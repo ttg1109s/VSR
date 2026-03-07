@@ -1,0 +1,2428 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Scenario Specification Schema V9.2 (Chat Refactor)",
+  "description": "Game scenario structure V9.2 with refactored Chat system, Passwords, Item Effects and Character Actions.",
+  "type": "object",
+  "required": [
+    "meta",
+    "globalStates",
+    "templates",
+    "itemInfo",
+    "passwords",
+    "scenes",
+    "actions",
+    "chat",
+    "characters",
+    "endings",
+    "config"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "config": {
+      "type": "object",
+      "description": "General configuration for the game scenario.",
+      "properties": {
+        "minTransition": {
+          "type": "number",
+          "description": "Minimum transition time between scenes unit seconds",
+          "default": 2
+        },
+        "minAutomationNextStep": {
+          "type": "number",
+          "description": "Minimum automation time unit seconds",
+          "default": 2
+        },
+        "maxCharacterMoving": {
+          "type": "number",
+          "description": "Maximum characters moving active. If characters moving active is greater than this value, it will queue list active moving.",
+          "default": 10
+        },
+        "maxInventory": {
+          "type": "array",
+          "description": "Maximum inventory items (eg: [50, char_id], [20, char_id]). If [] to infinite.",
+          "default": [],
+          "items": {
+            "type": "array",
+            "maxItems": 2,
+            "items": {
+              "type": "number"
+            }
+          },
+          "maxHandOn": {
+            "type": "number",
+            "description": "Maximum hand on items. If 0 to infinite.",
+            "default": 10
+          },
+          "brokenDisable": {
+            "type": "boolean",
+            "description": "Disable use broken items or not.",
+            "default": false
+          },
+          "minCharacterMoving": {
+            "type": "number",
+            "description": "Minimum character moving time unit seconds.",
+            "default": 30
+          }
+        },
+        "stopEffectWhenChat": {
+          "type": "boolean",
+          "description": "Stop effect when chat window is open.",
+          "default": false
+        },
+        "navContact": {
+          "type": "boolean",
+          "description": "Enable navigation contact or not.",
+          "default": true
+        },
+        "navInventory": {
+          "type": "boolean",
+          "description": "Enable navigation inventory or not.",
+          "default": true
+        },
+        "defaultNotice": {
+          "type": "boolean",
+          "description": "Enable default notice in hardcore on engine or not.",
+          "default": true
+        },
+        "allDescRead": {
+          "type": "boolean",
+          "default": false,
+          "description": "Force players to wait for descriptions on actions."
+        }
+      }
+    },
+    "meta": {
+      "type": "object",
+      "description": "General information about the game scenario.",
+      "required": [
+        "title",
+        "desc",
+        "version",
+        "language",
+        "writer",
+        "ageRating",
+        "tags"
+      ],
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Display title of the scenario."
+        },
+        "subtitle": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Subtitle (if any)."
+        },
+        "desc": {
+          "type": "string",
+          "description": "Brief description of the plot."
+        },
+        "writer": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Author name."
+        },
+        "studio": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Production studio name."
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "Version (e.g., 9.0.0)."
+        },
+        "language": {
+          "type": "string",
+          "minLength": 2,
+          "description": "Language code (vi, en, jp...)."
+        },
+        "cover": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "description": "Game cover image.",
+          "properties": {
+            "url": {
+              "type": "string",
+              "format": "uri"
+            },
+            "ratio": {
+              "enum": [
+                "1:1",
+                "16:9",
+                "4:5"
+              ]
+            },
+            "blurhash": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Classification tags (horror, puzzle...)."
+        },
+        "ageRating": {
+          "type": "string",
+          "description": "Age rating (16+, 18+)."
+        },
+        "difficulty": {
+          "enum": [
+            "easy",
+            "normal",
+            "hard"
+          ],
+          "description": "Estimated difficulty."
+        },
+        "estimatedPlayTime": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Estimated playtime (minutes)."
+        },
+        "entryScene": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "ID of the first Scene when starting the game."
+        },
+        "entryCharacter": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "ID of the Character that the player will roleplay as initially."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "copyright": {
+          "type": "string"
+        },
+        "license": {
+          "type": "string"
+        },
+        "notes": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "globalStates": {
+      "type": "object",
+      "description": "Global variables storing game state (flags, counters...).",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "type",
+          "value"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "boolean",
+              "number",
+              "string"
+            ],
+            "description": "Data type of the variable."
+          },
+          "value": {
+            "description": "Initial value."
+          }
+        }
+      }
+    },
+    "templates": {
+      "type": "object",
+      "description": "Shared template library (Requirements, Effects, Automations) for reuse.",
+      "properties": {
+        "requirements": {
+          "type": "object",
+          "description": "Definitions of logic requirements.",
+          "additionalProperties": {
+            "$ref": "#/definitions/requirement_details"
+          }
+        },
+        "effects": {
+          "type": "object",
+          "description": "Definitions of effect chains.",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/effect_details"
+            }
+          }
+        },
+        "automation": {
+          "type": "object",
+          "description": "Definitions of automated sequences.",
+          "additionalProperties": {
+            "type": "object",
+            "required": [
+              "set",
+              "plan"
+            ],
+            "properties": {
+              "set": {
+                "type": "object",
+                "required": [
+                  "move",
+                  "moveDirection",
+                  "numberCycleAllow",
+                  "countCurrent",
+                  "runInfinity",
+                  "banClick"
+                ],
+                "description": "Configuration for the automation.",
+                "properties": {
+                  "move": {
+                    "enum": [
+                      "step_by_step",
+                      "random"
+                    ],
+                    "default": "step_by_step",
+                    "description": "Movement type: step_by_step or random."
+                  },
+                  "moveDirection": {
+                    "enum": [
+                      "first",
+                      "last"
+                    ],
+                    "default": "first",
+                    "description": "Direction of movement: first or last."
+                  },
+                  "numberCycleAllow": {
+                    "type": "number",
+                    "default": 1,
+                    "description": "Number of cycles allowed."
+                  },
+                  "countCurrent": {
+                    "type": "number",
+                    "default": 0,
+                    "description": "Current cycle count."
+                  },
+                  "runInfinity": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Whether to run infinitely. If true, skip numberCycleAllow."
+                  },
+                  "banClick": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Whether to ban clicks during automation. Be careful with this setting with runInfinity true because it can cause an infinite loop."
+                  }
+                }
+              },
+              "plan": {
+                "type": "array",
+                "description": "List of steps in the automation.",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "seconds": {
+                      "type": "number",
+                      "default": 5
+                    },
+                    "effect": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/definitions/runnable_wrapper"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "itemInfo": {
+      "type": "object",
+      "description": "Database of items in the game.",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "name",
+          "icon",
+          "desc",
+          "usage"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Item name."
+          },
+          "icon": {
+            "type": "string",
+            "description": "Display icon (Emoji or text Metarial Icon of Google)."
+          },
+          "desc": {
+            "type": "string",
+            "description": "Item description."
+          },
+          "requirements": {
+            "description": "Requirements to use/hold the item.",
+            "oneOf": [
+              {
+                "$ref": "#/definitions/requirement_details"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "effect": {
+            "type": "object",
+            "description": "Effects associated with item usage/state.",
+            "properties": {
+              "use": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/runnable_wrapper"
+                },
+                "description": "Effect when item is used."
+              },
+              "equip": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/runnable_wrapper"
+                },
+                "description": "Effect when item is equipped."
+              },
+              "unequip": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/runnable_wrapper"
+                },
+                "description": "Effect when item is unequipped."
+              }
+            }
+          },
+          "usage": {
+            "type": "object",
+            "description": "Durability or usage count.",
+            "required": [
+              "current",
+              "max"
+            ],
+            "properties": {
+              "current": {
+                "type": "number",
+                "description": "Current value (Wear and tear)."
+              },
+              "max": {
+                "type": "number",
+                "description": "Max value (Fully broken)."
+              },
+              "status": {
+                "type": "array",
+                "default": [
+                  [
+                    10,
+                    "good"
+                  ],
+                  [
+                    5,
+                    "broken"
+                  ]
+                ],
+                "description": "Status of the item is an array of [value percents, label]."
+              },
+              "autoInc": {
+                "type": "boolean",
+                "default": true,
+                "description": "Auto increment usage current value when used."
+              }
+            }
+          },
+          "stats": {
+            "type": "object",
+            "description": "Secondary stats of the item (Damage, Recovery...).",
+            "additionalProperties": {
+              "type": "object",
+              "required": [
+                "current",
+                "max"
+              ],
+              "properties": {
+                "current": {
+                  "type": "number"
+                },
+                "max": {
+                  "type": "number"
+                },
+                "label": {
+                  "type": "string",
+                  "description": "Display label of the stat."
+                },
+                "color": {
+                  "type": "string",
+                  "pattern": "^#[0-9a-fA-F]{6}$"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "passwords": {
+      "type": "object",
+      "description": "Definitions of passwords separated by keyspaces.",
+      "properties": {
+        "number": {
+          "type": "object",
+          "description": "Numeric passwords.",
+          "additionalProperties": {
+            "$ref": "#/definitions/password_number"
+          }
+        },
+        "string": {
+          "type": "object",
+          "description": "String/text passwords.",
+          "additionalProperties": {
+            "$ref": "#/definitions/password_string"
+          }
+        },
+        "find_way": {
+          "type": "object",
+          "description": "Pathfinding puzzles.",
+          "additionalProperties": {
+            "$ref": "#/definitions/password_find_way"
+          }
+        },
+        "puzzle": {
+          "type": "object",
+          "description": "Image/Jigsaw puzzles.",
+          "additionalProperties": {
+            "$ref": "#/definitions/password_puzzle"
+          }
+        },
+        "switch": {
+          "type": "object",
+          "description": "Switch/Toggle passwords.",
+          "additionalProperties": {
+            "$ref": "#/definitions/password_switch"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "media": {
+      "type": "object",
+      "description": "Definition of media resources (Photo, Video, Sound).",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "type",
+          "url"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "photo",
+              "video",
+              "sound"
+            ],
+            "description": "Media type."
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL to the media resource."
+          }
+        }
+      }
+    },
+    "scenes": {
+      "type": "object",
+      "description": "List of game scenes.",
+      "additionalProperties": {
+        "$ref": "#/definitions/scene"
+      }
+    },
+    "actions": {
+      "type": "object",
+      "description": "Global list of Actions referenced by Routers.",
+      "additionalProperties": {
+        "$ref": "#/definitions/action"
+      }
+    },
+    "chat": {
+      "type": "object",
+      "description": "Dialogue system with character-specific branching.",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "meta",
+          "block",
+          "choice"
+        ],
+        "properties": {
+          "meta": {
+            "type": "object",
+            "description": "Chat metadata.",
+            "required": [
+              "loop"
+            ],
+            "properties": {
+              "title": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "default": null,
+                "description": "Display title."
+              },
+              "loop": {
+                "type": "boolean",
+                "description": "Whether the chat loops or is one-time."
+              },
+              "sender": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Character ID of sender, or null for unknown/spam."
+              },
+              "entry": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "ID of the starting block."
+              },
+              "to": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "List of recipient Character IDs."
+              }
+            }
+          },
+          "block": {
+            "type": "object",
+            "description": "Dictionary of dialogue blocks keyed by Block ID.",
+            "additionalProperties": {
+              "type": "object",
+              "description": "Block content.",
+              "required": [
+                "line",
+                "choiced"
+              ],
+              "properties": {
+                "line": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "char_id",
+                      "text"
+                    ],
+                    "properties": {
+                      "char_id": {
+                        "type": "string",
+                        "description": "Speaker ID."
+                      },
+                      "text": {
+                        "type": "string",
+                        "description": "Dialogue line."
+                      }
+                    }
+                  }
+                },
+                "choice_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "description": "Reference to a key in the choice object."
+                },
+                "choiced": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "State: Has this block been completed/selected?"
+                }
+              }
+            }
+          },
+          "choice": {
+            "type": "object",
+            "description": "Dictionary of choices keyed by Choice ID.",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "text"
+                ],
+                "properties": {
+                  "text": {
+                    "type": "string",
+                    "description": "Choice text."
+                  },
+                  "effect": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/definitions/runnable_wrapper"
+                    }
+                  },
+                  "jump": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Block ID to jump to. If null or duplicate with choice that Block ID contains it or not met, ends chat."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "characters": {
+      "type": "object",
+      "description": "List of characters (Roleplay & NPCs).",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "meta",
+          "set",
+          "stats",
+          "inventory"
+        ],
+        "properties": {
+          "meta": {
+            "type": "object",
+            "required": [
+              "name",
+              "desc"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Character name."
+              },
+              "desc": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Character description."
+              },
+              "avatar": {
+                "type": "string",
+                "description": "Character avatar URL."
+              }
+            }
+          },
+          "set": {
+            "type": "object",
+            "required": [
+              "linkEffect",
+              "alert",
+              "moving",
+              "move"
+            ],
+            "properties": {
+              "linkEffect": {
+                "type": [
+                  "boolean",
+                  "null"
+                ],
+                "default": false,
+                "description": "If true: Stats changes persist to this character when switching bodies."
+              },
+              "moving": {
+                "type": "boolean",
+                "default": true,
+                "description": "Allow automatic movement."
+              },
+              "alert": {
+                "enum": [
+                  "danger",
+                  "warning",
+                  "success",
+                  "notice",
+                  null
+                ],
+                "default": null,
+                "description": "Alert style when meeting."
+              },
+              "move": {
+                "enum": [
+                  "random",
+                  "list",
+                  "list_reverse",
+                  "list_loop_reverse",
+                  "edge_bounce_first",
+                  "edge_bounce_last",
+                  "random_weight",
+                  "random_count",
+                  "follow_player",
+                  "avoid_player",
+                  null
+                ],
+                "default": null,
+                "description": "Advanced Movement Type."
+              },
+              "mainAction": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "ID of the main action for this character."
+              }
+            }
+          },
+          "moveList": {
+            "type": "array",
+            "description": "Advanced movement path configuration.",
+            "items": {
+              "type": "object",
+              "required": [
+                "scene_id"
+              ],
+              "properties": {
+                "scene_id": {
+                  "type": "string"
+                },
+                "nextStep": {
+                  "type": "number",
+                  "default": 1.5,
+                  "description": "Seconds to wait before next move."
+                },
+                "weight": {
+                  "type": "number",
+                  "default": 1,
+                  "description": "Weight for random selection."
+                },
+                "count": {
+                  "type": "number",
+                  "default": -1,
+                  "description": "Count down for random_count. -1 is infinite."
+                },
+                "speed": {
+                  "type": "number",
+                  "default": 30,
+                  "description": "Movement speed in next steps."
+                },
+                "skip": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Skip this move."
+                },
+                "req": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/runnable_wrapper"
+                  }
+                }
+              }
+            }
+          },
+          "effect": {
+            "type": "object",
+            "description": "Character interaction effects keyed by Target Character ID.",
+            "properties": {
+              "meeting": {
+                "type": "object",
+                "description": "Map of Character ID to Effect List. Run when this Character meets another Character.",
+                "additionalProperties": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/runnable_wrapper"
+                  }
+                }
+              },
+              "leave": {
+                "type": "object",
+                "description": "Map of Character ID to Effect List. Run when this Character leaves another Character.",
+                "additionalProperties": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/runnable_wrapper"
+                  }
+                }
+              }
+            }
+          },
+          "stats": {
+            "type": "object",
+            "description": "Character stats (Level, HP, Sanity, Affinity...).",
+            "additionalProperties": {
+              "type": "object",
+              "required": [
+                "current",
+                "max",
+                "label"
+              ],
+              "properties": {
+                "current": {
+                  "type": "number",
+                  "default": 0,
+                  "description": "Current value of the stat."
+                },
+                "max": {
+                  "type": "number",
+                  "default": 100,
+                  "description": "Max value of the stat."
+                },
+                "label": {
+                  "type": "string",
+                  "description": "Stat name (e.g., HP, Sanity)."
+                },
+                "color": {
+                  "type": "string",
+                  "pattern": "^#[0-9a-fA-F]{6}$"
+                }
+              }
+            }
+          },
+          "met": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^.+:\\d+$"
+            },
+            "description": "List of characters met and count. Format: 'char_id:count'."
+          },
+          "relationship": {
+            "type": "array",
+            "description": "Relationship tags with other characters [[tag, char_id]].",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "place": {
+            "type": "object",
+            "description": "Current Place ID where the character is standing.",
+            "properties": {
+              "currentIndex": {
+                "type": "number",
+                "description": "Current index of the place."
+              },
+              "scene_id": {
+                "type": "string",
+                "description": "Current scene ID of the place."
+              }
+            }
+          },
+          "inventory": {
+            "type": "array",
+            "description": "Inventory items of the character."
+          }
+        }
+      }
+    },
+    "endings": {
+      "type": "object",
+      "description": "Definitions of game endings.",
+      "additionalProperties": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "set": {
+            "type": "object",
+            "description": "Description of the ending."
+          }
+        }
+      }
+    },
+    "definitions": {
+      "runnable_wrapper": {
+        "type": "object",
+        "description": "Wrapper for all logic actions (Effect, Requirement, Manage Effect).",
+        "required": [
+          "type",
+          "skip"
+        ],
+        "properties": {
+          "skip": {
+            "type": "boolean",
+            "description": "Skip this action if true.",
+            "default": false
+          },
+          "type": {
+            "enum": [
+              "effect",
+              "req",
+              "manage_effect"
+            ]
+          },
+          "ref": {
+            "type": "string",
+            "description": "Reference to ID in templates."
+          },
+          "inline": {
+            "type": "object",
+            "description": "Inline content definition."
+          },
+          "req": {
+            "$ref": "#/definitions/requirement_details",
+            "description": "Attached execution requirement."
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "effect"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "inline": {
+                  "$ref": "#/definitions/effect_details"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "req"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "inline": {
+                  "$ref": "#/definitions/requirement_details"
+                },
+                "req": {
+                  "not": {}
+                }
+              }
+            }
+          }
+        ]
+      },
+      "requirement_details": {
+        "type": "object",
+        "description": "Logic condition details.",
+        "properties": {
+          "logic": {
+            "enum": [
+              "AND",
+              "OR",
+              "NOT",
+              "XOR",
+              null
+            ],
+            "description": "Combining logic operator."
+          },
+          "check": {
+            "type": "array",
+            "description": "List of single checks.",
+            "items": {
+              "$ref": "#/definitions/requirement_check"
+            }
+          }
+        }
+      },
+      "requirement_check": {
+        "type": "object",
+        "description": "A single logic check.",
+        "required": [
+          "type",
+          "subtype",
+          "op",
+          "value"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "item",
+              "stats",
+              "state",
+              "set",
+              "relationship"
+            ],
+            "description": "Type of object to check."
+          },
+          "subtype": {
+            "type": "string",
+            "description": "Subtype (inventory, global, scene...)."
+          },
+          "target": {
+            "type": "string",
+            "description": "ID of the object to check."
+          },
+          "property": {
+            "type": "string",
+            "description": "Property to compare."
+          },
+          "op": {
+            "enum": [
+              "==",
+              "!=",
+              ">",
+              "<",
+              ">=",
+              "<=",
+              "has",
+              "!has"
+            ],
+            "description": "Comparison operator."
+          },
+          "value": {
+            "description": "Value to compare."
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "item"
+                }
+              }
+            },
+            "then": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "subtype": {
+                      "const": "inventory"
+                    },
+                    "op": {
+                      "enum": [
+                        "has",
+                        "!has"
+                      ]
+                    },
+                    "value": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "subtype": {
+                      "const": "hand"
+                    },
+                    "op": {
+                      "const": "=="
+                    },
+                    "value": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "subtype": {
+                      "const": "usage"
+                    },
+                    "op": {
+                      "enum": [
+                        "<",
+                        ">",
+                        "==",
+                        "!=",
+                        "<=",
+                        ">="
+                      ]
+                    },
+                    "value": {
+                      "type": "number"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "stats"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "subtype": {
+                  "enum": [
+                    "item",
+                    "characters"
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "state"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "subtype": {
+                  "const": "global"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "set"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "subtype": {
+                  "enum": [
+                    "state",
+                    "scene",
+                    "router",
+                    "action",
+                    "chat",
+                    "characters",
+                    "chat_choice",
+                    "chat_block",
+                    "automation",
+                    "block_chat"
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "relationship"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "subtype": {
+                  "enum": [
+                    "tag"
+                  ]
+                },
+                "property": {
+                  "type": "string",
+                  "description": "Format: 'targetCharID'"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "effect_details": {
+        "type": "object",
+        "description": "Impact effect details.",
+        "required": [
+          "type"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "notify",
+              "set",
+              "item",
+              "goto",
+              "vfx",
+              "characters",
+              "cms",
+              "skip_all"
+            ],
+            "description": "Type of effect."
+          },
+          "subtype": {
+            "type": "string",
+            "description": "Impact subtype."
+          },
+          "target": {
+            "type": "string",
+            "description": "ID of the target object."
+          },
+          "property": {
+            "type": "string",
+            "description": "Property to change."
+          },
+          "value": {
+            "description": "New value or increment value."
+          },
+          "text": {
+            "type": "string",
+            "description": "Notification content (for notify)."
+          },
+          "level": {
+            "enum": [
+              "info",
+              "success",
+              "warn",
+              "error"
+            ],
+            "description": "Notification level (color)."
+          },
+          "index": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "description": "Indices for npc_moving_ctrl."
+          },
+          "duration": {
+            "type": "number",
+            "description": "Duration in seconds for VFX."
+          },
+          "format": {
+            "enum": [
+              "photo",
+              "video",
+              "sound"
+            ],
+            "description": "Format for media VFX."
+          },
+          "control": {
+            "enum": [
+              "start",
+              "stop",
+              "repeat"
+            ],
+            "description": "Control action for media."
+          },
+          "mode": {
+            "type": "string",
+            "description": "Mode for stats effect (add_stats, remove_stats)."
+          },
+          "notify": {
+            "type": "boolean",
+            "description": "Show notification for stats effect."
+          },
+          "space": {
+            "enum": [
+              "router",
+              "action",
+              "characters",
+              "item",
+              "chat"
+            ],
+            "description": "Scope (for manage_effect)."
+          },
+          "in": {
+            "enum": [
+              "still",
+              "leave",
+              "enter",
+              "pass",
+              "fail",
+              "normal",
+              "t_start",
+              "t_end",
+              "meeting",
+              "pwFailed",
+              "use",
+              "equip",
+              "unequip"
+            ],
+            "description": "Hook name (for manage_effect)."
+          },
+          "inline": {
+            "$ref": "#/definitions/runnable_wrapper",
+            "description": "Content to inject (for manage_effect add_effect). Note: originally 'content' in wrapper."
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "notify"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "subtype": {
+                  "enum": [
+                    "modal",
+                    "toast"
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "set"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "subtype": {
+                  "enum": [
+                    "state",
+                    "scene",
+                    "router",
+                    "action",
+                    "chat",
+                    "characters",
+                    "chat_choice",
+                    "chat_block",
+                    "automation"
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "item"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "subtype": {
+                  "enum": [
+                    "add",
+                    "remove",
+                    "hand_on",
+                    "hand_off",
+                    "usage",
+                    "stats"
+                  ]
+                },
+                "target": {
+                  "type": "string"
+                },
+                "hide": {
+                  "type": "boolean",
+                  "description": "Auto hide action after execution."
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "characters"
+                },
+                "subtype": {
+                  "const": "edit_stats"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "exec": {
+                  "enum": [
+                    "add",
+                    "set",
+                    "add_stats",
+                    "remove_stats"
+                  ]
+                },
+                "target": {
+                  "type": "string"
+                },
+                "property": {
+                  "type": "string"
+                },
+                "value": {
+                  "description": "Value or increment."
+                }
+              },
+              "required": [
+                "target",
+                "property",
+                "value"
+              ]
+            }
+          },
+          {
+            "if": {},
+            "then": {
+              "properties": {
+                "subtype": {
+                  "enum": [
+                    "locked",
+                    "unlocked",
+                    "add_effect",
+                    "remove_effect"
+                  ]
+                },
+                "required": [
+                  "space",
+                  "in",
+                  "subtype"
+                ]
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "manage_effect"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "subtype": {
+                  "enum": [
+                    "locked",
+                    "unlocked",
+                    "add_effect",
+                    "remove_effect"
+                  ]
+                },
+                "required": [
+                  "space",
+                  "in",
+                  "subtype"
+                ]
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "goto"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "subtype": {
+                  "enum": [
+                    "chat",
+                    "end",
+                    "scene",
+                    "router",
+                    "in_faker",
+                    "out_faker"
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "vfx"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "subtype": {
+                  "enum": [
+                    "media",
+                    "frame",
+                    "overlay"
+                  ]
+                },
+                "id": {
+                  "type": "string",
+                  "description": "Unique ID for the effect instance. If duplicate, overrides existing."
+                },
+                "target": {
+                  "type": "string"
+                },
+                "flicker": {
+                  "type": "number",
+                  "description": "Flicker interval in seconds (for overlay). If < 2, null or empty -> false."
+                },
+                "loop": {
+                  "type": "boolean",
+                  "description": "Enable looping (for frame)."
+                },
+                "loopSecond": {
+                  "type": "number",
+                  "description": "Loop interval in seconds (for frame). If < 1, null or empty -> false."
+                },
+                "format": {
+                  "enum": [
+                    "sound",
+                    "video",
+                    "photo"
+                  ],
+                  "description": "Media format (for media)."
+                },
+                "control": {
+                  "enum": [
+                    "stop",
+                    "play",
+                    "pause"
+                  ],
+                  "description": "Playback control (for media)."
+                },
+                "repeat": {
+                  "type": "boolean",
+                  "description": "Enable repeat (for media)."
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "characters"
+                },
+                "subtype": {
+                  "const": "mng_stats"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "exec": {
+                  "enum": [
+                    "swap",
+                    "copy_to",
+                    "cut_to",
+                    "delete",
+                    "add_stats",
+                    "remove_stats"
+                  ]
+                },
+                "target": {
+                  "type": "string",
+                  "description": "Format: 'dest_id:src_id' or 'target_id'"
+                },
+                "value": {
+                  "type": "string",
+                  "description": "Stat Key to copy/cut/delete"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "characters"
+                },
+                "subtype": {
+                  "const": "moving"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "exec": {
+                  "enum": [
+                    "skip",
+                    "edit"
+                  ]
+                },
+                "target": {
+                  "type": "string"
+                },
+                "index": {
+                  "type": "array"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "cms"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "table": {
+                  "enum": [
+                    "characters",
+                    "routers"
+                  ],
+                  "description": "Target strategy table."
+                },
+                "column": {
+                  "enum": [
+                    "actions",
+                    "relationship",
+                    "met"
+                  ],
+                  "description": "Target column/property."
+                },
+                "method": {
+                  "enum": [
+                    "add",
+                    "remove",
+                    "insert",
+                    "empty",
+                    "set"
+                  ],
+                  "description": "Manipulation method"
+                },
+                "id": {
+                  "type": "string",
+                  "description": "ID of the target object (Character or Router)."
+                },
+                "value": {
+                  "description": "Value to add/remove/insert"
+                },
+                "index": {
+                  "type": "number",
+                  "description": "Index for 'insert' method"
+                }
+              },
+              "required": [
+                "subtype",
+                "method"
+              ]
+            }
+          }
+        ]
+      },
+      "password_common": {
+        "type": "object",
+        "required": [
+          "desc"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Title of the password."
+          },
+          "desc": {
+            "type": "string",
+            "description": "Description or hint for the password."
+          },
+          "retryMax": {
+            "type": "number",
+            "default": 3,
+            "description": "Max attempts allowed. 0 means infinite."
+          },
+          "countTest": {
+            "type": "number",
+            "default": 0,
+            "description": "Current number of failed attempts."
+          },
+          "timer": {
+            "type": "number",
+            "default": 0,
+            "description": "Time limit in seconds. 0 means no limit."
+          }
+        }
+      },
+      "password_number": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/definitions/password_common"
+          }
+        ],
+        "required": [
+          "display",
+          "value"
+        ],
+        "properties": {
+          "display": {
+            "enum": [
+              "keyboard",
+              "combination",
+              "rotary_dial"
+            ],
+            "description": "UI Style for number input."
+          },
+          "value": {
+            "type": [
+              "number",
+              "string"
+            ],
+            "pattern": "^[0-9]+$",
+            "description": "The correct number combination. Use string to preserve leading zeros."
+          }
+        }
+      },
+      "password_string": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/definitions/password_common"
+          }
+        ],
+        "required": [
+          "value"
+        ],
+        "properties": {
+          "value": {
+            "type": "string",
+            "description": "The correct string password."
+          },
+          "hint": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "description": "Indices of characters to reveal as hint."
+          }
+        }
+      },
+      "password_find_way": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/definitions/password_common"
+          }
+        ],
+        "required": [
+          "start",
+          "target",
+          "street",
+          "area"
+        ],
+        "properties": {
+          "area": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2
+          },
+          "start": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2
+          },
+          "target": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2
+          },
+          "street": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            },
+            "description": "The ordered list of coordinates representing the correct path."
+          }
+        }
+      },
+      "password_puzzle": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/definitions/password_common"
+          }
+        ],
+        "required": [
+          "url",
+          "level"
+        ],
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL to the external puzzle resource."
+          },
+          "ratio": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "default": [
+              1,
+              1
+            ],
+            "description": "Aspect ratio of the puzzle [width, height]."
+          },
+          "level": {
+            "enum": [
+              "easy",
+              "medium",
+              "hard",
+              "very hard",
+              "god"
+            ]
+          }
+        }
+      },
+      "password_switch": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/definitions/password_common"
+          }
+        ],
+        "required": [
+          "value"
+        ],
+        "properties": {
+          "value": {
+            "type": "string",
+            "pattern": "^[0-9]+$",
+            "description": "Correct combination (e.g. '0123'). Each digit represents a switch state."
+          }
+        }
+      },
+      "scene": {
+        "type": "object",
+        "required": [
+          "meta",
+          "set",
+          "routers"
+        ],
+        "properties": {
+          "meta": {
+            "type": "object",
+            "description": "Scene meta information.",
+            "required": [
+              "title",
+              "parentScene"
+            ],
+            "properties": {
+              "title": {
+                "type": "string",
+                "description": "Scene name."
+              },
+              "parentScene": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "ID of the parent Scene."
+              }
+            }
+          },
+          "set": {
+            "type": "object",
+            "description": "Scene configuration.",
+            "required": [
+              "activeRouterId",
+              "blocked",
+              "transition",
+              "transitionDuration"
+            ],
+            "properties": {
+              "activeRouterId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Router ID to activate immediately upon entering Scene."
+              },
+              "blocked": {
+                "type": [
+                  "boolean",
+                  "null"
+                ],
+                "description": "Lock this Scene from entry."
+              },
+              "transition": {
+                "enum": [
+                  "fade",
+                  "fade",
+                  "flash",
+                  "zoom_in",
+                  "zoom_out",
+                  "glitch",
+                  "crt_off",
+                  "spin",
+                  "slide_left",
+                  "slide_right",
+                  "slide_up",
+                  "slide_down",
+                  "iris_circle",
+                  "invert_flash",
+                  "warp",
+                  null
+                ],
+                "description": "Transition effect when entering Scene."
+              },
+              "transitionDuration": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "default": 1.5,
+                "description": "Effect duration (seconds)."
+              }
+            }
+          },
+          "routers": {
+            "type": "object",
+            "description": "List of Routers (status, viewpoint) in the Scene.",
+            "additionalProperties": {
+              "$ref": "#/definitions/router"
+            }
+          }
+        }
+      },
+      "router": {
+        "type": "object",
+        "required": [
+          "meta",
+          "set",
+          "actions"
+        ],
+        "properties": {
+          "meta": {
+            "type": "object",
+            "description": "Router display information.",
+            "required": [
+              "sceneID",
+              "desc"
+            ],
+            "properties": {
+              "sceneID": {
+                "type": "string",
+                "description": "Scene ID containing this Router."
+              },
+              "subTitleStatus": {
+                "type": "string",
+                "description": "Subtitle (status)."
+              },
+              "desc": {
+                "type": "string",
+                "description": "Router content description."
+              },
+              "cover": {
+                "type": "string",
+                "description": "Router background image."
+              }
+            }
+          },
+          "set": {
+            "type": "object",
+            "description": "Router configuration.",
+            "required": [
+              "blocked",
+              "visited",
+              "countVisited",
+              "secondsStill",
+              "timer",
+              "timerSeconds",
+              "timerDisplay",
+              "timerEnd",
+              "transition",
+              "transitionDuration",
+              "overlay",
+              "overlayFlick",
+              "overlayFlickDuration"
+            ],
+            "properties": {
+              "blocked": {
+                "type": [
+                  "boolean",
+                  "null"
+                ],
+                "description": "Lock router access."
+              },
+              "visited": {
+                "type": [
+                  "boolean",
+                  "null"
+                ],
+                "description": "Has been visited."
+              },
+              "countVisited": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "Visit count."
+              },
+              "secondsStill": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "default": 0,
+                "description": "Wait time before triggering Still Loop (seconds)."
+              },
+              "timer": {
+                "type": [
+                  "boolean",
+                  "null"
+                ],
+                "description": "Activate timer."
+              },
+              "timerSeconds": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "default": 60,
+                "description": "Total countdown time (seconds)."
+              },
+              "timerDisplay": {
+                "enum": [
+                  "dec",
+                  "inc",
+                  null
+                ],
+                "description": "Timer display: counting down (dec) or up (inc)."
+              },
+              "timerEnd": {
+                "enum": [
+                  "still",
+                  "out",
+                  null
+                ],
+                "description": "Action on timeout: Run loop (still) or exit (out)."
+              },
+              "transition": {
+                "enum": [
+                  "shake_random_blur",
+                  "shake_left_right_blur",
+                  "shake_up_down_blur",
+                  "blur",
+                  "glitch",
+                  "crt_off",
+                  "spin",
+                  "slide_left",
+                  "slide_right",
+                  "slide_up",
+                  "slide_down",
+                  "iris_circle",
+                  "invert_flash",
+                  "warp",
+                  null
+                ],
+                "description": "Internal transition effect."
+              },
+              "transitionDuration": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "default": 3,
+                "description": "Transition duration (seconds)."
+              },
+              "overlay": {
+                "enum": [
+                  "none",
+                  "dark",
+                  "light",
+                  "blood",
+                  "classic movie",
+                  "dreaming",
+                  "noise",
+                  null
+                ],
+                "description": "Visual effect overlay."
+              },
+              "overlayFlick": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "Duration in seconds for overlay flicker. If <= 1 or null/false, no flicker (permanent)."
+              }
+            }
+          },
+          "loop": {
+            "type": "object",
+            "description": "Events automatically running per router lifecycle.",
+            "properties": {
+              "enter": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/runnable_wrapper"
+                },
+                "description": "Run when entering Router."
+              },
+              "leave": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/runnable_wrapper"
+                },
+                "description": "Run when leaving Router."
+              },
+              "still": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/runnable_wrapper"
+                },
+                "description": "Run repeatedly after secondsStill interval."
+              }
+            }
+          },
+          "timer": {
+            "type": "object",
+            "description": "Events associated with Timer.",
+            "properties": {
+              "start": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/runnable_wrapper"
+                },
+                "description": "Run when Timer starts."
+              },
+              "end": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/runnable_wrapper"
+                },
+                "description": "Run when Timer ends (if timerEnd = still)."
+              }
+            }
+          },
+          "actions": {
+            "type": "array",
+            "description": "List of Action IDs available in this router.",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "action": {
+        "type": "object",
+        "required": [
+          "meta",
+          "set"
+        ],
+        "properties": {
+          "meta": {
+            "type": "object",
+            "description": "Action display information.",
+            "required": [
+              "buttonLabel",
+              "buttonLabel"
+            ],
+            "properties": {
+              "title": {
+                "type": "string",
+                "description": "Display title."
+              },
+              "parentScene": {
+                "type": "string",
+                "description": "ID of parent scene."
+              },
+              "thumb": {
+                "type": "string",
+                "description": "Thumbnail image."
+              },
+              "desc": {
+                "type": "string",
+                "description": "Short description."
+              },
+              "buttonIcon": {
+                "type": "string",
+                "description": "Icon on button."
+              },
+              "buttonLabel": {
+                "type": "string",
+                "description": "Label on button."
+              }
+            }
+          },
+          "set": {
+            "type": "object",
+            "description": "Action configuration and state (Strict Mode).",
+            "required": [
+              "requirement",
+              "password",
+              "countClicks",
+              "countFails",
+              "display",
+              "charAllow"
+            ],
+            "properties": {
+              "requirement": {
+                "type": [
+                  "boolean",
+                  "null"
+                ],
+                "description": "Check requirement or not."
+              },
+              "password": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "pattern": "^type_pass:.+$",
+                "description": "Reference to password ID in 'type_pass:password_id' format."
+              },
+              "countClicks": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "Click count."
+              },
+              "countFails": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "Fail count."
+              },
+              "display": {
+                "enum": [
+                  "show",
+                  "hide",
+                  "locked",
+                  null
+                ],
+                "description": "Display status."
+              },
+              "charAllow": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "items": {
+                  "type": "string"
+                },
+                "description": "List of Character IDs permitted to execute this action."
+              },
+              "cooldown": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "default": 0,
+                "description": "Cooldown time in seconds."
+              },
+              "sound": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Sound ID."
+              },
+              "readDesc": {
+                "type": "boolean",
+                "default": false,
+                "description": "Has the description been read? (Runtime)"
+              },
+              "clickHintDesc": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "Number of clicks before showing hint."
+              }
+            }
+          },
+          "requirement": {
+            "type": "object",
+            "description": "Requirement to execute action (if set.requirement = true).",
+            "properties": {
+              "ref": {
+                "type": "string",
+                "description": "Reference to requirement template."
+              },
+              "logic": {
+                "enum": [
+                  "AND",
+                  "OR",
+                  "NOT",
+                  "XOR",
+                  null
+                ]
+              },
+              "check": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/requirement_check"
+                }
+              }
+            }
+          },
+          "effect": {
+            "type": "object",
+            "description": "Effect occurring when action executed.",
+            "properties": {
+              "fail": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/runnable_wrapper"
+                },
+                "description": "Run on failure."
+              },
+              "pass": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/runnable_wrapper"
+                },
+                "description": "Run on success."
+              },
+              "normal": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/runnable_wrapper"
+                },
+                "description": "Run on click (condition ignored)."
+              },
+              "pwFailed": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/runnable_wrapper"
+                },
+                "description": "Run on password failure."
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
