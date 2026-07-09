@@ -26,6 +26,9 @@ export class UIController {
 
         this.ensureFakerModal();
 
+        // Render layout màn Home (tách từ index.html — xem components/HomeScreen.js)
+        this.renderHomeScreen();
+
         this.injectAnimationStyles();
 
         // Khởi tạo Keyboard Controller và Numpad
