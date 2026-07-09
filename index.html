@@ -9,6 +9,19 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <title>Visual Story RPG Engine</title>
     <script src="assets/css/tailwind.js"></script>
+    <!-- [FIX] Nạp Google Fonts trực tiếp ở đây thay vì qua @import lồng trong
+         be-vietnam-pro.css/material-icon.css. @import lồng trong 1 file CSS khác
+         tạo thêm 1 vòng round-trip tuần tự (HTML -> fetch CSS -> phát hiện
+         @import -> fetch CSS thật của Google Fonts -> phát hiện url font ->
+         fetch .woff2) trước khi font icon bắt đầu tải — trên mạng di động dễ
+         vượt quá "block period" ngắn của display=block, khiến ligature hiện chữ
+         thô ("auto_stories", "arrow_forward"...) thay vì icon. preconnect giúp
+         trình duyệt mở kết nối tới 2 domain của Google Fonts sớm, song song với
+         lúc HTML đang parse, thay vì đợi phát hiện qua @import mới bắt đầu mở. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Icons+Round&display=block" rel="stylesheet">
     <link href="assets/css/be-vietnam-pro.css" rel="stylesheet">
     <link href="assets/css/material-icon.css" rel="stylesheet">
     <link href="assets/css/main.css" rel="stylesheet">
@@ -42,7 +55,7 @@
             </div>
             <div class="space-y-3">
                 <button onclick="if(window.app)app.loadDemo();else console.error('App not loaded')"
-                    class="w-full py-4 bg-white hover:bg-[var(--vsr-surface-2)] border border-[var(--vsr-border)] text-[var(--vsr-ink-900)] rounded-xl transition-all flex items-center justify-cent[...]
+                    class="w-full py-4 bg-white hover:bg-[var(--vsr-surface-2)] border border-[var(--vsr-border)] text-[var(--vsr-ink-900)] rounded-xl transition-all flex items-center justify-center gap-3 group shadow-sm"><!-- [KHÔI PHỤC] class suy luận lại, soát lại nếu cần -->
                     <span
                         class="material-icons-round text-red-600 group-active:scale-110 transition-transform">play_arrow</span>
                     <span class="text-sm font-bold tracking-wide">DEMO SCRIPT</span>
@@ -51,7 +64,7 @@
                     <input type="file" id="script-upload" class="hidden" accept=".json"
                         onchange="if(window.app)app.importScript(event);else console.error('App not loaded')">
                     <button onclick="document.getElementById('script-upload').click()"
-                        class="w-full py-4 bg-[var(--vsr-surface-2)] hover:bg-[var(--vsr-surface-3)] border border-[var(--vsr-border)] text-[var(--vsr-ink-500)] hover:text-[var(--vsr-ink-900)] rou[...]
+                        class="w-full py-4 bg-[var(--vsr-surface-2)] hover:bg-[var(--vsr-surface-3)] border border-[var(--vsr-border)] text-[var(--vsr-ink-500)] hover:text-[var(--vsr-ink-900)] rounded-xl transition-all flex items-center justify-center gap-3"><!-- [KHÔI PHỤC] class suy luận lại, soát lại nếu cần -->
                         <span class="material-icons-round text-sm">folder_open</span>
                         <span class="text-xs font-bold tracking-wide">LOAD JSON</span>
                     </button>
@@ -74,9 +87,9 @@
         </header>
         <main class="flex-1 overflow-hidden flex flex-col md:flex-row">
             <div
-                class="w-full md:w-5/12 lg:w-4/12 flex-shrink-0 bg-[var(--vsr-surface-2)] md:border-r border-[var(--vsr-border)] p-6 md:p-8 flex flex-col justify-center items-center text-center ov[...]
+                class="w-full md:w-5/12 lg:w-4/12 flex-shrink-0 bg-[var(--vsr-surface-2)] md:border-r border-[var(--vsr-border)] p-6 md:p-8 flex flex-col justify-center items-center text-center overflow-y-auto"><!-- [KHÔI PHỤC] class suy luận lại, soát lại nếu cần -->
                 <div
-                    class="w-24 h-24 md:w-40 md:h-40 bg-white rounded-3xl border border-[var(--vsr-border)] flex items-center justify-center shadow-[var(--vsr-shadow-md)] relative overflow-hidden [...]
+                    class="w-24 h-24 md:w-40 md:h-40 bg-white rounded-3xl border border-[var(--vsr-border)] flex items-center justify-center shadow-[var(--vsr-shadow-md)] relative overflow-hidden group mb-6"><!-- [KHÔI PHỤC] class suy luận lại, soát lại nếu cần -->
                     <span
                         class="material-icons-round text-5xl text-[var(--vsr-ink-300)] group-hover:scale-110 transition-transform duration-500">auto_stories</span>
                 </div>
@@ -85,9 +98,9 @@
                 <h3 id="info-subtitle" class="text-base text-red-600 font-medium mb-5">Subtitle</h3>
                 <div class="w-full max-w-xs grid grid-cols-2 gap-3 mt-auto pt-4">
                     <button onclick="if(window.app)app.showScreen('home');else console.error('App not loaded')"
-                        class="py-3 border border-[var(--vsr-border)] hover:bg-[var(--vsr-tint-10)] bg-white rounded-xl text-xs text-[var(--vsr-ink-500)] transition-all font-bold uppercase trackin[...]
+                        class="py-3 border border-[var(--vsr-border)] hover:bg-[var(--vsr-tint-10)] bg-white rounded-xl text-xs text-[var(--vsr-ink-500)] transition-all font-bold uppercase tracking-wider"><!-- [KHÔI PHỤC] class + nội dung suy luận lại, soát lại nếu cần -->Home</button>
                     <button onclick="if(window.app)app.startGame();else console.error('App not loaded')"
-                        class="py-3 bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs shadow-lg shadow-red-900/10 transition-all font-bold uppercase tracking-wider flex items-center justif[...]
+                        class="py-3 bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs shadow-lg shadow-red-900/10 transition-all font-bold uppercase tracking-wider flex items-center justify-center gap-1.5"><!-- [KHÔI PHỤC] class suy luận lại, soát lại nếu cần -->
                         <span>Start</span> <span class="material-icons-round text-sm">arrow_forward</span>
                     </button>
                 </div>
@@ -128,7 +141,7 @@
 
                 <!-- Left Panel: màn "đọc truyện" (ảnh cảnh + tiêu đề + mô tả) -->
                 <div id="left-panel"
-                    class="flex-shrink-0 relative z-20 flex flex-col justify-end p-6 md:p-8 space-y-4 md:bg-[var(--vsr-surface-2)] md:justify-center md:h-full md:overflow-y-auto custom-scrollbar [...]
+                    class="flex-shrink-0 relative z-20 flex flex-col justify-end p-6 md:p-8 space-y-4 md:bg-[var(--vsr-surface-2)] md:justify-center md:h-full md:overflow-y-auto custom-scrollbar"
                     style="padding-top: calc(env(safe-area-inset-top) + 1.25rem);">
 
                     <!-- Tay cầm trượt sang phải, nằm giữa rìa phải màn hình (yêu cầu b) -->
@@ -143,7 +156,7 @@
                     </div>
                     <div class="animate-fade-in flex-shrink-0 z-10" style="animation-delay: 0.2s">
                         <div
-                            class="bg-white/90 backdrop-blur-xl border border-[var(--vsr-border)] p-4 md:p-5 rounded-2xl text-[var(--vsr-ink-900)] text-sm md:text-base leading-relaxed font-light [...]
+                            class="bg-white/90 backdrop-blur-xl border border-[var(--vsr-border)] p-4 md:p-5 rounded-2xl text-[var(--vsr-ink-900)] text-sm md:text-base leading-relaxed font-light max-h-40 overflow-y-auto custom-scrollbar"><!-- [KHÔI PHỤC] class suy luận lại, soát lại nếu cần -->
                             <p id="scene-desc"></p>
                         </div>
                     </div>
@@ -164,11 +177,11 @@
                             class="text-[10px] font-mono uppercase tracking-widest flex items-center gap-2">
                         </div>
                         <div class="flex items-center gap-1">
-                            <button id="btn-view-grid" onclick="if(window.ui)ui.toggleActionView('grid');else console.error('UI not loaded')" class="p-1.5 rounded-md transition-colors text-[var(--vsr-ink-900)] bg-[var(--vsr-tint-10)]"><span cla[...]
-                            <button id="btn-view-list" onclick="if(window.ui)ui.toggleActionView('list');else console.error('UI not loaded')" class="p-1.5 rounded-md transition-colors text-[var(--vsr-ink-400)] hover:text-[var(--vsr-ink-900)]"><[...]
-                            <button id="nav-btn-npc-desktop" onclick="if(window.ui)ui.toggleNpcSheet();else console.error('UI not loaded')" class="p-1.5 rounded-md transition-colors text-[var(--vsr-ink-400)] hover:text-[var(--vsr-ink-900)] rela[...]
+                            <button id="btn-view-grid" onclick="if(window.ui)ui.toggleActionView('grid');else console.error('UI not loaded')" class="p-1.5 rounded-md transition-colors text-[var(--vsr-ink-900)] bg-[var(--vsr-tint-10)]"><span class="material-icons-round text-base">grid_view</span></button><!-- [KHÔI PHỤC] icon + đóng thẻ suy luận lại theo bản mobile (btn-view-grid-m), soát lại nếu cần -->
+                            <button id="btn-view-list" onclick="if(window.ui)ui.toggleActionView('list');else console.error('UI not loaded')" class="p-1.5 rounded-md transition-colors text-[var(--vsr-ink-400)] hover:text-[var(--vsr-ink-900)]"><span class="material-icons-round text-base">view_list</span></button><!-- [KHÔI PHỤC] icon + đóng thẻ suy luận lại theo bản mobile (btn-view-list-m), soát lại nếu cần -->
+                            <button id="nav-btn-npc-desktop" onclick="if(window.ui)ui.toggleNpcSheet();else console.error('UI not loaded')" class="p-1.5 rounded-md transition-colors text-[var(--vsr-ink-400)] hover:text-[var(--vsr-ink-900)] relative"><!-- [KHÔI PHỤC] class suy luận lại, soát lại nếu cần -->
                                 <span class="material-icons-round text-base">groups</span>
-                                <span id="npc-badge-desktop" class="hidden absolute -top-1 -right-1 min-w-[14px] h-[14px] px-0.5 rounded-full bg-red-600 text-white text-[8px] font-bold flex items[...]
+                                <span id="npc-badge-desktop" class="hidden absolute -top-1 -right-1 min-w-[14px] h-[14px] px-0.5 rounded-full bg-red-600 text-white text-[8px] font-bold flex items-center justify-center border border-[var(--vsr-surface)]"><!-- [KHÔI PHỤC] class suy luận lại, soát lại nếu cần -->0</span>
                             </button>
                         </div>
                     </header>
@@ -193,7 +206,7 @@
         <!-- [FIX] onclick thật được gán động trong render/modules/scene.js (renderScene) —
              engine.goBack() không tồn tại trong bản gốc và không bao giờ thực sự chạy được. -->
         <button id="back-node-btn"
-            class="back-node-btn fixed bottom-6 right-20 z-40 w-12 h-12 bg-white hover:bg-[var(--vsr-surface-2)] rounded-full border border-[var(--vsr-border)] hidden md:flex items-center justify[...]
+            class="back-node-btn fixed bottom-6 right-20 z-40 w-12 h-12 bg-white hover:bg-[var(--vsr-surface-2)] rounded-full border border-[var(--vsr-border)] hidden md:flex items-center justify-center group"><!-- [KHÔI PHỤC] class suy luận lại, soát lại nếu cần -->
             <span
                 class="material-icons-round text-xl text-[var(--vsr-ink-500)] group-hover:text-[var(--vsr-ink-900)] transition-colors">reply</span>
         </button>
@@ -227,13 +240,13 @@
             <div class="w-10 h-1 rounded-full bg-[var(--vsr-border-strong)] mx-auto mt-3 mb-1 shrink-0"></div>
             <div class="flex items-center justify-between px-5 py-2 shrink-0">
                 <h3 class="text-sm font-bold text-[var(--vsr-ink-900)] uppercase tracking-wide">Đang có mặt tại đây</h3>
-                <button onclick="if(window.ui)ui.toggleNpcSheet(false);else console.error('UI not loaded')" class="w-8 h-8 rounded-full hover:bg-[var(--vsr-tint-10)] flex items-center justify-center text-[var(--vsr-ink-400)]"><span class="mater[...]
+                <button onclick="if(window.ui)ui.toggleNpcSheet(false);else console.error('UI not loaded')" class="w-8 h-8 rounded-full hover:bg-[var(--vsr-tint-10)] flex items-center justify-center text-[var(--vsr-ink-400)]"><span class="material-icons-round">close</span></button><!-- [KHÔI PHỤC] icon + đóng thẻ suy luận lại theo mẫu nút close màn Info, soát lại nếu cần -->
             </div>
             <div id="npc-sheet-list" class="flex-1 overflow-y-auto custom-scrollbar px-3 pb-3"></div>
         </div>
 
         <nav
-            class="fixed bottom-0 w-full glass-panel border-t border-[var(--vsr-border)] h-16 z-50 flex justify-around items-center shrink-0 md:w-16 md:h-full md:right-0 md:top-0 md:bottom-auto m[...]
+            class="fixed bottom-0 w-full glass-panel border-t border-[var(--vsr-border)] h-16 z-50 flex justify-around items-center shrink-0 md:w-16 md:h-full md:right-0 md:top-0 md:bottom-auto md:pb-0"
             style="padding-bottom: env(safe-area-inset-bottom);">
             <div class="flex-1 flex w-full h-full md:flex-col justify-around md:justify-center md:gap-4">
                 <button onclick="if(window.app)app.showScreen('home');else console.error('App not loaded')" class="nav-icon-btn group">
@@ -251,7 +264,7 @@
                     <span class="material-icons-round text-2xl">folder</span>
                     <span class="text-[9px] uppercase md:hidden">Items</span>
                     <span id="inv-count"
-                        class="absolute top-2 right-2 md:top-1 md:right-1 bg-red-600 text-white text-[8px] font-bold min-w-[14px] h-3.5 px-0.5 flex items-center justify-center rounded-full border[...]
+                        class="absolute top-2 right-2 md:top-1 md:right-1 bg-red-600 text-white text-[8px] font-bold min-w-[14px] h-3.5 px-0.5 flex items-center justify-center rounded-full border border-[var(--vsr-surface)] hidden z-10"><!-- [KHÔI PHỤC] class suy luận lại, soát lại nếu cần -->0</span>
                 </button>
                 <!-- Notification Button -->
                 <button onclick="if(window.ui)ui.toggleNotifications();else console.error('UI not loaded')" class="nav-icon-btn group relative">
@@ -335,14 +348,14 @@
         <div class="absolute inset-0 bg-black/50 backdrop-blur-sm pointer-events-auto transition-opacity"
             onclick="if(window.ui)ui.closePlayerCard();else console.error('UI not loaded')"></div>
         <div
-            class="bg-white w-full max-w-lg mx-auto rounded-t-2xl shadow-[0_-10px_40px_rgba(36,31,23,0.18)] transform translate-y-full transition-transform duration-300 pointer-events-auto p-6 pb[...]
+            class="bg-white w-full max-w-lg mx-auto rounded-t-2xl shadow-[0_-10px_40px_rgba(36,31,23,0.18)] transform translate-y-full transition-transform duration-300 pointer-events-auto p-6 pb-8 max-h-[85vh] overflow-y-auto"><!-- [KHÔI PHỤC] class suy luận lại, soát lại nếu cần -->
             <button onclick="if(window.ui)ui.closePlayerCard();else console.error('UI not loaded')"
                 class="absolute top-4 right-4 text-[var(--vsr-ink-400)] hover:text-[var(--vsr-ink-900)] transition-colors bg-[var(--vsr-tint-10)] rounded-full p-1"><span
                     class="material-icons-round">close</span></button>
             <div class="w-12 h-1.5 bg-[var(--vsr-border-strong)] rounded-full mx-auto mb-6"></div>
             <div class="flex items-center gap-4 mb-6">
                 <div
-                    class="w-16 h-16 rounded-full bg-[var(--vsr-surface-2)] shadow-inner flex items-center justify-center text-2xl font-bold text-[var(--vsr-ink-400)] border border-[var(--vsr-bor[...]
+                    class="w-16 h-16 rounded-full bg-[var(--vsr-surface-2)] shadow-inner flex items-center justify-center text-2xl font-bold text-[var(--vsr-ink-400)] border border-[var(--vsr-border)] shrink-0"><!-- [KHÔI PHỤC] class suy luận lại, soát lại nếu cần -->
                     P</div>
                 <div>
                     <h2 id="player-card-name" class="text-2xl font-bold text-[var(--vsr-ink-900)] tracking-tight">Player Status</h2>
