@@ -11,7 +11,11 @@ const SCHEMA_MAP = {
     // --- CONFIG & META ---
     'ageRating': 'meta.ageRating',
     'blurhash': 'meta.cover.blurhash',
-    'brokenDisable': 'config.maxInventory.brokenDisable',
+    // [FIX] brokenDisable/maxHandOn/minCharacterMoving are siblings of 'config', NOT nested
+    // inside 'config.maxInventory' (which is an array of [limit, char_id] pairs and cannot
+    // carry named properties through JSON.parse/stringify). Matches engine/modules/Config.js
+    // defaultConfig and the real scenario data (demo_script.js). See readme.md "Ghi chú kỹ thuật".
+    'brokenDisable': 'config.brokenDisable',
     'copyright': 'meta.copyright',
     'cover': 'meta.cover.url', // Note: key 'cover' map vào url
     'createdAt': 'meta.createdAt',
@@ -25,13 +29,13 @@ const SCHEMA_MAP = {
     'language': 'meta.language',
     'license': 'meta.license',
     'maxCharacterMoving': 'config.maxCharacterMoving',
-    'maxHandOn': 'config.maxInventory.maxHandOn',
+    'maxHandOn': 'config.maxHandOn',
 
     // [VÍ DỤ IDX] Truy cập phần tử cụ thể trong mảng đa chiều hoặc mảng đơn
     'maxInventory': 'config.maxInventory',
 
     'minAutomationNextStep': 'config.minAutomationNextStep',
-    'minCharacterMoving': 'config.maxInventory.minCharacterMoving',
+    'minCharacterMoving': 'config.minCharacterMoving',
     'minTransition': 'config.minTransition',
     'navContact': 'config.navContact',
     'navInventory': 'config.navInventory',
