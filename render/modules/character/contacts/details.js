@@ -39,7 +39,9 @@ export const ContactDetails = {
             avatarEl.className = `w-10 h-10 rounded-full flex items-center justify-center text-slate-400 font-bold bg-[#1a1a1a] border border-dashed border-slate-600`;
         } else {
             avatarEl.innerHTML = cid === entryChar ? 'P' : charName.charAt(0);
-            avatarEl.className = `w-10 h-10 rounded-full flex items-center justify-center text-white font-bold relative overflow-hidden ${cid === entryChar ? 'bg-blue-900' : 'bg-slate-700'}`;
+            // [FIX v13] bg-blue-900 (không nằm trong danh sách "nền đậm -> chữ trắng"
+            // tự động) đổi sang bg-blue-600 để tái dùng luật khôi phục text-white sẵn có.
+            avatarEl.className = `w-10 h-10 rounded-full flex items-center justify-center text-white font-bold relative overflow-hidden ${cid === entryChar ? 'bg-blue-600' : 'bg-slate-700'}`;
         }
 
         document.getElementById('detail-title').innerText = charName;

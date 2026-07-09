@@ -25,7 +25,7 @@ export const ContactList = {
             timeDisplay: '',
             isActive: ui.currentContactId === entryChar,
             isPlayer: true,
-            avatarHtml: `<div class="w-12 h-12 rounded-full bg-blue-900/30 border border-blue-500/30 flex items-center justify-center text-blue-400 font-bold">P</div>`
+            avatarHtml: `<div class="w-12 h-12 rounded-full bg-blue-100 border border-blue-300 flex items-center justify-center text-blue-700 font-bold">P</div>`
         });
 
         playerItem.onclick = () => {
