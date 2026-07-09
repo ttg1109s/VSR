@@ -3,7 +3,7 @@
 
 import { ContactList } from './contacts/list.js';
 import { ContactDetails } from './contacts/details.js';
-import { ContactScreenLayout } from '../../../../components/Layouts.js';
+import { ContactScreenLayout } from '../../../components/Layouts.js';
 
 export const ContactMethods = {
     // --- Public API ---
