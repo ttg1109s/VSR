@@ -130,7 +130,10 @@ export const LoaderSystem = {
                     const block = blocks[blockId];
                     if (block.id) state.map.blocks[block.id] = { chatId, blockId };
                     Object.values(block).forEach(variant => {
-                        if (typeof variant === 'object' && variant.choices) {
+                        // [FIX] typeof null === 'object' trong JS — nếu thiếu check null,
+                        // gặp giá trị "choice_id": null (rất phổ biến, xem demo_script.js)
+                        // sẽ crash "null is not an object (evaluating 'variant.choices')".
+                        if (variant && typeof variant === 'object' && variant.choices) {
                             variant.choices.forEach((choice, idx) => {
                                 if (!choice.set) choice.set = { choiced: false };
                                 if (choice.id) state.map.choices[choice.id] = { chatId, blockId, idx };
