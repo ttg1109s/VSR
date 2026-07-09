@@ -80,10 +80,10 @@ export const ChatMethods = {
             const dateStr = new Date(chatData.set.activationTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             const sep = document.createElement('div');
             sep.className = "flex items-center justify-center my-4 opacity-50";
-            sep.innerHTML = `<span class="text-[10px] text-slate-500 bg-[#1a1a1a] px-3 py-0.5 rounded-full border border-white/5">${dateStr}</span>`;
+            sep.innerHTML = `<span class="text-[10px] text-[var(--vsr-ink-400)] bg-[var(--vsr-surface-2)] px-3 py-0.5 rounded-full border border-[var(--vsr-border)]">${dateStr}</span>`;
             chatArea.appendChild(sep);
         } else if (history.length === 0) {
-            chatArea.innerHTML = `<div class="flex-1 flex flex-col items-center justify-center text-slate-600 space-y-2 opacity-50"><span class="text-xs italic">Start of conversation</span></div>`;
+            chatArea.innerHTML = `<div class="flex-1 flex flex-col items-center justify-center text-[var(--vsr-ink-300)] space-y-2 opacity-70"><span class="text-xs italic">Start of conversation</span></div>`;
         }
 
         visibleHistory.forEach(line => this.renderBubble(line, chatArea));
@@ -133,7 +133,7 @@ export const ChatMethods = {
         if (!isPlayer) {
             const rawName = displayName || "?";
             const initials = rawName.substring(0, 1).toUpperCase();
-            avatar = `<div class="flex-shrink-0 w-8 h-8 rounded-full bg-[#333] flex items-center justify-center mr-2 shadow-sm border border-white/10 mt-auto select-none"><span class="text-[10px] font-bold text-slate-400">${initials}</span></div>`;
+            avatar = `<div class="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--vsr-surface-3)] flex items-center justify-center mr-2 shadow-sm border border-[var(--vsr-border)] mt-auto select-none"><span class="text-[10px] font-bold text-[var(--vsr-ink-500)]">${initials}</span></div>`;
         }
 
         const temp = document.createElement('div');
@@ -167,7 +167,7 @@ export const ChatMethods = {
         if (footer.innerHTML.includes('Tap to continue') && !footer.innerHTML.includes('selectChatChoice')) return;
 
         footer.innerHTML = '';
-        footer.className = "shrink-0 bg-[#202020] border-t border-white/5 flex flex-col justify-center min-h-[70px] px-4 py-3 z-30 transition-all duration-300";
+        footer.className = "shrink-0 bg-white border-t border-[var(--vsr-border)] flex flex-col justify-center min-h-[70px] px-4 py-3 z-30 transition-all duration-300";
 
         const bar = document.createElement('div');
         bar.className = "flex items-center gap-3 w-full cursor-pointer group";
@@ -203,11 +203,11 @@ export const ChatMethods = {
         footer.style.display = '';
 
         footer.innerHTML = '';
-        footer.className = "shrink-0 bg-[#1a1a1a] border-t border-white/5 flex flex-col justify-end p-3 gap-2 shadow-[0_-5px_15px_rgba(0,0,0,0.3)] z-30 animate-fade-in";
+        footer.className = "shrink-0 bg-white border-t border-[var(--vsr-border)] flex flex-col justify-end p-3 gap-2 shadow-[0_-5px_15px_rgba(36,31,23,0.10)] z-30 animate-fade-in";
 
         if (promptText) {
             const p = document.createElement('div');
-            p.className = "text-slate-500 text-[10px] uppercase font-bold tracking-widest text-center py-1 select-none";
+            p.className = "text-[var(--vsr-ink-400)] text-[10px] uppercase font-bold tracking-widest text-center py-1 select-none";
             p.innerText = promptText;
             footer.appendChild(p);
         }
@@ -225,9 +225,9 @@ export const ChatMethods = {
             let btnClass = "w-full text-left p-3.5 rounded-xl border text-sm transition-all active:scale-[0.98] flex items-center justify-between group ";
 
             if (isLocked) {
-                btnClass += "bg-[#151515] border-white/5 text-slate-600 cursor-not-allowed";
+                btnClass += "bg-[var(--vsr-surface-2)] border-[var(--vsr-border)] text-[var(--vsr-ink-300)] cursor-not-allowed";
             } else {
-                btnClass += "bg-[#252525] border-white/5 text-slate-200 hover:bg-blue-600 hover:text-white hover:border-transparent hover:shadow-lg hover:shadow-blue-900/20";
+                btnClass += "bg-[var(--vsr-surface-2)] border-[var(--vsr-border)] text-[var(--vsr-ink-900)] hover:bg-blue-600 hover:text-white hover:border-transparent hover:shadow-lg hover:shadow-blue-900/20";
             }
 
             btn.className = btnClass;

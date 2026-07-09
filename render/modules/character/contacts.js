@@ -65,15 +65,25 @@ export const ContactMethods = {
         this.currentThreadId = null;
         this.renderContactList();
 
-        // UI Transition logic
+        // [FIX] #contact-empty-state / #contact-detail-view phải luôn đồng bộ
+        // theo currentContactId, BẤT KỂ mobile hay desktop — trước đây chỉ
+        // nhánh desktop (else) toggle 2 phần tử này. Trên mobile, nhánh if chỉ
+        // toggle panel NGOÀI (contact-list-panel/contact-detail-panel) nên dù
+        // panel phải đã hiện ra, bên trong vẫn kẹt ở placeholder
+        // "Select a contact..." — vì #contact-detail-view (chứa cả
+        // #contact-info-overlay dùng cho Personal Stats khi bấm vào chính
+        // mình) vẫn còn class "hidden" từ lúc render lần đầu, không bao giờ
+        // được gỡ trên mobile.
+        document.getElementById('contact-empty-state').classList.add('hidden');
+        document.getElementById('contact-detail-view').classList.remove('hidden');
+        document.getElementById('contact-detail-view').classList.add('flex');
+
+        // UI Transition logic — chuyển panel ngoài, chỉ cần thiết trên mobile
+        // (desktop luôn hiện đồng thời cả 2 panel nên không cần ẩn/hiện panel).
         if (this.isMobileView) {
             document.getElementById('contact-list-panel').classList.add('hidden');
             document.getElementById('contact-detail-panel').classList.remove('hidden');
             document.getElementById('contact-detail-panel').classList.add('flex');
-        } else {
-            document.getElementById('contact-empty-state').classList.add('hidden');
-            document.getElementById('contact-detail-view').classList.remove('hidden');
-            document.getElementById('contact-detail-view').classList.add('flex');
         }
 
         this.loadContactDetails(cid);
@@ -94,6 +104,13 @@ export const ContactMethods = {
         this.currentThreadId = null;
         this.renderContactList();
 
+        // [FIX] Luôn reset empty-state/detail-view bất kể mobile/desktop — lý
+        // do tương tự selectContact() ở trên (đồng bộ, không phụ thuộc nhánh).
+        document.getElementById('contact-empty-state').classList.remove('hidden');
+        document.getElementById('contact-empty-state').classList.add('flex');
+        document.getElementById('contact-detail-view').classList.add('hidden');
+        document.getElementById('contact-detail-view').classList.remove('flex');
+
         if (this.isMobileView) {
             document.getElementById('contact-list-panel').classList.remove('hidden');
             document.getElementById('contact-detail-panel').classList.add('hidden');
@@ -101,12 +118,6 @@ export const ContactMethods = {
         } else {
             document.getElementById('contact-detail-panel').classList.remove('hidden');
             document.getElementById('contact-detail-panel').classList.add('flex');
-
-            document.getElementById('contact-empty-state').classList.remove('hidden');
-            document.getElementById('contact-empty-state').classList.add('flex');
-
-            document.getElementById('contact-detail-view').classList.add('hidden');
-            document.getElementById('contact-detail-view').classList.remove('flex');
         }
     },
 

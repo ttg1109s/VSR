@@ -48,7 +48,7 @@ export const AlertMethods = {
 
         const item = document.createElement('div');
         item.id = `char-footer-item-${charId}`;
-        item.className = `w-10 h-10 rounded-full bg-[#1a1a1a] border-2 ${colorClass} flex items-center justify-center text-sm font-bold shadow-lg shrink-0 cursor-pointer hover:scale-105 transition-transform select-none relative group animate-fade-in`;
+        item.className = `w-10 h-10 rounded-full bg-white border-2 ${colorClass} flex items-center justify-center text-sm font-bold shadow-lg shrink-0 cursor-pointer hover:scale-105 transition-transform select-none relative group animate-fade-in`;
 
         item.innerHTML = `
             ${initial}
