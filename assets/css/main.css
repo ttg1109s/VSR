@@ -200,6 +200,17 @@ button, a, .cursor-pointer { -webkit-tap-highlight-color: transparent; }
     border-radius: 10px;
     color: var(--vsr-ink-900);
 }
+.icon-box {
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    background: var(--vsr-surface-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.notify-time { font-size: 10px; color: var(--vsr-ink-300); margin-top: 2px; }
 
 /* ---------- 5) SCENE SCREEN — hai cột trượt mobile-first ---------- */
 #scene-container { background: var(--vsr-canvas); }
@@ -337,6 +348,21 @@ button, a, .cursor-pointer { -webkit-tap-highlight-color: transparent; }
 }
 #npc-sheet-backdrop.open { opacity: 1; pointer-events: auto; }
 
+/* Alert nổi khi NPC "xuất hiện"/gặp mặt — trước đây đổ vào #rp-footer (nay đã ẩn
+   vĩnh viễn vì rp-footer cũ được thay bằng NPC sheet), nên cần container riêng. */
+#meeting-alert-strip {
+    position: fixed;
+    top: calc(env(safe-area-inset-top, 0px) + 12px);
+    right: 12px;
+    z-index: 35;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-end;
+    pointer-events: none;
+}
+#meeting-alert-strip > * { pointer-events: auto; }
+
 /* Avatar nhân vật trong NPC sheet (dùng lại cho mọi nơi hiển thị NPC) */
 .char-avatar-wrapper { position: relative; }
 .char-avatar {
@@ -369,6 +395,23 @@ button, a, .cursor-pointer { -webkit-tap-highlight-color: transparent; }
     100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
 }
 
+/* ---------- Inventory grid item (túi đồ) — CLASS NÀY BỊ THIẾU HOÀN TOÀN Ở BẢN GỐC ---------- */
+.explorer-item {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 6px;
+    background: var(--vsr-surface);
+    border: 1px solid var(--vsr-border);
+    border-radius: 14px;
+    box-shadow: var(--vsr-shadow-sm);
+    cursor: pointer;
+}
+.explorer-item:hover, .explorer-item:active { border-color: var(--vsr-border-strong); box-shadow: var(--vsr-shadow-md); }
+
 /* ---------- Info screen meta grid ---------- */
 .meta-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
 .meta-item {
@@ -377,6 +420,8 @@ button, a, .cursor-pointer { -webkit-tap-highlight-color: transparent; }
     border-radius: 12px;
     padding: 10px 12px;
 }
+.meta-label { font-size: 10px; text-transform: uppercase; letter-spacing: .05em; color: var(--vsr-ink-400); font-weight: 700; margin-bottom: 2px; }
+.meta-value { font-size: 13px; color: var(--vsr-ink-900); font-weight: 600; }
 
 /* ---------- Chat / dialogue reading view ---------- */
 .chat-container { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
@@ -422,9 +467,11 @@ button, a, .cursor-pointer { -webkit-tap-highlight-color: transparent; }
 /* --- Bề mặt hex-literal (thẻ, modal, panel...) --- */
 [class~="bg-[#0f172a]"], [class~="bg-[#101010]"], [class~="bg-[#151515]"],
 [class~="bg-[#1a1a1a]"], [class~="bg-[#1f1f1f]"], [class~="bg-[#202020]"],
-[class~="bg-[#252525]"], [class~="bg-[#262626]"], [class~="bg-[#2a2a2a]"] {
+[class~="bg-[#252525]"], [class~="bg-[#262626]"], [class~="bg-[#2a2a2a]"],
+[class~="bg-[#333]"], [class~="bg-[#444]"] {
     background-color: var(--vsr-surface) !important;
 }
+[class~="hover:bg-[#444]"]:hover { background-color: var(--vsr-surface-3) !important; }
 [class~="bg-slate-700"], [class~="bg-slate-800"], [class~="bg-slate-900"],
 [class~="bg-slate-950"] { background-color: var(--vsr-surface) !important; }
 [class~="bg-slate-900/80"] { background-color: var(--vsr-surface) !important; background-color: color-mix(in srgb, var(--vsr-surface) 85%, transparent) !important; }
@@ -485,11 +532,21 @@ button, a, .cursor-pointer { -webkit-tap-highlight-color: transparent; }
 }
 [class~="bg-black/90"][class~="text-white"] > *,
 [class~="bg-black/80"][class~="text-white"] { color: #fff !important; }
+/* Chữ/icon NẰM BÊN TRONG (không cùng 1 thẻ) các khối giữ tối ở trên cũng phải là trắng,
+   ví dụ span "Wait..." trong .action-cooldown-overlay không tự khớp rule same-element trên. */
+.action-cooldown-overlay [class~="text-white"],
+.pw-main-card [class~="text-white"] {
+    color: #fff !important;
+}
 #password-content [class~="text-white"],
 #password-content [class~="hover:text-white"]:hover,
 #keyboard-overlay [class~="text-white"] {
     color: #fff !important;
 }
+/* Bàn phím số/nút bấm trong mini-game mật khẩu vẫn là "phím vật lý" tối,
+   dù bg-[#333]/#444 đã được lật sáng ở nơi khác (avatar NPC, bong bóng chat...). */
+#password-content [class~="bg-[#333]"] { background-color: #333 !important; }
+#password-content [class~="hover:bg-[#444]"]:hover { background-color: #444 !important; }
 
 /* Nút/badge nền màu đậm: chữ luôn trắng để đủ tương phản */
 [class~="bg-amber-500"], [class~="bg-amber-600"], [class~="bg-amber-600/80"],
