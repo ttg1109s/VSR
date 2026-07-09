@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Module Syntax Checker</title>
+</head>
+<body style="background: #222; color: #fff; padding: 20px; font-family: monospace;">
+    <h1>🔧 Module Syntax Checker</h1>
+    <div id="output" style="background: #111; padding: 15px; border: 1px solid #555; max-height: 80vh; overflow: auto; white-space: pre-wrap;"></div>
+
+    <script>
+        const output = document.getElementById('output');
+        
+        function log(msg) {
+            const div = document.createElement('div');
+            div.style.color = '#ddd';
+            div.style.marginBottom = '5px';
+            div.textContent = msg;
+            output.appendChild(div);
+            output.scrollTop = output.scrollHeight;
+        }
+
+        async function testModules() {
+            log('=== TESTING MODULE IMPORTS ===\n');
+
+            // Test 1: Try importing app.js
+            log('TEST 1: Importing app.js as module...');
+            try {
+                const module = await import('./app.js');
+                log('✓ app.js imported successfully');
+                log('  Exports: ' + Object.keys(module).join(', '));
+            } catch (e) {
+                log('❌ ERROR in app.js:');
+                log('  ' + e.message);
+                log('  ' + e.stack);
+            }
+
+            log('\n---\n');
+
+            // Test 2: Try importing GameEngine directly
+            log('TEST 2: Importing GameEngine directly...');
+            try {
+                const { GameEngine } = await import('./engine/GameEngine.js');
+                log('✓ GameEngine imported successfully');
+            } catch (e) {
+                log('❌ ERROR in GameEngine.js:');
+                log('  ' + e.message);
+                log('  ' + e.stack);
+            }
+
+            log('\n---\n');
+
+            // Test 3: Try importing UIController
+            log('TEST 3: Importing UIController...');
+            try {
+                const { UIController } = await import('./render/ui.js');
+                log('✓ UIController imported successfully');
+            } catch (e) {
+                log('❌ ERROR in render/ui.js:');
+                log('  ' + e.message);
+                log('  ' + e.stack);
+            }
+
+            log('\n---\n');
+
+            // Test 4: Try importing TaskManager
+            log('TEST 4: Importing TaskManager...');
+            try {
+                const { TaskManager } = await import('./plugin/taskmanager.js');
+                log('✓ TaskManager imported successfully');
+            } catch (e) {
+                log('❌ ERROR in taskmanager.js:');
+                log('  ' + e.message);
+                log('  ' + e.stack);
+            }
+
+            log('\n---\n');
+
+            // Test 5: Try importing VFX
+            log('TEST 5: Importing VFX...');
+            try {
+                const { vfx } = await import('./render/vfx/index.js');
+                log('✓ VFX imported successfully');
+            } catch (e) {
+                log('❌ ERROR in render/vfx/index.js:');
+                log('  ' + e.message);
+                log('  ' + e.stack);
+            }
+
+            log('\n---\n');
+
+            // Test 6: Try importing API
+            log('TEST 6: Importing API...');
+            try {
+                const { API } = await import('./api/index.js');
+                log('✓ API imported successfully');
+            } catch (e) {
+                log('❌ ERROR in api/index.js:');
+                log('  ' + e.message);
+                log('  ' + e.stack);
+            }
+
+            log('\n---\n');
+
+            // Test 7: Try importing PasswordSystem
+            log('TEST 7: Importing PasswordSystem...');
+            try {
+                const { PasswordSystem } = await import('./password/index.js');
+                log('✓ PasswordSystem imported successfully');
+            } catch (e) {
+                log('❌ ERROR in password/index.js:');
+                log('  ' + e.message);
+                log('  ' + e.stack);
+            }
+
+            log('\n\n✅ SYNTAX CHECK COMPLETE');
+        }
+
+        testModules().catch(e => {
+            log('FATAL ERROR: ' + e.message);
+            log(e.stack);
+        });
+    </script>
+</body>
+</html>
