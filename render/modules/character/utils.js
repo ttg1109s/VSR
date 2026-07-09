@@ -32,10 +32,14 @@ export const AlertMethods = {
 
         if (document.getElementById(`char-footer-item-${charId}`)) return;
 
-        const container = document.getElementById('rp-footer');
+        // [FIX v13] #rp-footer bị ẩn vĩnh viễn (đã thay bằng NPC sheet mở từ toolbar) —
+        // dùng container nổi riêng #meeting-alert-strip thay thế.
+        const container = document.getElementById('meeting-alert-strip');
         if (!container) return;
 
-        const colors = { 'danger': 'border-red-500 shadow-red-500/50 text-red-100', 'warning': 'border-amber-500 shadow-amber-500/50 text-amber-100', 'success': 'border-green-500 shadow-green-500/50 text-green-100', 'notice': 'border-blue-500 shadow-blue-500/50 text-blue-100' };
+        // [FIX v13] text-*-100 (rất nhạt, dùng cho chữ trên nền tối cũ) đổi sang *-700
+        // (đậm) để đọc được trên avatar nền sáng (bg-[#1a1a1a] cũ nay đã lật thành trắng).
+        const colors = { 'danger': 'border-red-500 shadow-red-500/50 text-red-700', 'warning': 'border-amber-500 shadow-amber-500/50 text-amber-700', 'success': 'border-green-500 shadow-green-500/50 text-green-700', 'notice': 'border-blue-500 shadow-blue-500/50 text-blue-700' };
         const colorClass = colors[type] || colors['notice'];
 
         // [FIX V9.2] Strict Schema: meta.name
@@ -48,7 +52,7 @@ export const AlertMethods = {
 
         item.innerHTML = `
             ${initial}
-            <div class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 bg-black/90 backdrop-blur text-[10px] text-white rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none border border-white/10 z-50">
+            <div class="absolute top-full mt-2 right-0 px-2 py-1 bg-black/90 backdrop-blur text-[10px] text-white rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none border border-white/10 z-50">
                 ${charName}
             </div>
         `;
