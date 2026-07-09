@@ -1,7 +1,7 @@
 // Thanh Input mặc định (Tap to continue)
 export const ChatInputBar = () => {
     return `
-        <div class="flex-1 bg-[#151515] h-10 rounded-full px-4 flex items-center text-slate-500 text-sm border border-white/5 group-hover:bg-[#1a1a1a] transition-colors shadow-inner">
+        <div class="flex-1 bg-[var(--vsr-surface-2)] h-10 rounded-full px-4 flex items-center text-[var(--vsr-ink-400)] text-sm border border-[var(--vsr-border)] group-hover:bg-[var(--vsr-surface-3)] transition-colors shadow-inner">
             <span class="mr-2 text-green-500 text-xs">●</span> 
             <span class="italic">Tap to continue...</span>
         </div>

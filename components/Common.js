@@ -5,18 +5,18 @@ export const FakerRow = ({ name, initials }) => {
     return `
         <div class="w-10 h-10 rounded-full bg-purple-100 border border-purple-300 flex items-center justify-center text-purple-700 font-bold">${initials}</div>
         <div class="flex-1 min-w-0">
-            <h4 class="text-slate-200 font-bold text-sm">${name}</h4>
-            <p class="text-[10px] text-slate-500 uppercase tracking-wide">Nhập hồn</p>
+            <h4 class="text-[var(--vsr-ink-900)] font-bold text-sm">${name}</h4>
+            <p class="text-[10px] text-[var(--vsr-ink-400)] uppercase tracking-wide">Nhập hồn</p>
         </div>
-        <span class="material-icons-round text-slate-500">chevron_right</span>
+        <span class="material-icons-round text-[var(--vsr-ink-400)]">chevron_right</span>
     `;
 };
 
 // Alert nổi khi gặp nhân vật
 export const MeetingAlertBubble = ({ initial, name, colorClass }) => {
     return `
-        <div class="relative w-16 h-16 rounded-full bg-[#1a1a1a] border-2 ${colorClass} flex items-center justify-center shadow-lg animate-wave-pulse">
-            <span class="text-white font-bold text-2xl">${initial}</span>
+        <div class="relative w-16 h-16 rounded-full bg-white border-2 ${colorClass} flex items-center justify-center shadow-lg animate-wave-pulse">
+            <span class="text-[var(--vsr-ink-900)] font-bold text-2xl">${initial}</span>
             <div class="absolute -bottom-6 bg-black/80 px-2 py-0.5 rounded text-[10px] text-white whitespace-nowrap border border-white/10">${name}</div>
         </div>
     `;
@@ -42,12 +42,12 @@ export const StatBar = ({ key, s }) => {
         <div>
             <div class="flex justify-between items-center mb-1">
                 <div class="flex items-center gap-2">
-                    <span class="material-icons-round text-slate-400 text-sm">${icon}</span>
-                    <span class="text-sm font-bold text-slate-400 uppercase tracking-wide">${displayLabel}</span>
+                    <span class="material-icons-round text-[var(--vsr-ink-400)] text-sm">${icon}</span>
+                    <span class="text-sm font-bold text-[var(--vsr-ink-400)] uppercase tracking-wide">${displayLabel}</span>
                 </div>
-                <span class="text-sm font-bold text-slate-200">${s.current} <span class="text-slate-500 text-xs">/ ${s.max}</span></span>
+                <span class="text-sm font-bold text-[var(--vsr-ink-900)]">${s.current} <span class="text-[var(--vsr-ink-400)] text-xs">/ ${s.max}</span></span>
             </div>
-            <div class="w-full bg-[#1a1a1a] h-2 rounded-full overflow-hidden border border-white/5">
+            <div class="w-full bg-[var(--vsr-surface-2)] h-2 rounded-full overflow-hidden border border-[var(--vsr-border)]">
                 <div class="${bgClass} h-full transition-all duration-500 shadow-sm" style="width: ${pct}%; ${colorStyle}"></div>
             </div>
         </div>
@@ -65,5 +65,5 @@ export const ScriptInfoMeta = ({ label, value, icon }) => {
 };
 
 export const ScriptTag = ({ tag }) => {
-    return `<span class="px-2 py-1 rounded bg-white/10 border border-white/5 text-[10px] uppercase text-slate-400 font-bold tracking-wider">${tag}</span>`;
+    return `<span class="px-2 py-1 rounded bg-[var(--vsr-surface-2)] border border-[var(--vsr-border)] text-[10px] uppercase text-[var(--vsr-ink-500)] font-bold tracking-wider">${tag}</span>`;
 };
