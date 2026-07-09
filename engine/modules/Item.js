@@ -27,6 +27,16 @@ export const ItemSystem = {
         if (!char.inventory) char.inventory = [];
 
         if (!char.inventory.includes(itemId)) {
+            // [FIX] 'config.maxInventory' (mảng [limit, char_id]) trước đây không hề được
+            // kiểm tra khi thêm đồ — giới hạn số món trong túi theo nhân vật chưa từng có
+            // hiệu lực thực tế. Áp dụng giới hạn nếu có cặp khớp với nhân vật sở hữu.
+            const maxInvList = (this.getConfig ? this.getConfig('maxInventory') : null) || [];
+            const ownerLimitPair = Array.isArray(maxInvList) ? maxInvList.find(pair => Array.isArray(pair) && pair[1] === ownerId) : null;
+            const limit = ownerLimitPair ? ownerLimitPair[0] : 0;
+            if (limit > 0 && char.inventory.length >= limit) {
+                API.render.notification.add("Không thể nhặt", "Túi đồ đã đầy.", "warn");
+                return false;
+            }
             char.inventory.push(itemId);
             return true;
         }
@@ -70,7 +80,10 @@ export const ItemSystem = {
             }
         } else {
             // --- EQUIP ---
-            const maxHand = (this.state.config && this.state.config.maxInventory && this.state.config.maxInventory.maxHandOn) || 10;
+            // [FIX] 'maxHandOn' là sibling của 'config', không nằm lồng trong 'config.maxInventory'
+            // (maxInventory là mảng [limit, char_id], không thể mang thuộc tính tên).
+            // Dùng getConfig() để nhất quán với effect/strategies/Item.js.
+            const maxHand = (this.getConfig ? this.getConfig('maxHandOn') : this.state.config?.maxHandOn) || 10;
             if (char.hand.length >= maxHand) {
                 API.render.notification.add("Không thể cầm", "Tay đã đầy.", "warn");
                 return;

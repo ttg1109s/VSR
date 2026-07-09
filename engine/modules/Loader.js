@@ -68,7 +68,10 @@ export const LoaderSystem = {
             relationship: [],
             place: { scene_id: "", currentIndex: 0 },
             stats: {},
-            effect: { meeting: [], leave: [] },
+            // [FIX] effect.meeting/leave phải là OBJECT (key theo char_id -> mảng effect),
+            // không phải ARRAY. Khớp với chuẩn hoá bên dưới (dòng ~103) và cách Entity.js
+            // đọc `char.effect.meeting[currentIdentity]` / `char.effect.leave[currentIdentity]`.
+            effect: { meeting: {}, leave: {} },
             moveList: [],
             met: [],
             inventory: [],
@@ -118,7 +121,10 @@ export const LoaderSystem = {
         Object.keys(state.chats).forEach(chatId => {
             const chat = state.chats[chatId];
             if (!chat.set) chat.set = { read: false, bookmark: null, step: 0, lastInteraction: 0 };
-            const blocks = chat.blocks;
+            // [FIX] Khoá thực tế là 'block' (số ít) theo scenario.schema.json và cách
+            // engine/modules/Chat.js truy xuất (`chat.block[blockId]`), KHÔNG phải 'blocks'.
+            // Với tên sai trước đây, vòng lặp này luôn bị bỏ qua với mọi kịch bản hợp lệ.
+            const blocks = chat.block;
             if (blocks) {
                 Object.keys(blocks).forEach(blockId => {
                     const block = blocks[blockId];
@@ -161,14 +167,43 @@ export const LoaderSystem = {
                 };
                 state.routers[rKey] = JSON.parse(JSON.stringify({ ...defR, ...s.routers[rId].set }));
 
-                for (let aId in s.routers[rId].actions) {
-                    if (!s.routers[rId].actions[aId]) continue;
-                    const actKey = `${sId}_${rId}_${aId}`;
-                    const defActionSet = {
-                        countClicks: 0, countFails: 0, display: "show", type: "none", target: null, cooldown: 0,
-                        requirement: false, password: null
-                    };
-                    state.actions[actKey] = JSON.parse(JSON.stringify({ ...defActionSet, ...(s.routers[rId].actions[aId].set || {}) }));
+                // [FIX] Router.actions ở model hiện tại (xem engine/modules/Action.js
+                // getEffectiveActions) là MẢNG chứa string ID (tham chiếu tới `script.actions`
+                // toàn cục) hoặc object định nghĩa inline — không còn là object map
+                // {actionId: {set:{...}}} như bản cũ. Vòng lặp `for...in` trên mảng trước đây
+                // duyệt theo INDEX ("0","1",...) chứ không phải action ID thật, nên
+                // `state.actions` bị khởi tạo với key sai (vd "scene1_router1_0") và không bao
+                // giờ được các module khác đọc tới (chúng luôn dùng
+                // `${sceneId}_${routerId}_${actionIdThat}`).
+                const defActionSet = {
+                    countClicks: 0, countFails: 0, display: "show", cooldown: 0,
+                    requirement: false, password: null, readDesc: false
+                };
+                const routerActions = s.routers[rId].actions;
+
+                if (Array.isArray(routerActions)) {
+                    routerActions.forEach(item => {
+                        if (typeof item === 'string') {
+                            // Tham chiếu tới action toàn cục (script.actions[item])
+                            const actKey = `${sId}_${rId}_${item}`;
+                            const globalAct = script.actions ? script.actions[item] : null;
+                            state.actions[actKey] = JSON.parse(JSON.stringify({ ...defActionSet, ...((globalAct && globalAct.set) || {}) }));
+                        } else if (item && typeof item === 'object') {
+                            // Định nghĩa inline: dùng id khai báo sẵn hoặc bỏ qua (id ngẫu nhiên
+                            // sẽ được ActionSystem.getEffectiveActions tự sinh lúc render).
+                            if (item.id) {
+                                const actKey = `${sId}_${rId}_${item.id}`;
+                                state.actions[actKey] = JSON.parse(JSON.stringify({ ...defActionSet, ...(item.set || {}) }));
+                            }
+                        }
+                    });
+                } else if (routerActions && typeof routerActions === 'object') {
+                    // [LEGACY] Hỗ trợ ngược: router.actions vẫn là object map {actionId: {set}}
+                    Object.keys(routerActions).forEach(aId => {
+                        if (!routerActions[aId]) return;
+                        const actKey = `${sId}_${rId}_${aId}`;
+                        state.actions[actKey] = JSON.parse(JSON.stringify({ ...defActionSet, ...(routerActions[aId].set || {}) }));
+                    });
                 }
             }
         }
