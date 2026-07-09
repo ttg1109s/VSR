@@ -19,15 +19,16 @@ export class UIController {
         this.currentContactId = null;
         this.isMobileView = window.innerWidth < 768;
 
+        // [Refactor] Render toàn bộ shell tĩnh (tách từ index.html sang
+        // components/*.js) TRƯỚC TIÊN — xem ghi chú tại renderAppShell().
+        this.renderAppShell();
+
         this.ensureToastContainer();
         this.ensureReadMoreModal();
         this.ensureActionInfoModal();
         this.ensureTimerDisplay();
 
         this.ensureFakerModal();
-
-        // Render layout màn Home (tách từ index.html — xem components/HomeScreen.js)
-        this.renderHomeScreen();
 
         this.injectAnimationStyles();
 
