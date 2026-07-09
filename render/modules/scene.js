@@ -412,13 +412,20 @@ export const sceneMethods = {
         const grid = document.getElementById('meta-details-grid');
         if (grid) {
             grid.innerHTML = '';
-            const fields = [{ k: 'writer', l: 'Author' }, { k: 'version', l: 'Version' }, { k: 'difficulty', l: 'Difficulty' }, { k: 'estimatedPlayTime', l: 'Play Time (min)' }, { k: 'language', l: 'Language' }, { k: 'ageRating', l: 'Age Rating' }];
+            const fields = [
+                { k: 'writer', l: 'Author', icon: 'person' },
+                { k: 'version', l: 'Version', icon: 'sell' },
+                { k: 'difficulty', l: 'Difficulty', icon: 'speed' },
+                { k: 'estimatedPlayTime', l: 'Play Time (min)', icon: 'schedule' },
+                { k: 'language', l: 'Language', icon: 'translate' },
+                { k: 'ageRating', l: 'Age Rating', icon: 'shield' }
+            ];
             fields.forEach(f => {
                 if (m[f.k]) {
                     const div = document.createElement('div');
                     div.className = "meta-item";
                     // Use Component
-                    div.innerHTML = ScriptInfoMeta({ label: f.l, value: m[f.k] });
+                    div.innerHTML = ScriptInfoMeta({ label: f.l, value: m[f.k], icon: f.icon });
                     grid.appendChild(div);
                 }
             });
