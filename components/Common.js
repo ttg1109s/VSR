@@ -3,7 +3,7 @@ import { StatStyles } from '../render/modules/character/utils.js';
 // Item trong danh sách Faker (Nhập hồn)
 export const FakerRow = ({ name, initials }) => {
     return `
-        <div class="w-10 h-10 rounded-full bg-purple-900/40 border border-purple-500/30 flex items-center justify-center text-purple-300 font-bold">${initials}</div>
+        <div class="w-10 h-10 rounded-full bg-purple-100 border border-purple-300 flex items-center justify-center text-purple-700 font-bold">${initials}</div>
         <div class="flex-1 min-w-0">
             <h4 class="text-slate-200 font-bold text-sm">${name}</h4>
             <p class="text-[10px] text-slate-500 uppercase tracking-wide">Nhập hồn</p>
