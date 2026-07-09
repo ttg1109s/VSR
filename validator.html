@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <title>VSR - Module Validator</title>
+</head>
+<body style="background: #222; color: #fff; padding: 20px; font-family: monospace;">
+    <h1>🔍 Module Import Validator</h1>
+    <div id="output" style="background: #111; padding: 15px; border: 1px solid #555; max-height: 80vh; overflow: auto;"></div>
+
+    <script>
+        const output = document.getElementById('output');
+        
+        function log(msg, type = 'log') {
+            const color = {
+                error: '#ff7b7b',
+                warn: '#ffd54f',
+                success: '#7ec8ff',
+                log: '#ddd'
+            }[type] || '#ddd';
+            
+            const div = document.createElement('div');
+            div.style.color = color;
+            div.style.marginBottom = '5px';
+            div.textContent = msg;
+            output.appendChild(div);
+            output.scrollTop = output.scrollHeight;
+        }
+
+        async function validateImports() {
+            log('=== STARTING MODULE VALIDATION ===', 'warn');
+
+            const imports = [
+                { name: 'GameEngine', path: './engine/GameEngine.js' },
+                { name: 'UIController', path: './render/ui.js' },
+                { name: 'TaskManager', path: './plugin/taskmanager.js' },
+                { name: 'VFX', path: './render/vfx/index.js' },
+                { name: 'API', path: './api/index.js' },
+                { name: 'PasswordSystem', path: './password/index.js' }
+            ];
+
+            for (const imp of imports) {
+                try {
+                    const res = await fetch(imp.path);
+                    if (!res.ok) {
+                        log(`❌ ${imp.name} - HTTP ${res.status} @ ${imp.path}`, 'error');
+                    } else {
+                        const text = await res.text();
+                        // Check for obvious syntax errors
+                        if (text.includes('export') || text.includes('import')) {
+                            log(`✓ ${imp.name} loaded @ ${imp.path}`, 'success');
+                        } else {
+                            log(`⚠ ${imp.name} - No export/import found @ ${imp.path}`, 'warn');
+                        }
+                    }
+                } catch (e) {
+                    log(`❌ ${imp.name} - ${e.message} @ ${imp.path}`, 'error');
+                }
+            }
+
+            log('', 'log');
+            log('=== CHECKING DEMO_SCRIPT ===', 'warn');
+            
+            try {
+                const res = await fetch('./demo_script.js');
+                if (!res.ok) {
+                    log(`❌ demo_script.js - HTTP ${res.status}`, 'error');
+                } else {
+                    log(`✓ demo_script.js loaded`, 'success');
+                }
+            } catch (e) {
+                log(`❌ demo_script.js - ${e.message}`, 'error');
+            }
+
+            log('', 'log');
+            log('=== CHECKING NESTED IMPORTS IN GAMEENGINE ===', 'warn');
+
+            const engineImports = [
+                './engine/modules/Config.js',
+                './engine/modules/Logic.js',
+                './engine/modules/Effect.js',
+                './engine/modules/Action.js',
+                './engine/modules/Scene.js',
+                './engine/modules/Entity.js',
+                './engine/modules/Item.js',
+                './engine/modules/Chat.js',
+                './engine/modules/Automation.js',
+                './engine/modules/Loader.js'
+            ];
+
+            for (const path of engineImports) {
+                try {
+                    const res = await fetch(path);
+                    if (!res.ok) {
+                        log(`❌ ${path} - HTTP ${res.status}`, 'error');
+                    } else {
+                        log(`✓ ${path}`, 'success');
+                    }
+                } catch (e) {
+                    log(`❌ ${path} - ${e.message}`, 'error');
+                }
+            }
+
+            log('', 'log');
+            log('=== CHECKING UI SUBMODULES ===', 'warn');
+
+            const uiModules = [
+                './render/modules/common.js',
+                './render/modules/inventory.js',
+                './render/modules/character.js',
+                './render/modules/actions.js',
+                './render/modules/scene.js',
+                './components/Modals.js',
+                './components/Visuals.js'
+            ];
+
+            for (const path of uiModules) {
+                try {
+                    const res = await fetch(path);
+                    if (!res.ok) {
+                        log(`❌ ${path} - HTTP ${res.status}`, 'error');
+                    } else {
+                        log(`✓ ${path}`, 'success');
+                    }
+                } catch (e) {
+                    log(`❌ ${path} - ${e.message}`, 'error');
+                }
+            }
+
+            log('', 'log');
+            log('✅ VALIDATION COMPLETE', 'success');
+        }
+
+        validateImports();
+    </script>
+</body>
+</html>
