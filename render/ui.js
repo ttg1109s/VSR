@@ -9,8 +9,8 @@ import { sceneMethods } from './modules/scene.js?v=3';
 // Import Components
 import { ReadMoreModalTemplate, FakerModalTemplate } from '../components/Modals.js';
 import { TimerDisplayTemplate } from '../components/Visuals.js';
-// Import từ thư mục plugin (đã chuyển)
-import { PasswordSystem } from '../../password/index.js';
+// Import từ thư mục password (ở root)
+import { PasswordSystem } from '../password/index.js';
 
 export class UIController {
     constructor() {
