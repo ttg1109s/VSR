@@ -426,8 +426,173 @@
                     Menu</button></div>
         </div>
     </div>
-    <script src="demo_script.js?v=1.8.9.3"></script>
-    <script type="module" src="app.js?v=13.0.0"></script>
+    <script>
+(function () {
+
+    const logs = [];
+
+    function esc(v) {
+        if (v instanceof Error) return v.stack || v.message;
+
+        if (typeof v === "object") {
+            try {
+                return JSON.stringify(v, null, 2);
+            } catch {
+                return "[Object]";
+            }
+        }
+
+        return String(v);
+    }
+
+    function ensurePanel() {
+
+        if (document.getElementById("debug-console"))
+            return;
+
+        const style = document.createElement("style");
+        style.textContent = `
+#debug-console{
+position:fixed;
+right:0;
+top:0;
+width:430px;
+height:100vh;
+background:#111;
+color:#ddd;
+font:12px Consolas,monospace;
+z-index:999999;
+display:flex;
+flex-direction:column;
+border-left:2px solid #333;
+}
+
+#debug-header{
+background:#222;
+padding:8px;
+font-weight:bold;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+#debug-log{
+flex:1;
+overflow:auto;
+padding:8px;
+white-space:pre-wrap;
+word-break:break-word;
+}
+
+.debug-log{color:#ddd;}
+.debug-info{color:#6cf;}
+.debug-warn{color:#ffd54f;}
+.debug-error{color:#ff6b6b;}
+
+#debug-clear{
+cursor:pointer;
+padding:4px 8px;
+}
+`;
+        document.head.appendChild(style);
+
+        const panel = document.createElement("div");
+        panel.id = "debug-console";
+
+        panel.innerHTML = `
+<div id="debug-header">
+    <span>DEBUG CONSOLE</span>
+    <button id="debug-clear">Clear</button>
+</div>
+<div id="debug-log"></div>
+`;
+
+        document.body.appendChild(panel);
+
+        document
+            .getElementById("debug-clear")
+            .onclick = () => {
+                logs.length = 0;
+                document.getElementById("debug-log").innerHTML = "";
+            };
+
+        for (const item of logs)
+            append(item.type, item.text);
+    }
+
+    function append(type, text) {
+
+        if (!document.getElementById("debug-console")) {
+            logs.push({ type, text });
+            return;
+        }
+
+        const root = document.getElementById("debug-log");
+
+        const div = document.createElement("div");
+        div.className = "debug-" + type;
+
+        const t = new Date().toLocaleTimeString();
+
+        div.textContent =
+            "[" + t + "] " +
+            "[" + type.toUpperCase() + "] " +
+            text;
+
+        root.appendChild(div);
+
+        root.scrollTop = root.scrollHeight;
+    }
+
+    ["log","info","warn","error","debug"].forEach(fn=>{
+
+        const old = console[fn];
+
+        console[fn] = function(...args){
+
+            append(fn,args.map(esc).join(" "));
+
+            if(old)
+                old.apply(console,args);
+
+        };
+
+    });
+
+    window.addEventListener("error",e=>{
+
+        append("error",
+            e.message +
+            "\nFile: " +
+            e.filename +
+            ":" +
+            e.lineno +
+            ":" +
+            e.colno +
+            "\n\n" +
+            (e.error?.stack || "")
+        );
+
+    });
+
+    window.addEventListener("unhandledrejection",e=>{
+
+        append(
+            "error",
+            "Unhandled Promise\n\n" +
+            esc(e.reason)
+        );
+
+    });
+
+    document.addEventListener("DOMContentLoaded",ensurePanel);
+
+})();
+</script>
+
+<script src="demo_script.js?v=1.8.9.3"></script>
+<script type="module" src="app.js?v=13.0.0"></script>
+    
 </body>
 
 </html>
