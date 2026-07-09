@@ -119,6 +119,10 @@
             class="flex-1 overflow-hidden relative z-10 flex flex-col overflow-y-auto md:flex-row md:overflow-hidden md:divide-x md:divide-[var(--vsr-border)] pb-16 md:pb-0 md:mr-16">
             <div id="vfx-layer" class="absolute inset-0 pointer-events-none z-[5]"></div>
 
+            <!-- [FIX] Alert nổi khi NPC xuất hiện — trước đây đổ vào #rp-footer, nay
+                 rp-footer bị ẩn vĩnh viễn (đã chuyển thành NPC sheet) nên cần chỗ riêng. -->
+            <div id="meeting-alert-strip"></div>
+
             <!-- Slider Wrapper: mobile = 2 panel full-view trượt ngang; desktop = 2 cột cố định (cấu trúc cũ) -->
             <div id="game-slider">
 

@@ -107,6 +107,26 @@ Muốn chạy 100% offline (không mạng): tải sẵn 3 file CDN ở trên v�
 
 **Chưa (và không) làm:** không mô hình hoá lại 100% mọi biến thể `subtype` của từng effect trong schema (`effect_details` dùng `additionalProperties: true` cho phần payload) — số lượng tổ hợp `type`/`subtype` trên các file `engine/modules/effect/strategies/*.js` khá lớn, việc liệt kê tuyệt đối chính xác từng field cho từng tổ hợp nằm ngoài phạm vi hợp lý của một lần audit. Đây là lựa chọn có chủ đích, không phải sai sót bỏ sót.
 
+## 🔎 Rà soát bổ sung — Contact & Inventory (sau câu hỏi của bạn)
+
+Ban đầu các màn Contact/Inventory chỉ được theme qua lớp override tự động (không sửa trực tiếp). Sau khi rà lại kỹ từng file vì độ phức tạp của màn Contact, phát hiện thêm và đã sửa:
+
+**Thiếu hẳn định nghĩa CSS (vỡ layout, không phải vấn đề màu sắc):**
+- `.explorer-item` — **hoàn toàn không có style** → lưới túi đồ (Inventory) sẽ hiển thị vô dạng, mất khung/kích thước ô. Đã bổ sung.
+- `.meta-label` / `.meta-value` — thiếu → lưới "Information" ở màn Info (writer/version/độ khó...) mất toàn bộ định dạng. Đã bổ sung.
+- `.icon-box` / `.notify-time` — thiếu → hàng thông báo trong panel Notification mất icon tròn + giờ hiển thị. Đã bổ sung.
+
+**Tương phản chữ/nền sai (do các mã màu nằm ngoài phạm vi lớp override tự động):**
+- Avatar NPC trong danh sách Contact + avatar trong bong bóng chat: `bg-[#333]` (trước đây cố tình loại khỏi override vì tưởng chỉ dùng cho bàn phím số) không lật sáng trong khi chữ lật tối → chữ tối trên nền tối. Đã đưa `bg-[#333]`/`#444` vào diện lật sáng chung, và bổ sung khôi phục riêng cho đúng phạm vi bàn phím mật khẩu (`#password-content`) để khu vực đó vẫn giữ tối như thiết kế.
+- Avatar "P" (Player) trong danh sách Contact và trong header chi tiết Contact: `bg-blue-900/30 text-blue-400` và `bg-blue-900 text-white` — tương phản kém/không đọc được trên nền sáng. Đã đổi sang tông xanh sáng phù hợp.
+- Avatar trong danh sách "Nhập hồn" (Faker modal): `bg-purple-900/40 text-purple-300` — tương tự, đã đổi sang tông tím sáng.
+- `ActionCooldownOverlay` (chữ "Wait..." đè lên thumbnail đang hồi chiêu): `text-white` nằm trong thẻ con, không cùng cấp với `bg-black/80` của thẻ cha nên rule khôi phục cũ (chỉ khớp cùng 1 thẻ) bỏ sót — chữ bị lật tối, mất trên nền tối. Đã bổ sung rule khôi phục theo *hậu duệ* (descendant), không chỉ cùng thẻ.
+
+**Lỗi chức năng (không phải màu sắc):**
+- `AlertMethods.showMeetingAlert` (bong bóng "X vừa xuất hiện") đổ nội dung vào `#rp-footer` — nhưng `#rp-footer` đã bị ẩn vĩnh viễn ở v13 (thay bằng NPC sheet). Bong bóng này sẽ **không hiển thị** dù logic vẫn chạy đúng. Đã tạo container nổi riêng `#meeting-alert-strip` (góc trên phải màn scene) và trỏ lại đúng chỗ.
+
+Các file khác đã rà kỹ và **xác nhận ổn, không cần sửa** vì màu sắc/độ tương phản đã tự nhất quán qua lớp override: `components/Layouts.js`, `Contact.js`, `Chat.js`, `ChatBubble.js`, `ItemModal.js`, `Modals.js`, `Inventory.js` (phần `ExplorerItem`/`TaskbarItem`/`ItemUsageDisplay`/`ItemStatsDisplay`), `render/modules/character/chat.js` (còn lại), `character/player.js`, `character/contacts.js`.
+
 ## 📝 Changelog rút gọn (v13)
 
 - UI: Home/Info/Scene/Inventory/Character/mọi modal chuyển sang light theme mobile-first.
