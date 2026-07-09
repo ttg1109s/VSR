@@ -359,6 +359,7 @@ export const sceneMethods = {
 
         if (id === 'inventory' && window.ui) window.ui.renderExplorerGrid();
         if (id === 'character' && window.ui) window.ui.renderContactScreen();
+        if (id === 'home' && window.ui) window.ui.renderHomeScreen();
 
         const np = document.getElementById('notify-panel');
         if (np && !np.classList.contains('hidden-panel') && window.ui) window.ui.toggleNotifications();

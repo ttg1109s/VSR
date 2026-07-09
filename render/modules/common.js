@@ -1,7 +1,16 @@
 import { ToastComponent, NotificationRow } from '../../components/Notification.js';
 import { FakerRow } from '../../components/Common.js';
+import { HomeScreenLayout } from '../../components/HomeScreen.js';
 
 export const commonMethods = {
+    // --- Home Screen ---
+    // Render layout màn Home (tách từ index.html sang components/HomeScreen.js).
+    // Gọi 1 lần lúc khởi tạo UIController và mỗi khi quay lại màn home qua switchScreen.
+    renderHomeScreen() {
+        const el = document.getElementById('screen-home');
+        if (el) el.innerHTML = HomeScreenLayout();
+    },
+
     injectAnimationStyles() {
         if (document.getElementById('custom-animations')) return;
         const style = document.createElement('style');
