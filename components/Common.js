@@ -54,9 +54,11 @@ export const StatBar = ({ key, s }) => {
     `;
 };
 
-// Thông tin kịch bản (Meta Details)
-export const ScriptInfoMeta = ({ label, value }) => {
+// Thông tin kịch bản (Meta Details) — dạng khối kiểu "Information" của App Store:
+// icon nhỏ + nhãn + giá trị.
+export const ScriptInfoMeta = ({ label, value, icon }) => {
     return `
+        ${icon ? `<span class="material-icons-round meta-icon">${icon}</span>` : ''}
         <div class="meta-label">${label}</div>
         <div class="meta-value">${value}</div>
     `;
