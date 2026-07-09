@@ -624,6 +624,10 @@
 
     <div>
 
+    <button id="debug-copy">
+    Copy All
+    </button>
+
     <button id="debug-clear">
     Clear
     </button>
@@ -665,6 +669,41 @@
     document.getElementById("debug-clear").onclick=()=>{
 
     body.innerHTML="";
+
+    };
+
+    const copyBtn=document.getElementById("debug-copy");
+
+    copyBtn.onclick=()=>{
+
+    const text=Array.from(body.querySelectorAll(".log-entry"))
+    .map(el=>el.innerText)
+    .join("\n");
+
+    const done=()=>{
+    const old=copyBtn.textContent;
+    copyBtn.textContent="Copied!";
+    setTimeout(()=>{ copyBtn.textContent=old; },1200);
+    };
+
+    const fallback=()=>{
+    const ta=document.createElement("textarea");
+    ta.value=text;
+    ta.style.position="fixed";
+    ta.style.opacity="0";
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    try{ document.execCommand("copy"); done(); }
+    catch(e){ console.error("Copy failed",e); }
+    document.body.removeChild(ta);
+    };
+
+    if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done).catch(fallback);
+    } else {
+    fallback();
+    }
 
     };
 
