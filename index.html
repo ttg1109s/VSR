@@ -64,7 +64,7 @@
     <!-- =========================== INFO SCREEN (a) =========================== -->
     <!-- [Refactor] Layout tách sang components/InfoScreen.js, render động bởi
          render/modules/common.js (renderAppShell). -->
-    <section id="screen-info" class="screen screen-hidden bg-[var(--vsr-canvas)]">
+    <section id="screen-info" class="screen screen-hidden bg-[var(--vsr-canvas)] flex-col">
     </section>
 
     <!-- =========================== GAME / SCENE SCREEN (b, c, d) =========================== -->
@@ -392,14 +392,61 @@
     const panel=document.getElementById("debug-console");
     const body=document.getElementById("debug-body");
 
-    toggle.onclick=()=>{
+    // [FIX] Nút Debug có thể che vùng cần bấm trên mobile (vd đè lên card hành
+    // động, nav dưới...) — cho phép kéo-thả nút sang chỗ khác. Dùng Pointer Events
+    // (gộp chuột + cảm ứng). Nếu không di chuyển quá ngưỡng thì vẫn coi là tap
+    // bình thường (mở/đóng panel) như cũ.
+    (function initDraggableToggle(){
+        const DRAG_THRESHOLD = 6; // px
+        let dragging = false;
+        let moved = false;
+        let startX = 0, startY = 0;
+        let startLeft = 0, startTop = 0;
 
-    panel.style.display=
-    panel.style.display==="block"
-    ?"none"
-    :"block";
+        toggle.addEventListener('pointerdown', (e) => {
+            dragging = true;
+            moved = false;
+            const rect = toggle.getBoundingClientRect();
+            startLeft = rect.left;
+            startTop = rect.top;
+            startX = e.clientX;
+            startY = e.clientY;
+            toggle.setPointerCapture(e.pointerId);
+        });
 
-    };
+        toggle.addEventListener('pointermove', (e) => {
+            if (!dragging) return;
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
+            if (!moved && Math.hypot(dx, dy) < DRAG_THRESHOLD) return;
+            moved = true;
+
+            // Chuyển từ định vị right/bottom (mặc định trong CSS) sang left/top tự do,
+            // giữ nguyên vị trí hiện tại làm điểm bắt đầu (không giật hình).
+            let newLeft = startLeft + dx;
+            let newTop = startTop + dy;
+            const maxLeft = window.innerWidth - toggle.offsetWidth;
+            const maxTop = window.innerHeight - toggle.offsetHeight;
+            newLeft = Math.min(Math.max(0, newLeft), Math.max(0, maxLeft));
+            newTop = Math.min(Math.max(0, newTop), Math.max(0, maxTop));
+
+            toggle.style.left = newLeft + 'px';
+            toggle.style.top = newTop + 'px';
+            toggle.style.right = 'auto';
+            toggle.style.bottom = 'auto';
+        });
+
+        const endDrag = (e) => {
+            if (!dragging) return;
+            dragging = false;
+            if (!moved) {
+                // Không di chuyển đáng kể -> coi là tap: mở/đóng panel như cũ.
+                panel.style.display = panel.style.display === "block" ? "none" : "block";
+            }
+        };
+        toggle.addEventListener('pointerup', endDrag);
+        toggle.addEventListener('pointercancel', endDrag);
+    })();
 
     document.getElementById("debug-hide").onclick=()=>{
 
