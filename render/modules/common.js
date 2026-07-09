@@ -1,11 +1,41 @@
 import { ToastComponent, NotificationRow } from '../../components/Notification.js';
 import { FakerRow } from '../../components/Common.js';
 import { HomeScreenLayout } from '../../components/HomeScreen.js';
+import { InfoScreenLayout } from '../../components/InfoScreen.js';
+import { SceneScreenLayout } from '../../components/SceneScreen.js';
+import { InventoryScreenLayout } from '../../components/InventoryScreen.js';
+import {
+    GlobalPopoverTemplate, ItemModalShellTemplate, PlayerCardModalTemplate,
+    ChatOverlayTemplate, AlertModalTemplate, PasswordOverlayShellTemplate,
+    EndingScreenTemplate
+} from '../../components/Overlays.js';
 
 export const commonMethods = {
+    // --- App Shell ---
+    // Render TOÀN BỘ khung tĩnh của app (trước đây viết cứng trong index.html,
+    // nay tách sang components/*.js) — gọi 1 lần duy nhất lúc UIController khởi
+    // tạo, TRƯỚC các ensure*()/new PasswordSystem() phía dưới trong constructor,
+    // để đảm bảo mọi mount-point đã có nội dung trước khi phần còn lại của app
+    // chạy (dù thực tế các hệ thống con hiện đều query DOM kiểu lazy nên không
+    // bắt buộc, nhưng render trước vẫn là thứ tự an toàn nhất).
+    renderAppShell() {
+        const set = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
+        set('global-popover', GlobalPopoverTemplate());
+        this.renderHomeScreen();
+        set('screen-info', InfoScreenLayout());
+        set('screen-game', SceneScreenLayout());
+        set('screen-inventory', InventoryScreenLayout());
+        set('item-modal', ItemModalShellTemplate());
+        set('player-card-modal', PlayerCardModalTemplate());
+        set('chat-overlay', ChatOverlayTemplate());
+        set('alert-modal', AlertModalTemplate());
+        set('password-overlay', PasswordOverlayShellTemplate());
+        set('ending-screen', EndingScreenTemplate());
+    },
+
     // --- Home Screen ---
     // Render layout màn Home (tách từ index.html sang components/HomeScreen.js).
-    // Gọi 1 lần lúc khởi tạo UIController và mỗi khi quay lại màn home qua switchScreen.
+    // Gọi từ renderAppShell() lúc boot và mỗi khi quay lại màn home qua switchScreen.
     renderHomeScreen() {
         const el = document.getElementById('screen-home');
         if (el) el.innerHTML = HomeScreenLayout();
