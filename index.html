@@ -436,19 +436,39 @@
             errors: []
         };
 
+        // Cảnh báo sớm nếu đang mở qua file:// — ES module (type="module") sẽ bị
+        // trình duyệt chặn bởi CORS khi chạy qua file://, trong khi script thường
+        // (demo_script.js) vẫn chạy bình thường. Đây là nguyên nhân kinh điển khiến
+        // "DEMO_SCRIPT loaded" hiện ra nhưng app module không bao giờ load.
+        if (location.protocol === 'file:') {
+            console.error('⚠️ Đang chạy qua file:// — ES module (app.js) sẽ KHÔNG load được do bị chặn CORS. Cần chạy qua HTTP server (vd: python3 -m http.server, VSCode Live Server) rồi mở qua http://localhost.');
+        }
+
         // Catch unhandledrejection for module errors
         window.addEventListener('unhandledrejection', (event) => {
             console.error('[UNHANDLED PROMISE REJECTION]', event.reason);
             window._loadStatus.errors.push(`❌ Unhandled Promise Rejection: ${event.reason?.message || event.reason}`);
         });
 
-        // Catch synchronous errors during module loading
+        // Catch mọi lỗi script (bỏ bộ lọc theo nội dung message — bộ lọc cũ khiến
+        // các lỗi không chứa đúng vài từ khoá bị bỏ sót hoàn toàn, kể cả lỗi thật).
         window.addEventListener('error', (event) => {
-            if (event.message && (event.message.includes('import') || event.message.includes('Cannot find') || event.message.includes('is not a function'))) {
-                console.error('[MODULE LOAD ERROR]', event);
-                window._loadStatus.errors.push(`❌ ${event.message} @ ${event.filename}:${event.lineno}`);
-            }
+            const msg = event.message || '(no message — có thể là lỗi tải resource)';
+            console.error('[ERROR]', msg, '@', event.filename || '(unknown file)', ':', event.lineno ?? '?');
+            window._loadStatus.errors.push(`❌ ${msg} @ ${event.filename || '?'}:${event.lineno ?? '?'}`);
         });
+
+        // Lỗi tải resource (script/link 404, CORS bị chặn...) không bubble lên,
+        // nên phải bắt ở CAPTURE PHASE tại window mới thấy được — đây thường là
+        // chỗ lỗi thật của "type=module bị chặn CORS" ẩn nấp mà bộ bắt lỗi cũ bỏ sót.
+        window.addEventListener('error', (event) => {
+            const t = event.target;
+            if (t && (t.tagName === 'SCRIPT' || t.tagName === 'LINK') && !(event instanceof ErrorEvent)) {
+                const src = t.src || t.href || '(unknown)';
+                console.error('[RESOURCE LOAD ERROR]', t.tagName, src);
+                window._loadStatus.errors.push(`❌ Không tải được resource: ${src}`);
+            }
+        }, true);
 
         window.addEventListener('load', () => {
             // demo_script.js should be loaded
