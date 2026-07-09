@@ -426,172 +426,312 @@
                     Menu</button></div>
         </div>
     </div>
-    <script>
-(function () {
+    
+    <script src="demo_script.js?v=1.8.9.3"></script>
+<script type="module" src="app.js?v=13.0.0"></script>
+<style>
+#debug-toggle{
+    position:fixed;
+    right:12px;
+    bottom:12px;
+    z-index:999999;
 
-    const logs = [];
+    padding:8px 12px;
 
-    function esc(v) {
-        if (v instanceof Error) return v.stack || v.message;
+    border:none;
+    border-radius:999px;
 
-        if (typeof v === "object") {
-            try {
-                return JSON.stringify(v, null, 2);
-            } catch {
-                return "[Object]";
-            }
-        }
+    background:#222;
+    color:#fff;
 
-        return String(v);
-    }
+    cursor:pointer;
 
-    function ensurePanel() {
+    font:13px sans-serif;
 
-        if (document.getElementById("debug-console"))
-            return;
+    box-shadow:0 2px 8px rgba(0,0,0,.35);
+}
 
-        const style = document.createElement("style");
-        style.textContent = `
+#debug-toggle.error{
+    background:#c62828;
+}
+
 #debug-console{
-position:fixed;
-right:0;
-top:0;
-width:430px;
-height:100vh;
-background:#111;
-color:#ddd;
-font:12px Consolas,monospace;
-z-index:999999;
-display:flex;
-flex-direction:column;
-border-left:2px solid #333;
+
+    position:fixed;
+
+    right:12px;
+    bottom:56px;
+
+    width:460px;
+    height:260px;
+
+    max-width:80vw;
+    max-height:70vh;
+
+    display:none;
+
+    background:rgba(15,15,15,.96);
+
+    border:1px solid #555;
+    border-radius:8px;
+
+    overflow:hidden;
+
+    resize:both;
+
+    z-index:999999;
+
+    font:12px Consolas,monospace;
+
+    box-shadow:0 4px 20px rgba(0,0,0,.5);
+
 }
 
 #debug-header{
-background:#222;
-padding:8px;
-font-weight:bold;
-display:flex;
-justify-content:space-between;
-align-items:center;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    background:#222;
+
+    color:#fff;
+
+    padding:8px;
+
+    cursor:move;
+
+    user-select:none;
+
 }
 
-#debug-log{
-flex:1;
-overflow:auto;
-padding:8px;
-white-space:pre-wrap;
-word-break:break-word;
+#debug-header button{
+
+    margin-left:6px;
+
 }
 
-.debug-log{color:#ddd;}
-.debug-info{color:#6cf;}
-.debug-warn{color:#ffd54f;}
-.debug-error{color:#ff6b6b;}
+#debug-body{
 
-#debug-clear{
-cursor:pointer;
-padding:4px 8px;
+    overflow:auto;
+
+    height:calc(100% - 40px);
+
+    padding:8px;
+
+    white-space:pre-wrap;
+
+    word-break:break-word;
+
+    color:#ddd;
+
 }
-`;
-        document.head.appendChild(style);
 
-        const panel = document.createElement("div");
-        panel.id = "debug-console";
+.log-entry{
 
-        panel.innerHTML = `
+    margin-bottom:4px;
+
+    border-bottom:1px solid #222;
+
+    padding-bottom:4px;
+
+}
+
+.log{color:#ddd;}
+.info{color:#7ec8ff;}
+.warn{color:#ffd54f;}
+.error{color:#ff7b7b;}
+.debug{color:#90caf9;}
+.time{color:#888;margin-right:6px;}
+</style>
+
+<button id="debug-toggle">
+🐞 Debug
+</button>
+
+<div id="debug-console">
+
 <div id="debug-header">
-    <span>DEBUG CONSOLE</span>
-    <button id="debug-clear">Clear</button>
+
+<div>Console</div>
+
+<div>
+
+<button id="debug-clear">
+Clear
+</button>
+
+<button id="debug-hide">
+Hide
+</button>
+
 </div>
-<div id="debug-log"></div>
-`;
 
-        document.body.appendChild(panel);
+</div>
 
-        document
-            .getElementById("debug-clear")
-            .onclick = () => {
-                logs.length = 0;
-                document.getElementById("debug-log").innerHTML = "";
-            };
+<div id="debug-body"></div>
 
-        for (const item of logs)
-            append(item.type, item.text);
-    }
+</div>
 
-    function append(type, text) {
+<script>
+(function(){
 
-        if (!document.getElementById("debug-console")) {
-            logs.push({ type, text });
-            return;
-        }
+const toggle=document.getElementById("debug-toggle");
+const panel=document.getElementById("debug-console");
+const body=document.getElementById("debug-body");
 
-        const root = document.getElementById("debug-log");
+toggle.onclick=()=>{
 
-        const div = document.createElement("div");
-        div.className = "debug-" + type;
+panel.style.display=
+panel.style.display==="block"
+?"none"
+:"block";
 
-        const t = new Date().toLocaleTimeString();
+};
 
-        div.textContent =
-            "[" + t + "] " +
-            "[" + type.toUpperCase() + "] " +
-            text;
+document.getElementById("debug-hide").onclick=()=>{
 
-        root.appendChild(div);
+panel.style.display="none";
 
-        root.scrollTop = root.scrollHeight;
-    }
+};
 
-    ["log","info","warn","error","debug"].forEach(fn=>{
+document.getElementById("debug-clear").onclick=()=>{
 
-        const old = console[fn];
+body.innerHTML="";
 
-        console[fn] = function(...args){
+};
 
-            append(fn,args.map(esc).join(" "));
+function stringify(v){
 
-            if(old)
-                old.apply(console,args);
+if(v instanceof Error)
+return v.stack||v.message;
 
-        };
+if(typeof v==="object"){
 
-    });
+try{
+return JSON.stringify(v,null,2);
+}
+catch{
+return "[Object]";
+}
 
-    window.addEventListener("error",e=>{
+}
 
-        append("error",
-            e.message +
-            "\nFile: " +
-            e.filename +
-            ":" +
-            e.lineno +
-            ":" +
-            e.colno +
-            "\n\n" +
-            (e.error?.stack || "")
-        );
+return String(v);
 
-    });
+}
 
-    window.addEventListener("unhandledrejection",e=>{
+function append(type,args){
 
-        append(
-            "error",
-            "Unhandled Promise\n\n" +
-            esc(e.reason)
-        );
+const div=document.createElement("div");
 
-    });
+div.className="log-entry "+type;
 
-    document.addEventListener("DOMContentLoaded",ensurePanel);
+const t=new Date().toLocaleTimeString();
+
+div.innerHTML=
+'<span class="time">'+t+'</span>'+
+args.map(stringify).join(" ");
+
+body.appendChild(div);
+
+body.scrollTop=body.scrollHeight;
+
+if(type==="error"){
+
+toggle.classList.add("error");
+
+panel.style.display="block";
+
+}
+
+}
+
+["log","info","warn","error","debug"].forEach(fn=>{
+
+const old=console[fn];
+
+console[fn]=(...args)=>{
+
+append(fn,args);
+
+old.apply(console,args);
+
+};
+
+});
+
+window.addEventListener("error",e=>{
+
+append("error",[
+e.message,
+"\n"+e.filename+":"+e.lineno+":"+e.colno,
+"\n",
+e.error||""
+]);
+
+});
+
+window.addEventListener("unhandledrejection",e=>{
+
+append("error",[
+"Unhandled Promise Rejection",
+"\n",
+e.reason
+]);
+
+});
+
+let drag=false;
+let sx=0;
+let sy=0;
+let px=0;
+let py=0;
+
+const header=document.getElementById("debug-header");
+
+header.addEventListener("mousedown",e=>{
+
+drag=true;
+
+sx=e.clientX;
+sy=e.clientY;
+
+const rect=panel.getBoundingClientRect();
+
+px=rect.left;
+py=rect.top;
+
+panel.style.left=px+"px";
+panel.style.top=py+"px";
+panel.style.right="auto";
+panel.style.bottom="auto";
+
+});
+
+document.addEventListener("mousemove",e=>{
+
+if(!drag) return;
+
+panel.style.left=
+(px+e.clientX-sx)+"px";
+
+panel.style.top=
+(py+e.clientY-sy)+"px";
+
+});
+
+document.addEventListener("mouseup",()=>{
+
+drag=false;
+
+});
 
 })();
 </script>
 
-<script src="demo_script.js?v=1.8.9.3"></script>
-<script type="module" src="app.js?v=13.0.0"></script>
     
 </body>
 
