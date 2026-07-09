@@ -419,8 +419,16 @@ button, a, .cursor-pointer { -webkit-tap-highlight-color: transparent; }
     border: 1px solid var(--vsr-border);
     border-radius: 12px;
     padding: 10px 12px;
+    position: relative;
 }
-.meta-label { font-size: 10px; text-transform: uppercase; letter-spacing: .05em; color: var(--vsr-ink-400); font-weight: 700; margin-bottom: 2px; }
+.meta-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 16px;
+    color: var(--vsr-ink-300);
+}
+.meta-label { font-size: 10px; text-transform: uppercase; letter-spacing: .05em; color: var(--vsr-ink-400); font-weight: 700; margin-bottom: 2px; padding-right: 20px; }
 .meta-value { font-size: 13px; color: var(--vsr-ink-900); font-weight: 600; }
 
 /* ---------- Chat / dialogue reading view ---------- */
