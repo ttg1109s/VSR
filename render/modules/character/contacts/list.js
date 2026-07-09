@@ -15,7 +15,7 @@ export const ContactList = {
         const pName = pChar ? (pChar.meta?.name || 'You') : 'You';
 
         const playerItem = document.createElement('div');
-        playerItem.className = `p-3 rounded-lg flex items-center gap-3 cursor-pointer transition-colors ${ui.currentContactId === entryChar ? 'bg-white/10 border border-white/10' : 'hover:bg-white/5 border border-transparent'}`;
+        playerItem.className = `p-3 rounded-lg flex items-center gap-3 cursor-pointer transition-colors ${ui.currentContactId === entryChar ? 'bg-[var(--vsr-tint-10)] border border-[var(--vsr-border)]' : 'hover:bg-[var(--vsr-tint-05)] border border-transparent'}`;
 
         playerItem.innerHTML = ContactRow({
             cid: entryChar,
@@ -34,7 +34,7 @@ export const ContactList = {
         };
         listContainer.appendChild(playerItem);
 
-        const sep = document.createElement('div'); sep.className = "h-px bg-white/5 my-2 mx-2"; listContainer.appendChild(sep);
+        const sep = document.createElement('div'); sep.className = "h-px bg-[var(--vsr-border)] my-2 mx-2"; listContainer.appendChild(sep);
 
         // 2. Render Spam/Unknown
         const spamThreads = engine.getThreads('spam');
@@ -44,7 +44,7 @@ export const ContactList = {
             const latestTime = spamThreads.length > 0 ? spamThreads[0].time : 0;
 
             const spamEl = document.createElement('div');
-            spamEl.className = `p-3 rounded-lg flex items-center gap-3 cursor-pointer transition-colors group ${isActive ? 'bg-white/10 border-white/10' : 'hover:bg-white/5 border-transparent'} border relative mb-2`;
+            spamEl.className = `p-3 rounded-lg flex items-center gap-3 cursor-pointer transition-colors group ${isActive ? 'bg-[var(--vsr-tint-10)] border-[var(--vsr-border)]' : 'hover:bg-[var(--vsr-tint-05)] border-transparent'} border relative mb-2`;
 
             spamEl.innerHTML = ContactRow({
                 cid: 'spam',
@@ -54,7 +54,7 @@ export const ContactList = {
                 timeDisplay: timeAgo(latestTime),
                 isActive: isActive,
                 isPlayer: false,
-                avatarHtml: `<div class="w-12 h-12 rounded-full bg-[#1a1a1a] flex items-center justify-center text-slate-400 font-bold border border-white/10 border-dashed group-hover:border-white/30 transition-colors">?</div>`
+                avatarHtml: `<div class="w-12 h-12 rounded-full bg-[var(--vsr-surface-2)] flex items-center justify-center text-[var(--vsr-ink-400)] font-bold border border-[var(--vsr-border)] border-dashed group-hover:border-[var(--vsr-border-strong)] transition-colors">?</div>`
             });
 
             spamEl.onclick = () => {
@@ -125,7 +125,7 @@ export const ContactList = {
             }
 
             const el = document.createElement('div');
-            el.className = `p-3 rounded-lg flex items-center gap-3 cursor-pointer transition-colors group ${isActive ? 'bg-white/10 border-white/10' : 'hover:bg-white/5 border-transparent'} border relative`;
+            el.className = `p-3 rounded-lg flex items-center gap-3 cursor-pointer transition-colors group ${isActive ? 'bg-[var(--vsr-tint-10)] border-[var(--vsr-border)]' : 'hover:bg-[var(--vsr-tint-05)] border-transparent'} border relative`;
 
             el.innerHTML = ContactRow({
                 cid: cid,
@@ -134,7 +134,7 @@ export const ContactList = {
                 preview: preview,
                 timeDisplay: timeDisplay,
                 isActive: isActive,
-                avatarHtml: `<div class="w-12 h-12 rounded-full bg-[#333] flex items-center justify-center text-slate-300 font-bold border border-white/10 group-hover:border-white/20 transition-colors">${(name && name.length > 0) ? name.charAt(0) : '?'}</div>`
+                avatarHtml: `<div class="w-12 h-12 rounded-full bg-[var(--vsr-surface-3)] flex items-center justify-center text-[var(--vsr-ink-700)] font-bold border border-[var(--vsr-border)] group-hover:border-[var(--vsr-border-strong)] transition-colors">${(name && name.length > 0) ? name.charAt(0) : '?'}</div>`
             });
 
             el.onclick = () => {

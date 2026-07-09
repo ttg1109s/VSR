@@ -36,12 +36,12 @@ export const ContactDetails = {
 
         if (cid === 'spam') {
             avatarEl.innerHTML = '?';
-            avatarEl.className = `w-10 h-10 rounded-full flex items-center justify-center text-slate-400 font-bold bg-[#1a1a1a] border border-dashed border-slate-600`;
+            avatarEl.className = `w-10 h-10 rounded-full flex items-center justify-center text-[var(--vsr-ink-400)] font-bold bg-[var(--vsr-surface-2)] border border-dashed border-[var(--vsr-border-strong)]`;
         } else {
             avatarEl.innerHTML = cid === entryChar ? 'P' : charName.charAt(0);
             // [FIX v13] bg-blue-900 (không nằm trong danh sách "nền đậm -> chữ trắng"
             // tự động) đổi sang bg-blue-600 để tái dùng luật khôi phục text-white sẵn có.
-            avatarEl.className = `w-10 h-10 rounded-full flex items-center justify-center text-white font-bold relative overflow-hidden ${cid === entryChar ? 'bg-blue-600' : 'bg-slate-700'}`;
+            avatarEl.className = `w-10 h-10 rounded-full flex items-center justify-center text-white font-bold relative overflow-hidden ${cid === entryChar ? 'bg-blue-600' : 'bg-[var(--vsr-ink-700)]'}`;
         }
 
         document.getElementById('detail-title').innerText = charName;
@@ -129,7 +129,7 @@ export const ContactDetails = {
         if (!relContainer) {
             relContainer = document.createElement('div');
             relContainer.id = 'info-overlay-relationships';
-            relContainer.className = "mt-6 space-y-3 border-t border-white/5 pt-4";
+            relContainer.className = "mt-6 space-y-3 border-t border-[var(--vsr-border)] pt-4";
             const statsEl = document.getElementById('info-overlay-stats');
             if (statsEl && statsEl.parentNode) {
                 statsEl.parentNode.appendChild(relContainer);
@@ -141,7 +141,7 @@ export const ContactDetails = {
         if (!relationships || !Array.isArray(relationships) || relationships.length === 0) return;
 
         const titleObj = document.createElement('h3');
-        titleObj.className = "text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-2";
+        titleObj.className = "text-xs font-bold text-[var(--vsr-ink-400)] uppercase tracking-wider mb-2 flex items-center gap-2";
         titleObj.innerHTML = `<span class="material-icons-round text-sm">group</span> Relationships`;
         relContainer.appendChild(titleObj);
 
@@ -169,7 +169,7 @@ export const ContactDetails = {
             const initials = targetId === entryChar ? "Me" : displayName.charAt(0).toUpperCase();
 
             const item = document.createElement('div');
-            item.className = `flex items-center gap-3 p-2.5 rounded-lg border transition-colors ${targetId === entryChar ? 'bg-blue-900/10 border-blue-500/20' : 'bg-white/5 border-white/5 hover:bg-white/10'}`;
+            item.className = `flex items-center gap-3 p-2.5 rounded-lg border transition-colors ${targetId === entryChar ? 'bg-blue-50 border-blue-200' : 'bg-[var(--vsr-tint-05)] border-[var(--vsr-border)] hover:bg-[var(--vsr-tint-10)]'}`;
 
             item.innerHTML = RelationshipRow({ targetId, displayName, initials, relTag, isPlayer: targetId === entryChar });
             relContainer.appendChild(item);
@@ -233,7 +233,7 @@ export const ContactDetails = {
         const allThreads = engine.getThreads(cid);
 
         if (allThreads.length === 0) {
-            container.innerHTML = `<div class="h-full flex flex-col items-center justify-center text-slate-600"><span class="material-icons-round text-4xl mb-2 opacity-20">mail</span><span class="text-sm">No topics found</span></div>`;
+            container.innerHTML = `<div class="h-full flex flex-col items-center justify-center text-[var(--vsr-ink-300)]"><span class="material-icons-round text-4xl mb-2 opacity-40">mail</span><span class="text-sm">No topics found</span></div>`;
             return;
         }
 
@@ -241,11 +241,11 @@ export const ContactDetails = {
         const threads = allThreads.slice(0, displayedCount);
 
         const list = document.createElement('div');
-        list.className = "flex flex-col divide-y divide-white/5 pb-4";
+        list.className = "flex flex-col divide-y divide-[var(--vsr-border)] pb-4";
 
         threads.forEach(t => {
             const item = document.createElement('div');
-            item.className = `p-4 hover:bg-white/5 cursor-pointer transition-colors flex items-start gap-3 group ${t.isUnread ? 'bg-blue-900/10' : ''}`;
+            item.className = `p-4 hover:bg-[var(--vsr-tint-05)] cursor-pointer transition-colors flex items-start gap-3 group ${t.isUnread ? 'bg-blue-50' : ''}`;
 
             item.innerHTML = ThreadRow({ t, timeStr: timeAgo(t.time) });
 
@@ -257,7 +257,7 @@ export const ContactDetails = {
             const loadMoreDiv = document.createElement('div');
             loadMoreDiv.className = "p-4 flex justify-center";
             loadMoreDiv.innerHTML = `
-                <button class="px-4 py-2 bg-white/5 hover:bg-white/10 rounded-full text-xs text-slate-400 font-bold uppercase tracking-wider transition-colors border border-white/5">
+                <button class="px-4 py-2 bg-[var(--vsr-tint-05)] hover:bg-[var(--vsr-tint-10)] rounded-full text-xs text-[var(--vsr-ink-400)] font-bold uppercase tracking-wider transition-colors border border-[var(--vsr-border)]">
                     Show more (${allThreads.length - displayedCount})
                 </button>
              `;
