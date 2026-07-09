@@ -436,6 +436,20 @@
             errors: []
         };
 
+        // Catch unhandledrejection for module errors
+        window.addEventListener('unhandledrejection', (event) => {
+            console.error('[UNHANDLED PROMISE REJECTION]', event.reason);
+            window._loadStatus.errors.push(`❌ Unhandled Promise Rejection: ${event.reason?.message || event.reason}`);
+        });
+
+        // Catch synchronous errors during module loading
+        window.addEventListener('error', (event) => {
+            if (event.message && (event.message.includes('import') || event.message.includes('Cannot find') || event.message.includes('is not a function'))) {
+                console.error('[MODULE LOAD ERROR]', event);
+                window._loadStatus.errors.push(`❌ ${event.message} @ ${event.filename}:${event.lineno}`);
+            }
+        });
+
         window.addEventListener('load', () => {
             // demo_script.js should be loaded
             if (typeof DEMO_SCRIPT === 'undefined') {
@@ -460,23 +474,20 @@
                 }
             }, 50);
 
-            // Timeout: if app not loaded after 3 seconds
+            // Timeout: if app not loaded after 5 seconds
             setTimeout(() => {
                 if (!window._loadStatus.appLoaded) {
-                    window._loadStatus.errors.push('❌ App module failed to load within 3 seconds');
+                    window._loadStatus.errors.push('❌ App module failed to load within 5 seconds');
                     console.error('FATAL: Module loading timeout', window._loadStatus);
                     document.getElementById('debug-toggle').classList.add('error');
                     document.getElementById('debug-console').style.display = 'block';
+                    
+                    // Log all errors
+                    window._loadStatus.errors.forEach(err => {
+                        console.error(err);
+                    });
                 }
-            }, 3000);
-        });
-
-        // Catch module loading errors
-        window.addEventListener('error', (event) => {
-            if (event.filename && event.filename.includes('app.js')) {
-                window._loadStatus.errors.push(`❌ ${event.message} @ ${event.filename}:${event.lineno}`);
-                console.error('[MODULE ERROR]', event.error);
-            }
+            }, 5000);
         });
     </script>
 
