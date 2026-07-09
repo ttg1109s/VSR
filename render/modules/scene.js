@@ -174,8 +174,10 @@ export const sceneMethods = {
         // Actually, if we are deeper than root, we can go back.
         const hasBack = path.length > 1;
 
-        const backBtn = document.getElementById('back-node-btn');
-        if (backBtn) {
+        // [FIX UI v13] Có 2 nút back (desktop nổi #back-node-btn + mobile trong
+        // scene-bottom-toolbar #back-node-btn-mobile) — đồng bộ cả hai qua class dùng chung.
+        const backBtns = document.querySelectorAll('.back-node-btn');
+        backBtns.forEach(backBtn => {
             const shouldHide = !hasBack;
             backBtn.classList.toggle('hidden', shouldHide);
             // Go back to the immediate parent (second to last item)
@@ -185,7 +187,7 @@ export const sceneMethods = {
                     API.engine.scene.enterScene(parentNode.id, true);
                 }
             };
-        }
+        });
 
         // [SCROLL FIX] Only reset if context changes (New Scene OR New Router)
         const currentContext = `${engine?.state?.sceneId}_${engine?.state?.scenes[engine?.state?.sceneId]?.activeRouterId}`;
@@ -203,9 +205,10 @@ export const sceneMethods = {
             }
             this._lastRenderSceneContext = currentContext;
 
-            // [NEW] Clear active character list in footer when switching scenes
-            const charFooter = document.getElementById('rp-footer');
-            if (charFooter) charFooter.innerHTML = '';
+            // [UI v13] Dọn danh sách NPC sheet khi đổi scene (thay cho rp-footer cũ)
+            const npcList = document.getElementById('npc-sheet-list');
+            if (npcList) npcList.innerHTML = '';
+            if (window.ui) window.ui.toggleNpcSheet(false);
 
             // [NEW] Render Breadcrumbs
             const breadcrumbs = document.getElementById('breadcrumbs');
@@ -220,15 +223,17 @@ export const sceneMethods = {
                 const html = path.map((node, index) => {
                     const isLast = index === path.length - 1;
                     // Style: items before are dim, current is bright. Hover effect for links.
+                    // [THEME] rp-header giờ là nền sáng (xem main.css) nên breadcrumb dùng
+                    // token chữ tối (ink), không dùng text-white/NN của theme cũ.
                     const cssClass = isLast
-                        ? ""
-                        : "text-white/40 hover:text-white/80 transition-colors duration-200 cursor-pointer";
+                        ? "text-[var(--vsr-ink-900)] font-semibold"
+                        : "text-[var(--vsr-ink-400)] hover:text-[var(--vsr-ink-700)] transition-colors duration-200 cursor-pointer";
 
                     const clickAttr = isLast ? "" : `onclick="API.engine.scene.enterScene('${node.id}')"`;
 
                     return `<span class="${cssClass}" ${clickAttr}>${node.title}</span>`;
                 }).join(`
-                        <svg class="w-3 h-3 text-white/20 -mx-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-3 h-3 text-[var(--vsr-ink-300)] -mx-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                         </svg>
                     `);
@@ -243,97 +248,99 @@ export const sceneMethods = {
         if (window.ui && window.ui.renderCharacterFooter) window.ui.renderCharacterFooter();
     },
 
+    // [UI v13] Trước đây render trực tiếp vào #rp-footer (chiếm không gian dọc cố định,
+    // đi ngược yêu cầu "list action full-view" trên mobile). Giờ NPC được liệt kê trong
+    // #npc-sheet (bottom sheet mở từ icon trong scene-bottom-toolbar) + badge đếm số lượng.
     renderCharacterFooter() {
-        const container = document.getElementById('rp-footer');
-        if (!container) return;
+        const sheetList = document.getElementById('npc-sheet-list');
+        const badges = [document.getElementById('npc-badge'), document.getElementById('npc-badge-desktop')];
+        if (!sheetList) return;
 
-        container.innerHTML = '';
+        sheetList.innerHTML = '';
 
         if (!API.engine || !API.engine.state) return;
 
-        const currentS = API.engine.state.getFakerState ? API.engine.state.getFakerState()?.targetId : null;
         const characters = API.engine.state.getCharacters();
-        if (!characters) return;
+        if (!characters) { badges.forEach(b => b && b.classList.add('hidden')); return; }
 
         const sceneId = API.engine.state.sceneId;
         const fakerState = (API.engine.state.getFakerState && API.engine.state.getFakerState()) || { active: false };
         const entryChar = API.engine.state.meta?.entryCharacter || 'player';
         const currentIdentity = fakerState.active ? fakerState.targetId : entryChar;
 
-        console.log("[renderCharacterFooter] Debug:", { sceneId, entryChar, currentIdentity, allChars: Object.keys(characters) });
-
         const activeChars = Object.entries(characters).filter(([id, char]) => {
             if (id === entryChar) return false;
             if (id === currentIdentity) return false;
-
-            const match = char.place && char.place.scene_id === sceneId;
-            console.log(`[renderCharacterFooter] Check ${id}: sId=${char.place?.scene_id}, match=${match}`);
-            return match;
+            return char.place && char.place.scene_id === sceneId;
         });
 
-        console.log("[renderCharacterFooter] Active Chars:", activeChars.length);
+        // Cập nhật badge số lượng trên toolbar (mobile) + header (desktop)
+        badges.forEach(badge => {
+            if (!badge) return;
+            if (activeChars.length > 0) {
+                badge.textContent = activeChars.length > 9 ? '9+' : String(activeChars.length);
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        });
 
         if (activeChars.length === 0) {
-            container.innerHTML = `<span class="text-[10px] text-slate-600 font-mono uppercase tracking-widest italic w-full text-center">No one is here</span>`;
+            sheetList.innerHTML = `<div class="text-center py-10 text-[var(--vsr-ink-400)] text-xs italic">Không có ai khác ở đây.</div>`;
             return;
         }
 
+        const statusMap = {
+            'danger': 'text-red-600 status-danger',
+            'warning': 'text-amber-600 status-warning',
+            'success': 'text-green-600 status-success',
+            'notice': 'text-blue-600 status-notice'
+        };
+
         activeChars.forEach(([id, char]) => {
             const type = char.set.alert || 'notice';
-            // Map alert types to status colors/classes
-            const statusMap = {
-                'danger': 'text-red-500 status-danger',
-                'warning': 'text-amber-500 status-warning',
-                'success': 'text-green-500 status-success',
-                'notice': 'text-blue-500 status-notice'
-            };
-            const statusClass = statusMap[type] || 'text-slate-400';
+            const statusClass = statusMap[type] || 'text-[var(--vsr-ink-400)]';
             const dotClass = statusMap[type] ? statusMap[type].split(' ')[1] : '';
 
-            // Avatar URL - Fallback to initial if logic needs it, but assuming schema has avatar
-            // [FIX] Robust Name and Avatar Resolution
             const charName = char.set.name || char.meta.name || "Unknown";
             const avatarUrl = char.meta.avatar || '';
             const initial = charName.charAt(0).toUpperCase();
 
-            const wrapper = document.createElement('div');
-            wrapper.className = "char-avatar-wrapper group cursor-pointer shrink-0";
+            const row = document.createElement('div');
+            row.className = "flex items-center gap-3 p-3 rounded-xl hover:bg-[var(--vsr-tint-05)] cursor-pointer transition-colors char-avatar-wrapper";
 
-            // HTML Structure
-            /*
-                Wrapper
-                 -> Tooltip (Name) - Positioned Right
-                 -> Wave (Animation)
-                 -> Avatar Circle (Image or Initial)
-                 -> Status Dot
-            */
-            wrapper.innerHTML = `
-                <div class="absolute left-full top-1/2 -translate-y-1/2 ml-3 px-2 py-1 bg-black/90 backdrop-blur text-[10px] text-white rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none border border-white/10 z-50 origin-left shadow-xl">
-                    ${charName}
-                </div>
-                <div class="char-wave animate-wave ${statusClass.split(' ')[0]}"></div>
-                
-                <div class="char-avatar flex items-center justify-center bg-[#202020] text-lg font-bold text-slate-400 overflow-hidden" 
+            row.innerHTML = `
+                <div class="char-avatar flex items-center justify-center text-base font-bold overflow-hidden shrink-0"
                      style="${avatarUrl ? `background-image: url('${avatarUrl}')` : ''}">
                      ${!avatarUrl ? initial : ''}
+                     ${dotClass ? `<div class="char-dot-status ${dotClass}"></div>` : ''}
                 </div>
-                
-                ${dotClass ? `<div class="char-dot-status ${dotClass}"></div>` : ''}
+                <div class="flex-1 min-w-0">
+                    <div class="text-sm font-bold text-[var(--vsr-ink-900)] truncate">${charName}</div>
+                    <div class="text-[11px] ${statusClass} uppercase tracking-wide font-bold">${type}</div>
+                </div>
+                <span class="material-icons-round text-[var(--vsr-ink-300)]">chevron_right</span>
             `;
 
-            wrapper.onclick = () => {
-                // Priority: Main Action > Do Nothing
+            row.onclick = () => {
                 const mainActionId = char.set.mainAction;
-
-                if (mainActionId) {
-                    if (API.engine && API.engine.action && API.engine.action.trigger) {
-                        // Pass charId as uniqueId for the action context
-                        API.engine.action.trigger(mainActionId, id);
-                    }
+                if (mainActionId && API.engine && API.engine.action && API.engine.action.trigger) {
+                    this.toggleNpcSheet(false);
+                    API.engine.action.trigger(mainActionId, id);
                 }
             };
-            container.appendChild(wrapper);
+            sheetList.appendChild(row);
         });
+    },
+
+    // Mở/đóng NPC sheet. Gọi không truyền tham số để toggle theo trạng thái hiện tại.
+    toggleNpcSheet(force) {
+        const sheet = document.getElementById('npc-sheet');
+        const backdrop = document.getElementById('npc-sheet-backdrop');
+        if (!sheet || !backdrop) return;
+        const shouldOpen = (force !== undefined) ? force : !sheet.classList.contains('open');
+        sheet.classList.toggle('open', shouldOpen);
+        backdrop.classList.toggle('open', shouldOpen);
     },
 
     switchScreen(id) {

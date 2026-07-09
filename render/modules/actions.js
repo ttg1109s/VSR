@@ -16,10 +16,7 @@ export const actionMethods = {
     toggleActionView(mode) {
         if (mode !== 'grid' && mode !== 'list') return;
         this._viewMode = mode;
-        const btnGrid = document.getElementById('btn-view-grid');
-        const btnList = document.getElementById('btn-view-list');
-        if (btnGrid) btnGrid.className = `p-1.5 rounded-md transition-colors ${mode === 'grid' ? 'text-white bg-white/10' : 'text-slate-500 hover:text-white hover:bg-white/5'}`;
-        if (btnList) btnList.className = `p-1.5 rounded-md transition-colors ${mode === 'list' ? 'text-white bg-white/10' : 'text-slate-500 hover:text-white hover:bg-white/5'}`;
+        this._syncViewButtons(mode);
 
         const container = document.getElementById('actions-list');
         if (container) {
@@ -39,6 +36,22 @@ export const actionMethods = {
                 this.renderActions(actions, sId, rId);
             }
         }
+    },
+
+    // [UI v13] Có 2 cặp nút grid/list: header desktop (#btn-view-grid/list) và
+    // scene-bottom-toolbar mobile (#btn-view-grid-m/list-m) — đồng bộ cả hai.
+    _syncViewButtons(mode) {
+        const gridOn = 'p-1.5 rounded-md transition-colors text-[var(--vsr-ink-900)] bg-[var(--vsr-tint-10)]';
+        const gridOff = 'p-1.5 rounded-md transition-colors text-[var(--vsr-ink-400)] hover:text-[var(--vsr-ink-900)]';
+        const btnGrid = document.getElementById('btn-view-grid');
+        const btnList = document.getElementById('btn-view-list');
+        if (btnGrid) btnGrid.className = mode === 'grid' ? gridOn : gridOff;
+        if (btnList) btnList.className = mode === 'list' ? gridOn : gridOff;
+
+        const btnGridM = document.getElementById('btn-view-grid-m');
+        const btnListM = document.getElementById('btn-view-list-m');
+        if (btnGridM) btnGridM.classList.toggle('active', mode === 'grid');
+        if (btnListM) btnListM.classList.toggle('active', mode === 'list');
     },
 
     // --- COMPATIBILITY & UTILS ---
@@ -129,11 +142,8 @@ export const actionMethods = {
             container.classList.remove('gap-3');
         }
 
-        // Update Buttons
-        const btnGrid = document.getElementById('btn-view-grid');
-        const btnList = document.getElementById('btn-view-list');
-        if (btnGrid) btnGrid.className = `p-1.5 rounded-md transition-colors ${this._viewMode === 'grid' ? 'text-white bg-white/10' : 'text-slate-500 hover:text-white hover:bg-white/5'}`;
-        if (btnList) btnList.className = `p-1.5 rounded-md transition-colors ${this._viewMode === 'list' ? 'text-white bg-white/10' : 'text-slate-500 hover:text-white hover:bg-white/5'}`;
+        // Update Buttons (đồng bộ cả header desktop + toolbar mobile)
+        this._syncViewButtons(this._viewMode || 'grid');
 
         const fakerState = (API.engine.state.getFakerState && API.engine.state.getFakerState()) || { active: false };
         const isFakerActive = fakerState?.active;

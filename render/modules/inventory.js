@@ -14,8 +14,16 @@ export const inventoryMethods = {
         const items = API.engine.state.getInventory();
         const hand = API.engine.state.getHand();
 
-        const maxInv = (API.engine.getConfig && API.engine.getConfig('maxInventory')) || 0;
-        const limitDisplay = (maxInv === 0) ? '∞' : maxInv;
+        // [FIX] 'maxInventory' là MẢNG các cặp [limit, char_id] (giới hạn riêng theo từng
+        // nhân vật), không phải một số đơn. `[] || 0` luôn ra `[]` (mảng rỗng vẫn truthy
+        // trong JS) nên trước đây bộ đếm hiển thị bị hỏng (vd "3/" thay vì "3/∞").
+        // Tìm giới hạn áp dụng cho nhân vật đang sở hữu túi đồ hiện tại (entryCharacter);
+        // không tìm thấy cặp nào khớp -> coi là vô hạn.
+        const ownerId = (API.engine.state.meta && API.engine.state.meta.entryCharacter) || 'player';
+        const maxInvList = (API.engine.getConfig && API.engine.getConfig('maxInventory')) || [];
+        const ownerLimitPair = Array.isArray(maxInvList) ? maxInvList.find(pair => Array.isArray(pair) && pair[1] === ownerId) : null;
+        const maxInv = ownerLimitPair ? ownerLimitPair[0] : 0;
+        const limitDisplay = (!maxInv || maxInv === 0) ? '∞' : maxInv;
         const statusEl = document.getElementById('explorer-status');
         if (statusEl) statusEl.innerHTML = `<span class="font-mono">${items.length}/${limitDisplay}</span> items • ${hand.length} equipped`;
 
