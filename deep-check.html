@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Deep Module Checker</title>
+</head>
+<body style="background: #222; color: #fff; padding: 20px; font-family: monospace;">
+    <h1>🔍 Deep Module Import Checker</h1>
+    <div id="output" style="background: #111; padding: 15px; border: 1px solid #555; max-height: 80vh; overflow: auto; white-space: pre-wrap;"></div>
+
+    <script>
+        const output = document.getElementById('output');
+        
+        function log(msg) {
+            const div = document.createElement('div');
+            div.style.color = '#ddd';
+            div.style.marginBottom = '5px';
+            div.textContent = msg;
+            output.appendChild(div);
+            output.scrollTop = output.scrollHeight;
+        }
+
+        // Extract imports from JS source code
+        function extractImports(code) {
+            const imports = [];
+            const importRegex = /import\s+(?:{[^}]*}|[^}]*?)\s+from\s+['"]([^'"]+)['"]/g;
+            let match;
+            while ((match = importRegex.exec(code)) !== null) {
+                imports.push(match[1]);
+            }
+            return imports;
+        }
+
+        async function checkModule(path, depth = 0, visited = new Set()) {
+            if (visited.has(path)) return;
+            visited.add(path);
+
+            const indent = '  '.repeat(depth);
+            
+            try {
+                const res = await fetch(path);
+                if (!res.ok) {
+                    log(`${indent}❌ ${path} - HTTP ${res.status}`);
+                    return;
+                }
+                
+                const text = await res.text();
+                const imports = extractImports(text);
+                
+                if (imports.length === 0) {
+                    log(`${indent}✓ ${path} (no dependencies)`);
+                } else {
+                    log(`${indent}✓ ${path}`);
+                    
+                    for (const imp of imports) {
+                        // Resolve relative paths
+                        let resolvedPath = imp;
+                        if (imp.startsWith('./')) {
+                            const basePath = path.substring(0, path.lastIndexOf('/'));
+                            resolvedPath = basePath + '/' + imp.substring(2);
+                        } else if (imp.startsWith('../')) {
+                            const basePath = path.substring(0, path.lastIndexOf('/'));
+                            resolvedPath = basePath + '/' + imp;
+                            // Normalize ../ paths
+                            while (resolvedPath.includes('/../')) {
+                                resolvedPath = resolvedPath.replace(/\/[^/]+\/\.\.\//, '/');
+                            }
+                        }
+                        
+                        await checkModule(resolvedPath, depth + 1, visited);
+                    }
+                }
+            } catch (e) {
+                log(`${indent}❌ ${path} - ${e.message}`);
+            }
+        }
+
+        async function runCheck() {
+            log('=== DEEP MODULE CHECK ===\n');
+            
+            log('Starting from app.js...');
+            await checkModule('./app.js');
+            
+            log('\n\n--- Also checking render/ui.js ---');
+            await checkModule('./render/ui.js');
+        }
+
+        runCheck();
+    </script>
+</body>
+</html>
