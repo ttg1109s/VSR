@@ -22,6 +22,15 @@
       "type": "object",
       "description": "General configuration for the game scenario.",
       "properties": {
+        "fakerMode": {
+          "enum": [
+            "soul",
+            "mask",
+            "swap"
+          ],
+          "default": "soul",
+          "description": "Identity mode when faker/disguise is active: soul (no permissions transfer), mask (borrow target permissions), swap (become target)."
+        },
         "minTransition": {
           "type": "number",
           "description": "Minimum transition time between scenes unit seconds",
@@ -47,22 +56,22 @@
             "items": {
               "type": "number"
             }
-          },
-          "maxHandOn": {
-            "type": "number",
-            "description": "Maximum hand on items. If 0 to infinite.",
-            "default": 10
-          },
-          "brokenDisable": {
-            "type": "boolean",
-            "description": "Disable use broken items or not.",
-            "default": false
-          },
-          "minCharacterMoving": {
-            "type": "number",
-            "description": "Minimum character moving time unit seconds.",
-            "default": 30
           }
+        },
+        "maxHandOn": {
+          "type": "number",
+          "description": "Maximum hand on items. If 0 to infinite.",
+          "default": 10
+        },
+        "brokenDisable": {
+          "type": "boolean",
+          "description": "Disable use broken items or not.",
+          "default": false
+        },
+        "minCharacterMoving": {
+          "type": "number",
+          "description": "Minimum character moving time unit seconds.",
+          "default": 30
         },
         "stopEffectWhenChat": {
           "type": "boolean",
@@ -2420,6 +2429,958 @@
                 "description": "Run on password failure."
               }
             }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "runnable_wrapper": {
+      "type": "object",
+      "description": "Một bước hiệu ứng trong chuỗi effect (mảng fail/pass/normal/pwFailed, loop.enter/leave/still, item.effect.use/equip/unequip...). Engine đọc field 'type' để dispatch (xem engine/modules/effect/Strategies.js: manage_effect, cms, characters, notify, vfx, item, set, goto). Phải cung cấp 'ref' (tham chiếu templates.effects) HOẶC 'inline' (định nghĩa trực tiếp), không cả hai.",
+      "type_alt_note": "Trường 'type' ở CẤP NÀY dùng để engine dispatch effect handler, KHÁC với 'type' bên trong 'inline' nếu có (đó là type của effect_details).",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "effect",
+            "item",
+            "set",
+            "goto",
+            "characters",
+            "cms",
+            "notify",
+            "vfx",
+            "automation",
+            "manage_effect"
+          ],
+          "description": "Loại effect handler sẽ xử lý bước này."
+        },
+        "ref": {
+          "type": "string",
+          "description": "ID tham chiếu tới templates.effects.<ref> (dùng lại effect đã định nghĩa sẵn)."
+        },
+        "inline": {
+          "$ref": "#/definitions/effect_details",
+          "description": "Định nghĩa effect trực tiếp (thay vì tham chiếu qua 'ref')."
+        },
+        "hide": {
+          "type": "boolean",
+          "default": false,
+          "description": "Với type=item/subtype=add: ẩn thông báo 'đã nhận vật phẩm' mặc định."
+        },
+        "skip": {
+          "type": "boolean",
+          "default": false,
+          "description": "Bỏ qua bước này khi thực thi (dùng để tạm tắt một effect mà không phải xoá khỏi kịch bản)."
+        },
+        "req": {
+          "$ref": "#/definitions/requirement_details",
+          "description": "Điều kiện cổng cho RIÊNG bước này: nếu check() không pass thì bước này bị bỏ qua (KHÔNG dừng cả danh sách). Đây là cơ chế đúng để 'gate' một effect — KHÔNG dùng { type: 'req' } (giá trị này luôn bị engine no-op, xem engine/modules/Effect.js dòng ~54)."
+        }
+      },
+      "additionalProperties": true
+    },
+    "effect_details": {
+      "type": "object",
+      "description": "Payload thực thi của một effect (thường nằm trong runnable_wrapper.inline, hoặc trực tiếp trong templates.effects.<id>[]). Cấu trúc cụ thể phụ thuộc 'type'/'subtype' — xem engine/modules/effect/strategies/*.js. Được mô hình hoá permissive (additionalProperties: true) vì có rất nhiều biến thể subtype. Lưu ý: payload của 'manage_effect' KHÔNG có field 'type' (dùng space/in/target/subtype/content thay thế), nên 'type' ở đây là optional chứ không required.",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "effect",
+            "item",
+            "set",
+            "goto",
+            "characters",
+            "cms",
+            "notify",
+            "vfx",
+            "automation",
+            "manage_effect"
+          ],
+          "description": "Loại effect (giống runnable_wrapper.type khi dùng inline)."
+        },
+        "subtype": {
+          "type": "string",
+          "description": "Biến thể cụ thể trong nhóm 'type'. Ví dụ: type=characters -> subtype in [edit_stats, mng_stats, moving, ...]; type=item -> subtype in [add, remove, usage, ...]; type=notify -> subtype in [toast, modal, ...]."
+        },
+        "target": {
+          "description": "ID đối tượng bị tác động (character id, scene id, action id, item id...). Có thể là chuỗi resolver $(...)."
+        },
+        "property": {
+          "type": "string",
+          "description": "Tên thuộc tính bị chỉnh sửa (vd tên chỉ số 'HP', hoặc property của scene/router/action khi type=set)."
+        },
+        "value": {
+          "description": "Giá trị áp dụng. Có thể là số, chuỗi, bool, hoặc chuỗi resolver $(...)."
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "add",
+            "subtract",
+            "set",
+            "multiply"
+          ],
+          "description": "Cách áp dụng 'value' lên chỉ số hiện tại (mặc định 'add')."
+        },
+        "field": {
+          "type": "string",
+          "enum": [
+            "current",
+            "max"
+          ],
+          "description": "Với hiệu ứng chỉnh chỉ số: áp dụng lên field 'current' hay 'max' (mặc định 'current')."
+        },
+        "text": {
+          "type": "string",
+          "description": "Nội dung thông báo (type=notify)."
+        },
+        "title": {
+          "type": "string",
+          "description": "Tiêu đề thông báo (type=notify)."
+        },
+        "level": {
+          "type": "string",
+          "enum": [
+            "info",
+            "success",
+            "warn",
+            "danger",
+            "error"
+          ],
+          "description": "Mức độ / màu sắc thông báo (type=notify)."
+        },
+        "table": {
+          "type": "string",
+          "description": "Tên bảng CMS bị tác động (type=cms)."
+        },
+        "exec": {
+          "type": "string",
+          "description": "Thao tác cụ thể (vd type=characters/subtype=mng_stats dùng 'exec': 'swap' | 'copy_to' | 'cut_to')."
+        },
+        "logic": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "AND",
+            "OR",
+            null
+          ],
+          "description": "Dùng khi effect_details lồng một requirement (vd type=set/subtype liên quan điều kiện)."
+        },
+        "check": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/requirement_check"
+          }
+        },
+        "duration": {
+          "type": "number",
+          "description": "Thời lượng hiệu ứng (giây), dùng cho type=vfx."
+        },
+        "notify": {
+          "type": "boolean",
+          "description": "Có hiển thị toast khi effect này chạy hay không."
+        },
+        "space": {
+          "type": "string",
+          "description": "Phạm vi quản lý cho manage_effect, vd 'router' | 'scene' | 'action' | 'character'."
+        },
+        "in": {
+          "type": "string",
+          "description": "Danh sách con bị chỉnh sửa trong manage_effect, vd 'still' | 'enter' | 'leave' | 'pass' | 'fail'."
+        },
+        "content": {
+          "$ref": "#/definitions/runnable_wrapper",
+          "description": "Effect được thêm/xoá khỏi danh sách target (dùng bởi manage_effect)."
+        }
+      },
+      "additionalProperties": true
+    },
+    "requirement_check": {
+      "type": "object",
+      "description": "Một điều kiện đơn lẻ trong requirement.check[] (xem engine/modules/Logic.js cho danh sách op được hỗ trợ).",
+      "required": [
+        "type",
+        "op"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "item",
+            "state",
+            "stat",
+            "character"
+          ],
+          "description": "Nhóm đối tượng được kiểm tra: vật phẩm, global state, chỉ số, hoặc nhân vật."
+        },
+        "subtype": {
+          "type": "string",
+          "description": "Biến thể cụ thể trong nhóm 'type'. Ví dụ type=item -> subtype 'inventory' | 'hand'; type=state -> subtype 'global'."
+        },
+        "op": {
+          "type": "string",
+          "enum": [
+            "has",
+            "not_has",
+            "==",
+            "!=",
+            ">",
+            ">=",
+            "<",
+            "<="
+          ],
+          "description": "Toán tử so sánh."
+        },
+        "value": {
+          "description": "Giá trị so sánh (item id, số, chuỗi, bool...)."
+        },
+        "property": {
+          "type": "string",
+          "description": "Tên global state / chỉ số cần kiểm tra (bắt buộc khi type=state hoặc type=stat)."
+        }
+      },
+      "additionalProperties": true
+    },
+    "requirement_details": {
+      "description": "Điều kiện tổng hợp: HOẶC định nghĩa trực tiếp {logic, check[]}, HOẶC tham chiếu {ref: templates.requirements.<id>}.",
+      "oneOf": [
+        {
+          "type": "object",
+          "description": "Điều kiện tổng hợp (dùng cho action.requirement, itemInfo.requirements, templates.requirements.<id>).",
+          "required": [
+            "logic",
+            "check"
+          ],
+          "properties": {
+            "logic": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "AND",
+                "OR",
+                null
+              ],
+              "default": null,
+              "description": "Cách kết hợp các điều kiện trong 'check'. null nếu 'check' rỗng."
+            },
+            "check": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/requirement_check"
+              },
+              "default": []
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "description": "Tham chiếu tới templates.requirements.<id> thay vì định nghĩa logic/check trực tiếp.",
+          "required": [
+            "ref"
+          ],
+          "properties": {
+            "ref": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "password_number": {
+      "type": "object",
+      "description": "Mật khẩu dạng số (bàn phím số / mã xoay / quay số).",
+      "required": [
+        "desc",
+        "display",
+        "value"
+      ],
+      "properties": {
+        "desc": {
+          "type": "string",
+          "description": "Mô tả/gợi ý hiển thị cho người chơi."
+        },
+        "retryMax": {
+          "type": "number",
+          "default": 0,
+          "description": "Số lần thử tối đa. 0 = không giới hạn."
+        },
+        "timer": {
+          "type": "number",
+          "description": "Giới hạn thời gian giải đố (giây). Bỏ trống = không giới hạn."
+        },
+        "display": {
+          "type": "string",
+          "enum": [
+            "keyboard",
+            "combination",
+            "rotary_dial"
+          ],
+          "description": "Kiểu giao diện nhập mã."
+        },
+        "value": {
+          "type": "string",
+          "description": "Mã số đáp án đúng."
+        }
+      },
+      "additionalProperties": false
+    },
+    "password_string": {
+      "type": "object",
+      "description": "Mật khẩu dạng chuỗi ký tự.",
+      "required": [
+        "desc",
+        "value"
+      ],
+      "properties": {
+        "desc": {
+          "type": "string",
+          "description": "Mô tả/gợi ý hiển thị cho người chơi."
+        },
+        "retryMax": {
+          "type": "number",
+          "default": 0,
+          "description": "Số lần thử tối đa. 0 = không giới hạn."
+        },
+        "timer": {
+          "type": "number",
+          "description": "Giới hạn thời gian giải đố (giây). Bỏ trống = không giới hạn."
+        },
+        "value": {
+          "type": "string",
+          "description": "Chuỗi đáp án đúng."
+        },
+        "hint": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "description": "Danh sách vị trí (index) ký tự được gợi ý sẵn."
+        }
+      },
+      "additionalProperties": false
+    },
+    "password_find_way": {
+      "type": "object",
+      "description": "Câu đố tìm đường trên lưới ô vuông.",
+      "required": [
+        "desc",
+        "area",
+        "start",
+        "target",
+        "street"
+      ],
+      "properties": {
+        "desc": {
+          "type": "string",
+          "description": "Mô tả/gợi ý hiển thị cho người chơi."
+        },
+        "retryMax": {
+          "type": "number",
+          "default": 0,
+          "description": "Số lần thử tối đa. 0 = không giới hạn."
+        },
+        "timer": {
+          "type": "number",
+          "description": "Giới hạn thời gian giải đố (giây). Bỏ trống = không giới hạn."
+        },
+        "area": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 2,
+          "maxItems": 2,
+          "description": "Kích thước lưới [cols, rows]."
+        },
+        "start": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 2,
+          "maxItems": 2,
+          "description": "Toạ độ ô bắt đầu [x, y]."
+        },
+        "target": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 2,
+          "maxItems": 2,
+          "description": "Toạ độ ô đích [x, y]."
+        },
+        "street": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2
+          },
+          "description": "Danh sách toạ độ [x, y] tạo thành đường đi đúng, theo thứ tự."
+        }
+      },
+      "additionalProperties": false
+    },
+    "password_puzzle": {
+      "type": "object",
+      "description": "Câu đố ghép tranh (jigsaw).",
+      "required": [
+        "desc",
+        "url",
+        "ratio",
+        "level"
+      ],
+      "properties": {
+        "desc": {
+          "type": "string",
+          "description": "Mô tả/gợi ý hiển thị cho người chơi."
+        },
+        "retryMax": {
+          "type": "number",
+          "default": 0,
+          "description": "Số lần thử tối đa. 0 = không giới hạn."
+        },
+        "timer": {
+          "type": "number",
+          "description": "Giới hạn thời gian giải đố (giây). Bỏ trống = không giới hạn."
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL ảnh dùng để ghép."
+        },
+        "ratio": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 2,
+          "maxItems": 2,
+          "description": "Số mảnh ghép [cols, rows]."
+        },
+        "level": {
+          "type": "string",
+          "enum": [
+            "easy",
+            "normal",
+            "hard"
+          ],
+          "description": "Độ khó (ảnh hưởng số mảnh xáo trộn/hiệu ứng)."
+        }
+      },
+      "additionalProperties": false
+    },
+    "password_switch": {
+      "type": "object",
+      "description": "Mật khẩu dạng công tắc/cần gạt (chuỗi nhị phân bật/tắt).",
+      "required": [
+        "desc",
+        "value"
+      ],
+      "properties": {
+        "desc": {
+          "type": "string",
+          "description": "Mô tả/gợi ý hiển thị cho người chơi."
+        },
+        "retryMax": {
+          "type": "number",
+          "default": 0,
+          "description": "Số lần thử tối đa. 0 = không giới hạn."
+        },
+        "timer": {
+          "type": "number",
+          "description": "Giới hạn thời gian giải đố (giây). Bỏ trống = không giới hạn."
+        },
+        "value": {
+          "type": "string",
+          "description": "Chuỗi trạng thái đúng của các công tắc (vd '064')."
+        }
+      },
+      "additionalProperties": false
+    },
+    "password_common": {
+      "type": "object",
+      "description": "Tập field chung cho mọi loại mật khẩu (tham khảo, không dùng $ref trực tiếp — mỗi loại có schema riêng ở trên vì field bắt buộc khác nhau).",
+      "properties": {
+        "desc": {
+          "type": "string",
+          "description": "Mô tả/gợi ý hiển thị cho người chơi."
+        },
+        "retryMax": {
+          "type": "number",
+          "default": 0,
+          "description": "Số lần thử tối đa. 0 = không giới hạn."
+        },
+        "timer": {
+          "type": "number",
+          "description": "Giới hạn thời gian giải đố (giây). Bỏ trống = không giới hạn."
+        }
+      },
+      "additionalProperties": true
+    },
+    "action": {
+      "type": "object",
+      "description": "Định nghĩa một hành động (được tham chiếu bởi router.actions[] qua ID, hoặc định nghĩa inline).",
+      "required": [
+        "meta",
+        "set"
+      ],
+      "properties": {
+        "meta": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "thumb": {
+              "type": "string",
+              "description": "URL/đường dẫn ảnh thumbnail. Rỗng -> dùng assets/images/thumbnail.jpg mặc định."
+            },
+            "desc": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "buttonIcon": {
+              "type": "string",
+              "description": "Tên Material Icon hiển thị trên nút."
+            },
+            "buttonLabel": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "title"
+          ]
+        },
+        "set": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "none",
+                "to_scene",
+                "swap_router",
+                "get_item",
+                "faker"
+              ],
+              "default": "none"
+            },
+            "target": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "ID đích tương ứng với 'type' (scene id / router id / item id / character id)."
+            },
+            "requirement": {
+              "type": "boolean",
+              "default": false,
+              "description": "Bật/tắt kiểm tra 'requirement' của action này."
+            },
+            "password": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "Khoá mật khẩu bảo vệ action, định dạng '<passwordType>:<passwordId>' (vd 'number:num_keyboard')."
+            },
+            "countClicks": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "countFails": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "display": {
+              "type": "string",
+              "enum": [
+                "show",
+                "hide",
+                "locked"
+              ],
+              "default": "show"
+            },
+            "charAllow": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Danh sách character ID được phép thực hiện action này. Rỗng = ai cũng được."
+            },
+            "cooldown": {
+              "type": "number",
+              "default": 0,
+              "description": "Thời gian hồi (giây) sau khi thực hiện thành công."
+            },
+            "readDesc": {
+              "type": "boolean",
+              "default": false,
+              "description": "Bắt buộc người chơi xem mô tả (hover/click info) trước khi thực hiện được action."
+            },
+            "clickHintDesc": {
+              "type": "number",
+              "description": "Số lần bấm thất bại (do chưa đọc mô tả) trước khi UI hiện gợi ý nhấp nháy."
+            }
+          },
+          "required": [
+            "display"
+          ]
+        },
+        "requirement": {
+          "$ref": "#/definitions/requirement_details"
+        },
+        "effect": {
+          "type": "object",
+          "properties": {
+            "normal": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/runnable_wrapper"
+              },
+              "description": "Luôn chạy khi action được bấm (trước khi kiểm tra requirement)."
+            },
+            "pass": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/runnable_wrapper"
+              },
+              "description": "Chạy khi requirement đạt (hoặc không có requirement)."
+            },
+            "fail": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/runnable_wrapper"
+              },
+              "description": "Chạy khi requirement không đạt."
+            },
+            "pwFailed": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/runnable_wrapper"
+              },
+              "description": "Chạy khi nhập sai mật khẩu bảo vệ action."
+            }
+          }
+        }
+      }
+    },
+    "router": {
+      "type": "object",
+      "description": "Một 'view' con trong scene (scene có thể có nhiều router, chỉ 1 router active tại 1 thời điểm qua scene.set.activeRouterId).",
+      "required": [
+        "meta",
+        "set",
+        "actions"
+      ],
+      "properties": {
+        "meta": {
+          "type": "object",
+          "properties": {
+            "sceneID": {
+              "type": "string",
+              "description": "ID scene cha (để tiện tra cứu ngược)."
+            },
+            "subTitleStatus": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "Nhãn trạng thái ngắn hiển thị cạnh mô tả (vd 'Sấm chớp ngoài cửa sổ')."
+            },
+            "desc": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "cover": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "Ảnh/video nền riêng cho router này (ghi đè scene.meta.cover). Hỗ trợ tiền tố 'video:' / 'photo:' hoặc media id."
+            }
+          }
+        },
+        "set": {
+          "type": "object",
+          "properties": {
+            "blocked": {
+              "type": "boolean",
+              "default": false
+            },
+            "visited": {
+              "type": "boolean",
+              "default": false
+            },
+            "countVisited": {
+              "type": "number",
+              "default": 0
+            },
+            "secondsStill": {
+              "type": "number",
+              "description": "Sau bao nhiêu giây đứng yên tại router thì loop.still được kích hoạt."
+            },
+            "timer": {
+              "type": [
+                "boolean",
+                "null"
+              ],
+              "default": null,
+              "description": "Bật đếm ngược tại router (dùng chung với timerSeconds)."
+            },
+            "timerSeconds": {
+              "type": "number",
+              "default": 60
+            },
+            "timerDisplay": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "Định dạng hiển thị đồng hồ đếm ngược, vd 'dec' (giây thập phân)."
+            },
+            "timerEnd": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "out",
+                "still",
+                null
+              ],
+              "default": "out",
+              "description": "Hành vi khi hết giờ đếm ngược (set.timer=true): 'out' = tự động goBack (goBackTimerEnd), 'still' = chạy router.timer.end[] tại chỗ. (Đây là một enum, KHÔNG phải timestamp runtime.)"
+            },
+            "transition": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "default": "fade",
+              "description": "Hiệu ứng chuyển cảnh khi vào router này (xem render/vfx/modules/transitions.js)."
+            },
+            "transitionDuration": {
+              "type": "number"
+            },
+            "overlay": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "Overlay hình ảnh phủ toàn màn hình khi router active (xem render/vfx/modules/overlays.js)."
+            },
+            "overlayFlick": {
+              "type": [
+                "number",
+                "boolean",
+                "null"
+              ],
+              "description": "Số lần overlay nhấp nháy khi router active. true/số>0 = có nhấp nháy, false/null = không."
+            }
+          },
+          "required": [
+            "blocked",
+            "visited",
+            "countVisited"
+          ]
+        },
+        "loop": {
+          "type": "object",
+          "description": "Effect tự động chạy theo vòng đời router.",
+          "properties": {
+            "enter": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/runnable_wrapper"
+              },
+              "description": "Chạy khi router vừa được kích hoạt."
+            },
+            "leave": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/runnable_wrapper"
+              },
+              "description": "Chạy khi rời khỏi router."
+            },
+            "still": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/runnable_wrapper"
+              },
+              "description": "Chạy khi người chơi đứng yên tại router quá 'set.secondsStill' giây."
+            }
+          }
+        },
+        "timer": {
+          "type": "object",
+          "description": "Effect chạy theo đếm ngược của router (song song với set.timer/timerSeconds).",
+          "properties": {
+            "start": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/runnable_wrapper"
+              }
+            },
+            "end": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/runnable_wrapper"
+              }
+            }
+          }
+        },
+        "actions": {
+          "description": "Danh sách action thuộc router. Model hiện tại: MẢNG gồm string (ID tham chiếu tới 'actions' toàn cục) hoặc object action inline. (Model cũ: object map {actionId: {...action}} vẫn được engine hỗ trợ ngược nhưng KHÔNG khuyến khích dùng cho kịch bản mới.)",
+          "oneOf": [
+            {
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "description": "ID tham chiếu tới actions.<id> ở cấp gốc kịch bản."
+                  },
+                  {
+                    "$ref": "#/definitions/action",
+                    "description": "Định nghĩa action inline, nên có thêm field 'id' để state có key ổn định."
+                  }
+                ]
+              }
+            },
+            {
+              "type": "object",
+              "description": "[LEGACY] object map {actionId: action}.",
+              "additionalProperties": {
+                "$ref": "#/definitions/action"
+              }
+            }
+          ]
+        },
+        "importAction": {
+          "type": "array",
+          "description": "[LEGACY] Nhập lại danh sách action từ router khác. Hỗ trợ một phần trong engine hiện tại.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "of": {
+                "type": "string",
+                "description": "ID router nguồn."
+              }
+            }
+          }
+        }
+      }
+    },
+    "scene": {
+      "type": "object",
+      "description": "Một địa điểm/khung cảnh trong kịch bản, chứa 1 hoặc nhiều router.",
+      "required": [
+        "meta",
+        "set",
+        "routers"
+      ],
+      "properties": {
+        "meta": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "parentScene": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "ID scene cha, dùng để build breadcrumb/back navigation (engine/modules/Loader.js buildSceneTree)."
+            },
+            "desc": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "cover": {
+              "type": [
+                "object",
+                "string",
+                "null"
+              ],
+              "description": "Ảnh/video nền mặc định của scene (dùng nếu router không tự định nghĩa 'cover' riêng)."
+            },
+            "music": {
+              "type": [
+                "object",
+                "string",
+                "null"
+              ]
+            },
+            "ambience": {
+              "type": [
+                "object",
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "title"
+          ]
+        },
+        "set": {
+          "type": "object",
+          "properties": {
+            "activeRouterId": {
+              "type": "string",
+              "description": "ID router đang active mặc định khi vào scene."
+            },
+            "blocked": {
+              "type": "boolean",
+              "default": false
+            },
+            "transition": {
+              "type": "string",
+              "default": "fade"
+            },
+            "transitionDuration": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "activeRouterId"
+          ]
+        },
+        "routers": {
+          "type": "object",
+          "description": "Danh sách router, key là router ID.",
+          "additionalProperties": {
+            "$ref": "#/definitions/router"
           }
         }
       }

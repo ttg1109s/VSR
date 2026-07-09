@@ -1,9 +1,12 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" data-theme="light">
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#F7F4EC">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <title>Visual Story RPG Engine</title>
     <script src="assets/css/tailwind.js"></script>
     <link href="assets/css/be-vietnam-pro.css" rel="stylesheet">
@@ -12,92 +15,96 @@
     <link rel="icon" href="data:,">
 </head>
 
-<body class="h-screen w-screen select-none text-slate-200">
+<body class="h-screen w-screen select-none">
 
     <!-- Global Popover Container -->
     <div id="global-popover">
         <div class="pop-thumb-header" id="pop-thumb"></div>
         <div class="pop-content">
-            <h4 class="text-amber-400 font-bold text-sm mb-1" id="pop-title"></h4>
-            <p class="text-xs text-slate-300 leading-relaxed" id="pop-desc"></p>
+            <h4 class="text-amber-600 font-bold text-sm mb-1" id="pop-title"></h4>
+            <p class="text-xs text-slate-500 leading-relaxed" id="pop-desc"></p>
         </div>
     </div>
 
     <div id="transition-overlay"></div>
 
-    <section id="screen-home" class="screen screen-visible items-center justify-center p-6 text-center">
-        <div class="relative z-10 w-full max-w-sm space-y-12">
+    <!-- =========================== HOME SCREEN (a) =========================== -->
+    <section id="screen-home" class="screen screen-visible items-center justify-center p-6 text-center"
+        style="padding-top: calc(env(safe-area-inset-top) + 1.5rem); padding-bottom: calc(env(safe-area-inset-bottom) + 1.5rem);">
+        <div class="relative z-10 w-full max-w-sm space-y-10">
             <div class="relative">
-                <div class="absolute -inset-10 bg-gradient-to-tr from-blue-900/10 to-red-900/10 blur-3xl rounded-full">
+                <div class="absolute -inset-10 bg-gradient-to-tr from-red-100/60 to-amber-100/60 blur-3xl rounded-full">
                 </div>
-                <h1 class="anime-font text-6xl font-bold text-white tracking-tighter mb-2 drop-shadow-2xl">VSR<span
-                        class="text-red-500">Engine</span></h1>
-                <p class="text-[10px] tracking-[0.5em] text-slate-400 uppercase">Make a your Visual StoryTelling to
-                    easier than ever</p>
+                <h1 class="anime-font text-5xl font-bold text-[var(--vsr-ink-900)] tracking-tighter mb-2 relative">VSR<span
+                        class="text-red-600">Engine</span></h1>
+                <p class="text-[10px] tracking-[0.4em] text-[var(--vsr-ink-400)] uppercase relative">Make your Visual
+                    StoryTelling easier than ever</p>
             </div>
             <div class="space-y-3">
                 <button onclick="app.loadDemo()"
-                    class="w-full py-4 bg-white/5 hover:bg-white/10 backdrop-blur-md border border-white/10 text-white rounded-lg transition-all flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-95 group">
+                    class="w-full py-4 bg-white hover:bg-[var(--vsr-surface-2)] border border-[var(--vsr-border)] text-[var(--vsr-ink-900)] rounded-xl transition-all flex items-center justify-center gap-3 active:scale-[0.98] shadow-[var(--vsr-shadow-sm)] group">
                     <span
-                        class="material-icons-round text-slate-400 group-hover:text-red-400 transition-colors">play_arrow</span>
-                    <span class="text-sm font-medium">DEMO SCRIPT</span>
+                        class="material-icons-round text-red-600 group-active:scale-110 transition-transform">play_arrow</span>
+                    <span class="text-sm font-bold tracking-wide">DEMO SCRIPT</span>
                 </button>
                 <div class="relative">
                     <input type="file" id="script-upload" class="hidden" accept=".json"
-                        onchange="app.handleUpload(event)">
+                        onchange="app.importScript(event)">
                     <button onclick="document.getElementById('script-upload').click()"
-                        class="w-full py-4 bg-black/40 hover:bg-black/60 backdrop-blur-md border border-white/5 text-slate-400 hover:text-white rounded-lg transition-all flex items-center justify-center gap-3 active:scale-95">
-                        <span class="material-icons-round text-sm">folder_open</span> <span class="text-xs">LOAD
-                            JSON</span>
+                        class="w-full py-4 bg-[var(--vsr-surface-2)] hover:bg-[var(--vsr-surface-3)] border border-[var(--vsr-border)] text-[var(--vsr-ink-500)] hover:text-[var(--vsr-ink-900)] rounded-xl transition-all flex items-center justify-center gap-3 active:scale-[0.98]">
+                        <span class="material-icons-round text-sm">folder_open</span>
+                        <span class="text-xs font-bold tracking-wide">LOAD JSON</span>
                     </button>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="screen-info" class="screen screen-hidden bg-black/80 backdrop-blur-xl">
-        <header class="h-14 border-b border-white/5 flex items-center px-6 justify-between shrink-0">
-            <div class="flex items-center gap-3 text-xs text-slate-500">
+    <!-- =========================== INFO SCREEN (a) =========================== -->
+    <section id="screen-info" class="screen screen-hidden bg-[var(--vsr-canvas)]">
+        <header class="h-14 border-b border-[var(--vsr-border)] flex items-center px-4 justify-between shrink-0"
+            style="padding-top: env(safe-area-inset-top);">
+            <div class="flex items-center gap-3 text-xs text-[var(--vsr-ink-400)]">
                 <span class="material-icons-round text-base">description</span>
                 <span class="font-mono">metadata.json</span>
             </div>
             <button onclick="app.showScreen('home')"
-                class="w-8 h-8 rounded-full hover:bg-white/5 flex items-center justify-center text-slate-500 hover:text-white transition-all"><span
+                class="w-9 h-9 rounded-full hover:bg-[var(--vsr-tint-10)] flex items-center justify-center text-[var(--vsr-ink-400)] hover:text-[var(--vsr-ink-900)] transition-all"><span
                     class="material-icons-round">close</span></button>
         </header>
         <main class="flex-1 overflow-hidden flex flex-col md:flex-row">
             <div
-                class="w-full md:w-5/12 lg:w-4/12 flex-shrink-0 bg-black/20 md:border-r border-white/5 p-8 flex flex-col justify-center items-center text-center overflow-y-auto custom-scrollbar relative">
+                class="w-full md:w-5/12 lg:w-4/12 flex-shrink-0 bg-[var(--vsr-surface-2)] md:border-r border-[var(--vsr-border)] p-6 md:p-8 flex flex-col justify-center items-center text-center overflow-y-auto custom-scrollbar relative">
                 <div
-                    class="w-32 h-32 md:w-48 md:h-48 bg-gradient-to-br from-slate-800 to-black rounded-3xl border border-white/10 flex items-center justify-center shadow-2xl relative overflow-hidden group mb-6 shrink-0">
+                    class="w-24 h-24 md:w-40 md:h-40 bg-white rounded-3xl border border-[var(--vsr-border)] flex items-center justify-center shadow-[var(--vsr-shadow-md)] relative overflow-hidden group mb-5 shrink-0">
                     <span
-                        class="material-icons-round text-6xl text-slate-400 group-hover:scale-110 transition-transform duration-500">auto_stories</span>
+                        class="material-icons-round text-5xl text-[var(--vsr-ink-300)] group-hover:scale-110 transition-transform duration-500">auto_stories</span>
                 </div>
-                <h2 id="info-title" class="anime-font text-3xl md:text-4xl text-white font-bold tracking-tight mb-2">
+                <h2 id="info-title" class="anime-font text-2xl md:text-4xl text-[var(--vsr-ink-900)] font-bold tracking-tight mb-2">
                     Title</h2>
-                <h3 id="info-subtitle" class="text-lg text-red-400 font-medium mb-6">Subtitle</h3>
-                <div class="w-full max-w-xs grid grid-cols-2 gap-3 mt-auto">
+                <h3 id="info-subtitle" class="text-base text-red-600 font-medium mb-5">Subtitle</h3>
+                <div class="w-full max-w-xs grid grid-cols-2 gap-3 mt-auto pt-4">
                     <button onclick="app.showScreen('home')"
-                        class="py-3 border border-white/10 hover:bg-white/5 bg-black/20 rounded-xl text-xs text-slate-400 transition-all font-bold uppercase tracking-wider">Cancel</button>
+                        class="py-3 border border-[var(--vsr-border)] hover:bg-[var(--vsr-tint-10)] bg-white rounded-xl text-xs text-[var(--vsr-ink-500)] transition-all font-bold uppercase tracking-wider">Cancel</button>
                     <button onclick="app.startGame()"
-                        class="py-3 bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs shadow-lg shadow-red-900/20 transition-all font-bold uppercase tracking-wider flex items-center justify-center gap-2">
+                        class="py-3 bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs shadow-lg shadow-red-900/10 transition-all font-bold uppercase tracking-wider flex items-center justify-center gap-2">
                         <span>Start</span> <span class="material-icons-round text-sm">arrow_forward</span>
                     </button>
                 </div>
             </div>
-            <div class="flex-1 p-8 overflow-y-auto custom-scrollbar bg-black/40">
-                <div id="info-tags" class="flex flex-wrap gap-2 mb-8"></div>
+            <div class="flex-1 p-6 md:p-8 overflow-y-auto custom-scrollbar">
+                <div id="info-tags" class="flex flex-wrap gap-2 mb-6"></div>
                 <h4
-                    class="text-xs uppercase tracking-widest text-slate-500 mb-4 font-bold border-b border-white/5 pb-2">
+                    class="text-xs uppercase tracking-widest text-[var(--vsr-ink-400)] mb-3 font-bold border-b border-[var(--vsr-border)] pb-2">
                     Information</h4>
-                <div class="meta-grid mb-8" id="meta-details-grid"></div>
+                <div class="meta-grid mb-6" id="meta-details-grid"></div>
                 <h4
-                    class="text-xs uppercase tracking-widest text-slate-500 mb-4 font-bold border-b border-white/5 pb-2">
+                    class="text-xs uppercase tracking-widest text-[var(--vsr-ink-400)] mb-3 font-bold border-b border-[var(--vsr-border)] pb-2">
                     Synopsis</h4>
-                <div class="bg-white/5 rounded-2xl p-6 border border-white/5 mb-8">
-                    <p id="info-desc" class="text-slate-300 text-sm leading-7 font-light text-justify">...</p>
+                <div class="bg-[var(--vsr-surface-2)] rounded-2xl p-5 border border-[var(--vsr-border)] mb-6">
+                    <p id="info-desc" class="text-[var(--vsr-ink-700)] text-sm leading-7 font-light text-justify">...</p>
                 </div>
-                <div class="w-full flex justify-between text-[10px] text-slate-600 font-mono pt-4 mt-auto">
+                <div class="w-full flex justify-between text-[10px] text-[var(--vsr-ink-300)] font-mono pt-4">
                     <span id="info-copyright"></span>
                     <span id="info-updated"></span>
                 </div>
@@ -105,105 +112,149 @@
         </main>
     </section>
 
-    <section id="screen-game" class="screen screen-hidden bg-black/20 flex flex-col h-screen">
+    <!-- =========================== GAME / SCENE SCREEN (b, c, d) =========================== -->
+    <section id="screen-game" class="screen screen-hidden bg-[var(--vsr-canvas)] flex flex-col h-screen">
 
         <main id="scene-container"
-            class="flex-1 overflow-hidden relative z-10 flex flex-col overflow-y-auto md:flex-row md:overflow-hidden md:divide-x md:divide-white/5 pb-16 md:pb-0 md:mr-16">
+            class="flex-1 overflow-hidden relative z-10 flex flex-col overflow-y-auto md:flex-row md:overflow-hidden md:divide-x md:divide-[var(--vsr-border)] pb-16 md:pb-0 md:mr-16">
             <div id="vfx-layer" class="absolute inset-0 pointer-events-none z-[5]"></div>
 
-            <!-- Slider Wrapper for Mobile/Tablet -->
+            <!-- Slider Wrapper: mobile = 2 panel full-view trượt ngang; desktop = 2 cột cố định (cấu trúc cũ) -->
             <div id="game-slider">
 
-                <!-- Left Panel -->
+                <!-- Left Panel: màn "đọc truyện" (ảnh cảnh + tiêu đề + mô tả) -->
                 <div id="left-panel"
-                    class="w-full md:w-5/12 lg:w-4/12 flex-shrink-0 relative z-20 flex flex-col justify-end p-6 md:p-8 space-y-4 bg-gradient-to-b from-black/80 to-transparent md:bg-black/40 border-b border-white/5 md:border-b-0 md:justify-center md:h-full md:overflow-y-auto custom-scrollbar transition-all duration-500 bg-cover bg-center">
+                    class="flex-shrink-0 relative z-20 flex flex-col justify-end p-6 md:p-8 space-y-4 md:bg-[var(--vsr-surface-2)] md:justify-center md:h-full md:overflow-y-auto custom-scrollbar transition-all duration-500 bg-cover bg-center"
+                    style="padding-top: calc(env(safe-area-inset-top) + 1.25rem);">
 
-                    <!-- Slider Toggle (To Right) -->
-                    <button class="slider-toggle-btn btn-slide-right" onclick="ui.slideGame('right')">
+                    <!-- Tay cầm trượt sang phải, nằm giữa rìa phải màn hình (yêu cầu b) -->
+                    <button class="slider-toggle-btn btn-slide-right md:hidden" onclick="ui.slideGame('right')" aria-label="Xem danh sách hành động">
                         <span class="material-icons-round">chevron_right</span>
                     </button>
 
                     <div class="animate-fade-in flex-shrink-0 z-10" style="animation-delay: 0.1s">
                         <h2 id="scene-title"
-                            class="anime-font text-2xl md:text-4xl font-bold text-white leading-tight drop-shadow-2xl mb-2 md:mb-4">
+                            class="anime-font text-2xl md:text-4xl font-bold text-white md:text-[var(--vsr-ink-900)] leading-tight drop-shadow-2xl md:drop-shadow-none mb-2 md:mb-4">
                         </h2>
                     </div>
                     <div class="animate-fade-in flex-shrink-0 z-10" style="animation-delay: 0.2s">
                         <div
-                            class="bg-black/70 backdrop-blur-xl border border-white/10 p-4 md:p-5 rounded-2xl text-slate-200 text-sm md:text-base leading-relaxed font-light shadow-2xl">
+                            class="bg-white/90 backdrop-blur-xl border border-[var(--vsr-border)] p-4 md:p-5 rounded-2xl text-[var(--vsr-ink-900)] text-sm md:text-base leading-relaxed font-light shadow-[var(--vsr-shadow-md)]">
                             <p id="scene-desc"></p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Right Panel -->
-                <div id="right-panel" class="flex-1 relative bg-black/20 flex flex-col md:h-full overflow-hidden">
+                <!-- Right Panel: danh sách hành động — full-view trên mobile (yêu cầu b) -->
+                <div id="right-panel" class="flex-1 relative bg-[var(--vsr-canvas)] flex flex-col md:h-full overflow-hidden">
 
-                    <!-- Slider Toggle (To Left) -->
-                    <button class="slider-toggle-btn btn-slide-left" onclick="ui.slideGame('left')">
+                    <!-- Tay cầm trượt về trái -->
+                    <button class="slider-toggle-btn btn-slide-left md:hidden" onclick="ui.slideGame('left')" aria-label="Quay lại màn đọc truyện">
                         <span class="material-icons-round">chevron_left</span>
                     </button>
 
-                    <!-- Header: Breadcrumbs -->
+                    <!-- Header: chỉ hiện ở desktop (mobile dùng scene-bottom-toolbar) -->
                     <header id="rp-header"
-                        class="shrink-0 h-10 border-b border-white/5 flex items-center px-4 bg-black/20 hidden md:flex backdrop-blur-md z-20">
+                        class="shrink-0 h-11 border-b border-[var(--vsr-border)] items-center px-4 bg-[var(--vsr-surface-2)] hidden md:flex justify-between z-20">
                         <div id="breadcrumbs"
-                            class="text-[10px] text-slate-500 font-mono uppercase tracking-widest flex items-center gap-2">
+                            class="text-[10px] font-mono uppercase tracking-widest flex items-center gap-2">
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <button id="btn-view-grid" onclick="ui.toggleActionView('grid')" class="p-1.5 rounded-md transition-colors text-[var(--vsr-ink-900)] bg-[var(--vsr-tint-10)]"><span class="material-icons-round text-base">grid_view</span></button>
+                            <button id="btn-view-list" onclick="ui.toggleActionView('list')" class="p-1.5 rounded-md transition-colors text-[var(--vsr-ink-400)] hover:text-[var(--vsr-ink-900)]"><span class="material-icons-round text-base">view_list</span></button>
+                            <button id="nav-btn-npc-desktop" onclick="ui.toggleNpcSheet()" class="p-1.5 rounded-md transition-colors text-[var(--vsr-ink-400)] hover:text-[var(--vsr-ink-900)] relative ml-1">
+                                <span class="material-icons-round text-base">groups</span>
+                                <span id="npc-badge-desktop" class="hidden absolute -top-1 -right-1 min-w-[14px] h-[14px] px-0.5 rounded-full bg-red-600 text-white text-[8px] font-bold flex items-center justify-center"></span>
+                            </button>
                         </div>
                     </header>
 
                     <!-- Body: Actions (Grid by default) -->
                     <div id="rp-body"
-                        class="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-6 relative bg-gradient-to-br from-black/20 to-transparent">
-
-                        <!-- [FIX XUNG ĐỘT] Đã xóa hết class GRID, thay bằng FLEXWRAP để tôn trọng CSS của thẻ con -->
-                        <div id="actions-list" class="flex flex-wrap justify-center pb-8 md:pb-20 transition-all">
+                        class="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-6 relative"
+                        style="padding-bottom: calc(env(safe-area-inset-bottom) + 1rem);">
+                        <div id="actions-list" class="flex flex-wrap justify-center pb-4 transition-all">
                             <!-- Actions injected here -->
                         </div>
                     </div>
 
-                    <!-- Footer: Character List -->
-                    <footer id="rp-footer"
-                        class="shrink-0 h-20 border-t border-white/5 bg-black/60 backdrop-blur-xl flex items-center px-6 gap-4 custom-scrollbar z-30 shadow-[0_-5px_20px_rgba(0,0,0,0.5)]">
-                        <!-- Character items injected here -->
-                    </footer>
+                    <!-- Footer NPC cũ đã được thay bằng #npc-sheet (mobile) / nav-btn-npc-desktop (desktop) -->
+                    <footer id="rp-footer" class="hidden"></footer>
                 </div>
 
             </div>
         </main>
 
-        <button id="back-node-btn" onclick="engine.goBack()"
-            class="fixed bottom-24 right-4 md:right-20 z-40 w-12 h-12 bg-black/80 hover:bg-white/10 backdrop-blur rounded-full border border-white/10 flex items-center justify-center hidden shadow-lg active:scale-90 transition-all group">
+        <!-- Back button nổi — chỉ desktop (mobile dùng nút trong scene-bottom-toolbar) -->
+        <!-- [FIX] onclick thật được gán động trong render/modules/scene.js (renderScene) —
+             engine.goBack() không tồn tại trong bản gốc và không bao giờ thực sự chạy được. -->
+        <button id="back-node-btn"
+            class="back-node-btn fixed bottom-6 right-20 z-40 w-12 h-12 bg-white hover:bg-[var(--vsr-surface-2)] rounded-full border border-[var(--vsr-border)] hidden md:flex items-center justify-center shadow-[var(--vsr-shadow-md)] active:scale-90 transition-all group">
             <span
-                class="material-icons-round text-xl text-slate-400 group-hover:text-white transition-colors">reply</span>
+                class="material-icons-round text-xl text-[var(--vsr-ink-500)] group-hover:text-[var(--vsr-ink-900)] transition-colors">reply</span>
         </button>
 
+        <!-- ==================== SCENE BOTTOM TOOLBAR (mobile) — yêu cầu (c) + (d) ==================== -->
+        <div id="scene-bottom-toolbar" class="md:hidden">
+            <div class="scene-toolbar-group">
+                <button id="back-node-btn-mobile" class="back-node-btn scene-toolbar-btn hidden">
+                    <span class="material-icons-round">reply</span>
+                </button>
+                <span id="scene-title-badge" class="scene-toolbar-label"></span>
+            </div>
+            <div class="scene-toolbar-group">
+                <button id="btn-view-grid-m" onclick="ui.toggleActionView('grid')" class="scene-toolbar-btn active">
+                    <span class="material-icons-round text-lg">grid_view</span>
+                </button>
+                <button id="btn-view-list-m" onclick="ui.toggleActionView('list')" class="scene-toolbar-btn">
+                    <span class="material-icons-round text-lg">view_list</span>
+                </button>
+                <!-- Icon NPC trong scene — bấm mở list (yêu cầu d) -->
+                <button id="nav-btn-npc" onclick="ui.toggleNpcSheet()" class="scene-toolbar-btn">
+                    <span class="material-icons-round text-lg">groups</span>
+                    <span id="npc-badge" class="scene-toolbar-badge hidden">0</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- NPC sheet: danh sách nhân vật đang có mặt trong scene (yêu cầu d) -->
+        <div id="npc-sheet-backdrop" onclick="ui.toggleNpcSheet(false)"></div>
+        <div id="npc-sheet">
+            <div class="w-10 h-1 rounded-full bg-[var(--vsr-border-strong)] mx-auto mt-3 mb-1 shrink-0"></div>
+            <div class="flex items-center justify-between px-5 py-2 shrink-0">
+                <h3 class="text-sm font-bold text-[var(--vsr-ink-900)] uppercase tracking-wide">Đang có mặt tại đây</h3>
+                <button onclick="ui.toggleNpcSheet(false)" class="w-8 h-8 rounded-full hover:bg-[var(--vsr-tint-10)] flex items-center justify-center text-[var(--vsr-ink-400)]"><span class="material-icons-round text-lg">close</span></button>
+            </div>
+            <div id="npc-sheet-list" class="flex-1 overflow-y-auto custom-scrollbar px-3 pb-3"></div>
+        </div>
+
         <nav
-            class="fixed bottom-0 w-full glass-panel border-t border-white/5 h-16 z-50 flex justify-around items-center shrink-0 md:w-16 md:h-full md:right-0 md:top-0 md:bottom-auto md:flex-col md:justify-center md:gap-0 md:border-t-0 md:border-l p-0">
+            class="fixed bottom-0 w-full glass-panel border-t border-[var(--vsr-border)] h-16 z-50 flex justify-around items-center shrink-0 md:w-16 md:h-full md:right-0 md:top-0 md:bottom-auto md:flex-col md:justify-center md:gap-0 md:border-t-0 md:border-l p-0"
+            style="padding-bottom: env(safe-area-inset-bottom);">
             <div class="flex-1 flex w-full h-full md:flex-col justify-around md:justify-center md:gap-4">
                 <button onclick="app.showScreen('home')" class="nav-icon-btn group">
-                    <span class="material-icons-round text-2xl group-hover:text-white">home</span>
+                    <span class="material-icons-round text-2xl">home</span>
                     <span class="text-[9px] uppercase md:hidden">Home</span>
                 </button>
                 <button id="nav-btn-contact" onclick="app.showScreen('character')" class="nav-icon-btn group relative">
-                    <span class="material-icons-round text-2xl group-hover:text-white">contacts</span>
+                    <span class="material-icons-round text-2xl">contacts</span>
                     <span class="text-[9px] uppercase md:hidden">Msg</span>
                     <span id="msg-badge"
-                        class="absolute top-3 right-3 md:top-2 md:right-2 w-2.5 h-2.5 bg-red-600 rounded-full border border-[#1a1a1a] hidden z-10"></span>
+                        class="absolute top-3 right-3 md:top-2 md:right-2 w-2.5 h-2.5 bg-red-600 rounded-full border border-[var(--vsr-surface)] hidden z-10"></span>
                 </button>
                 <button id="nav-btn-inventory" onclick="app.showScreen('inventory')"
                     class="nav-icon-btn group relative">
-                    <span class="material-icons-round text-2xl group-hover:text-white">folder</span>
+                    <span class="material-icons-round text-2xl">folder</span>
                     <span class="text-[9px] uppercase md:hidden">Items</span>
                     <span id="inv-count"
-                        class="absolute top-2 right-2 md:top-1 md:right-1 bg-red-600 text-white text-[8px] font-bold min-w-[14px] h-3.5 px-0.5 flex items-center justify-center rounded-full border border-[#1a1a1a] hidden z-10">0</span>
+                        class="absolute top-2 right-2 md:top-1 md:right-1 bg-red-600 text-white text-[8px] font-bold min-w-[14px] h-3.5 px-0.5 flex items-center justify-center rounded-full border border-[var(--vsr-surface)] hidden z-10">0</span>
                 </button>
                 <!-- Notification Button -->
                 <button onclick="ui.toggleNotifications()" class="nav-icon-btn group relative">
-                    <span class="material-icons-round text-2xl group-hover:text-white">notifications</span>
+                    <span class="material-icons-round text-2xl">notifications</span>
                     <span class="text-[9px] uppercase md:hidden">Alerts</span>
                     <span id="notify-badge"
-                        class="absolute top-2 right-3 md:top-1 md:right-2 w-2.5 h-2.5 bg-red-500 rounded-full border border-[#1a1a1a] hidden z-10 animate-pulse"></span>
+                        class="absolute top-2 right-3 md:top-1 md:right-2 w-2.5 h-2.5 bg-red-500 rounded-full border border-[var(--vsr-surface)] hidden z-10 animate-pulse"></span>
                 </button>
             </div>
         </nav>
@@ -211,88 +262,87 @@
         <!-- Notification Panel (Facebook Style) -->
         <div id="notify-panel" class="hidden-panel">
             <div
-                class="h-12 border-b border-white/10 flex items-center justify-between px-4 bg-white/5 rounded-t-xl shrink-0">
-                <span class="text-sm font-bold text-white">Notifications</span>
+                class="h-12 border-b border-[var(--vsr-border)] flex items-center justify-between px-4 bg-[var(--vsr-tint-05)] rounded-t-xl shrink-0">
+                <span class="text-sm font-bold text-[var(--vsr-ink-900)]">Notifications</span>
                 <button onclick="ui.clearAllNotifications()"
-                    class="text-[10px] uppercase text-slate-500 hover:text-white font-bold">Clear All</button>
+                    class="text-[10px] uppercase text-[var(--vsr-ink-400)] hover:text-[var(--vsr-ink-900)] font-bold">Clear All</button>
             </div>
             <div id="notify-list" class="flex-1 overflow-y-auto custom-scrollbar p-1">
-                <!-- Notifications injected here -->
-                <div class="text-center py-8 text-slate-500 text-xs italic">No notifications</div>
+                <div class="text-center py-8 text-[var(--vsr-ink-400)] text-xs italic">No notifications</div>
             </div>
         </div>
 
     </section>
 
     <section id="screen-inventory"
-        class="screen screen-hidden bg-[#262626] flex flex-col h-full font-sans text-slate-300">
+        class="screen screen-hidden bg-[var(--vsr-canvas)] flex flex-col h-full font-sans text-[var(--vsr-ink-900)]">
         <header
-            class="bg-[#1f1f1f] h-12 flex items-center px-4 border-b border-white/5 select-none shrink-0 shadow-sm z-10 gap-3">
+            class="bg-white h-12 flex items-center px-4 border-b border-[var(--vsr-border)] select-none shrink-0 shadow-sm z-10 gap-3"
+            style="padding-top: env(safe-area-inset-top); height: calc(3rem + env(safe-area-inset-top));">
             <button onclick="app.showScreen('game')"
-                class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/5 text-slate-400 transition-colors"><span
+                class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[var(--vsr-tint-10)] text-[var(--vsr-ink-500)] transition-colors"><span
                     class="material-icons-round">arrow_back</span></button>
             <div
-                class="flex-1 flex items-center bg-[#2a2a2a] h-8 rounded px-3 text-xs text-slate-400 border border-white/5">
-                <span class="material-icons-round text-[14px] mr-2 text-amber-500">folder</span> Inventory / Items
+                class="flex-1 flex items-center bg-[var(--vsr-surface-2)] h-8 rounded px-3 text-xs text-[var(--vsr-ink-500)] border border-[var(--vsr-border)]">
+                <span class="material-icons-round text-[14px] mr-2 text-amber-600">folder</span> Inventory / Items
             </div>
             <div
-                class="w-32 md:w-48 bg-[#2a2a2a] h-8 rounded px-3 text-xs text-slate-500 border border-white/5 flex items-center">
+                class="w-32 md:w-48 bg-[var(--vsr-surface-2)] h-8 rounded px-3 text-xs text-[var(--vsr-ink-400)] border border-[var(--vsr-border)] flex items-center">
                 Search...</div>
         </header>
         <div class="flex-1 flex overflow-hidden">
-            <div class="w-48 border-r border-white/5 bg-[#1f1f1f] hidden md:block p-4">
-                <div class="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-3">Quick Access</div>
+            <div class="w-48 border-r border-[var(--vsr-border)] bg-white hidden md:block p-4">
+                <div class="text-[10px] font-bold uppercase tracking-wider text-[var(--vsr-ink-400)] mb-3">Quick Access</div>
                 <div
-                    class="flex items-center gap-2 px-3 py-2 bg-white/5 text-slate-200 rounded-md text-xs font-medium cursor-pointer">
-                    <span class="material-icons-round text-sm text-blue-400">inventory_2</span> All Items
+                    class="flex items-center gap-2 px-3 py-2 bg-[var(--vsr-tint-10)] text-[var(--vsr-ink-900)] rounded-md text-xs font-medium cursor-pointer">
+                    <span class="material-icons-round text-sm text-blue-600">inventory_2</span> All Items
                 </div>
             </div>
             <div id="explorer-grid"
                 class="flex-1 p-6 overflow-y-auto custom-scrollbar grid grid-cols-3 md:grid-cols-5 lg:grid-cols-7 gap-4 content-start">
             </div>
         </div>
-        <div class="h-16 bg-[#1f1f1f] border-t border-white/5 flex items-center px-4 justify-between shrink-0">
+        <div class="h-16 bg-white border-t border-[var(--vsr-border)] flex items-center px-4 justify-between shrink-0"
+            style="padding-bottom: env(safe-area-inset-bottom); height: calc(4rem + env(safe-area-inset-bottom));">
             <div class="flex items-center gap-4 overflow-hidden h-full">
-                <div class="text-[10px] font-bold uppercase tracking-wider text-slate-500 shrink-0">Hand:</div>
+                <div class="text-[10px] font-bold uppercase tracking-wider text-[var(--vsr-ink-400)] shrink-0">Hand:</div>
                 <div class="flex gap-2 overflow-x-auto no-scrollbar items-center h-full" id="inventory-taskbar-content">
                 </div>
             </div>
-            <div class="text-[10px] text-slate-500 shrink-0 ml-4" id="explorer-status">0 items</div>
+            <div class="text-[10px] text-[var(--vsr-ink-400)] shrink-0 ml-4" id="explorer-status">0 items</div>
         </div>
     </section>
 
     <!-- [UPDATED] Contact Screen: Dynamic Injection via JS -->
     <section id="screen-character"
-        class="screen screen-hidden bg-[#262626] flex flex-col h-full font-sans text-slate-300"></section>
+        class="screen screen-hidden bg-[var(--vsr-canvas)] flex flex-col h-full font-sans text-[var(--vsr-ink-900)]"></section>
 
     <!-- FULL SCREEN MOBILE MODAL -->
     <div id="item-modal"
-        class="fixed inset-0 z-[350] bg-black/80 backdrop-blur-sm hidden font-sans transition-opacity duration-300 opacity-0">
+        class="fixed inset-0 z-[350] hidden font-sans transition-opacity duration-300 opacity-0">
         <div id="item-modal-box"
-            class="bg-[#1f1f1f] w-full h-full flex flex-col transform translate-y-full transition-transform duration-300">
+            class="bg-white w-full h-full flex flex-col transform translate-y-full transition-transform duration-300">
             <!-- Content Injected via JS -->
         </div>
     </div>
 
-    <!-- [UPDATED] Player Modal Logic Merged into Contact Screen, keeping modal logic just in case but contact screen is primary -->
     <div id="player-card-modal"
         class="fixed inset-0 z-[300] flex items-end justify-center pointer-events-none hidden font-sans">
         <div class="absolute inset-0 bg-black/50 backdrop-blur-sm pointer-events-auto transition-opacity"
             onclick="ui.closePlayerCard()"></div>
         <div
-            class="bg-[#262626] w-full max-w-lg mx-auto rounded-t-2xl shadow-[0_-10px_40px_rgba(0,0,0,0.5)] transform translate-y-full transition-transform duration-300 pointer-events-auto p-6 pb-10 text-slate-300 border-t border-white/10 relative">
+            class="bg-white w-full max-w-lg mx-auto rounded-t-2xl shadow-[0_-10px_40px_rgba(36,31,23,0.18)] transform translate-y-full transition-transform duration-300 pointer-events-auto p-6 pb-10 text-[var(--vsr-ink-900)] border-t border-[var(--vsr-border)] relative">
             <button onclick="ui.closePlayerCard()"
-                class="absolute top-4 right-4 text-slate-500 hover:text-white transition-colors bg-white/5 rounded-full p-1"><span
+                class="absolute top-4 right-4 text-[var(--vsr-ink-400)] hover:text-[var(--vsr-ink-900)] transition-colors bg-[var(--vsr-tint-10)] rounded-full p-1"><span
                     class="material-icons-round">close</span></button>
-            <div class="w-12 h-1.5 bg-[#404040] rounded-full mx-auto mb-6"></div>
+            <div class="w-12 h-1.5 bg-[var(--vsr-border-strong)] rounded-full mx-auto mb-6"></div>
             <div class="flex items-center gap-4 mb-6">
                 <div
-                    class="w-16 h-16 rounded-full bg-[#333] shadow-inner flex items-center justify-center text-2xl font-bold text-slate-500 border border-white/5">
+                    class="w-16 h-16 rounded-full bg-[var(--vsr-surface-2)] shadow-inner flex items-center justify-center text-2xl font-bold text-[var(--vsr-ink-400)] border border-[var(--vsr-border)]">
                     P</div>
                 <div>
-                    <!-- [FIX] Added ID for Player Card Name -->
-                    <h2 id="player-card-name" class="text-2xl font-bold text-white tracking-tight">Player Status</h2>
-                    <p class="text-sm text-slate-500">Personal Information</p>
+                    <h2 id="player-card-name" class="text-2xl font-bold text-[var(--vsr-ink-900)] tracking-tight">Player Status</h2>
+                    <p class="text-sm text-[var(--vsr-ink-400)]">Personal Information</p>
                 </div>
             </div>
             <div id="player-card-stats" class="space-y-5">
@@ -300,24 +350,26 @@
         </div>
     </div>
 
-    <div id="chat-overlay" class="fixed inset-0 z-[100] hidden flex flex-col bg-black font-sans">
-        <header class="h-16 bg-[#202020] border-b border-white/10 flex items-center px-4 justify-between shrink-0">
+    <div id="chat-overlay" class="fixed inset-0 z-[100] hidden flex flex-col bg-[var(--vsr-canvas)] font-sans">
+        <header class="h-16 bg-white border-b border-[var(--vsr-border)] flex items-center px-4 justify-between shrink-0"
+            style="padding-top: env(safe-area-inset-top); height: calc(4rem + env(safe-area-inset-top));">
             <div class="flex items-center gap-3">
-                <button id="chat-back-btn" onclick="engine.endChat()" class="text-blue-400 hidden"><span
+                <button id="chat-back-btn" onclick="engine.endChat()" class="text-blue-600 hidden"><span
                         class="material-icons-round">arrow_back_ios</span></button>
-                <div class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center text-white font-bold relative"
+                <div class="w-10 h-10 rounded-full bg-[var(--vsr-surface-2)] flex items-center justify-center text-[var(--vsr-ink-700)] font-bold relative"
                     id="chat-header-avatar">?</div>
                 <div>
-                    <h3 class="text-white font-bold text-sm" id="chat-header-title">Chat</h3>
-                    <p class="text-slate-400 text-xs" id="chat-header-status">Active now</p>
+                    <h3 class="text-[var(--vsr-ink-900)] font-bold text-sm" id="chat-header-title">Chat</h3>
+                    <p class="text-[var(--vsr-ink-400)] text-xs" id="chat-header-status">Active now</p>
                 </div>
             </div>
         </header>
-        <div id="chat-messages" class="chat-container custom-scrollbar bg-black"></div>
-        <div id="chat-choices-area" class="p-4 flex flex-col gap-2 bg-[#1a1a1a] border-t border-white/5 hidden"></div>
+        <div id="chat-messages" class="chat-container custom-scrollbar"></div>
+        <div id="chat-choices-area" class="p-4 flex flex-col gap-2 bg-[var(--vsr-surface-2)] border-t border-[var(--vsr-border)] hidden"></div>
         <div id="chat-input-bar"
-            class="h-14 bg-[#202020] border-t border-white/10 px-4 flex items-center gap-3 cursor-pointer shrink-0">
-            <div class="flex-1 bg-[#101010] h-9 rounded-full px-4 flex items-center text-slate-500 text-sm">Tap to
+            class="h-14 bg-white border-t border-[var(--vsr-border)] px-4 flex items-center gap-3 cursor-pointer shrink-0"
+            style="padding-bottom: env(safe-area-inset-bottom); height: calc(3.5rem + env(safe-area-inset-bottom));">
+            <div class="flex-1 bg-[var(--vsr-surface-2)] h-9 rounded-full px-4 flex items-center text-[var(--vsr-ink-400)] text-sm">Tap to
                 continue...</div>
         </div>
     </div>
@@ -325,15 +377,15 @@
     <div id="alert-modal"
         class="fixed inset-0 z-[300] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center opacity-0 transition-all duration-300 font-sans">
         <div id="alert-box"
-            class="bg-[#262626] border border-white/10 p-0 rounded-xl max-w-sm w-[85%] mx-4 shadow-2xl transform scale-95 transition-transform overflow-hidden">
+            class="bg-white border border-[var(--vsr-border)] p-0 rounded-xl max-w-sm w-[85%] mx-4 shadow-[var(--vsr-shadow-lg)] transform scale-95 transition-transform overflow-hidden">
             <div class="p-6 text-center">
                 <span id="alert-icon" class="material-icons-round text-4xl mb-3 text-amber-500 block">warning</span>
-                <h3 id="alert-title" class="text-white font-bold text-lg mb-2">Notification</h3>
-                <p id="alert-msg" class="text-slate-400 text-sm leading-relaxed whitespace-pre-wrap">...</p>
+                <h3 id="alert-title" class="text-[var(--vsr-ink-900)] font-bold text-lg mb-2">Notification</h3>
+                <p id="alert-msg" class="text-[var(--vsr-ink-500)] text-sm leading-relaxed whitespace-pre-wrap">...</p>
             </div>
-            <div class="border-t border-white/5 flex">
+            <div class="border-t border-[var(--vsr-border)] flex">
                 <button onclick="ui.closeAlert()"
-                    class="flex-1 py-3 text-sm font-bold text-blue-500 hover:bg-white/5 transition-colors uppercase tracking-wide">OK</button>
+                    class="flex-1 py-3 text-sm font-bold text-blue-600 hover:bg-[var(--vsr-tint-05)] transition-colors uppercase tracking-wide">OK</button>
             </div>
         </div>
     </div>
@@ -341,17 +393,18 @@
     <div id="keyboard-overlay"
         class="fixed inset-0 z-[250] bg-black/90 backdrop-blur hidden flex flex-col items-center justify-center p-6 opacity-0 transition-all duration-300">
         <div class="w-full max-w-xs space-y-4 scale-95 transition-transform" id="keyboard-box">
-            <div class="text-center text-slate-500 text-xs uppercase tracking-widest mb-2">Security Access</div>
+            <div class="text-center text-slate-400 text-xs uppercase tracking-widest mb-2">Security Access</div>
             <div id="kb-display"
                 class="glass-panel h-16 rounded-lg flex items-center justify-center text-3xl font-mono text-white tracking-[0.2em] bg-black/50 border border-white/10">
             </div>
             <div class="grid grid-cols-3 gap-2" id="numpad-container"></div>
             <button onclick="keyboard.cancel()"
-                class="w-full text-slate-500 hover:text-white text-xs py-4 uppercase tracking-widest">Cancel</button>
+                class="w-full text-slate-400 hover:text-white text-xs py-4 uppercase tracking-widest">Cancel</button>
         </div>
     </div>
 
-    <!-- NEW PASSWORD OVERLAY -->
+    <!-- PASSWORD OVERLAY — mini-game "phần cứng" (bàn phím/công tắc/ghép hình) giữ theme tối
+         có chủ đích, xem readme.md > Ghi chú kỹ thuật > Ngoại lệ theme -->
     <div id="password-overlay"
         class="fixed inset-0 z-[300] bg-black/80 backdrop-blur-sm hidden flex items-center justify-center opacity-0 transition-opacity duration-300 font-sans">
         <div id="password-content">
@@ -365,12 +418,12 @@
             <h1 id="end-title" class="anime-font text-5xl font-bold text-white mb-4">THE END</h1>
             <p id="end-desc" class="text-slate-400 text-sm font-light leading-relaxed">...</p>
             <div class="pt-8"><button onclick="ui.hideEnding(); app.showScreen('home')"
-                    class="px-8 py-3 bg-white/5 hover:bg-white/10 text-white border border-white/10 text-xs uppercase tracking-widest rounded-full">Main
+                    class="px-8 py-3 bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs uppercase tracking-widest rounded-full">Main
                     Menu</button></div>
         </div>
     </div>
     <script src="demo_script.js?v=1.8.9.3"></script>
-    <script type="module" src="app.js?v=1.93.1.5.109"></script>
+    <script type="module" src="app.js?v=13.0.0"></script>
 </body>
 
 </html>

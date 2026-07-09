@@ -50,8 +50,8 @@ const DEMO_SCRIPT = {
         },
         "effects": {
             "notify_danger": [{ "type": "notify", "subtype": "modal", "text": "Sát nhân tấn công", "level": "error" }],
-            "damage_player": [{ "type": "stats", "subtype": "characters", "target": "char1", "property": "HP", "value": -40, "mode": "add", "notify": true }],
-            "damage_killer": [{ "type": "stats", "subtype": "characters", "target": "char2", "property": "HP", "value": -20, "mode": "add", "notify": true }],
+            "damage_player": [{ "type": "characters", "subtype": "edit_stats", "target": "char1", "property": "HP", "value": -40, "mode": "add", "notify": true }],
+            "damage_killer": [{ "type": "characters", "subtype": "edit_stats", "target": "char2", "property": "HP", "value": -20, "mode": "add", "notify": true }],
             "turn_on_electricity": [
                 { "type": "set", "subtype": "state", "target": "global", "property": "electricity_on", "value": true },
                 { "type": "notify", "subtype": "toast", "text": "Điện đã bật lại! Ánh sáng trở về 🏠✨", "level": "success" }
@@ -165,7 +165,7 @@ const DEMO_SCRIPT = {
             "desc": "Hồi máu.",
             "requirements": null,
             "effect": {
-                "use": [{ "type": "effect", "inline": { "type": "stats", "subtype": "characters", "target": "char1", "property": "HP", "value": 50, "mode": "add" } }],
+                "use": [{ "type": "effect", "inline": { "type": "characters", "subtype": "edit_stats", "target": "char1", "property": "HP", "value": 50, "mode": "add" } }],
                 "equip": [],
                 "unequip": []
             },
@@ -179,7 +179,7 @@ const DEMO_SCRIPT = {
             "requirements": null,
             "effect": {
                 "use": [
-                    { "type": "effect", "inline": { "type": "stats", "subtype": "characters", "target": "char2", "property": "HP", "value": -80, "mode": "add" } },
+                    { "type": "effect", "inline": { "type": "characters", "subtype": "edit_stats", "target": "char2", "property": "HP", "value": -80, "mode": "add" } },
                     { "type": "effect", "inline": { "type": "notify", "text": "Đánh trúng sát nhân! 💥", "level": "success" } }
                 ],
                 "equip": [],
@@ -492,8 +492,13 @@ const DEMO_SCRIPT = {
                 "fail": [{ "type": "effect", "inline": { "type": "notify", "text": "Cần hộp công cụ!", "level": "error" } }],
                 "pass": [
                     { "type": "effect", "ref": "turn_on_electricity" },
-                    { "type": "req", "inline": { "logic": "AND", "check": [{ "type": "state", "subtype": "global", "op": "==", "value": true, "property": "police_called" }] } },
-                    { "type": "effect", "ref": "win_game" }
+                    // [FIX] { "type": "req", ... } luôn bị engine no-op (xem Effect.js
+                    // processRunnable: `if (wrapper.type === 'req') return;`). Cơ chế đúng để
+                    // gate một effect là gắn field "req" (sibling của "type") NGAY TRÊN wrapper
+                    // muốn kiểm tra điều kiện (xem processRunnable dòng ~45: `if (wrapper.req
+                    // && !this.checkReq(wrapper.req).pass) return;`). Trước đây "win_game" luôn
+                    // chạy bất kể police_called, vì entry "req" đứng riêng không gate được gì.
+                    { "type": "effect", "ref": "win_game", "req": { "logic": "AND", "check": [{ "type": "state", "subtype": "global", "op": "==", "value": true, "property": "police_called" }] } }
                 ],
                 "normal": [],
                 "pwFailed": [
@@ -553,7 +558,7 @@ const DEMO_SCRIPT = {
                 "fail": [],
                 "pass": [
                     { "type": "item", "subtype": "usage", "target": "item9", "value": -1 },
-                    { "type": "stats", "subtype": "characters", "target": "char1", "property": "HP", "value": 50, "mode": "add" }
+                    { "type": "characters", "subtype": "edit_stats", "target": "char1", "property": "HP", "value": 50, "mode": "add" }
                 ],
                 "normal": [], "pwFailed": []
             }
