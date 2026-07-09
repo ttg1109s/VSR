@@ -9,10 +9,18 @@
 
     <script>
         const output = document.getElementById('output');
-        
-        function log(msg) {
+
+        // Giới hạn cứng để KHÔNG BAO GIỜ treo, kể cả khi có import vòng (A -> B -> A)
+        // hoặc phép quy đổi path bị lỗi ở đâu đó chưa lường trước.
+        const MAX_NODES = 300;
+        const FETCH_TIMEOUT_MS = 8000;
+
+        let visitCount = 0;
+        let aborted = false;
+
+        function log(msg, color) {
             const div = document.createElement('div');
-            div.style.color = '#ddd';
+            div.style.color = color || '#ddd';
             div.style.marginBottom = '5px';
             div.textContent = msg;
             output.appendChild(div);
@@ -22,7 +30,7 @@
         // Extract imports from JS source code
         function extractImports(code) {
             const imports = [];
-            const importRegex = /import\s+(?:{[^}]*}|[^}]*?)\s+from\s+['"]([^'"]+)['"]/g;
+            const importRegex = /import\s+[\s\S]*?\s+from\s+['"]([^'"]+)['"]/g;
             let match;
             while ((match = importRegex.exec(code)) !== null) {
                 imports.push(match[1]);
@@ -30,58 +38,102 @@
             return imports;
         }
 
-        async function checkModule(path, depth = 0, visited = new Set()) {
-            if (visited.has(path)) return;
-            visited.add(path);
+        // Dùng URL API có sẵn của trình duyệt để quy đổi path — ĐÂY LÀ CHỖ SỬA CHÍNH.
+        // Bản cũ tự viết regex thay thế "/x/../" theo vòng lặp while: nếu chuỗi còn
+        // lại không khớp đúng hình dạng regex (vd path lệch cấp thư mục thật), while
+        // không bao giờ thoát -> treo vô hạn. new URL() dùng đúng thuật toán chuẩn
+        // mà trình duyệt/ES module dùng để resolve import, luôn ra kết quả xác định,
+        // không cần vòng lặp tự viết tay nữa.
+        function resolveUrl(spec, baseUrl) {
+            return new URL(spec, baseUrl).href;
+        }
+
+        // Bỏ query string (?v=...) khi dùng làm khoá "đã thăm" — bản cũ coi
+        // "Effect.js" và "Effect.js?v=1.2.2" là hai node khác nhau nên module dùng
+        // chung bị quét lại nhiều lần chồng chéo (không hẳn là loop vô hạn, nhưng
+        // số lần fetch tăng theo cấp số nhân với các module dùng chung sâu như
+        // api/index.js -> cảm giác như treo vì chạy rất lâu).
+        function stripQuery(url) {
+            return url.split('?')[0];
+        }
+
+        async function fetchWithTimeout(url, ms) {
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), ms);
+            try {
+                return await fetch(url, { signal: controller.signal });
+            } finally {
+                clearTimeout(timer);
+            }
+        }
+
+        async function checkModule(url, depth, visited) {
+            const key = stripQuery(url);
+
+            if (visited.has(key)) {
+                log(`${'  '.repeat(depth)}↩ (đã kiểm tra) ${key}`, '#777');
+                return;
+            }
+            if (aborted) return;
+            if (visitCount >= MAX_NODES) {
+                if (!aborted) {
+                    aborted = true;
+                    log(`⛔ Dừng: đã kiểm tra ${MAX_NODES} module mà chưa xong — nhiều khả năng có import vòng hoặc cây import quá lớn. Xem lại thủ công phần chưa quét.`, '#ff7b7b');
+                }
+                return;
+            }
+
+            visited.add(key);
+            visitCount++;
 
             const indent = '  '.repeat(depth);
-            
+
             try {
-                const res = await fetch(path);
+                const res = await fetchWithTimeout(url, FETCH_TIMEOUT_MS);
                 if (!res.ok) {
-                    log(`${indent}❌ ${path} - HTTP ${res.status}`);
+                    log(`${indent}❌ ${key} - HTTP ${res.status}`, '#ff7b7b');
                     return;
                 }
-                
+
                 const text = await res.text();
                 const imports = extractImports(text);
-                
-                if (imports.length === 0) {
-                    log(`${indent}✓ ${path} (no dependencies)`);
-                } else {
-                    log(`${indent}✓ ${path}`);
-                    
-                    for (const imp of imports) {
-                        // Resolve relative paths
-                        let resolvedPath = imp;
-                        if (imp.startsWith('./')) {
-                            const basePath = path.substring(0, path.lastIndexOf('/'));
-                            resolvedPath = basePath + '/' + imp.substring(2);
-                        } else if (imp.startsWith('../')) {
-                            const basePath = path.substring(0, path.lastIndexOf('/'));
-                            resolvedPath = basePath + '/' + imp;
-                            // Normalize ../ paths
-                            while (resolvedPath.includes('/../')) {
-                                resolvedPath = resolvedPath.replace(/\/[^/]+\/\.\.\//, '/');
-                            }
-                        }
-                        
-                        await checkModule(resolvedPath, depth + 1, visited);
+
+                log(`${indent}✓ ${key}${imports.length === 0 ? ' (no dependencies)' : ''}`);
+
+                for (const imp of imports) {
+                    if (aborted) break;
+
+                    let resolved;
+                    try {
+                        resolved = resolveUrl(imp, url);
+                    } catch (e) {
+                        log(`${indent}  ⚠️ Không resolve được import "${imp}" trong ${key}: ${e.message}`, '#ffd54f');
+                        continue;
                     }
+
+                    await checkModule(resolved, depth + 1, visited);
                 }
             } catch (e) {
-                log(`${indent}❌ ${path} - ${e.message}`);
+                const reason = e.name === 'AbortError' ? `timeout sau ${FETCH_TIMEOUT_MS}ms (nghi resource bị treo/CORS)` : e.message;
+                log(`${indent}❌ ${key} - ${reason}`, '#ff7b7b');
             }
         }
 
         async function runCheck() {
+            const start = performance.now();
             log('=== DEEP MODULE CHECK ===\n');
-            
+
+            const visited = new Set();
+
             log('Starting from app.js...');
-            await checkModule('./app.js');
-            
-            log('\n\n--- Also checking render/ui.js ---');
-            await checkModule('./render/ui.js');
+            await checkModule(new URL('./app.js', location.href).href, 0, visited);
+
+            log('\n--- Also checking render/ui.js ---');
+            await checkModule(new URL('./render/ui.js', location.href).href, 0, visited);
+
+            const elapsed = ((performance.now() - start) / 1000).toFixed(1);
+            const summaryColor = aborted ? '#ff7b7b' : '#7ec8ff';
+            log(`\n=== XONG sau ${elapsed}s — đã kiểm tra ${visitCount}/${MAX_NODES} module ===`, summaryColor);
         }
 
         runCheck();
