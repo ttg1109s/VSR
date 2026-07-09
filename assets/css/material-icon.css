@@ -2,17 +2,22 @@
  * assets/css/material-icon.css
  * ---------------------------------------------------------------------
  * GHI CHÚ PHỤC HỒI: bộ icon font "Material Icons Round" gốc không có
- * trong kho lưu trữ tải lên. Phục hồi bằng @import trỏ tới Google Fonts
- * (giấy phép Apache 2.0, miễn phí) — đúng bộ đang được dùng khắp dự án
- * qua class `.material-icons-round` (xem index.html, components/*.js).
+ * trong kho lưu trữ tải lên. Phục hồi qua Google Fonts (giấy phép Apache
+ * 2.0, miễn phí) — đúng bộ đang được dùng khắp dự án qua class
+ * `.material-icons-round` (xem index.html, components/*.js).
+ *
+ * [FIX] @import trỏ Google Fonts đã CHUYỂN sang <link> trực tiếp trong
+ * <head> của index.html (xem ghi chú ở đó) — @import lồng trong 1 file CSS
+ * khác cộng thêm 1 vòng round-trip tuần tự trước khi font bắt đầu tải,
+ * trên mạng di động dễ khiến ligature hiện chữ thô thay vì icon. File này
+ * giờ chỉ còn định nghĩa các thuộc tính hiển thị dùng chung cho ligature.
  * Cần Internet ở lần tải trang đầu tiên.
  *
  * Muốn tự host 100% offline: tải .woff2 từ
- * https://github.com/google/material-design-icons rồi thay @import bằng
- * @font-face trỏ tới assets/fonts/MaterialIconsRound.woff2.
+ * https://github.com/google/material-design-icons rồi thay <link> trong
+ * index.html bằng @font-face trỏ tới assets/fonts/MaterialIconsRound.woff2.
  * ---------------------------------------------------------------------
  */
-@import url('https://fonts.googleapis.com/css2?family=Material+Icons+Round&display=block');
 
 .material-icons-round {
     font-family: 'Material Icons Round';
