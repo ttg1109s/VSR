@@ -1,0 +1,15 @@
+/**
+ * assets/css/be-vietnam-pro.css
+ * ---------------------------------------------------------------------
+ * GHI CHÚ PHỤC HỒI: file font tĩnh gốc (woff2 tự host) không có trong kho
+ * lưu trữ tải lên. Phục hồi bằng @import trỏ tới Google Fonts CSS2 API —
+ * đây chính là nguồn phát hành chính thức của "Be Vietnam Pro" (giấy phép
+ * SIL Open Font License, miễn phí). Cần Internet ở lần tải trang đầu tiên
+ * (trình duyệt sẽ cache theo sau đó).
+ *
+ * Muốn tự host 100% offline: tải các file .woff2 qua
+ * https://gwfh.mranftl.com/fonts/be-vietnam-pro rồi thay khối @import bên
+ * dưới bằng các khai báo @font-face trỏ tới assets/fonts/*.woff2.
+ * ---------------------------------------------------------------------
+ */
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');

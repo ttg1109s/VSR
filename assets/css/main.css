@@ -1,0 +1,513 @@
+/* =========================================================================
+   VSR Engine — main.css
+   Restructure Mobile-First + Light Theme (v13)
+   -------------------------------------------------------------------------
+   File này được PHỤC HỒI từ đầu (không có bản gốc trong repo — assets/ đã bị
+   loại khỏi kho lưu trữ). Kiến trúc:
+
+   1) DESIGN TOKENS  — biến CSS cho light theme (mặc định) + dark theme (tuỳ
+      chọn, bật qua [data-theme="dark"] trên <html>, xem app.js).
+   2) BASE / RESET    — nền, chữ, safe-area cho mobile.
+   3) SCREEN SYSTEM   — .screen/.screen-visible/.screen-hidden (chuyển màn).
+   4) COMPONENT CLASSES — glass-panel, nav-icon-btn, custom-scrollbar,...
+   5) SCENE SCREEN — hệ thống 2 cột trượt mobile-first (yêu cầu b/c/d).
+   6) THEME OVERRIDE LAYER — ánh xạ các class Tailwind "cứng" (bg-black,
+      bg-[#1a1a1a], text-slate-400, text-white,...) từng được viết cho theme
+      tối trong hàng chục file components/*.js và render/modules/*.js, sang
+      token sáng — KHÔNG cần sửa từng file JS. Xem readme.md mục
+      "Ghi chú kỹ thuật > Theme override layer" để biết lý do & phạm vi
+      ngoại lệ (tooltip, scrim, khối mini-game mật khẩu...).
+   ========================================================================= */
+
+/* ---------- 1) DESIGN TOKENS ---------- */
+:root,
+[data-theme="light"] {
+    --vsr-canvas: #F7F4EC;
+    --vsr-canvas-alt: #EFEADD;
+    --vsr-surface: #FFFFFF;
+    --vsr-surface-2: #F7F3E9;
+    --vsr-surface-3: #ECE6D6;
+    --vsr-ink-900: #241F17;
+    --vsr-ink-700: #4A4337;
+    --vsr-ink-500: #7C7362;
+    --vsr-ink-400: #968D7A;
+    --vsr-ink-300: #BDB5A2;
+    --vsr-border: rgba(36, 31, 23, 0.12);
+    --vsr-border-strong: rgba(36, 31, 23, 0.24);
+    --vsr-tint-05: rgba(36, 31, 23, 0.04);
+    --vsr-tint-10: rgba(36, 31, 23, 0.06);
+    --vsr-tint-20: rgba(36, 31, 23, 0.10);
+    --vsr-tint-30: rgba(36, 31, 23, 0.16);
+    --vsr-scrim: rgba(20, 17, 12, 0.55);
+    --vsr-accent: #DC2626;
+    --vsr-accent-ink: #FFFFFF;
+    --vsr-shadow-sm: 0 1px 2px rgba(36, 31, 23, 0.06);
+    --vsr-shadow-md: 0 6px 20px rgba(36, 31, 23, 0.10);
+    --vsr-shadow-lg: 0 12px 36px rgba(36, 31, 23, 0.16);
+    --vsr-safe-top: env(safe-area-inset-top, 0px);
+    --vsr-safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+[data-theme="dark"] {
+    --vsr-canvas: #121212;
+    --vsr-canvas-alt: #1a1a1a;
+    --vsr-surface: #1f1f1f;
+    --vsr-surface-2: #181818;
+    --vsr-surface-3: #262626;
+    --vsr-ink-900: #F1EFEA;
+    --vsr-ink-700: #D8D3C8;
+    --vsr-ink-500: #9C9891;
+    --vsr-ink-400: #7A776F;
+    --vsr-ink-300: #5C5A54;
+    --vsr-border: rgba(255, 255, 255, 0.10);
+    --vsr-border-strong: rgba(255, 255, 255, 0.20);
+    --vsr-tint-05: rgba(255, 255, 255, 0.05);
+    --vsr-tint-10: rgba(255, 255, 255, 0.08);
+    --vsr-tint-20: rgba(255, 255, 255, 0.14);
+    --vsr-tint-30: rgba(255, 255, 255, 0.20);
+    --vsr-scrim: rgba(0, 0, 0, 0.65);
+    --vsr-accent: #EF4444;
+    --vsr-accent-ink: #FFFFFF;
+    --vsr-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --vsr-shadow-md: 0 6px 20px rgba(0, 0, 0, 0.4);
+    --vsr-shadow-lg: 0 12px 36px rgba(0, 0, 0, 0.5);
+}
+
+/* ---------- 2) BASE / RESET ---------- */
+html, body {
+    height: 100%;
+    overscroll-behavior-y: none;
+    background: var(--vsr-canvas);
+}
+
+body {
+    font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    color: var(--vsr-ink-900);
+    -webkit-tap-highlight-color: transparent;
+}
+
+.anime-font {
+    font-family: 'Be Vietnam Pro', -apple-system, system-ui, sans-serif;
+    letter-spacing: -0.02em;
+}
+
+::selection { background: var(--vsr-accent); color: #fff; }
+
+.custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: var(--vsr-border-strong); border-radius: 4px; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+button, a, .cursor-pointer { -webkit-tap-highlight-color: transparent; }
+:focus-visible { outline: 2px solid var(--vsr-accent); outline-offset: 2px; }
+
+/* ---------- 3) SCREEN SYSTEM ---------- */
+.screen {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    background: var(--vsr-canvas);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.screen-hidden { opacity: 0; transform: scale(0.98); pointer-events: none; }
+.screen-visible { opacity: 1; transform: scale(1); pointer-events: auto; }
+.screen.hidden { display: none; }
+
+/* ---------- Global popover (action info hover/click) ---------- */
+#global-popover {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 260px;
+    z-index: 900;
+    background: var(--vsr-surface);
+    border: 1px solid var(--vsr-border);
+    border-radius: 12px;
+    box-shadow: var(--vsr-shadow-lg);
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(4px) scale(0.98);
+    pointer-events: none;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+}
+#global-popover.active { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+.pop-thumb-header {
+    width: 100%;
+    height: 96px;
+    background-size: cover;
+    background-position: center;
+    background-color: var(--vsr-surface-3);
+    display: none;
+}
+.pop-content { padding: 12px 14px; }
+
+/* ---------- 4) COMPONENT CLASSES ---------- */
+.glass-panel {
+    background: var(--vsr-surface);
+    background: color-mix(in srgb, var(--vsr-surface) 88%, transparent);
+    backdrop-filter: blur(16px) saturate(1.4);
+    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+}
+
+#notify-panel {
+    position: fixed;
+    top: calc(env(safe-area-inset-top, 0px) + 8px);
+    right: 8px;
+    left: 8px;
+    max-width: 380px;
+    margin-left: auto;
+    max-height: 70vh;
+    background: var(--vsr-surface);
+    border: 1px solid var(--vsr-border);
+    border-radius: 16px;
+    box-shadow: var(--vsr-shadow-lg);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 500;
+    transform: translateY(0) scale(1);
+    opacity: 1;
+    pointer-events: auto;
+    transition: transform 0.25s ease, opacity 0.25s ease;
+}
+/* .hidden-panel = trạng thái ĐÓNG (class này bị toggle bởi ui.toggleNotifications()).
+   Cần selector #notify-panel.hidden-panel (ID+class) để thắng specificity của #notify-panel ở trên. */
+#notify-panel.hidden-panel {
+    transform: translateY(-12px) scale(0.97);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.nav-icon-btn {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    color: var(--vsr-ink-400);
+    transition: color 0.15s ease;
+}
+.nav-icon-btn:hover, .nav-icon-btn:active { color: var(--vsr-ink-900); }
+
+.notify-item {
+    display: flex;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    color: var(--vsr-ink-900);
+}
+
+/* ---------- 5) SCENE SCREEN — hai cột trượt mobile-first ---------- */
+#scene-container { background: var(--vsr-canvas); }
+
+#game-slider {
+    display: flex;
+    width: 200%;
+    height: 100%;
+    transition: transform 0.38s cubic-bezier(.22, .61, .36, 1);
+}
+#game-slider.slide-to-right { transform: translateX(-50%); }
+
+#left-panel, #right-panel {
+    width: 50%;
+    flex: 0 0 50%;
+}
+
+/* Nút bấm ở rìa để trượt sang panel còn lại (chỉ hiện trên mobile) */
+.slider-toggle-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 40;
+    width: 32px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--vsr-surface);
+    color: var(--vsr-ink-700);
+    box-shadow: var(--vsr-shadow-md);
+    border: 1px solid var(--vsr-border);
+}
+.btn-slide-right { right: 0; border-radius: 12px 0 0 12px; border-right: none; }
+.btn-slide-left { left: 0; border-radius: 0 12px 12px 0; border-left: none; }
+
+@media (min-width: 768px) {
+    /* Desktop/tablet: quay lại cấu trúc 2 cột đồng thời như bản gốc.
+       [FIX] Đặt lại "flex" đầy đủ (không chỉ width) ở mỗi breakpoint, vì rule
+       mobile phía trên đã set flex-basis:50% — nếu không reset, flex-basis cũ
+       sẽ lấn át width mới khai báo ở đây (flex-basis luôn ưu tiên hơn width
+       trên trục chính của flex container). */
+    #game-slider { width: 100%; transform: none !important; }
+    #left-panel { width: 41.6667%; flex: 0 0 41.6667%; } /* ~ 5/12 như bản gốc */
+    #right-panel { width: auto; flex: 1 1 0%; }
+    .slider-toggle-btn { display: none; }
+    #scene-bottom-toolbar { display: none !important; }
+}
+
+@media (min-width: 1024px) {
+    #left-panel { width: 33.3333%; flex-basis: 33.3333%; } /* ~ 4/12 (lg) như bản gốc */
+}
+
+/* ---------- Scene bottom toolbar (mobile) — yêu cầu (c) + (d) ---------- */
+#scene-bottom-toolbar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 64px; /* nằm ngay trên nav chính, không che nội dung scene */
+    height: 52px;
+    z-index: 45;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+    background: var(--vsr-surface);
+    border-top: 1px solid var(--vsr-border);
+    box-shadow: 0 -2px 12px rgba(36, 31, 23, 0.06);
+}
+.scene-toolbar-group { display: flex; align-items: center; gap: 4px; }
+.scene-toolbar-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--vsr-ink-500);
+    position: relative;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+.scene-toolbar-btn:active { background: var(--vsr-tint-10); }
+.scene-toolbar-btn.active { color: var(--vsr-accent); background: var(--vsr-tint-10); }
+.scene-toolbar-label {
+    font-size: 11px;
+    color: var(--vsr-ink-400);
+    max-width: 40vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.scene-toolbar-badge {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    min-width: 15px;
+    height: 15px;
+    padding: 0 3px;
+    border-radius: 999px;
+    background: var(--vsr-accent);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* NPC-in-scene sheet (mở từ icon trong scene-bottom-toolbar) */
+#npc-sheet {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 460;
+    max-height: 60vh;
+    background: var(--vsr-surface);
+    border-radius: 20px 20px 0 0;
+    box-shadow: var(--vsr-shadow-lg);
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(.22, .61, .36, 1);
+    display: flex;
+    flex-direction: column;
+    padding-bottom: var(--vsr-safe-bottom);
+}
+#npc-sheet.open { transform: translateY(0); }
+#npc-sheet-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 455;
+    background: var(--vsr-scrim);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+#npc-sheet-backdrop.open { opacity: 1; pointer-events: auto; }
+
+/* Avatar nhân vật trong NPC sheet (dùng lại cho mọi nơi hiển thị NPC) */
+.char-avatar-wrapper { position: relative; }
+.char-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 999px;
+    background-size: cover;
+    background-position: center;
+    color: var(--vsr-ink-500);
+    border: 1px solid var(--vsr-border);
+}
+.char-wave { position: absolute; inset: 0; border-radius: 999px; }
+.char-wave.animate-wave { animation: vsr-wave-pulse 2s infinite; }
+.char-dot-status {
+    position: absolute;
+    bottom: -1px;
+    right: -1px;
+    width: 12px;
+    height: 12px;
+    border-radius: 999px;
+    border: 2px solid var(--vsr-surface);
+}
+.status-danger { background: #DC2626; }
+.status-warning { background: #D97706; }
+.status-success { background: #16A34A; }
+.status-notice { background: #2563EB; }
+@keyframes vsr-wave-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, .35); }
+    70% { box-shadow: 0 0 0 12px rgba(220, 38, 38, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+}
+
+/* ---------- Info screen meta grid ---------- */
+.meta-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.meta-item {
+    background: var(--vsr-surface-2);
+    border: 1px solid var(--vsr-border);
+    border-radius: 12px;
+    padding: 10px 12px;
+}
+
+/* ---------- Chat / dialogue reading view ---------- */
+.chat-container { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+
+/* ---------- Misc animation utility classes referenced across JS ---------- */
+.animate-fade-in { animation: vsr-fade-in .4s ease both; }
+@keyframes vsr-fade-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+.shake-hard { animation: vsr-shake-hard .4s; }
+@keyframes vsr-shake-hard {
+    10%, 90% { transform: translateX(-1px); }
+    20%, 80% { transform: translateX(2px); }
+    30%, 50%, 70% { transform: translateX(-4px); }
+    40%, 60% { transform: translateX(4px); }
+}
+
+.animate-pw-shake { animation: vsr-shake-hard .4s; }
+.pw-error-state { outline: 2px solid #DC2626 !important; }
+.pw-success-state { outline: 2px solid #16A34A !important; }
+
+/* action list: chế độ danh sách (toggle grid/list, xem render/modules/actions.js) */
+#actions-list.view-list { display: flex; flex-direction: column; align-items: stretch; gap: 10px; }
+#actions-list.view-list .action-card-grid-item { width: 100% !important; max-width: none !important; }
+
+/* =========================================================================
+   6) THEME OVERRIDE LAYER
+   Ánh xạ các utility class Tailwind viết cứng cho theme tối (đang nằm rải
+   rác trong components/*.js và render/modules/**/*.js) sang token sáng ở
+   trên, dùng attribute-selector [class~="..."] để khớp chính xác 1 token
+   trong class="..." mà không cần escape ký tự đặc biệt (/, [, ], #).
+
+   NGOẠI LỆ CÓ CHỦ ĐÍCH (không override, giữ nguyên tối) — xem readme.md:
+   - Scrim/backdrop của modal trung tâm (alert/faker/readmore/password/
+     keyboard/item-modal/player-card/ending-screen).
+   - Tooltip nổi & cooldown-mask trên thumbnail (quy ước giữ tối để luôn dễ
+     đọc trên mọi ảnh nền).
+   - Khối "phần cứng" mini-game mật khẩu (bàn phím số/công tắc): #333/#444/
+     #404040 và bg-black của các phím bấm.
+   - Gradient scrim phủ trên ảnh nền/thumbnail (from-black/to-black/
+     from-slate-900) để chữ luôn đọc được trên ảnh bất kỳ.
+   ========================================================================= */
+
+/* --- Bề mặt hex-literal (thẻ, modal, panel...) --- */
+[class~="bg-[#0f172a]"], [class~="bg-[#101010]"], [class~="bg-[#151515]"],
+[class~="bg-[#1a1a1a]"], [class~="bg-[#1f1f1f]"], [class~="bg-[#202020]"],
+[class~="bg-[#252525]"], [class~="bg-[#262626]"], [class~="bg-[#2a2a2a]"] {
+    background-color: var(--vsr-surface) !important;
+}
+[class~="bg-slate-700"], [class~="bg-slate-800"], [class~="bg-slate-900"],
+[class~="bg-slate-950"] { background-color: var(--vsr-surface) !important; }
+[class~="bg-slate-900/80"] { background-color: var(--vsr-surface) !important; background-color: color-mix(in srgb, var(--vsr-surface) 85%, transparent) !important; }
+
+/* --- bg-black/NN: mức đục càng cao càng "đặc" (mô phỏng phân lớp cũ) --- */
+[class~="bg-black/20"], [class~="bg-black/30"] { background-color: var(--vsr-canvas-alt) !important; }
+[class~="bg-black/40"], [class~="bg-black/50"] { background-color: var(--vsr-surface-2) !important; }
+[class~="bg-black/60"], [class~="bg-black/70"], [class~="bg-black/80"],
+[class~="bg-black/90"], [class~="bg-black"] { background-color: var(--vsr-surface) !important; }
+
+/* --- Viền --- */
+[class~="border-white/5"], [class~="border-white/10"], [class~="border-white/20"],
+[class~="border-white/30"], [class~="border-white"],
+[class~="border-slate-400"], [class~="border-slate-600"], [class~="border-slate-700"],
+[class~="border-slate-800"], [class~="border-slate-900"],
+[class~="border-black/20"], [class~="border-black/30"] {
+    border-color: var(--vsr-border) !important;
+}
+[class~="divide-white/5"] > * + * { border-color: var(--vsr-border) !important; }
+[class~="ring-white"] { --tw-ring-color: var(--vsr-border-strong) !important; }
+
+/* --- Lớp phủ hover/kính mờ (bg-white/NN dùng cho hover trên nền tối cũ) --- */
+[class~="bg-white/5"] { background-color: var(--vsr-tint-05) !important; }
+[class~="bg-white/10"] { background-color: var(--vsr-tint-10) !important; }
+[class~="bg-white/20"] { background-color: var(--vsr-tint-20) !important; }
+[class~="bg-white/30"] { background-color: var(--vsr-tint-30) !important; }
+[class~="hover:bg-white/5"]:hover { background-color: var(--vsr-tint-05) !important; }
+[class~="hover:bg-white/10"]:hover { background-color: var(--vsr-tint-10) !important; }
+
+/* --- Chữ --- */
+[class~="text-slate-200"] { color: var(--vsr-ink-900) !important; }
+[class~="text-slate-300"] { color: var(--vsr-ink-700) !important; }
+[class~="text-slate-400"] { color: var(--vsr-ink-500) !important; }
+[class~="text-slate-500"] { color: var(--vsr-ink-500) !important; }
+[class~="text-slate-600"] { color: var(--vsr-ink-400) !important; }
+[class~="text-white"] { color: var(--vsr-ink-900) !important; }
+[class~="hover:text-white"]:hover { color: var(--vsr-ink-900) !important; }
+.group:hover [class~="group-hover:text-white"] { color: var(--vsr-ink-900) !important; }
+
+/* =====================  NGOẠI LỆ — khôi phục lại tối/trắng  ===================== */
+
+/* Modal/scrim trung tâm: luôn tối để tách khỏi nội dung phía sau */
+#alert-modal, #faker-overlay, #readmore-overlay, #password-overlay,
+#keyboard-overlay, #item-modal, #ending-screen {
+    background-color: var(--vsr-scrim) !important;
+}
+#player-card-modal > [class~="bg-black/50"] { background-color: var(--vsr-scrim) !important; }
+
+/* Tooltip nổi & cooldown-mask & khung tối "phần cứng" mật khẩu: giữ tối + chữ trắng */
+[class~="bg-black/90"][class~="text-white"],
+[class~="bg-black/80"][class~="text-white"],
+.action-cooldown-overlay[class~="bg-black/60"],
+.action-cooldown-overlay[class~="bg-black/80"],
+.pw-main-card[class~="bg-black/60"],
+.pw-main-card[class~="bg-black/80"],
+[class~="bg-black/50"][class~="pointer-events-none"][class~="z-10"] {
+    background-color: var(--vsr-scrim) !important;
+}
+[class~="bg-black/90"][class~="text-white"] > *,
+[class~="bg-black/80"][class~="text-white"] { color: #fff !important; }
+#password-content [class~="text-white"],
+#password-content [class~="hover:text-white"]:hover,
+#keyboard-overlay [class~="text-white"] {
+    color: #fff !important;
+}
+
+/* Nút/badge nền màu đậm: chữ luôn trắng để đủ tương phản */
+[class~="bg-amber-500"], [class~="bg-amber-600"], [class~="bg-amber-600/80"],
+[class~="bg-amber-600/90"], [class~="bg-amber-700"],
+[class~="bg-blue-500"], [class~="bg-blue-600"], [class~="bg-blue-700"],
+[class~="bg-emerald-500"], [class~="bg-emerald-600"],
+[class~="bg-green-500"], [class~="bg-green-600"],
+[class~="bg-pink-600"], [class~="bg-pink-700"],
+[class~="bg-red-400"], [class~="bg-red-500"], [class~="bg-red-600"],
+[class~="bg-red-900/80"], [class~="bg-sky-600"] {
+    color: #fff !important;
+}
+/* ...và khi các nền đậm này chỉ xuất hiện lúc hover (hover:bg-*) đi kèm hover:text-white */
+[class~="hover:bg-amber-600"][class~="hover:text-white"]:hover,
+[class~="hover:bg-blue-600"][class~="hover:text-white"]:hover,
+[class~="hover:bg-emerald-500"][class~="hover:text-white"]:hover,
+[class~="hover:bg-pink-600"][class~="hover:text-white"]:hover,
+[class~="hover:bg-red-500"][class~="hover:text-white"]:hover,
+[class~="hover:bg-sky-600"][class~="hover:text-white"]:hover {
+    color: #fff !important;
+}
