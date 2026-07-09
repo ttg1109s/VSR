@@ -42,35 +42,11 @@
     <div id="transition-overlay"></div>
 
     <!-- =========================== HOME SCREEN (a) =========================== -->
+    <!-- [Refactor] Layout tách sang components/HomeScreen.js, render động bởi
+         render/modules/common.js (renderHomeScreen) — đồng bộ pattern với
+         #screen-character (components/Layouts.js). -->
     <section id="screen-home" class="screen screen-visible items-center justify-center p-6 text-center"
         style="padding-top: calc(env(safe-area-inset-top) + 1.5rem); padding-bottom: calc(env(safe-area-inset-bottom) + 1.5rem);">
-        <div class="relative z-10 w-full max-w-sm space-y-10">
-            <div class="relative">
-                <div class="absolute -inset-10 bg-gradient-to-tr from-red-100/60 to-amber-100/60 blur-3xl rounded-full">
-                </div>
-                <h1 class="anime-font text-5xl font-bold text-[var(--vsr-ink-900)] tracking-tighter mb-2 relative">VSR<span
-                        class="text-red-600">Engine</span></h1>
-                <p class="text-[10px] tracking-[0.4em] text-[var(--vsr-ink-400)] uppercase relative">Make your Visual
-                    StoryTelling easier than ever</p>
-            </div>
-            <div class="space-y-3">
-                <button onclick="if(window.app)app.loadDemo();else console.error('App not loaded')"
-                    class="w-full py-4 bg-white hover:bg-[var(--vsr-surface-2)] border border-[var(--vsr-border)] text-[var(--vsr-ink-900)] rounded-xl transition-all flex items-center justify-center gap-3 group shadow-sm"><!-- [KHÔI PHỤC] class suy luận lại, soát lại nếu cần -->
-                    <span
-                        class="material-icons-round text-red-600 group-active:scale-110 transition-transform">play_arrow</span>
-                    <span class="text-sm font-bold tracking-wide">DEMO SCRIPT</span>
-                </button>
-                <div class="relative">
-                    <input type="file" id="script-upload" class="hidden" accept=".json"
-                        onchange="if(window.app)app.importScript(event);else console.error('App not loaded')">
-                    <button onclick="document.getElementById('script-upload').click()"
-                        class="w-full py-4 bg-[var(--vsr-surface-2)] hover:bg-[var(--vsr-surface-3)] border border-[var(--vsr-border)] text-[var(--vsr-ink-500)] hover:text-[var(--vsr-ink-900)] rounded-xl transition-all flex items-center justify-center gap-3"><!-- [KHÔI PHỤC] class suy luận lại, soát lại nếu cần -->
-                        <span class="material-icons-round text-sm">folder_open</span>
-                        <span class="text-xs font-bold tracking-wide">LOAD JSON</span>
-                    </button>
-                </div>
-            </div>
-        </div>
     </section>
 
     <!-- =========================== INFO SCREEN (a) =========================== -->
