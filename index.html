@@ -41,17 +41,17 @@
                     StoryTelling easier than ever</p>
             </div>
             <div class="space-y-3">
-                <button onclick="app.loadDemo()"
-                    class="w-full py-4 bg-white hover:bg-[var(--vsr-surface-2)] border border-[var(--vsr-border)] text-[var(--vsr-ink-900)] rounded-xl transition-all flex items-center justify-center gap-3 active:scale-[0.98] shadow-[var(--vsr-shadow-sm)] group">
+                <button onclick="if(window.app)app.loadDemo();else console.error('App not loaded')"
+                    class="w-full py-4 bg-white hover:bg-[var(--vsr-surface-2)] border border-[var(--vsr-border)] text-[var(--vsr-ink-900)] rounded-xl transition-all flex items-center justify-cent[...]
                     <span
                         class="material-icons-round text-red-600 group-active:scale-110 transition-transform">play_arrow</span>
                     <span class="text-sm font-bold tracking-wide">DEMO SCRIPT</span>
                 </button>
                 <div class="relative">
                     <input type="file" id="script-upload" class="hidden" accept=".json"
-                        onchange="app.importScript(event)">
+                        onchange="if(window.app)app.importScript(event);else console.error('App not loaded')">
                     <button onclick="document.getElementById('script-upload').click()"
-                        class="w-full py-4 bg-[var(--vsr-surface-2)] hover:bg-[var(--vsr-surface-3)] border border-[var(--vsr-border)] text-[var(--vsr-ink-500)] hover:text-[var(--vsr-ink-900)] rounded-xl transition-all flex items-center justify-center gap-3 active:scale-[0.98]">
+                        class="w-full py-4 bg-[var(--vsr-surface-2)] hover:bg-[var(--vsr-surface-3)] border border-[var(--vsr-border)] text-[var(--vsr-ink-500)] hover:text-[var(--vsr-ink-900)] rou[...]
                         <span class="material-icons-round text-sm">folder_open</span>
                         <span class="text-xs font-bold tracking-wide">LOAD JSON</span>
                     </button>
@@ -68,15 +68,15 @@
                 <span class="material-icons-round text-base">description</span>
                 <span class="font-mono">metadata.json</span>
             </div>
-            <button onclick="app.showScreen('home')"
+            <button onclick="if(window.app)app.showScreen('home');else console.error('App not loaded')"
                 class="w-9 h-9 rounded-full hover:bg-[var(--vsr-tint-10)] flex items-center justify-center text-[var(--vsr-ink-400)] hover:text-[var(--vsr-ink-900)] transition-all"><span
                     class="material-icons-round">close</span></button>
         </header>
         <main class="flex-1 overflow-hidden flex flex-col md:flex-row">
             <div
-                class="w-full md:w-5/12 lg:w-4/12 flex-shrink-0 bg-[var(--vsr-surface-2)] md:border-r border-[var(--vsr-border)] p-6 md:p-8 flex flex-col justify-center items-center text-center overflow-y-auto custom-scrollbar relative">
+                class="w-full md:w-5/12 lg:w-4/12 flex-shrink-0 bg-[var(--vsr-surface-2)] md:border-r border-[var(--vsr-border)] p-6 md:p-8 flex flex-col justify-center items-center text-center ov[...]
                 <div
-                    class="w-24 h-24 md:w-40 md:h-40 bg-white rounded-3xl border border-[var(--vsr-border)] flex items-center justify-center shadow-[var(--vsr-shadow-md)] relative overflow-hidden group mb-5 shrink-0">
+                    class="w-24 h-24 md:w-40 md:h-40 bg-white rounded-3xl border border-[var(--vsr-border)] flex items-center justify-center shadow-[var(--vsr-shadow-md)] relative overflow-hidden [...]
                     <span
                         class="material-icons-round text-5xl text-[var(--vsr-ink-300)] group-hover:scale-110 transition-transform duration-500">auto_stories</span>
                 </div>
@@ -84,10 +84,10 @@
                     Title</h2>
                 <h3 id="info-subtitle" class="text-base text-red-600 font-medium mb-5">Subtitle</h3>
                 <div class="w-full max-w-xs grid grid-cols-2 gap-3 mt-auto pt-4">
-                    <button onclick="app.showScreen('home')"
-                        class="py-3 border border-[var(--vsr-border)] hover:bg-[var(--vsr-tint-10)] bg-white rounded-xl text-xs text-[var(--vsr-ink-500)] transition-all font-bold uppercase tracking-wider">Cancel</button>
-                    <button onclick="app.startGame()"
-                        class="py-3 bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs shadow-lg shadow-red-900/10 transition-all font-bold uppercase tracking-wider flex items-center justify-center gap-2">
+                    <button onclick="if(window.app)app.showScreen('home');else console.error('App not loaded')"
+                        class="py-3 border border-[var(--vsr-border)] hover:bg-[var(--vsr-tint-10)] bg-white rounded-xl text-xs text-[var(--vsr-ink-500)] transition-all font-bold uppercase trackin[...]
+                    <button onclick="if(window.app)app.startGame();else console.error('App not loaded')"
+                        class="py-3 bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs shadow-lg shadow-red-900/10 transition-all font-bold uppercase tracking-wider flex items-center justif[...]
                         <span>Start</span> <span class="material-icons-round text-sm">arrow_forward</span>
                     </button>
                 </div>
@@ -128,11 +128,11 @@
 
                 <!-- Left Panel: màn "đọc truyện" (ảnh cảnh + tiêu đề + mô tả) -->
                 <div id="left-panel"
-                    class="flex-shrink-0 relative z-20 flex flex-col justify-end p-6 md:p-8 space-y-4 md:bg-[var(--vsr-surface-2)] md:justify-center md:h-full md:overflow-y-auto custom-scrollbar transition-all duration-500 bg-cover bg-center"
+                    class="flex-shrink-0 relative z-20 flex flex-col justify-end p-6 md:p-8 space-y-4 md:bg-[var(--vsr-surface-2)] md:justify-center md:h-full md:overflow-y-auto custom-scrollbar [...]
                     style="padding-top: calc(env(safe-area-inset-top) + 1.25rem);">
 
                     <!-- Tay cầm trượt sang phải, nằm giữa rìa phải màn hình (yêu cầu b) -->
-                    <button class="slider-toggle-btn btn-slide-right md:hidden" onclick="ui.slideGame('right')" aria-label="Xem danh sách hành động">
+                    <button class="slider-toggle-btn btn-slide-right md:hidden" onclick="if(window.ui)ui.slideGame('right');else console.error('UI not loaded')" aria-label="Xem danh sách hành động">
                         <span class="material-icons-round">chevron_right</span>
                     </button>
 
@@ -143,7 +143,7 @@
                     </div>
                     <div class="animate-fade-in flex-shrink-0 z-10" style="animation-delay: 0.2s">
                         <div
-                            class="bg-white/90 backdrop-blur-xl border border-[var(--vsr-border)] p-4 md:p-5 rounded-2xl text-[var(--vsr-ink-900)] text-sm md:text-base leading-relaxed font-light shadow-[var(--vsr-shadow-md)]">
+                            class="bg-white/90 backdrop-blur-xl border border-[var(--vsr-border)] p-4 md:p-5 rounded-2xl text-[var(--vsr-ink-900)] text-sm md:text-base leading-relaxed font-light [...]
                             <p id="scene-desc"></p>
                         </div>
                     </div>
@@ -153,7 +153,7 @@
                 <div id="right-panel" class="flex-1 relative bg-[var(--vsr-canvas)] flex flex-col md:h-full overflow-hidden">
 
                     <!-- Tay cầm trượt về trái -->
-                    <button class="slider-toggle-btn btn-slide-left md:hidden" onclick="ui.slideGame('left')" aria-label="Quay lại màn đọc truyện">
+                    <button class="slider-toggle-btn btn-slide-left md:hidden" onclick="if(window.ui)ui.slideGame('left');else console.error('UI not loaded')" aria-label="Quay lại màn đọc truyện">
                         <span class="material-icons-round">chevron_left</span>
                     </button>
 
@@ -164,11 +164,11 @@
                             class="text-[10px] font-mono uppercase tracking-widest flex items-center gap-2">
                         </div>
                         <div class="flex items-center gap-1">
-                            <button id="btn-view-grid" onclick="ui.toggleActionView('grid')" class="p-1.5 rounded-md transition-colors text-[var(--vsr-ink-900)] bg-[var(--vsr-tint-10)]"><span class="material-icons-round text-base">grid_view</span></button>
-                            <button id="btn-view-list" onclick="ui.toggleActionView('list')" class="p-1.5 rounded-md transition-colors text-[var(--vsr-ink-400)] hover:text-[var(--vsr-ink-900)]"><span class="material-icons-round text-base">view_list</span></button>
-                            <button id="nav-btn-npc-desktop" onclick="ui.toggleNpcSheet()" class="p-1.5 rounded-md transition-colors text-[var(--vsr-ink-400)] hover:text-[var(--vsr-ink-900)] relative ml-1">
+                            <button id="btn-view-grid" onclick="if(window.ui)ui.toggleActionView('grid');else console.error('UI not loaded')" class="p-1.5 rounded-md transition-colors text-[var(--vsr-ink-900)] bg-[var(--vsr-tint-10)]"><span cla[...]
+                            <button id="btn-view-list" onclick="if(window.ui)ui.toggleActionView('list');else console.error('UI not loaded')" class="p-1.5 rounded-md transition-colors text-[var(--vsr-ink-400)] hover:text-[var(--vsr-ink-900)]"><[...]
+                            <button id="nav-btn-npc-desktop" onclick="if(window.ui)ui.toggleNpcSheet();else console.error('UI not loaded')" class="p-1.5 rounded-md transition-colors text-[var(--vsr-ink-400)] hover:text-[var(--vsr-ink-900)] rela[...]
                                 <span class="material-icons-round text-base">groups</span>
-                                <span id="npc-badge-desktop" class="hidden absolute -top-1 -right-1 min-w-[14px] h-[14px] px-0.5 rounded-full bg-red-600 text-white text-[8px] font-bold flex items-center justify-center"></span>
+                                <span id="npc-badge-desktop" class="hidden absolute -top-1 -right-1 min-w-[14px] h-[14px] px-0.5 rounded-full bg-red-600 text-white text-[8px] font-bold flex items[...]
                             </button>
                         </div>
                     </header>
@@ -193,7 +193,7 @@
         <!-- [FIX] onclick thật được gán động trong render/modules/scene.js (renderScene) —
              engine.goBack() không tồn tại trong bản gốc và không bao giờ thực sự chạy được. -->
         <button id="back-node-btn"
-            class="back-node-btn fixed bottom-6 right-20 z-40 w-12 h-12 bg-white hover:bg-[var(--vsr-surface-2)] rounded-full border border-[var(--vsr-border)] hidden md:flex items-center justify-center shadow-[var(--vsr-shadow-md)] active:scale-90 transition-all group">
+            class="back-node-btn fixed bottom-6 right-20 z-40 w-12 h-12 bg-white hover:bg-[var(--vsr-surface-2)] rounded-full border border-[var(--vsr-border)] hidden md:flex items-center justify[...]
             <span
                 class="material-icons-round text-xl text-[var(--vsr-ink-500)] group-hover:text-[var(--vsr-ink-900)] transition-colors">reply</span>
         </button>
@@ -207,14 +207,14 @@
                 <span id="scene-title-badge" class="scene-toolbar-label"></span>
             </div>
             <div class="scene-toolbar-group">
-                <button id="btn-view-grid-m" onclick="ui.toggleActionView('grid')" class="scene-toolbar-btn active">
+                <button id="btn-view-grid-m" onclick="if(window.ui)ui.toggleActionView('grid');else console.error('UI not loaded')" class="scene-toolbar-btn active">
                     <span class="material-icons-round text-lg">grid_view</span>
                 </button>
-                <button id="btn-view-list-m" onclick="ui.toggleActionView('list')" class="scene-toolbar-btn">
+                <button id="btn-view-list-m" onclick="if(window.ui)ui.toggleActionView('list');else console.error('UI not loaded')" class="scene-toolbar-btn">
                     <span class="material-icons-round text-lg">view_list</span>
                 </button>
                 <!-- Icon NPC trong scene — bấm mở list (yêu cầu d) -->
-                <button id="nav-btn-npc" onclick="ui.toggleNpcSheet()" class="scene-toolbar-btn">
+                <button id="nav-btn-npc" onclick="if(window.ui)ui.toggleNpcSheet();else console.error('UI not loaded')" class="scene-toolbar-btn">
                     <span class="material-icons-round text-lg">groups</span>
                     <span id="npc-badge" class="scene-toolbar-badge hidden">0</span>
                 </button>
@@ -222,39 +222,39 @@
         </div>
 
         <!-- NPC sheet: danh sách nhân vật đang có mặt trong scene (yêu cầu d) -->
-        <div id="npc-sheet-backdrop" onclick="ui.toggleNpcSheet(false)"></div>
+        <div id="npc-sheet-backdrop" onclick="if(window.ui)ui.toggleNpcSheet(false);else console.error('UI not loaded')"></div>
         <div id="npc-sheet">
             <div class="w-10 h-1 rounded-full bg-[var(--vsr-border-strong)] mx-auto mt-3 mb-1 shrink-0"></div>
             <div class="flex items-center justify-between px-5 py-2 shrink-0">
                 <h3 class="text-sm font-bold text-[var(--vsr-ink-900)] uppercase tracking-wide">Đang có mặt tại đây</h3>
-                <button onclick="ui.toggleNpcSheet(false)" class="w-8 h-8 rounded-full hover:bg-[var(--vsr-tint-10)] flex items-center justify-center text-[var(--vsr-ink-400)]"><span class="material-icons-round text-lg">close</span></button>
+                <button onclick="if(window.ui)ui.toggleNpcSheet(false);else console.error('UI not loaded')" class="w-8 h-8 rounded-full hover:bg-[var(--vsr-tint-10)] flex items-center justify-center text-[var(--vsr-ink-400)]"><span class="mater[...]
             </div>
             <div id="npc-sheet-list" class="flex-1 overflow-y-auto custom-scrollbar px-3 pb-3"></div>
         </div>
 
         <nav
-            class="fixed bottom-0 w-full glass-panel border-t border-[var(--vsr-border)] h-16 z-50 flex justify-around items-center shrink-0 md:w-16 md:h-full md:right-0 md:top-0 md:bottom-auto md:flex-col md:justify-center md:gap-0 md:border-t-0 md:border-l p-0"
+            class="fixed bottom-0 w-full glass-panel border-t border-[var(--vsr-border)] h-16 z-50 flex justify-around items-center shrink-0 md:w-16 md:h-full md:right-0 md:top-0 md:bottom-auto m[...]
             style="padding-bottom: env(safe-area-inset-bottom);">
             <div class="flex-1 flex w-full h-full md:flex-col justify-around md:justify-center md:gap-4">
-                <button onclick="app.showScreen('home')" class="nav-icon-btn group">
+                <button onclick="if(window.app)app.showScreen('home');else console.error('App not loaded')" class="nav-icon-btn group">
                     <span class="material-icons-round text-2xl">home</span>
                     <span class="text-[9px] uppercase md:hidden">Home</span>
                 </button>
-                <button id="nav-btn-contact" onclick="app.showScreen('character')" class="nav-icon-btn group relative">
+                <button id="nav-btn-contact" onclick="if(window.app)app.showScreen('character');else console.error('App not loaded')" class="nav-icon-btn group relative">
                     <span class="material-icons-round text-2xl">contacts</span>
                     <span class="text-[9px] uppercase md:hidden">Msg</span>
                     <span id="msg-badge"
                         class="absolute top-3 right-3 md:top-2 md:right-2 w-2.5 h-2.5 bg-red-600 rounded-full border border-[var(--vsr-surface)] hidden z-10"></span>
                 </button>
-                <button id="nav-btn-inventory" onclick="app.showScreen('inventory')"
+                <button id="nav-btn-inventory" onclick="if(window.app)app.showScreen('inventory');else console.error('App not loaded')"
                     class="nav-icon-btn group relative">
                     <span class="material-icons-round text-2xl">folder</span>
                     <span class="text-[9px] uppercase md:hidden">Items</span>
                     <span id="inv-count"
-                        class="absolute top-2 right-2 md:top-1 md:right-1 bg-red-600 text-white text-[8px] font-bold min-w-[14px] h-3.5 px-0.5 flex items-center justify-center rounded-full border border-[var(--vsr-surface)] hidden z-10">0</span>
+                        class="absolute top-2 right-2 md:top-1 md:right-1 bg-red-600 text-white text-[8px] font-bold min-w-[14px] h-3.5 px-0.5 flex items-center justify-center rounded-full border[...]
                 </button>
                 <!-- Notification Button -->
-                <button onclick="ui.toggleNotifications()" class="nav-icon-btn group relative">
+                <button onclick="if(window.ui)ui.toggleNotifications();else console.error('UI not loaded')" class="nav-icon-btn group relative">
                     <span class="material-icons-round text-2xl">notifications</span>
                     <span class="text-[9px] uppercase md:hidden">Alerts</span>
                     <span id="notify-badge"
@@ -268,7 +268,7 @@
             <div
                 class="h-12 border-b border-[var(--vsr-border)] flex items-center justify-between px-4 bg-[var(--vsr-tint-05)] rounded-t-xl shrink-0">
                 <span class="text-sm font-bold text-[var(--vsr-ink-900)]">Notifications</span>
-                <button onclick="ui.clearAllNotifications()"
+                <button onclick="if(window.ui)ui.clearAllNotifications();else console.error('UI not loaded')"
                     class="text-[10px] uppercase text-[var(--vsr-ink-400)] hover:text-[var(--vsr-ink-900)] font-bold">Clear All</button>
             </div>
             <div id="notify-list" class="flex-1 overflow-y-auto custom-scrollbar p-1">
@@ -283,7 +283,7 @@
         <header
             class="bg-white h-12 flex items-center px-4 border-b border-[var(--vsr-border)] select-none shrink-0 shadow-sm z-10 gap-3"
             style="padding-top: env(safe-area-inset-top); height: calc(3rem + env(safe-area-inset-top));">
-            <button onclick="app.showScreen('game')"
+            <button onclick="if(window.app)app.showScreen('game');else console.error('App not loaded')"
                 class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[var(--vsr-tint-10)] text-[var(--vsr-ink-500)] transition-colors"><span
                     class="material-icons-round">arrow_back</span></button>
             <div
@@ -333,16 +333,16 @@
     <div id="player-card-modal"
         class="fixed inset-0 z-[300] flex items-end justify-center pointer-events-none hidden font-sans">
         <div class="absolute inset-0 bg-black/50 backdrop-blur-sm pointer-events-auto transition-opacity"
-            onclick="ui.closePlayerCard()"></div>
+            onclick="if(window.ui)ui.closePlayerCard();else console.error('UI not loaded')"></div>
         <div
-            class="bg-white w-full max-w-lg mx-auto rounded-t-2xl shadow-[0_-10px_40px_rgba(36,31,23,0.18)] transform translate-y-full transition-transform duration-300 pointer-events-auto p-6 pb-10 text-[var(--vsr-ink-900)] border-t border-[var(--vsr-border)] relative">
-            <button onclick="ui.closePlayerCard()"
+            class="bg-white w-full max-w-lg mx-auto rounded-t-2xl shadow-[0_-10px_40px_rgba(36,31,23,0.18)] transform translate-y-full transition-transform duration-300 pointer-events-auto p-6 pb[...]
+            <button onclick="if(window.ui)ui.closePlayerCard();else console.error('UI not loaded')"
                 class="absolute top-4 right-4 text-[var(--vsr-ink-400)] hover:text-[var(--vsr-ink-900)] transition-colors bg-[var(--vsr-tint-10)] rounded-full p-1"><span
                     class="material-icons-round">close</span></button>
             <div class="w-12 h-1.5 bg-[var(--vsr-border-strong)] rounded-full mx-auto mb-6"></div>
             <div class="flex items-center gap-4 mb-6">
                 <div
-                    class="w-16 h-16 rounded-full bg-[var(--vsr-surface-2)] shadow-inner flex items-center justify-center text-2xl font-bold text-[var(--vsr-ink-400)] border border-[var(--vsr-border)]">
+                    class="w-16 h-16 rounded-full bg-[var(--vsr-surface-2)] shadow-inner flex items-center justify-center text-2xl font-bold text-[var(--vsr-ink-400)] border border-[var(--vsr-bor[...]
                     P</div>
                 <div>
                     <h2 id="player-card-name" class="text-2xl font-bold text-[var(--vsr-ink-900)] tracking-tight">Player Status</h2>
@@ -358,7 +358,7 @@
         <header class="h-16 bg-white border-b border-[var(--vsr-border)] flex items-center px-4 justify-between shrink-0"
             style="padding-top: env(safe-area-inset-top); height: calc(4rem + env(safe-area-inset-top));">
             <div class="flex items-center gap-3">
-                <button id="chat-back-btn" onclick="engine.endChat()" class="text-blue-600 hidden"><span
+                <button id="chat-back-btn" onclick="if(window.engine)engine.endChat();else console.error('Engine not loaded')" class="text-blue-600 hidden"><span
                         class="material-icons-round">arrow_back_ios</span></button>
                 <div class="w-10 h-10 rounded-full bg-[var(--vsr-surface-2)] flex items-center justify-center text-[var(--vsr-ink-700)] font-bold relative"
                     id="chat-header-avatar">?</div>
@@ -388,7 +388,7 @@
                 <p id="alert-msg" class="text-[var(--vsr-ink-500)] text-sm leading-relaxed whitespace-pre-wrap">...</p>
             </div>
             <div class="border-t border-[var(--vsr-border)] flex">
-                <button onclick="ui.closeAlert()"
+                <button onclick="if(window.ui)ui.closeAlert();else console.error('UI not loaded')"
                     class="flex-1 py-3 text-sm font-bold text-blue-600 hover:bg-[var(--vsr-tint-05)] transition-colors uppercase tracking-wide">OK</button>
             </div>
         </div>
@@ -402,7 +402,7 @@
                 class="glass-panel h-16 rounded-lg flex items-center justify-center text-3xl font-mono text-white tracking-[0.2em] bg-black/50 border border-white/10">
             </div>
             <div class="grid grid-cols-3 gap-2" id="numpad-container"></div>
-            <button onclick="keyboard.cancel()"
+            <button onclick="if(window.keyboard)keyboard.cancel();else console.error('Keyboard not loaded')"
                 class="w-full text-slate-400 hover:text-white text-xs py-4 uppercase tracking-widest">Cancel</button>
         </div>
     </div>
@@ -421,318 +421,372 @@
         <div class="space-y-6 max-w-md">
             <h1 id="end-title" class="anime-font text-5xl font-bold text-white mb-4">THE END</h1>
             <p id="end-desc" class="text-slate-400 text-sm font-light leading-relaxed">...</p>
-            <div class="pt-8"><button onclick="ui.hideEnding(); app.showScreen('home')"
+            <div class="pt-8"><button onclick="if(window.ui&&window.app){ui.hideEnding();app.showScreen('home');}else console.error('App/UI not loaded')"
                     class="px-8 py-3 bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs uppercase tracking-widest rounded-full">Main
                     Menu</button></div>
         </div>
     </div>
     
+    <!-- ==================== PRELOADER & LOADER CHECK ==================== -->
+    <script>
+        // Preloader: Check if all imports are loaded
+        window._loadStatus = {
+            scriptLoaded: false,
+            appLoaded: false,
+            errors: []
+        };
+
+        window.addEventListener('load', () => {
+            // demo_script.js should be loaded
+            if (typeof DEMO_SCRIPT === 'undefined') {
+                window._loadStatus.errors.push('❌ DEMO_SCRIPT not loaded - check demo_script.js');
+            } else {
+                window._loadStatus.scriptLoaded = true;
+                console.log('✓ DEMO_SCRIPT loaded');
+            }
+
+            // Check app.js module loading (with timeout)
+            const checkAppLoad = setInterval(() => {
+                if (window.app && window.ui && window.engine && window.API) {
+                    window._loadStatus.appLoaded = true;
+                    clearInterval(checkAppLoad);
+                    console.log('✓ App module loaded');
+                    
+                    if (window._loadStatus.errors.length === 0) {
+                        console.log('✅ ALL MODULES LOADED SUCCESSFULLY');
+                    } else {
+                        console.error('⚠️ LOAD WARNINGS:', window._loadStatus.errors);
+                    }
+                }
+            }, 50);
+
+            // Timeout: if app not loaded after 3 seconds
+            setTimeout(() => {
+                if (!window._loadStatus.appLoaded) {
+                    window._loadStatus.errors.push('❌ App module failed to load within 3 seconds');
+                    console.error('FATAL: Module loading timeout', window._loadStatus);
+                    document.getElementById('debug-toggle').classList.add('error');
+                    document.getElementById('debug-console').style.display = 'block';
+                }
+            }, 3000);
+        });
+
+        // Catch module loading errors
+        window.addEventListener('error', (event) => {
+            if (event.filename && event.filename.includes('app.js')) {
+                window._loadStatus.errors.push(`❌ ${event.message} @ ${event.filename}:${event.lineno}`);
+                console.error('[MODULE ERROR]', event.error);
+            }
+        });
+    </script>
+
     <script src="demo_script.js?v=1.8.9.3"></script>
-<script type="module" src="app.js?v=13.0.0"></script>
-<style>
-#debug-toggle{
-    position:fixed;
-    right:12px;
-    bottom:12px;
-    z-index:999999;
-
-    padding:8px 12px;
-
-    border:none;
-    border-radius:999px;
-
-    background:#222;
-    color:#fff;
-
-    cursor:pointer;
-
-    font:13px sans-serif;
-
-    box-shadow:0 2px 8px rgba(0,0,0,.35);
-}
-
-#debug-toggle.error{
-    background:#c62828;
-}
-
-#debug-console{
-
-    position:fixed;
-
-    right:12px;
-    bottom:56px;
-
-    width:460px;
-    height:260px;
-
-    max-width:80vw;
-    max-height:70vh;
-
-    display:none;
-
-    background:rgba(15,15,15,.96);
-
-    border:1px solid #555;
-    border-radius:8px;
-
-    overflow:hidden;
-
-    resize:both;
-
-    z-index:999999;
-
-    font:12px Consolas,monospace;
-
-    box-shadow:0 4px 20px rgba(0,0,0,.5);
-
-}
-
-#debug-header{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-    background:#222;
-
-    color:#fff;
-
-    padding:8px;
-
-    cursor:move;
-
-    user-select:none;
-
-}
-
-#debug-header button{
-
-    margin-left:6px;
-
-}
-
-#debug-body{
-
-    overflow:auto;
-
-    height:calc(100% - 40px);
-
-    padding:8px;
-
-    white-space:pre-wrap;
-
-    word-break:break-word;
-
-    color:#ddd;
-
-}
-
-.log-entry{
-
-    margin-bottom:4px;
-
-    border-bottom:1px solid #222;
-
-    padding-bottom:4px;
-
-}
-
-.log{color:#ddd;}
-.info{color:#7ec8ff;}
-.warn{color:#ffd54f;}
-.error{color:#ff7b7b;}
-.debug{color:#90caf9;}
-.time{color:#888;margin-right:6px;}
-</style>
-
-<button id="debug-toggle">
-🐞 Debug
-</button>
-
-<div id="debug-console">
-
-<div id="debug-header">
-
-<div>Console</div>
-
-<div>
-
-<button id="debug-clear">
-Clear
-</button>
-
-<button id="debug-hide">
-Hide
-</button>
-
-</div>
-
-</div>
-
-<div id="debug-body"></div>
-
-</div>
-
-<script>
-(function(){
-
-const toggle=document.getElementById("debug-toggle");
-const panel=document.getElementById("debug-console");
-const body=document.getElementById("debug-body");
-
-toggle.onclick=()=>{
-
-panel.style.display=
-panel.style.display==="block"
-?"none"
-:"block";
-
-};
-
-document.getElementById("debug-hide").onclick=()=>{
-
-panel.style.display="none";
-
-};
-
-document.getElementById("debug-clear").onclick=()=>{
-
-body.innerHTML="";
-
-};
-
-function stringify(v){
-
-if(v instanceof Error)
-return v.stack||v.message;
-
-if(typeof v==="object"){
-
-try{
-return JSON.stringify(v,null,2);
-}
-catch{
-return "[Object]";
-}
-
-}
-
-return String(v);
-
-}
-
-function append(type,args){
-
-const div=document.createElement("div");
-
-div.className="log-entry "+type;
-
-const t=new Date().toLocaleTimeString();
-
-div.innerHTML=
-'<span class="time">'+t+'</span>'+
-args.map(stringify).join(" ");
-
-body.appendChild(div);
-
-body.scrollTop=body.scrollHeight;
-
-if(type==="error"){
-
-toggle.classList.add("error");
-
-panel.style.display="block";
-
-}
-
-}
-
-["log","info","warn","error","debug"].forEach(fn=>{
-
-const old=console[fn];
-
-console[fn]=(...args)=>{
-
-append(fn,args);
-
-old.apply(console,args);
-
-};
-
-});
-
-window.addEventListener("error",e=>{
-
-append("error",[
-e.message,
-"\n"+e.filename+":"+e.lineno+":"+e.colno,
-"\n",
-e.error||""
-]);
-
-});
-
-window.addEventListener("unhandledrejection",e=>{
-
-append("error",[
-"Unhandled Promise Rejection",
-"\n",
-e.reason
-]);
-
-});
-
-let drag=false;
-let sx=0;
-let sy=0;
-let px=0;
-let py=0;
-
-const header=document.getElementById("debug-header");
-
-header.addEventListener("mousedown",e=>{
-
-drag=true;
-
-sx=e.clientX;
-sy=e.clientY;
-
-const rect=panel.getBoundingClientRect();
-
-px=rect.left;
-py=rect.top;
-
-panel.style.left=px+"px";
-panel.style.top=py+"px";
-panel.style.right="auto";
-panel.style.bottom="auto";
-
-});
-
-document.addEventListener("mousemove",e=>{
-
-if(!drag) return;
-
-panel.style.left=
-(px+e.clientX-sx)+"px";
-
-panel.style.top=
-(py+e.clientY-sy)+"px";
-
-});
-
-document.addEventListener("mouseup",()=>{
-
-drag=false;
-
-});
-
-})();
-</script>
-
+    <script type="module" src="app.js?v=13.0.0"></script>
     
-</body>
+    <style>
+    #debug-toggle{
+        position:fixed;
+        right:12px;
+        bottom:12px;
+        z-index:999999;
 
-</html>
+        padding:8px 12px;
+
+        border:none;
+        border-radius:999px;
+
+        background:#222;
+        color:#fff;
+
+        cursor:pointer;
+
+        font:13px sans-serif;
+
+        box-shadow:0 2px 8px rgba(0,0,0,.35);
+    }
+
+    #debug-toggle.error{
+        background:#c62828;
+    }
+
+    #debug-console{
+
+        position:fixed;
+
+        right:12px;
+        bottom:56px;
+
+        width:460px;
+        height:260px;
+
+        max-width:80vw;
+        max-height:70vh;
+
+        display:none;
+
+        background:rgba(15,15,15,.96);
+
+        border:1px solid #555;
+        border-radius:8px;
+
+        overflow:hidden;
+
+        resize:both;
+
+        z-index:999999;
+
+        font:12px Consolas,monospace;
+
+        box-shadow:0 4px 20px rgba(0,0,0,.5);
+
+    }
+
+    #debug-header{
+
+        display:flex;
+
+        justify-content:space-between;
+
+        align-items:center;
+
+        background:#222;
+
+        color:#fff;
+
+        padding:8px;
+
+        cursor:move;
+
+        user-select:none;
+
+    }
+
+    #debug-header button{
+
+        margin-left:6px;
+
+    }
+
+    #debug-body{
+
+        overflow:auto;
+
+        height:calc(100% - 40px);
+
+        padding:8px;
+
+        white-space:pre-wrap;
+
+        word-break:break-word;
+
+        color:#ddd;
+
+    }
+
+    .log-entry{
+
+        margin-bottom:4px;
+
+        border-bottom:1px solid #222;
+
+        padding-bottom:4px;
+
+    }
+
+    .log{color:#ddd;}
+    .info{color:#7ec8ff;}
+    .warn{color:#ffd54f;}
+    .error{color:#ff7b7b;}
+    .debug{color:#90caf9;}
+    .time{color:#888;margin-right:6px;}
+    </style>
+
+    <button id="debug-toggle">
+    🐞 Debug
+    </button>
+
+    <div id="debug-console">
+
+    <div id="debug-header">
+
+    <div>Console</div>
+
+    <div>
+
+    <button id="debug-clear">
+    Clear
+    </button>
+
+    <button id="debug-hide">
+    Hide
+    </button>
+
+    </div>
+
+    </div>
+
+    <div id="debug-body"></div>
+
+    </div>
+
+    <script>
+    (function(){
+
+    const toggle=document.getElementById("debug-toggle");
+    const panel=document.getElementById("debug-console");
+    const body=document.getElementById("debug-body");
+
+    toggle.onclick=()=>{
+
+    panel.style.display=
+    panel.style.display==="block"
+    ?"none"
+    :"block";
+
+    };
+
+    document.getElementById("debug-hide").onclick=()=>{
+
+    panel.style.display="none";
+
+    };
+
+    document.getElementById("debug-clear").onclick=()=>{
+
+    body.innerHTML="";
+
+    };
+
+    function stringify(v){
+
+    if(v instanceof Error)
+    return v.stack||v.message;
+
+    if(typeof v==="object"){
+
+    try{
+    return JSON.stringify(v,null,2);
+    }
+    catch{
+    return "[Object]";
+    }
+
+    }
+
+    return String(v);
+
+    }
+
+    function append(type,args){
+
+    const div=document.createElement("div");
+
+    div.className="log-entry "+type;
+
+    const t=new Date().toLocaleTimeString();
+
+    div.innerHTML=
+    '<span class="time">'+t+'</span>'+
+    args.map(stringify).join(" ");
+
+    body.appendChild(div);
+
+    body.scrollTop=body.scrollHeight;
+
+    if(type==="error"){
+
+    toggle.classList.add("error");
+
+    panel.style.display="block";
+
+    }
+
+    }
+
+    ["log","info","warn","error","debug"].forEach(fn=>{
+
+    const old=console[fn];
+
+    console[fn]=(...args)=>{
+
+    append(fn,args);
+
+    old.apply(console,args);
+
+    };
+
+    });
+
+    window.addEventListener("error",e=>{
+
+    append("error",[
+    e.message,
+    "\n"+e.filename+":"+e.lineno+":"+e.colno,
+    "\n",
+    e.error||""
+    ]);
+
+    });
+
+    window.addEventListener("unhandledrejection",e=>{
+
+    append("error",[
+    "Unhandled Promise Rejection",
+    "\n",
+    e.reason
+    ]);
+
+    });
+
+    let drag=false;
+    let sx=0;
+    let sy=0;
+    let px=0;
+    let py=0;
+
+    const header=document.getElementById("debug-header");
+
+    header.addEventListener("mousedown",e=>{
+
+    drag=true;
+
+    sx=e.clientX;
+    sy=e.clientY;
+
+    const rect=panel.getBoundingClientRect();
+
+    px=rect.left;
+    py=rect.top;
+
+    panel.style.left=px+"px";
+    panel.style.top=py+"px";
+    panel.style.right="auto";
+    panel.style.bottom="auto";
+
+    });
+
+    document.addEventListener("mousemove",e=>{
+
+    if(!drag) return;
+
+    panel.style.left=
+    (px+e.clientX-sx)+"px";
+
+    panel.style.top=
+    (py+e.clientY-sy)+"px";
+
+    });
+
+    document.addEventListener("mouseup",()=>{
+
+    drag=false;
+
+    });
+
+    })();
+    </script>
+
+        
+    </body>
+
+    </html>
