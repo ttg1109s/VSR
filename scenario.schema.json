@@ -2617,14 +2617,14 @@
           "enum": [
             "item",
             "state",
-            "stat",
-            "character"
+            "stats",
+            "set"
           ],
-          "description": "Nhóm đối tượng được kiểm tra: vật phẩm, global state, chỉ số, hoặc nhân vật."
+          "description": "[FIX] Enum trước đây ghi 'stat'/'character' — engine thật (engine/modules/Logic.js: CheckTypeHandlers) chỉ có 4 key này ('stats' số nhiều, không phải 'stat'; không có 'character'). Dùng 'stat' hoặc 'character' sẽ luôn fail âm thầm (checkSingle trả về pass:false khi không tìm thấy handler). type=item -> kiểm tra vật phẩm; type=state -> global state; type=stats -> chỉ số nhân vật/vật phẩm (subtype 'characters'|'item'); type=set -> field trong .set của scene/router/action/characters/chat/chat_choice/automation (subtype tương ứng)."
         },
         "subtype": {
           "type": "string",
-          "description": "Biến thể cụ thể trong nhóm 'type'. Ví dụ type=item -> subtype 'inventory' | 'hand'; type=state -> subtype 'global'."
+          "description": "Biến thể cụ thể trong nhóm 'type'. type=item -> 'inventory'|'hand'|'usage'; type=stats -> 'characters'|'item' (cần thêm 'target'/'property'/'field'); type=set -> 'scene'|'router'|'action'|'characters'|'chat'|'chat_choice'|'automation' (cần thêm 'target'/'property')."
         },
         "op": {
           "type": "string",
