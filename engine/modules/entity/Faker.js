@@ -67,21 +67,24 @@ export const FakerSystem = {
         if (mode === 'swap') {
             // --- SWAP MODE ---
             this.state.meta.entryCharacter = targetId;
-            API.render.notification.add("Chuyển sinh", `Bạn đã trở thành ${target.set.name}`, "success");
+            // [FIX] set.name không được kịch bản nào khai báo (chỉ có meta.name theo
+            // schema) — fallback về meta.name giống render/modules/scene.js:305,
+            // nếu không notification sẽ hiện chữ "undefined".
+            API.render.notification.add("Chuyển sinh", `Bạn đã trở thành ${target.set.name || target.meta.name}`, "success");
 
         } else if (mode === 'mask') {
             // --- MASK MODE ---
-            player.set.name = target.set.name;
+            player.set.name = target.set.name || target.meta.name;
             player.set.desc = target.set.desc;
             player.set.relationship = target.set.relationship;
-            API.render.notification.add("Cải trang", `Bạn đang khoác lên mình ${target.set.name}`, "info");
+            API.render.notification.add("Cải trang", `Bạn đang khoác lên mình ${target.set.name || target.meta.name}`, "info");
 
         } else {
             // --- SOUL MODE (Default) ---
             if (player.stats && target.stats) {
                 this._syncStats(player, target);
             }
-            API.render.notification.add("Đoạt xá", `Đã chiếm lấy cơ thể ${target.set.name}`, "magic");
+            API.render.notification.add("Đoạt xá", `Đã chiếm lấy cơ thể ${target.set.name || target.meta.name}`, "magic");
         }
 
         API.render.components.closePlayerCard();
