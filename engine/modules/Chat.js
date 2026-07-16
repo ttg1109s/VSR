@@ -109,7 +109,16 @@ export const ChatSystem = {
 
         const ownerId = this.getChatOwner(id);
 
-        if (!this.state.chats[id]) this.state.chats[id] = { set: { read: false, step: 0, bookmark: [] } };
+        // [FIX] state.chats[id] ĐÃ tồn tại (Loader.js copy nguyên script.chat vào
+        // state.chats từ lúc load), nên điều kiện cũ `if (!this.state.chats[id])`
+        // luôn false với bất kỳ chat hợp lệ nào -> `.set` không bao giờ được khởi
+        // tạo -> dòng ngay sau đó đọc `.set.bookmark` trên `undefined` -> crash
+        // (TypeError). Đúng ra phải kiểm tra thiếu RIÊNG field `.set` (schema
+        // chat.<id> vốn không khai báo `.set` — script hợp lệ theo schema sẽ luôn
+        // rơi vào nhánh crash này). Giữ nguyên meta/block/choice đã có, chỉ bổ
+        // sung `.set` nếu thiếu.
+        if (!this.state.chats[id]) this.state.chats[id] = {};
+        if (!this.state.chats[id].set) this.state.chats[id].set = { read: false, step: 0, bookmark: [] };
 
         // [MIGRATION] Upgrade bookmark to array
         if (this.state.chats[id].set.bookmark && !Array.isArray(this.state.chats[id].set.bookmark)) {
