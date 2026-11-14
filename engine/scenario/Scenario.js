@@ -71,11 +71,13 @@ function validateReferences(scenario) {
       if (Array.isArray(routerActions)) {
         routerActions.forEach((action, index) => {
           const path = `scenes.${sceneId}.routers.${routerId}.actions[${index}]`;
-          if (typeof action === 'string' && !Object.hasOwn(actions, action)) {
-            add(path, `references missing global action '${action}'`);
+          if (typeof action === 'string') {
+            if (!Object.hasOwn(actions, action)) add(path, `references missing global action '${action}'`);
+            if (seen.has(action)) add(path, `duplicates action ID '${action}' in this router`);
+            seen.add(action);
           }
           if (isObject(action) && action.id) {
-            if (seen.has(action.id)) add(path, `duplicates inline action ID '${action.id}' in this router`);
+            if (seen.has(action.id)) add(path, `duplicates action ID '${action.id}' in this router`);
             seen.add(action.id);
           }
         });
@@ -382,11 +384,8 @@ export function normalizeScenario(input) {
   scenario.meta ||= {};
   scenario.meta.entryCharacter = scenario.meta.entryCharacter ?? 'player';
 
-  const errors = validateScenario(scenario);
-  if (errors.length) throw new ScenarioValidationError(errors);
-
-  for (const [sceneId, scene] of Object.entries(scenario.scenes)) {
-    for (const [routerId, router] of Object.entries(scene.routers)) {
+  for (const [sceneId, scene] of Object.entries(scenario.scenes || {})) {
+    for (const [routerId, router] of Object.entries(scene.routers || {})) {
       if (Array.isArray(router.actions)) {
         router.actions.forEach((action, index) => {
           if (action && typeof action === 'object' && !action.id) {
@@ -396,5 +395,8 @@ export function normalizeScenario(input) {
       }
     }
   }
+
+  const errors = validateScenario(scenario);
+  if (errors.length) throw new ScenarioValidationError(errors);
   return scenario;
 }
