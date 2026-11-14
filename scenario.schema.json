@@ -1110,18 +1110,7 @@
           "description": "ID tham chiếu tới templates.effects.<ref> (dùng lại effect đã định nghĩa sẵn)."
         },
         "inline": {
-          "oneOf": [
-            {
-              "$ref": "#/definitions/effect_details"
-            },
-            {
-              "type": "array",
-              "minItems": 1,
-              "items": {
-                "$ref": "#/definitions/runnable_wrapper"
-              }
-            }
-          ]
+          "description": "Inline payload; its schema is selected by wrapper.type."
         },
         "hide": {
           "type": "boolean"
