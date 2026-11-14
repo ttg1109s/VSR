@@ -13,7 +13,7 @@ export class Loop {
  }
  enabled(){if(typeof this.callback!=='function')throw new TypeError('TaskManager callback must be a function.');if(!Number.isFinite(this.time)||this.time<=0)throw new TypeError('TaskManager time must be greater than zero.');if(this.isRunning)return;this.isRunning=true;this.isPaused=false;this.currentCount=0;this.isBusy=false;this.lastTick=this.#now();this.expected=this.lastTick+this.time;this.#schedule(this.time);}
  disabled(){this.isRunning=false;this.isPaused=false;if(this.timerId!==null)this.clock.clearTimeout(this.timerId);this.timerId=null;}
- pause(){if(!this.isRunning||this.isPaused)return;this.isPaused=true;this.remainingTime=Math.max(0,this.dueAt-this.#now());if(this.timerId!==null)this.clock.clearTimeout(this.timerId);this.timerId=null;}
+ remaining(){if(!this.isRunning)return null;return this.isPaused?this.remainingTime:Math.max(0,this.dueAt-this.#now());}\n pause(){if(!this.isRunning||this.isPaused)return;this.isPaused=true;this.remainingTime=this.remaining();if(this.timerId!==null)this.clock.clearTimeout(this.timerId);this.timerId=null;}
  resume(){if(!this.isRunning||!this.isPaused)return;this.isPaused=false;if(this.mode==='timeout')this.expected=this.#now()+this.remainingTime;this.#schedule(this.remainingTime);}
 }
 export class TaskManager {
@@ -23,6 +23,6 @@ export class TaskManager {
  addNew(name,config){this.#validate(name,config);this.plan[name]=new Loop(config.time,config.exe,config.mode||'interval',config.count??0,this.clock);this.running[name]=false;}
  kill(name){if(!this.plan[name])return;this.plan[name].disabled();delete this.plan[name];delete this.running[name];}
  killAll(){for(const name of Object.keys(this.plan))this.kill(name);}
- pause(name){if(this.plan[name]&&this.running[name])this.plan[name].pause();}
+ getRemaining(name){return this.plan[name]&&this.running[name]?this.plan[name].remaining():null;}\n snapshotRemaining(prefixes=['auto_','move_char_']){const result={};for(const name of Object.keys(this.plan)){if(prefixes.some(prefix=>name.startsWith(prefix))){const remaining=this.getRemaining(name);if(remaining!==null)result[name]=remaining;}}return result;}\n pause(name){if(this.plan[name]&&this.running[name])this.plan[name].pause();}
  resume(name){if(this.plan[name]&&this.running[name])this.plan[name].resume();}
 }
