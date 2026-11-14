@@ -1567,6 +1567,49 @@
                     "exec",
                     "property",
                     "value"
+                  ],
+                  "properties": {
+                    "exec": {
+                      "enum": [
+                        "set",
+                        "add",
+                        "remove",
+                        "replace"
+                      ]
+                    },
+                    "property": {
+                      "enum": [
+                        "move",
+                        "moving",
+                        "moveList"
+                      ]
+                    }
+                  },
+                  "allOf": [
+                    {
+                      "if": {
+                        "properties": {
+                          "exec": { "enum": ["add", "remove", "replace"] }
+                        },
+                        "required": ["exec"]
+                      },
+                      "then": {
+                        "properties": {
+                          "property": { "const": "moveList" }
+                        }
+                      }
+                    },
+                    {
+                      "if": {
+                        "properties": {
+                          "exec": { "enum": ["remove", "replace"] }
+                        },
+                        "required": ["exec"]
+                      },
+                      "then": {
+                        "required": ["index"]
+                      }
+                    }
                   ]
                 }
               }
