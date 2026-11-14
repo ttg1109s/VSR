@@ -1,6 +1,6 @@
 export const ItemSystem = {
     getOwnerId() {
-        return this.api.engine.state.getRuntime('meta.entryCharacter') || 'player';
+        return this.api.engine.state.get('entryCharacter') || 'player';
     },
 
     getInventory() {
@@ -16,7 +16,7 @@ export const ItemSystem = {
     addItem(itemId) {
         const state = this.api.engine.state;
         const ownerId = this.getOwnerId();
-        if (!state.getRuntime('characters.[id]', { id: ownerId })) return false;
+        if (!state.getRuntimeSnapshot('characters.[id]', { id: ownerId })) return false;
         const inventory = state.getRuntimeSnapshot('characters.[id].inventory', { id: ownerId }) || [];
         if (inventory.includes(itemId)) return false;
         const maxInvList = (this.getConfig ? this.getConfig('maxInventory') : null) || [];
@@ -47,7 +47,7 @@ export const ItemSystem = {
         }
 
         const idx = (this.getHand() || []).indexOf(id);
-        const maxHand = (this.getConfig ? this.getConfig('maxHandOn') : state.getRuntime('config.maxHandOn')) || 10;
+        const maxHand = (this.getConfig ? this.getConfig('maxHandOn') : state.get('maxHandOn')) || 10;
         if (idx < 0 && info.requirements) {
             const res = this.checkReq(info.requirements);
             if (!res.pass) {
@@ -91,7 +91,7 @@ export const ItemSystem = {
 
     async use(id) {
         const state = this.api.engine.state;
-        const info = state.getRuntime('itemInfo.[id]', { id });
+        const info = state.getRuntimeSnapshot('itemInfo.[id]', { id });
         if (!info) return;
 
         if (info.requirements) {
