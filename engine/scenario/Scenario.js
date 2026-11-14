@@ -71,6 +71,29 @@ function validateReferences(scenario) {
     }
   }
 
+  for (const [automationId, automation] of Object.entries(scenario.templates?.automation || {})) {
+    if (!Array.isArray(automation?.plan) || automation.plan.length === 0) {
+      errors.push(`templates.automation.${automationId}.plan must contain at least one step`);
+    }
+  }
+
+  const templates = scenario.templates || {};
+  const inspectReferences = (value, path = '') => {
+    if (!value || typeof value !== 'object') return;
+    if (!Array.isArray(value) && typeof value.type === 'string' && typeof value.ref === 'string') {
+      if (value.type === 'effect' && !Object.hasOwn(templates.effects || {}, value.ref)) {
+        errors.push(`${path || 'scenario'} references missing effect template '${value.ref}'`);
+      }
+      if (value.type === 'req' && !Object.hasOwn(templates.requirements || {}, value.ref)) {
+        errors.push(`${path || 'scenario'} references missing requirement template '${value.ref}'`);
+      }
+    }
+    for (const [key, child] of Object.entries(value)) {
+      if (child && typeof child === 'object') inspectReferences(child, path ? `${path}.${key}` : key);
+    }
+  };
+  inspectReferences(scenario);
+
   const entryScene = scenario.meta?.entryScene;
   if (entryScene && !Object.hasOwn(scenes, entryScene)) {
     errors.push(`meta.entryScene references missing scene '${entryScene}'`);
