@@ -167,7 +167,9 @@ export class StateAccess {
         chatState: engine.chatState,
         pendingPasswordAction: engine.pendingPasswordAction
       };
-      const runtimeBaseline = JSON.stringify(runtimeOriginal);\n      const sessionBaseline = JSON.stringify(sessionOriginal);\n      const runtimeDraft = clone(runtimeOriginal);
+      const runtimeBaseline = JSON.stringify(runtimeOriginal);
+      const sessionBaseline = JSON.stringify(sessionOriginal);
+      const runtimeDraft = clone(runtimeOriginal);
       const sessionDraft = clone(sessionOriginal);
       const roots = { runtime: runtimeDraft, session: sessionDraft };
       const tx = Object.freeze({
