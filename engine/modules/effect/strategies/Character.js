@@ -58,7 +58,7 @@ const StatsLogic = {
 
         const entryChar = engine.api.engine.state.getRuntime('meta.entryCharacter') || 'player';
 
-        if (charA && charB && charA.stats && charB.stats) {
+        if (idA !== idB && charA && charB && charA.stats && charB.stats) {
             engine.api.engine.state.update('characters', characters => {
                 const sourceStats = JSON.parse(JSON.stringify(characters[idA].stats));
                 characters[idA].stats = JSON.parse(JSON.stringify(characters[idB].stats));
@@ -79,7 +79,7 @@ const StatsLogic = {
         const destChar = engine.api.engine.state.getRuntimeSnapshot('characters.[id]', { id: destId });
         const srcChar = engine.api.engine.state.getRuntimeSnapshot('characters.[id]', { id: srcId });
 
-        if (destChar && srcChar && srcChar.stats && srcChar.stats[statKey]) {
+        if (destId !== srcId && destChar && srcChar && srcChar.stats && Object.prototype.hasOwnProperty.call(srcChar.stats, statKey)) {
             engine.api.engine.state.update('characters.[id]', current => ({
                 ...current,
                 stats: { ...(current.stats || {}), [statKey]: JSON.parse(JSON.stringify(srcChar.stats[statKey])) }
@@ -97,7 +97,7 @@ const StatsLogic = {
         const destChar = engine.api.engine.state.getRuntime('characters.[id]', { id: destId });
         const srcChar = engine.api.engine.state.getRuntime('characters.[id]', { id: srcId });
 
-        if (destChar && srcChar && srcChar.stats && srcChar.stats[statKey]) {
+        if (destId !== srcId && destChar && srcChar && srcChar.stats && Object.prototype.hasOwnProperty.call(srcChar.stats, statKey)) {
             engine.api.engine.state.update('characters', characters => {
                 characters[destId].stats ||= {};
                 characters[destId].stats[statKey] = JSON.parse(JSON.stringify(characters[srcId].stats[statKey]));
@@ -113,7 +113,7 @@ const StatsLogic = {
         const statKey = eff.value;
         const char = engine.api.engine.state.getRuntimeSnapshot('characters.[id]', { id: targetId });
 
-        if (char && char.stats && char.stats[statKey]) {
+        if (char && char.stats && Object.prototype.hasOwnProperty.call(char.stats, statKey)) {
             engine.api.engine.state.update('characters.[id].stats', stats => {
                 const next = { ...(stats || {}) };
                 delete next[statKey];
