@@ -203,6 +203,29 @@ function validateReferences(scenario) {
     if (wrapper.type === 'manage_effect' && !wrapper.inline) {
       add(path, "type 'manage_effect' requires an inline management payload");
     }
+    if (wrapper.type === 'manage_effect' && isObject(wrapper.inline)) {
+      const config = wrapper.inline;
+      const targetExists = {
+        router: () => routerExists(config.target),
+        character: () => characterExists(config.target),
+        action: () => actionExists(config.target),
+        chat: () => Object.hasOwn(chats, config.target),
+        item: () => Object.hasOwn(items, config.target)
+      }[config.space];
+      if (targetExists && !targetExists()) {
+        add(path + '.inline.target', "references missing " + config.space + " target '" + config.target + "'");
+      }
+      if (config.space === 'chat' && typeof config.in === 'string') {
+        const [blockId, choiceId] = config.in.split(':');
+        const chat = chats[config.target];
+        if (blockId && !Object.hasOwn(chat?.block || {}, blockId)) {
+          add(path + '.inline.in', "references missing chat block '" + blockId + "'");
+        }
+        if (choiceId && !Object.hasOwn(chat?.choice || {}, choiceId)) {
+          add(path + '.inline.in', "references missing chat choice group '" + choiceId + "'");
+        }
+      }
+    }
     validateRequirement(wrapper.req, path + '.req');
   };
 
