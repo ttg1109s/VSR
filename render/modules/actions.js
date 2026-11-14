@@ -1,3 +1,4 @@
+import { escapeHtml } from '../../utils/security.js';
 // Quản lý Action rendering, chi tiết action và Cooldown
 import { API } from '../../api/index.js';
 import { ActionCard } from '../../components/ActionCard.js?v=5';
@@ -192,7 +193,7 @@ export const actionMethods = {
             }
 
             const isMat = /^[a-z0-9_]+$/.test(iconStr);
-            const iconHtml = isMat ? `<span class="material-icons-round text-lg">${iconStr}</span>` : `<span class="text-lg font-bold">${iconStr}</span>`;
+            const iconHtml = isMat ? `<span class="material-icons-round text-lg">${escapeHtml(iconStr)}</span>` : `<span class="text-lg font-bold">${iconStr}</span>`;
 
             // [MEDIA SUPPORT] Resolve thumb ID & Detect Video
             let thumbUrl = meta.thumb;
