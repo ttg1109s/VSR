@@ -53,6 +53,9 @@ function parentFor(root, path, context = {}, create = false) {
   const leaf = segments.pop();
   let current = root;
   for (const key of segments) {
+    if (current === null || typeof current !== 'object') {
+      throw new StatePathError(`Cannot traverse non-object segment "${String(key)}".`, 'INVALID_STATE_PARENT');
+    }
     if (current[key] === undefined && create) current[key] = {};
     if (current[key] === null || typeof current[key] !== 'object') {
       throw new StatePathError(`Cannot traverse non-object segment "${String(key)}".`, 'INVALID_STATE_PARENT');
