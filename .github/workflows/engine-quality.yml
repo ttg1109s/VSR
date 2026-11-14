@@ -15,4 +15,4 @@ jobs:
           node-version: 20
       - run: npm install --ignore-scripts --no-audit --no-fund
       - run: npm test
-      - run: npm run audit:state
+      - run: npm run audit:state:strict
