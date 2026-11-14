@@ -33,8 +33,11 @@ function children(node) {
   const out = [];
   for (const [key, value] of Object.entries(node)) {
     if (key === 'loc' || key === 'start' || key === 'end') continue;
-    if (Array.isArray(value)) for (const item of value) if (item?.type) out.push(item);
-    else if (value?.type) out.push(value);
+    if (Array.isArray(value)) {
+      for (const item of value) if (item?.type) out.push(item);
+    } else if (value?.type) {
+      out.push(value);
+    }
   }
   return out;
 }
