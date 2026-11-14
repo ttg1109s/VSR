@@ -1,97 +1,139 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import path from 'node:path';
+import { parse } from 'acorn';
 
 const ROOT = process.cwd();
 const IGNORED_DIRS = new Set(['.git', 'node_modules', 'coverage', 'dist', 'build', '.next']);
-const MUTATORS = /\.(?:push|pop|shift|unshift|splice|sort|reverse|fill|copyWithin)\s*\(/;
-const RAW_ROOT = /(?<![\w$.])(?:this|engine)\s*\.\s*state\b/g;
-const PROPERTY_CHAIN = /(?:\s*(?:\?\.\s*|\.\s*)[A-Za-z_$][\w$]*|\s*\[[^\]\n]+\])+/g;
-const ALIAS_DECL = /\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:this|engine)\s*\.\s*state\b/g;
+const MUTATORS = new Set(['push', 'pop', 'shift', 'unshift', 'splice', 'sort', 'reverse', 'fill', 'copyWithin']);
 
 function walk(dir, out = []) {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     if (entry.isDirectory()) {
       if (!IGNORED_DIRS.has(entry.name)) walk(path.join(dir, entry.name), out);
-    } else if (entry.isFile() && entry.name.endsWith('.js')) {
-      out.push(path.join(dir, entry.name));
-    }
+    } else if (entry.isFile() && entry.name.endsWith('.js')) out.push(path.join(dir, entry.name));
   }
   return out;
 }
 
-function classify(line, end, expression) {
-  const tail = line.slice(end);
-  if (MUTATORS.test(expression) || /\.(?:push|pop|shift|unshift|splice|sort|reverse|fill|copyWithin)$/.test(expression) || /^\s*\(/.test(tail) && /\.(?:push|pop|shift|unshift|splice|sort|reverse|fill|copyWithin)$/.test(expression)) return 'MUTATION';
-  if (/^\s*(?:\+\+|--)/.test(tail) || /^\s*(?:\+=|-=|\*=|\/=|%=|=(?!=|>))/.test(tail)) return 'WRITE';
-  return 'READ';
+function propertyName(node) {
+  if (!node?.computed && node?.property?.type === 'Identifier') return node.property.name;
+  if (node?.computed && node.property?.type === 'Literal') return String(node.property.value);
+  return node?.computed ? '[computed]' : '';
 }
 
-function scan(file) {
+function isRawStateRoot(node) {
+  return node?.type === 'MemberExpression' &&
+    propertyName(node) === 'state' &&
+    (node.object?.type === 'ThisExpression' ||
+      (node.object?.type === 'Identifier' && node.object.name === 'engine'));
+}
+
+function children(node) {
+  const out = [];
+  for (const [key, value] of Object.entries(node)) {
+    if (key === 'loc' || key === 'start' || key === 'end') continue;
+    if (Array.isArray(value)) for (const item of value) if (item?.type) out.push(item);
+    else if (value?.type) out.push(value);
+  }
+  return out;
+}
+
+function analyze(file) {
   const source = fs.readFileSync(file, 'utf8');
-  const lines = source.split(/\r?\n/);
+  const ast = parse(source, { ecmaVersion: 'latest', sourceType: 'module', locations: true, allowHashBang: true });
   const aliases = new Set();
-  for (const line of lines) {
-    ALIAS_DECL.lastIndex = 0;
-    let match;
-    while ((match = ALIAS_DECL.exec(line))) aliases.add(match[1]);
+  const parents = new WeakMap();
+
+  function index(node, parent = null) {
+    if (parent) parents.set(node, parent);
+    for (const child of children(node)) index(child, node);
+  }
+  index(ast);
+
+  function collectAliases(node) {
+    if (node.type === 'VariableDeclarator' && node.id?.type === 'Identifier' && isRawStateRoot(node.init)) {
+      aliases.add(node.id.name);
+    }
+    for (const child of children(node)) collectAliases(child);
+  }
+  collectAliases(ast);
+
+  function rootOf(node) {
+    let current = node;
+    while (current?.type === 'MemberExpression') current = current.object;
+    if (isRawStateRoot(current)) return { kind: 'direct', root: current };
+    if (current?.type === 'Identifier' && aliases.has(current.name)) return { kind: 'alias', root: current };
+    return null;
+  }
+
+  function chainOf(node) {
+    const parts = [];
+    let current = node;
+    while (current?.type === 'MemberExpression') {
+      const name = propertyName(current);
+      parts.unshift(name.startsWith('[') ? name : current.computed ? `[${name}]` : name);
+      current = current.object;
+    }
+    if (isRawStateRoot(current)) return [current.object.type === 'ThisExpression' ? 'this.state' : 'engine.state', ...parts].join('.');
+    if (current?.type === 'Identifier' && aliases.has(current.name)) return [current.name, ...parts].join('.');
+    return '';
   }
 
   const findings = [];
-  for (let index = 0; index < lines.length; index++) {
-    const line = lines[index];
-    if (/^\s*(?:\/\/|\*|\*\/)/.test(line)) continue;
-
-    RAW_ROOT.lastIndex = 0;
-    let rootMatch;
-    while ((rootMatch = RAW_ROOT.exec(line))) {
-      const rest = line.slice(rootMatch.index + rootMatch[0].length);
-      PROPERTY_CHAIN.lastIndex = 0;
-      const chain = PROPERTY_CHAIN.exec(rest)?.[0] ?? '';
-      if (!chain) continue;
-      const expression = rootMatch[0] + chain;
+  function visit(node) {
+    if (node.type === 'MemberExpression') {
+      const parent = parents.get(node);
+      const outermost = !(parent?.type === 'MemberExpression' && parent.object === node);
+      if (outermost) {
+        const root = rootOf(node);
+        if (root) {
+          let access = 'READ';
+          if (parent?.type === 'AssignmentExpression' && parent.left === node) access = 'WRITE';
+          else if (parent?.type === 'UpdateExpression' && parent.argument === node) access = 'WRITE';
+          else if (parent?.type === 'CallExpression' && parent.callee === node && MUTATORS.has(propertyName(node))) access = 'MUTATION';
+          findings.push({
+            file: path.relative(ROOT, file),
+            line: node.loc.start.line,
+            column: node.loc.start.column + 1,
+            access,
+            expression: chainOf(node),
+            alias: root.kind === 'alias'
+          });
+        }
+      }
+    } else if (node.type === 'VariableDeclarator' && node.id?.type === 'ObjectPattern' && isRawStateRoot(node.init)) {
       findings.push({
         file: path.relative(ROOT, file),
-        line: index + 1,
-        access: classify(line, rootMatch.index + expression.length, expression),
-        expression: expression.trim(),
-        source: line.trim()
+        line: node.loc.start.line,
+        column: node.loc.start.column + 1,
+        access: 'READ',
+        expression: 'destructuring from Engine state',
+        alias: false
       });
     }
-
-    for (const alias of aliases) {
-      const aliasPattern = new RegExp('(?<![\\w$.])' + alias + '\\s*(?:\\?\\.\\s*|\\.\\s*)[A-Za-z_$][\\w$]*(?:\\s*(?:\\?\\.\\s*|\\.\\s*)[A-Za-z_$][\\w$]*|\\s*\\[[^\\]\\n]+\\])*', 'g');
-      aliasPattern.lastIndex = 0;
-      let match;
-      while ((match = aliasPattern.exec(line))) {
-        findings.push({
-          file: path.relative(ROOT, file),
-          line: index + 1,
-          access: classify(line, match.index + match[0].length, match[0]),
-          expression: match[0].trim(),
-          source: line.trim(),
-          alias: true
-        });
-      }
-    }
+    for (const child of children(node)) visit(child);
   }
+  visit(ast);
   return findings;
 }
 
 const files = walk(ROOT);
-const findings = files.flatMap(scan).sort((a, b) =>
-  a.file.localeCompare(b.file) || a.line - b.line || a.expression.localeCompare(b.expression)
+const findings = files.flatMap(analyze).sort((a, b) =>
+  a.file.localeCompare(b.file) || a.line - b.line || a.column - b.column
 );
+const counts = findings.reduce((result, item) => {
+  result[item.access] = (result[item.access] || 0) + 1;
+  return result;
+}, {});
 
 if (process.argv.includes('--json')) {
-  process.stdout.write(JSON.stringify({ scannedFiles: files.length, findings }, null, 2) + '\n');
+  process.stdout.write(JSON.stringify({ scannedFiles: files.length, findings, counts }, null, 2) + '\\n');
 } else {
-  const counts = findings.reduce((result, item) => { result[item.access] = (result[item.access] || 0) + 1; return result; }, {});
-  console.log('Heuristic runtime-state access audit (not AST-based)');
+  console.log('AST runtime-state access audit');
   console.log(`Scanned ${files.length} JavaScript files; found ${findings.length} candidates.`);
-  console.log(`Classification: READ=${counts.READ || 0}, WRITE=${counts.WRITE || 0}, MUTATION=${counts.MUTATION || 0}.\n`);
+  console.log(`Classification: READ=${counts.READ || 0}, WRITE=${counts.WRITE || 0}, MUTATION=${counts.MUTATION || 0}.\\n`);
   for (const item of findings) {
-    console.log(`[${item.access}] ${item.file}:${item.line}  ${item.expression}`);
+    console.log(`[${item.access}]${item.alias ? '[ALIAS]' : ''} ${item.file}:${item.line}:${item.column}  ${item.expression}`);
   }
-  console.log('\nLimitations: regex does not resolve scopes, aliases, destructuring or computed paths; strings/comments can cause false positives, and indirect access can be missed. Review findings manually.');
 }
