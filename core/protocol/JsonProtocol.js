@@ -128,6 +128,9 @@ export class JsonProtocol {
 
     publish(type, payload = {}, engine = null) {
         if (typeof type !== 'string' || !type.trim()) throw new TypeError('Event type is required.');
+        if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+            throw new TypeError('Event payload must be a JSON object.');
+        }
         const safePayload = cloneJsonValue(payload);
         this.revision += 1;
         const event = {
@@ -147,17 +150,16 @@ export class JsonProtocol {
         if (this.eventLog.length > this.maxEvents) this.eventLog.shift();
 
         this.listeners.forEach(listener => {
-            try { listener(event); }
+            try { listener(cloneJsonValue(event)); }
             catch (error) { console.error('[VSR Protocol] Event listener failed:', error); }
         });
         return event;
     }
 
     publishSnapshot(engine, reason = 'state.changed') {
-        const event = this.publish('state.snapshot', {
-            reason,
-            snapshot: this.createSnapshot(engine)
-        });
+        const snapshot = this.createSnapshot(engine);
+        snapshot.revision = this.revision + 1;
+        const event = this.publish('state.snapshot', { reason, snapshot });
         return event.payload.snapshot;
     }
 
@@ -199,6 +201,10 @@ export class JsonProtocol {
             };
         }
 
+        if (command.payload !== undefined &&
+            (!command.payload || typeof command.payload !== 'object' || Array.isArray(command.payload))) {
+            throw new TypeError('Command payload must be a JSON object.');
+        }
         const payload = command.payload === undefined ? {} : cloneJsonValue(command.payload);
         this.publish('command.accepted', { commandId: command.commandId, command: command.command });
         let result;
@@ -240,6 +246,9 @@ export class JsonProtocol {
     }
 
     createCommand(command, payload = {}, { commandId, expectedRevision } = {}) {
+        if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+            throw new TypeError('Command payload must be a JSON object.');
+        }
         const envelope = {
             protocol: 'vsr',
             protocolVersion: this.protocolVersion,
