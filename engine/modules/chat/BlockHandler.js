@@ -32,18 +32,23 @@ export const ChatBlockHandlers = {
         ensureInputVisible();
         const line = block.line[engine.chatState.index];
 
-        engine.chatState.index++;
+        const state = engine.api.engine.state;
+        state.update('session.chat', current => ({
+            ...(current || {}),
+            index: (current?.index || 0) + 1
+        }));
 
-        const history = engine.api.engine.state.get('chat.history', { id: engine.chatState.id });
-        if (history) history.push(line);
+        state.update('chat.history', history => [...(history || []), line], { id: engine.chatState.id });
 
         engine.api.presentation.chat.renderBubble(line, null);
 
-        const chatData = engine.api.engine.state.get('chat.data', { id: engine.chatState.id });
-        if (chatData?.set) {
-            chatData.set.step = engine.chatState.index;
-            chatData.set.lastInteraction = Date.now();
-        }
+        state.update('chat.data', chatData => {
+            if (chatData?.set) {
+                chatData.set.step = engine.chatState.index;
+                chatData.set.lastInteraction = Date.now();
+            }
+            return chatData;
+        }, { id: engine.chatState.id });
     },
 
     router: (engine, block) => {
