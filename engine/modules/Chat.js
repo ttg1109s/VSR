@@ -397,13 +397,9 @@ export const ChatSystem = {
         const playerLine = { nameID: entryChar, text: choice.text };
 
         this.state.chatHistory[this.chatState.id].push(playerLine);
-        API.render.chat.renderBubble(playerLine, document.getElementById('contact-chat-history'));
+        API.render.chat.renderBubble(playerLine, null);
 
-        const footer = document.getElementById('contact-chat-footer');
-        if (footer) {
-            footer.innerHTML = '';
-            footer.classList.add('hidden');
-        }
+        API.render.chat.clearChoices();
 
         this.chatState.blocking = true;
 
