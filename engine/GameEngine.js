@@ -114,7 +114,7 @@ export class GameEngine {
         this.isTransitioning = false;
     }
 
-    init(script) {
+    async init(script) {
         this.reset();
 
         const loadedData = LoaderSystem.loadScript(script);
@@ -130,14 +130,14 @@ export class GameEngine {
             console.error(`SAFEGUARD: Entry Scene '${entry}' not found! Trying fallback.`);
             const firstScene = Object.keys(this.state.scenes)[0];
             if (firstScene) {
-                this.enterScene(firstScene);
+                await this.enterScene(firstScene);
                 this.state.playerMoveHistory.push(firstScene);
                 this.publishProtocolSnapshot('engine.initialized');
             } else {
                 API.presentation.notification.alert("Init Error", "Không tìm thấy Scene hợp lệ để bắt đầu.", "danger");
             }
         } else {
-            this.enterScene(entry);
+            await this.enterScene(entry);
             this.state.playerMoveHistory.push(entry);
             this.publishProtocolSnapshot('engine.initialized');
         }
