@@ -23,7 +23,7 @@ function walk(dir, out = []) {
 function classify(line, end, expression) {
   const tail = line.slice(end);
   if (MUTATORS.test(expression) || /^\s*\.(?:push|pop|shift|unshift|splice|sort|reverse|fill|copyWithin)\s*\(/.test(tail)) return 'MUTATION';
-  if (/^\s*(?:\+\+|--)/.test(tail) || /^\s*(?:[+\-*/%]?=(?!=|>))/.test(tail)) return 'WRITE';
+  if (/^\s*(?:\+\+|--)/.test(tail) || /^\s*(?:\+=|-=|\*=|\/=|%=|=(?!=|>))/.test(tail)) return 'WRITE';
   return 'READ';
 }
 
