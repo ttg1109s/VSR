@@ -2573,7 +2573,8 @@
       "required": [
         "space",
         "in",
-        "subtype"
+        "subtype",
+        "target"
       ],
       "additionalProperties": false,
       "properties": {
@@ -2710,7 +2711,8 @@
             "NOT",
             "XOR",
             null
-          ]
+          ],
+          "default": null
         },
         "check": {
           "type": "array",
