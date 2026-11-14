@@ -55,7 +55,7 @@ export const StatsHelpers = {
         targetObj.stats[prop] = newStat;
 
         if (eff.notify) {
-            const type = current < 0 ? "danger" : "success";
+            const type = parsedCurrent < 0 ? "danger" : "success";
             engine.api.notifications.add(newStat.label, current, type, { source: 'scenario', category: 'scenario.stats.added' });
         }
 
