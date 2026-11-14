@@ -261,7 +261,7 @@ export const ChatSystem = {
             this.api.presentation.chat.renderChatHistory(id);
             // [FIX] Hide input (User requirement: No button)
             // Interaction with screen will trigger nextChat -> endChat via isReview flag
-            hideInput();
+            hideInput(this);
             this.chatState.isReview = true;
         }
     },
