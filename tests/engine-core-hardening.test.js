@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { scenarioSchema } from '../engine/scenario/ScenarioSchema.js';
-import { validateScenario, normalizeScenario, ScenarioValidationError } from '../engine/scenario/Scenario.js';
+import { validateScenario, normalizeScenario, migrateScenario, ScenarioValidationError } from '../engine/scenario/Scenario.js';
 import { LogicSystem } from '../engine/modules/Logic.js';
 import { EffectSystem } from '../engine/modules/Effect.js';
 import { LoaderSystem } from '../engine/modules/Loader.js';
