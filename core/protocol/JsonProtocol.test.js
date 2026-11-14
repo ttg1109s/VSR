@@ -28,6 +28,9 @@ const event = protocol.publishSnapshot(engine, 'test');
 assert(received === event, 'event delivered');
 assert(event.revision === 1, 'revision increments');
 assert(event.payload.snapshot.state.sceneId === 'scene_1', 'snapshot event payload');
+assert(event.payload.snapshot.revision === event.revision, 'snapshot and event revisions align');
+assert(protocol.getEventsSince(0).events.length === 1, 'event replay returns ordered event');
+assert(protocol.getEventsSince(0).gap === false, 'event replay has no gap');
 
 let executions = 0;
 protocol.registerCommand('test.increment', payload => {
@@ -47,5 +50,15 @@ assert(!conflict.ok && conflict.error.code === 'REVISION_CONFLICT', 'revision co
 
 const unknown = await protocol.dispatch(protocol.createCommand('test.unknown', {}, { commandId: 'cmd-3' }));
 assert(!unknown.ok && unknown.error.code === 'UNKNOWN_COMMAND', 'unknown command rejected');
+
+let circular = {};
+circular.self = circular;
+let circularRejected = false;
+try { protocol.publish('test.circular', circular); } catch (_) { circularRejected = true; }
+assert(circularRejected, 'circular event payload rejected');
+
+let invalidCommandRejected = false;
+try { protocol.createCommand('test.invalid', []); } catch (_) { invalidCommandRejected = true; }
+assert(invalidCommandRejected, 'non-object command payload rejected');
 
 console.log('VSR JSON Protocol tests: PASS');
