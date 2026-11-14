@@ -55,16 +55,16 @@ export const ItemStrategies = {
         if (engine.addItem) {
             const added = engine.addItem(eff.target);
             if (added) {
-                API.render.notification.add("Nhận vật phẩm", engine.state.itemInfo[eff.target]?.name || eff.target, "success");
-                API.render.components.explorer();
+                API.presentation.notification.add("Nhận vật phẩm", engine.state.itemInfo[eff.target]?.name || eff.target, "success");
+                API.presentation.components.explorer();
             }
         } else {
             // Fallback nếu hàm addItem chưa mixin (hiếm gặp)
             const char = ItemStrategies._getChar(engine);
             if (char && !char.inventory.includes(eff.target)) {
                 char.inventory.push(eff.target);
-                API.render.notification.add("Nhận vật phẩm", engine.state.itemInfo[eff.target]?.name || eff.target, "success");
-                API.render.components.explorer();
+                API.presentation.notification.add("Nhận vật phẩm", engine.state.itemInfo[eff.target]?.name || eff.target, "success");
+                API.presentation.components.explorer();
             }
         }
     },
@@ -85,7 +85,7 @@ export const ItemStrategies = {
                 if (handIdx > -1) char.hand.splice(handIdx, 1);
             }
 
-            API.render.components.explorer();
+            API.presentation.components.explorer();
             // Có thể thêm notify nếu cần thiết
         }
     },
@@ -99,7 +99,7 @@ export const ItemStrategies = {
         const idx = char.hand.indexOf(eff.target);
         if (idx > -1) {
             char.hand.splice(idx, 1);
-            API.render.components.explorer();
+            API.presentation.components.explorer();
         }
     },
 
@@ -115,11 +115,11 @@ export const ItemStrategies = {
 
         if (!char.hand.includes(eff.target) && char.inventory.includes(eff.target)) {
             if (char.hand.length >= maxHand) {
-                API.render.notification.add("Không thể cầm", "Tay đã đầy.", "warn");
+                API.presentation.notification.add("Không thể cầm", "Tay đã đầy.", "warn");
                 return;
             }
             char.hand.push(eff.target);
-            API.render.components.explorer();
+            API.presentation.components.explorer();
         }
     },
 
@@ -135,7 +135,7 @@ export const ItemStrategies = {
             u.current = Math.max(0, Math.min(u.max, oldVal + valToAdd));
 
             // [API FIX] Refresh UI
-            API.render.components.explorer();
+            API.presentation.components.explorer();
         }
     }
 };
