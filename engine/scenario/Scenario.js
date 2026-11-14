@@ -17,6 +17,10 @@ const ajv = new Ajv({ allErrors: true, strict: false, allowUnionTypes: true });
 addFormats(ajv);
 const validateAgainstSchema = ajv.compile(scenarioSchema);
 
+const defaultsAjv = new Ajv({ allErrors: true, strict: false, allowUnionTypes: true, useDefaults: true });
+addFormats(defaultsAjv);
+const applySchemaDefaults = defaultsAjv.compile(scenarioSchema);
+
 function clone(input) {
   try {
     const serialized = JSON.stringify(input);
@@ -395,28 +399,40 @@ function validateReferences(scenario) {
 
 export function validateScenario(scenario) {
   if (!isObject(scenario)) return ['root must be a JSON object'];
+
+  let candidate;
+  try {
+    candidate = clone(scenario);
+  } catch (error) {
+    return error instanceof ScenarioValidationError ? error.errors : [error.message];
+  }
+
+  applySchemaDefaults(candidate);
   const errors = [];
-  validateAgainstSchema(scenario);
+  validateAgainstSchema(candidate);
   for (const error of validateAgainstSchema.errors || []) {
     const path = error.instancePath || '/';
-    errors.push(`${path} ${error.message}`);
+    errors.push(path + ' ' + error.message);
   }
-  errors.push(...validateReferences(scenario));
+  errors.push(...validateReferences(candidate));
   return [...new Set(errors)];
 }
 
 export function normalizeScenario(input) {
   const scenario = clone(input);
-  scenario.formatVersion = scenario.formatVersion ?? SCENARIO_FORMAT_VERSION;
-  scenario.meta ||= {};
-  scenario.meta.entryCharacter = scenario.meta.entryCharacter ?? 'player';
+  if (!isObject(scenario)) throw new ScenarioValidationError(['root must be a JSON object']);
 
-  for (const [sceneId, scene] of Object.entries(scenario.scenes || {})) {
-    for (const [routerId, router] of Object.entries(scene.routers || {})) {
+  if (isObject(scenario.meta) && scenario.meta.entryCharacter == null) {
+    scenario.meta.entryCharacter = 'player';
+  }
+  applySchemaDefaults(scenario);
+
+  for (const [sceneId, scene] of Object.entries(isObject(scenario.scenes) ? scenario.scenes : {})) {
+    for (const [routerId, router] of Object.entries(isObject(scene?.routers) ? scene.routers : {})) {
       if (Array.isArray(router.actions)) {
         router.actions.forEach((action, index) => {
-          if (action && typeof action === 'object' && !action.id) {
-            action.id = `inline_${sceneId}_${routerId}_${index}`;
+          if (action && typeof action === 'object' && !Array.isArray(action) && !action.id) {
+            action.id = 'inline_' + sceneId + '_' + routerId + '_' + index;
           }
         });
       }
