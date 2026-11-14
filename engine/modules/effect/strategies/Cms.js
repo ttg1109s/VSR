@@ -5,19 +5,20 @@ import { resolveValue } from './Logic.js';
 // --- Character Helper ---
 const getCharacter = (engine, id) => {
     const charId = resolveValue(id, engine);
-    return engine.state.characters[charId];
+    return engine.api.engine.state.getRuntime('characters.[id]', { id: charId });
 };
 
 // --- Router Helper ---
 const getRouter = (engine, id) => {
     const rawId = resolveValue(id, engine);
     // Try explicit global ID first
-    if (engine.state.routers[rawId]) return engine.state.routers[rawId];
+    const state = engine.api.engine.state;
+    if (state.getRuntime('routers.[routerKey]', { routerKey: rawId })) return state.getRuntime('routers.[routerKey]', { routerKey: rawId });
 
     // Try current scene ID prefix
-    const sId = engine.state.sceneId;
+    const sId = engine.api.engine.state.sceneId;
     const globalId = `${sId}_${rawId}`;
-    return engine.state.routers[globalId];
+    return state.getRuntime('routers.[routerKey]', { routerKey: globalId });
 };
 
 const ensureArray = (obj, prop) => {
