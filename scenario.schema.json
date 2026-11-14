@@ -1251,6 +1251,27 @@
               }
             }
           ]
+        },
+        "format": {
+          "type": "string",
+          "enum": [
+            "photo",
+            "video",
+            "sound"
+          ]
+        },
+        "control": {
+          "type": "string",
+          "enum": [
+            "start",
+            "stop",
+            "repeat",
+            "play",
+            "pause"
+          ]
+        },
+        "dedupeKey": {
+          "type": "string"
         }
       },
       "additionalProperties": false,
