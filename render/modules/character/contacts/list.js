@@ -1,3 +1,4 @@
+import { escapeHtml } from '../../../../utils/security.js';
 import { timeAgo } from '../utils.js?v=2';
 import { ContactRow } from '../../../../components/Contact.js';
 
@@ -134,7 +135,7 @@ export const ContactList = {
                 preview: preview,
                 timeDisplay: timeDisplay,
                 isActive: isActive,
-                avatarHtml: `<div class="w-12 h-12 rounded-full bg-[var(--vsr-surface-3)] flex items-center justify-center text-[var(--vsr-ink-700)] font-bold border border-[var(--vsr-border)] group-hover:border-[var(--vsr-border-strong)] transition-colors">${(name && name.length > 0) ? name.charAt(0) : '?'}</div>`
+                avatarHtml: `<div class="w-12 h-12 rounded-full bg-[var(--vsr-surface-3)] flex items-center justify-center text-[var(--vsr-ink-700)] font-bold border border-[var(--vsr-border)] group-hover:border-[var(--vsr-border-strong)] transition-colors">${escapeHtml((name && name.length > 0) ? name.charAt(0) : '?')}</div>`
             });
 
             el.onclick = () => {
