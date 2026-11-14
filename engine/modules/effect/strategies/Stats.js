@@ -14,7 +14,7 @@ export const StatsHelpers = {
             delete targetObj.stats[prop];
             // [API FIX]
             if (eff.notify) engine.api.presentation.notification.add("Xóa chỉ số", `Đã xóa ${prop}`, "info");
-            const entryChar = engine.state.meta?.entryCharacter || 'player';
+            const entryChar = engine.api.engine.state.getRuntime('meta.entryCharacter') || 'player';
             if (isChar && effectiveTarget === entryChar) engine.api.presentation.components.updatePlayerCard();
             if (isChar && engine.api.presentation.updateContactDetails) engine.api.presentation.updateContactDetails(effectiveTarget);
             if (!isChar) engine.api.presentation.components.explorer();
@@ -44,7 +44,7 @@ export const StatsHelpers = {
             engine.api.presentation.notification.add(newStat.label, msg, type);
         }
 
-        const entryChar = engine.state.meta?.entryCharacter || 'player';
+        const entryChar = engine.api.engine.state.getRuntime('meta.entryCharacter') || 'player';
         if (isChar && effectiveTarget === entryChar) engine.api.presentation.components.updatePlayerCard();
         if (isChar && engine.api.presentation.updateContactDetails) engine.api.presentation.updateContactDetails(effectiveTarget);
         if (!isChar) engine.api.presentation.components.explorer();
@@ -107,7 +107,7 @@ export const StatsHelpers = {
             );
         }
 
-        const entryChar = engine.state.meta?.entryCharacter || 'player';
+        const entryChar = engine.api.engine.state.getRuntime('meta.entryCharacter') || 'player';
         if (isChar && effectiveTarget === entryChar) engine.api.presentation.components.updatePlayerCard();
         if (isChar && engine.api.presentation.updateContactDetails) engine.api.presentation.updateContactDetails(effectiveTarget);
         if (!isChar) engine.api.presentation.components.explorer();
