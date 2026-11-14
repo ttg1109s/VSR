@@ -32,7 +32,7 @@ export class NotificationSystem {
     const id = input.id || `${this.engineId}:notification:${++this.sequence}`;
     return {
       id: String(id), source: String(input.source || 'engine'),
-      category: String(input.category || `${input.source || 'engine'}.${title.toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g, '').replace(/[^a-z0-9]+/g, '.').replace(/^\\.|\\.$/g, '') || 'general'}`),
+      category: String(input.category || `${input.source || 'engine'}.${title}`),
       title, message, severity, level: originalLevel,
       priority: Number.isFinite(input.priority) ? input.priority : PRIORITY[severity],
       presentation: presentation === 'modal' ? 'modal' : 'toast',
