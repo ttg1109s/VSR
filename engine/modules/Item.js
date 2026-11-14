@@ -1,117 +1,92 @@
-
 export const ItemSystem = {
     getOwnerId() {
-        // [Refactor] Luôn lấy theo entryCharacter (cơ thể gốc của người chơi)
-        // Nếu faker mode = swap -> entryCharacter sẽ thay đổi.
-        // Nếu faker mode = soul/mask -> entryCharacter vẫn là 'player' (hoặc char khởi đầu).
-        return this.state.meta?.entryCharacter || 'player';
+        return this.api.engine.state.getRuntime('meta.entryCharacter') || 'player';
     },
 
     getInventory() {
         const ownerId = this.getOwnerId();
-        const char = this.state.characters[ownerId];
-        return char ? (char.inventory || []) : [];
+        return this.api.engine.state.getRuntime('characters.[id].inventory', { id: ownerId }) || [];
     },
 
     getHand() {
         const ownerId = this.getOwnerId();
-        const char = this.state.characters[ownerId];
-        return char ? (char.hand || []) : [];
+        return this.api.engine.state.getRuntime('characters.[id].hand', { id: ownerId }) || [];
     },
 
     addItem(itemId) {
+        const state = this.api.engine.state;
         const ownerId = this.getOwnerId();
-        const char = this.state.characters[ownerId];
-        if (!char) return false;
-        if (!char.inventory) char.inventory = [];
+        const inventory = [...(state.getRuntime('characters.[id].inventory', { id: ownerId }) || [])];
+        if (!state.getRuntime('characters.[id]', { id: ownerId })) return false;
 
-        if (!char.inventory.includes(itemId)) {
-            // [FIX] 'config.maxInventory' (mảng [limit, char_id]) trước đây không hề được
-            // kiểm tra khi thêm đồ — giới hạn số món trong túi theo nhân vật chưa từng có
-            // hiệu lực thực tế. Áp dụng giới hạn nếu có cặp khớp với nhân vật sở hữu.
+        if (!inventory.includes(itemId)) {
             const maxInvList = (this.getConfig ? this.getConfig('maxInventory') : null) || [];
             const ownerLimitPair = Array.isArray(maxInvList) ? maxInvList.find(pair => Array.isArray(pair) && pair[1] === ownerId) : null;
             const limit = ownerLimitPair ? ownerLimitPair[0] : 0;
-            if (limit > 0 && char.inventory.length >= limit) {
+            if (limit > 0 && inventory.length >= limit) {
                 this.api.presentation.notification.add("Không thể nhặt", "Túi đồ đã đầy.", "warn");
                 return false;
             }
-            char.inventory.push(itemId);
+            inventory.push(itemId);
+            state.set('characters.[id].inventory', inventory, { id: ownerId });
             return true;
         }
         return false;
     },
 
-    // [Refactor] Calculate status on-demand (Single Source of Truth)
     isBroken(itemId) {
-        // [FIXED] Use API to read state via Schema
         const current = this.api.engine.state.get('item.current', { id: itemId });
         const max = this.api.engine.state.get('item.max', { id: itemId });
-
-        // Broken if current usage exceeds or equals max usage (assuming max > 0)
-        if (max > 0 && current >= max) {
-            return true;
-        }
-        return false;
+        return max > 0 && current >= max;
     },
 
     async toggleHand(id) {
+        const state = this.api.engine.state;
         const ownerId = this.getOwnerId();
-        const char = this.state.characters[ownerId];
-        if (!char) return;
-        if (!char.hand) char.hand = [];
-
-        const idx = char.hand.indexOf(id);
-        const info = this.state.itemInfo[id];
+        const hand = [...(state.getRuntime('characters.[id].hand', { id: ownerId }) || [])];
+        if (!state.getRuntime('characters.[id]', { id: ownerId })) return;
+        const info = state.getRuntime('itemInfo.[id]', { id });
 
         if (!info) {
             this.api.presentation.notification.add("Lỗi", "Vật phẩm không tồn tại.", "danger");
             return;
         }
 
+        const idx = hand.indexOf(id);
         if (idx > -1) {
-            // --- UNEQUIP ---
-            char.hand.splice(idx, 1);
+            hand.splice(idx, 1);
+            state.set('characters.[id].hand', hand, { id: ownerId });
             this.api.presentation.notification.add("Đã cất", "Bỏ vật phẩm vào túi", "info");
-
-            if (info.effect && info.effect.unequip) {
-                await this.processRunnables(info.effect.unequip, { itemId: id });
-            }
+            if (info.effect?.unequip) await this.processRunnables(info.effect.unequip, { itemId: id });
         } else {
-            // --- EQUIP ---
-            // [FIX] 'maxHandOn' là sibling của 'config', không nằm lồng trong 'config.maxInventory'
-            // (maxInventory là mảng [limit, char_id], không thể mang thuộc tính tên).
-            // Dùng getConfig() để nhất quán với effect/strategies/Item.js.
-            const maxHand = (this.getConfig ? this.getConfig('maxHandOn') : this.state.config?.maxHandOn) || 10;
-            if (char.hand.length >= maxHand) {
+            const maxHand = (this.getConfig ? this.getConfig('maxHandOn') : state.getRuntime('config.maxHandOn')) || 10;
+            if (hand.length >= maxHand) {
                 this.api.presentation.notification.add("Không thể cầm", "Tay đã đầy.", "warn");
                 return;
             }
-
             if (info.requirements) {
                 const res = this.checkReq(info.requirements);
-                if (!res.pass) { this.api.presentation.notification.add("Không thể cầm", "Chưa đủ điều kiện sử dụng.", "danger"); return; }
+                if (!res.pass) {
+                    this.api.presentation.notification.add("Không thể cầm", "Chưa đủ điều kiện sử dụng.", "danger");
+                    return;
+                }
             }
-            char.hand.push(id);
+            hand.push(id);
+            state.set('characters.[id].hand', hand, { id: ownerId });
             this.api.presentation.notification.add("Đã cầm", `${info.name} đang ở trên tay`, "success");
-
-            if (info.effect && info.effect.equip) {
-                await this.processRunnables(info.effect.equip, { itemId: id });
-            }
+            if (info.effect?.equip) await this.processRunnables(info.effect.equip, { itemId: id });
         }
 
-        // Update UI
         this.api.presentation.components.updateItemModal(id);
-        this.api.presentation.components.explorer(); // Refresh inventory grid
+        this.api.presentation.components.explorer();
         this.commitState('inventory.changed');
     },
 
-    // [NEW] Xử lý hành động "Dùng" (Use) vật phẩm
     async use(id) {
-        const info = this.state.itemInfo[id];
+        const state = this.api.engine.state;
+        const info = state.getRuntime('itemInfo.[id]', { id });
         if (!info) return;
 
-        // 1. Kiểm tra Requirements (nếu có)
         if (info.requirements) {
             const res = this.checkReq(info.requirements);
             if (!res.pass) {
@@ -120,45 +95,26 @@ export const ItemSystem = {
             }
         }
 
-        // 2. Kiểm tra độ bền/số lần sử dụng
         if (info.usage) {
-            // Check broken status (On-demand)
             const isBroken = this.isBroken(id);
-
-            // Config: brokenDisable
-            // false (default) -> Broken items are disabled (Cannot use)
-            // true -> Disable the "Broken" penalty (Can use even if broken)
             const disableBrokenPenalty = this.getConfig ? this.getConfig('brokenDisable') : false;
-
             if (isBroken && !disableBrokenPenalty) {
                 this.api.presentation.notification.add("Hỏng", "Vật phẩm đã hỏng hoặc hết lượt dùng.", "warn");
                 return;
             }
-
-            // Tăng độ mòn/số lần đã dùng (Nếu chưa hỏng hẳn hoặc config cho phép dùng tiếp)
-            // [UPDATED] Check autoInc config (Default: true)
             const autoInc = info.usage.autoInc !== false;
-
             if (typeof info.usage.current === 'number' && autoInc) {
-                info.usage.current++;
-                // [Refactor] No need to store state. logic is on-demand.
+                state.set('item.current', info.usage.current + 1, { id });
             }
         }
 
-        // 3. Thực thi Effect 'use'
-        if (info.effect && info.effect.use) {
+        if (info.effect?.use) {
             this.api.presentation.notification.add("Sử dụng", `Đã dùng ${info.name}`, "info");
-
-            // Execute runnables defined in schema
             await this.processRunnables(info.effect.use, { itemId: id });
-
-            // Nếu vật phẩm là loại tiêu hao (consumable) và logic game yêu cầu xóa khi hỏng/hết lượt
-            // có thể thêm logic xóa tại đây. Hiện tại Engine giữ lại item (chỉ update status).
         } else {
             this.api.presentation.notification.add("Thông báo", "Vật phẩm này không có tác dụng khi sử dụng trực tiếp.", "info");
         }
 
-        // 4. Update UI
         this.api.presentation.components.updateItemModal(id);
         this.api.presentation.components.explorer();
     }
