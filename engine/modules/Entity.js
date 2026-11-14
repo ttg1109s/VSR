@@ -8,7 +8,7 @@ export const EntitySystem = {
     ...FakerSystem,
 
     initCharactersMoving() {
-        Object.keys(this.state.characters).forEach(charId => taskManager.kill(`move_char_${charId}`));
+        Object.keys(this.state.characters).forEach(charId => this.taskManager.kill(`move_char_${charId}`));
         const currentIdentity = this.state.faker.active ? this.state.faker.targetId : (this.state.meta?.entryCharacter || 'player');
 
         Object.keys(this.state.characters).forEach(charId => {
@@ -36,14 +36,14 @@ export const EntitySystem = {
         let rawStep = (currentItem && currentItem.nextStep) ? resolveValue(currentItem.nextStep, this) : minTime;
         const waitTime = Math.max(minTime, Number(rawStep) || minTime);
 
-        taskManager.kill(`move_char_${charId}`);
-        taskManager.addNew(`move_char_${charId}`, {
+        this.taskManager.kill(`move_char_${charId}`);
+        this.taskManager.addNew(`move_char_${charId}`, {
             time: waitTime * 1000,
             mode: 'timeout',
             count: 1,
             exe: () => this.executeCharacterMove(charId)
         });
-        taskManager.operator(`move_char_${charId}`, 'enabled');
+        this.taskManager.operator(`move_char_${charId}`, 'enabled');
     },
 
     resumeNPCMovement() {
@@ -85,7 +85,7 @@ export const EntitySystem = {
         if (charId === currentIdentity) return;
 
         if (!this.validateMoveState(charId)) {
-            taskManager.kill(`move_char_${charId}`);
+            this.taskManager.kill(`move_char_${charId}`);
             return;
         }
 
