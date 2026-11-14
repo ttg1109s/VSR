@@ -143,7 +143,7 @@ const CheckTypeHandlers = {
 export const LogicSystem = {
     checkReq(req) {
         if (req === null || req === undefined || req === false) return { pass: true };
-        let definition = req;
+        let definition = req?.inline || req;
         if (typeof req === 'string') {
             definition = this.src?.templates?.requirement?.[req]
                 || this.src?.templates?.requirements?.[req]
