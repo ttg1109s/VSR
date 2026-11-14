@@ -192,7 +192,6 @@ export const ActionSystem = {
 
             // Update the action counter without retaining a mutable state reference.
             const actStateKey = `${sId}_${rId}_${actionKey}`;
-            const state = this.api.engine.state;
             state.update('actions.[id]', current => ({
                 countClicks: 0,
                 countFails: 0,
