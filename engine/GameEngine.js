@@ -115,7 +115,7 @@ export class GameEngine {
  async init(script){
   const loaded=LoaderSystem.loadScript(script,this.api);
   if(!loaded)throw new Error('Scenario loading failed.');
-  const sourceCopy=cloneJsonValue(script);
+  const sourceCopy=cloneJsonValue(loaded.scenario);
   this.reset();
   this.scenario=sourceCopy;this.src=loaded.src;this.state=loaded.state;
   this.initCharactersMoving();
