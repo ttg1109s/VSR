@@ -13,7 +13,7 @@ export const StatsHelpers = {
         if (targetObj.stats[prop]) {
             delete targetObj.stats[prop];
             // [API FIX]
-            if (eff.notify) engine.api.presentation.notification.add("Xóa chỉ số", `Đã xóa ${prop}`, "info", { source: 'scenario', category: 'scenario.stats.removed' });
+            if (eff.notify) engine.api.notifications.add("Xóa chỉ số", `Đã xóa ${prop}`, "info", { source: 'scenario', category: 'scenario.stats.removed' });
             const entryChar = engine.api.engine.state.getRuntime('meta.entryCharacter') || 'player';
             if (isChar && effectiveTarget === entryChar) engine.api.presentation.components.updatePlayerCard();
             if (isChar && engine.api.presentation.updateContactDetails) engine.api.presentation.updateContactDetails(effectiveTarget);
@@ -41,7 +41,7 @@ export const StatsHelpers = {
             const isNegative = newStat.current < 0;
             const type = isNegative ? "danger" : "success";
             const msg = newStat.current;
-            engine.api.presentation.notification.add(newStat.label, msg, type, { source: 'scenario', category: 'scenario.stats.added' });
+            engine.api.notifications.add(newStat.label, msg, type, { source: 'scenario', category: 'scenario.stats.added' });
         }
 
         const entryChar = engine.api.engine.state.getRuntime('meta.entryCharacter') || 'player';
@@ -100,7 +100,7 @@ export const StatsHelpers = {
                 // diff đã có dấu trừ sẵn
             }
 
-            engine.api.presentation.notification.add(
+            engine.api.notifications.add(
                 isChar ? "Chỉ số" : "Vật phẩm",
                 `${name} (${label}): ${sign}${diff}`,
                 type,
