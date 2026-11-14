@@ -274,8 +274,13 @@ function validateReferences(scenario) {
     if (effect.type === 'item' && effect.target && !dynamicTarget && !Object.hasOwn(items, effect.target)) {
       add(`${path}.target`, `references missing item '${effect.target}'`);
     }
-    if (effect.type === 'characters' && effect.target && !dynamicTarget && !characterExists(effect.target)) {
-      add(`${path}.target`, `references missing character '${effect.target}'`);
+    if (effect.type === 'characters' && effect.target && !dynamicTarget) {
+      const targets = effect.subtype === 'mng_stats' && typeof effect.target === 'string'
+        ? effect.target.split(':').filter(Boolean)
+        : [effect.target];
+      for (const target of targets) {
+        if (!characterExists(target)) add(`${path}.target`, `references missing character '${target}'`);
+      }
     }
     if (effect.type === 'cms' && typeof effect.id === 'string' && !effect.id.includes('$(')) {
       if (effect.table === 'characters' && !characterExists(effect.id)) {
