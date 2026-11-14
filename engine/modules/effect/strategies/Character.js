@@ -21,8 +21,8 @@ const StatsLogic = {
             charA.stats = JSON.parse(JSON.stringify(charB.stats));
             charB.stats = tempStats;
 
-            if (idA === entryChar || idB === entryChar) API.render.components.updatePlayerCard();
-            API.render.notification.add("Hoán đổi", `Chỉ số giữa ${charA.set.name} và ${charB.set.name} đã thay đổi.`, "info");
+            if (idA === entryChar || idB === entryChar) API.presentation.components.updatePlayerCard();
+            API.presentation.notification.add("Hoán đổi", `Chỉ số giữa ${charA.set.name} và ${charB.set.name} đã thay đổi.`, "info");
         }
     },
     copy_to: (engine, eff) => {
@@ -38,7 +38,7 @@ const StatsLogic = {
         if (destChar && srcChar && srcChar.stats && srcChar.stats[statKey]) {
             if (!destChar.stats) destChar.stats = {};
             destChar.stats[statKey] = JSON.parse(JSON.stringify(srcChar.stats[statKey]));
-            if (destId === entryChar) API.render.components.updatePlayerCard();
+            if (destId === entryChar) API.presentation.components.updatePlayerCard();
         }
     },
     cut_to: (engine, eff) => {
@@ -55,7 +55,7 @@ const StatsLogic = {
             if (!destChar.stats) destChar.stats = {};
             destChar.stats[statKey] = JSON.parse(JSON.stringify(srcChar.stats[statKey]));
             delete srcChar.stats[statKey];
-            if (destId === entryChar || srcId === entryChar) API.render.components.updatePlayerCard();
+            if (destId === entryChar || srcId === entryChar) API.presentation.components.updatePlayerCard();
         }
     },
     delete: (engine, eff) => {
@@ -66,7 +66,7 @@ const StatsLogic = {
 
         if (char && char.stats && char.stats[statKey]) {
             delete char.stats[statKey];
-            if (targetId === entryChar) API.render.components.updatePlayerCard();
+            if (targetId === entryChar) API.presentation.components.updatePlayerCard();
         }
     },
     add_stats: (engine, eff) => {
