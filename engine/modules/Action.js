@@ -226,7 +226,11 @@ export const ActionSystem = {
             let failType = null;
 
             if (set.requirement === true) {
-                const checkRes = this.checkReq(actDef.requirement);
+                // An explicitly enabled requirement without a definition is a
+                // configuration error, never an implicit pass.
+                const checkRes = actDef.requirement
+                    ? this.checkReq(actDef.requirement)
+                    : { pass: false, type: 'invalid_requirement' };
                 checkPassed = checkRes.pass;
                 failType = checkRes.type;
             }
