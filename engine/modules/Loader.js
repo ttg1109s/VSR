@@ -5,7 +5,7 @@ export const LoaderSystem = {
     loadScript(script) {
         if (!script || !script.scenes) {
             console.error("SAFEGUARD: Script data is invalid or missing 'scenes'.");
-            if (window.API && window.API.render) window.API.render.notification.alert("Data Error", "Dữ liệu kịch bản bị lỗi.", "danger");
+            API.presentation.notification.alert("Data Error", "Dữ liệu kịch bản bị lỗi.", "danger");
             return null;
         }
 
