@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { NotificationSystem } from '../engine/modules/Notification.js';
 import { ActionSystem } from '../engine/modules/Action.js';
+import { GameEngine } from '../engine/GameEngine.js';
 
 function makeProtocol() {
   const events = [];
@@ -103,4 +104,39 @@ test('action blocked by unread description emits a deduplicated not_read notific
   assert.equal(calls[0][2], 'warn');
   assert.equal(calls[0][3].category, 'action.not_read');
   assert.equal(calls[0][3].dedupeKey, 'action.not_read:scene_router_inspect');
+});
+
+test('notification manager automatically expires toast notifications', () => {
+  const protocol = makeProtocol();
+  let now = 100;
+  const scheduled = [];
+  const notifications = new NotificationSystem({
+    protocol,
+    clock: () => now,
+    schedule(callback, delay) {
+      const timer = { callback, delay, unref() {} };
+      scheduled.push(timer);
+      return timer;
+    },
+    cancelSchedule() {}
+  });
+  const created = notifications.add('Tạm thời', 'Tự hết hạn', 'info', { duration: 50 }).notification;
+  assert.equal(scheduled[0].delay, 50);
+  now = 150;
+  scheduled[0].callback();
+  assert.equal(notifications.getPending().length, 0);
+  assert.equal(notifications.getHistory()[0].status, 'expired');
+  assert.equal(protocol.events.at(-1).event, 'presentation.notification.expired');
+  assert.equal(created.expiresAt, 150);
+});
+
+test('GameEngine presentation notification facade routes through NotificationSystem', () => {
+  const engine = new GameEngine({ engineId: 'notification-facade-test' });
+  engine.api.presentation.notification.add('Thông báo Engine', 'Đã nhận', 'success');
+  const event = engine.protocol.getEventsAfter(0).events.find(item => item.event === 'presentation.notification.add');
+  assert.ok(event);
+  assert.equal(event.payload.notification.source, 'engine');
+  assert.deepEqual(event.payload.args, ['Thông báo Engine', 'Đã nhận', 'success']);
+  assert.equal(engine.api.notifications.getHistory().length, 1);
+  engine.dispose();
 });
