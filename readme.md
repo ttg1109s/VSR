@@ -1,7 +1,7 @@
 Visual Story RPG Engine
 
 Dự án engine game web-based tập trung vào kể chuyện tương tác (Visual Novel/RPG/Point & Click) sử dụng cấu trúc dữ liệu JSON.
-Kiến trúc **Logic (Engine) - Bridge (API) - View (Render)**, tách nhỏ UI (Components) để dễ bảo trì. Chạy trực tiếp qua `file://` hoặc static server, không cần build step.
+Kiến trúc **Logic (Engine) - Bridge (API) - View (Render)**, tách nhỏ UI (Components) để dễ bảo trì. Chạy qua HTTP static server (không mở trực tiếp bằng `file://` vì trình duyệt chặn ES modules/CORS), không cần build step.
 
 ## 🆕 v13 — Mobile-First Restructure + Light Theme
 
