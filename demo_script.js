@@ -36,7 +36,7 @@
 // sửa trực tiếp trong engine, xem thêm ở các file liên quan):
 //   1. `{"type":"goto","subtype":"end",...}` trước đây không bao giờ thực sự
 //      hiện màn kết thúc (GotoStrategies.end chỉều pause/clear queue, không
-//      gọi API.render.components.ending) — đã sửa trong
+//      gọi API.presentation.components.ending) — đã sửa trong
 //      engine/modules/effect/strategies/Logic.js.
 //   2. `startChat()` crash với MỌI kịch bản hợp lệ theo schema (vì
 //      state.chats[id] đã tồn tại sau khi Loader.js copy script.chat, nên
