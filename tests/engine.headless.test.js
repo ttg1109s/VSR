@@ -106,3 +106,25 @@ test('Entity meeting counters update through detached StateAccess values',async(
  e.updateMetState(charId,'__identity_probe');
  assert.equal(e.state.characters[charId].met.find(x=>x.startsWith('__identity_probe:')),'__identity_probe:2');
 });
+
+test('Chat choice progress stays in runtime state and endChat commits synchronously',async()=>{
+ const e=makeEngine();
+ await e.init(structuredClone(DEMO_SCRIPT));
+ const chatId='__chat_state_probe';
+ const chat={meta:{sender:'npc',entry:'start'},block:{start:{choice_id:'probe_choices'}},choice:{probe_choices:[{text:'Continue'}]}};
+ e.src.chat ||= {};
+ e.src.chat[chatId]=structuredClone(chat);
+ e.state.chats[chatId]=structuredClone(chat);
+ e.state.chatHistory[chatId]=[];
+ e.chatState={active:true,id:chatId,blockId:'start',index:0,blocking:false};
+ await e.selectChatChoice(0);
+ assert.equal(e.state.chats[chatId].block.start.choiced,true);
+ assert.equal(e.state.chats[chatId].choice.probe_choices[0].set.choiced,true);
+ assert.equal(e.src.chat[chatId].block.start.choiced,undefined);
+ assert.deepEqual(e.state.chatHistory[chatId].map(line=>line.text),['Continue']);
+ e.state.actions.__chat_action_probe={type:'show_chat',target:chatId,display:'show'};
+ e.endChat();
+ assert.equal(e.state.chats[chatId].set.read,true);
+ assert.equal(e.state.actions.__chat_action_probe.display,'hide');
+ assert.equal(e.chatState.active,false);
+});
