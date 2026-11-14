@@ -12,7 +12,7 @@ import {createEngineAPI} from '../api/index.js';
 import {JsonProtocol,cloneJsonValue} from '../core/protocol/JsonProtocol.js';
 import {verifyPassword} from '../password/verify.js';
 import {TaskManager} from '../plugin/taskmanager.js';
-import {createSaveEnvelope,normalizeSaveEnvelope} from './persistence/SaveState.js';
+import {createSaveEnvelope,normalizeSaveEnvelope,SAVE_VERSION} from './persistence/SaveState.js';
 
 export class GameEngine {
  constructor({taskManager,engineId,authorizeCommand,clock}={}) {
@@ -60,7 +60,7 @@ export class GameEngine {
   this.state={sceneId:'',scenes:{},routers:{},actions:{},global:{},characters:{},itemInfo:{},chats:{},chatHistory:{},executed:[],effect_overrides:{},effectQueue:{sync:[],async:[]},isSyncQueueRunning:false,isAsyncQueueRunning:false,pausedBackgroundTasks:{automations:{},characters:{}},prevRouter:null,map:{choices:{},blocks:{}},automations:{},faker:{active:false,targetId:null,backupPlayer:null},playerMoveHistory:[],sceneTree:{},config:{}};
   this.src=null;this.scenario=null;this.pendingPasswordAction=null;
   this.chatState={active:false,blocking:false,id:null,blockId:null,index:0,triggerActionId:null,actionModified:false};
-  this.taskSequence=0;this.currentStillTask=null;this.activeTimerTasks=[];this.isActionProcessing=false;this.isTransitioning=false;this.disposed=false;
+  this.taskSequence=0;this.currentStillTask=null;this.activeTimerTasks=[];this.isActionProcessing=false;this.isTransitioning=false;this.disposed=false;this.restoredTaskTimers={};
  }
  async init(script){
   const loaded=LoaderSystem.loadScript(script,this.api);
@@ -89,16 +89,40 @@ export class GameEngine {
   const normalized=LoaderSystem.loadScript(save.scenario,this.api);
   if(!normalized)throw new TypeError('Save scenario is invalid.');
   const restored=cloneJsonValue(save.state);
-  if(!restored.scenes||!restored.characters||!restored.sceneId||!restored.scenes[restored.sceneId]||!normalized.state.scenes?.[restored.sceneId])throw new TypeError('Save state does not match scenario.');
-  await this.init(save.scenario);
-  restored.effectQueue={sync:[],async:[]};restored.isSyncQueueRunning=false;restored.isAsyncQueueRunning=false;restored.pausedBackgroundTasks={automations:{},characters:{}};
-  this.state=restored;this.chatState={...this.chatState,...(cloneJsonValue(save.chatState)||{})};
-  this.taskManager.killAll();this.rehydrateBackgroundTasks();this.commitState('save.restored');
-  return{restored:true,saveVersion:1};
+  const requiredObjects=['scenes','characters','routers','actions','global','automations','chats','chatHistory'];
+  if(requiredObjects.some(key=>!restored[key]||typeof restored[key]!=='object'||Array.isArray(restored[key]))||
+     typeof restored.sceneId!=='string'||!restored.sceneId||
+     !restored.scenes[restored.sceneId]||!normalized.state.scenes?.[restored.sceneId]) {
+   throw new TypeError('Save state does not match scenario structure.');
+  }
+  for(const sceneId of Object.keys(restored.scenes)) {
+   if(!normalized.state.scenes?.[sceneId])throw new TypeError(`Save contains unknown scene "${sceneId}".`);
+  }
+  this.reset();
+  this.scenario=cloneJsonValue(save.scenario);
+  this.src=normalized.src;
+  this.state=restored;
+  this.chatState={...this.chatState,...(cloneJsonValue(save.chatState)||{})};
+  this.pendingPasswordAction=cloneJsonValue(save.pendingPasswordAction)||null;
+  this.restoredTaskTimers=cloneJsonValue(save.taskRemainingMs)||{};
+  this.rehydrateBackgroundTasks();
+  this.commitState('save.restored');
+  return{restored:true,saveVersion:SAVE_VERSION};
  }
  rehydrateBackgroundTasks(){
-  this.initCharactersMoving();
-  for(const[id,state]of Object.entries(this.state.automations||{}))if(state?.active)this.processAutomationStep(id);
+  const timers=this.restoredTaskTimers||{};
+  for(const charId of Object.keys(this.state.characters||{})) {
+   const remaining=timers[`move_char_${charId}`];
+   this.scheduleCharacterMove(charId,Number.isFinite(remaining)?remaining:null);
+  }
+  for(const[id,state]of Object.entries(this.state.automations||{})) {
+   if(!state?.active)continue;
+   const taskId=`auto_${id}`;
+   const remaining=timers[taskId];
+   if(Number.isFinite(remaining))this.scheduleDelay(remaining,()=>this.processAutomationStep(id),taskId);
+   else this.processAutomationStep(id);
+  }
+  this.restoredTaskTimers={};
  }
  dispose(){this.clearEffectQueue('all');this.taskManager?.killAll?.();this.protocol?.publish('engine.disposed',{});this.disposed=true;}
  forceUnlock(){this.isTransitioning=false;this.isActionProcessing=false;this.state.isSyncQueueRunning=false;this.state.isAsyncQueueRunning=false;this.clearEffectQueue('all');this.api.presentation.navigation.setBlocking(false);}
