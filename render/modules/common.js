@@ -138,6 +138,11 @@ export const commonMethods = {
             if (diff > 3600) timeStr = `${Math.floor(diff / 3600)}h ago`;
 
             el.innerHTML = NotificationRow({ n, timeStr, color, icon });
+            const removeButton = el.querySelector('[data-notification-id]');
+            if (removeButton) removeButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                this.removeNotification(Number(removeButton.dataset.notificationId), event);
+            });
             container.appendChild(el);
         });
     },
