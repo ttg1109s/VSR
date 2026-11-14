@@ -7,11 +7,11 @@ import { API } from '../../api/index.js';
 export const ChatSystem = {
     // --- Helper: Quản lý lớp phủ Z-Index ---
     toggleChatOverlay(active) {
-        if (API.render.navigation.setBlocking) {
-            API.render.navigation.setBlocking(active);
+        if (API.presentation.navigation.setBlocking) {
+            API.presentation.navigation.setBlocking(active);
         }
-        if (API.render.chat.toggleOverlay) {
-            API.render.chat.toggleOverlay(active);
+        if (API.presentation.chat.toggleOverlay) {
+            API.presentation.chat.toggleOverlay(active);
         }
     },
 
@@ -219,8 +219,8 @@ export const ChatSystem = {
                 }
 
                 // [FIX] Render history immediately so context is visible
-                if (API.render && API.render.chat && API.render.chat.renderChatHistory) {
-                    API.render.chat.renderChatHistory(id);
+                if (API.presentation && API.presentation.chat && API.presentation.chat.renderChatHistory) {
+                    API.presentation.chat.renderChatHistory(id);
                 }
 
                 if (stopAtBlock) {
@@ -248,9 +248,9 @@ export const ChatSystem = {
             isProcessing: false
         };
 
-        API.render.navigation.switchScreen('character');
-        API.render.navigation.selectContact(ownerId);
-        API.render.navigation.openThread(id);
+        API.presentation.navigation.switchScreen('character');
+        API.presentation.navigation.selectContact(ownerId);
+        API.presentation.navigation.openThread(id);
 
         this.toggleChatOverlay(true);
 
@@ -259,7 +259,7 @@ export const ChatSystem = {
         } else {
             // Just refresh render
             console.log(`[ChatSystem] Chat '${id}' fully reviewed. Render only.`);
-            API.render.chat.renderChatHistory(id);
+            API.presentation.chat.renderChatHistory(id);
             // [FIX] Hide input (User requirement: No button)
             // Interaction with screen will trigger nextChat -> endChat via isReview flag
             hideInput();
@@ -397,9 +397,9 @@ export const ChatSystem = {
         const playerLine = { nameID: entryChar, text: choice.text };
 
         this.state.chatHistory[this.chatState.id].push(playerLine);
-        API.render.chat.renderBubble(playerLine, null);
+        API.presentation.chat.renderBubble(playerLine, null);
 
-        API.render.chat.clearChoices();
+        API.presentation.chat.clearChoices();
 
         this.chatState.blocking = true;
 
@@ -445,8 +445,8 @@ export const ChatSystem = {
 
                 this.processChatBlock();
                 this.toggleChatOverlay(true);
-                API.render.refresh();
-                API.render.components.inputBar();
+                API.presentation.refresh();
+                API.presentation.components.inputBar();
 
             }, 500);
         } else {
@@ -478,7 +478,7 @@ export const ChatSystem = {
         this.toggleChatOverlay(false);
         hideInput();
 
-        API.render.chat.renderContactList();
-        API.render.refresh();
+        API.presentation.chat.renderContactList();
+        API.presentation.refresh();
     }
 };
