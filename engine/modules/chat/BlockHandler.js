@@ -17,9 +17,7 @@ export const ChatBlockHandlers = {
                 console.log(`[BlockHandler] Rendering choices...`);
                 hideInput();
 
-                if (API.render.chat.threadId === engine.chatState.id) {
-                    API.render.chat.renderChoices(block.choices, null);
-                }
+                API.presentation.chat.renderChoices(block.choices, null);
                 return; // Dừng lại đợi user chọn
             }
 
@@ -40,9 +38,7 @@ export const ChatBlockHandlers = {
         const history = API.engine.state.get('chat.history', { id: engine.chatState.id });
         if (history) history.push(line);
 
-        if (API.render.chat.threadId === engine.chatState.id) {
-            API.render.chat.renderBubble(line, null);
-        }
+        API.presentation.chat.renderBubble(line, null);
 
         const chatData = API.engine.state.get('chat.data', { id: engine.chatState.id });
         if (chatData?.set) {
@@ -54,8 +50,6 @@ export const ChatBlockHandlers = {
     router: (engine, block) => {
         // Trường hợp block thuần Router (không content)
         hideInput();
-        if (API.render.chat.threadId === engine.chatState.id) {
-            API.render.chat.renderChoices(block.choices, null);
-        }
+        API.presentation.chat.renderChoices(block.choices, null);
     }
 };
