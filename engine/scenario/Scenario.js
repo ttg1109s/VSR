@@ -210,13 +210,13 @@ function validateReferences(scenario) {
     if (!isObject(action)) return;
     const set = action.set || {};
     if (typeof set.password === 'string') validatePasswordRef(set.password, `${path}.set.password`);
-    if (set.type === 'to_scene' && set.target && !set.target.includes('$(') && !Object.hasOwn(scenes, set.target)) {
+    if (set.type === 'to_scene' && typeof set.target === 'string' && !set.target.includes('$(') && !Object.hasOwn(scenes, set.target)) {
       add(`${path}.set.target`, `references missing scene '${set.target}'`);
     }
-    if (set.type === 'swap_router' && set.target && !set.target.includes('$(') && !routerExists(set.target)) {
+    if (set.type === 'swap_router' && typeof set.target === 'string' && !set.target.includes('$(') && !routerExists(set.target)) {
       add(`${path}.set.target`, `references missing router '${set.target}'`);
     }
-    if (set.type === 'get_item' && set.target && !set.target.includes('$(') && !Object.hasOwn(items, set.target)) {
+    if (set.type === 'get_item' && typeof set.target === 'string' && !set.target.includes('$(') && !Object.hasOwn(items, set.target)) {
       add(`${path}.set.target`, `references missing item '${set.target}'`);
     }
     if (set.type === 'faker' && typeof set.target === 'string' && !set.target.includes('$(')) {
@@ -361,7 +361,7 @@ function validateReferences(scenario) {
 
   for (const [passwordId, password] of Object.entries(passwords.find_way || {})) {
     const path = `passwords.find_way.${passwordId}`;
-    const [cols, rows] = password?.area || [];
+    const [cols, rows] = Array.isArray(password?.area) ? password.area : [];
     const inBounds = (point) => Array.isArray(point) && point.length === 2 &&
       Number.isInteger(point[0]) && Number.isInteger(point[1]) &&
       point[0] >= 0 && point[0] < cols && point[1] >= 0 && point[1] < rows;
@@ -370,7 +370,7 @@ function validateReferences(scenario) {
     const street = Array.isArray(password?.street) ? password.street : [];
     street.forEach((point, index) => {
       if (!inBounds(point)) add(`${path}.street[${index}]`, 'must be inside the configured grid');
-      if (index > 0) {
+      if (index > 0 && Array.isArray(point) && Array.isArray(street[index - 1])) {
         const previous = street[index - 1];
         const distance = Math.abs(point[0] - previous[0]) + Math.abs(point[1] - previous[1]);
         if (distance !== 1) add(`${path}.street[${index}]`, 'must be orthogonally adjacent to the previous point');
