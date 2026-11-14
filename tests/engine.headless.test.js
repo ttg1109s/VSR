@@ -111,7 +111,7 @@ test('Chat choice progress stays in runtime state and endChat commits synchronou
  const e=makeEngine();
  await e.init(structuredClone(DEMO_SCRIPT));
  const chatId='__chat_state_probe';
- const chat={meta:{sender:'npc',entry:'start'},block:{start:{choice_id:'probe_choices'}},choice:{probe_choices:[{text:'Continue'}]}};
+ const chat={meta:{sender:'npc',entry:'start'},set:{read:false,step:0,bookmark:[]},block:{start:{choice_id:'probe_choices'}},choice:{probe_choices:[{text:'Continue'}]}};
  e.src.chat ||= {};
  e.src.chat[chatId]=structuredClone(chat);
  e.state.chats[chatId]=structuredClone(chat);
