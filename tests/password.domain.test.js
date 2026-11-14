@@ -55,3 +55,10 @@ test('find-way rejects out-of-grid and non-adjacent paths', () => {
   assert.equal(verifyPassword('find_way',config,[[0,0],[2,2],[1,1]]),false);
   assert.equal(verifyPassword('find_way',config,[[0,0],[3,0],[1,1]]),false);
 });
+
+test('retryMax defaults to the schema limit of three attempts', () => {
+  const passwords = new PasswordSystem({ clock: () => 10 });
+  const challenge = passwords.open({ actionId:'door', uniqueId:'door-1', sceneId:'s', routerId:'r', type:'number', passwordId:'lock' });
+  assert.equal(challenge.retryMax, 3);
+  assert.equal(passwords.recordFailure(challenge).remainingAttempts, 2);
+});
