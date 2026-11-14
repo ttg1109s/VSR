@@ -1867,6 +1867,36 @@
               }
             ]
           }
+        },
+        {
+          "if": {
+            "properties": {
+              "field": {
+                "const": "max"
+              }
+            },
+            "required": [
+              "field"
+            ]
+          },
+          "then": {
+            "properties": {
+              "mode": {
+                "enum": [
+                  "set",
+                  "add"
+                ]
+              },
+              "exec": {
+                "enum": [
+                  "add_stats",
+                  "remove_stats",
+                  "add",
+                  "set"
+                ]
+              }
+            }
+          }
         }
       ]
     },
@@ -2562,6 +2592,36 @@
                 ]
               }
             ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "field": {
+                "const": "max"
+              }
+            },
+            "required": [
+              "field"
+            ]
+          },
+          "then": {
+            "properties": {
+              "mode": {
+                "enum": [
+                  "set",
+                  "add"
+                ]
+              },
+              "exec": {
+                "enum": [
+                  "add_stats",
+                  "remove_stats",
+                  "add",
+                  "set"
+                ]
+              }
+            }
           }
         }
       ]
