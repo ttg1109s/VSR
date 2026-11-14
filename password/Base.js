@@ -4,8 +4,6 @@
  * Refactored to use HTML UI (render/modules/password.js) instead of Canvas.
  */
 
-import { PasswordRender } from '../render/modules/password.js';
-
 export class PasswordStrategy {
     constructor(system) {
         this.system = system;
@@ -27,7 +25,11 @@ export class PasswordStrategy {
         try {
             // Render UI
             // PasswordRender now handles user interaction loop (retry, shake) internally
-            const result = await PasswordRender.show(type, passDef);
+            const renderer = this.system.renderer;
+            if (!renderer || typeof renderer.show !== 'function') {
+                throw new Error('Password renderer adapter is not configured.');
+            }
+            const result = await renderer.show(type, passDef);
 
             // Update attempts if returned
             if (result && typeof result.attempts === 'number') {
@@ -59,7 +61,7 @@ export class PasswordStrategy {
 
     hide() {
         this.active = false;
-        PasswordRender.close();
+        this.system.renderer?.close?.();
     }
 
     onSuccess() {
