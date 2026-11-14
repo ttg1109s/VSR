@@ -1,4 +1,5 @@
 import { escapeHtml } from '../../../utils/security.js';
+import { StatStyles } from '../../../shared/presentation/StatStyles.js';
 import { MeetingAlertBubble } from '../../../components/Common.js';
 
 export const timeAgo = (date) => {
@@ -18,12 +19,7 @@ export const timeAgo = (date) => {
     return Math.floor(seconds) + "s";
 };
 
-export const StatStyles = {
-    hp: { bgClass: 'bg-rose-500', icon: 'favorite' },
-    sanity: { bgClass: 'bg-violet-500', icon: 'psychology' },
-    ammo: { bgClass: 'bg-amber-500', icon: 'whatshot' },
-    default: { bgClass: 'bg-blue-500', icon: 'bolt' }
-};
+export { StatStyles };
 
 export const AlertMethods = {
     showMeetingAlert(charId, type = 'notice') {
