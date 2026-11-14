@@ -15,6 +15,7 @@
     "./protocol": "./core/protocol/JsonProtocol.js",
     "./scenario-schema": "./scenario.schema.json",
     "./scenario": "./engine/scenario/Scenario.js",
-    "./save-schema": "./engine/persistence/save.schema.json"
+    "./save-schema": "./engine/persistence/save.schema.json",
+    "./state": "./state/StateAccess.js"
   }
 }
