@@ -14,7 +14,7 @@ export class Loop {
  enabled(){if(typeof this.callback!=='function')throw new TypeError('TaskManager callback must be a function.');if(!Number.isFinite(this.time)||this.time<=0)throw new TypeError('TaskManager time must be greater than zero.');if(this.isRunning)return;this.isRunning=true;this.isPaused=false;this.currentCount=0;this.isBusy=false;this.lastTick=this.#now();this.expected=this.lastTick+this.time;this.#schedule(this.time);}
  disabled(){this.isRunning=false;this.isPaused=false;if(this.timerId!==null)this.clock.clearTimeout(this.timerId);this.timerId=null;}
  remaining(){if(!this.isRunning)return null;return this.isPaused?this.remainingTime:Math.max(0,this.dueAt-this.#now());}
- pause(){if(!this.isRunning||this.isPaused)return;this.isPaused=true;this.remainingTime=this.remaining();if(this.timerId!==null)this.clock.clearTimeout(this.timerId);this.timerId=null;}
+ pause(){if(!this.isRunning||this.isPaused)return;this.remainingTime=Math.max(0,this.dueAt-this.#now());this.isPaused=true;if(this.timerId!==null)this.clock.clearTimeout(this.timerId);this.timerId=null;}
  resume(){if(!this.isRunning||!this.isPaused)return;this.isPaused=false;if(this.mode==='timeout')this.expected=this.#now()+this.remainingTime;this.#schedule(this.remainingTime);}
 }
 export class TaskManager {
