@@ -1,5 +1,5 @@
 import Ajv from 'ajv';
-import scenarioSchema from '../../scenario.schema.json' with { type: 'json' };
+import scenarioSchema from '../../scenario.schema.json' assert { type: 'json' };
 
 export const SCENARIO_FORMAT_VERSION = 1;
 
