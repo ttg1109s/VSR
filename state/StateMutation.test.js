@@ -72,3 +72,20 @@ test('rejects prototype-polluting paths', () => {
   assert.throws(() => state.set('__proto__.polluted', true), StatePathError);
   assert.equal({}.polluted, undefined);
 });
+
+test('preserves nested object references after transaction commit', async () => {
+  const e = engine(), nested = e.state.nested, state = new StateAccess(e);
+  await state.transaction(tx => tx.set('nested.count', 12));
+  assert.equal(e.state.nested, nested);
+  assert.equal(nested.count, 12);
+});
+
+test('detects direct writes that conflict with an open transaction', async () => {
+  const e = engine(), state = new StateAccess(e);
+  await assert.rejects(state.transaction(async tx => {
+    tx.set('score', 50);
+    e.state.nested.count = 77;
+  }), error => error.code === 'TRANSACTION_CONFLICT');
+  assert.equal(e.state.score, 1);
+  assert.equal(e.state.nested.count, 77);
+});
