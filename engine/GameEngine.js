@@ -210,40 +210,40 @@ export class GameEngine {
  pushToEffectQueue(effectiveList,context,isAsync=false){
   return new Promise(resolve=>{
    const item={effectiveList,context,isAsync,resolve};
-   const queue=isAsync?this.runtime.effectQueue.async:this.state.effectQueue.sync;queue.push(item);
-   if(isAsync&&!this.state.isAsyncQueueRunning)this.runAsyncQueue();
-   if(!isAsync&&!this.state.isSyncQueueRunning)this.runSyncQueue();
+   const queue=isAsync?this.runtime.effectQueue.async:this.runtime.effectQueue.sync;queue.push(item);
+   if(isAsync&&!this.runtime.isAsyncQueueRunning)this.runAsyncQueue();
+   if(!isAsync&&!this.runtime.isSyncQueueRunning)this.runSyncQueue();
   });
  }
  async runSyncQueue(){
-  this.state.isSyncQueueRunning=true;
+  this.runtime.isSyncQueueRunning=true;
   try{
-   while(this.state.effectQueue.sync.length){
-    const item=this.state.effectQueue.sync.shift();this.isActionProcessing=true;
+   while(this.runtime.effectQueue.sync.length){
+    const item=this.runtime.effectQueue.sync.shift();this.isActionProcessing=true;
     this.api.presentation.navigation.setBlocking(true);
     try{await this.processRunnables(item.effectiveList,item.context,false,true);}catch(error){console.error('EffectQueue sync error:',error);}
     item.resolve?.({cancelled:false});
    }
   }finally{
-   this.state.isSyncQueueRunning=false;this.isActionProcessing=false;
+   this.runtime.isSyncQueueRunning=false;this.isActionProcessing=false;
    this.api.presentation.navigation.setBlocking(false);
   }
  }
  async runAsyncQueue(){
-  this.state.isAsyncQueueRunning=true;
+  this.runtime.isAsyncQueueRunning=true;
   try{
-   while(this.state.effectQueue.async.length){
-    const item=this.state.effectQueue.async.shift();
+   while(this.runtime.effectQueue.async.length){
+    const item=this.runtime.effectQueue.async.shift();
     try{await this.processRunnables(item.effectiveList,item.context,true,true);}catch(error){console.error('EffectQueue async error:',error);}
     item.resolve?.({cancelled:false});
    }
-  }finally{this.state.isAsyncQueueRunning=false;}
+  }finally{this.runtime.isAsyncQueueRunning=false;}
  }
  clearEffectQueue(queueType='all'){
   if(!this.state?.effectQueue)return;
   const cancel=queue=>{for(const item of queue.splice(0))item.resolve?.({cancelled:true});};
-  if(queueType==='all'||queueType==='sync')cancel(this.state.effectQueue.sync);
-  if(queueType==='all'||queueType==='async')cancel(this.state.effectQueue.async);
+  if(queueType==='all'||queueType==='sync')cancel(this.runtime.effectQueue.sync);
+  if(queueType==='all'||queueType==='async')cancel(this.runtime.effectQueue.async);
  }
  pauseBackgroundTasks(){
   for(const id of Object.keys(this.state.automations||{}))if(this.state.automations[id]?.active)this.taskManager.pause(`auto_${id}`);
