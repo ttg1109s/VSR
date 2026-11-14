@@ -39,7 +39,7 @@ export class NotificationSystem {
       presentation: presentation === 'modal' ? 'modal' : 'toast',
       createdAt: now, updatedAt: now,
       expiresAt: duration === null ? null : now + duration,
-      duration, dedupeKey: input.dedupeKey == null ? null : `${input.source || 'engine'}:${input.category || title}:${String(input.dedupeKey)}`,
+      duration, dedupeKey: input.dedupe === false ? null : (input.dedupeKey == null ? `${input.source || 'engine'}:${input.category || title}:${title}:${message}` : `${input.source || 'engine'}:${input.category || title}:${String(input.dedupeKey)}`),
       status: 'pending', read: false,
       metadata: input.metadata && typeof input.metadata === 'object' && !Array.isArray(input.metadata) ? cloneJsonValue(input.metadata) : {}
     };
