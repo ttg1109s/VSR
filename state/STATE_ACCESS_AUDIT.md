@@ -2,9 +2,11 @@
 
 - Repository: `ttg1109s/VSR`
 - Branch: `patch`
-- Audited commit: `509d7df673903d26bb566567adaa2c77cf2f27dc`
-- Method: repository-wide JavaScript source scan using targeted regular expressions for raw `this.state.*` and `engine.state.*` property access, followed by manual context classification.
-- Scope: tracked JavaScript files in the audited Git tree. Regex findings are indicators, not proof of a defect.
+- Audited source commit: `509d7df673903d26bb566567adaa2c77cf2f27dc`
+- Method: repository-wide JavaScript scan using targeted regular expressions for raw `this.state.*` and `engine.state.*` property access, followed by manual context classification.
+- Scope: 44 tracked JavaScript files in the audited Git tree. Regex findings are indicators, not proof of a defect.
+- Reusable scanner: `tools/audit-state-access.js`
+- Run from the repository root: `node tools/audit-state-access.js`; add `--json` for machine-readable output.
 
 ## Findings requiring review
 
@@ -44,7 +46,7 @@ This may be an intentional serialization boundary because it projects the whole 
 
 - `engine/modules/Loader.js` lines 55-210 builds and normalizes a local, not-yet-installed `state` object. This is bootstrap construction before the runtime StateAccess facade is used. It should not be migrated blindly.
 - `state/StateAccess.js` is the implementation of the access layer and necessarily reads/writes `engine.state` internally.
-- `engine/GameEngine.persistence.test.js` uses raw state to construct and assert persistence fixtures. Tests are not production access paths.
+- `engine/GameEngine.persistence.test.js`, `engine/persistence/SaveState.test.js`, `tests/cms-transaction.test.js`, and `tests/engine.headless.test.js` contain direct state setup/assertions for fixtures and behavior tests. These are not production access paths. Examples include `engine/persistence/SaveState.test.js:67,69` and `tests/cms-transaction.test.js:25,33`.
 - `api/index.js` exposes a StateAccess facade. Its `state.sceneId` and `state.scenes` getters are compatibility accessors, not raw `engine.state` property reads.
 - Calls such as `state.get(...)`, `state.set(...)`, `state.update(...)`, and `state.getRuntimeSnapshot(...)` are not direct key access and are not reported as violations by this audit.
 
