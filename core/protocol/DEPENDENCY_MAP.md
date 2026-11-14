@@ -86,4 +86,4 @@ Do not delete Render until all of these are true:
 7. Browser integration tests verify the existing renderer still behaves correctly during migration.
 8. A second renderer can run against snapshots/events/commands without importing `render/`.
 
-The present implementation completes the protocol foundation and a first decoupling slice. It does **not** satisfy the Render-removal gates.
+The present implementation completes the protocol foundation and several first decoupling slices (Chat DOM removal, password adapter inversion, shared password verification, shared stat tokens). It does **not** satisfy the Render-removal gates.
