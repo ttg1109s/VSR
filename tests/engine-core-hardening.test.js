@@ -5,6 +5,7 @@ import { scenarioSchema } from '../engine/scenario/ScenarioSchema.js';
 import { validateScenario, normalizeScenario, ScenarioValidationError } from '../engine/scenario/Scenario.js';
 import { LogicSystem } from '../engine/modules/Logic.js';
 import { EffectSystem } from '../engine/modules/Effect.js';
+import { LoaderSystem } from '../engine/modules/Loader.js';
 import { ActionSystem } from '../engine/modules/Action.js';
 import { SceneSystem } from '../engine/modules/Scene.js';
 import { AutomationSystem } from '../engine/modules/Automation.js';
@@ -251,4 +252,23 @@ test('effect wrappers reject unresolved template references', async () => {
     api: { engine: { state: { getRuntimeSnapshot: () => ({}) } } }
   });
   await assert.rejects(() => engine.processRunnable({ type: 'effect', ref: 'missing' }), /Unknown effect template reference/);
+});
+
+
+test('normalization applies schema defaults before runtime use', () => {
+  const normalized = normalizeScenario(validScenario());
+  assert.equal(normalized.formatVersion, 1);
+  assert.equal(normalized.meta.entryCharacter, 'player');
+  assert.deepEqual(normalized.config.maxInventory, []);
+  assert.equal(normalized.scenes.start.set.blocked, false);
+  assert.equal(normalized.scenes.start.routers.main.set.blocked, false);
+  assert.equal(normalized.scenes.start.routers.main.actions[0].id, 'inline_start_main_0');
+});
+
+test('loader keeps the normalized scenario separate from runtime-only indexes', () => {
+  const loaded = LoaderSystem.loadScript(validScenario(), {});
+  assert.equal(loaded.scenario.formatVersion, 1);
+  assert.equal(loaded.scenario.meta.entryCharacter, 'player');
+  assert.equal(Object.hasOwn(loaded.scenario, 'path'), false);
+  assert.equal(Object.hasOwn(loaded.src, 'path'), true);
 });
