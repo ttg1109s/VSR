@@ -454,24 +454,27 @@ export const ChatSystem = {
         const chatId = this.chatState.id;
         console.log(`[ChatSystem] endChat: ${chatId}`);
 
-        this.api.engine.state.transaction(tx => {
-            if (chatId) {
-                const chat = tx.get('chat.data', { id: chatId });
-                if (chat?.set) {
-                    chat.set.read = true;
-                    tx.set('chat.data', chat, { id: chatId });
-                }
-                const actions = tx.get('actions') || {};
+        const state = this.api.engine.state;
+        if (chatId) {
+            state.update('chat.data', current => {
+                if (current?.set) current.set.read = true;
+                return current;
+            }, { id: chatId });
+            state.update('actions', current => {
+                const actions = current || {};
                 for (const actionState of Object.values(actions)) {
                     if (actionState.type === 'show_chat' && actionState.target === chatId) {
                         actionState.display = 'hide';
                     }
                 }
-                tx.set('actions', actions);
-            }
-            const session = tx.get('session.chat') || {};
-            tx.set('session.chat', { ...session, active: false, blocking: false });
-        }).catch(error => console.error('[ChatSystem] Failed to commit endChat state:', error));
+                return actions;
+            });
+        }
+        state.update('session.chat', current => ({
+            ...(current || {}),
+            active: false,
+            blocking: false
+        }));
 
         this.toggleChatOverlay(false);
         hideInput(this);
