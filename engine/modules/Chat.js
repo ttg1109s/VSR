@@ -137,8 +137,8 @@ export const ChatSystem = {
                 chatRuntime.set.read = false;
 
                 // Reset scenario-local choice flags as before; these flags are read by resolveBlock.
-                if (c.block) {
-                    Object.values(c.block).forEach(variants => {
+                if (chatRuntime.block) {
+                    Object.values(chatRuntime.block).forEach(variants => {
                         Object.values(variants).forEach(v => {
                             if (v.choiced) v.choiced = false;
                         });
@@ -232,7 +232,7 @@ export const ChatSystem = {
     },
 
     resolveBlock(chatId, blockId) {
-        const chat = this.src.chat[chatId];
+        const chat = this.api.engine.state.getRuntimeSnapshot('chat.data', { id: chatId }) || this.src.chat[chatId];
         if (!chat || !chat.block) return null;
 
         let block = chat.block[blockId];
@@ -294,7 +294,7 @@ export const ChatSystem = {
         }
 
         // Logic check choiced khi BẮT ĐẦU vào block (để chặn loop nếu cấu hình loop=false)
-        const chatSrc = this.src.chat[this.chatState.id];
+        const chatSrc = this.api.engine.state.getRuntimeSnapshot('chat.data', { id: this.chatState.id }) || this.src.chat[this.chatState.id];
         const rawBlock = chatSrc.block[block.id];
         const isChoiced = rawBlock && rawBlock.choiced === true;
         const isLoopAllowed = chatSrc.meta && chatSrc.meta.loop === true;
@@ -328,25 +328,21 @@ export const ChatSystem = {
         const choice = block.choices[idx];
 
         // --- 1. Đánh dấu 'choiced = true' NGAY LẬP TỨC ---
-        if (this.src.chat[this.chatState.id].block[this.chatState.blockId]) {
-            // [FIX] Mark both Block AND Choice as choiced
-            this.src.chat[this.chatState.id].block[this.chatState.blockId].choiced = true;
-
-            // Access raw choice via ID mapping if possible, or index
-            if (this.src.chat[this.chatState.id].block[this.chatState.blockId].choice_id) {
-                const cId = this.src.chat[this.chatState.id].block[this.chatState.blockId].choice_id;
-                if (this.src.chat[this.chatState.id].choice && this.src.chat[this.chatState.id].choice[cId]) {
-                    if (this.src.chat[this.chatState.id].choice[cId][idx]) {
-                        if (!this.src.chat[this.chatState.id].choice[cId][idx].set) {
-                            this.src.chat[this.chatState.id].choice[cId][idx].set = {};
-                        }
-                        this.src.chat[this.chatState.id].choice[cId][idx].set.choiced = true;
-                    }
-                }
+        const chatId = this.chatState.id;
+        const blockId = this.chatState.blockId;
+        this.api.engine.state.update('chat.data', current => {
+            const rawBlock = current?.block?.[blockId];
+            if (!rawBlock) return current;
+            rawBlock.choiced = true;
+            const choiceId = rawBlock.choice_id;
+            const rawChoice = choiceId && current.choice?.[choiceId]?.[idx];
+            if (rawChoice) {
+                if (!rawChoice.set) rawChoice.set = {};
+                rawChoice.set.choiced = true;
             }
-
-            console.log(`[ChatSystem] Marked Block ${this.chatState.blockId} (and choice ${idx}) as CHOICED.`);
-        }
+            return current;
+        }, { id: chatId });
+        console.log(`[ChatSystem] Marked Block ${blockId} (and choice ${idx}) as CHOICED.`);
 
         // --- 2. Render tin nhắn ---
         const entryChar = this.state.meta?.entryCharacter || 'player';
@@ -357,7 +353,7 @@ export const ChatSystem = {
 
         this.api.presentation.chat.clearChoices();
 
-        this.chatState.blocking = true;
+        this.api.engine.state.update('session.chat', current => ({ ...(current || {}), blocking: true }));
 
         // --- 3. Run Effect ---
         if (choice.effect) {
@@ -368,7 +364,7 @@ export const ChatSystem = {
 
         // --- 4. Logic JUMP + Kiểm tra CHOICED của Đích ---
         let nextBlockId = choice.jump;
-        const chatData = this.src.chat[this.chatState.id];
+        const chatData = this.api.engine.state.getRuntimeSnapshot('chat.data', { id: this.chatState.id }) || this.src.chat[this.chatState.id];
 
         // Nếu jump hợp lệ, kiểm tra xem block đích có tồn tại không
         if (nextBlockId) {
