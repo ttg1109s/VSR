@@ -9,9 +9,67 @@ import { ChatSystem } from './modules/Chat.js?v=3.1.6';
 import { AutomationSystem } from './modules/Automation.js';
 import { LoaderSystem } from './modules/Loader.js';
 import { API } from '../api/index.js'; // [Refactor] Import API
+import { JsonProtocol } from '../core/protocol/JsonProtocol.js';
 
 export class GameEngine {
-    constructor() { this.reset(); }
+    constructor() {
+        this.reset();
+        this.protocol = new JsonProtocol();
+        this.registerProtocolCommands();
+    }
+
+    registerProtocolCommands() {
+        this.protocol.registerCommand('engine.init', payload => {
+            if (!payload.script || typeof payload.script !== 'object') {
+                throw new TypeError('engine.init requires payload.script JSON object.');
+            }
+            this.init(payload.script);
+            return { initialized: !!this.src };
+        });
+        this.protocol.registerCommand('action.trigger', payload => {
+            if (typeof payload.actionId !== 'string' || !payload.actionId) {
+                throw new TypeError('action.trigger requires actionId.');
+            }
+            return this.handleAction(payload.actionId, payload.uniqueId || payload.actionId);
+        });
+        this.protocol.registerCommand('chat.next', () => this.nextChat());
+        this.protocol.registerCommand('chat.selectChoice', payload => {
+            if (!Number.isInteger(payload.index)) throw new TypeError('chat.selectChoice requires integer index.');
+            return this.selectChatChoice(payload.index);
+        });
+        this.protocol.registerCommand('inventory.toggleHand', payload => {
+            if (typeof payload.itemId !== 'string' || !payload.itemId) {
+                throw new TypeError('inventory.toggleHand requires itemId.');
+            }
+            return this.toggleHand(payload.itemId);
+        });
+        this.protocol.registerCommand('scene.enter', payload => {
+            if (typeof payload.sceneId !== 'string' || !payload.sceneId) {
+                throw new TypeError('scene.enter requires sceneId.');
+            }
+            return this.enterScene(payload.sceneId, payload.skipTransition === true);
+        });
+        this.protocol.registerCommand('password.submit', payload => {
+            if (!payload.actionDef || typeof payload.actionKey !== 'string' ||
+                typeof payload.uniqueId !== 'string' ||
+                ![true, false, 'cancel'].includes(payload.result)) {
+                throw new TypeError('password.submit requires actionDef, actionKey, uniqueId and boolean/cancel result.');
+            }
+            return this.finishPasswordAction(
+                payload.actionDef, payload.actionKey, payload.uniqueId, payload.result
+            );
+        });
+    }
+
+    publishProtocolSnapshot(reason = 'state.changed') {
+        if (!this.protocol || !this.state) return null;
+        return this.protocol.publishSnapshot(this, reason);
+    }
+
+    dispatchProtocolCommand(command, context = {}) {
+        if (!this.protocol) throw new Error('VSR protocol is not initialized.');
+        return this.protocol.dispatch(command, context);
+    }
 
     reset() {
         this.state = {
@@ -59,12 +117,14 @@ export class GameEngine {
             if (firstScene) {
                 this.enterScene(firstScene);
                 this.state.playerMoveHistory.push(firstScene);
+                this.publishProtocolSnapshot('engine.initialized');
             } else {
                 API.render.notification.alert("Init Error", "Không tìm thấy Scene hợp lệ để bắt đầu.", "danger");
             }
         } else {
             this.enterScene(entry);
             this.state.playerMoveHistory.push(entry);
+            this.publishProtocolSnapshot('engine.initialized');
         }
     }
 
