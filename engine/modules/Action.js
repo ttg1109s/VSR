@@ -283,7 +283,8 @@ export const ActionSystem = {
                                 deadlineAt: challenge.deadlineAt
                             }
                         );
-                        // Return here and let the PasswordSystem callback handle the rest
+                        // The player may now interact; do not hold the global action lock while waiting.
+                        this.isActionProcessing = false;
                         return;
                     } else {
                         console.error(`[Flow] Password Definition NOT FOUND: ${set.password}`);
