@@ -108,3 +108,20 @@ test('transactions can read source but cannot write it', async () => {
   });
   assert.equal(e.src.meta.title, 'Immutable source');
 });
+
+
+test('read snapshots are detached from mutable Engine state', () => {
+  const e = engine(), state = new StateAccess(e);
+  const snapshot = state.getRuntimeSnapshot('nested');
+  snapshot.count = 99;
+  assert.equal(e.state.nested.count, 2);
+});
+
+test('snapshot reads preserve undefined and clone nested arrays', () => {
+  const e = engine(), state = new StateAccess(e);
+  e.state.items = [{ id: 'a' }];
+  const snapshot = state.getSnapshot('items');
+  snapshot[0].id = 'changed';
+  assert.equal(e.state.items[0].id, 'a');
+  assert.equal(state.getSnapshot('missing'), undefined);
+});

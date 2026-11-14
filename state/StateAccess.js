@@ -240,6 +240,15 @@ export class StateAccess {
   getSource(path, context = {}) { return this.getFrom('source', path, context); }
   getRuntime(path, context = {}) { return this.getFrom('runtime', path, context); }
   getSession(path, context = {}) { return this.getFrom('session', path, context); }
+  getSnapshot(path, context = {}, options = {}) {
+    const namespace = options.namespace ?? STATE_SCHEMA[path]?.[0] ?? 'runtime';
+    const value = this.get(path, context, options);
+    return value === undefined ? undefined : clone(value);
+  }
+  getRuntimeSnapshot(path, context = {}) {
+    const value = this.getRuntime(path, context);
+    return value === undefined ? undefined : clone(value);
+  }
 }
 
 export function createStateAccess(engine) {
@@ -250,6 +259,8 @@ export function createStateAccess(engine) {
     getSource: (path, context = {}) => access.getSource(path, context),
     getRuntime: (path, context = {}) => access.getRuntime(path, context),
     getSession: (path, context = {}) => access.getSession(path, context),
+    getSnapshot: (path, context = {}, options = {}) => access.getSnapshot(path, context, options),
+    getRuntimeSnapshot: (path, context = {}) => access.getRuntimeSnapshot(path, context),
     set: (path, value, context = {}, options = {}) => access.set(path, value, context, options),
     update: (path, updater, context = {}, options = {}) => access.update(path, updater, context, options),
     delete: (path, context = {}, options = {}) => access.delete(path, context, options),

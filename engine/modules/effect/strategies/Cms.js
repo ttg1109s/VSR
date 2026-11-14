@@ -1,177 +1,117 @@
-// htdocs/engine/modules/effect/strategies/Cms.js
-
+// Centralized CMS state mutations. Every update is applied to a transaction draft.
 import { resolveValue } from './Logic.js';
 
-// --- Character Helper ---
-const getCharacter = (engine, id) => {
-    const charId = resolveValue(id, engine);
-    return engine.api.engine.state.getRuntime('characters.[id]', { id: charId });
-};
+function resolveCharacterId(engine, value) {
+    return resolveValue(value, engine);
+}
 
-// --- Router Helper ---
-const getRouter = (engine, id) => {
-    const rawId = resolveValue(id, engine);
-    // Try explicit global ID first
-    const state = engine.api.engine.state;
-    if (state.getRuntime('routers.[routerKey]', { routerKey: rawId })) return state.getRuntime('routers.[routerKey]', { routerKey: rawId });
+function resolveRouterKey(engine, value, tx) {
+    const routerId = resolveValue(value, engine);
+    if (tx.get(`routers.[routerKey]`, { routerKey: routerId })) return routerId;
+    const sceneId = tx.get('sceneId');
+    return `${sceneId}_${routerId}`;
+}
 
-    // Try current scene ID prefix
-    const sId = engine.api.engine.state.sceneId;
-    const globalId = `${sId}_${rawId}`;
-    return state.getRuntime('routers.[routerKey]', { routerKey: globalId });
-};
+function ensureArray(target, key) {
+    if (!Array.isArray(target[key])) target[key] = [];
+    return target[key];
+}
 
-const ensureArray = (obj, prop) => {
-    if (!Array.isArray(obj[prop])) obj[prop] = [];
-    return obj[prop];
-};
-
-// --- Action Methods ---
-const ActionMethods = {
-    add: (targetArray, value) => {
-        if (!targetArray.includes(value)) targetArray.push(value);
-    },
-    remove: (targetArray, value) => {
-        const idx = targetArray.indexOf(value);
-        if (idx > -1) targetArray.splice(idx, 1);
-    },
-    insert: (targetArray, value, index) => {
-        const i = index !== undefined ? index : targetArray.length;
-        targetArray.splice(i, 0, value);
-    },
-    empty: (targetArray) => {
-        if (Array.isArray(targetArray)) {
-            targetArray.length = 0;
-        }
-    }
-};
-
-// --- Relationship Methods ---
-const RelationshipMethods = {
-    add: (targetArray, value) => {
-        if (Array.isArray(value) && value.length === 2) {
-            const exists = targetArray.some(r => r[0] === value[0] && r[1] === value[1]);
-            if (!exists) targetArray.push(value);
-        }
-    },
-    remove: (targetArray, value, owner) => { // owner is character
-        if (Array.isArray(value) && value.length === 2) {
-            const idx = targetArray.findIndex(r => r[0] === value[0] && r[1] === value[1]);
-            if (idx > -1) targetArray.splice(idx, 1);
-        } else if (typeof value === 'string') {
-            owner.set.relationship = targetArray.filter(r => r[0] !== value);
-        }
-    },
-    insert: (targetArray, value, index) => {
-        if (Array.isArray(value) && value.length === 2) {
-            const i = index !== undefined ? index : targetArray.length;
-            targetArray.splice(i, 0, value);
-        }
-    }
-    // empty handled in dispatcher
-};
-
-// --- Met Methods ---
-const MetMethods = {
-    add: (owner, targetCharId) => {
-        ensureArray(owner, 'met');
-        let found = false;
-        for (let i = 0; i < owner.met.length; i++) {
-            const parts = owner.met[i].split(':');
-            if (parts[0] === targetCharId) {
-                const count = parseInt(parts[1] || '0') + 1;
-                owner.met[i] = `${targetCharId}:${count}`;
-                found = true;
+function mutateList(list, method, value, index, pairMode = false) {
+    switch (method) {
+        case 'add':
+            if (pairMode) {
+                if (!Array.isArray(value) || value.length !== 2) return;
+                if (!list.some(item => item[0] === value[0] && item[1] === value[1])) list.push(value);
+            } else if (!list.includes(value)) list.push(value);
+            break;
+        case 'remove': {
+            if (pairMode && typeof value === 'string') {
+                for (let i = list.length - 1; i >= 0; i--) if (list[i]?.[0] === value) list.splice(i, 1);
                 break;
             }
+            const idx = pairMode && Array.isArray(value)
+                ? list.findIndex(item => item[0] === value[0] && item[1] === value[1])
+                : list.indexOf(value);
+            if (idx >= 0) list.splice(idx, 1);
+            break;
         }
-        if (!found) {
-            owner.met.push(`${targetCharId}:1`);
-        }
-    },
-    set: (owner, value) => {
-        ensureArray(owner, 'met');
+        case 'insert':
+            if (pairMode && (!Array.isArray(value) || value.length !== 2)) return;
+            list.splice(index === undefined ? list.length : index, 0, value);
+            break;
+        case 'empty':
+            list.length = 0;
+            break;
+        default:
+            break;
+    }
+}
 
-        let targetId, targetCount;
-
-        if (typeof value === 'object' && value !== null) {
-            targetId = value.id;
-            targetCount = value.count !== undefined ? value.count : 1;
+function mutateMet(owner, method, value) {
+    const met = ensureArray(owner, 'met');
+    if (method === 'empty') {
+        owner.met = [];
+        return;
+    }
+    if (method === 'remove') {
+        owner.met = met.filter(item => item.split(':')[0] !== value);
+        return;
+    }
+    if (method === 'add') {
+        const id = value;
+        if (!id) return;
+        const index = met.findIndex(item => item.split(':')[0] === id);
+        if (index >= 0) {
+            const parts = met[index].split(':');
+            met[index] = `${id}:${parseInt(parts[1] || '0', 10) + 1}`;
+        } else met.push(`${id}:1`);
+        return;
+    }
+    if (method === 'set') {
+        let id, count;
+        if (value && typeof value === 'object') {
+            id = value.id;
+            count = value.count === undefined ? 1 : value.count;
         } else if (typeof value === 'string') {
-            const inputParts = value.split(':');
-            targetId = inputParts[0];
-            targetCount = parseInt(inputParts[1] || '1');
+            const parts = value.split(':');
+            id = parts[0];
+            count = parseInt(parts[1] || '1', 10);
         } else {
-            console.warn("[Cms] MetMethods.set: Invalid value", value);
+            console.warn('[Cms] MetMethods.set: Invalid value', value);
             return;
         }
-
-        if (!targetId) return;
-
-        let found = false;
-        for (let i = 0; i < owner.met.length; i++) {
-            const parts = owner.met[i].split(':');
-            if (parts[0] === targetId) {
-                owner.met[i] = `${targetId}:${targetCount}`;
-                found = true;
-                break;
-            }
-        }
-        if (!found) {
-            owner.met.push(`${targetId}:${targetCount}`);
-        }
-    },
-    remove: (owner, targetCharId) => {
-        ensureArray(owner, 'met');
-        owner.met = owner.met.filter(item => {
-            const parts = item.split(':');
-            return parts[0] !== targetCharId;
-        });
-    },
-    empty: (owner) => {
-        owner.met = [];
+        if (!id) return;
+        const index = met.findIndex(item => item.split(':')[0] === id);
+        if (index >= 0) met[index] = `${id}:${count}`;
+        else met.push(`${id}:${count}`);
     }
-};
-
+}
 
 export const CmsStrategies = {
-    characters: (engine, eff) => {
-        const owner = getCharacter(engine, eff.id);
-        if (!owner) return;
-
+    characters: async (engine, eff) => {
+        const id = resolveCharacterId(engine, eff.id);
         const value = resolveValue(eff.value, engine);
-
-        if (eff.column === 'relationship') {
-            if (!owner.set) return;
-            const targetArray = ensureArray(owner.set, 'relationship');
-
-            if (eff.method === 'empty') {
-                owner.set.relationship = [];
-            } else if (eff.method === 'remove') {
-                RelationshipMethods.remove(targetArray, value, owner);
-            } else {
-                RelationshipMethods[eff.method]?.(targetArray, value, eff.index);
+        await engine.api.engine.state.transaction(tx => {
+            const owner = tx.get('characters.[id]', { id });
+            if (!owner) return;
+            if (eff.column === 'relationship') {
+                if (!owner.set) return;
+                const relationship = ensureArray(owner.set, 'relationship');
+                mutateList(relationship, eff.method, value, eff.index, true);
+            } else if (eff.column === 'met') {
+                mutateMet(owner, eff.method, value);
             }
-
-        } else if (eff.column === 'met') {
-            MetMethods[eff.method]?.(owner, value);
-        }
+        });
     },
 
-    routers: (engine, eff) => {
-        const router = getRouter(engine, eff.id);
-        if (!router) return;
-
+    routers: async (engine, eff) => {
         const value = resolveValue(eff.value, engine);
-
-        if (eff.column === 'actions') {
-            const targetArray = ensureArray(router, 'actions');
-
-            if (eff.method === 'empty') {
-                ActionMethods.empty(targetArray);
-            } else {
-                ActionMethods[eff.method]?.(targetArray, value, eff.index);
-            }
-        }
+        await engine.api.engine.state.transaction(tx => {
+            const key = resolveRouterKey(engine, eff.id, tx);
+            const router = tx.get('routers.[routerKey]', { routerKey: key });
+            if (!router || eff.column !== 'actions') return;
+            mutateList(ensureArray(router, 'actions'), eff.method, value, eff.index);
+        });
     }
 };
