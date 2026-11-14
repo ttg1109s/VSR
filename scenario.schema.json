@@ -1141,20 +1141,18 @@
         "mode": {
           "type": "string",
           "enum": [
-            "add",
-            "subtract",
             "set",
-            "multiply"
+            "add",
+            "full"
           ],
-          "description": "Cách áp dụng 'value' lên chỉ số hiện tại (mặc định 'add')."
+          "description": "Stat operation supported by the runtime calculators."
         },
         "field": {
           "type": "string",
           "enum": [
             "current",
             "max"
-          ],
-          "description": "Với hiệu ứng chỉnh chỉ số: áp dụng lên field 'current' hay 'max' (mặc định 'current')."
+          ]
         },
         "text": {
           "type": "string",
@@ -1422,7 +1420,18 @@
                   "required": [
                     "property",
                     "value"
-                  ]
+                  ],
+                  "properties": {
+                    "exec": {
+                      "enum": [
+                        "add_stats",
+                        "remove_stats",
+                        "add",
+                        "set",
+                        "full"
+                      ]
+                    }
+                  }
                 }
               },
               {
@@ -1897,20 +1906,18 @@
         "mode": {
           "type": "string",
           "enum": [
-            "add",
-            "subtract",
             "set",
-            "multiply"
+            "add",
+            "full"
           ],
-          "description": "Cách áp dụng 'value' lên chỉ số hiện tại (mặc định 'add')."
+          "description": "Stat operation supported by the runtime calculators."
         },
         "field": {
           "type": "string",
           "enum": [
             "current",
             "max"
-          ],
-          "description": "Với hiệu ứng chỉnh chỉ số: áp dụng lên field 'current' hay 'max' (mặc định 'current')."
+          ]
         },
         "text": {
           "type": "string",
@@ -2109,7 +2116,18 @@
                   "required": [
                     "property",
                     "value"
-                  ]
+                  ],
+                  "properties": {
+                    "exec": {
+                      "enum": [
+                        "add_stats",
+                        "remove_stats",
+                        "add",
+                        "set",
+                        "full"
+                      ]
+                    }
+                  }
                 }
               },
               {
