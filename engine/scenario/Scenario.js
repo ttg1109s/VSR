@@ -42,9 +42,10 @@ function validateReferences(scenario) {
   const passwords = scenario.passwords || {};
   const templates = scenario.templates || {};
   const routerOwners = new Map();
+  const allRouterIds = new Set(Object.values(scenes).flatMap(scene => Object.keys(scene?.routers || {})));
 
   const add = (path, message) => errors.push(`${path}: ${message}`);
-  const routerExists = (id) => routerOwners.has(id);
+  const routerExists = (id) => allRouterIds.has(id);
   const characterExists = (id) => id === 'player' || Object.hasOwn(characters, id);
 
   for (const [sceneId, scene] of Object.entries(scenes)) {
