@@ -1,49 +1,47 @@
-# State Access Audit — Historical Baseline
+# State Access Audit
 
-> **Status: historical, not a current audit.** This document records findings from an earlier repository revision. Its file paths, line numbers, and findings must not be treated as verified against the current branch.
+## Current branch status
 
 - Repository: `ttg1109s/VSR`
-- Original branch: `patch`
-- Original audited commit: `509d7df673903d26bb566567adaa2c77cf2f27dc`
-- Original method: repository-wide JavaScript scan using targeted regular expressions for raw `this.state.*` and `engine.state.*` property access, followed by manual context classification.
-- Original scope: 44 tracked JavaScript files in that Git tree.
-- Scanner: `tools/audit-state-access.js`
-- Run from the repository root: `node tools/audit-state-access.js`; add `--json` for machine-readable output.
+- Branch: `feature/restore-password-domain`
+- Audit tool: `tools/audit-state-access.js`
+- Commands: `npm run audit:state` or `node tools/audit-state-access.js --json`
 
-## Historical findings
+The current implementation separates gameplay state (`engine.state`) from Engine orchestration state (`engine.runtime`). Effect queues and queue-running flags are owned by the latter and are excluded from save data by construction. The save serializer retains filtering for legacy save-state keys for compatibility.
 
-The original scan identified direct runtime/gameplay state access outside the StateAccess abstraction in these areas:
+## Changes made in this pass
 
-- `engine/GameEngine.js`: scene, character, automation, and movement-history state.
-- `engine/modules/Effect.js`: effect override state.
-- `engine/modules/Logic.js`: current scene state.
-- `engine/modules/effect/strategies/Item.js`: entry-character metadata and item definitions.
-- The protocol snapshot implementation: direct access to the runtime state root for serialization.
+- Corrected the `SaveState.js` import to use `../../protocol/JsonProtocol.js`.
+- Moved effect queues and queue-running flags out of `engine.state` and into `engine.runtime`.
+- Changed effect override reads to use `getRuntimeSnapshot()`.
+- Changed the LogicSystem current-scene lookup to use StateAccess.
+- Removed direct Engine-state fallback reads from ItemStrategies; owner and item-name reads now use StateAccess snapshots.
+- Changed player movement-history append to a StateAccess update.
+- Added regression tests for detached snapshots, controlled updates, read-only source state, Engine queue ownership, and save rejection while a queue is active.
 
-It also identified direct access to Engine-internal effect queue arrays and coordination flags. Those are orchestration details and should be evaluated separately from scenario/gameplay state.
+## Ownership boundaries
 
-These findings describe the original audited commit only. The protocol implementation has since moved to `protocol/JsonProtocol.js`; therefore, historical references to `core/protocol/JsonProtocol.js` are not current paths. Original line numbers are not expected to match the current source.
+The following direct state access is intentional and must remain narrowly scoped:
 
-## StateAccess design considerations
+- `state/StateAccess.js`: implementation of the state boundary itself.
+- `engine/GameEngine.js`: Engine owner, bootstrap/restore assignment, and internal orchestration. Gameplay writes should still use StateAccess where practical.
+- `engine/persistence/SaveState.js`: persistence boundary that clones the complete serializable runtime model and validates active work before saving.
+- `protocol/JsonProtocol.js`: protocol serialization boundary that creates a detached JSON snapshot.
 
-The StateAccess implementation provides explicit namespace-aware access to source, runtime, and session state. Scenario source is read-only through the facade. Snapshot methods clone returned values for read-only use.
+Do not mechanically move every Engine-owned value into StateAccess. TaskManager timers, queue promises, locks, and orchestration flags are not gameplay state.
 
-Legacy methods such as `getRuntime()`, `getSource()`, and `getSession()` retain reference semantics for compatibility. A caller that mutates a returned object can therefore bypass `set()` or `update()`. New read-only module code should prefer `getRuntimeSnapshot()`, `getSourceSnapshot()`, and `getSessionSnapshot()`.
+## Scanner limitations
 
-Engine coordination structures such as effect queues and queue-running flags are not automatically equivalent to gameplay state. Their ownership should be decided explicitly; they should not be migrated mechanically into the StateAccess schema.
+The scanner is intentionally described as heuristic. It uses regular expressions, not an AST or symbol table. It improves direct mutation classification, but it cannot reliably resolve lexical scope, alias reassignment, destructuring, computed property access, reflection, or indirect references. It can also produce false positives from strings and non-leading comments. Its output is a candidate list for review, not proof of compliance.
 
-## Re-audit procedure
+A full AST audit remains a separate engineering task requiring a parser dependency and rules for scope-aware alias tracking. No AST-level completeness claim is made by this branch.
 
-To establish a current baseline:
+## Verification
 
-1. Run `node tools/audit-state-access.js` on the target branch and record the exact commit SHA.
-2. Review each match against the current source; distinguish runtime/gameplay state from bootstrap construction, StateAccess internals, protocol serialization, and Engine orchestration.
-3. Verify aliases, computed properties, destructuring, and indirect references manually. The regular-expression scanner cannot resolve symbols.
-4. Update this document only with findings reproduced on that commit, including current paths and line numbers.
-5. If the audit is used in CI, enforce only newly introduced production violations and maintain a reviewed allowlist for intentional boundaries.
+The repository now provides:
 
-## Limitations
+- `npm test` — Node.js built-in test runner for the checked-in regression tests.
+- `npm run audit:state` — heuristic candidate scan.
+- GitHub Actions workflow `.github/workflows/engine-quality.yml` — runs both commands on pushes to this branch and pull requests.
 
-The scanner uses targeted regular expressions rather than full AST or symbol analysis. It can miss aliases such as `const state = engine.state; state.foo`, computed property names, destructuring from aliases, reflective access, and helper functions that return state references. It can also flag harmless comments or strings. Treat its output as a review aid, not proof of correctness or completeness.
-
-No current-branch scan is claimed by this historical report.
+The current environment did not execute Node.js against a local checkout. Therefore, the committed tests and workflow are configured but their passing status has not been independently confirmed here. The workflow result is the authoritative runtime verification.
