@@ -58,11 +58,8 @@ const MovingLogic = {
 
 const StatsLogic = {
     swap: (engine, eff) => {
-        const parts = eff.target.split(':');
-        if (parts.length < 2) return;
-
-        const idA = engine.redirectTarget(parts[0]);
-        const idB = engine.redirectTarget(parts[1]);
+        const [idA, idB] = resolveCharacterPair(engine, eff);
+        if (!idA || !idB) return;
 
         const charA = engine.api.engine.state.getRuntimeSnapshot('characters.[id]', { id: idA });
         const charB = engine.api.engine.state.getRuntimeSnapshot('characters.[id]', { id: idB });
@@ -82,9 +79,8 @@ const StatsLogic = {
     },
     copy_to: (engine, eff) => {
         const entryChar = engine.api.engine.state.getRuntime('meta.entryCharacter') || 'player';
-        const parts = eff.target.split(':');
-        const destId = engine.redirectTarget(parts[0]);
-        const srcId = parts[1] ? engine.redirectTarget(parts[1]) : entryChar;
+        const [destId, srcId] = resolveCharacterPair(engine, eff, entryChar);
+        if (!destId || !srcId) return;
         const statKey = eff.value;
 
         const destChar = engine.api.engine.state.getRuntimeSnapshot('characters.[id]', { id: destId });
@@ -100,9 +96,8 @@ const StatsLogic = {
     },
     cut_to: (engine, eff) => {
         const entryChar = engine.api.engine.state.getRuntime('meta.entryCharacter') || 'player';
-        const parts = eff.target.split(':');
-        const destId = engine.redirectTarget(parts[0]);
-        const srcId = parts[1] ? engine.redirectTarget(parts[1]) : entryChar;
+        const [destId, srcId] = resolveCharacterPair(engine, eff, entryChar);
+        if (!destId || !srcId) return;
         const statKey = eff.value;
 
         const destChar = engine.api.engine.state.getRuntime('characters.[id]', { id: destId });
@@ -191,6 +186,7 @@ export const CharacterStrategies = {
         const resolvedEff = {
             ...eff,
             target: resolveValue(eff.target, engine),
+            source: resolveValue(eff.source, engine),
             value: resolveValue(eff.value, engine)
         };
         StatsLogic[eff.exec]?.(engine, resolvedEff);
