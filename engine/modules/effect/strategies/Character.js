@@ -40,9 +40,11 @@ const MovingLogic = {
         if (eff.property !== 'moveList' || !Array.isArray(char.moveList) || !indices.length) return false;
         const valid = [...new Set(indices)].filter(i => Number.isInteger(i) && i >= 0 && i < char.moveList.length).sort((a, b) => b - a);
         if (!valid.length) return false;
+        const oldIndex = Number.isInteger(char.place?.currentIndex) ? char.place.currentIndex : 0;
+        const removedBeforeCursor = valid.filter(i => i < oldIndex).length;
         valid.forEach(i => char.moveList.splice(i, 1));
         char.place ||= { scene_id: null, currentIndex: 0 };
-        char.place.currentIndex = Math.min(char.place.currentIndex || 0, Math.max(0, char.moveList.length - 1));
+        char.place.currentIndex = Math.max(0, Math.min(oldIndex - removedBeforeCursor, char.moveList.length - 1));
         return true;
     },
     replace: (char, eff, indices) => {
