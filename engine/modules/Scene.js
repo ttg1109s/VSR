@@ -114,8 +114,8 @@ export const SceneSystem = {
             }
         });
 
-        if (API.render && API.render.components && API.render.components.updateCharacterList) {
-            API.render.components.updateCharacterList();
+        if (API.presentation && API.presentation.components && API.presentation.components.updateCharacterList) {
+            API.presentation.components.updateCharacterList();
         }
     },
 
@@ -155,14 +155,14 @@ export const SceneSystem = {
         this.isTransitioning = true;
 
         if (transType && transType !== 'none' && !skipTransition) {
-            await API.render.scene.transition('start', transType, timeIn / 1000);
+            await API.presentation.scene.transition('start', transType, timeIn / 1000);
         }
 
         if (this.currentStillTask) { taskManager.kill(this.currentStillTask); this.currentStillTask = null; }
         this.activeTimerTasks.forEach(taskId => taskManager.kill(taskId));
         this.activeTimerTasks = [];
 
-        API.render.scene.hideTimer();
+        API.presentation.scene.hideTimer();
 
         const oldRouterId = this.state.scenes[sId].activeRouterId;
         if (!isSceneEntry && oldRouterId && oldRouterId !== routerId) {
@@ -198,8 +198,8 @@ export const SceneSystem = {
             }
         }
 
-        if (API.render.vfx && API.render.vfx.exec) {
-            API.render.vfx.exec('overlay', ovType || 'none', {
+        if (API.presentation.vfx && API.presentation.vfx.exec) {
+            API.presentation.vfx.exec('overlay', ovType || 'none', {
                 element: 'vfx-layer',
                 duration: null, // Router overlays are usually permanent until changed
                 flicker: ovFlicker,
@@ -208,7 +208,7 @@ export const SceneSystem = {
         }
 
         if (transType && transType !== 'none' && !skipTransition) {
-            await API.render.scene.transition('end', transType, timeOut / 1000);
+            await API.presentation.scene.transition('end', transType, timeOut / 1000);
         }
 
         this.isTransitioning = false;
@@ -271,7 +271,7 @@ export const SceneSystem = {
                     taskManager.kill(uiTaskId);
                     taskManager.kill(endTaskId);
 
-                    API.render.scene.hideTimer();
+                    API.presentation.scene.hideTimer();
 
                     const endMode = rConfigSet.timerEnd || 'out';
                     if (endMode === 'out') this.goBackTimerEnd();
@@ -322,7 +322,7 @@ export const SceneSystem = {
         const m = Math.floor(displayVal / 60).toString().padStart(2, '0');
         const s = (displayVal % 60).toString().padStart(2, '0');
 
-        API.render.scene.updateTimer(`${m}:${s}`);
+        API.presentation.scene.updateTimer(`${m}:${s}`);
     },
 
     render() {
@@ -340,6 +340,6 @@ export const SceneSystem = {
         // Publish a JSON-safe state projection independently of the UI adapter.
         if (this.publishProtocolSnapshot) this.publishProtocolSnapshot('scene.render');
 
-        API.render.scene.render(s, r, actions);
+        API.presentation.scene.render(s, r, actions);
     },
 };
