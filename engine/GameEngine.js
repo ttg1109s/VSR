@@ -186,7 +186,7 @@ export class GameEngine {
    if(!normalized.state.scenes?.[sceneId])throw new TypeError(`Save contains unknown scene "${sceneId}".`);
   }
   this.reset();
-  this.scenario=cloneJsonValue(save.scenario);
+  this.scenario=cloneJsonValue(normalized.scenario);
   this.src=normalized.src;
   this.state=restored;
   this.chatState={...this.chatState,...(cloneJsonValue(save.chatState)||{})};
