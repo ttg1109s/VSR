@@ -2726,6 +2726,23 @@
               }
             }
           }
+        },
+        {
+          "if": {
+            "properties": {
+              "subtype": {
+                "const": "remove_effect"
+              }
+            },
+            "required": [
+              "subtype"
+            ]
+          },
+          "then": {
+            "required": [
+              "index"
+            ]
+          }
         }
       ]
     },
