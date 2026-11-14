@@ -46,7 +46,7 @@ const ObjectRetrievers = {
         const state = engine.api.engine.state;
         const map = state.getRuntime('map.choices.[id]', { id: target });
         if (!map) return null;
-        return state.getRuntime('chats.[chatId].blocks.[blockId].choices.[idx]', map);
+        return state.getRuntime('chats.[chatId].block.[blockId].choices.[idx]', map);
     },
     automation: (engine, target) => engine.api.engine.state.getRuntime('automations.[id]', { id: target })
 };
@@ -142,16 +142,27 @@ const CheckTypeHandlers = {
 
 export const LogicSystem = {
     checkReq(req) {
-        if (!req) return { pass: true };
-        if (req.logic && req.check?.length > 0) {
-            const results = req.check.map(c => this.checkSingle(c));
-            const gate = LogicGates[req.logic];
-            if (gate) return { pass: gate(results) };
+        if (req === null || req === undefined || req === false) return { pass: true };
+        let definition = req;
+        if (typeof req === 'string') {
+            definition = this.src?.templates?.requirement?.[req]
+                || this.src?.templates?.requirements?.[req]
+                || this.src?.templates?.req?.[req];
+        } else if (req && typeof req === 'object' && typeof req.ref === 'string') {
+            definition = this.src?.templates?.requirement?.[req.ref]
+                || this.src?.templates?.requirements?.[req.ref]
+                || this.src?.templates?.req?.[req.ref];
         }
-        if (req.check?.length === 1) {
-            return this.checkSingle(req.check[0]);
+        if (!definition || typeof definition !== 'object' || !Array.isArray(definition.check) || definition.check.length === 0) {
+            return { pass: false, type: 'invalid_requirement' };
         }
-        return { pass: true };
+        const results = definition.check.map(check => this.checkSingle(check));
+        if (!definition.logic && results.length === 1) return results[0];
+        const gate = LogicGates[definition.logic];
+        if (!gate || (definition.logic === 'NOT' && results.length !== 1)) {
+            return { pass: false, type: 'invalid_requirement' };
+        }
+        return { pass: gate(results) };
     },
 
     compare(v1, op, v2) {
@@ -185,7 +196,7 @@ export const LogicSystem = {
 
             // Priority 2: If undefined (maybe router is in another scene referenced globally), use legacy search logic
             if (isBlocked === undefined && this.src.path?.routers[target]) {
-                const parentSceneId = this.src.path.routers[target][0];
+                const parentSceneId = this.src.path.routers[target];
                 isBlocked = this.api.engine.state.get('router.blocked', { sceneId: parentSceneId, routerId: target });
             }
 
