@@ -1043,7 +1043,8 @@
           "description": "ID tham chiếu tới templates.effects.<ref> (dùng lại effect đã định nghĩa sẵn)."
         },
         "inline": {
-          "$ref": "#/definitions/effect_details"
+          "type": "object",
+          "description": "Inline payload; its exact schema is selected by wrapper.type."
         },
         "hide": {
           "type": "boolean",
@@ -1074,6 +1075,14 @@
             ]
           },
           "then": {
+            "required": [
+              "inline"
+            ],
+            "properties": {
+              "inline": {
+                "$ref": "#/definitions/effect_details"
+              }
+            },
             "anyOf": [
               {
                 "required": [
