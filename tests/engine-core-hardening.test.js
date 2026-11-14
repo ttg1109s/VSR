@@ -2,6 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { validateScenario, normalizeScenario, ScenarioValidationError } from '../engine/scenario/Scenario.js';
 import { LogicSystem } from '../engine/modules/Logic.js';
+import { ActionSystem } from '../engine/modules/Action.js';
+import { SceneSystem } from '../engine/modules/Scene.js';
 
 function validScenario() {
   return {
@@ -86,4 +88,35 @@ test('scenario cloning rejects cyclic non-JSON input', () => {
   const scenario = validScenario();
   scenario.meta.self = scenario;
   assert.throws(() => normalizeScenario(scenario), ScenarioValidationError);
+});
+
+test('a global action cannot be triggered unless the active router references it', async () => {
+  const state = {
+    get(key) {
+      if (key === 'sceneId') return 'start';
+      if (key === 'scene.activeRouterId') return 'main';
+      return undefined;
+    }
+  };
+  const engine = {
+    isActionProcessing: false,
+    isTransitioning: false,
+    api: { engine: { state } },
+    src: {
+      scenes: { start: { routers: { main: { actions: [] } } } },
+      actions: { hidden: { meta: { title: 'Hidden' }, set: { display: 'show' } } }
+    },
+    getEffectiveActions: ActionSystem.getEffectiveActions
+  };
+  assert.equal(await ActionSystem.handleAction.call(engine, 'hidden'), undefined);
+});
+
+test('entering a locked scene is rejected by the engine', async () => {
+  const engine = {
+    api: { engine: { state: { getRuntimeSnapshot: () => ({}) } } },
+    checkHardLock: () => true
+  };
+  assert.deepEqual(await SceneSystem.enterScene.call(engine, 'locked'), {
+    success: false, reason: 'target_locked'
+  });
 });
