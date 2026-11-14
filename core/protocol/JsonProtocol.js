@@ -153,14 +153,14 @@ export class JsonProtocol {
             try { listener(cloneJsonValue(event)); }
             catch (error) { console.error('[VSR Protocol] Event listener failed:', error); }
         });
-        return event;
+        return cloneJsonValue(event);
     }
 
     publishSnapshot(engine, reason = 'state.changed') {
         const snapshot = this.createSnapshot(engine);
         snapshot.revision = this.revision + 1;
         const event = this.publish('state.snapshot', { reason, snapshot });
-        return event.payload.snapshot;
+        return cloneJsonValue(event.payload.snapshot);
     }
 
     async dispatch(command, context = {}) {
@@ -176,7 +176,7 @@ export class JsonProtocol {
         }
 
         if (this.commandResults.has(command.commandId)) {
-            return this.commandResults.get(command.commandId);
+            return cloneJsonValue(this.commandResults.get(command.commandId));
         }
         if (command.expectedRevision !== undefined && command.expectedRevision !== this.revision) {
             return {
@@ -210,6 +210,7 @@ export class JsonProtocol {
         let result;
         try {
             result = await handler(payload, context);
+            result = result === undefined ? null : cloneJsonValue(result);
         } catch (error) {
             this.publish('command.failed', {
                 commandId: command.commandId,
@@ -236,13 +237,13 @@ export class JsonProtocol {
             commandId: command.commandId,
             ok: true,
             revision: this.revision,
-            result: result === undefined ? null : cloneJsonValue(result)
+            result
         };
         this.commandResults.set(command.commandId, ack);
         if (this.commandResults.size > this.maxRememberedCommands) {
             this.commandResults.delete(this.commandResults.keys().next().value);
         }
-        return ack;
+        return cloneJsonValue(ack);
     }
 
     createCommand(command, payload = {}, { commandId, expectedRevision } = {}) {
