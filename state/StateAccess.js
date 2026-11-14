@@ -136,11 +136,12 @@ export class StateAccess {
     const namespace = options.namespace ?? STATE_SCHEMA[path]?.[0] ?? 'runtime';
     if (namespace === 'source') throw new StatePathError('Scenario source is read-only.', 'READ_ONLY_NAMESPACE');
     const resolvedPath = STATE_SCHEMA[path]?.[1] ?? path;
-    if (namespace === 'session' && resolvedPath === 'chatState') { this.engine.chatState = value; return value; }
-    if (namespace === 'session' && resolvedPath === 'pendingPasswordAction') { this.engine.pendingPasswordAction = value; return value; }
+    if (namespace === 'session' && resolvedPath === 'chatState') { this.engine.chatState = value; this.engine.commitState?.('state.set'); return value; }
+    if (namespace === 'session' && resolvedPath === 'pendingPasswordAction') { this.engine.pendingPasswordAction = value; this.engine.commitState?.('state.set'); return value; }
     const root = this.#root(namespace);
     const { parent, leaf } = parentFor(root, resolvedPath, resolveContext(path, context, this.engine), true);
     parent[leaf] = value;
+    this.engine.commitState?.('state.set');
     return value;
   }
 
@@ -154,12 +155,14 @@ export class StateAccess {
     const namespace = options.namespace ?? STATE_SCHEMA[path]?.[0] ?? 'runtime';
     if (namespace === 'source') throw new StatePathError('Scenario source is read-only.', 'READ_ONLY_NAMESPACE');
     const resolvedPath = STATE_SCHEMA[path]?.[1] ?? path;
-    if (namespace === 'session' && resolvedPath === 'chatState') { this.engine.chatState = undefined; return true; }
-    if (namespace === 'session' && resolvedPath === 'pendingPasswordAction') { this.engine.pendingPasswordAction = undefined; return true; }
+    if (namespace === 'session' && resolvedPath === 'chatState') { this.engine.chatState = undefined; this.engine.commitState?.('state.delete'); return true; }
+    if (namespace === 'session' && resolvedPath === 'pendingPasswordAction') { this.engine.pendingPasswordAction = undefined; this.engine.commitState?.('state.delete'); return true; }
     const root = this.#root(namespace);
     const { parent, leaf } = parentFor(root, resolvedPath, resolveContext(path, context, this.engine));
     if (parent === null || typeof parent !== 'object') return false;
-    return delete parent[leaf];
+    const deleted = delete parent[leaf];
+    if (deleted) this.engine.commitState?.('state.delete');
+    return deleted;
   }
 
   async transaction(callback) {
