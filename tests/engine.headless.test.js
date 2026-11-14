@@ -206,3 +206,26 @@ test('Character stat effects mutate detached drafts and persist through StateAcc
  detached.stats.__focus_probe.current=99;
  assert.equal(e.state.characters.player.stats.__focus_probe.current,5);
 });
+
+
+test('Password challenge expires automatically and its deadline survives save restore',async()=>{
+ const a=makeEngine();
+ const script=structuredClone(DEMO_SCRIPT);
+ const sceneId=script.meta.entryScene;
+ const routerId=script.scenes[sceneId].set.activeRouterId;
+ script.passwords.string.__timed_secret={value:'never',timer:0.08};
+ script.actions.__timed_password={meta:{title:'Timed password'},set:{display:'show',password:'string:__timed_secret'},effect:{pass:[],pwFailed:[]}};
+ script.scenes[sceneId].routers[routerId].actions.push('__timed_password');
+ await a.init(script);
+ await a.handleAction('__timed_password');
+ assert.ok(a.pendingPasswordAction?.deadlineAt);
+ const save=a.exportSave();
+ const b=makeEngine();
+ await b.restoreSave(save);
+ assert.equal(b.pendingPasswordAction.challengeId,save.pendingPasswordAction.challengeId);
+ await new Promise(resolve=>setTimeout(resolve,120));
+ assert.equal(a.pendingPasswordAction,null);
+ assert.equal(b.pendingPasswordAction,null);
+ assert.ok(a.protocol.getEventsAfter(0).events.some(event=>event.event==='password.expired'));
+ assert.ok(b.protocol.getEventsAfter(0).events.some(event=>event.event==='password.expired'));
+});
