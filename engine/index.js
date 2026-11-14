@@ -8,3 +8,6 @@ export { DEMO_SCRIPT } from '../demo_script.js';
 
 export { normalizeScenario, validateScenario, ScenarioValidationError, SCENARIO_FORMAT_VERSION } from './scenario/Scenario.js';
 export { createSaveEnvelope, normalizeSaveEnvelope, SAVE_VERSION } from './persistence/SaveState.js';
+
+export { StateAccess, StatePathError, createStateAccess } from '../state/StateAccess.js';
+export { STATE_SCHEMA } from '../state/schema.js';
