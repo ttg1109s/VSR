@@ -332,6 +332,39 @@ function validateReferences(scenario) {
     }
   };
 
+  const effectTemplateGraph = new Map();
+  const collectEffectRefs = (value, refs) => {
+    if (Array.isArray(value)) {
+      value.forEach(item => collectEffectRefs(item, refs));
+      return;
+    }
+    if (!isObject(value)) return;
+    if (value.type === 'effect' && typeof value.ref === 'string') refs.push(value.ref);
+    for (const child of Object.values(value)) collectEffectRefs(child, refs);
+  };
+  for (const [templateId, content] of Object.entries(templates.effects || {})) {
+    const refs = [];
+    collectEffectRefs(content, refs);
+    effectTemplateGraph.set(templateId, refs);
+  }
+  const visitedEffectTemplates = new Set();
+  const activeEffectTemplates = [];
+  const visitEffectTemplate = (templateId) => {
+    if (activeEffectTemplates.includes(templateId)) {
+      const cycle = [...activeEffectTemplates.slice(activeEffectTemplates.indexOf(templateId)), templateId];
+      add('templates.effects.' + templateId, 'contains recursive effect-template cycle: ' + cycle.join(' -> '));
+      return;
+    }
+    if (visitedEffectTemplates.has(templateId)) return;
+    activeEffectTemplates.push(templateId);
+    for (const ref of effectTemplateGraph.get(templateId) || []) {
+      if (effectTemplateGraph.has(ref)) visitEffectTemplate(ref);
+    }
+    activeEffectTemplates.pop();
+    visitedEffectTemplates.add(templateId);
+  };
+  for (const templateId of effectTemplateGraph.keys()) visitEffectTemplate(templateId);
+
   const inspect = (value, path = 'scenario') => {
     if (Array.isArray(value)) {
       value.forEach((child, index) => inspect(child, `${path}[${index}]`));
