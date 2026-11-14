@@ -76,6 +76,76 @@ const resolveCharacterPair = (engine, eff, defaultSource = null) => {
     ];
 };
 
+// Transfer a single item ID between two characters without cloning itemInfo state.
+const ItemTransferLogic = {
+    transfer: async (engine, eff) => {
+        const [targetId, sourceId] = resolveCharacterPair(engine, eff);
+        const itemId = typeof eff.value === 'string' ? eff.value : '';
+        if (!targetId || !sourceId || !itemId || targetId === sourceId) return;
+
+        const state = engine.api.engine.state;
+        const itemInfo = state.getRuntimeSnapshot('itemInfo.[id]', { id: itemId });
+        if (!itemInfo) return;
+
+        const maxInventory = (engine.getConfig ? engine.getConfig('maxInventory') : null)
+            || state.getRuntimeSnapshot('config.maxInventory')
+            || [];
+        const targetLimitPair = Array.isArray(maxInventory)
+            ? maxInventory.find(pair => Array.isArray(pair) && pair[1] === targetId)
+            : null;
+        const targetLimit = targetLimitPair ? Number(targetLimitPair[0]) : 0;
+        const configuredMaxHand = engine.getConfig ? engine.getConfig('maxHandOn') : undefined;
+        const maxHand = configuredMaxHand === undefined || configuredMaxHand === null
+            ? 10
+            : Number(configuredMaxHand);
+
+        const result = await state.transaction(tx => {
+            const source = tx.get('characters.[id]', { id: sourceId });
+            const target = tx.get('characters.[id]', { id: targetId });
+            if (!source || !target) return 'missing_character';
+
+            const sourceInventory = Array.isArray(source.inventory) ? [...source.inventory] : [];
+            const targetInventory = Array.isArray(target.inventory) ? [...target.inventory] : [];
+            if (!sourceInventory.includes(itemId)) return 'not_owned';
+            if (targetInventory.includes(itemId)) return 'duplicate';
+            if (targetLimit > 0 && targetInventory.length >= targetLimit) return 'inventory_full';
+
+            const sourceHand = Array.isArray(source.hand) ? [...source.hand] : [];
+            const targetHand = Array.isArray(target.hand) ? [...target.hand] : [];
+            const wasInHand = sourceHand.includes(itemId);
+
+            source.inventory = sourceInventory.filter(id => id !== itemId);
+            source.hand = sourceHand.filter(id => id !== itemId);
+            target.inventory = [...targetInventory, itemId];
+
+            // A zero/non-positive hand limit means unlimited, matching the schema contract.
+            if (wasInHand && (!(maxHand > 0) || targetHand.length < maxHand)) {
+                target.hand = targetHand.includes(itemId) ? targetHand : [...targetHand, itemId];
+            }
+
+            tx.set('characters.[id]', source, { id: sourceId });
+            tx.set('characters.[id]', target, { id: targetId });
+            return wasInHand && !target.hand?.includes(itemId) ? 'transferred_unequipped' : 'transferred';
+        });
+
+        if (result !== 'transferred' && result !== 'transferred_unequipped') return;
+
+        const entryChar = state.getRuntime('meta.entryCharacter') || 'player';
+        if (sourceId === entryChar || targetId === entryChar) {
+            engine.api.presentation.components?.updateItemModal?.(itemId);
+            engine.api.presentation.components?.explorer?.();
+            engine.api.presentation.components?.updatePlayerCard?.();
+        }
+        engine.commitState?.('inventory.changed');
+        engine.api.notifications?.add?.(
+            'Chuyển vật phẩm',
+            `Đã chuyển ${itemInfo.name || itemId} từ ${sourceId} sang ${targetId}.`,
+            'info',
+            { source: 'scenario', category: 'scenario.character.item_transfer' }
+        );
+    }
+};
+
 const StatsLogic = {
     swap: (engine, eff) => {
         const [idA, idB] = resolveCharacterPair(engine, eff);
@@ -210,6 +280,15 @@ export const CharacterStrategies = {
             value: resolveValue(eff.value, engine)
         };
         StatsLogic[eff.exec]?.(engine, resolvedEff);
+    },
+    mng_items: (engine, eff) => {
+        const resolvedEff = {
+            ...eff,
+            target: resolveValue(eff.target, engine),
+            source: resolveValue(eff.source, engine),
+            value: resolveValue(eff.value, engine)
+        };
+        ItemTransferLogic[eff.exec]?.(engine, resolvedEff);
     },
     moving: (engine, eff) => {
         const rawTarget = resolveValue(eff.target, engine);
