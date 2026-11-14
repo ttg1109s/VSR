@@ -1,7 +1,7 @@
 // engine/modules/chat/BlockHandler.js
 // [FIXED] Hybrid Logic: Content -> Choice -> (If Null Choice) End
 
-import { ensureInputVisible, hideInput } from './UIHelper.js';
+import { ensureInputVisible, hideInput } from './Presentation.js';
 import { API } from '../../../api/index.js';
 
 export const ChatBlockHandlers = {
