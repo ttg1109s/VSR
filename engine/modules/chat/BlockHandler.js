@@ -14,7 +14,7 @@ export const ChatBlockHandlers = {
             // 2. [HYBRID] Hết content thì tìm xem có Choices không
             if (block.choices && block.choices.length > 0) {
                 console.log(`[BlockHandler] Rendering choices...`);
-                hideInput();
+                hideInput(engine);
 
                 engine.api.presentation.chat.renderChoices(block.choices, null);
                 return; // Dừng lại đợi user chọn
@@ -29,7 +29,7 @@ export const ChatBlockHandlers = {
         }
 
         // 4. Render dòng thoại tiếp theo
-        ensureInputVisible();
+        ensureInputVisible(engine);
         const line = block.line[engine.chatState.index];
 
         const state = engine.api.engine.state;
