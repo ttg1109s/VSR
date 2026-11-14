@@ -100,60 +100,43 @@ export const ChatSystem = {
         if (!c) return;
 
         console.log(`[ChatSystem] startChat: ${id} Trigger: ${triggerActionId}`);
-
         const ownerId = this.getChatOwner(id);
+        const state = this.api.engine.state;
+        const chatRuntime = state.getRuntimeSnapshot('chat.data', { id }) || {};
+        if (!chatRuntime.set) chatRuntime.set = { read: false, step: 0, bookmark: [] };
 
-        // [FIX] state.chats[id] ĐÃ tồn tại (Loader.js copy nguyên script.chat vào
-        // state.chats từ lúc load), nên điều kiện cũ `if (!this.state.chats[id])`
-        // luôn false với bất kỳ chat hợp lệ nào -> `.set` không bao giờ được khởi
-        // tạo -> dòng ngay sau đó đọc `.set.bookmark` trên `undefined` -> crash
-        // (TypeError). Đúng ra phải kiểm tra thiếu RIÊNG field `.set` (schema
-        // chat.<id> vốn không khai báo `.set` — script hợp lệ theo schema sẽ luôn
-        // rơi vào nhánh crash này). Giữ nguyên meta/block/choice đã có, chỉ bổ
-        // sung `.set` nếu thiếu.
-        if (!this.state.chats[id]) this.state.chats[id] = {};
-        if (!this.state.chats[id].set) this.state.chats[id].set = { read: false, step: 0, bookmark: [] };
-
-        // [MIGRATION] Upgrade bookmark to array
-        if (this.state.chats[id].set.bookmark && !Array.isArray(this.state.chats[id].set.bookmark)) {
-            this.state.chats[id].set.bookmark = [this.state.chats[id].set.bookmark];
-        } else if (!this.state.chats[id].set.bookmark) {
-            this.state.chats[id].set.bookmark = [];
+        // Normalize legacy single-value bookmarks without mutating the live state object.
+        if (chatRuntime.set.bookmark && !Array.isArray(chatRuntime.set.bookmark)) {
+            chatRuntime.set.bookmark = [chatRuntime.set.bookmark];
+        } else if (!chatRuntime.set.bookmark) {
+            chatRuntime.set.bookmark = [];
         }
 
-        console.log(`[ChatSystem] State before init: Read=${this.state.chats[id].set.read}, Activation=${this.state.chats[id].set.activationTime}, BookmarkLen=${this.state.chats[id].set.bookmark.length}`);
-
-        if (!this.state.chats[id].set.activationTime) {
-            this.state.chats[id].set.activationTime = Date.now();
-            // [FIX] Only reset read to false if it is not already true (preserved state)
-            if (this.state.chats[id].set.read !== true) {
-                this.state.chats[id].set.read = false;
-            }
+        console.log(`[ChatSystem] State before init: Read=${chatRuntime.set.read}, Activation=${chatRuntime.set.activationTime}, BookmarkLen=${chatRuntime.set.bookmark.length}`);
+        if (!chatRuntime.set.activationTime) {
+            chatRuntime.set.activationTime = Date.now();
+            if (chatRuntime.set.read !== true) chatRuntime.set.read = false;
         }
+        chatRuntime.set.lastInteraction = Date.now();
 
-        this.state.chats[id].set.lastInteraction = Date.now();
-        if (!this.state.chatHistory[id]) this.state.chatHistory[id] = [];
-
-        // --- Logic: Handle Loop & Bookmark Replay ---
+        let chatHistory = state.getRuntimeSnapshot('chat.history', { id }) || [];
         const isLoop = c.meta && c.meta.loop === true;
-        const bookmark = this.state.chats[id].set.bookmark;
+        const bookmark = chatRuntime.set.bookmark;
         const hasRead = bookmark.length > 0;
-
-        console.log(`[ChatSystem] Logic check: isLoop=${isLoop}, hasRead=${hasRead}, readState=${this.state.chats[id].set.read}`);
+        console.log(`[ChatSystem] Logic check: isLoop=${isLoop}, hasRead=${hasRead}, readState=${chatRuntime.set.read}`);
 
         let startBlock = c.meta?.entry || c.entry;
-        let startIndex = 0;
+        const startIndex = 0;
         let shouldProcessBlock = true;
 
-        if (hasRead || (this.state.chats[id].set.read === true && !isLoop)) {
-            if (isLoop && !this.state.chats[id].set.read) {
-                // CLAUSE: Loop = True && Read -> Clear History, Reset Choiced, Restart
+        if (hasRead || (chatRuntime.set.read === true && !isLoop)) {
+            if (isLoop && !chatRuntime.set.read) {
                 console.log(`[ChatSystem] Loop check: True. Restarting chat '${id}'.`);
-                this.state.chatHistory[id] = [];
-                this.state.chats[id].set.bookmark = [];
-                this.state.chats[id].set.read = false;
+                chatHistory = [];
+                chatRuntime.set.bookmark = [];
+                chatRuntime.set.read = false;
 
-                // Reset Choiced in SRC (Runtime)
+                // Reset scenario-local choice flags as before; these flags are read by resolveBlock.
                 if (c.block) {
                     Object.values(c.block).forEach(variants => {
                         Object.values(variants).forEach(v => {
@@ -161,103 +144,85 @@ export const ChatSystem = {
                         });
                     });
                 }
-                // startBlock defaults to entry
             } else {
-                // CLAUSE: Loop = False OR Read -> Replay Bookmark (Review Mode)
                 console.log(`[ChatSystem] Review/Replay '${id}'.`);
-                this.state.chatHistory[id] = [];
-
+                chatHistory = [];
                 let stopAtBlock = null;
 
                 for (const blockId of bookmark) {
                     const blockInfo = this.resolveBlock(id, blockId);
                     if (!blockInfo) continue;
 
-                    // 1. Always Load Content first
                     if (blockInfo.line) {
                         blockInfo.line.forEach(line => {
-                            const lineObj = { ...line, nameID: line.nameID || line.char_id };
-                            this.state.chatHistory[id].push(lineObj);
+                            chatHistory.push({ ...line, nameID: line.nameID || line.char_id });
                         });
                     }
 
-                    // 2. Check Choices & Reconstruct Player Line
                     if (blockInfo.choices && blockInfo.choices.length > 0) {
                         const rawVariant = c.block[blockId];
-
-                        // Find if any choice was made
                         let pickedChoice = null;
                         if (rawVariant && rawVariant.choiced) {
                             pickedChoice = blockInfo.choices.find(ch => ch.set && ch.set.choiced === true);
                         }
-
                         if (pickedChoice) {
-                            // Found a made choice. Reconstruct player line.
                             const entryChar = this.state.meta?.entryCharacter || 'player';
-                            this.state.chatHistory[id].push({ nameID: entryChar, text: pickedChoice.text });
+                            chatHistory.push({ nameID: entryChar, text: pickedChoice.text });
                         } else {
-                            // Block is Un-choiced -> STOP load, show this block
                             stopAtBlock = blockId;
                             break;
                         }
-                    } else {
-                        // [FIX] If checking HISTORY (Read=True), do NOT stop on dialogue blocks.
-                        // Only stop if we are NOT read (meaning we reached the end of current progress).
-                        if (!this.state.chats[id].set.read) {
-                            stopAtBlock = blockId;
-                            break;
-                        }
+                    } else if (!chatRuntime.set.read) {
+                        stopAtBlock = blockId;
+                        break;
                     }
 
-                    startBlock = blockId; // Update cursor
-                }
-
-                // [FIX] Render history immediately so context is visible
-                if (this.api.presentation && this.api.presentation.chat && this.api.presentation.chat.renderChatHistory) {
-                    this.api.presentation.chat.renderChatHistory(id);
+                    startBlock = blockId;
                 }
 
                 if (stopAtBlock) {
                     startBlock = stopAtBlock;
                     shouldProcessBlock = true;
-                } else if (!this.state.chats[id].set.read) {
-                    // If NOT read and no stopAtBlock? Continue?
-                    // Usually implies we reached end of bookmark but not end of chat?
+                } else if (!chatRuntime.set.read) {
                     shouldProcessBlock = true;
                 } else {
-                    // Replay finished and Read is True. Show history. 
                     shouldProcessBlock = false;
                 }
             }
         }
 
-        this.chatState = {
+        // Commit the complete progress projection before rendering or dispatching the next block.
+        state.set('chat.data', chatRuntime, { id });
+        state.set('chat.history', chatHistory, { id });
+
+        const nextChatState = {
             active: true,
-            id: id,
+            id,
             blockId: startBlock,
             index: startIndex,
             blocking: true,
-            triggerActionId: triggerActionId,
+            triggerActionId,
             actionModified: false,
-            isProcessing: false
+            isProcessing: false,
+            ...(!shouldProcessBlock ? { isReview: true } : {})
         };
+        state.set('session.chat', nextChatState);
+
+        if (!shouldProcessBlock && this.api.presentation?.chat?.renderChatHistory) {
+            this.api.presentation.chat.renderChatHistory(id);
+        }
 
         this.api.presentation.navigation.switchScreen('character');
         this.api.presentation.navigation.selectContact(ownerId);
         this.api.presentation.navigation.openThread(id);
-
         this.toggleChatOverlay(true);
 
         if (shouldProcessBlock) {
             this.processChatBlock();
         } else {
-            // Just refresh render
             console.log(`[ChatSystem] Chat '${id}' fully reviewed. Render only.`);
             this.api.presentation.chat.renderChatHistory(id);
-            // [FIX] Hide input (User requirement: No button)
-            // Interaction with screen will trigger nextChat -> endChat via isReview flag
             hideInput(this);
-            this.chatState.isReview = true;
         }
     },
 
