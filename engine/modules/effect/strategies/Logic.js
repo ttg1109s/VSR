@@ -57,12 +57,12 @@ export const GotoStrategies = {
         if (engine.pauseBackgroundTasks) engine.pauseBackgroundTasks();
         if (engine.clearEffectQueue) engine.clearEffectQueue('all');
         // [FIX] Trước đây chỉ pause/clear queue rồi dừng — không nơi nào gọi
-        // API.render.components.ending() (bí danh window.ui.showEnding()), nên
+        // API.presentation.components.ending() (bí danh window.ui.showEnding()), nên
         // {"type":"goto","subtype":"end","target":"<endingId>"} — cơ chế DUY
         // NHẤT trong toàn engine để hiện #ending-screen — luôn no-op im lặng.
         // Bất kỳ kịch bản nào dùng goto/end để thắng/thua game đều không bao
         // giờ thực sự hiện màn kết thúc.
-        if (API.render && API.render.components) API.render.components.ending(eff.target);
+        if (API.presentation && API.presentation.components) API.presentation.components.ending(eff.target);
     },
     in_faker: async (engine, eff) => {
         if (engine.pauseBackgroundTasks) engine.pauseBackgroundTasks();
