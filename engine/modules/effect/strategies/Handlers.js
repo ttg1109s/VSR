@@ -1,65 +1,82 @@
-// htdocs/engine/modules/effect/strategies/Handlers.js
+// Centralized mutation handlers for effect-driven state changes.
+
+const stateOf = engine => engine.api.engine.state;
 
 export const AutomationPropertyHandlers = {
     state: (engine, target, val) => {
-        const actions = { run: (id) => engine.runAutomation(id), stop: (id) => engine.stopAutomation(id) };
+        const actions = { run: id => engine.runAutomation(id), stop: id => engine.stopAutomation(id) };
         if (actions[val]) actions[val](target);
     },
-    __default__: (engine, target, val, prop) => { engine.state.automations[target][prop] = val; }
+    __default__: (engine, target, val, prop) => {
+        stateOf(engine).set('automations.[id].[property]', val, { id: target, property: prop });
+    }
 };
 
 export const ScenePropertyHandlers = {
-    blocked: (engine, scene, val) => {
-        scene.blocked = val;
+    blocked: (engine, scene, val, sceneId) => {
+        stateOf(engine).set('scenes.[id].blocked', val, { id: sceneId });
         if (val === false) engine.resumeNPCMovement();
         engine.render();
     },
-    activeRouterId: (engine, scene, val, sId) => {
-        scene.activeRouterId = val;
-        if (sId === engine.state.sceneId) engine.enterRouter(val);
+    activeRouterId: (engine, scene, val, sceneId) => {
+        stateOf(engine).set('scenes.[id].activeRouterId', val, { id: sceneId });
+        if (sceneId === stateOf(engine).sceneId) engine.enterRouter(val);
         else engine.render();
     },
-    __default__: (engine, scene, val, sId, prop) => { scene[prop] = val; engine.render(); }
+    __default__: (engine, scene, val, sceneId, prop) => {
+        stateOf(engine).set('scenes.[id].[property]', val, { id: sceneId, property: prop });
+        engine.render();
+    }
 };
 
 export const RouterPropertyHandlers = {
-    blocked: (engine, router, val) => {
-        router.blocked = val;
+    blocked: (engine, router, val, routerId) => {
+        const sceneId = stateOf(engine).sceneId;
+        stateOf(engine).set('routers.[routerKey].blocked', val, { routerKey: `${sceneId}_${routerId}` });
         if (val === false) engine.resumeNPCMovement();
         engine.render();
     },
-    __default__: (engine, router, val, rId, prop) => { router[prop] = val; engine.render(); }
+    __default__: (engine, router, val, routerId, prop) => {
+        const sceneId = stateOf(engine).sceneId;
+        stateOf(engine).set('routers.[routerKey].[property]', val, {
+            routerKey: `${sceneId}_${routerId}`,
+            property: prop
+        });
+        engine.render();
+    }
 };
 
 export const ActionPropertyHandlers = {
     __default__: (engine, action, val, actKey, prop) => {
-        action[prop] = val;
-        if (engine.chatState.active && engine.chatState.triggerActionId === actKey) {
-            engine.chatState.actionModified = true;
-        }
+        stateOf(engine).set('actions.[actionKey].[property]', val, { actionKey: actKey, property: prop });
+        const chatState = stateOf(engine).getSession('chatState');
+        if (chatState?.active && chatState.triggerActionId === actKey) chatState.actionModified = true;
         engine.render();
     }
 };
 
 export const CharacterPropertyHandlers = {
     meeting: () => { },
-    moveList: (engine, char, val) => {
-        // [REFACTOR] Use 'char.place.currentIndex'
-        char.place.currentIndex = 0;
-        char.moveList = val;
+    moveList: (engine, char, val, charId) => {
+        stateOf(engine).transaction(tx => {
+            tx.set('characters.[id].place.currentIndex', 0, { id: charId });
+            tx.set('characters.[id].moveList', val, { id: charId });
+        });
     },
     moving: (engine, char, val, charId) => {
-        char.set.moving = val;
+        stateOf(engine).set('characters.[id].set.moving', val, { id: charId });
         if (val === true) {
             engine.scheduleCharacterMove(charId);
         } else {
             engine.taskManager.kill(`move_char_${charId}`);
-            if (engine.checkQueueAndResume) {
-                engine.checkQueueAndResume();
-            }
+            if (engine.checkQueueAndResume) engine.checkQueueAndResume();
         }
     },
-    met: (engine, char, val) => { char.set.met = val; engine.api.presentation.components.renderCharacterScreen(); },
-
-    __default__: (engine, char, val, charId, prop) => { char.set[prop] = val; }
+    met: (engine, char, val, charId) => {
+        stateOf(engine).set('characters.[id].set.met', val, { id: charId });
+        engine.api.presentation.components.renderCharacterScreen();
+    },
+    __default__: (engine, char, val, charId, prop) => {
+        stateOf(engine).set('characters.[id].set.[property]', val, { id: charId, property: prop });
+    }
 };
