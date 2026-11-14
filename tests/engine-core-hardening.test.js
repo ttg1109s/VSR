@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { validateScenario, normalizeScenario } from '../engine/scenario/Scenario.js';
+import { validateScenario, normalizeScenario, ScenarioValidationError } from '../engine/scenario/Scenario.js';
 import { LogicSystem } from '../engine/modules/Logic.js';
 
 function validScenario() {
@@ -80,4 +80,10 @@ test('semantic validation rejects empty automation plans', () => {
     empty: { set: { move: 'step_by_step', moveDirection: 'first', numberCycleAllow: 1, countCurrent: 0, runInfinity: false, banClick: false }, plan: [] }
   };
   assert.ok(validateScenario(scenario).some(error => error.includes('plan must contain at least one step')));
+});
+
+test('scenario cloning rejects cyclic non-JSON input', () => {
+  const scenario = validScenario();
+  scenario.meta.self = scenario;
+  assert.throws(() => normalizeScenario(scenario), ScenarioValidationError);
 });
