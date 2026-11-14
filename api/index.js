@@ -112,7 +112,8 @@ export const API = {
             renderContactList: () => window.ui?.renderContactList(),
             toggleOverlay: (active) => window.ui?.toggleChatOverlay(active),
             renderChoices: (choices, prompt) => window.ui?.renderChatChoices(choices, prompt),
-            renderChatHistory: (chatId) => window.ui?.renderChatHistory(chatId)
+            renderChatHistory: (chatId) => window.ui?.renderChatHistory(chatId),
+            clearChoices: () => window.ui?.clearChatChoices()
         },
 
         components: {
@@ -162,5 +163,35 @@ export const API = {
         fb: fb
     }
 };
+
+/**
+ * Compatibility instrumentation: legacy render calls remain operational while
+ * also becoming observable JSON presentation events for alternative renderers.
+ * Payloads that are not JSON-safe are deliberately omitted, never passed through.
+ */
+function instrumentPresentationBridge(target, path = 'presentation') {
+    Object.keys(target).forEach(key => {
+        const descriptor = Object.getOwnPropertyDescriptor(target, key);
+        if (!descriptor || descriptor.get || descriptor.set) return;
+        const value = target[key];
+        const name = `${path}.${key}`;
+        if (typeof value === 'function') {
+            target[key] = (...args) => {
+                try {
+                    const protocol = window.engine?.protocol;
+                    if (protocol) protocol.publish(name, { args });
+                } catch (error) {
+                    console.warn('[VSR Protocol] Skipped non-JSON presentation payload:', name, error);
+                }
+                return value(...args);
+            };
+        } else if (value && typeof value === 'object') {
+            instrumentPresentationBridge(value, name);
+        }
+    });
+}
+
+instrumentPresentationBridge(API.render);
+
 
 window.API = API;
