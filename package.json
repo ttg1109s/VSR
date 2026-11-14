@@ -10,6 +10,7 @@
   "exports": {
     ".": "./engine/index.js",
     "./protocol": "./protocol/JsonProtocol.js",
+    "./notifications": "./engine/modules/Notification.js",
     "./scenario-schema": "./scenario.schema.json",
     "./scenario": "./engine/scenario/Scenario.js",
     "./save-schema": "./engine/persistence/save.schema.json",
