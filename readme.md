@@ -83,4 +83,4 @@ Reusable helpers live in `utils/` and are available through `createUtils()` or t
 
 ## Verification status
 
-Run `npm test` for the checked-in Node.js regression tests and `npm run audit:state` for heuristic direct-state-access candidates. The audit is regex-based, not AST-based, and requires manual review. CI runs both commands on pushes to this branch and pull requests. Runtime behavior and integrations still require validation in the target host/client environment.
+Run `npm test` for the checked-in Node.js regression tests, `npm run audit:state` for the AST candidate report, and `npm run audit:state:strict` to enforce the reviewed allowlist. The Acorn-based audit is syntax- and member-expression-aware, but it is not a complete interprocedural data-flow proof. CI runs tests and strict audit on pushes to this branch and pull requests. Runtime behavior and integrations still require validation in the target host/client environment.
