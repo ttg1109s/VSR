@@ -55,6 +55,7 @@ export class JsonProtocol {
         this.protocolVersion = protocolVersion;
         this.revision = 0;
         this.eventSequence = 0;
+        this.commandSequence = 0;
         this.listeners = new Set();
         this.commandHandlers = new Map();
         this.commandResults = new Map();
@@ -175,7 +176,29 @@ export class JsonProtocol {
         }
 
         const payload = command.payload === undefined ? {} : cloneJsonValue(command.payload);
-        const result = await handler(payload, context);
+        this.publish('command.accepted', { commandId: command.commandId, command: command.command });
+        let result;
+        try {
+            result = await handler(payload, context);
+        } catch (error) {
+            this.publish('command.failed', {
+                commandId: command.commandId,
+                command: command.command,
+                message: error?.message || String(error)
+            });
+            const failed = {
+                protocol: 'vsr',
+                protocolVersion: this.protocolVersion,
+                type: 'ack',
+                commandId: command.commandId,
+                ok: false,
+                error: { code: 'COMMAND_FAILED', message: error?.message || String(error) },
+                revision: this.revision
+            };
+            this.commandResults.set(command.commandId, failed);
+            return failed;
+        }
+        this.publish('command.completed', { commandId: command.commandId, command: command.command });
         const ack = {
             protocol: 'vsr',
             protocolVersion: this.protocolVersion,
@@ -197,7 +220,7 @@ export class JsonProtocol {
             protocol: 'vsr',
             protocolVersion: this.protocolVersion,
             type: 'command',
-            commandId: commandId || createId('cmd', ++this.eventSequence),
+            commandId: commandId || createId('cmd', ++this.commandSequence),
             command,
             payload: cloneJsonValue(payload)
         };
