@@ -56,7 +56,7 @@ export const ItemStrategies = {
         if (engine.addItem) {
             const added = engine.addItem(eff.target);
             if (added) {
-                engine.api.presentation.notification.add("Nhận vật phẩm", engine.api.engine.state.getRuntimeSnapshot('itemInfo.[id].name', { id: eff.target }) || eff.target, "success", { source: 'scenario', category: 'scenario.inventory.added' });
+                engine.api.notifications.add("Nhận vật phẩm", engine.api.engine.state.getRuntimeSnapshot('itemInfo.[id].name', { id: eff.target }) || eff.target, "success", { source: 'scenario', category: 'scenario.inventory.added' });
                 engine.api.presentation.components.explorer();
             }
         } else {
@@ -66,7 +66,7 @@ export const ItemStrategies = {
                 engine.api.engine.state.update('characters.[id].inventory', inventory => [...(inventory || []), eff.target], {
                     id: ItemStrategies._getOwnerId(engine)
                 });
-                engine.api.presentation.notification.add("Nhận vật phẩm", engine.api.engine.state.getRuntimeSnapshot('itemInfo.[id].name', { id: eff.target }) || eff.target, "success");
+                engine.api.notifications.add("Nhận vật phẩm", engine.api.engine.state.getRuntimeSnapshot('itemInfo.[id].name', { id: eff.target }) || eff.target, "success");
                 engine.api.presentation.components.explorer();
             }
         }
@@ -118,7 +118,7 @@ export const ItemStrategies = {
         const inventory = char.inventory || [];
         if (!hand.includes(eff.target) && inventory.includes(eff.target)) {
             if (hand.length >= maxHand) {
-                engine.api.presentation.notification.add("Không thể cầm", "Tay đã đầy.", "warn", { source: 'scenario', category: 'scenario.inventory.hand_full' });
+                engine.api.notifications.add("Không thể cầm", "Tay đã đầy.", "warn", { source: 'scenario', category: 'scenario.inventory.hand_full' });
                 return;
             }
             const ownerId = ItemStrategies._getOwnerId(engine);
