@@ -12,6 +12,17 @@ Bản này tái cấu trúc toàn bộ UI/UX theo hướng **mobile-first**, đ�
 - **(c) Thanh công cụ scene**: chuyển xuống **bottom, full-width** trên mobile (`#scene-bottom-toolbar`), nằm ngay trên thanh nav chính, không che nội dung scene (khác với nút back nổi kiểu cũ vốn đè lên góc màn hình).
 - **(d) NPC trong scene**: danh sách nhân vật đang có mặt không còn nằm cố định trong footer (chiếm chỗ dọc của action list) mà chuyển thành **icon trong thanh công cụ** (kèm badge số lượng) — bấm vào mở **bottom sheet** liệt kê NPC.
 
+## JSON Protocol v1 (Hybrid)
+
+The Engine exposes a versioned JSON boundary under `core/protocol/`:
+
+- Snapshot: JSON-safe projection of domain state; scheduler queues, callbacks, and runtime-only fields are excluded.
+- Event: ordered event stream with revision numbers and a bounded replay buffer.
+- Command: allow-listed JSON requests with idempotent command IDs and optional expected revision.
+- Compatibility: scenario schema and existing state/save structures are not migrated or rewritten. The protocol snapshot is a separate transport object.
+
+See `core/protocol/README.md`, `core/protocol/protocol.schema.json`, and `core/protocol/DEPENDENCY_MAP.md`. Open `core/protocol/test.html` through the same HTTP static server to run the protocol contract tests in a browser.
+
 ## 📂 Project Structure
 
 htdocs/
