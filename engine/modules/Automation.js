@@ -6,6 +6,7 @@ export const AutomationSystem = {
         const state = access.getRuntime('automations.[id]', { id: autoId });
         const template = access.getSource('templates.automation.[id]', { id: autoId });
         if (!state || !template || state.active) return;
+        if (!Array.isArray(template.plan) || template.plan.length === 0) return;
 
         access.set('automation.active', true, { id: autoId });
         access.set('automation.countCurrent', 0, { id: autoId });
@@ -35,6 +36,10 @@ export const AutomationSystem = {
         const state = access.getRuntime('automations.[id]', { id: autoId });
         const template = access.getSource('templates.automation.[id]', { id: autoId });
         if (!state || !state.active || !template) return;
+        if (!Array.isArray(template.plan) || template.plan.length === 0) {
+            this.stopAutomation(autoId);
+            return;
+        }
 
         const chatState = access.getSession('chatState');
         if (this.getConfig && this.getConfig('stopEffectWhenChat') && chatState?.active) {
