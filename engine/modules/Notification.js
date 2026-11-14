@@ -30,7 +30,7 @@ export class NotificationSystem {
     const id = input.id || `${this.engineId}:notification:${++this.sequence}`;
     return {
       id: String(id), source: String(input.source || 'engine'),
-      category: String(input.category || 'general'),
+      category: String(input.category || `${input.source || 'engine'}.general`),
       title, message, severity, level: originalLevel,
       priority: Number.isFinite(input.priority) ? input.priority : PRIORITY[severity],
       presentation: presentation === 'modal' ? 'modal' : 'toast',
@@ -90,7 +90,16 @@ export class NotificationSystem {
       this.pending = this.pending.filter(id => id !== removed.id);
       if (removed.dedupeKey && this.dedupe.get(removed.dedupeKey) === removed.id) this.dedupe.delete(removed.dedupeKey);
     }
-    while (this.pending.length > this.maxQueue) this.pending.shift();
+    while (this.pending.length > this.maxQueue) {
+      const droppedId = this.pending.pop();
+      const dropped = this.byId.get(droppedId);
+      if (dropped) {
+        dropped.status = 'dropped';
+        dropped.dismissedAt = now;
+        dropped.dismissReason = 'queue_overflow';
+        this.publish('dropped', dropped);
+      }
+    }
     this.publish('add', candidate, [candidate.title, candidate.message, candidate.level]);
     return { notification: { ...candidate }, deduplicated: false };
   }
