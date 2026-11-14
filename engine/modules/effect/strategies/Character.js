@@ -1,6 +1,49 @@
 // htdocs/engine/modules/effect/strategies/Character.js
 import { resolveValue } from './Logic.js';
-import { StatsHelpers } from './Stats.js'; // [NEW]
+import { StatsHelpers } from './Stats.js';
+
+const cloneValue = value => JSON.parse(JSON.stringify(value));
+
+// Character movement effects operate on the character's movement configuration.
+// Supported operations: set (move/moving/moveList), add/remove/replace (moveList).
+const MovingLogic = {
+    set: (char, eff) => {
+        if (eff.property === 'move' || eff.property === 'moving') {
+            char.set ||= {};
+            char.set[eff.property] = eff.value;
+            return true;
+        }
+        if (eff.property === 'moveList' && Array.isArray(eff.value)) {
+            char.moveList = cloneValue(eff.value);
+            char.place ||= { scene_id: null, currentIndex: 0 };
+            char.place.currentIndex = 0;
+            return true;
+        }
+        return false;
+    },
+    add: (char, eff) => {
+        if (eff.property !== 'moveList' || !eff.value || typeof eff.value !== 'object' || Array.isArray(eff.value)) return false;
+        char.moveList ||= [];
+        char.moveList.push(cloneValue(eff.value));
+        return true;
+    },
+    remove: (char, eff, indices) => {
+        if (eff.property !== 'moveList' || !Array.isArray(char.moveList) || !indices.length) return false;
+        const valid = [...new Set(indices)].filter(i => Number.isInteger(i) && i >= 0 && i < char.moveList.length).sort((a, b) => b - a);
+        if (!valid.length) return false;
+        valid.forEach(i => char.moveList.splice(i, 1));
+        char.place ||= { scene_id: null, currentIndex: 0 };
+        char.place.currentIndex = Math.min(char.place.currentIndex || 0, Math.max(0, char.moveList.length - 1));
+        return true;
+    },
+    replace: (char, eff, indices) => {
+        if (eff.property !== 'moveList' || !Array.isArray(char.moveList) || indices.length !== 1 || !eff.value || typeof eff.value !== 'object' || Array.isArray(eff.value)) return false;
+        const index = indices[0];
+        if (!Number.isInteger(index) || index < 0 || index >= char.moveList.length) return false;
+        char.moveList[index] = cloneValue(eff.value);
+        return true;
+    }
+};
 
 const StatsLogic = {
     swap: (engine, eff) => {
@@ -84,7 +127,7 @@ const StatsLogic = {
         const char = engine.api.engine.state.getRuntimeSnapshot('characters.[id]', { id: charId });
 
         if (char) {
-            const valRaw = resolveValue(eff.value, engine);
+            const valRaw = String(resolveValue(eff.value, engine) ?? '');
             // Format expectation: "Key:Current:Max:Label:Color"
             // We need to separate Key from the rest to map to StatsHelpers (property=Key, value=Rest)
             const firstColon = valRaw.indexOf(':');
@@ -142,28 +185,23 @@ export const CharacterStrategies = {
         StatsLogic[eff.exec]?.(engine, resolvedEff);
     },
     moving: (engine, eff) => {
-        const charId = resolveValue(eff.target, engine);
+        const rawTarget = resolveValue(eff.target, engine);
+        const charId = engine.redirectTarget ? engine.redirectTarget(rawTarget) : rawTarget;
         const char = engine.api.engine.state.getRuntime('characters.[id]', { id: charId });
         if (!char) return;
 
         const resolvedEff = {
             ...eff,
-            target: charId, // Ensure resolved target is used
+            target: charId,
             property: resolveValue(eff.property, engine),
             value: resolveValue(eff.value, engine)
         };
+        const indices = Array.isArray(eff.index) ? eff.index : (Number.isInteger(eff.index) ? [eff.index] : []);
+        const changed = MovingLogic[eff.exec]?.(char, resolvedEff, indices) === true;
+        if (!changed) return;
 
-        MovingLogic[eff.exec]?.(engine, char, resolvedEff, eff.index || []);
         engine.api.engine.state.set('characters.[id]', char, { id: charId });
-
-        // Logic check VALIDATE MOVE STATE
-        if (!engine.validateMoveState(charId)) {
-            engine.taskManager.kill(`move_char_${charId}`);
-            return;
-        }
-
-        if (char.set.moving && !engine.taskManager.plan[`move_char_${charId}`]) {
-            engine.scheduleCharacterMove(charId);
-        }
+        engine.taskManager?.kill?.(`move_char_${charId}`);
+        if (engine.validateMoveState(charId)) engine.scheduleCharacterMove(charId);
     }
 };
