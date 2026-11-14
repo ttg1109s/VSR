@@ -1,3 +1,5 @@
+import { escapeHtml } from '../utils/security.js';
+
 // Các hiệu ứng hình ảnh, badge, overlay nhỏ
 
 export const TimerDisplayTemplate = () => {
@@ -37,7 +39,7 @@ export const PlayerFakerBadge = () => {
 export const PlayerNameDisplay = ({ name, badgeHtml }) => {
     return `
         <div class="flex items-center">
-            <span>${name}</span>
+            <span>${escapeHtml(name)}</span>
             ${badgeHtml}
         </div>
     `;
