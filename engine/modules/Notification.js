@@ -1,3 +1,5 @@
+import { cloneJsonValue } from '../../protocol/JsonProtocol.js';
+
 const SEVERITY_ALIASES = Object.freeze({
   info: 'info', success: 'success', warn: 'warning', warning: 'warning',
   danger: 'danger', error: 'danger', magic: 'special', special: 'special'
@@ -30,7 +32,7 @@ export class NotificationSystem {
     const id = input.id || `${this.engineId}:notification:${++this.sequence}`;
     return {
       id: String(id), source: String(input.source || 'engine'),
-      category: String(input.category || `${input.source || 'engine'}.general`),
+      category: String(input.category || `${input.source || 'engine'}.${title.toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g, '').replace(/[^a-z0-9]+/g, '.').replace(/^\\.|\\.$/g, '') || 'general'}`),
       title, message, severity, level: originalLevel,
       priority: Number.isFinite(input.priority) ? input.priority : PRIORITY[severity],
       presentation: presentation === 'modal' ? 'modal' : 'toast',
@@ -38,7 +40,7 @@ export class NotificationSystem {
       expiresAt: duration === null ? null : now + duration,
       duration, dedupeKey: input.dedupeKey == null ? null : String(input.dedupeKey),
       status: 'pending', read: false,
-      metadata: input.metadata && typeof input.metadata === 'object' && !Array.isArray(input.metadata) ? input.metadata : {}
+      metadata: input.metadata && typeof input.metadata === 'object' && !Array.isArray(input.metadata) ? cloneJsonValue(input.metadata) : {}
     };
   }
 
