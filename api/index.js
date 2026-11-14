@@ -1,5 +1,5 @@
 import { createStateAccess } from './state.js';
-import { fb } from '../plugin/basefunction.js';
+import { createUtils } from '../utils/index.js';
 
 function createPresentation(engine) {
     const publish = (path, args) => {
@@ -24,6 +24,7 @@ function createPresentation(engine) {
 export function createEngineAPI(engine) {
     if (!engine) throw new TypeError('createEngineAPI requires an Engine instance.');
     const state = createStateAccess(engine);
+    const utils = createUtils();
     return {
         engine: {
             init: script => engine.init(script),
@@ -72,7 +73,7 @@ export function createEngineAPI(engine) {
             eventsAfter: sequence => engine.protocol?.getEventsAfter(sequence) ?? null
         },
         presentation: createPresentation(engine),
-        plugins: { fb }
+        utils
     };
 }
 export const API = Object.freeze({ createEngineAPI });

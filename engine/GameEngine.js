@@ -12,7 +12,7 @@ import {createEngineAPI} from '../api/index.js';
 import {JsonProtocol,cloneJsonValue} from '../protocol/JsonProtocol.js';
 import {verifyPassword} from './modules/password/verify.js';
 import {PasswordSystem} from './modules/password/PasswordSystem.js';
-import {TaskManager} from '../plugin/taskmanager.js';
+import {TaskManager} from './runtime/TaskManager.js';
 import {createSaveEnvelope,normalizeSaveEnvelope,SAVE_VERSION} from './persistence/SaveState.js';
 
 export class GameEngine {

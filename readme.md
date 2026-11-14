@@ -65,7 +65,7 @@ Engine modules do not import a renderer or access DOM APIs. Calls such as notifi
 
 ## Runtime ownership
 
-Each `GameEngine` instance owns its own `TaskManager`. Create one Engine per game session. Call `engine.taskManager.killAll()` when disposing the instance to stop background automation, character movement, and timers.
+Each `GameEngine` instance owns its own `TaskManager`, implemented under `engine/runtime/TaskManager.js`. Create one Engine per game session. Call `engine.taskManager.killAll()` when disposing the instance to stop background automation, character movement, and timers.
 
 ## Dependency map
 
@@ -75,3 +75,7 @@ See `protocol/DEPENDENCY_MAP.md` for the Engine module map and remaining domain 
 ## Kiến trúc protocol v2
 
 Engine chạy headless, mỗi instance sở hữu API facade và protocol riêng. `stateRevision` chỉ thay đổi khi commit snapshot; `eventSequence` tăng theo mọi event. Command được tuần tự hóa và có thể kiểm tra quyền qua `authorizeCommand`. Password submit chỉ nhận action ID và input thô; cấu hình mật khẩu được tra cứu từ scenario phía Engine. Save game có envelope phiên bản riêng, không thay đổi scenario authoring format.
+
+## Shared utilities
+
+Reusable helper functions live in `utils/` and are available through `createUtils()` or the package subpath `vsr-engine/utils`. The utility facade exposes `check`, `random`, `number`, and `array`; it does not access Engine state or register runtime plugins. Each API facade exposes the same capability as `engine.api.utils`. The scheduler is a Runtime component under `engine/runtime/`, not a plugin.
