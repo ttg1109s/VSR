@@ -55,6 +55,13 @@ function validateReferences(scenario) {
   const add = (path, message) => errors.push(`${path}: ${message}`);
   const routerExists = (id) => allRouterIds.has(id);
   const characterExists = (id) => id === 'player' || Object.hasOwn(characters, id);
+  const actionExists = (id) => Object.hasOwn(actions, id) || Object.values(scenes).some(scene =>
+    Object.values(scene?.routers || {}).some(router => {
+      const list = router?.actions;
+      if (Array.isArray(list)) return list.some(item => item === id || (isObject(item) && item.id === id));
+      return isObject(list) && Object.hasOwn(list, id);
+    })
+  );
 
   for (const [sceneId, scene] of Object.entries(scenes)) {
     const parentId = scene?.meta?.parentScene;
@@ -138,6 +145,10 @@ function validateReferences(scenario) {
     }
     for (const [index, check] of asArray(requirement.check).entries()) {
       const checkPath = path + ".check[" + index + "]";
+      if (!isObject(check)) {
+        add(checkPath, 'must be a requirement check object');
+        continue;
+      }
       if (check.type === 'state') {
         const stateDef = scenario.globalStates?.[check.property];
         if (!stateDef) add(checkPath + ".property", "references missing global state '" + check.property + "'");
@@ -169,10 +180,10 @@ function validateReferences(scenario) {
         const exists = {
           scene: () => Object.hasOwn(scenes, check.target),
           router: () => routerExists(check.target),
-          action: () => Object.hasOwn(actions, check.target) || Object.values(scenes).some(scene => Object.values(scene?.routers || {}).some(router => (Array.isArray(router?.actions) ? router.actions : Object.values(router?.actions || {})).some(item => isObject(item) && item.id === check.target))),
+          action: () => actionExists(check.target),
           characters: () => characterExists(check.target),
           chat: () => Object.hasOwn(chats, check.target),
-          chat_choice: () => Object.values(chats).some(chat => Object.hasOwn(chat.choice || {}, check.target)),
+          chat_choice: () => Object.values(chats).some(chat => Object.hasOwn(chat?.choice || {}, check.target)),
           automation: () => Object.hasOwn(templates.automation || {}, check.target)
         }[check.subtype];
         if (exists && !exists()) add(checkPath + ".target", "references missing " + check.subtype + " target '" + check.target + "'");
@@ -199,10 +210,10 @@ function validateReferences(scenario) {
     if (!isObject(action)) return;
     const set = action.set || {};
     if (typeof set.password === 'string') validatePasswordRef(set.password, `${path}.set.password`);
-    if (set.type === 'to_scene' && set.target && !Object.hasOwn(scenes, set.target)) {
+    if (set.type === 'to_scene' && set.target && !set.target.includes('$(') && !Object.hasOwn(scenes, set.target)) {
       add(`${path}.set.target`, `references missing scene '${set.target}'`);
     }
-    if (set.type === 'swap_router' && set.target && !routerExists(set.target)) {
+    if (set.type === 'swap_router' && set.target && !set.target.includes('$(') && !routerExists(set.target)) {
       add(`${path}.set.target`, `references missing router '${set.target}'`);
     }
     if (set.type === 'get_item' && set.target && !set.target.includes('$(') && !Object.hasOwn(items, set.target)) {
@@ -248,10 +259,10 @@ function validateReferences(scenario) {
         state: () => Object.hasOwn(scenario.globalStates || {}, effect.target),
         scene: () => Object.hasOwn(scenes, effect.target),
         router: () => routerExists(effect.target),
-        action: () => Object.hasOwn(actions, effect.target),
+        action: () => actionExists(effect.target),
         characters: () => characterExists(effect.target),
         chat: () => Object.hasOwn(chats, effect.target),
-        chat_choice: () => Object.values(chats).some(chat => Object.hasOwn(chat.choice || {}, effect.target)),
+        chat_choice: () => Object.values(chats).some(chat => Object.hasOwn(chat?.choice || {}, effect.target)),
         automation: () => Object.hasOwn(templates.automation || {}, effect.target)
       }[effect.subtype];
       if (exists && !exists()) add(`${path}.target`, `references missing ${effect.subtype} target '${effect.target}'`);
@@ -294,6 +305,7 @@ function validateReferences(scenario) {
       if (move?.scene_id && !Object.hasOwn(scenes, move.scene_id)) {
         add(`characters.${characterId}.moveList[${index}].scene_id`, `references missing scene '${move.scene_id}'`);
       }
+      validateRequirement(move?.req, `characters.${characterId}.moveList[${index}].req`);
     }
     const placeScene = character?.place?.scene_id;
     if (placeScene && !Object.hasOwn(scenes, placeScene)) {
@@ -302,11 +314,8 @@ function validateReferences(scenario) {
     for (const [index, itemId] of [...asArray(character?.inventory), ...asArray(character?.hand)].entries()) {
       if (!Object.hasOwn(items, itemId)) add(`characters.${characterId}.inventory/hand[${index}]`, `references missing item '${itemId}'`);
     }
-    if (character?.set?.mainAction) {
-      const exists = Object.hasOwn(actions, character.set.mainAction) ||
-        Object.values(scenes).some(scene => Object.values(scene?.routers || {}).some(router =>
-          (Array.isArray(router?.actions) ? router.actions : Object.values(router?.actions || {})).some(item => isObject(item) && item.id === character.set.mainAction)));
-      if (!exists) add(`characters.${characterId}.set.mainAction`, `references missing action '${character.set.mainAction}'`);
+    if (character?.set?.mainAction && !actionExists(character.set.mainAction)) {
+      add(`characters.${characterId}.set.mainAction`, `references missing action '${character.set.mainAction}'`);
     }
     for (const scope of ['meeting','leave']) {
       for (const targetId of Object.keys(character?.effect?.[scope] || {})) {
@@ -433,7 +442,7 @@ export function normalizeScenario(input) {
 
   for (const [sceneId, scene] of Object.entries(isObject(scenario.scenes) ? scenario.scenes : {})) {
     for (const [routerId, router] of Object.entries(isObject(scene?.routers) ? scene.routers : {})) {
-      if (Array.isArray(router.actions)) {
+      if (Array.isArray(router?.actions)) {
         router.actions.forEach((action, index) => {
           if (action && typeof action === 'object' && !Array.isArray(action) && !action.id) {
             action.id = 'inline_' + sceneId + '_' + routerId + '_' + index;
