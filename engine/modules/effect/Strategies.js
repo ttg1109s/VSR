@@ -19,19 +19,22 @@ const WiredSetStrategies = {
         const target = resolveValue(eff.target, engine);
         const val = resolveValue(eff.value, engine);
         const prop = resolveValue(eff.property, engine);
-        const sId = engine.state.sceneId;
+        const state = engine.api.engine.state;
+        const sId = state.sceneId;
+        const scene = state.getFrom('runtime', 'scenes.[id]', { id: target });
 
-        if (engine.state.scenes[target]) {
+        if (scene) {
             const handler = ScenePropertyHandlers[prop] || ScenePropertyHandlers.__default__;
-            handler(engine, engine.state.scenes[target], val, sId, prop);
+            handler(engine, scene, val, target, prop);
         }
     },
 
     router: (engine, eff) => {
-        const sId = engine.state.sceneId;
-        const rId = resolveValue(eff.target, engine) || engine.state.scenes[sId].activeRouterId;
+        const state = engine.api.engine.state;
+        const sId = state.sceneId;
+        const rId = resolveValue(eff.target, engine) || state.get('scene.activeRouterId', { id: sId });
         const rKey = `${sId}_${rId}`;
-        const router = engine.state.routers[rKey];
+        const router = state.getRuntime('routers.[routerKey]', { routerKey: rKey });
         const val = resolveValue(eff.value, engine);
         const prop = resolveValue(eff.property, engine);
 
@@ -42,11 +45,12 @@ const WiredSetStrategies = {
     },
 
     action: (engine, eff) => {
-        const sId = engine.state.sceneId;
-        const rId = engine.state.scenes[sId].activeRouterId;
+        const state = engine.api.engine.state;
+        const sId = state.sceneId;
+        const rId = state.get('scene.activeRouterId', { id: sId });
         const aId = resolveValue(eff.target, engine);
         const actKey = `${sId}_${rId}_${aId}`;
-        const action = engine.state.actions[actKey];
+        const action = state.getRuntime('actions.[actionKey]', { actionKey: actKey });
         const val = resolveValue(eff.value, engine);
         const prop = resolveValue(eff.property, engine);
 
@@ -59,7 +63,7 @@ const WiredSetStrategies = {
     character: (engine, eff) => {
         const rawTarget = resolveValue(eff.target, engine);
         const charId = engine.redirectTarget ? engine.redirectTarget(rawTarget) : rawTarget;
-        const char = engine.state.characters[charId];
+        const char = engine.api.engine.state.getRuntime('characters.[id]', { id: charId });
         const val = resolveValue(eff.value, engine);
         const prop = resolveValue(eff.property, engine);
 
