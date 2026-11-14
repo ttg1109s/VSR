@@ -116,6 +116,7 @@ export const SceneSystem = {
         if (this.api.presentation && this.api.presentation.components && this.api.presentation.components.updateCharacterList) {
             this.api.presentation.components.updateCharacterList();
         }
+        this.commitState('scene.entered');
     },
 
     async enterRouter(routerId, forceRender = false, isSceneEntry = false, skipTransition = false) {

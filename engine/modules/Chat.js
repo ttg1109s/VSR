@@ -2,22 +2,21 @@
 
 import { hideInput } from './chat/Presentation.js';
 import { ChatBlockHandlers } from './chat/BlockHandler.js';
-import { API } from '../../api/index.js';
 
 export const ChatSystem = {
     // --- Helper: Quản lý lớp phủ Z-Index ---
     toggleChatOverlay(active) {
-        if (API.presentation.navigation.setBlocking) {
-            API.presentation.navigation.setBlocking(active);
+        if (this.api.presentation.navigation.setBlocking) {
+            this.api.presentation.navigation.setBlocking(active);
         }
-        if (API.presentation.chat.toggleOverlay) {
-            API.presentation.chat.toggleOverlay(active);
+        if (this.api.presentation.chat.toggleOverlay) {
+            this.api.presentation.chat.toggleOverlay(active);
         }
     },
 
     getChatOwner(chatId) {
-        // [FIXED] Use API.engine.state.get with Schema key 'chat.sender'
-        let sender = API.engine.state.get('chat.sender', { id: chatId });
+        // [FIXED] Use this.api.engine.state.get with Schema key 'chat.sender'
+        let sender = this.api.engine.state.get('chat.sender', { id: chatId });
         // Fallback to direct src lookup if State API fails (e.g. static data not in State)
         if (!sender && this.src.chat && this.src.chat[chatId] && this.src.chat[chatId].meta) {
             sender = this.src.chat[chatId].meta.sender;
@@ -85,7 +84,7 @@ export const ChatSystem = {
             }
 
             // [FIXED] Use API for Title
-            const title = API.engine.state.get('chat.title', { id: id }) || (charId === 'spam' ? "Unknown Message" : "No Subject");
+            const title = this.api.engine.state.get('chat.title', { id: id }) || (charId === 'spam' ? "Unknown Message" : "No Subject");
 
             return {
                 id: id,
@@ -219,8 +218,8 @@ export const ChatSystem = {
                 }
 
                 // [FIX] Render history immediately so context is visible
-                if (API.presentation && API.presentation.chat && API.presentation.chat.renderChatHistory) {
-                    API.presentation.chat.renderChatHistory(id);
+                if (this.api.presentation && this.api.presentation.chat && this.api.presentation.chat.renderChatHistory) {
+                    this.api.presentation.chat.renderChatHistory(id);
                 }
 
                 if (stopAtBlock) {
@@ -248,9 +247,9 @@ export const ChatSystem = {
             isProcessing: false
         };
 
-        API.presentation.navigation.switchScreen('character');
-        API.presentation.navigation.selectContact(ownerId);
-        API.presentation.navigation.openThread(id);
+        this.api.presentation.navigation.switchScreen('character');
+        this.api.presentation.navigation.selectContact(ownerId);
+        this.api.presentation.navigation.openThread(id);
 
         this.toggleChatOverlay(true);
 
@@ -259,7 +258,7 @@ export const ChatSystem = {
         } else {
             // Just refresh render
             console.log(`[ChatSystem] Chat '${id}' fully reviewed. Render only.`);
-            API.presentation.chat.renderChatHistory(id);
+            this.api.presentation.chat.renderChatHistory(id);
             // [FIX] Hide input (User requirement: No button)
             // Interaction with screen will trigger nextChat -> endChat via isReview flag
             hideInput();
@@ -397,9 +396,9 @@ export const ChatSystem = {
         const playerLine = { nameID: entryChar, text: choice.text };
 
         this.state.chatHistory[this.chatState.id].push(playerLine);
-        API.presentation.chat.renderBubble(playerLine, null);
+        this.api.presentation.chat.renderBubble(playerLine, null);
 
-        API.presentation.chat.clearChoices();
+        this.api.presentation.chat.clearChoices();
 
         this.chatState.blocking = true;
 
@@ -445,8 +444,9 @@ export const ChatSystem = {
 
                 this.processChatBlock();
                 this.toggleChatOverlay(true);
-                API.presentation.refresh();
-                API.presentation.components.inputBar();
+                this.api.presentation.refresh();
+                this.api.presentation.components.inputBar();
+                this.commitState('chat.block.transition');
 
             }, 500);
         } else {
@@ -478,7 +478,7 @@ export const ChatSystem = {
         this.toggleChatOverlay(false);
         hideInput();
 
-        API.presentation.chat.renderContactList();
-        API.presentation.refresh();
+        this.api.presentation.chat.renderContactList();
+        this.api.presentation.refresh();
     }
 };

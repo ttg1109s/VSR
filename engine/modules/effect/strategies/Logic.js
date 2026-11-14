@@ -81,7 +81,8 @@ export default class LogicStrategy {
         return new Promise(async (resolve) => {
             if (params.wait) {
                 const ms = resolveValue(params.wait, engine);
-                setTimeout(resolve, ms);
+                await engine.delay(ms);
+                resolve();
                 return;
             }
             if (params.log) console.log("LOGIC LOG:", resolveValue(params.log, engine));
