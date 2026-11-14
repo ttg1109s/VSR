@@ -132,7 +132,7 @@ export const ChatMethods = {
         let avatar = '';
         if (!isPlayer) {
             const rawName = displayName || "?";
-            const initials = rawName.substring(0, 1).toUpperCase();
+            const initials = rawName.substring(0, 1).toUpperCase().replace(/[&<>\"']/g, '');
             avatar = `<div class="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--vsr-surface-3)] flex items-center justify-center mr-2 shadow-sm border border-[var(--vsr-border)] mt-auto select-none"><span class="text-[10px] font-bold text-[var(--vsr-ink-500)]">${initials}</span></div>`;
         }
 
