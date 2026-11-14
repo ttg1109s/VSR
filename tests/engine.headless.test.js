@@ -173,3 +173,20 @@ test('Effective action thumbnail defaults do not mutate scenario source',async()
  assert.equal(action.meta.thumb,'assets/images/thumbnail.jpg');
  assert.equal(e.src.actions.__thumb_probe.meta.thumb,undefined);
 });
+
+test('Item effect strategies update inventory, hand and usage through StateAccess',async()=>{
+ const e=makeEngine();
+ await e.init(structuredClone(DEMO_SCRIPT));
+ const ownerId=e.getOwnerId();
+ e.state.characters[ownerId].inventory=['__item_effect_probe'];
+ e.state.characters[ownerId].hand=[];
+ e.state.itemInfo.__item_effect_probe={name:'Probe',usage:{current:1,max:5}};
+ await e.applyEffect({type:'item',subtype:'hand_on',target:'__item_effect_probe'});
+ assert.deepEqual(e.state.characters[ownerId].hand,['__item_effect_probe']);
+ await e.applyEffect({type:'item',subtype:'usage',target:'__item_effect_probe',value:2});
+ assert.equal(e.state.itemInfo.__item_effect_probe.usage.current,3);
+ await e.applyEffect({type:'item',subtype:'hand_off',target:'__item_effect_probe'});
+ assert.deepEqual(e.state.characters[ownerId].hand,[]);
+ await e.applyEffect({type:'item',subtype:'remove',target:'__item_effect_probe'});
+ assert.deepEqual(e.state.characters[ownerId].inventory,[]);
+});
