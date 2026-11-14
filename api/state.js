@@ -167,6 +167,11 @@ const SCHEMA_MAP = {
 };
 
 export default class State {
+    static engine = null;
+
+    static bindEngine(engine) {
+        this.engine = engine || null;
+    }
 
     /**
      * @method get
