@@ -352,7 +352,7 @@ export const ActionSystem = {
                 return { success: false, reason: 'cancelled' };
             }
             if (result === 'expired') {
-                this.api.presentation.events?.publish?.('password.expired', { actionId: actionKey, uniqueId });
+                this.protocol?.publish?.('password.expired', { actionId: actionKey, uniqueId });
                 return { success: false, reason: 'expired' };
             }
             if (result === true) {
