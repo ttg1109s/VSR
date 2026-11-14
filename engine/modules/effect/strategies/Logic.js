@@ -7,30 +7,46 @@ export const SetStrategies = {
     state: (engine, eff) => {
         const target = resolveValue(eff.target, engine);
         const val = resolveValue(eff.value, engine);
-        if (engine.state.global[target]) {
-            if (typeof engine.state.global[target].value === 'number') {
-                const numVal = Number(val);
-                if (!isNaN(numVal)) {
-                    engine.state.global[target].value += numVal;
-                    return;
-                }
+        const state = engine.api.engine.state;
+        const current = state.get('globalState.value', { id: target });
+        if (current === undefined) return;
+        if (typeof current === 'number') {
+            const increment = Number(val);
+            if (Number.isFinite(increment)) {
+                state.set('globalState.value', current + increment, { id: target });
+                return;
             }
-            engine.state.global[target].value = val;
         }
+        state.set('globalState.value', val, { id: target });
     },
     scene: (engine, eff) => {
         const target = resolveValue(eff.target, engine);
-        if (engine.state.scenes[target]) engine.state.scenes[target][eff.property] = resolveValue(eff.value, engine);
+        const state = engine.api.engine.state;
+        if (!state.has('scene.blocked', { id: target })) return;
+        state.set('scenes.[id].[property]', resolveValue(eff.value, engine), {
+            id: target,
+            property: resolveValue(eff.property, engine)
+        });
     },
     router: (engine, eff) => {
-        const sId = engine.state.sceneId;
-        const rId = resolveValue(eff.target, engine) || engine.state.scenes[sId].activeRouterId;
-        const rKey = `${sId}_${rId}`;
-        if (engine.state.routers[rKey]) engine.state.routers[rKey][eff.property] = resolveValue(eff.value, engine);
+        const state = engine.api.engine.state;
+        const sceneId = state.sceneId;
+        const routerId = resolveValue(eff.target, engine) || state.get('scene.activeRouterId', { id: sceneId });
+        const routerKey = `${sceneId}_${routerId}`;
+        if (!state.has('router.blocked', { sceneId, routerId })) return;
+        state.set('routers.[routerKey].[property]', resolveValue(eff.value, engine), {
+            routerKey,
+            property: resolveValue(eff.property, engine)
+        });
     },
     automation: (engine, eff) => {
         const target = resolveValue(eff.target, engine);
-        if (engine.state.automations[target]) engine.state.automations[target][eff.property] = resolveValue(eff.value, engine);
+        const state = engine.api.engine.state;
+        if (!state.getRuntime('automations.[id]', { id: target })) return;
+        state.set('automations.[id].[property]', resolveValue(eff.value, engine), {
+            id: target,
+            property: resolveValue(eff.property, engine)
+        });
     }
 };
 
