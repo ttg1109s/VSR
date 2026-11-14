@@ -177,7 +177,7 @@ export const LogicSystem = {
         } else {
             // For router, we need sceneId to construct the context for API
             // Try to find the scene containing this router
-            const sId = this.state.sceneId;
+            const sId = this.api.engine.state.get('sceneId');
             // Note: Schema for router blocked is 'router.blocked' -> 'scenes.[sceneId].routers.[routerId].set.blocked'
 
             // Priority 1: Check in current scene
