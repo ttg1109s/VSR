@@ -282,6 +282,9 @@ test('nested effect templates are valid runnable graphs and resolve their refere
   assert.deepEqual(validateScenario(scenario), []);
   scenario.templates.effects.outer[0].ref = 'missing';
   assert.ok(validateScenario(scenario).some(error => error.includes("references missing effect template 'missing'")));
+  scenario.templates.effects.outer[0].ref = 'base';
+  scenario.templates.effects.base[0] = { type: 'effect', ref: 'outer' };
+  assert.ok(validateScenario(scenario).some(error => error.includes('recursive effect-template cycle')));
 });
 
 test('management effects validate their target namespace', () => {
