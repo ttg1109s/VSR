@@ -35,6 +35,10 @@ function isObject(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
 
+function asArray(value) {
+  return Array.isArray(value) ? value : [];
+}
+
 function validateReferences(scenario) {
   const errors = [];
   const scenes = scenario.scenes || {};
@@ -74,7 +78,7 @@ function validateReferences(scenario) {
         routerOwners.set(routerId, sceneId);
       }
 
-      for (const [index, imported] of (router?.importAction || []).entries()) {
+      for (const [index, imported] of asArray(router?.importAction).entries()) {
         if (imported?.of && !routerExists(imported.of)) {
           add(`scenes.${sceneId}.routers.${routerId}.importAction[${index}].of`, `references missing router '${imported.of}'`);
         }
@@ -132,7 +136,7 @@ function validateReferences(scenario) {
       }
       return;
     }
-    for (const [index, check] of (requirement.check || []).entries()) {
+    for (const [index, check] of asArray(requirement.check).entries()) {
       const checkPath = path + ".check[" + index + "]";
       if (check.type === 'state') {
         const stateDef = scenario.globalStates?.[check.property];
@@ -165,7 +169,7 @@ function validateReferences(scenario) {
         const exists = {
           scene: () => Object.hasOwn(scenes, check.target),
           router: () => routerExists(check.target),
-          action: () => Object.hasOwn(actions, check.target) || Object.values(scenes).some(scene => Object.values(scene.routers || {}).some(router => (Array.isArray(router.actions) ? router.actions : Object.values(router.actions || {})).some(item => isObject(item) && item.id === check.target))),
+          action: () => Object.hasOwn(actions, check.target) || Object.values(scenes).some(scene => Object.values(scene?.routers || {}).some(router => (Array.isArray(router?.actions) ? router.actions : Object.values(router?.actions || {})).some(item => isObject(item) && item.id === check.target))),
           characters: () => characterExists(check.target),
           chat: () => Object.hasOwn(chats, check.target),
           chat_choice: () => Object.values(chats).some(chat => Object.hasOwn(chat.choice || {}, check.target)),
@@ -286,26 +290,26 @@ function validateReferences(scenario) {
   }
 
   for (const [characterId, character] of Object.entries(characters)) {
-    for (const [index, move] of (character.moveList || []).entries()) {
-      if (move.scene_id && !Object.hasOwn(scenes, move.scene_id)) {
+    for (const [index, move] of asArray(character?.moveList).entries()) {
+      if (move?.scene_id && !Object.hasOwn(scenes, move.scene_id)) {
         add(`characters.${characterId}.moveList[${index}].scene_id`, `references missing scene '${move.scene_id}'`);
       }
     }
-    const placeScene = character.place?.scene_id;
+    const placeScene = character?.place?.scene_id;
     if (placeScene && !Object.hasOwn(scenes, placeScene)) {
       add(`characters.${characterId}.place.scene_id`, `references missing scene '${placeScene}'`);
     }
-    for (const [index, itemId] of [...(character.inventory || []), ...(character.hand || [])].entries()) {
+    for (const [index, itemId] of [...asArray(character?.inventory), ...asArray(character?.hand)].entries()) {
       if (!Object.hasOwn(items, itemId)) add(`characters.${characterId}.inventory/hand[${index}]`, `references missing item '${itemId}'`);
     }
-    if (character.set?.mainAction) {
+    if (character?.set?.mainAction) {
       const exists = Object.hasOwn(actions, character.set.mainAction) ||
-        Object.values(scenes).some(scene => Object.values(scene.routers || {}).some(router =>
-          (Array.isArray(router.actions) ? router.actions : Object.values(router.actions || {})).some(item => isObject(item) && item.id === character.set.mainAction)));
+        Object.values(scenes).some(scene => Object.values(scene?.routers || {}).some(router =>
+          (Array.isArray(router?.actions) ? router.actions : Object.values(router?.actions || {})).some(item => isObject(item) && item.id === character.set.mainAction)));
       if (!exists) add(`characters.${characterId}.set.mainAction`, `references missing action '${character.set.mainAction}'`);
     }
     for (const scope of ['meeting','leave']) {
-      for (const targetId of Object.keys(character.effect?.[scope] || {})) {
+      for (const targetId of Object.keys(character?.effect?.[scope] || {})) {
         if (!characterExists(targetId)) add(`characters.${characterId}.effect.${scope}.${targetId}`, `references missing character '${targetId}'`);
       }
     }
@@ -320,21 +324,21 @@ function validateReferences(scenario) {
     if (chat?.meta?.sender && !characterExists(chat.meta.sender)) {
       add(`chat.${chatId}.meta.sender`, `references missing character '${chat.meta.sender}'`);
     }
-    for (const [index, recipient] of (chat?.meta?.to || []).entries()) {
+    for (const [index, recipient] of asArray(chat?.meta?.to).entries()) {
       if (!characterExists(recipient)) add(`chat.${chatId}.meta.to[${index}]`, `references missing character '${recipient}'`);
     }
     for (const [blockId, block] of Object.entries(blocks)) {
       if (block?.choice_id && !Object.hasOwn(choices, block.choice_id)) {
         add(`chat.${chatId}.block.${blockId}.choice_id`, `references missing choice group '${block.choice_id}'`);
       }
-      for (const [index, line] of (block?.line || []).entries()) {
+      for (const [index, line] of asArray(block?.line).entries()) {
         if (line?.char_id && !characterExists(line.char_id)) {
           add(`chat.${chatId}.block.${blockId}.line[${index}].char_id`, `references missing character '${line.char_id}'`);
         }
       }
     }
     for (const [choiceId, list] of Object.entries(choices)) {
-      for (const [index, choice] of (list || []).entries()) {
+      for (const [index, choice] of asArray(list).entries()) {
         if (choice?.id) {
           if (globalChoiceIds.has(choice.id)) add(`chat.${chatId}.choice.${choiceId}[${index}].id`, `choice ID '${choice.id}' is already used in chat '${globalChoiceIds.get(choice.id)}'`);
           else globalChoiceIds.set(choice.id, chatId);
@@ -348,13 +352,13 @@ function validateReferences(scenario) {
 
   for (const [passwordId, password] of Object.entries(passwords.find_way || {})) {
     const path = `passwords.find_way.${passwordId}`;
-    const [cols, rows] = password.area || [];
+    const [cols, rows] = password?.area || [];
     const inBounds = (point) => Array.isArray(point) && point.length === 2 &&
       Number.isInteger(point[0]) && Number.isInteger(point[1]) &&
       point[0] >= 0 && point[0] < cols && point[1] >= 0 && point[1] < rows;
-    if (!inBounds(password.start)) add(`${path}.start`, 'must be inside the configured grid');
-    if (!inBounds(password.target)) add(`${path}.target`, 'must be inside the configured grid');
-    const street = Array.isArray(password.street) ? password.street : [];
+    if (!inBounds(password?.start)) add(`${path}.start`, 'must be inside the configured grid');
+    if (!inBounds(password?.target)) add(`${path}.target`, 'must be inside the configured grid');
+    const street = Array.isArray(password?.street) ? password.street : [];
     street.forEach((point, index) => {
       if (!inBounds(point)) add(`${path}.street[${index}]`, 'must be inside the configured grid');
       if (index > 0) {
@@ -363,10 +367,10 @@ function validateReferences(scenario) {
         if (distance !== 1) add(`${path}.street[${index}]`, 'must be orthogonally adjacent to the previous point');
       }
     });
-    if (street.length && JSON.stringify(street[0]) !== JSON.stringify(password.start)) {
+    if (street.length && JSON.stringify(street[0]) !== JSON.stringify(password?.start)) {
       add(`${path}.street[0]`, 'must equal start');
     }
-    if (street.length && JSON.stringify(street.at(-1)) !== JSON.stringify(password.target)) {
+    if (street.length && JSON.stringify(street.at(-1)) !== JSON.stringify(password?.target)) {
       add(`${path}.street[${street.length - 1}]`, 'must equal target');
     }
     const seen = new Set();
