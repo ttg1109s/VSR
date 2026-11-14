@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { PasswordSystem } from '../engine/modules/Password/PasswordSystem.js';
-import { verifyPassword } from '../password/verify.js';
+import { PasswordSystem } from '../engine/modules/password/PasswordSystem.js';
+import { verifyPassword } from '../engine/modules/password/verify.js';
 
 test('retryMax zero is unlimited and failures stay active', () => {
   let now = 1000;
