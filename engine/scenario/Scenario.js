@@ -276,13 +276,13 @@ function validateReferences(scenario) {
   };
 
   for (const [actionId, action] of Object.entries(actions)) validateAction(action, 'actions.' + actionId);
-  for (const [itemId, item] of Object.entries(items)) validateRequirement(item.requirements, 'itemInfo.' + itemId + '.requirements');
+  for (const [itemId, item] of Object.entries(items)) validateRequirement(item?.requirements, 'itemInfo.' + itemId + '.requirements');
   for (const [templateId, requirement] of Object.entries(templates.requirements || {})) validateRequirement(requirement, 'templates.requirements.' + templateId);
   for (const [sceneId, scene] of Object.entries(scenes)) {
     for (const [routerId, router] of Object.entries(scene?.routers || {})) {
-      const entries = Array.isArray(router.actions)
+      const entries = Array.isArray(router?.actions)
         ? router.actions.map((item, index) => [index, item])
-        : Object.entries(router.actions || {});
+        : Object.entries(router?.actions || {});
       for (const [key, item] of entries) {
         if (isObject(item)) validateAction(item, `scenes.${sceneId}.routers.${routerId}.actions.${key}`);
       }
