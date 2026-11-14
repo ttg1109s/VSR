@@ -1,3 +1,4 @@
+import { sanitizeInlineHtml, safeMediaUrl } from '../../utils/security.js';
 import { ScriptInfoMeta, ScriptTag } from '../../components/Common.js';
 import { API } from '../../api/index.js';
 
@@ -71,7 +72,7 @@ export const sceneMethods = {
             return;
         }
 
-        let descHtml = r.meta.desc || "No description.";
+        let descHtml = sanitizeInlineHtml(r.meta.desc || "No description.");
         if (r.meta.subTitleStatus) {
             descHtml = `<span class=\"text-green-400 font-bold mr-2\">${r.meta.subTitleStatus}</span>` + descHtml;
         }
@@ -123,7 +124,7 @@ export const sceneMethods = {
                     leftPanel.style.backgroundImage = 'none';
                     const video = document.createElement('video');
                     video.id = 'scene-bg-video';
-                    video.src = bgUrl;
+                    video.src = safeMediaUrl(bgUrl);
                     video.autoplay = true;
                     video.loop = true;
                     video.muted = true; // Background video usually muted
@@ -156,7 +157,7 @@ export const sceneMethods = {
                     // Ensure panel has relative positioning?
                     // It usually does.
                 } else {
-                    leftPanel.style.backgroundImage = bgUrl ? `linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.8)), url('${bgUrl}')` : 'none';
+                    leftPanel.style.backgroundImage = bgUrl ? `linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.8)), url('${safeMediaUrl(bgUrl).replace(/['()\\\\]/g, '')}')` : 'none';
                 }
 
                 leftPanel.setAttribute('data-bg', r.meta.cover || s.meta?.cover?.url || bgUrl || '');
