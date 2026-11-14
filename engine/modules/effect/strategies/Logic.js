@@ -57,7 +57,7 @@ export const GotoStrategies = {
         if (engine.pauseBackgroundTasks) engine.pauseBackgroundTasks();
         if (engine.clearEffectQueue) engine.clearEffectQueue('all');
         // [FIX] Trước đây chỉ pause/clear queue rồi dừng — không nơi nào gọi
-        // API.presentation.components.ending() (bí danh window.ui.showEnding()), nên
+        // API.presentation.components.ending() (bí danh presentation event), nên
         // {"type":"goto","subtype":"end","target":"<endingId>"} — cơ chế DUY
         // NHẤT trong toàn engine để hiện #ending-screen — luôn no-op im lặng.
         // Bất kỳ kịch bản nào dùng goto/end để thắng/thua game đều không bao
