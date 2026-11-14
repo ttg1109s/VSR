@@ -119,8 +119,12 @@ function validateReferences(scenario) {
     }
     for (const [index, check] of (requirement.check || []).entries()) {
       const checkPath = path + ".check[" + index + "]";
-      if (check.type === 'state' && !Object.hasOwn(scenario.globalStates || {}, check.property)) {
-        add(checkPath + ".property", "references missing global state '" + check.property + "'");
+      if (check.type === 'state') {
+        const stateDef = scenario.globalStates?.[check.property];
+        if (!stateDef) add(checkPath + ".property", "references missing global state '" + check.property + "'");
+        else if (check.value !== undefined && typeof check.value !== stateDef.type) {
+          add(checkPath + ".value", "must match global state type '" + stateDef.type + "'");
+        }
       }
       if (check.type === 'item') {
         if (check.subtype === 'usage' && !Object.hasOwn(items, check.target)) {
@@ -182,8 +186,12 @@ function validateReferences(scenario) {
     if (set.type === 'swap_router' && set.target && !routerExists(set.target)) {
       add(`${path}.set.target`, `references missing router '${set.target}'`);
     }
-    if (set.type === 'get_item' && set.target && !Object.hasOwn(items, set.target)) {
+    if (set.type === 'get_item' && set.target && !set.target.includes('$(') && !Object.hasOwn(items, set.target)) {
       add(`${path}.set.target`, `references missing item '${set.target}'`);
+    }
+    if (set.type === 'faker' && typeof set.target === 'string' && !set.target.includes('$(')) {
+      const targetCharacter = set.target.includes(':') ? set.target.split(':').at(-1) : set.target;
+      if (!characterExists(targetCharacter)) add(`${path}.set.target`, `references missing faker character '${targetCharacter}'`);
     }
     if (Array.isArray(set.charAllow)) {
       set.charAllow.forEach((id, index) => {
@@ -216,6 +224,19 @@ function validateReferences(scenario) {
     if (effect.type === 'characters' && effect.target && !dynamicTarget && !characterExists(effect.target)) {
       add(`${path}.target`, `references missing character '${effect.target}'`);
     }
+    if (effect.type === 'set' && effect.target && !dynamicTarget) {
+      const exists = {
+        state: () => Object.hasOwn(scenario.globalStates || {}, effect.target),
+        scene: () => Object.hasOwn(scenes, effect.target),
+        router: () => routerExists(effect.target),
+        action: () => Object.hasOwn(actions, effect.target),
+        characters: () => characterExists(effect.target),
+        chat: () => Object.hasOwn(chats, effect.target),
+        chat_choice: () => Object.values(chats).some(chat => Object.hasOwn(chat.choice || {}, effect.target)),
+        automation: () => Object.hasOwn(templates.automation || {}, effect.target)
+      }[effect.subtype];
+      if (exists && !exists()) add(`${path}.target`, `references missing ${effect.subtype} target '${effect.target}'`);
+    }
   };
 
   const inspect = (value, path = 'scenario') => {
@@ -226,8 +247,8 @@ function validateReferences(scenario) {
     if (!isObject(value)) return;
 
     if (value.type && ['effect','item','set','goto','characters','cms','notify','vfx','manage_effect','skip_all'].includes(value.type)) {
-      if (value.type === 'effect' || value.type === 'manage_effect' || value.type === 'skip_all') validateWrapper(value, path);
-      else validateEffectPayload(value, path);
+      validateWrapper(value, path);
+      if (value.type !== 'effect' && value.type !== 'skip_all') validateEffectPayload(value, path);
     }
     if (isObject(value.set) && typeof value.set.password === 'string') {
       validatePasswordRef(value.set.password, `${path}.set.password`);
