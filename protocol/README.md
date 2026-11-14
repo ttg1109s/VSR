@@ -34,4 +34,4 @@ Scenario JSON is separate from save data. `formatVersion` is optional and defaul
 
 The built-in validator checks core root, scene, and router invariants; it is not a full JSON Schema validator.
 
-Save data uses a separate `vsr-save` version-1 envelope. Runtime queues and timer handles are excluded. Active domain work is rehydrated from saved domain state where supported. See `../engine/persistence/save.schema.json`.
+Save data uses a separate `vsr-save` version-2 envelope (with normalization support for version 1). Runtime queues and timer handles are excluded. Active domain work is rehydrated from saved domain state where supported. See `../engine/persistence/save.schema.json`.
