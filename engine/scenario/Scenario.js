@@ -60,12 +60,20 @@ function validateReferences(scenario) {
     }
 
     for (const [routerId, router] of Object.entries(scene?.routers || {})) {
+      if (router?.meta?.sceneID && router.meta.sceneID !== sceneId) {
+        add(`scenes.${sceneId}.routers.${routerId}.meta.sceneID`, `must equal containing scene ID '${sceneId}'`);
+      }
       if (routerOwners.has(routerId)) {
         add(`scenes.${sceneId}.routers.${routerId}`, `router ID is not globally unique; already declared in scene '${routerOwners.get(routerId)}'`);
       } else {
         routerOwners.set(routerId, sceneId);
       }
 
+      for (const [index, imported] of (router?.importAction || []).entries()) {
+        if (imported?.of && !routerExists(imported.of)) {
+          add(`scenes.${sceneId}.routers.${routerId}.importAction[${index}].of`, `references missing router '${imported.of}'`);
+        }
+      }
       const seen = new Set();
       const routerActions = router?.actions;
       if (Array.isArray(routerActions)) {
@@ -278,6 +286,19 @@ function validateReferences(scenario) {
         add(`characters.${characterId}.moveList[${index}].scene_id`, `references missing scene '${move.scene_id}'`);
       }
     }
+    const placeScene = character.place?.scene_id;
+    if (placeScene && !Object.hasOwn(scenes, placeScene)) {
+      add(`characters.${characterId}.place.scene_id`, `references missing scene '${placeScene}'`);
+    }
+    for (const [index, itemId] of [...(character.inventory || []), ...(character.hand || [])].entries()) {
+      if (!Object.hasOwn(items, itemId)) add(`characters.${characterId}.inventory/hand[${index}]`, `references missing item '${itemId}'`);
+    }
+    if (character.set?.mainAction) {
+      const exists = Object.hasOwn(actions, character.set.mainAction) ||
+        Object.values(scenes).some(scene => Object.values(scene.routers || {}).some(router =>
+          (Array.isArray(router.actions) ? router.actions : Object.values(router.actions || {})).some(item => isObject(item) && item.id === character.set.mainAction)));
+      if (!exists) add(`characters.${characterId}.set.mainAction`, `references missing action '${character.set.mainAction}'`);
+    }
     for (const scope of ['meeting','leave']) {
       for (const targetId of Object.keys(character.effect?.[scope] || {})) {
         if (!characterExists(targetId)) add(`characters.${characterId}.effect.${scope}.${targetId}`, `references missing character '${targetId}'`);
@@ -285,6 +306,7 @@ function validateReferences(scenario) {
     }
   }
 
+  const globalChoiceIds = new Map();
   for (const [chatId, chat] of Object.entries(chats)) {
     const blocks = chat?.block || {};
     const choices = chat?.choice || {};
@@ -308,6 +330,10 @@ function validateReferences(scenario) {
     }
     for (const [choiceId, list] of Object.entries(choices)) {
       for (const [index, choice] of (list || []).entries()) {
+        if (choice?.id) {
+          if (globalChoiceIds.has(choice.id)) add(`chat.${chatId}.choice.${choiceId}[${index}].id`, `choice ID '${choice.id}' is already used in chat '${globalChoiceIds.get(choice.id)}'`);
+          else globalChoiceIds.set(choice.id, chatId);
+        }
         if (choice?.jump && !Object.hasOwn(blocks, choice.jump)) {
           add(`chat.${chatId}.choice.${choiceId}[${index}].jump`, `references missing block '${choice.jump}'`);
         }
