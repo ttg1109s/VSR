@@ -1848,6 +1848,7 @@
             "properties": {
               "subtype": {
                 "enum": [
+                  "default",
                   "toast",
                   "modal"
                 ],
@@ -2601,6 +2602,7 @@
             "properties": {
               "subtype": {
                 "enum": [
+                  "default",
                   "toast",
                   "modal"
                 ],
