@@ -3,13 +3,8 @@
 import { normalizeScenario } from '../scenario/Scenario.js';
 
 export const LoaderSystem = {
-    loadScript(script) {
-        if (!script || !script.scenes) {
-            console.error("SAFEGUARD: Script data is invalid or missing 'scenes'.");
-            API.presentation.notification.alert("Data Error", "Dữ liệu kịch bản bị lỗi.", "danger");
-            return null;
-        }
-
+    loadScript(input, api) {
+        const script = normalizeScenario(input);
         const src = script;
         src.path = { routers: {}, chats: {}, characters: {} };
 

@@ -1,4 +1,4 @@
-# VSR Hybrid JSON Protocol v1
+# VSR Hybrid JSON Protocol v2
 
 Each Engine owns its own API facade, state resolver, protocol and task manager. No process-global current Engine is used.
 

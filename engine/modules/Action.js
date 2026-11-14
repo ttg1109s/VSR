@@ -252,7 +252,13 @@ export const ActionSystem = {
 
                     if (passDef) {
                         passDef._type = passType;
-                        this.api.presentation.components.keyboard(actDef, actionKey, uniqueId, passDef);
+                        this.pendingPasswordAction = { sceneId: sId, routerId: rId, actionId: actionKey, uniqueId };
+                        this.api.presentation.components.keyboard(
+                            { id: actionKey, meta: { title: actDef.meta?.title, desc: actDef.meta?.desc } },
+                            actionKey,
+                            uniqueId,
+                            { type: passType, desc: passDef.desc, retryMax: passDef.retryMax, timer: passDef.timer }
+                        );
                         // Return here and let the PasswordSystem callback handle the rest
                         return;
                     } else {
