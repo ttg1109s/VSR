@@ -16,7 +16,7 @@ function makeProtocol() {
   };
 }
 
-test('notification manager normalizes severity and preserves legacy presentation event payload', () => {
+test('notification manager normalizes severity and publishes the canonical event envelope', () => {
   const protocol = makeProtocol();
   let now = 1000;
   const notifications = new NotificationSystem({
@@ -27,7 +27,9 @@ test('notification manager normalizes severity and preserves legacy presentation
   });
   const event = protocol.events.at(-1);
   assert.equal(event.event, 'presentation.notification.add');
-  assert.deepEqual(event.payload.args, ['Cảnh báo', 'Nội dung', 'warn']);
+  assert.equal(Object.hasOwn(event.payload, 'args'), false);
+  assert.equal(event.payload.notification.title, 'Cảnh báo');
+  assert.equal(event.payload.notification.level, 'warn');
   assert.equal(result.notification.severity, 'warning');
   assert.equal(result.notification.source, 'action');
   assert.equal(result.notification.expiresAt, 2500);
@@ -114,7 +116,7 @@ test('action blocked by unread description emits a deduplicated not_read notific
     src: { scenes: { scene: { routers: { router: {} } } } },
     api: {
       engine: { state },
-      presentation: { notification: { add: (...args) => calls.push(args) } }
+      notifications: { add: (...args) => calls.push(args) }
     },
     getEffectiveActions: () => [{
       id: 'inspect', meta: { desc: 'Description' }, set: {}
@@ -155,13 +157,15 @@ test('notification manager automatically expires toast notifications', () => {
   assert.equal(created.expiresAt, 150);
 });
 
-test('GameEngine presentation notification facade routes through NotificationSystem', () => {
+test('GameEngine exposes notifications only through the canonical API', () => {
   const engine = new GameEngine({ engineId: 'notification-facade-test' });
-  engine.api.presentation.notification.add('Thông báo Engine', 'Đã nhận', 'success');
+  engine.api.notifications.add('Thông báo Engine', 'Đã nhận', 'success');
   const event = engine.protocol.getEventsAfter(0).events.find(item => item.event === 'presentation.notification.add');
   assert.ok(event);
   assert.equal(event.payload.notification.source, 'engine');
-  assert.deepEqual(event.payload.args, ['Thông báo Engine', 'Đã nhận', 'success']);
+  assert.equal(Object.hasOwn(event.payload, 'args'), false);
+  assert.equal(event.payload.notification.title, 'Thông báo Engine');
+  assert.throws(() => engine.api.presentation.notification, /engine\.api\.notifications/);
   assert.equal(engine.api.notifications.getHistory().length, 1);
   engine.dispose();
 });
