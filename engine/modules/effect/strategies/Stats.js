@@ -83,8 +83,9 @@ export const StatsHelpers = {
             : toFiniteNumber(rawValue);
         if (value === null) return false;
 
-        const maxValue = toFiniteNumber(stat.max);
-        if (maxValue === null) return false;
+        const storedMax = toFiniteNumber(stat.max);
+        if (storedMax === null) return false;
+        const maxValue = Math.max(0, storedMax);
         const calculated = calculator(oldValue, maxValue, value);
         if (!Number.isFinite(calculated)) return false;
 
