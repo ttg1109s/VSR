@@ -131,8 +131,11 @@ export class StateAccess {
   set(path, value, context = {}, options = {}) {
     const namespace = options.namespace ?? STATE_SCHEMA[path]?.[0] ?? 'runtime';
     if (namespace === 'source') throw new StatePathError('Scenario source is read-only.', 'READ_ONLY_NAMESPACE');
+    const resolvedPath = STATE_SCHEMA[path]?.[1] ?? path;
+    if (namespace === 'session' && resolvedPath === 'chatState') { this.engine.chatState = value; return value; }
+    if (namespace === 'session' && resolvedPath === 'pendingPasswordAction') { this.engine.pendingPasswordAction = value; return value; }
     const root = this.#root(namespace);
-    const { parent, leaf } = parentFor(root, STATE_SCHEMA[path]?.[1] ?? path, resolveContext(path, context, this.engine), true);
+    const { parent, leaf } = parentFor(root, resolvedPath, resolveContext(path, context, this.engine), true);
     parent[leaf] = value;
     return value;
   }
@@ -146,8 +149,11 @@ export class StateAccess {
   delete(path, context = {}, options = {}) {
     const namespace = options.namespace ?? STATE_SCHEMA[path]?.[0] ?? 'runtime';
     if (namespace === 'source') throw new StatePathError('Scenario source is read-only.', 'READ_ONLY_NAMESPACE');
+    const resolvedPath = STATE_SCHEMA[path]?.[1] ?? path;
+    if (namespace === 'session' && resolvedPath === 'chatState') { this.engine.chatState = undefined; return true; }
+    if (namespace === 'session' && resolvedPath === 'pendingPasswordAction') { this.engine.pendingPasswordAction = undefined; return true; }
     const root = this.#root(namespace);
-    const { parent, leaf } = parentFor(root, STATE_SCHEMA[path]?.[1] ?? path, resolveContext(path, context, this.engine));
+    const { parent, leaf } = parentFor(root, resolvedPath, resolveContext(path, context, this.engine));
     if (parent === null || typeof parent !== 'object') return false;
     return delete parent[leaf];
   }
@@ -171,23 +177,25 @@ export class StateAccess {
       const sessionBaseline = JSON.stringify(sessionOriginal);
       const runtimeDraft = clone(runtimeOriginal);
       const sessionDraft = clone(sessionOriginal);
-      const roots = { runtime: runtimeDraft, session: sessionDraft };
+      const roots = { source: engine.src, runtime: runtimeDraft, session: sessionDraft };
       const tx = Object.freeze({
         get: (path, context = {}, options = {}) => {
           const namespace = options.namespace ?? STATE_SCHEMA[path]?.[0] ?? 'runtime';
-          if (!roots[namespace]) throw new StatePathError(`Namespace "${namespace}" is not writable in a transaction.`);
+          if (!roots[namespace]) throw new StatePathError(`Unknown state namespace "${namespace}".`);
           return readPath(roots[namespace], STATE_SCHEMA[path]?.[1] ?? path, resolveContext(path, context, engine));
         },
         set: (path, value, context = {}, options = {}) => {
           const namespace = options.namespace ?? STATE_SCHEMA[path]?.[0] ?? 'runtime';
-          if (!roots[namespace]) throw new StatePathError(`Namespace "${namespace}" is not writable in a transaction.`);
+          if (namespace === "source") throw new StatePathError("Scenario source is read-only.", "READ_ONLY_NAMESPACE");
+          if (!roots[namespace]) throw new StatePathError(`Unknown state namespace "${namespace}".`);
           const { parent, leaf } = parentFor(roots[namespace], STATE_SCHEMA[path]?.[1] ?? path, resolveContext(path, context, engine), true);
           parent[leaf] = value;
           return value;
         },
         delete: (path, context = {}, options = {}) => {
           const namespace = options.namespace ?? STATE_SCHEMA[path]?.[0] ?? 'runtime';
-          if (!roots[namespace]) throw new StatePathError(`Namespace "${namespace}" is not writable in a transaction.`);
+          if (namespace === "source") throw new StatePathError("Scenario source is read-only.", "READ_ONLY_NAMESPACE");
+          if (!roots[namespace]) throw new StatePathError(`Unknown state namespace "${namespace}".`);
           const { parent, leaf } = parentFor(roots[namespace], STATE_SCHEMA[path]?.[1] ?? path, resolveContext(path, context, engine));
           return parent && delete parent[leaf];
         }
