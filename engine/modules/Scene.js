@@ -306,7 +306,7 @@ export const SceneSystem = {
         const sId = state.get('sceneId');
 
         const sceneMeta = this.src.scenes[sId]?.meta;
-        if (sceneMeta && sceneMeta.inside && sceneMeta.parentScene) {
+        if (sceneMeta?.parentScene) {
             const parentId = sceneMeta.parentScene;
             if (this.src.scenes[parentId]) {
                 this.enterScene(parentId, true);
@@ -319,7 +319,7 @@ export const SceneSystem = {
         const target = state.get('prevRouter');
         if (!target) return;
 
-        const sId = this.src.path.routers[target]?.[0];
+        const sId = this.src.path.routers[target];
         if (sId && state.getRuntimeSnapshot('scenes.[id]', { id: sId })) {
             const isSameScene = sId === state.get('sceneId');
             state.set('scene.activeRouterId', target, { id: sId });
