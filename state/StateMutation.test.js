@@ -89,3 +89,22 @@ test('detects direct writes that conflict with an open transaction', async () =>
   assert.equal(e.state.score, 1);
   assert.equal(e.state.nested.count, 77);
 });
+
+test('writes session roots back to the Engine instance', () => {
+  const e = engine(), state = new StateAccess(e);
+  state.set('session.chat', { active: true, id: 'new-chat' });
+  state.set('session.passwordChallenge', { actionId: 'new-door' });
+  assert.equal(e.chatState.id, 'new-chat');
+  assert.equal(e.pendingPasswordAction.actionId, 'new-door');
+  state.delete('session.passwordChallenge');
+  assert.equal(e.pendingPasswordAction, undefined);
+});
+
+test('transactions can read source but cannot write it', async () => {
+  const e = engine(), state = new StateAccess(e);
+  await state.transaction(tx => {
+    assert.equal(tx.get('meta.title', {}, { namespace: 'source' }), 'Immutable source');
+    assert.throws(() => tx.set('meta.title', 'changed', {}, { namespace: 'source' }), StatePathError);
+  });
+  assert.equal(e.src.meta.title, 'Immutable source');
+});
