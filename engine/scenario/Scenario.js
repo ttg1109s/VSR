@@ -119,8 +119,8 @@ function validateReferences(scenario) {
     }
     for (const [index, check] of (requirement.check || []).entries()) {
       const checkPath = path + ".check[" + index + "]";
-      if (check.type === 'state' && !Object.hasOwn(scenario.globalStates || {}, check.target)) {
-        add(checkPath + ".target", "references missing global state '" + check.target + "'");
+      if (check.type === 'state' && !Object.hasOwn(scenario.globalStates || {}, check.property)) {
+        add(checkPath + ".property", "references missing global state '" + check.property + "'");
       }
       if (check.type === 'item') {
         if (check.subtype === 'usage' && !Object.hasOwn(items, check.target)) {
