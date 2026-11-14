@@ -68,6 +68,19 @@ test('notification manager deduplicates identical notices by default but keeps s
   assert.equal(notifications.getHistory().length, 2);
 });
 
+test('notification manager rate-limits bursts within a source category', () => {
+  const protocol = makeProtocol();
+  const notifications = new NotificationSystem({
+    protocol, clock: () => 100, maxPerWindow: 2, rateWindowMs: 1000
+  });
+  notifications.add('Cảnh báo', 'Một', 'warn', { source: 'action', category: 'action.failure', dedupe: false });
+  notifications.add('Cảnh báo', 'Hai', 'warn', { source: 'action', category: 'action.failure', dedupe: false });
+  const blocked = notifications.add('Cảnh báo', 'Ba', 'warn', { source: 'action', category: 'action.failure', dedupe: false });
+  assert.equal(blocked.rateLimited, true);
+  assert.equal(notifications.getHistory().length, 2);
+  assert.equal(protocol.events.at(-1).event, 'presentation.notification.rateLimited');
+});
+
 test('notification manager prioritizes pending entries and bounds its queue', () => {
   const protocol = makeProtocol();
   const notifications = new NotificationSystem({
