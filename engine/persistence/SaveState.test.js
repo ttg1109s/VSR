@@ -19,6 +19,7 @@ function makeEngine() {
     pendingPasswordAction: { actionId: 'door' },
     taskManager: {
       snapshotRemaining: () => ({ auto_patrol: 1250, move_char_npc: 800 }),
+      snapshotPaused: () => ['auto_patrol'],
       hasBusyTasks: () => false
     }
   };
@@ -31,6 +32,7 @@ test('creates v2 save envelopes without ephemeral execution queues', () => {
   assert.equal('effectQueue' in save.state, false);
   assert.deepEqual(save.taskRemainingMs, { auto_patrol: 1250, move_char_npc: 800 });
   assert.deepEqual(save.pendingPasswordAction, { actionId: 'door' });
+  assert.deepEqual(save.pausedTasks, ['auto_patrol']);
 });
 
 test('migrates v1 saves to v2 defaults', () => {
@@ -67,4 +69,15 @@ test('refuses saves while effect processing or background work is active', () =>
   engine.state.isSyncQueueRunning = false;
   engine.taskManager.hasBusyTasks = () => true;
   assert.throws(() => createSaveEnvelope(engine), /background task/);
+});
+
+test('migrates legacy saves that predate the protocol field', () => {
+  const migrated = normalizeSaveEnvelope({
+    saveVersion: 1,
+    scenario: {},
+    state: {},
+    savedAt: new Date().toISOString()
+  });
+  assert.equal(migrated.protocol, 'vsr-save');
+  assert.deepEqual(migrated.pausedTasks, []);
 });
