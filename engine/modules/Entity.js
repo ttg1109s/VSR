@@ -156,8 +156,8 @@ export const EntitySystem = {
         // [FIX] Trigger UI Update AFTER state change if character left the current scene
         if (isLeaving) {
             console.log(`[Entity] Char ${charId} LEAVING scene ${currentScene} -> ${nextSceneId}`);
-            if (API.render?.components?.updateCharacterList) {
-                API.render.components.updateCharacterList();
+            if (API.presentation?.components?.updateCharacterList) {
+                API.presentation.components.updateCharacterList();
             }
         }
 
@@ -180,11 +180,11 @@ export const EntitySystem = {
                     }
                 }
 
-                if (API.render?.components?.updateCharacterList) {
-                    console.log(`[Entity] Calling API.render.components.updateCharacterList() for ${charId}`);
-                    API.render.components.updateCharacterList();
+                if (API.presentation?.components?.updateCharacterList) {
+                    console.log(`[Entity] Calling API.presentation.components.updateCharacterList() for ${charId}`);
+                    API.presentation.components.updateCharacterList();
                 } else {
-                    console.error("[Entity] API.render.components.updateCharacterList MISSING");
+                    console.error("[Entity] API.presentation.components.updateCharacterList MISSING");
                 }
             }
         }
