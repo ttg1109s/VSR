@@ -3,12 +3,13 @@ export const SceneSystem = {
 
     // [NEW] API to get Scene Path from Loader's generated SceneTree
     getPath(sceneId) {
-        if (!sceneId) sceneId = this.state.sceneId;
-        return this.state.sceneTree[sceneId] || [];
+        const state = this.api.engine.state;
+        if (!sceneId) sceneId = state.get('sceneId');
+        return state.getRuntimeSnapshot('sceneTree.[id]', { id: sceneId }) || [];
     },
 
     shouldSkipTransition(targetSceneId) {
-        const currentSceneId = this.state.sceneId;
+        const currentSceneId = this.api.engine.state.get('sceneId');
         if (!currentSceneId || !targetSceneId) return false;
 
         // [FIXED] Use Pre-calculated SceneTree to check relationship
@@ -28,22 +29,24 @@ export const SceneSystem = {
     },
 
     async enterScene(id, skipTransition = false) {
-        if (!this.state.scenes[id]) {
+        const state = this.api.engine.state;
+        if (!state.getRuntimeSnapshot('scenes.[id]', { id })) {
             console.error(`Scene '${id}' not found.`);
             return;
         }
 
-        const currentS = this.state.sceneId;
-        // [FIX] Define currentIdentity early to use for both Leave and Meeting logic
-        const currentIdentity = this.state.faker.active ? this.state.faker.targetId : (this.state.meta?.entryCharacter || 'player');
+        const currentS = state.get('sceneId');
+        const faker = state.getRuntimeSnapshot('faker') || {};
+        const entryChar = state.get('entryCharacter') || 'player';
+        const currentIdentity = faker.active ? faker.targetId : entryChar;
 
         // Logic: Player LEAVES current scene (trigger 'leave' effect on NPCs staying there)
         if (currentS && currentS !== id) {
-            Object.keys(this.state.characters).forEach(charId => {
-                const entryChar = this.state.meta?.entryCharacter || 'player';
+            const characters = state.getRuntimeSnapshot('characters') || {};
+            Object.keys(characters).forEach(charId => {
                 if (charId === entryChar) return;
 
-                const char = this.state.characters[charId];
+                const char = characters[charId];
                 // [REFACTOR] Use 'char.place.scene_id'
                 if (char.place.scene_id === currentS) {
                     // [FIX V9.2] Leave Logic: Access Object by currentIdentity Key
@@ -62,11 +65,9 @@ export const SceneSystem = {
             });
         }
 
-        const state = this.api.engine.state;
-        const previousRouter = currentS && this.state.scenes[currentS]
-            ? this.state.scenes[currentS].activeRouterId
+        const previousRouter = currentS
+            ? state.getRuntimeSnapshot('scenes.[id]', { id: currentS })?.activeRouterId
             : undefined;
-        const entryChar = this.state.meta?.entryCharacter || 'player';
 
         // Apply these synchronous writes without yielding between them: leave effects
         // may still be running asynchronously and must not invalidate a queued transaction.
@@ -78,7 +79,7 @@ export const SceneSystem = {
 
         let effectiveSkip = skipTransition;
 
-        const activeRouter = this.state.scenes[id].activeRouterId;
+        const activeRouter = state.getRuntimeSnapshot('scenes.[id]', { id })?.activeRouterId;
         if (!activeRouter || !this.src.scenes[id].routers[activeRouter]) {
             console.error(`Active Router '${activeRouter}' in Scene '${id}' invalid.`);
             return;
@@ -87,11 +88,12 @@ export const SceneSystem = {
         await this.enterRouter(activeRouter, true, true, effectiveSkip);
 
         // Logic: Player ENTERS new scene (trigger 'meeting' effect on NPCs here)
-        Object.keys(this.state.characters).forEach(charId => {
+        const currentCharacters = state.getRuntimeSnapshot('characters') || {};
+        Object.keys(currentCharacters).forEach(charId => {
             if (charId === entryChar) return;
             if (charId === currentIdentity) return;
 
-            const char = this.state.characters[charId];
+            const char = currentCharacters[charId];
             // [REFACTOR] Use 'char.place.scene_id'
             if (char.place.scene_id === id) {
                 // [FIX] Use shared updateMetState from EntitySystem (mixed into API.engine)
@@ -123,11 +125,11 @@ export const SceneSystem = {
     },
 
     async enterRouter(routerId, forceRender = false, isSceneEntry = false, skipTransition = false) {
-        const sId = this.state.sceneId;
+        const state = this.api.engine.state;
+        const sId = state.get('sceneId');
         if (!routerId || !this.src.scenes[sId].routers[routerId]) return;
 
         const rKey = `${sId}_${routerId}`;
-        const state = this.api.engine.state;
         if (!state.getRuntimeSnapshot('routers.[id]', { id: rKey })) {
             state.set('routers.[id]', { blocked: false, visited: false, countVisited: 0 }, { id: rKey });
         }
@@ -170,7 +172,7 @@ export const SceneSystem = {
 
         this.api.presentation.scene.hideTimer();
 
-        const oldRouterId = this.state.scenes[sId].activeRouterId;
+        const oldRouterId = state.getRuntimeSnapshot('scenes.[id]', { id: sId })?.activeRouterId;
         if (!isSceneEntry && oldRouterId && oldRouterId !== routerId) {
             const oldRd = this.src.scenes[sId].routers[oldRouterId];
             if (oldRd && oldRd.loop && oldRd.loop.leave) {
@@ -238,7 +240,7 @@ export const SceneSystem = {
                 time: secondsStill * 1000,
                 mode: 'interval',
                 exe: () => {
-                    if (this.state.sceneId === sId && this.state.scenes[sId].activeRouterId === routerId) {
+                    if (state.get('sceneId') === sId && state.get('scene.activeRouterId', { id: sId }) === routerId) {
                         this.processRunnables(rd.loop.still, { sceneId: sId, routerId, hook: 'still' }, true)
                             .catch(e => console.error("Still Loop Error:", e));
                     }
@@ -300,8 +302,8 @@ export const SceneSystem = {
     },
 
     goBackParent() {
-        const entryChar = this.state.meta?.entryCharacter || 'player';
-        const sId = this.state.sceneId;
+        const state = this.api.engine.state;
+        const sId = state.get('sceneId');
 
         const sceneMeta = this.src.scenes[sId]?.meta;
         if (sceneMeta && sceneMeta.inside && sceneMeta.parentScene) {
@@ -313,13 +315,14 @@ export const SceneSystem = {
     },
 
     goBackTimerEnd() {
-        const target = this.state.prevRouter;
+        const state = this.api.engine.state;
+        const target = state.get('prevRouter');
         if (!target) return;
 
         const sId = this.src.path.routers[target]?.[0];
-        if (sId && this.state.scenes[sId]) {
-            const isSameScene = sId === this.state.sceneId;
-            this.api.engine.state.set('scene.activeRouterId', target, { id: sId });
+        if (sId && state.getRuntimeSnapshot('scenes.[id]', { id: sId })) {
+            const isSameScene = sId === state.get('sceneId');
+            state.set('scene.activeRouterId', target, { id: sId });
 
             if (isSameScene) this.enterRouter(target);
             else this.enterScene(sId, false);
@@ -338,13 +341,13 @@ export const SceneSystem = {
     },
 
     render() {
-        if (!this.state.sceneId) return;
-
-        const sId = this.state.sceneId;
+        const state = this.api.engine.state;
+        const sId = state.get('sceneId');
+        if (!sId) return;
         const s = this.src.scenes[sId];
         if (!s) return;
 
-        const rId = this.state.scenes[sId].activeRouterId;
+        const rId = state.getRuntimeSnapshot('scenes.[id]', { id: sId })?.activeRouterId;
         const r = s.routers[rId];
 
         const actions = this.getEffectiveActions(sId, rId);
