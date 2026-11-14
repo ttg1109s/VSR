@@ -13,7 +13,9 @@ export class PasswordSystem {
     if (!actionId || !uniqueId || !sceneId || !routerId || !type || !passwordId) {
       throw new TypeError('Password challenge requires action, identity, scene, router, type and password ID.');
     }
-    const retryMax = Number.isFinite(Number(config.retryMax)) ? Math.max(0, Math.floor(Number(config.retryMax))) : 0;
+    const retryMax = config.retryMax === undefined
+      ? 3
+      : Number.isFinite(Number(config.retryMax)) ? Math.max(0, Math.floor(Number(config.retryMax))) : 3;
     const timerSeconds = Number(config.timer);
     const now = this.clock();
     return {
