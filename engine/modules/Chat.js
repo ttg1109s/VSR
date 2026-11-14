@@ -15,12 +15,7 @@ export const ChatSystem = {
     },
 
     getChatOwner(chatId) {
-        // [FIXED] Use this.api.engine.state.get with Schema key 'chat.sender'
-        let sender = this.api.engine.state.get('chat.sender', { id: chatId });
-        // Fallback to direct src lookup if State API fails (e.g. static data not in State)
-        if (!sender && this.src.chat && this.src.chat[chatId] && this.src.chat[chatId].meta) {
-            sender = this.src.chat[chatId].meta.sender;
-        }
+        const sender = this.api.engine.state.get('chat.sender', { id: chatId });
         return sender || 'spam';
     },
 
