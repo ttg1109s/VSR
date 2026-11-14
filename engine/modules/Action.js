@@ -28,7 +28,7 @@ export const ActionSystem = {
                 } else if (typeof item === 'object') {
                     // Inline Definition
                     let act = { ...item, source: 'inline' };
-                    if (!act.id) act.id = `inline_${Math.random().toString(36).substr(2, 9)}`;
+                    if (!act.id) throw new Error(`Inline action in router '${rId}' must have a stable id; normalize the scenario before resolving actions.`);
                     ensureThumb(act);
                     actions.push(act);
                 }
@@ -58,7 +58,6 @@ export const ActionSystem = {
             });
         }
         return actions;
-        return actions;
     },
 
     markAsRead(uniqueId) {
@@ -85,27 +84,28 @@ export const ActionSystem = {
         const sId = state.get('sceneId');
         const rId = state.get('scene.activeRouterId', { id: sId });
 
-        if (!rId || !this.src.scenes[sId].routers[rId]) return;
+        if (!rId || !this.src?.scenes?.[sId]?.routers?.[rId]) return;
 
-        let actDef = null;
-
-        // 1. Try Global Direct Lookup first
-        if (this.src.actions && this.src.actions[actionKey]) {
-            actDef = this.src.actions[actionKey];
-        }
-
-        // 2. If not found or specific override needed, search in effective actions
-        if (!actDef) {
-            const effective = this.getEffectiveActions(sId, rId);
-            const found = effective.find(a => a.id === actionKey);
-            if (found) actDef = found;
-        }
-
+        // The active router is the authority for action membership. A global
+        // action definition is not executable unless this router references it.
+        const effective = this.getEffectiveActions(sId, rId);
+        const actDef = effective.find(action => action.id === actionKey);
         if (!actDef) return;
+
+        // Enforce locks in the Engine, not only in presentation controls.
+        if (this.checkHardLock('scene', sId) || this.checkHardLock('router', rId)) {
+            return { success: false, reason: 'hard_locked' };
+        }
 
         console.log(`[Flow] >>> CLICK ACTION: ${actionKey}`);
 
         const set = actDef.set || {};
+        if (set.type === 'to_scene' && set.target && this.checkHardLock('scene', set.target)) {
+            return { success: false, reason: 'target_locked' };
+        }
+        if (set.type === 'swap_router' && set.target && this.checkHardLock('router', set.target)) {
+            return { success: false, reason: 'target_locked' };
+        }
 
         // --- Identity / Faker Logic ---
         // Determine Current Identity (Who is the player acting as?)
