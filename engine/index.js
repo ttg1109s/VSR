@@ -1,4 +1,5 @@
 export { GameEngine } from './GameEngine.js';
+export { NotificationSystem } from './modules/Notification.js';
 export { JsonProtocol, cloneJsonValue } from '../protocol/JsonProtocol.js';
 export { verifyPassword } from './modules/password/verify.js';
 export { API, createEngineAPI } from '../api/index.js';
