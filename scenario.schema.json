@@ -315,7 +315,7 @@
           "type": "object",
           "description": "Definitions of logic requirements.",
           "additionalProperties": {
-            "$ref": "#/definitions/requirement_details"
+            "$ref": "#/definitions/requirement_definition"
           }
         },
         "effects": {
@@ -1828,90 +1828,17 @@
       "description": "Điều kiện tổng hợp: HOẶC định nghĩa trực tiếp {logic, check[]}, HOẶC tham chiếu {ref: templates.requirements.<id>}.",
       "oneOf": [
         {
-          "type": "object",
-          "description": "Điều kiện tổng hợp (dùng cho action.requirement, itemInfo.requirements, templates.requirements.<id>).",
-          "required": [
-            "logic",
-            "check"
-          ],
-          "properties": {
-            "logic": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "enum": [
-                "AND",
-                "OR",
-                "NOT",
-                "XOR",
-                null
-              ],
-              "default": null,
-              "description": "Cách kết hợp các điều kiện trong 'check'. null nếu 'check' rỗng."
-            },
-            "check": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/requirement_check"
-              },
-              "default": [],
-              "minItems": 1
-            }
-          },
-          "additionalProperties": false,
-          "allOf": [
-            {
-              "if": {
-                "properties": {
-                  "logic": {
-                    "const": "NOT"
-                  }
-                },
-                "required": [
-                  "logic"
-                ]
-              },
-              "then": {
-                "properties": {
-                  "check": {
-                    "minItems": 1,
-                    "maxItems": 1
-                  }
-                }
-              }
-            },
-            {
-              "if": {
-                "properties": {
-                  "logic": {
-                    "const": null
-                  }
-                },
-                "required": [
-                  "logic"
-                ]
-              },
-              "then": {
-                "properties": {
-                  "check": {
-                    "minItems": 1,
-                    "maxItems": 1
-                  }
-                }
-              }
-            }
-          ]
+          "$ref": "#/definitions/requirement_definition"
         },
         {
           "type": "object",
-          "description": "Tham chiếu tới templates.requirements.<id> thay vì định nghĩa logic/check trực tiếp.",
           "required": [
             "ref"
           ],
           "properties": {
             "ref": {
-              "type": "string"
+              "type": "string",
+              "minLength": 1
             }
           },
           "additionalProperties": false
@@ -2757,6 +2684,79 @@
               "index": {
                 "type": "array",
                 "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "requirement_definition": {
+      "type": "object",
+      "description": "Canonical inline requirement template; templates are definitions, not aliases.",
+      "required": [
+        "logic",
+        "check"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "logic": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "AND",
+            "OR",
+            "NOT",
+            "XOR",
+            null
+          ]
+        },
+        "check": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/definitions/requirement_check"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "logic": {
+                "const": "NOT"
+              }
+            },
+            "required": [
+              "logic"
+            ]
+          },
+          "then": {
+            "properties": {
+              "check": {
+                "minItems": 1,
+                "maxItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "logic": {
+                "const": null
+              }
+            },
+            "required": [
+              "logic"
+            ]
+          },
+          "then": {
+            "properties": {
+              "check": {
+                "minItems": 1,
+                "maxItems": 1
               }
             }
           }
