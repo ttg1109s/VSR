@@ -181,6 +181,15 @@ export const ChatMethods = {
         footer.appendChild(bar);
     },
 
+    clearChatChoices() {
+        const footer = document.getElementById('contact-chat-footer');
+        if (footer) {
+            footer.innerHTML = '';
+            footer.classList.add('hidden');
+            footer.style.display = '';
+        }
+    },
+
     hideInputBar() {
         const footer = document.getElementById('contact-chat-footer');
         if (footer) {
