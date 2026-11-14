@@ -18,7 +18,8 @@
   },
   "scripts": {
     "test": "node --test",
-    "audit:state": "node tools/audit-state-access.js"
+    "audit:state": "node tools/audit-state-access.js",
+    "audit:state:strict": "node tools/audit-state-access.js --strict"
   },
   "devDependencies": {
     "acorn": "^8.15.0"
