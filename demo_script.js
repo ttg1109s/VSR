@@ -49,7 +49,7 @@
 //      action theo điều kiện toàn cục, dùng nhánh req theo từng bước effect
 //      (xem action_go_upstairs) thay vì set/action xuyên router.
 // ============================================================================
-const DEMO_SCRIPT = {
+export const DEMO_SCRIPT = {
     "meta": {
         "title": "Phi Vụ: Biệt Thự Sương Mù",
         "subtitle": "Một đêm, một két sắt, một lời hứa.",
