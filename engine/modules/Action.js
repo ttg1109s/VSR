@@ -172,7 +172,12 @@ export const ActionSystem = {
         const hasBeenRead = currentState.readDesc === true;
 
         if (requiresRead && !hasBeenRead) {
-            console.log(`[Flow] Blocked: Description not read for ${actionKey}`);
+            this.api.presentation.notification.add(
+                'Chưa đọc mô tả',
+                'Vui lòng đọc mô tả trước khi thực hiện thao tác này.',
+                'warn',
+                { source: 'action', category: 'action.not_read', dedupeKey: `action.not_read:${actStateKey}`, duration: 4000 }
+            );
             return { success: false, reason: 'not_read' };
         }
 
