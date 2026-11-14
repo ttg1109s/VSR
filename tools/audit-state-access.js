@@ -64,8 +64,10 @@ function analyze(file) {
 
   function rootOf(node) {
     let current = node;
-    while (current?.type === 'MemberExpression') current = current.object;
-    if (isRawStateRoot(current)) return { kind: 'direct', root: current };
+    while (current?.type === 'MemberExpression') {
+      if (isRawStateRoot(current)) return { kind: 'direct', root: current };
+      current = current.object;
+    }
     if (current?.type === 'Identifier' && aliases.has(current.name)) return { kind: 'alias', root: current };
     return null;
   }
@@ -73,9 +75,9 @@ function analyze(file) {
   function chainOf(node) {
     const parts = [];
     let current = node;
-    while (current?.type === 'MemberExpression') {
+    while (current?.type === 'MemberExpression' && !isRawStateRoot(current)) {
       const name = propertyName(current);
-      parts.unshift(name.startsWith('[') ? name : current.computed ? `[${name}]` : name);
+      parts.unshift(current.computed ? `[${name}]` : name);
       current = current.object;
     }
     if (isRawStateRoot(current)) return [current.object.type === 'ThisExpression' ? 'this.state' : 'engine.state', ...parts].join('.');
