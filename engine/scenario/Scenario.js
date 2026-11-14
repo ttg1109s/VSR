@@ -17,7 +17,9 @@ const validateAgainstSchema = ajv.compile(scenarioSchema);
 
 function clone(input) {
   try {
-    return structuredClone(input);
+    const serialized = JSON.stringify(input);
+    if (serialized === undefined) throw new TypeError('Scenario root is not JSON-serializable.');
+    return JSON.parse(serialized);
   } catch (error) {
     throw new ScenarioValidationError([`Scenario must be JSON-compatible: ${error.message}`]);
   }
@@ -80,6 +82,22 @@ function validateReferences(scenario) {
   const templates = scenario.templates || {};
   const inspectReferences = (value, path = '') => {
     if (!value || typeof value !== 'object') return;
+    if (!Array.isArray(value) && value.set && typeof value.set === 'object') {
+      const actionSet = value.set;
+      if (typeof actionSet.password === 'string') {
+        const parts = actionSet.password.split(':');
+        if (parts.length !== 2 || !parts[0] || !parts[1] || !Object.hasOwn(scenario.passwords?.[parts[0]] || {}, parts[1])) {
+          errors.push(`${path || 'scenario'} references invalid password '${actionSet.password}'`);
+        }
+      }
+      if (actionSet.type === 'to_scene' && actionSet.target && !Object.hasOwn(scenes, actionSet.target)) {
+        errors.push(`${path || 'scenario'} references missing target scene '${actionSet.target}'`);
+      }
+      if (actionSet.type === 'swap_router' && actionSet.target &&
+          !Object.values(scenes).some(scene => Object.hasOwn(scene.routers || {}, actionSet.target))) {
+        errors.push(`${path || 'scenario'} references missing target router '${actionSet.target}'`);
+      }
+    }
     if (!Array.isArray(value) && typeof value.type === 'string' && typeof value.ref === 'string') {
       if (value.type === 'effect' && !Object.hasOwn(templates.effects || {}, value.ref)) {
         errors.push(`${path || 'scenario'} references missing effect template '${value.ref}'`);
