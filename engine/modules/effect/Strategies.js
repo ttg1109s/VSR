@@ -116,8 +116,8 @@ export const EffectHandlers = {
         }
     },
 
-    cms(eff) {
-        CmsStrategies[eff.table]?.(this, eff);
+    async cms(eff) {
+        return await CmsStrategies[eff.table]?.(this, eff);
     },
 
     characters(eff) {
