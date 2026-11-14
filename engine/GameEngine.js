@@ -104,6 +104,7 @@ export class GameEngine {
  dispatchProtocolCommand(command,context={}){if(!this.protocol)throw new Error('VSR protocol is not initialized.');return this.protocol.dispatch(command,context);}
  reset(){
   this.clearEffectQueue?.('all');
+  this.notifications?.reset();
   this.taskManager?.killAll?.();
   this.state={sceneId:'',scenes:{},routers:{},actions:{},global:{},characters:{},itemInfo:{},chats:{},chatHistory:{},executed:[],effect_overrides:{},prevRouter:null,map:{choices:{},blocks:{}},automations:{},faker:{active:false,targetId:null,backupPlayer:null},playerMoveHistory:[],sceneTree:{},config:{}};
   this.runtime={effectQueue:{sync:[],async:[]},isSyncQueueRunning:false,isAsyncQueueRunning:false};
