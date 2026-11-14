@@ -55,14 +55,18 @@ test('invalid and unresolved requirements fail closed', () => {
   assert.equal(engine.checkReq({ check: [{ type: 'unknown', subtype: 'x', op: '==', value: 1 }] }).pass, false);
 });
 
-test('requirement template references resolve before evaluation', () => {
+test('requirement template references resolve and evaluate against runtime state', () => {
   const engine = Object.assign({}, LogicSystem, {
-    src: { templates: { requirements: { allow: { check: [{ type: 'unknown', subtype: 'x', op: '==', value: 1 }] } } } }
+    src: { templates: { requirements: { allow: { check: [
+      { type: 'state', subtype: 'global', target: 'flag', op: '==', value: 7 }
+    ] } } } },
+    api: { engine: { state: { get: () => 7 } } }
   });
-  assert.equal(engine.checkReq({ ref: 'allow' }).pass, false);
+  assert.equal(engine.checkReq({ ref: 'allow' }).pass, true);
 });
 
-test('NOT requirements require exactly one check', () => {
+test('not_has rejects non-array values and NOT requirements require exactly one check', () => {
+  assert.equal(LogicSystem.compare('not-an-array', 'not_has', 'value'), false);
   const engine = Object.assign({}, LogicSystem, { src: {} });
   assert.equal(engine.checkReq({ logic: 'NOT', check: [
     { type: 'unknown', subtype: 'x', op: '==', value: 1 },
