@@ -156,7 +156,7 @@ export const ActionSystem = {
                 await this.processRunnables(actDef.effect.normal, { sceneId: sId, routerId: rId, actionId: actionKey, hook: 'normal' });
             }
             this.api.presentation.effects.shake(uniqueId);
-            this.api.presentation.notification.add("Bị chặn", blockReason, "warn");
+            this.api.notifications.add("Bị chặn", blockReason, "warn");
             this.commitState('action.changed'); // Re-render to update UI states if needed
             return { success: false, reason: 'permission_denied' };
         }
@@ -172,7 +172,7 @@ export const ActionSystem = {
         const hasBeenRead = currentState.readDesc === true;
 
         if (requiresRead && !hasBeenRead) {
-            this.api.presentation.notification.add(
+            this.api.notifications.add(
                 'Chưa đọc mô tả',
                 'Vui lòng đọc mô tả trước khi thực hiện thao tác này.',
                 'warn',
@@ -207,7 +207,7 @@ export const ActionSystem = {
             if (set.cooldown && set.cooldown > 0 && actState.cooldownEnd && actState.cooldownEnd > Date.now()) {
                 this.api.presentation.effects.shake(uniqueId);
                 const rem = Math.ceil((actState.cooldownEnd - Date.now()) / 1000);
-                this.api.presentation.notification.add("Thao tác thất bại", `Vui lòng đợi ${rem}s`, "warn");
+                this.api.notifications.add("Thao tác thất bại", `Vui lòng đợi ${rem}s`, "warn");
                 this.isActionProcessing = false;
                 return;
             }
@@ -241,14 +241,14 @@ export const ActionSystem = {
                 this.api.presentation.effects.shake(uniqueId);
 
                 const failActions = {
-                    item_surplus: () => this.api.presentation.notification.add("Cảnh báo", "Bạn đang cầm thừa vật phẩm!", "warn"),
-                    item_missing: () => this.api.presentation.notification.add("Cảnh báo", "Thiếu vật phẩm yêu cầu!", "warn"),
-                    item_order: () => this.api.presentation.notification.add("Cảnh báo", "Sai thứ tự vật phẩm!", "warn")
+                    item_surplus: () => this.api.notifications.add("Cảnh báo", "Bạn đang cầm thừa vật phẩm!", "warn"),
+                    item_missing: () => this.api.notifications.add("Cảnh báo", "Thiếu vật phẩm yêu cầu!", "warn"),
+                    item_order: () => this.api.notifications.add("Cảnh báo", "Sai thứ tự vật phẩm!", "warn")
                 };
                 if (failType && failActions[failType]) {
                     failActions[failType]();
                 } else if (this.getConfig && this.getConfig('defaultNotice')) {
-                    this.api.presentation.notification.add("Thất bại", "Chưa đủ điều kiện thực hiện.", "warn");
+                    this.api.notifications.add("Thất bại", "Chưa đủ điều kiện thực hiện.", "warn");
                 }
 
                 // Fail Effect
