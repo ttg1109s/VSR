@@ -144,7 +144,8 @@ export class StateAccess {
     const previous = transactionQueues.get(engine) ?? Promise.resolve();
     let release;
     const gate = new Promise(resolve => { release = resolve; });
-    transactionQueues.set(engine, previous.then(() => gate));
+    const queued = previous.then(() => gate);
+    transactionQueues.set(engine, queued);
     await previous;
     try {
       const runtimeOriginal = engine.state;
@@ -189,7 +190,7 @@ export class StateAccess {
       return result;
     } finally {
       release();
-      if (transactionQueues.get(engine) === gate) transactionQueues.delete(engine);
+      if (transactionQueues.get(engine) === queued) transactionQueues.delete(engine);
     }
   }
 
