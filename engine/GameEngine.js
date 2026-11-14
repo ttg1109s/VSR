@@ -10,6 +10,7 @@ import { AutomationSystem } from './modules/Automation.js';
 import { LoaderSystem } from './modules/Loader.js';
 import { API } from '../api/index.js'; // [Refactor] Import API
 import { JsonProtocol } from '../core/protocol/JsonProtocol.js';
+import { verifyPassword } from '../password/verify.js';
 
 export class GameEngine {
     constructor() {
@@ -51,12 +52,22 @@ export class GameEngine {
         });
         this.protocol.registerCommand('password.submit', payload => {
             if (!payload.actionDef || typeof payload.actionKey !== 'string' ||
-                typeof payload.uniqueId !== 'string' ||
-                ![true, false, 'cancel'].includes(payload.result)) {
-                throw new TypeError('password.submit requires actionDef, actionKey, uniqueId and boolean/cancel result.');
+                typeof payload.uniqueId !== 'string') {
+                throw new TypeError('password.submit requires actionDef, actionKey and uniqueId.');
             }
+            if (payload.result === 'cancel') {
+                return this.finishPasswordAction(
+                    payload.actionDef, payload.actionKey, payload.uniqueId, 'cancel'
+                );
+            }
+            if (typeof payload.passwordType !== 'string' ||
+                !payload.passwordConfig || typeof payload.passwordConfig !== 'object' ||
+                !Object.prototype.hasOwnProperty.call(payload, 'input')) {
+                throw new TypeError('password.submit requires passwordType, passwordConfig and raw input.');
+            }
+            const success = verifyPassword(payload.passwordType, payload.passwordConfig, payload.input);
             return this.finishPasswordAction(
-                payload.actionDef, payload.actionKey, payload.uniqueId, payload.result
+                payload.actionDef, payload.actionKey, payload.uniqueId, success
             );
         });
     }
