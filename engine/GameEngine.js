@@ -35,7 +35,10 @@ export class GameEngine {
   this.protocol.registerCommand('scene.enter',payload=>{if(typeof payload.sceneId!=='string'||!payload.sceneId)throw new TypeError('scene.enter requires sceneId.');return this.enterScene(payload.sceneId,payload.skipTransition===true);});
   this.protocol.registerCommand('password.submit',payload=>this.submitPassword(payload));
  }
- submitPassword(payload={}) {
+ async submitPassword(payload={}) {
+  if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+   throw new TypeError('password.submit payload must be an object.');
+  }
   const pending=this.pendingPasswordAction;
   if(!pending)throw new Error('No active password challenge.');
   if(payload.challengeId!==pending.challengeId)throw new Error('Password challenge ID mismatch or stale challenge.');
@@ -48,31 +51,33 @@ export class GameEngine {
   if(!inspected.accepted) {
    if(inspected.reason==='expired') {
     this.clearPasswordExpiry(pending);
-    this.passwordSystem.finish(pending,'expired');
-    this.pendingPasswordAction=null;
-    this.api.engine.state.set('session.passwordChallenge',null);
-    this.protocol?.publish?.('password.expired',{challengeId:pending.challengeId});
-    return this.finishPasswordAction(action,pending.actionId,pending.uniqueId,'expired');
+    if (this.passwordSystem.finish(pending,'expired')) {
+     this.pendingPasswordAction=null;
+     this.api.engine.state.set('session.passwordChallenge',null);
+     return this.finishPasswordAction(action,pending.actionId,pending.uniqueId,'expired');
+    }
    }
    throw new Error('Password challenge is not active.');
   }
   if(payload.cancel===true) {
    this.clearPasswordExpiry(pending);
-   this.passwordSystem.finish(pending,'cancelled');
+   if (!this.passwordSystem.finish(pending,'cancelled')) throw new Error('Password challenge is no longer active.');
    this.pendingPasswordAction=null;
    this.api.engine.state.set('session.passwordChallenge',null);
+   this.commitState('password.cancelled');
    return this.finishPasswordAction(action,pending.actionId,pending.uniqueId,'cancel');
   }
   if(!Object.prototype.hasOwnProperty.call(payload,'input'))throw new TypeError('password.submit requires raw input.');
   const valid=verifyPassword(pending.type,config,payload.input);
   if(valid) {
    this.clearPasswordExpiry(pending);
-   this.passwordSystem.finish(pending,'succeeded');
+   if (!this.passwordSystem.finish(pending,'succeeded')) throw new Error('Password challenge is no longer active.');
    this.pendingPasswordAction=null;
    this.api.engine.state.set('session.passwordChallenge',null);
    return this.finishPasswordAction(action,pending.actionId,pending.uniqueId,true);
   }
   const attempt=this.passwordSystem.recordFailure(pending);
+  if (!attempt.accepted) throw new Error('Password challenge is no longer active.');
   this.api.presentation.effects.shake(pending.uniqueId);
   if(!attempt.exhausted) {
    this.protocol?.publish?.('password.retry',{challengeId:pending.challengeId,countTest:pending.countTest,remainingAttempts:attempt.remainingAttempts});
@@ -80,7 +85,6 @@ export class GameEngine {
    return {success:false,retry:true,countTest:pending.countTest,remainingAttempts:attempt.remainingAttempts};
   }
   this.clearPasswordExpiry(pending);
-  this.passwordSystem.finish(pending,'exhausted');
   this.pendingPasswordAction=null;
   this.api.engine.state.set('session.passwordChallenge',null);
   return this.finishPasswordAction(action,pending.actionId,pending.uniqueId,'exhausted');
@@ -118,7 +122,7 @@ export class GameEngine {
   this.taskManager.operator(id,'enabled');return id;
  }
  schedulePasswordExpiry(challenge, action) {
-  if (!challenge?.deadlineAt) return null;
+  if (!challenge || challenge.deadlineAt === null || challenge.deadlineAt === undefined) return null;
   const taskId = `password_${challenge.challengeId}`;
   const remaining = challenge.deadlineAt - this.passwordSystem.clock();
   return this.scheduleDelay(Math.max(1, remaining), async () => {
@@ -128,14 +132,19 @@ export class GameEngine {
     this.passwordSystem.finish(challenge, 'cancelled');
     this.pendingPasswordAction = null;
     this.api.engine.state.set('session.passwordChallenge', null);
+    this.commitState('password.cancelled');
     return;
    }
    const inspected = this.passwordSystem.inspect(challenge);
-   if (inspected.accepted) return;
-   this.passwordSystem.finish(challenge, 'expired');
+   if (inspected.accepted) {
+    // Timers can fire early under clock adjustments or scheduler jitter.
+    // Re-arm against the absolute deadline instead of losing the expiry.
+    this.schedulePasswordExpiry(challenge, action);
+    return;
+   }
+   if (inspected.reason !== 'expired' || !this.passwordSystem.finish(challenge, 'expired')) return;
    this.pendingPasswordAction = null;
    this.api.engine.state.set('session.passwordChallenge', null);
-   this.protocol?.publish?.('password.expired', { challengeId: challenge.challengeId });
    await this.finishPasswordAction(action, challenge.actionId, challenge.uniqueId, 'expired');
   }, taskId);
  }
