@@ -86,7 +86,12 @@ export const FakerSystem = {
             state.set('entryCharacter', backup.entryCharacter || 'player');
             this.api.presentation.notification.add("Hoàn trả", "Trở về nhân vật gốc", "info");
         } else if (mode === 'mask') {
-            state.set('characters.[id].set', backup.set || {}, { id: 'player' });
+            state.update('characters.[id].set', current => ({
+                ...(current || {}),
+                name: backup.set?.name,
+                desc: backup.set?.desc,
+                relationship: backup.set?.relationship
+            }), { id: 'player' });
             this.api.presentation.notification.add("Gỡ bỏ", "Tháo bỏ lớp ngụy trang", "info");
         } else {
             if (target?.stats) this._syncStats('player', targetId, true);
