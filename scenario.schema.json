@@ -1487,6 +1487,7 @@
                 "enum": [
                   "edit_stats",
                   "mng_stats",
+                  "mng_items",
                   "moving"
                 ]
               }
@@ -1552,6 +1553,42 @@
                         "delete"
                       ]
                     }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "const": "mng_items"
+                    }
+                  },
+                  "required": ["subtype"]
+                },
+                "then": {
+                  "required": ["exec", "source", "value"],
+                  "properties": {
+                    "exec": { "const": "transfer" },
+                    "source": { "type": "string", "minLength": 1 },
+                    "value": { "type": "string", "minLength": 1 }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "const": "mng_items"
+                    }
+                  },
+                  "required": ["subtype"]
+                },
+                "then": {
+                  "required": ["exec", "source", "value"],
+                  "properties": {
+                    "exec": { "const": "transfer" },
+                    "source": { "type": "string", "minLength": 1 },
+                    "value": { "type": "string", "minLength": 1 }
                   }
                 }
               },
@@ -2001,6 +2038,10 @@
         "target": {
           "description": "ID đối tượng bị tác động (character id, scene id, action id, item id...). Có thể là chuỗi resolver $(...)."
         },
+        "source": {
+          "type": "string",
+          "description": "ID nhân vật nguồn cho characters/mng_items transfer."
+        },
         "property": {
           "type": "string",
           "description": "Tên thuộc tính bị chỉnh sửa (vd tên chỉ số 'HP', hoặc property của scene/router/action khi type=set)."
@@ -2284,6 +2325,7 @@
                 "enum": [
                   "edit_stats",
                   "mng_stats",
+                  "mng_items",
                   "moving"
                 ]
               }
