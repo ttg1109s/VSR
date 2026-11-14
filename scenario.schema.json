@@ -2727,7 +2727,7 @@
         "retryMax": {
           "type": "number",
           "minimum": 0,
-          "default": 0,
+          "default": 3,
           "description": "Số lần thử tối đa. 0 = không giới hạn."
         },
         "timer": {
@@ -2766,7 +2766,7 @@
         "retryMax": {
           "type": "number",
           "minimum": 0,
-          "default": 0,
+          "default": 3,
           "description": "Số lần thử tối đa. 0 = không giới hạn."
         },
         "timer": {
@@ -2806,7 +2806,7 @@
         "retryMax": {
           "type": "number",
           "minimum": 0,
-          "default": 0,
+          "default": 3,
           "description": "Số lần thử tối đa. 0 = không giới hạn."
         },
         "timer": {
@@ -2882,7 +2882,7 @@
         "retryMax": {
           "type": "number",
           "minimum": 0,
-          "default": 0,
+          "default": 3,
           "description": "Số lần thử tối đa. 0 = không giới hạn."
         },
         "timer": {
@@ -2933,7 +2933,7 @@
         "retryMax": {
           "type": "number",
           "minimum": 0,
-          "default": 0,
+          "default": 3,
           "description": "Số lần thử tối đa. 0 = không giới hạn."
         },
         "timer": {
@@ -2959,7 +2959,7 @@
         "retryMax": {
           "type": "number",
           "minimum": 0,
-          "default": 0,
+          "default": 3,
           "description": "Số lần thử tối đa. 0 = không giới hạn."
         },
         "timer": {
