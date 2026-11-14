@@ -11,6 +11,7 @@ import { ReadMoreModalTemplate, FakerModalTemplate } from '../components/Modals.
 import { TimerDisplayTemplate } from '../components/Visuals.js';
 // Import từ thư mục password (ở root)
 import { PasswordSystem } from '../password/index.js';
+import { PasswordRender } from './modules/password.js';
 
 export class UIController {
     constructor() {
@@ -33,7 +34,7 @@ export class UIController {
         this.injectAnimationStyles();
 
         // Khởi tạo Keyboard Controller và Numpad
-        this.keyboard = new PasswordSystem();
+        this.keyboard = new PasswordSystem(PasswordRender);
 
         // Expose keyboard ra global để Engine gọi được nếu cần
         window.keyboard = this.keyboard;
