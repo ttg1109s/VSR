@@ -1,3 +1,5 @@
+import { verifyPassword } from '../../password/verify.js';
+
 /**
  * render/modules/pasword.js
  * Controller điều phối hiển thị và xử lý sự kiện cho hệ thống Password.
@@ -255,36 +257,7 @@ export const PasswordRender = {
     },
 
     _verify(input) {
-        if (this.config.type === 'puzzle') {
-            const val = this.config.value || "solved";
-            return input === val;
-        }
-
-        if (this.config.type === 'find_way') {
-            try {
-                const userPath = JSON.parse(input);
-                const correctPath = this.config.street;
-
-                if (!Array.isArray(userPath) || !Array.isArray(correctPath)) return false;
-                if (userPath.length !== correctPath.length) return false;
-
-                for (let i = 0; i < correctPath.length; i++) {
-                    // Check coords [x, y]
-                    if (userPath[i][0] !== correctPath[i][0] || userPath[i][1] !== correctPath[i][1]) {
-                        return false;
-                    }
-                }
-                return true;
-            } catch (e) {
-                console.error("FindWay Parse Error", e);
-                return false;
-            }
-        }
-
-        // Standard comparison
-        const correct = this.config.value ? this.config.value.toString().toUpperCase() : "";
-        const userIn = input ? input.toString().toUpperCase() : "";
-        return userIn === correct;
+        return verifyPassword(this.config.type, this.config, input);
     },
 
     _handleSuccess(result) {
