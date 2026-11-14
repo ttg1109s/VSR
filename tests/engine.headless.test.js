@@ -145,3 +145,31 @@ test('Starting a chat commits dialogue progress through StateAccess',async()=>{
  assert.deepEqual(e.state.chatHistory[chatId].map(line=>line.text),['Hello']);
  assert.deepEqual(e.state.chats[chatId].set.bookmark,['start']);
 });
+
+test('Faker identity changes use StateAccess and restore linked stats',async()=>{
+ const e=makeEngine();
+ await e.init(structuredClone(DEMO_SCRIPT));
+ const player=e.state.characters.player;
+ assert.ok(player);
+ player.stats={strength:{current:5,max:10}};
+ e.state.characters.__faker_probe={set:{name:'Target',linkEffect:true},meta:{name:'Target'},stats:{strength:{current:0,max:20}},place:{scene_id:e.state.sceneId,currentIndex:0},moveList:[],moveHistory:[]};
+ await e.enterFaker('soul:__faker_probe');
+ assert.equal(e.state.faker.active,true);
+ assert.equal(e.state.characters.__faker_probe.stats.strength.current,10);
+ await e.exitFaker();
+ assert.equal(e.state.faker.active,false);
+ assert.equal(e.state.characters.player.stats.strength.current,5);
+});
+
+test('Effective action thumbnail defaults do not mutate scenario source',async()=>{
+ const e=makeEngine();
+ const script=structuredClone(DEMO_SCRIPT);
+ await e.init(script);
+ const sceneId=e.state.sceneId;
+ const routerId=e.state.scenes[sceneId].activeRouterId;
+ e.src.actions.__thumb_probe={meta:{title:'Probe'},set:{},effect:{}};
+ e.src.scenes[sceneId].routers[routerId].actions.push('__thumb_probe');
+ const action=e.getEffectiveActions(sceneId,routerId).find(item=>item.id==='__thumb_probe');
+ assert.equal(action.meta.thumb,'assets/images/thumbnail.jpg');
+ assert.equal(e.src.actions.__thumb_probe.meta.thumb,undefined);
+});
