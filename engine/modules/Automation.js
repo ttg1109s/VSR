@@ -23,7 +23,7 @@ export const AutomationSystem = {
         // [FIXED] Use API to get 'banClick'
         const isBanClick = API.engine.state.get('automation.banClick', { id: autoId });
         if (isBanClick) {
-            API.render.navigation.setBlocking(true);
+            API.presentation.navigation.setBlocking(true);
         }
 
         this.processAutomationStep(autoId);
@@ -40,7 +40,7 @@ export const AutomationSystem = {
         // [FIXED] Use API in loop if possible, but object iteration is faster here
         const anyBlocking = Object.values(this.state.automations).some(a => a.active && a.banClick);
         if (!anyBlocking) {
-            API.render.navigation.setBlocking(false);
+            API.presentation.navigation.setBlocking(false);
         }
     },
 
