@@ -182,7 +182,7 @@ export default class State {
      * API.engine.state.get('tags', { idx: 1 });
      */
     static get(key, context = {}) {
-        const globalState = window.engine?.state;
+        const globalState = this.engine?.state || (typeof window !== 'undefined' ? window.engine?.state : null);
         if (!globalState) {
             console.warn("[State] Engine state chưa khởi tạo.");
             return undefined;
