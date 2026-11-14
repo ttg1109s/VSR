@@ -2,139 +2,106 @@ import { resolveValue } from './effect/strategies/Logic.js';
 
 export const AutomationSystem = {
     runAutomation(autoId) {
-        const state = this.state.automations[autoId];
-        const template = this.src.templates.automation[autoId];
-        if (!state || !template) return;
+        const access = this.api.engine.state;
+        const state = access.getRuntime('automations.[id]', { id: autoId });
+        const template = access.getSource('templates.automation.[id]', { id: autoId });
+        if (!state || !template || state.active) return;
 
-        // [FIXED] Use API to check 'active' via Schema (though write op needs direct access)
-        if (state.active) return;
+        access.set('automation.active', true, { id: autoId });
+        access.set('automation.countCurrent', 0, { id: autoId });
+        access.set('automation.stepIndex', state.moveDirection === 'last' ? template.plan.length : -1, { id: autoId });
 
-        state.active = true;
-        state.countCurrent = 0;
-        state.stepIndex = -1;
-
-        if (state.moveDirection === 'last') {
-            state.stepIndex = template.plan.length;
-        } else {
-            state.stepIndex = -1;
-        }
-
-        // [FIXED] Use API to get 'banClick'
-        const isBanClick = this.api.engine.state.get('automation.banClick', { id: autoId });
-        if (isBanClick) {
+        if (access.get('automation.banClick', { id: autoId })) {
             this.api.presentation.navigation.setBlocking(true);
         }
-
         this.processAutomationStep(autoId);
     },
 
     stopAutomation(autoId) {
-        const state = this.state.automations[autoId];
-        if (!state) return;
+        const access = this.api.engine.state;
+        if (!access.getRuntime('automations.[id]', { id: autoId })) return;
 
-        state.active = false;
+        access.set('automation.active', false, { id: autoId });
         this.commitState('automation.stopped');
         this.taskManager.kill(`auto_${autoId}`);
 
-        // Check if ANY automation is blocking
-        // [FIXED] Use API in loop if possible, but object iteration is faster here
-        const anyBlocking = Object.values(this.state.automations).some(a => a.active && a.banClick);
-        if (!anyBlocking) {
-            this.api.presentation.navigation.setBlocking(false);
-        }
+        const anyBlocking = Object.values(access.getRuntime('automations') || {})
+            .some(item => item.active && item.banClick);
+        if (!anyBlocking) this.api.presentation.navigation.setBlocking(false);
     },
 
     async processAutomationStep(autoId) {
-        const state = this.state.automations[autoId];
-        const template = this.src.templates.automation[autoId];
+        const access = this.api.engine.state;
+        const state = access.getRuntime('automations.[id]', { id: autoId });
+        const template = access.getSource('templates.automation.[id]', { id: autoId });
+        if (!state || !state.active || !template) return;
 
-        if (!state || !state.active) return;
-
-        // [Config] stopEffectWhenChat
-        if (this.getConfig && this.getConfig('stopEffectWhenChat') && this.chatState && this.chatState.active) {
+        const chatState = access.getSession('chatState');
+        if (this.getConfig && this.getConfig('stopEffectWhenChat') && chatState?.active) {
             const taskId = `auto_${autoId}`;
             this.taskManager.kill(taskId);
             this.taskManager.addNew(taskId, {
                 time: 1000,
                 mode: 'timeout',
                 count: 1,
-                exe: () => {
-                    this.processAutomationStep(autoId);
-                }
+                exe: () => this.processAutomationStep(autoId)
             });
             this.taskManager.operator(taskId, 'enabled');
             return;
         }
 
-        // [FIXED] Use API for countCurrent check
-        const countCurrent = this.api.engine.state.get('automation.countCurrent', { id: autoId });
-        const banClick = this.api.engine.state.get('automation.banClick', { id: autoId });
-        const runInfinity = this.api.engine.state.get('automation.runInfinity', { id: autoId });
-        const numberCycleAllow = this.api.engine.state.get('automation.numberCycleAllow', { id: autoId });
+        const countCurrent = access.get('automation.countCurrent', { id: autoId });
+        const banClick = access.get('automation.banClick', { id: autoId });
+        const runInfinity = access.get('automation.runInfinity', { id: autoId });
+        const numberCycleAllow = access.get('automation.numberCycleAllow', { id: autoId });
 
-        if (runInfinity && banClick) {
-            if (countCurrent > 5000) {
-                console.warn(`SAFETY STOP: Automation '${autoId}' exceeded safety limit (5000) in blocking mode.`);
-                this.stopAutomation(autoId);
-                return;
-            }
+        if (runInfinity && banClick && countCurrent > 5000) {
+            console.warn(`SAFETY STOP: Automation '${autoId}' exceeded safety limit (5000) in blocking mode.`);
+            this.stopAutomation(autoId);
+            return;
         }
 
         let nextIndex = -1;
         const planLen = template.plan.length;
-
         if (state.move === 'random') {
             nextIndex = Math.floor(Math.random() * planLen);
+        } else if (state.moveDirection === 'last') {
+            nextIndex = state.stepIndex - 1;
         } else {
-            if (state.moveDirection === 'last') {
-                nextIndex = state.stepIndex - 1;
-            } else {
-                nextIndex = state.stepIndex + 1;
-            }
+            nextIndex = state.stepIndex + 1;
         }
 
         let isCycleComplete = false;
-        if (state.moveDirection === 'last') {
-            if (nextIndex < 0) isCycleComplete = true;
-        } else {
-            if (nextIndex >= planLen) isCycleComplete = true;
+        if (state.move !== 'random') {
+            isCycleComplete = state.moveDirection === 'last' ? nextIndex < 0 : nextIndex >= planLen;
         }
 
         if (state.move !== 'random' && isCycleComplete) {
-            state.countCurrent++;
-            if (!runInfinity && state.countCurrent >= numberCycleAllow) {
+            const nextCount = countCurrent + 1;
+            access.set('automation.countCurrent', nextCount, { id: autoId });
+            if (!runInfinity && nextCount >= numberCycleAllow) {
                 this.stopAutomation(autoId);
                 return;
             }
-            if (state.moveDirection === 'last') nextIndex = planLen - 1;
-            else nextIndex = 0;
+            nextIndex = state.moveDirection === 'last' ? planLen - 1 : 0;
         }
 
-        state.stepIndex = nextIndex;
+        access.set('automation.stepIndex', nextIndex, { id: autoId });
         const step = template.plan[nextIndex];
-
-        if (step && step.effect) {
-            await this.processRunnables(step.effect, { automationId: autoId }, true);
-        }
-
-        if (!state.active) return;
+        if (step?.effect) await this.processRunnables(step.effect, { automationId: autoId }, true);
+        if (!access.get('automation.active', { id: autoId })) return;
 
         const minTime = this.getConfig ? this.getConfig('minAutomationNextStep') : 2;
-        let rawSeconds = (step && step.seconds) ? resolveValue(step.seconds) : minTime;
-        let configDelay = Number(rawSeconds);
-        if (isNaN(configDelay)) configDelay = minTime;
-
-        const finalSeconds = Math.max(minTime, configDelay);
-
+        const rawSeconds = step?.seconds ? resolveValue(step.seconds) : minTime;
+        const configDelay = Number(rawSeconds);
+        const finalSeconds = Math.max(minTime, Number.isFinite(configDelay) ? configDelay : minTime);
         const taskId = `auto_${autoId}`;
 
         this.taskManager.addNew(taskId, {
             time: finalSeconds * 1000,
             mode: 'timeout',
             count: 1,
-            exe: () => {
-                this.processAutomationStep(autoId);
-            }
+            exe: () => this.processAutomationStep(autoId)
         });
         this.taskManager.operator(taskId, 'enabled');
     }
