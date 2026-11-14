@@ -22,7 +22,7 @@ function walk(dir, out = []) {
 
 function classify(line, end, expression) {
   const tail = line.slice(end);
-  if (MUTATORS.test(expression) || /^\s*\.(?:push|pop|shift|unshift|splice|sort|reverse|fill|copyWithin)\s*\(/.test(tail)) return 'MUTATION';
+  if (MUTATORS.test(expression) || /\.(?:push|pop|shift|unshift|splice|sort|reverse|fill|copyWithin)$/.test(expression) || /^\s*\(/.test(tail) && /\.(?:push|pop|shift|unshift|splice|sort|reverse|fill|copyWithin)$/.test(expression)) return 'MUTATION';
   if (/^\s*(?:\+\+|--)/.test(tail) || /^\s*(?:\+=|-=|\*=|\/=|%=|=(?!=|>))/.test(tail)) return 'WRITE';
   return 'READ';
 }
@@ -86,10 +86,12 @@ const findings = files.flatMap(scan).sort((a, b) =>
 if (process.argv.includes('--json')) {
   process.stdout.write(JSON.stringify({ scannedFiles: files.length, findings }, null, 2) + '\n');
 } else {
-  console.log('Direct runtime-state access candidates');
-  console.log(`Scanned ${files.length} JavaScript files; found ${findings.length} candidates.\n`);
+  const counts = findings.reduce((result, item) => { result[item.access] = (result[item.access] || 0) + 1; return result; }, {});
+  console.log('Heuristic runtime-state access audit (not AST-based)');
+  console.log(`Scanned ${files.length} JavaScript files; found ${findings.length} candidates.`);
+  console.log(`Classification: READ=${counts.READ || 0}, WRITE=${counts.WRITE || 0}, MUTATION=${counts.MUTATION || 0}.\n`);
   for (const item of findings) {
     console.log(`[${item.access}] ${item.file}:${item.line}  ${item.expression}`);
   }
-  console.log('\nReview each result: regex does not resolve symbols and may report false positives.');
+  console.log('\nLimitations: regex does not resolve scopes, aliases, destructuring or computed paths; strings/comments can cause false positives, and indirect access can be missed. Review findings manually.');
 }
