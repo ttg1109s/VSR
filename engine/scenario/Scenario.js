@@ -2,7 +2,7 @@ import Ajv from 'ajv';
 import { scenarioSchema } from './ScenarioSchema.js';
 import addFormats from 'ajv-formats';
 
-export const SCENARIO_FORMAT_VERSION = 1;
+export const SCENARIO_FORMAT_VERSION = scenarioSchema.properties.formatVersion.const;
 
 export class ScenarioValidationError extends Error {
   constructor(errors) {
