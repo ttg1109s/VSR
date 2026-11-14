@@ -73,3 +73,11 @@ test('not_has rejects non-array values and NOT requirements require exactly one 
     { type: 'unknown', subtype: 'x', op: '==', value: 1 }
   ] }).pass, false);
 });
+
+test('semantic validation rejects empty automation plans', () => {
+  const scenario = validScenario();
+  scenario.templates.automation = {
+    empty: { set: { move: 'step_by_step', moveDirection: 'first', numberCycleAllow: 1, countCurrent: 0, runInfinity: false, banClick: false }, plan: [] }
+  };
+  assert.ok(validateScenario(scenario).some(error => error.includes('plan must contain at least one step')));
+});
