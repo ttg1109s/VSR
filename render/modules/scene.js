@@ -230,9 +230,9 @@ export const sceneMethods = {
                         ? "text-[var(--vsr-ink-900)] font-semibold"
                         : "text-[var(--vsr-ink-400)] hover:text-[var(--vsr-ink-700)] transition-colors duration-200 cursor-pointer";
 
-                    const clickAttr = isLast ? "" : `onclick="API.engine.scene.enterScene('${node.id}')"`;
+                    const clickAttr = isLast ? "" : `data-scene-id="${escapeHtml(node.id)}"`;
 
-                    return `<span class="${cssClass}" ${clickAttr}>${node.title}</span>`;
+                    return `<span class="${cssClass}" ${clickAttr}>${escapeHtml(node.title)}</span>`;
                 }).join(`
                         <svg class="w-3 h-3 text-[var(--vsr-ink-300)] -mx-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
@@ -240,6 +240,9 @@ export const sceneMethods = {
                     `);
 
                 breadcrumbs.innerHTML = html;
+                breadcrumbs.querySelectorAll('[data-scene-id]').forEach((el) => {
+                    el.addEventListener('click', () => API.engine.scene.enterScene(el.dataset.sceneId));
+                });
             } else {
                 breadcrumbs.innerHTML = "";
             }
