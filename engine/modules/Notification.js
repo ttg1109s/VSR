@@ -7,16 +7,17 @@ const SEVERITY_ALIASES = Object.freeze({
 const PRIORITY = Object.freeze({ danger: 5, warning: 4, special: 3, success: 2, info: 1 });
 
 export class NotificationSystem {
-  constructor({ protocol, engineId = 'vsr', clock = () => Date.now(), schedule = (callback, delay) => setTimeout(callback, delay), cancelSchedule = handle => clearTimeout(handle), maxHistory = 200, maxQueue = 100, dedupeWindowMs = 750, defaultDurationMs = 5000 } = {}) {
+  constructor({ protocol, engineId = 'vsr', clock = () => Date.now(), schedule = (callback, delay) => setTimeout(callback, delay), cancelSchedule = handle => clearTimeout(handle), maxHistory = 200, maxQueue = 100, dedupeWindowMs = 750, rateWindowMs = 1000, maxPerWindow = 20, defaultDurationMs = 5000 } = {}) {
     if (!protocol || typeof protocol.publish !== 'function') throw new TypeError('NotificationSystem requires a Protocol publisher.');
     if (typeof clock !== 'function') throw new TypeError('NotificationSystem clock must be a function.');
-    Object.assign(this, { protocol, engineId, clock, schedule, cancelSchedule, maxHistory, maxQueue, dedupeWindowMs, defaultDurationMs });
+    Object.assign(this, { protocol, engineId, clock, schedule, cancelSchedule, maxHistory, maxQueue, dedupeWindowMs, rateWindowMs, maxPerWindow, defaultDurationMs });
     this.sequence = 0;
     this.history = [];
     this.pending = [];
     this.byId = new Map();
     this.dedupe = new Map();
     this.timers = new Map();
+    this.rateBuckets = new Map();
   }
 
   normalize(input = {}, presentation = 'toast') {
@@ -105,6 +106,19 @@ export class NotificationSystem {
       }
       this.dedupe.set(candidate.dedupeKey, candidate.id);
     }
+    const rateKey = `${candidate.source}:${candidate.category}`;
+    const recent = (this.rateBuckets.get(rateKey) || []).filter(timestamp => now - timestamp < this.rateWindowMs);
+    if (recent.length >= this.maxPerWindow) {
+      this.rateBuckets.set(rateKey, recent);
+      this.protocol.publish('presentation.notification.rateLimited', {
+        source: candidate.source, category: candidate.category,
+        limit: this.maxPerWindow, windowMs: this.rateWindowMs,
+        retryAfterMs: Math.max(0, this.rateWindowMs - (now - recent[0]))
+      });
+      return { notification: null, deduplicated: false, rateLimited: true };
+    }
+    recent.push(now);
+    this.rateBuckets.set(rateKey, recent);
     this.history.push(candidate);
     this.pending.push(candidate.id);
     this.byId.set(candidate.id, candidate);
@@ -201,6 +215,7 @@ export class NotificationSystem {
       this.pending = [];
       this.byId.clear();
       this.dedupe.clear();
+      this.rateBuckets.clear();
     }
   }
 }
