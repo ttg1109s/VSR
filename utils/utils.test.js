@@ -10,6 +10,11 @@ test('createUtils returns an isolated utility facade', () => {
     assert.equal(first.check.type('value', 'string'), true);
     assert.equal(first.check.array([1, 2]), true);
     assert.equal(first.check.inRange(3, 1, 5), true);
+    assert.deepEqual(first.check.includes([1, 2, 1], 1, { findIndex: true, count: true }), {
+        result: true,
+        index: [{ has: [0, 2], exception: [1] }],
+        count: [{ has: 2, exception: 1 }]
+    });
 });
 
 test('array utilities and merge strategies do not depend on a global singleton', () => {

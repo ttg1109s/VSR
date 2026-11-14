@@ -149,7 +149,7 @@ class Random {
  * @class NumberPlugin
  * @description Provides number formatting and manipulation utilities.
  */
-class NumberPlugin {
+class NumberUtils {
     constructor(randomModule) {
         this.random = randomModule;
     }
@@ -459,7 +459,7 @@ class UtilityLibrary {
     constructor() {
         this.check = new Check();
         this.random = new Random();
-        this.number = new NumberPlugin(this.random);
+        this.number = new NumberUtils(this.random);
         this.array = new ArrayUtils(this.check);
         this.check.arrayUtils = this.array;
     }
