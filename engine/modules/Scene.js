@@ -34,6 +34,9 @@ export const SceneSystem = {
             console.error(`Scene '${id}' not found.`);
             return;
         }
+        if (this.checkHardLock('scene', id)) {
+            return { success: false, reason: 'target_locked' };
+        }
 
         const currentS = state.get('sceneId');
         const faker = state.getRuntimeSnapshot('faker') || {};
@@ -127,7 +130,10 @@ export const SceneSystem = {
     async enterRouter(routerId, forceRender = false, isSceneEntry = false, skipTransition = false) {
         const state = this.api.engine.state;
         const sId = state.get('sceneId');
-        if (!routerId || !this.src.scenes[sId].routers[routerId]) return;
+        if (!routerId || !this.src?.scenes?.[sId]?.routers?.[routerId]) return;
+        if (this.checkHardLock('router', routerId)) {
+            return { success: false, reason: 'target_locked' };
+        }
 
         const rKey = `${sId}_${routerId}`;
         if (!state.getRuntimeSnapshot('routers.[id]', { id: rKey })) {
