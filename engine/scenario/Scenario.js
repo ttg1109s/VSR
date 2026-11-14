@@ -27,36 +27,62 @@ function clone(input) {
   }
 }
 
+function isObject(value) {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+
 function validateReferences(scenario) {
   const errors = [];
   const scenes = scenario.scenes || {};
+  const actions = scenario.actions || {};
+  const characters = scenario.characters || {};
+  const items = scenario.itemInfo || {};
+  const chats = scenario.chat || {};
+  const endings = scenario.endings || {};
+  const passwords = scenario.passwords || {};
+  const templates = scenario.templates || {};
+  const routerOwners = new Map();
+
+  const add = (path, message) => errors.push(`${path}: ${message}`);
+  const routerExists = (id) => routerOwners.has(id);
+  const characterExists = (id) => id === 'player' || Object.hasOwn(characters, id);
 
   for (const [sceneId, scene] of Object.entries(scenes)) {
     const parentId = scene?.meta?.parentScene;
     if (parentId && !Object.hasOwn(scenes, parentId)) {
-      errors.push(`scenes.${sceneId}.meta.parentScene references missing scene '${parentId}'`);
+      add(`scenes.${sceneId}.meta.parentScene`, `references missing scene '${parentId}'`);
     }
+
     const routerIds = Object.keys(scene?.routers || {});
+    if (!routerIds.length) add(`scenes.${sceneId}.routers`, 'must contain at least one router');
     if (scene?.set?.activeRouterId && !routerIds.includes(scene.set.activeRouterId)) {
-      errors.push(`scenes.${sceneId}.set.activeRouterId references missing router '${scene.set.activeRouterId}'`);
+      add(`scenes.${sceneId}.set.activeRouterId`, `references missing router '${scene.set.activeRouterId}' in this scene`);
     }
+
     for (const [routerId, router] of Object.entries(scene?.routers || {})) {
+      if (routerOwners.has(routerId)) {
+        add(`scenes.${sceneId}.routers.${routerId}`, `router ID is not globally unique; already declared in scene '${routerOwners.get(routerId)}'`);
+      } else {
+        routerOwners.set(routerId, sceneId);
+      }
+
       const seen = new Set();
-      const actions = router?.actions;
-      if (Array.isArray(actions)) {
-        actions.forEach((action, index) => {
-          if (typeof action === 'string' && !Object.hasOwn(scenario.actions || {}, action)) {
-            errors.push(`scenes.${sceneId}.routers.${routerId}.actions[${index}] references missing global action '${action}'`);
+      const routerActions = router?.actions;
+      if (Array.isArray(routerActions)) {
+        routerActions.forEach((action, index) => {
+          const path = `scenes.${sceneId}.routers.${routerId}.actions[${index}]`;
+          if (typeof action === 'string' && !Object.hasOwn(actions, action)) {
+            add(path, `references missing global action '${action}'`);
           }
-          if (action && typeof action === 'object' && action.id) {
-            if (seen.has(action.id)) errors.push(`scenes.${sceneId}.routers.${routerId} contains duplicate action id '${action.id}'`);
+          if (isObject(action) && action.id) {
+            if (seen.has(action.id)) add(path, `duplicates inline action ID '${action.id}' in this router`);
             seen.add(action.id);
           }
         });
-      } else if (actions && typeof actions === 'object') {
-        for (const id of Object.keys(actions)) {
-          if (seen.has(id)) errors.push(`scenes.${sceneId}.routers.${routerId} contains duplicate action id '${id}'`);
-          seen.add(id);
+      } else if (isObject(routerActions)) {
+        for (const actionId of Object.keys(routerActions)) {
+          if (seen.has(actionId)) add(`scenes.${sceneId}.routers.${routerId}.actions`, `contains duplicate action ID '${actionId}'`);
+          seen.add(actionId);
         }
       }
     }
@@ -67,7 +93,7 @@ function validateReferences(scenario) {
     let current = sceneId;
     while (current && scenes[current]?.meta?.parentScene) {
       if (visited.has(current)) {
-        errors.push(`scene parent cycle detected from '${sceneId}'`);
+        add(`scenes.${sceneId}.meta.parentScene`, 'scene parent cycle detected');
         break;
       }
       visited.add(current);
@@ -75,68 +101,214 @@ function validateReferences(scenario) {
     }
   }
 
-  for (const [automationId, automation] of Object.entries(scenario.templates?.automation || {})) {
-    if (!Array.isArray(automation?.plan) || automation.plan.length === 0) {
-      errors.push(`templates.automation.${automationId}.plan must contain at least one step`);
-    }
-  }
-
-  const templates = scenario.templates || {};
-  const inspectReferences = (value, path = '') => {
-    if (!value || typeof value !== 'object') return;
-    if (!Array.isArray(value) && value.set && typeof value.set === 'object') {
-      const actionSet = value.set;
-      if (typeof actionSet.password === 'string') {
-        const parts = actionSet.password.split(':');
-        if (parts.length !== 2 || !parts[0] || !parts[1] || !Object.hasOwn(scenario.passwords?.[parts[0]] || {}, parts[1])) {
-          errors.push(`${path || 'scenario'} references invalid password '${actionSet.password}'`);
-        }
-      }
-      if (actionSet.type === 'to_scene' && actionSet.target && !Object.hasOwn(scenes, actionSet.target)) {
-        errors.push(`${path || 'scenario'} references missing target scene '${actionSet.target}'`);
-      }
-      if (actionSet.type === 'swap_router' && actionSet.target &&
-          !Object.values(scenes).some(scene => Object.hasOwn(scene?.routers || {}, actionSet.target))) {
-        errors.push(`${path || 'scenario'} references missing target router '${actionSet.target}'`);
-      }
-    }
-    if (!Array.isArray(value) && typeof value.type === 'string' && typeof value.ref === 'string') {
-      if (value.type === 'effect' && !Object.hasOwn(templates.effects || {}, value.ref)) {
-        errors.push(`${path || 'scenario'} references missing effect template '${value.ref}'`);
-      }
-      if (value.type === 'req' && !Object.hasOwn(templates.requirements || {}, value.ref)) {
-        errors.push(`${path || 'scenario'} references missing requirement template '${value.ref}'`);
-      }
-    }
-    for (const [key, child] of Object.entries(value)) {
-      if (child && typeof child === 'object') inspectReferences(child, path ? `${path}.${key}` : key);
+  const validatePasswordRef = (reference, path) => {
+    if (typeof reference !== 'string') return;
+    const parts = reference.split(':');
+    if (parts.length !== 2 || !parts[0] || !parts[1] || !Object.hasOwn(passwords[parts[0]] || {}, parts[1])) {
+      add(path, `references invalid password '${reference}' (expected type:id)`);
     }
   };
-  inspectReferences(scenario);
+
+  const validateRequirementRef = (requirement, path) => {
+    if (!isObject(requirement) || typeof requirement.ref !== 'string') return;
+    if (!Object.hasOwn(templates.requirements || {}, requirement.ref)) {
+      add(path, `references missing requirement template '${requirement.ref}'`);
+    }
+  };
+
+  const validateWrapper = (wrapper, path) => {
+    if (!isObject(wrapper)) return;
+    if (wrapper.type === 'effect' && typeof wrapper.ref === 'string' &&
+        !Object.hasOwn(templates.effects || {}, wrapper.ref)) {
+      add(path, `references missing effect template '${wrapper.ref}'`);
+    }
+    if (wrapper.type === 'effect' && !wrapper.ref && !wrapper.inline) {
+      add(path, "type 'effect' requires either ref or inline payload");
+    }
+    if (wrapper.type === 'manage_effect' && !wrapper.inline) {
+      add(path, "type 'manage_effect' requires an inline management payload");
+    }
+    if (wrapper.type === 'automation') {
+      add(path, "type 'automation' is not an executable wrapper; start a declared automation through the supported set effect");
+    }
+    validateRequirementRef(wrapper.req, `${path}.req`);
+  };
+
+  const validateAction = (action, path) => {
+    if (!isObject(action)) return;
+    const set = action.set || {};
+    if (typeof set.password === 'string') validatePasswordRef(set.password, `${path}.set.password`);
+    if (set.type === 'to_scene' && set.target && !Object.hasOwn(scenes, set.target)) {
+      add(`${path}.set.target`, `references missing scene '${set.target}'`);
+    }
+    if (set.type === 'swap_router' && set.target && !routerExists(set.target)) {
+      add(`${path}.set.target`, `references missing router '${set.target}'`);
+    }
+    if (set.type === 'get_item' && set.target && !Object.hasOwn(items, set.target)) {
+      add(`${path}.set.target`, `references missing item '${set.target}'`);
+    }
+    if (Array.isArray(set.charAllow)) {
+      set.charAllow.forEach((id, index) => {
+        if (!characterExists(id)) add(`${path}.set.charAllow[${index}]`, `references missing character '${id}'`);
+      });
+    }
+    validateRequirementRef(action.requirement, `${path}.requirement`);
+  };
+
+  const validateEffectPayload = (effect, path) => {
+    if (!isObject(effect)) return;
+    if (effect.type === 'goto') {
+      if (effect.subtype === 'scene' && effect.target && !Object.hasOwn(scenes, effect.target)) {
+        add(`${path}.target`, `references missing scene '${effect.target}'`);
+      } else if (effect.subtype === 'router' && effect.target && !routerExists(effect.target)) {
+        add(`${path}.target`, `references missing router '${effect.target}'`);
+      } else if (effect.subtype === 'chat' && effect.target && !Object.hasOwn(chats, effect.target)) {
+        add(`${path}.target`, `references missing chat '${effect.target}'`);
+      } else if (effect.subtype === 'end' && effect.target && !Object.hasOwn(endings, effect.target)) {
+        add(`${path}.target`, `references missing ending '${effect.target}'`);
+      } else if (effect.subtype === 'in_faker' && typeof effect.target === 'string') {
+        const targetCharacter = effect.target.includes(':') ? effect.target.split(':').at(-1) : effect.target;
+        if (!characterExists(targetCharacter)) add(`${path}.target`, `references missing faker character '${targetCharacter}'`);
+      }
+    }
+    if (effect.type === 'item' && effect.target && !Object.hasOwn(items, effect.target)) {
+      add(`${path}.target`, `references missing item '${effect.target}'`);
+    }
+    if (effect.type === 'characters' && effect.target && !characterExists(effect.target)) {
+      add(`${path}.target`, `references missing character '${effect.target}'`);
+    }
+  };
+
+  const inspect = (value, path = 'scenario') => {
+    if (Array.isArray(value)) {
+      value.forEach((child, index) => inspect(child, `${path}[${index}]`));
+      return;
+    }
+    if (!isObject(value)) return;
+
+    if (value.type && ['effect','item','set','goto','characters','cms','notify','vfx','manage_effect','skip_all'].includes(value.type)) {
+      if (value.type === 'effect' || value.type === 'manage_effect' || value.type === 'skip_all') validateWrapper(value, path);
+      else validateEffectPayload(value, path);
+    }
+    if (isObject(value.set) && typeof value.set.password === 'string') {
+      validatePasswordRef(value.set.password, `${path}.set.password`);
+    }
+    for (const [key, child] of Object.entries(value)) inspect(child, `${path}.${key}`);
+  };
+
+  for (const [actionId, action] of Object.entries(actions)) validateAction(action, `actions.${actionId}`);
+  for (const [sceneId, scene] of Object.entries(scenes)) {
+    for (const [routerId, router] of Object.entries(scene?.routers || {})) {
+      const entries = Array.isArray(router.actions)
+        ? router.actions.map((item, index) => [index, item])
+        : Object.entries(router.actions || {});
+      for (const [key, item] of entries) {
+        if (isObject(item)) validateAction(item, `scenes.${sceneId}.routers.${routerId}.actions.${key}`);
+      }
+    }
+  }
+
+  for (const [characterId, character] of Object.entries(characters)) {
+    for (const [index, move] of (character.moveList || []).entries()) {
+      if (move.scene_id && !Object.hasOwn(scenes, move.scene_id)) {
+        add(`characters.${characterId}.moveList[${index}].scene_id`, `references missing scene '${move.scene_id}'`);
+      }
+    }
+    for (const scope of ['meeting','leave']) {
+      for (const targetId of Object.keys(character.effect?.[scope] || {})) {
+        if (!characterExists(targetId)) add(`characters.${characterId}.effect.${scope}.${targetId}`, `references missing character '${targetId}'`);
+      }
+    }
+  }
+
+  for (const [chatId, chat] of Object.entries(chats)) {
+    const blocks = chat?.block || {};
+    const choices = chat?.choice || {};
+    const entry = chat?.meta?.entry;
+    if (entry && !Object.hasOwn(blocks, entry)) add(`chat.${chatId}.meta.entry`, `references missing entry block '${entry}'`);
+    if (chat?.meta?.sender && !characterExists(chat.meta.sender)) {
+      add(`chat.${chatId}.meta.sender`, `references missing character '${chat.meta.sender}'`);
+    }
+    for (const [index, recipient] of (chat?.meta?.to || []).entries()) {
+      if (!characterExists(recipient)) add(`chat.${chatId}.meta.to[${index}]`, `references missing character '${recipient}'`);
+    }
+    for (const [blockId, block] of Object.entries(blocks)) {
+      if (block?.choice_id && !Object.hasOwn(choices, block.choice_id)) {
+        add(`chat.${chatId}.block.${blockId}.choice_id`, `references missing choice group '${block.choice_id}'`);
+      }
+      for (const [index, line] of (block?.line || []).entries()) {
+        if (line?.char_id && !characterExists(line.char_id)) {
+          add(`chat.${chatId}.block.${blockId}.line[${index}].char_id`, `references missing character '${line.char_id}'`);
+        }
+      }
+    }
+    for (const [choiceId, list] of Object.entries(choices)) {
+      for (const [index, choice] of (list || []).entries()) {
+        if (choice?.jump && !Object.hasOwn(blocks, choice.jump)) {
+          add(`chat.${chatId}.choice.${choiceId}[${index}].jump`, `references missing block '${choice.jump}'`);
+        }
+      }
+    }
+  }
+
+  for (const [passwordId, password] of Object.entries(passwords.find_way || {})) {
+    const path = `passwords.find_way.${passwordId}`;
+    const [cols, rows] = password.area || [];
+    const inBounds = (point) => Array.isArray(point) && point.length === 2 &&
+      Number.isInteger(point[0]) && Number.isInteger(point[1]) &&
+      point[0] >= 0 && point[0] < cols && point[1] >= 0 && point[1] < rows;
+    if (!inBounds(password.start)) add(`${path}.start`, 'must be inside the configured grid');
+    if (!inBounds(password.target)) add(`${path}.target`, 'must be inside the configured grid');
+    const street = Array.isArray(password.street) ? password.street : [];
+    street.forEach((point, index) => {
+      if (!inBounds(point)) add(`${path}.street[${index}]`, 'must be inside the configured grid');
+      if (index > 0) {
+        const previous = street[index - 1];
+        const distance = Math.abs(point[0] - previous[0]) + Math.abs(point[1] - previous[1]);
+        if (distance !== 1) add(`${path}.street[${index}]`, 'must be orthogonally adjacent to the previous point');
+      }
+    });
+    if (street.length && JSON.stringify(street[0]) !== JSON.stringify(password.start)) {
+      add(`${path}.street[0]`, 'must equal start');
+    }
+    if (street.length && JSON.stringify(street.at(-1)) !== JSON.stringify(password.target)) {
+      add(`${path}.street[${street.length - 1}]`, 'must equal target');
+    }
+    const seen = new Set();
+    street.forEach((point, index) => {
+      const key = Array.isArray(point) ? point.join(',') : String(point);
+      if (seen.has(key)) add(`${path}.street[${index}]`, 'must not revisit a grid cell');
+      seen.add(key);
+    });
+  }
+
+  for (const [automationId, automation] of Object.entries(templates.automation || {})) {
+    if (!Array.isArray(automation?.plan) || automation.plan.length === 0) {
+      add(`templates.automation.${automationId}.plan`, 'must contain at least one step');
+    }
+  }
+
+  inspect(scenario);
 
   const entryScene = scenario.meta?.entryScene;
-  if (entryScene && !Object.hasOwn(scenes, entryScene)) {
-    errors.push(`meta.entryScene references missing scene '${entryScene}'`);
+  if (typeof entryScene !== 'string' || !Object.hasOwn(scenes, entryScene)) {
+    add('meta.entryScene', `must reference an existing scene; received '${entryScene}'`);
   }
   const entryCharacter = scenario.meta?.entryCharacter;
-  if (entryCharacter && entryCharacter !== 'player' && !Object.hasOwn(scenario.characters || {}, entryCharacter)) {
-    errors.push(`meta.entryCharacter references missing character '${entryCharacter}'`);
+  if (entryCharacter && !characterExists(entryCharacter)) {
+    add('meta.entryCharacter', `references missing character '${entryCharacter}'`);
   }
 
-  return errors;
+  return [...new Set(errors)];
 }
 
 export function validateScenario(scenario) {
-  if (!scenario || typeof scenario !== 'object' || Array.isArray(scenario)) {
-    return ['root must be a JSON object'];
-  }
+  if (!isObject(scenario)) return ['root must be a JSON object'];
   const errors = [];
   validateAgainstSchema(scenario);
-  if (validateAgainstSchema.errors) {
-    for (const error of validateAgainstSchema.errors) {
-      const path = error.instancePath || '/';
-      errors.push(`${path} ${error.message}`);
-    }
+  for (const error of validateAgainstSchema.errors || []) {
+    const path = error.instancePath || '/';
+    errors.push(`${path} ${error.message}`);
   }
   errors.push(...validateReferences(scenario));
   return [...new Set(errors)];
@@ -144,12 +316,14 @@ export function validateScenario(scenario) {
 
 export function normalizeScenario(input) {
   const scenario = clone(input);
+  scenario.formatVersion = scenario.formatVersion ?? SCENARIO_FORMAT_VERSION;
+  scenario.meta ||= {};
+  scenario.meta.entryCharacter = scenario.meta.entryCharacter ?? 'player';
+
   const errors = validateScenario(scenario);
   if (errors.length) throw new ScenarioValidationError(errors);
 
-  scenario.formatVersion = scenario.formatVersion ?? SCENARIO_FORMAT_VERSION;
   for (const [sceneId, scene] of Object.entries(scenario.scenes)) {
-    scene.set.activeRouterId ||= Object.keys(scene.routers)[0];
     for (const [routerId, router] of Object.entries(scene.routers)) {
       if (Array.isArray(router.actions)) {
         router.actions.forEach((action, index) => {
