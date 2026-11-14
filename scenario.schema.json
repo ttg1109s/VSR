@@ -1043,8 +1043,7 @@
           "description": "ID tham chiếu tới templates.effects.<ref> (dùng lại effect đã định nghĩa sẵn)."
         },
         "inline": {
-          "$ref": "#/definitions/effect_details",
-          "description": "Định nghĩa effect trực tiếp (thay vì tham chiếu qua 'ref')."
+          "$ref": "#/definitions/effect_details"
         },
         "hide": {
           "type": "boolean",
@@ -1103,7 +1102,12 @@
           "then": {
             "required": [
               "inline"
-            ]
+            ],
+            "properties": {
+              "inline": {
+                "$ref": "#/definitions/manage_effect_details"
+              }
+            }
           }
         },
         {
@@ -1150,7 +1154,8 @@
             "vfx",
             "item",
             "set",
-            "goto"
+            "goto",
+            "skip_all"
           ],
           "description": "Loại effect (giống runnable_wrapper.type khi dùng inline)."
         },
@@ -1241,7 +1246,13 @@
         },
         "space": {
           "type": "string",
-          "description": "Phạm vi quản lý cho manage_effect, vd 'router' | 'scene' | 'action' | 'character'."
+          "enum": [
+            "router",
+            "character",
+            "action",
+            "chat",
+            "item"
+          ]
         },
         "in": {
           "type": "string",
@@ -1250,10 +1261,70 @@
         "content": {
           "$ref": "#/definitions/runnable_wrapper",
           "description": "Effect được thêm/xoá khỏi danh sách target (dùng bởi manage_effect)."
+        },
+        "inline": {
+          "$ref": "#/definitions/manage_effect_details"
+        },
+        "hide": {
+          "type": "boolean"
+        },
+        "id": {
+          "type": "string"
+        },
+        "flicker": {
+          "type": "number"
+        },
+        "loop": {
+          "type": "boolean"
+        },
+        "loopSecond": {
+          "type": "number"
+        },
+        "repeat": {
+          "type": "boolean"
+        },
+        "column": {
+          "type": "string"
+        },
+        "method": {
+          "type": "string"
+        },
+        "index": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          ]
         }
       },
       "additionalProperties": true,
-      "allOf": []
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "manage_effect"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "inline"
+            ]
+          }
+        }
+      ]
     },
     "requirement_check": {
       "type": "object",
@@ -1325,7 +1396,91 @@
                   "usage"
                 ]
               }
-            }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "const": "inventory"
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "op": {
+                      "enum": [
+                        "has",
+                        "!has"
+                      ]
+                    },
+                    "value": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "const": "hand"
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "op": {
+                      "const": "=="
+                    },
+                    "value": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "const": "usage"
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "target"
+                  ],
+                  "properties": {
+                    "op": {
+                      "enum": [
+                        "==",
+                        "!=",
+                        ">",
+                        ">=",
+                        "<",
+                        "<="
+                      ]
+                    },
+                    "value": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            ]
           }
         },
         {
@@ -1380,6 +1535,9 @@
                   "current",
                   "max"
                 ]
+              },
+              "value": {
+                "type": "number"
               }
             }
           }
@@ -2219,6 +2377,129 @@
           "minProperties": 1
         }
       }
+    },
+    "manage_effect_details": {
+      "type": "object",
+      "description": "Management payload used by EffectHandlers.manage_effect.",
+      "required": [
+        "space",
+        "in",
+        "subtype"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "space": {
+          "type": "string",
+          "enum": [
+            "router",
+            "character",
+            "action",
+            "chat",
+            "item"
+          ]
+        },
+        "in": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Target hook; chat hooks use blockId:choiceId."
+        },
+        "subtype": {
+          "type": "string",
+          "enum": [
+            "locked",
+            "unlocked",
+            "add_effect",
+            "remove_effect"
+          ]
+        },
+        "target": {
+          "type": "string",
+          "minLength": 1
+        },
+        "index": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          ]
+        },
+        "content": {
+          "$ref": "#/definitions/runnable_wrapper"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "subtype": {
+                "const": "add_effect"
+              }
+            },
+            "required": [
+              "subtype"
+            ]
+          },
+          "then": {
+            "required": [
+              "content"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "subtype": {
+                "const": "locked"
+              }
+            },
+            "required": [
+              "subtype"
+            ]
+          },
+          "then": {
+            "required": [
+              "index"
+            ],
+            "properties": {
+              "index": {
+                "type": "array",
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "subtype": {
+                "const": "unlocked"
+              }
+            },
+            "required": [
+              "subtype"
+            ]
+          },
+          "then": {
+            "required": [
+              "index"
+            ],
+            "properties": {
+              "index": {
+                "type": "array",
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
     }
   },
   "$id": "https://vsr.engine/scenario/v1/schema.json"
