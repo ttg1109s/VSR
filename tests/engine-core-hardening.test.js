@@ -272,3 +272,33 @@ test('loader keeps the normalized scenario separate from runtime-only indexes', 
   assert.equal(Object.hasOwn(loaded.scenario, 'path'), false);
   assert.equal(Object.hasOwn(loaded.src, 'path'), true);
 });
+
+
+test('nested effect templates are valid runnable graphs and resolve their references', () => {
+  const scenario = validScenario();
+  scenario.templates.effects.base = [{ type: 'notify', text: 'Nested template' }];
+  scenario.templates.effects.outer = [{ type: 'effect', ref: 'base' }];
+  assert.deepEqual(validateScenario(scenario), []);
+  scenario.templates.effects.outer[0].ref = 'missing';
+  assert.ok(validateScenario(scenario).some(error => error.includes("references missing effect template 'missing'")));
+});
+
+test('management effects validate their target namespace', () => {
+  const scenario = validScenario();
+  scenario.actions.inspect.effect = {
+    normal: [{
+      type: 'manage_effect',
+      inline: { space: 'router', in: 'enter', subtype: 'locked', target: 'missing_router', index: [0] }
+    }]
+  };
+  assert.ok(validateScenario(scenario).some(error => error.includes("references missing router target 'missing_router'")));
+});
+
+test('malformed collection shapes produce validation errors instead of crashing the validator', () => {
+  const scenario = validScenario();
+  scenario.characters.broken = { moveList: 7, inventory: 9, hand: null };
+  scenario.chat.broken = { meta: { loop: false, entry: 'missing', to: 'not-an-array' }, block: {}, choice: {} };
+  scenario.passwords.find_way.broken = { desc: 'Broken', area: 3, start: null, target: null, street: [null] };
+  assert.doesNotThrow(() => validateScenario(scenario));
+  assert.ok(validateScenario(scenario).length > 0);
+});
