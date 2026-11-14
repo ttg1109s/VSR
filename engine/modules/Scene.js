@@ -62,18 +62,22 @@ export const SceneSystem = {
             });
         }
 
-        if (currentS && this.state.scenes[currentS]) {
-            this.state.prevRouter = this.state.scenes[currentS].activeRouterId;
-        }
+        const state = this.api.engine.state;
+        const previousRouter = currentS && this.state.scenes[currentS]
+            ? this.state.scenes[currentS].activeRouterId
+            : undefined;
+        const entryChar = this.state.meta?.entryCharacter || 'player';
+
+        // Scene cursor and player location move together as one state transition.
+        await state.transaction(tx => {
+            if (previousRouter) tx.set('prevRouter', previousRouter);
+            tx.set('sceneId', id);
+            if (tx.get('characters.[id]', { id: entryChar })) {
+                tx.set('characters.[id].place.scene_id', id, { id: entryChar });
+            }
+        });
 
         let effectiveSkip = skipTransition;
-        this.state.sceneId = id;
-
-        // [REFACTOR] Update Entry Character's Place
-        const entryChar = this.state.meta?.entryCharacter || 'player';
-        if (this.state.characters[entryChar]) {
-            this.state.characters[entryChar].place.scene_id = id;
-        }
 
         const activeRouter = this.state.scenes[id].activeRouterId;
         if (!activeRouter || !this.src.scenes[id].routers[activeRouter]) {
@@ -124,10 +128,17 @@ export const SceneSystem = {
         if (!routerId || !this.src.scenes[sId].routers[routerId]) return;
 
         const rKey = `${sId}_${routerId}`;
-        if (!this.state.routers[rKey]) this.state.routers[rKey] = { blocked: false, visited: false, countVisited: 0 };
+        const state = this.api.engine.state;
+        if (!state.getRuntimeSnapshot('routers.[id]', { id: rKey })) {
+            await state.transaction(tx => {
+                if (!tx.get('routers.[id]', { id: rKey })) {
+                    tx.set('routers.[id]', { blocked: false, visited: false, countVisited: 0 }, { id: rKey });
+                }
+            });
+        }
 
         const rd = this.src.scenes[sId].routers[routerId];
-        const rSet = this.state.routers[rKey];
+        const rSet = state.getRuntimeSnapshot('routers.[id]', { id: rKey });
         const rConfigSet = rd.set || {};
 
         let transType = null;
@@ -171,12 +182,16 @@ export const SceneSystem = {
                 this.processRunnables(oldRd.loop.leave, { sceneId: sId, routerId: oldRouterId, hook: 'leave' }, true)
                     .catch(e => console.warn("Router leave err:", e));
             }
-            this.state.prevRouter = oldRouterId;
         }
 
-        this.state.scenes[sId].activeRouterId = routerId;
-        this.state.routers[rKey].visited = true;
-        this.state.routers[rKey].countVisited++;
+        await state.transaction(tx => {
+            if (!isSceneEntry && oldRouterId && oldRouterId !== routerId) tx.set('prevRouter', oldRouterId);
+            tx.set('scene.activeRouterId', routerId, { id: sId });
+            const routerState = tx.get('routers.[id]', { id: rKey }) || { blocked: false, visited: false, countVisited: 0 };
+            routerState.visited = true;
+            routerState.countVisited = (routerState.countVisited || 0) + 1;
+            tx.set('routers.[id]', routerState, { id: rKey });
+        });
 
         this.render();
 
@@ -307,7 +322,7 @@ export const SceneSystem = {
         const sId = this.src.path.routers[target]?.[0];
         if (sId && this.state.scenes[sId]) {
             const isSameScene = sId === this.state.sceneId;
-            this.state.scenes[sId].activeRouterId = target;
+            this.api.engine.state.set('scene.activeRouterId', target, { id: sId });
 
             if (isSameScene) this.enterRouter(target);
             else this.enterScene(sId, false);
