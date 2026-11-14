@@ -7,10 +7,13 @@ export const EntitySystem = {
     ...FakerSystem,
 
     initCharactersMoving() {
-        Object.keys(this.state.characters).forEach(charId => this.taskManager.kill(`move_char_${charId}`));
-        const currentIdentity = this.state.faker.active ? this.state.faker.targetId : (this.state.meta?.entryCharacter || 'player');
+        const state = this.api.engine.state;
+        const characters = state.getRuntimeSnapshot('characters') || {};
+        const faker = state.getRuntimeSnapshot('faker') || {};
+        Object.keys(characters).forEach(charId => this.taskManager.kill(`move_char_${charId}`));
+        const currentIdentity = faker.active ? faker.targetId : (state.get('entryCharacter') || 'player');
 
-        Object.keys(this.state.characters).forEach(charId => {
+        Object.keys(characters).forEach(charId => {
             if (charId !== currentIdentity) this.scheduleCharacterMove(charId);
         });
     },
@@ -22,7 +25,9 @@ export const EntitySystem = {
     },
 
     scheduleCharacterMove(charId, delayOverride = null) {
-        const currentIdentity = this.state.faker.active ? this.state.faker.targetId : (this.state.meta?.entryCharacter || 'player');
+        const state = this.api.engine.state;
+        const faker = state.getRuntimeSnapshot('faker') || {};
+        const currentIdentity = faker.active ? faker.targetId : (state.get('entryCharacter') || 'player');
         if (charId === currentIdentity) return;
 
         if (!this.validateMoveState(charId)) return;
@@ -47,9 +52,12 @@ export const EntitySystem = {
     },
 
     resumeNPCMovement() {
-        const currentIdentity = this.state.faker.active ? this.state.faker.targetId : (this.state.meta?.entryCharacter || 'player');
+        const state = this.api.engine.state;
+        const faker = state.getRuntimeSnapshot('faker') || {};
+        const characters = state.getRuntimeSnapshot('characters') || {};
+        const currentIdentity = faker.active ? faker.targetId : (state.get('entryCharacter') || 'player');
 
-        Object.keys(this.state.characters).forEach(charId => {
+        Object.keys(characters).forEach(charId => {
             if (charId !== currentIdentity) {
                 if (this.validateMoveState(charId)) this.scheduleCharacterMove(charId);
             }
@@ -69,7 +77,9 @@ export const EntitySystem = {
     },
 
     async executeCharacterMove(charId) {
-        const currentIdentity = this.state.faker.active ? this.state.faker.targetId : (this.state.meta?.entryCharacter || 'player');
+        const state = this.api.engine.state;
+        const faker = state.getRuntimeSnapshot('faker') || {};
+        const currentIdentity = faker.active ? faker.targetId : (state.get('entryCharacter') || 'player');
         if (charId === currentIdentity) return;
 
         if (!this.validateMoveState(charId)) {
@@ -97,8 +107,8 @@ export const EntitySystem = {
             direction: char._moveDir || 1,
             currentScene: currentScene,
             moveHistory: char.moveHistory || [],
-            playerMoveHistory: this.state.playerMoveHistory,
-            playerCurrentScene: this.state.sceneId,
+            playerMoveHistory: state.getRuntimeSnapshot('playerMoveHistory') || [],
+            playerCurrentScene: state.get('sceneId'),
             engine: this
         });
 
@@ -119,12 +129,13 @@ export const EntitySystem = {
             return current;
         }, { id: charId });
 
-        if (!nextSceneId || !this.state.scenes[nextSceneId] || this.isLocationBlocked(nextSceneId)) {
+        if (!nextSceneId || !state.getRuntimeSnapshot('scenes.[id]', { id: nextSceneId }) || this.isLocationBlocked(nextSceneId)) {
             this.scheduleCharacterMove(charId);
             return;
         }
 
-        const isLeaving = (currentScene === this.state.sceneId && nextSceneId !== this.state.sceneId);
+        const playerSceneId = state.get('sceneId');
+        const isLeaving = (currentScene === playerSceneId && nextSceneId !== playerSceneId);
 
         if (isLeaving) {
             // [FIX] Logic Leave: Access Object by currentIdentity Key (Schema Compliance)
@@ -132,7 +143,7 @@ export const EntitySystem = {
                 const leaveEffects = char.effect.leave[currentIdentity];
                 if (Array.isArray(leaveEffects)) {
                     await this.processRunnables(leaveEffects, {
-                        sceneId: this.state.sceneId,
+                        sceneId: playerSceneId,
                         charId,
                         hook: `leave:${currentIdentity}`
                     }, true);
@@ -151,7 +162,7 @@ export const EntitySystem = {
             }
         }
 
-        if (nextSceneId === this.state.sceneId) {
+        if (nextSceneId === playerSceneId) {
             console.log(`[Entity] Char ${charId} ENTERING current scene ${nextSceneId}`);
             if (charId !== currentIdentity) {
                 // [FIX] Update Met State when entering current scene
@@ -163,7 +174,7 @@ export const EntitySystem = {
 
                     if (Array.isArray(meetingEffects)) {
                         await this.processRunnables(meetingEffects, {
-                            sceneId: this.state.sceneId,
+                            sceneId: playerSceneId,
                             charId,
                             hook: `meeting:${currentIdentity}` // Pass specific hook for Management
                         }, true);
