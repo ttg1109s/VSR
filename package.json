@@ -8,5 +8,11 @@
   },
   "engines": {
     "node": ">=20"
+  },
+  "main": "./engine/index.js",
+  "exports": {
+    ".": "./engine/index.js",
+    "./protocol": "./core/protocol/JsonProtocol.js",
+    "./scenario-schema": "./scenario.schema.json"
   }
 }
