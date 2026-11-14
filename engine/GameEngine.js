@@ -11,12 +11,15 @@ import { LoaderSystem } from './modules/Loader.js';
 import { API } from '../api/index.js'; // [Refactor] Import API
 import { JsonProtocol } from '../core/protocol/JsonProtocol.js';
 import { verifyPassword } from '../password/verify.js';
+import { TaskManager } from '../plugin/taskmanager.js';
 
 export class GameEngine {
-    constructor() {
+    constructor({ taskManager = new TaskManager() } = {}) {
+        this.taskManager = taskManager;
         this.reset();
         this.protocol = new JsonProtocol();
         this.registerProtocolCommands();
+        API.bindEngine(this);
     }
 
     registerProtocolCommands() {
@@ -83,6 +86,7 @@ export class GameEngine {
     }
 
     reset() {
+        this.taskManager?.killAll?.();
         this.state = {
             // [CLEANUP] Removed: inventory, hand (global), bans, injections
             sceneId: "", scenes: {}, routers: {}, actions: {}, global: {},
@@ -130,7 +134,7 @@ export class GameEngine {
                 this.state.playerMoveHistory.push(firstScene);
                 this.publishProtocolSnapshot('engine.initialized');
             } else {
-                API.render.notification.alert("Init Error", "Không tìm thấy Scene hợp lệ để bắt đầu.", "danger");
+                API.presentation.notification.alert("Init Error", "Không tìm thấy Scene hợp lệ để bắt đầu.", "danger");
             }
         } else {
             this.enterScene(entry);
@@ -213,12 +217,12 @@ export class GameEngine {
         if (!this.state.automations) return;
         Object.keys(this.state.automations).forEach(autoId => {
             if (this.state.automations[autoId] && this.state.automations[autoId].active) {
-                if (window.taskManager) window.taskManager.pause(`auto_${autoId}`);
+                this.taskManager?.pause(`auto_${autoId}`);
             }
         });
         if (this.state.characters) {
             Object.keys(this.state.characters).forEach(charId => {
-                if (window.taskManager) window.taskManager.pause(`move_char_${charId}`);
+                this.taskManager?.pause(`move_char_${charId}`);
             });
         }
     }
@@ -227,12 +231,12 @@ export class GameEngine {
         if (!this.state.automations) return;
         Object.keys(this.state.automations).forEach(autoId => {
             if (this.state.automations[autoId] && this.state.automations[autoId].active) {
-                if (window.taskManager) window.taskManager.resume(`auto_${autoId}`);
+                this.taskManager?.resume(`auto_${autoId}`);
             }
         });
         if (this.state.characters) {
             Object.keys(this.state.characters).forEach(charId => {
-                if (window.taskManager) window.taskManager.resume(`move_char_${charId}`);
+                this.taskManager?.resume(`move_char_${charId}`);
             });
         }
     }
