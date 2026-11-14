@@ -15,15 +15,15 @@ export const EffectKeyStrategies = {
 export const EffectScopeResolvers = {
     router: (cfg, ctx, engine) => ({
         scope: 'router',
-        params: { sId: ctx.sceneId || engine.state.sceneId, rId: cfg.target, hook: cfg.in }
+        params: { sId: ctx.sceneId || engine.api.engine.state.sceneId, rId: cfg.target, hook: cfg.in }
     }),
     character: (cfg, ctx, engine) => ({
         scope: 'character',
         params: { cId: cfg.target, hook: cfg.in }
     }),
     action: (cfg, ctx, engine) => {
-        const sId = ctx.sceneId || engine.state.sceneId;
-        let rId = ctx.routerId || (engine.state.scenes[sId] ? engine.state.scenes[sId].activeRouterId : null);
+        const sId = ctx.sceneId || engine.api.engine.state.sceneId;
+        let rId = ctx.routerId || (engine.api.engine.state.get('scene.activeRouterId', { id: sId }));
         return rId ? { scope: 'action', params: { sId, rId, aId: cfg.target, hook: cfg.in } } : null;
     },
     chat: (cfg, ctx, engine) => {
