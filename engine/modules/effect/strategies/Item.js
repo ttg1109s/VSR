@@ -12,7 +12,8 @@ export const ItemStrategies = {
         // Let's modify `engine.state.itemInfo[eff.target]`.
 
         const itemId = resolveValue(eff.target, engine);
-        const item = engine.state.itemInfo[itemId];
+        const state = engine.api.engine.state;
+        const item = state.getRuntimeSnapshot('itemInfo.[id]', { id: itemId });
 
         if (item) {
             if (!item.stats) item.stats = {};
@@ -30,20 +31,22 @@ export const ItemStrategies = {
                 const mappedEff = { ...eff, mode: execMode };
                 StatsHelpers.edit_value(item, mappedEff, false, itemId, engine);
             }
+            state.set('itemInfo.[id]', item, { id: itemId });
         }
     },
     // Helper để lấy Inventory của nhân vật đang nhập vai
     _getChar: (engine) => {
         const ownerId = engine.getOwnerId ? engine.getOwnerId() : (engine.state.meta?.entryCharacter || 'player');
-        return engine.state.characters[ownerId];
+        return engine.api.engine.state.getRuntimeSnapshot('characters.[id]', { id: ownerId });
     },
 
     // Helper: Hide Action if requested
     _tryHideAction: (engine, eff, context) => {
         if (eff.hide === true && context && context.actionId && context.sceneId && context.routerId) {
             const actStateKey = `${context.sceneId}_${context.routerId}_${context.actionId}`;
-            if (engine.state.actions[actStateKey]) {
-                engine.state.actions[actStateKey].display = 'hide';
+            const state = engine.api.engine.state;
+            if (state.getRuntimeSnapshot('actions.[id]', { id: actStateKey })) {
+                state.update('actions.[id].display', () => 'hide', { id: actStateKey });
             }
         }
     },
@@ -60,9 +63,11 @@ export const ItemStrategies = {
         } else {
             // Fallback nếu hàm addItem chưa mixin (hiếm gặp)
             const char = ItemStrategies._getChar(engine);
-            if (char && !char.inventory.includes(eff.target)) {
-                char.inventory.push(eff.target);
-                engine.api.presentation.notification.add("Nhận vật phẩm", engine.state.itemInfo[eff.target]?.name || eff.target, "success");
+            if (char && !(char.inventory || []).includes(eff.target)) {
+                engine.api.engine.state.update('characters.[id].inventory', inventory => [...(inventory || []), eff.target], {
+                    id: engine.getOwnerId ? engine.getOwnerId() : (engine.state.meta?.entryCharacter || 'player')
+                });
+                engine.api.presentation.notification.add("Nhận vật phẩm", engine.api.engine.state.getRuntime('itemInfo.[id].name', { id: eff.target }) || eff.target, "success");
                 engine.api.presentation.components.explorer();
             }
         }
@@ -74,18 +79,15 @@ export const ItemStrategies = {
         const char = ItemStrategies._getChar(engine);
         if (!char || !char.inventory) return;
 
-        const idx = char.inventory.indexOf(eff.target);
+        const idx = (char.inventory || []).indexOf(eff.target);
         if (idx > -1) {
-            char.inventory.splice(idx, 1);
-
-            // Nếu đang cầm trên tay cũng xóa luôn
-            if (char.hand) {
-                const handIdx = char.hand.indexOf(eff.target);
-                if (handIdx > -1) char.hand.splice(handIdx, 1);
-            }
-
+            const ownerId = engine.getOwnerId ? engine.getOwnerId() : (engine.state.meta?.entryCharacter || 'player');
+            engine.api.engine.state.update('characters.[id]', current => ({
+                ...current,
+                inventory: (current.inventory || []).filter(itemId => itemId !== eff.target),
+                hand: (current.hand || []).filter(itemId => itemId !== eff.target)
+            }), { id: ownerId });
             engine.api.presentation.components.explorer();
-            // Có thể thêm notify nếu cần thiết
         }
     },
 
@@ -95,9 +97,10 @@ export const ItemStrategies = {
         const char = ItemStrategies._getChar(engine);
         if (!char || !char.hand) return;
 
-        const idx = char.hand.indexOf(eff.target);
+        const idx = (char.hand || []).indexOf(eff.target);
         if (idx > -1) {
-            char.hand.splice(idx, 1);
+            const ownerId = engine.getOwnerId ? engine.getOwnerId() : (engine.state.meta?.entryCharacter || 'player');
+            engine.api.engine.state.update('characters.[id].hand', hand => (hand || []).filter(itemId => itemId !== eff.target), { id: ownerId });
             engine.api.presentation.components.explorer();
         }
     },
@@ -112,28 +115,29 @@ export const ItemStrategies = {
         // Check max hand config
         const maxHand = (engine.getConfig && engine.getConfig('maxHandOn')) || 10;
 
-        if (!char.hand.includes(eff.target) && char.inventory.includes(eff.target)) {
-            if (char.hand.length >= maxHand) {
+        const hand = char.hand || [];
+        const inventory = char.inventory || [];
+        if (!hand.includes(eff.target) && inventory.includes(eff.target)) {
+            if (hand.length >= maxHand) {
                 engine.api.presentation.notification.add("Không thể cầm", "Tay đã đầy.", "warn");
                 return;
             }
-            char.hand.push(eff.target);
+            const ownerId = engine.getOwnerId ? engine.getOwnerId() : (engine.state.meta?.entryCharacter || 'player');
+            engine.api.engine.state.update('characters.[id].hand', current => [...(current || []), eff.target], { id: ownerId });
             engine.api.presentation.components.explorer();
         }
     },
 
     usage: (engine, eff, context) => {
         ItemStrategies._tryHideAction(engine, eff, context);
-        const item = engine.state.itemInfo[eff.target];
+        const state = engine.api.engine.state;
+        const item = state.getRuntimeSnapshot('itemInfo.[id]', { id: eff.target });
         if (item?.usage) {
             const u = item.usage;
             const valToAdd = Number(resolveValue(eff.value));
-
-            // Logic tăng giảm usage
             const oldVal = Number(u.current);
             u.current = Math.max(0, Math.min(u.max, oldVal + valToAdd));
-
-            // [API FIX] Refresh UI
+            state.set('itemInfo.[id]', item, { id: eff.target });
             engine.api.presentation.components.explorer();
         }
     }
