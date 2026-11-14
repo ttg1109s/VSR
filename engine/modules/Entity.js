@@ -16,7 +16,7 @@ export const EntitySystem = {
     },
 
     validateMoveState(charId) {
-        const char = this.state.characters[charId];
+        const char = this.api.engine.state.getRuntimeSnapshot('characters.[id]', { id: charId });
         // [REFACTOR] 'skip' check on moveList items
         return !!(char && char.set.moving && char.set.move && char.moveList.some(item => !item.skip));
     },
@@ -27,7 +27,7 @@ export const EntitySystem = {
 
         if (!this.validateMoveState(charId)) return;
 
-        const char = this.state.characters[charId];
+        const char = this.api.engine.state.getRuntimeSnapshot('characters.[id]', { id: charId });
         // [REFACTOR] Use 'char.place.currentIndex'
         const currentItem = char.moveList[char.place.currentIndex || 0];
 
@@ -77,7 +77,7 @@ export const EntitySystem = {
             return;
         }
 
-        const char = this.state.characters[charId];
+        const char = this.api.engine.state.getRuntimeSnapshot('characters.[id]', { id: charId });
         const moveList = char.moveList;
         // [REFACTOR] Use 'char.place.scene_id'
         const currentScene = char.place.scene_id;
@@ -112,10 +112,12 @@ export const EntitySystem = {
 
         const nextSceneId = moveList[result.idx].scene_id;
 
-        // [REFACTOR] Update 'char.place'
-        char.place.currentIndex = result.idx;
-        // [FIX] Update runtime direction
-        char._moveDir = result.dir;
+        // Persist movement cursor and direction through StateAccess.
+        this.api.engine.state.update('characters.[id]', current => {
+            current.place.currentIndex = result.idx;
+            current._moveDir = result.dir;
+            return current;
+        }, { id: charId });
 
         if (!nextSceneId || !this.state.scenes[nextSceneId] || this.isLocationBlocked(nextSceneId)) {
             this.scheduleCharacterMove(charId);
@@ -138,8 +140,8 @@ export const EntitySystem = {
             }
         }
 
-        // [REFACTOR] Update 'char.place.scene_id'
-        char.place.scene_id = nextSceneId;
+        // Persist the new location after leave effects have completed.
+        this.api.engine.state.update('characters.[id].place.scene_id', () => nextSceneId, { id: charId });
 
         // [FIX] Trigger UI Update AFTER state change if character left the current scene
         if (isLeaving) {
@@ -181,27 +183,19 @@ export const EntitySystem = {
     },
 
     updateMetState(charId, currentIdentity) {
-        const char = this.state.characters[charId];
-        if (!char) return;
-
-        if (!char.met) char.met = [];
-
-        let found = false;
-        let metCount = 0;
-
-        for (let i = 0; i < char.met.length; i++) {
-            const parts = char.met[i].split(':');
-            if (parts[0] === currentIdentity) {
-                metCount = parseInt(parts[1] || '0') + 1;
-                char.met[i] = `${currentIdentity}:${metCount}`;
-                found = true;
-                break;
+        const state = this.api.engine.state;
+        if (!state.getRuntimeSnapshot('characters.[id]', { id: charId })) return;
+        state.update('characters.[id].met', current => {
+            const met = Array.isArray(current) ? current : [];
+            const index = met.findIndex(entry => String(entry).split(':')[0] === currentIdentity);
+            if (index >= 0) {
+                const parts = String(met[index]).split(':');
+                const count = parseInt(parts[1] || '0', 10) + 1;
+                met[index] = `${currentIdentity}:${count}`;
+            } else {
+                met.push(`${currentIdentity}:1`);
             }
-        }
-
-        if (!found) {
-            metCount = 1;
-            char.met.push(`${currentIdentity}:1`);
-        }
+            return met;
+        }, { id: charId });
     }
 };

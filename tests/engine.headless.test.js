@@ -92,3 +92,17 @@ test('Item inventory and hand operations preserve synchronous add and transactio
  await e.toggleHand('__item_probe');
  assert.deepEqual(e.state.characters[ownerId].hand,[]);
 });
+
+test('Entity meeting counters update through detached StateAccess values',async()=>{
+ const e=makeEngine();
+ await e.init(structuredClone(DEMO_SCRIPT));
+ const charId=Object.keys(e.state.characters).find(id=>id!==(e.state.meta?.entryCharacter||'player'));
+ assert.ok(charId);
+ e.updateMetState(charId,'__identity_probe');
+ assert.ok(e.state.characters[charId].met.includes('__identity_probe:1'));
+ const snapshot=e.api.engine.state.getRuntimeSnapshot('characters.[id]',{id:charId});
+ snapshot.met.push('__mutated_outside__');
+ assert.equal(e.state.characters[charId].met.includes('__mutated_outside__'),false);
+ e.updateMetState(charId,'__identity_probe');
+ assert.equal(e.state.characters[charId].met.find(x=>x.startsWith('__identity_probe:')),'__identity_probe:2');
+});

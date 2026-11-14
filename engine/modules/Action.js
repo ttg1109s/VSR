@@ -57,14 +57,17 @@ export const ActionSystem = {
     },
 
     markAsRead(uniqueId) {
-        if (!this.state.actions[uniqueId]) {
-            this.state.actions[uniqueId] = { countClicks: 0, countFails: 0, display: 'show', readDesc: false };
-        }
-        // Only update if not already read
-        if (!this.state.actions[uniqueId].readDesc) {
-            this.state.actions[uniqueId].readDesc = true;
-            console.log(`[Action] Marked as read: ${uniqueId}`);
-        }
+        const state = this.api.engine.state;
+        const current = state.getRuntimeSnapshot('actions.[id]', { id: uniqueId });
+        if (current?.readDesc === true) return;
+        state.update('actions.[id]', value => ({
+            countClicks: 0,
+            countFails: 0,
+            display: 'show',
+            ...(value || {}),
+            readDesc: true
+        }), { id: uniqueId });
+        console.log(`[Action] Marked as read: ${uniqueId}`);
     },
 
     async handleAction(actionKey, uniqueId) {
