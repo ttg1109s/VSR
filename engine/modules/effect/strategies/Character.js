@@ -3,17 +3,26 @@ import { resolveValue } from './Logic.js';
 import { StatsHelpers } from './Stats.js';
 
 const cloneValue = value => JSON.parse(JSON.stringify(value));
+const isMoveEntry = value => !!(value && typeof value === 'object' && !Array.isArray(value) && typeof value.scene_id === 'string' && value.scene_id.length > 0);
+const MOVE_TYPES = new Set(['random', 'list', 'list_reverse', 'list_loop_reverse', 'edge_bounce_first', 'edge_bounce_last', 'random_weight', 'random_count', 'follow_player', 'avoid_player']);
 
 // Character movement effects operate on the character's movement configuration.
 // Supported operations: set (move/moving/moveList), add/remove/replace (moveList).
 const MovingLogic = {
     set: (char, eff) => {
-        if (eff.property === 'move' || eff.property === 'moving') {
+        if (eff.property === 'move') {
+            if (typeof eff.value !== 'string' || !MOVE_TYPES.has(eff.value)) return false;
             char.set ||= {};
-            char.set[eff.property] = eff.value;
+            char.set.move = eff.value;
             return true;
         }
-        if (eff.property === 'moveList' && Array.isArray(eff.value)) {
+        if (eff.property === 'moving') {
+            if (typeof eff.value !== 'boolean') return false;
+            char.set ||= {};
+            char.set.moving = eff.value;
+            return true;
+        }
+        if (eff.property === 'moveList' && Array.isArray(eff.value) && eff.value.every(isMoveEntry)) {
             char.moveList = cloneValue(eff.value);
             char.place ||= { scene_id: null, currentIndex: 0 };
             char.place.currentIndex = 0;
@@ -22,7 +31,7 @@ const MovingLogic = {
         return false;
     },
     add: (char, eff) => {
-        if (eff.property !== 'moveList' || !eff.value || typeof eff.value !== 'object' || Array.isArray(eff.value)) return false;
+        if (eff.property !== 'moveList' || !isMoveEntry(eff.value)) return false;
         char.moveList ||= [];
         char.moveList.push(cloneValue(eff.value));
         return true;
@@ -37,7 +46,7 @@ const MovingLogic = {
         return true;
     },
     replace: (char, eff, indices) => {
-        if (eff.property !== 'moveList' || !Array.isArray(char.moveList) || indices.length !== 1 || !eff.value || typeof eff.value !== 'object' || Array.isArray(eff.value)) return false;
+        if (eff.property !== 'moveList' || !Array.isArray(char.moveList) || indices.length !== 1 || !isMoveEntry(eff.value)) return false;
         const index = indices[0];
         if (!Number.isInteger(index) || index < 0 || index >= char.moveList.length) return false;
         char.moveList[index] = cloneValue(eff.value);
