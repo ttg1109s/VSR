@@ -1,3 +1,5 @@
+import { sanitizeInlineHtml } from '../utils/security.js';
+
 // Thanh Input mặc định (Tap to continue)
 export const ChatInputBar = () => {
     return `
@@ -14,7 +16,7 @@ export const ChatInputBar = () => {
 // Nút chọn lựa chọn hội thoại
 export const ChatChoiceItem = ({ text, isLocked }) => {
     return `
-        <span class="font-medium line-clamp-2">${text}</span>
+        <span class="font-medium line-clamp-2">${sanitizeInlineHtml(text)}</span>
         ${isLocked 
             ? '<span class="material-icons-round text-xs opacity-50">lock</span>' 
             : '<span class="material-icons-round text-xs opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0 transition-all">send</span>'
