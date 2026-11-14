@@ -29,7 +29,7 @@ export function createSaveEnvelope(engine) {
 
 function validateSaveShape(save) {
   if (!save || typeof save !== 'object' || Array.isArray(save)) throw new TypeError('Invalid VSR save envelope.');
-  if (save.protocol !== 'vsr-save') throw new TypeError('Invalid save protocol.');
+  if (save.protocol !== undefined && save.protocol !== 'vsr-save') throw new TypeError('Invalid save protocol.');
   if (!save.scenario || typeof save.scenario !== 'object' || Array.isArray(save.scenario)) throw new TypeError('Save scenario must be an object.');
   if (!save.state || typeof save.state !== 'object' || Array.isArray(save.state)) throw new TypeError('Save state must be an object.');
   if (typeof save.savedAt !== 'string' || Number.isNaN(Date.parse(save.savedAt))) throw new TypeError('Save timestamp is invalid.');
@@ -58,6 +58,7 @@ export function normalizeSaveEnvelope(input) {
   if (version === 1) {
     return {
       ...input,
+      protocol: 'vsr-save',
       saveVersion: SAVE_VERSION,
       pendingPasswordAction: input.pendingPasswordAction ?? null,
       taskRemainingMs: {}
@@ -66,6 +67,7 @@ export function normalizeSaveEnvelope(input) {
   if (version !== SAVE_VERSION) throw new Error(`Unsupported save version: ${version}`);
   return {
     ...input,
+    protocol: 'vsr-save',
     pendingPasswordAction: input.pendingPasswordAction ?? null,
     taskRemainingMs: input.taskRemainingMs ?? {}
   };
