@@ -5,7 +5,8 @@ import { PuzzleStrategy } from './Puzzle.js';
 import { SwitchStrategy } from './Switch.js';
 
 export class PasswordSystem {
-    constructor() {
+    constructor(renderer = null) {
+        this.renderer = renderer;
         this.active = false;
         this.currentStrategy = null;
 
