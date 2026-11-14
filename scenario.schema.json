@@ -323,8 +323,9 @@
           "description": "Definitions of effect chains.",
           "additionalProperties": {
             "type": "array",
+            "minItems": 1,
             "items": {
-              "$ref": "#/definitions/effect_details"
+              "$ref": "#/definitions/runnable_wrapper"
             }
           }
         },
@@ -1098,8 +1099,18 @@
           "description": "ID tham chiếu tới templates.effects.<ref> (dùng lại effect đã định nghĩa sẵn)."
         },
         "inline": {
-          "type": "object",
-          "description": "Inline payload; its exact schema is selected by wrapper.type."
+          "oneOf": [
+            {
+              "$ref": "#/definitions/effect_details"
+            },
+            {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/definitions/runnable_wrapper"
+              }
+            }
+          ]
         },
         "hide": {
           "type": "boolean"
@@ -1290,7 +1301,18 @@
           "then": {
             "properties": {
               "inline": {
-                "$ref": "#/definitions/effect_details"
+                "oneOf": [
+                  {
+                    "$ref": "#/definitions/effect_details"
+                  },
+                  {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                      "$ref": "#/definitions/runnable_wrapper"
+                    }
+                  }
+                ]
               }
             },
             "anyOf": [
