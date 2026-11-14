@@ -74,7 +74,7 @@ export const sceneMethods = {
 
         let descHtml = sanitizeInlineHtml(r.meta.desc || "No description.");
         if (r.meta.subTitleStatus) {
-            descHtml = `<span class=\"text-green-400 font-bold mr-2\">${r.meta.subTitleStatus}</span>` + descHtml;
+            descHtml = `<span class=\"text-green-400 font-bold mr-2\">${sanitizeInlineHtml(r.meta.subTitleStatus)}</span>` + descHtml;
         }
         const descEl = document.getElementById('scene-desc');
         if (descEl && descEl.innerHTML !== descHtml) {
