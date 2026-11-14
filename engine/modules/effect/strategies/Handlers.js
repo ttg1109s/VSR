@@ -53,7 +53,7 @@ export const CharacterPropertyHandlers = {
         if (val === true) {
             engine.scheduleCharacterMove(charId);
         } else {
-            taskManager.kill(`move_char_${charId}`);
+            this.taskManager.kill(`move_char_${charId}`);
             if (engine.checkQueueAndResume) {
                 engine.checkQueueAndResume();
             }
