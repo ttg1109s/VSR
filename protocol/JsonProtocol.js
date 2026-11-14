@@ -12,8 +12,10 @@ export function cloneJsonValue(value,seen=new WeakSet()){
 }
 const id=(p,n)=>`${p}_${Date.now().toString(36)}_${n.toString(36)}`;
 export class JsonProtocol{
- constructor({engineId=`vsr-${Math.random().toString(36).slice(2,10)}`,protocolVersion=2,maxEvents=1000,maxRememberedCommands=500,authorizeCommand=null,onCommandSuccess=null}={}){
-  Object.assign(this,{engineId,protocolVersion,maxEvents,maxRememberedCommands,authorizeCommand,onCommandSuccess});
+ constructor({engineId=`vsr-${Math.random().toString(36).slice(2,10)}`,protocolVersion=2,maxEvents=1000,maxRememberedCommands=500,authorizeCommand=null,requireAuthorization=false,onCommandSuccess=null}={}){
+  if(typeof requireAuthorization!=='boolean')throw new TypeError('requireAuthorization must be boolean.');
+  if(requireAuthorization&&typeof authorizeCommand!=='function')throw new TypeError('requireAuthorization needs an authorizeCommand function.');
+  Object.assign(this,{engineId,protocolVersion,maxEvents,maxRememberedCommands,authorizeCommand,requireAuthorization,onCommandSuccess});
   this.stateRevision=0;this.revision=0;this.eventSequence=0;this.commandSequence=0;this.listeners=new Set();this.eventLog=[];this.commandHandlers=new Map();this.commandResults=new Map();this.dispatchQueue=Promise.resolve();
  }
  subscribe(fn){if(typeof fn!=='function')throw new TypeError('Protocol listener must be a function.');this.listeners.add(fn);return()=>this.listeners.delete(fn);}
@@ -41,18 +43,25 @@ export class JsonProtocol{
  async #dispatch(command,context){
   if(!command||typeof command!=='object'||Array.isArray(command)||command.protocol!=='vsr'||command.protocolVersion!==this.protocolVersion||command.type!=='command'||typeof command.command!=='string')throw new TypeError('Invalid VSR command envelope.');
   if(typeof command.commandId!=='string'||!command.commandId.trim())throw new TypeError('commandId is required.');
-  if(this.commandResults.has(command.commandId))return cloneJsonValue(this.commandResults.get(command.commandId));
   const expected=command.expectedStateRevision??command.expectedRevision;
   if(expected!==undefined&&(!Number.isInteger(expected)||expected<0))throw new TypeError('expectedStateRevision must be non-negative.');
-  if(expected!==undefined&&expected!==this.stateRevision)return this.#remember(command.commandId,{protocol:'vsr',protocolVersion:this.protocolVersion,type:'ack',commandId:command.commandId,ok:false,error:{code:'REVISION_CONFLICT',expected,actual:this.stateRevision},revision:this.stateRevision,stateRevision:this.stateRevision});
-  const handler=this.commandHandlers.get(command.command);
-  if(!handler)return this.#remember(command.commandId,{protocol:'vsr',protocolVersion:this.protocolVersion,type:'ack',commandId:command.commandId,ok:false,error:{code:'UNKNOWN_COMMAND',command:command.command},revision:this.stateRevision,stateRevision:this.stateRevision});
   if(command.payload!==undefined&&(!command.payload||typeof command.payload!=='object'||Array.isArray(command.payload)))throw new TypeError('Command payload must be an object.');
   const payload=command.payload===undefined?{}:cloneJsonValue(command.payload);
-  if(this.authorizeCommand&&!await this.authorizeCommand({command:command.command,payload,context}))return this.#remember(command.commandId,{protocol:'vsr',protocolVersion:this.protocolVersion,type:'ack',commandId:command.commandId,ok:false,error:{code:'FORBIDDEN'},revision:this.stateRevision,stateRevision:this.stateRevision});
+
+  // Authorize before reading idempotency storage so rejected callers cannot
+  // replay a known commandId to retrieve a prior acknowledgement.
+  if(this.authorizeCommand&&!await this.authorizeCommand({command:command.command,payload,context})) {
+   return {protocol:'vsr',protocolVersion:this.protocolVersion,type:'ack',commandId:command.commandId,ok:false,error:{code:'FORBIDDEN'},revision:this.stateRevision,stateRevision:this.stateRevision};
+  }
+  const principalId=context?.principal?.id??context?.principalId??null;
+  const idempotencyKey=principalId===null?command.commandId:`${String(principalId)}:${command.commandId}`;
+  if(this.commandResults.has(idempotencyKey))return cloneJsonValue(this.commandResults.get(idempotencyKey));
+  if(expected!==undefined&&expected!==this.stateRevision)return this.#remember(idempotencyKey,{protocol:'vsr',protocolVersion:this.protocolVersion,type:'ack',commandId:command.commandId,ok:false,error:{code:'REVISION_CONFLICT',expected,actual:this.stateRevision},revision:this.stateRevision,stateRevision:this.stateRevision});
+  const handler=this.commandHandlers.get(command.command);
+  if(!handler)return this.#remember(idempotencyKey,{protocol:'vsr',protocolVersion:this.protocolVersion,type:'ack',commandId:command.commandId,ok:false,error:{code:'UNKNOWN_COMMAND',command:command.command},revision:this.stateRevision,stateRevision:this.stateRevision});
   const revisionBefore=this.stateRevision;this.publish('command.accepted',{commandId:command.commandId,command:command.command});
-  try{const result=await handler(payload,context);await this.onCommandSuccess?.({command:command.command,payload,context,revisionBefore});this.publish('command.completed',{commandId:command.commandId,command:command.command});return this.#remember(command.commandId,{protocol:'vsr',protocolVersion:this.protocolVersion,type:'ack',commandId:command.commandId,ok:true,revision:this.stateRevision,stateRevision:this.stateRevision,result:result===undefined?null:cloneJsonValue(result)});}
-  catch(error){this.publish('command.failed',{commandId:command.commandId,command:command.command,code:error?.code||'COMMAND_FAILED',message:error?.message||String(error)});return this.#remember(command.commandId,{protocol:'vsr',protocolVersion:this.protocolVersion,type:'ack',commandId:command.commandId,ok:false,error:{code:error?.code||'COMMAND_FAILED',message:error?.message||String(error)},revision:this.stateRevision,stateRevision:this.stateRevision});}
+  try{const result=await handler(payload,context);await this.onCommandSuccess?.({command:command.command,payload,context,revisionBefore});this.publish('command.completed',{commandId:command.commandId,command:command.command});return this.#remember(idempotencyKey,{protocol:'vsr',protocolVersion:this.protocolVersion,type:'ack',commandId:command.commandId,ok:true,revision:this.stateRevision,stateRevision:this.stateRevision,result:result===undefined?null:cloneJsonValue(result)});}
+  catch(error){this.publish('command.failed',{commandId:command.commandId,command:command.command,code:error?.code||'COMMAND_FAILED',message:error?.message||String(error)});return this.#remember(idempotencyKey,{protocol:'vsr',protocolVersion:this.protocolVersion,type:'ack',commandId:command.commandId,ok:false,error:{code:error?.code||'COMMAND_FAILED',message:error?.message||String(error)},revision:this.stateRevision,stateRevision:this.stateRevision});}
  }
  createCommand(command,payload={}, {commandId,expectedRevision,expectedStateRevision}={}){
   if(typeof command!=='string'||!command.trim()||!payload||typeof payload!=='object'||Array.isArray(payload))throw new TypeError('Invalid command name or payload.');
