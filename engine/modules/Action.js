@@ -265,12 +265,23 @@ export const ActionSystem = {
                     const passDef = this.src.passwords && this.src.passwords[passType] ? this.src.passwords[passType][passId] : null;
 
                     if (passDef) {
-                        state.set('session.passwordChallenge', { sceneId: sId, routerId: rId, actionId: actionKey, uniqueId });
+                        const challenge = this.passwordSystem.open({
+                            actionId: actionKey, uniqueId, sceneId: sId, routerId: rId,
+                            type: passType, passwordId: passId, config: passDef
+                        });
+                        this.pendingPasswordAction = challenge;
+                        state.set('session.passwordChallenge', challenge);
                         this.api.presentation.components.keyboard(
                             { id: actionKey, meta: { title: actDef.meta?.title, desc: actDef.meta?.desc } },
                             actionKey,
                             uniqueId,
-                            { type: passType, desc: passDef.desc, retryMax: passDef.retryMax, timer: passDef.timer }
+                            {
+                                type: passType, desc: passDef.desc, retryMax: challenge.retryMax,
+                                timer: passDef.timer, challengeId: challenge.challengeId,
+                                countTest: challenge.countTest,
+                                remainingAttempts: challenge.retryMax === 0 ? null : challenge.retryMax,
+                                deadlineAt: challenge.deadlineAt
+                            }
                         );
                         // Return here and let the PasswordSystem callback handle the rest
                         return;
@@ -329,38 +340,39 @@ export const ActionSystem = {
 
     // executeActionResult REMOVED
 
-    async finishPasswordAction(actDef, actionKey, uniqueId, success) {
+    async finishPasswordAction(actDef, actionKey, uniqueId, result) {
         const state = this.api.engine.state;
         const sId = state.get('sceneId');
         const rId = state.get('scene.activeRouterId', { id: sId });
-
         this.isActionProcessing = true;
         try {
-            if (success === 'cancel') {
+            if (result === 'cancel') {
                 console.log(`[Flow] Action '${actionKey}' cancelled by user.`);
-                return; // Finally block will release lock
+                return { success: false, reason: 'cancelled' };
             }
-
-            if (success) {
+            if (result === 'expired') {
+                this.api.presentation.events?.publish?.('password.expired', { actionId: actionKey, uniqueId });
+                return { success: false, reason: 'expired' };
+            }
+            if (result === true) {
                 await this.executeActionSuccess(actDef, sId, rId, actionKey, uniqueId);
                 if (!this.isTransitioning) this.commitState('action.changed');
-            } else {
-                const state = this.api.engine.state;
+                return { success: true };
+            }
+            if (result === 'exhausted') {
                 const actStateKey = `${sId}_${rId}_${actionKey}`;
                 if (state.getRuntimeSnapshot('actions.[id]', { id: actStateKey })) {
                     state.update('actions.[id].countFails', current => (Number(current) || 0) + 1, { id: actStateKey });
-                    // [REQ] countTest = retryMax => pwFail effect ONLY. Do NOT lock action.
                 }
-
-                this.api.presentation.effects.shake(uniqueId);
-
                 if (actDef.effect?.pwFailed) {
-                    console.log(`[Flow] Effect 'pwFailed' start`);
                     await this.processRunnables(actDef.effect.pwFailed, {
                         sceneId: sId, routerId: rId, actionId: actionKey, hook: 'pwFailed'
                     });
                 }
+                this.commitState('password.exhausted');
+                return { success: false, reason: 'exhausted' };
             }
+            return { success: false, reason: 'invalid_result' };
         } finally {
             this.isActionProcessing = false;
         }
