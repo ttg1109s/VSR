@@ -1,4 +1,4 @@
-import { cloneJsonValue } from '../../core/protocol/JsonProtocol.js';
+import { cloneJsonValue } from '../../protocol/JsonProtocol.js';
 
 export const SAVE_VERSION = 2;
 const RUNTIME_KEYS = ['effectQueue', 'isSyncQueueRunning', 'isAsyncQueueRunning', 'pausedBackgroundTasks'];
@@ -6,8 +6,8 @@ const RUNTIME_KEYS = ['effectQueue', 'isSyncQueueRunning', 'isAsyncQueueRunning'
 export function createSaveEnvelope(engine) {
   if (!engine?.src || !engine?.scenario) throw new Error('Cannot save an uninitialized Engine.');
   if (engine.isActionProcessing || engine.isTransitioning ||
-      engine.state?.isSyncQueueRunning || engine.state?.isAsyncQueueRunning ||
-      engine.state?.effectQueue?.sync?.length || engine.state?.effectQueue?.async?.length) {
+      engine.runtime?.isSyncQueueRunning || engine.runtime?.isAsyncQueueRunning ||
+      engine.runtime?.effectQueue?.sync?.length || engine.runtime?.effectQueue?.async?.length) {
     throw new Error('Cannot save while an action, transition, or effect queue is active.');
   }
   if (engine.taskManager?.hasBusyTasks?.(['auto_', 'move_char_'])) {
