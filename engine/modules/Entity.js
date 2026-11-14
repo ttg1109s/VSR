@@ -20,8 +20,14 @@ export const EntitySystem = {
 
     validateMoveState(charId) {
         const char = this.api.engine.state.getRuntimeSnapshot('characters.[id]', { id: charId });
-        // [REFACTOR] 'skip' check on moveList items
-        return !!(char && char.set.moving && char.set.move && char.moveList.some(item => !item.skip));
+        // Missing movement configuration is a valid disabled state, not a runtime error.
+        return !!(
+            char &&
+            char.set?.moving &&
+            char.set?.move &&
+            Array.isArray(char.moveList) &&
+            char.moveList.some(item => item && !item.skip)
+        );
     },
 
     scheduleCharacterMove(charId, delayOverride = null) {
