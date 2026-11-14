@@ -101,7 +101,8 @@ export const CmsStrategies = {
                 mutateList(relationship, eff.method, value, eff.index, true);
             } else if (eff.column === 'met') {
                 mutateMet(owner, eff.method, value);
-            }
+            } else return;
+            tx.set('characters.[id]', owner, { id });
         });
     },
 
@@ -112,6 +113,7 @@ export const CmsStrategies = {
             const router = tx.get('routers.[routerKey]', { routerKey: key });
             if (!router || eff.column !== 'actions') return;
             mutateList(ensureArray(router, 'actions'), eff.method, value, eff.index);
+            tx.set('routers.[routerKey]', router, { routerKey: key });
         });
     }
 };

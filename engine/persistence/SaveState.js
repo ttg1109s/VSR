@@ -76,10 +76,10 @@ export function normalizeSaveEnvelope(input) {
   }
   if (version !== SAVE_VERSION) throw new Error(`Unsupported save version: ${version}`);
   return {
-    ...input,
+    ...cloneJsonValue(input),
     protocol: 'vsr-save',
     pendingPasswordAction: input.pendingPasswordAction ?? null,
-    taskRemainingMs: input.taskRemainingMs ?? {},
-    pausedTasks: input.pausedTasks ?? []
+    taskRemainingMs: cloneJsonValue(input.taskRemainingMs ?? {}),
+    pausedTasks: [...(input.pausedTasks ?? [])]
   };
 }
