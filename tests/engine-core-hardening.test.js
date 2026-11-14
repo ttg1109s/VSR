@@ -1,5 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { scenarioSchema } from '../engine/scenario/ScenarioSchema.js';
 import { validateScenario, normalizeScenario, ScenarioValidationError } from '../engine/scenario/Scenario.js';
 import { LogicSystem } from '../engine/modules/Logic.js';
 import { ActionSystem } from '../engine/modules/Action.js';
@@ -119,4 +121,9 @@ test('entering a locked scene is rejected by the engine', async () => {
   assert.deepEqual(await SceneSystem.enterScene.call(engine, 'locked'), {
     success: false, reason: 'target_locked'
   });
+});
+
+test('generated runtime schema stays identical to scenario.schema.json', () => {
+  const sourceSchema = JSON.parse(readFileSync(new URL('../scenario.schema.json', import.meta.url), 'utf8'));
+  assert.deepEqual(scenarioSchema, sourceSchema);
 });
