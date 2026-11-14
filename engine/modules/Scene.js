@@ -158,8 +158,8 @@ export const SceneSystem = {
             await API.presentation.scene.transition('start', transType, timeIn / 1000);
         }
 
-        if (this.currentStillTask) { taskManager.kill(this.currentStillTask); this.currentStillTask = null; }
-        this.activeTimerTasks.forEach(taskId => taskManager.kill(taskId));
+        if (this.currentStillTask) { this.taskManager.kill(this.currentStillTask); this.currentStillTask = null; }
+        this.activeTimerTasks.forEach(taskId => this.taskManager.kill(taskId));
         this.activeTimerTasks = [];
 
         API.presentation.scene.hideTimer();
@@ -222,7 +222,7 @@ export const SceneSystem = {
         if (rd.loop && rd.loop.still && rd.loop.still.length > 0 && secondsStill >= 5) {
             const taskId = `router_still_${sId}_${routerId}`;
             this.currentStillTask = taskId;
-            taskManager.addNew(taskId, {
+            this.taskManager.addNew(taskId, {
                 time: secondsStill * 1000,
                 mode: 'interval',
                 exe: () => {
@@ -232,7 +232,7 @@ export const SceneSystem = {
                     }
                 }
             });
-            taskManager.operator(taskId, 'enabled');
+            this.taskManager.operator(taskId, 'enabled');
         }
 
         if (rConfigSet.timer && rConfigSet.timerSeconds >= 1.5) {
@@ -250,7 +250,7 @@ export const SceneSystem = {
 
             this.updateTimerUI(maxTimeSeconds, displayMode, maxTimeSeconds);
 
-            taskManager.addNew(uiTaskId, {
+            this.taskManager.addNew(uiTaskId, {
                 time: 1000,
                 mode: 'interval',
                 exe: () => {
@@ -260,16 +260,16 @@ export const SceneSystem = {
                     }
                 }
             });
-            taskManager.operator(uiTaskId, 'enabled');
+            this.taskManager.operator(uiTaskId, 'enabled');
             this.activeTimerTasks.push(uiTaskId);
 
-            taskManager.addNew(endTaskId, {
+            this.taskManager.addNew(endTaskId, {
                 time: durationMs,
                 mode: 'timeout',
                 count: 1,
                 exe: () => {
-                    taskManager.kill(uiTaskId);
-                    taskManager.kill(endTaskId);
+                    this.taskManager.kill(uiTaskId);
+                    this.taskManager.kill(endTaskId);
 
                     API.presentation.scene.hideTimer();
 
@@ -282,7 +282,7 @@ export const SceneSystem = {
                     }
                 }
             });
-            taskManager.operator(endTaskId, 'enabled');
+            this.taskManager.operator(endTaskId, 'enabled');
             this.activeTimerTasks.push(endTaskId);
         }
     },
