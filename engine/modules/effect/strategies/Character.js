@@ -23,7 +23,7 @@ const StatsLogic = {
                 return characters;
             });
             if (idA === entryChar || idB === entryChar) engine.api.presentation.components.updatePlayerCard();
-            engine.api.presentation.notification.add("Hoán đổi", `Chỉ số giữa ${charA.set.name} và ${charB.set.name} đã thay đổi.`, "info");
+            engine.api.presentation.notification.add("Hoán đổi", `Chỉ số giữa ${charA.set.name} và ${charB.set.name} đã thay đổi.`, "info", { source: 'scenario', category: 'scenario.character.stats_swap' });
         }
     },
     copy_to: (engine, eff) => {
