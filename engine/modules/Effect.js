@@ -47,7 +47,7 @@ export const EffectSystem = {
         if (wrapper.type === 'skip_all') return;
         if (wrapper.type === 'effect') {
             const templateContent = wrapper.ref ? this.src?.templates?.effects?.[wrapper.ref] : null;
-            if (wrapper.ref && !templateContent) throw new Error(\`Unknown effect template reference: \${wrapper.ref}\`);
+            if (wrapper.ref && !templateContent) throw new Error(`Unknown effect template reference: ${wrapper.ref}`);
             if (!wrapper.ref && !wrapper.inline) throw new TypeError("An 'effect' wrapper requires ref or inline.");
             const process = async (content) => Array.isArray(content)
                 ? await this.processRunnables(content, context, isAsync, true)
@@ -58,7 +58,7 @@ export const EffectSystem = {
         }
 
         if (!EffectHandlers[wrapper.type]) {
-            throw new TypeError(\`Unsupported runnable wrapper type: \${String(wrapper.type)}\`);
+            throw new TypeError(`Unsupported runnable wrapper type: ${String(wrapper.type)}`);
         }
         await this.applyEffect(wrapper, context, listKey, sourceList);
     },
@@ -97,11 +97,11 @@ export const EffectSystem = {
     async applyEffect(eff, context, listKey = null, sourceList = []) {
         if (!eff || !eff.type) throw new TypeError('Effect payload must declare a type.');
         const handler = EffectHandlers[eff.type];
-        if (typeof handler !== 'function') throw new TypeError(\`Unsupported effect payload type: \${String(eff.type)}\`);
+        if (typeof handler !== 'function') throw new TypeError(`Unsupported effect payload type: ${String(eff.type)}`);
         try {
             await handler.call(this, eff, context, listKey, sourceList);
         } catch (error) {
-            const wrapped = new Error(\`Effect '\${eff.type}' failed: \${error.message}\`, { cause: error });
+            const wrapped = new Error(`Effect '${eff.type}' failed: ${error.message}`, { cause: error });
             wrapped.code = 'EFFECT_EXECUTION_FAILED';
             throw wrapped;
         }
