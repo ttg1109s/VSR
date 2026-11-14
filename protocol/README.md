@@ -14,7 +14,11 @@ Each `GameEngine` instance owns its API facade, state resolver, protocol, and ta
 
 Commands are allow-listed and serialized per Engine. Command idempotency is keyed by `commandId`, bounded in memory, and is not durable across process restarts.
 
-An optional `authorizeCommand` hook can enforce an authorization policy using trusted transport context. It is not an authentication mechanism. A network adapter remains responsible for authenticating callers and constructing trustworthy context.
+An `authorizeCommand` hook can enforce an authorization policy using trusted transport context. It is not an authentication mechanism. A network adapter remains responsible for authenticating callers and constructing trustworthy context.
+
+For a network-facing deployment, construct the Engine with both `authorizeCommand` and `requireAuthorization: true`. Construction fails if the required hook is missing. The adapter must authenticate the caller, place a stable authenticated principal ID in `context.principal.id` (or `context.principalId`), and never accept that identity from the untrusted command payload. Idempotency records are scoped by that principal ID. Keep the default optional mode only for trusted local/in-process use.
+
+**Important trust boundary:** do not send scenario source or password answer values to an untrusted client. Run the authoritative Engine and password verification on a trusted server. The protocol authorization hook protects command access; it does not by itself hide scenario data or make a client-hosted Engine authoritative.
 
 ### Password submission
 
@@ -27,6 +31,8 @@ The `password.submit` command requires an active Engine-owned challenge. Its pay
 The Engine rejects missing, stale, or mismatched challenge IDs and validates that the challenge still belongs to the active scene and router. The Engine resolves the password definition and effects from the loaded scenario. The client must not submit a success flag, retry counter, password configuration, answer, or other authority-bearing data.
 
 A wrong answer either leaves the challenge active for another attempt or exhausts it according to the Engine-side retry policy. The Engine enforces the challenge deadline. Clients should treat the command acknowledgement and subsequent protocol events as the result; they must not determine success locally.
+
+For `puzzle`, the client submits `input` as an array (or JSON-encoded array) of original piece indices in final row-major positions. For a solved `cols × rows` puzzle, the array is `[0, 1, 2, ... cols*rows-1]`. The Engine validates the configured dimensions and the complete arrangement; the client must not submit a `solved: true` flag. The action input request includes the puzzle image URL, dimensions, and level.
 
 ## Scenario and saves
 

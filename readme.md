@@ -48,6 +48,28 @@ unsubscribe();
 engine.taskManager.killAll();
 ```
 
+## Production deployment and command authorization
+
+For a network-facing deployment, keep the authoritative Engine on a trusted server. Do not send scenario source or password answer values to an untrusted client. Authenticate callers in the transport adapter and enable required command authorization:
+
+```js
+const engine = new GameEngine({
+  requireAuthorization: true,
+  authorizeCommand: async ({ command, payload, context }) => {
+    // context.principal must be populated by trusted server middleware.
+    const principalId = context?.principal?.id;
+    if (!principalId) return false;
+
+    // Apply your application's session, ownership and command policy here.
+    return await authorizeGameCommand({ principalId, command, payload });
+  }
+});
+```
+
+The adapter must set `context.principal.id` from the authenticated session, not from client-supplied payload data. Authorization is not authentication; the Engine cannot secure a deployment whose transport trusts client-provided identity. Local/in-process use may retain the default optional authorization mode.
+
+Password verification supports number, string, switch, validated grid paths, and jigsaw piece arrangements. For jigsaw challenges, clients submit the final row-major piece order as `input`; the Engine validates the full arrangement and the configured piece count.
+
 ## Hybrid JSON protocol v2
 
 The protocol uses four envelope types:

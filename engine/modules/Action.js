@@ -256,43 +256,50 @@ export const ActionSystem = {
                 return;
             }
 
-            // Password Check
+            // Password Check — fail closed: a malformed or missing definition
+            // must never fall through to successful action execution.
             if (set.password) {
-                const parts = set.password.split(':');
-                if (parts.length >= 2) {
-                    const passType = parts[0];
-                    const passId = parts[1];
-                    const passDef = this.src.passwords && this.src.passwords[passType] ? this.src.passwords[passType][passId] : null;
-
-                    if (passDef) {
-                        const challenge = this.passwordSystem.open({
-                            actionId: actionKey, uniqueId, sceneId: sId, routerId: rId,
-                            type: passType, passwordId: passId, config: passDef
-                        });
-                        this.pendingPasswordAction = challenge;
-                        this.schedulePasswordExpiry(challenge, actDef);
-                        state.set('session.passwordChallenge', challenge);
-                        this.api.presentation.components.keyboard(
-                            { id: actionKey, meta: { title: actDef.meta?.title, desc: actDef.meta?.desc } },
-                            actionKey,
-                            uniqueId,
-                            {
-                                type: passType, desc: passDef.desc, retryMax: challenge.retryMax,
-                                timer: passDef.timer, challengeId: challenge.challengeId,
-                                countTest: challenge.countTest,
-                                remainingAttempts: challenge.retryMax === 0 ? null : challenge.retryMax,
-                                deadlineAt: challenge.deadlineAt
-                            }
-                        );
-                        // The player may now interact; do not hold the global action lock while waiting.
-                        this.isActionProcessing = false;
-                        return;
-                    } else {
-                        console.error(`[Flow] Password Definition NOT FOUND: ${set.password}`);
-                        this.api.presentation.notification.add("Lỗi Config", "Không tìm thấy định nghĩa mật khẩu.", "error");
-                        this.isActionProcessing = false; // Release lock manually because finally block skips this check
-                    }
+                const parts = typeof set.password === 'string' ? set.password.split(':') : [];
+                if (parts.length !== 2 || !parts[0] || !parts[1]) {
+                    throw new Error(`Invalid password reference: ${String(set.password)}`);
                 }
+                const [passType, passId] = parts;
+                const passDef = this.src?.passwords?.[passType]?.[passId];
+                if (!passDef) {
+                    throw new Error(`Password definition not found: ${set.password}`);
+                }
+
+                const challenge = this.passwordSystem.open({
+                    actionId: actionKey, uniqueId, sceneId: sId, routerId: rId,
+                    type: passType, passwordId: passId, config: passDef
+                });
+                this.pendingPasswordAction = challenge;
+                this.schedulePasswordExpiry(challenge, actDef);
+                state.set('session.passwordChallenge', challenge);
+                this.api.presentation.components.keyboard(
+                    { id: actionKey, meta: { title: actDef.meta?.title, desc: actDef.meta?.desc } },
+                    actionKey,
+                    uniqueId,
+                    {
+                        type: passType, desc: passDef.desc, retryMax: challenge.retryMax,
+                        timer: passDef.timer, challengeId: challenge.challengeId,
+                        countTest: challenge.countTest,
+                        remainingAttempts: challenge.retryMax === 0 ? null : challenge.retryMax,
+                        deadlineAt: challenge.deadlineAt,
+                        ...(passType === 'puzzle' ? {
+                            puzzle: { url: passDef.url, ratio: passDef.ratio ?? [3, 3], level: passDef.level }
+                        } : {}),
+                        ...(passType === 'find_way' ? {
+                            findWay: {
+                                area: passDef.area, start: passDef.start,
+                                target: passDef.target
+                            }
+                        } : {})
+                    }
+                );
+                // The player may now interact; do not hold the global action lock.
+                this.isActionProcessing = false;
+                return;
             }
 
             // Success Execution
@@ -306,7 +313,7 @@ export const ActionSystem = {
             console.error("[Flow] Action execution error:", err);
         } finally {
             // Only release lock if NOT a password action (password UI handles its own flow)
-            if (!set.password) {
+            if (!this.pendingPasswordAction || this.pendingPasswordAction.actionId !== actionKey) {
                 this.isActionProcessing = false;
             }
         }
@@ -354,6 +361,7 @@ export const ActionSystem = {
             }
             if (result === 'expired') {
                 this.protocol?.publish?.('password.expired', { actionId: actionKey, uniqueId });
+                this.commitState('password.expired');
                 return { success: false, reason: 'expired' };
             }
             if (result === true) {
