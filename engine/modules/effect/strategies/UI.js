@@ -3,6 +3,6 @@
 import { API } from '../../../../api/index.js';
 
 export const NotifyStrategies = {
-    modal: (engine, eff) => API.render.notification.alert(eff.title || "Thông báo", eff.text, eff.level || "info"),
-    default: (engine, eff) => API.render.notification.add(eff.title || "Thông báo", eff.text, eff.level || "info")
+    modal: (engine, eff) => API.presentation.notification.alert(eff.title || "Thông báo", eff.text, eff.level || "info"),
+    default: (engine, eff) => API.presentation.notification.add(eff.title || "Thông báo", eff.text, eff.level || "info")
 };
