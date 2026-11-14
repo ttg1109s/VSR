@@ -74,7 +74,7 @@ export const ChatSystem = {
             let preview = c.set.desc || "No content";
             if (h.length > 0) {
                 const last = h[h.length - 1];
-                const entryChar = this.state.meta?.entryCharacter || 'player';
+                const entryChar = this.api.engine.state.get('entryCharacter') || 'player';
                 const senderID = last.nameID || last.char_id;
                 preview = `${(senderID === entryChar) ? 'You: ' : ''}${last.text}`;
             }
@@ -167,7 +167,7 @@ export const ChatSystem = {
                             pickedChoice = blockInfo.choices.find(ch => ch.set && ch.set.choiced === true);
                         }
                         if (pickedChoice) {
-                            const entryChar = this.state.meta?.entryCharacter || 'player';
+                            const entryChar = this.api.engine.state.get('entryCharacter') || 'player';
                             chatHistory.push({ nameID: entryChar, text: pickedChoice.text });
                         } else {
                             stopAtBlock = blockId;
@@ -228,8 +228,8 @@ export const ChatSystem = {
     },
 
     _getCurrentIdentityKey() {
-        const fakerState = this.state.faker;
-        return fakerState.active ? fakerState.targetId : (this.state.meta?.entryCharacter || 'player');
+        const fakerState = this.api.engine.state.getRuntimeSnapshot('faker') || {};
+        return fakerState.active ? fakerState.targetId : (this.api.engine.state.get('entryCharacter') || 'player');
     },
 
     resolveBlock(chatId, blockId) {
@@ -346,7 +346,7 @@ export const ChatSystem = {
         console.log(`[ChatSystem] Marked Block ${blockId} (and choice ${idx}) as CHOICED.`);
 
         // --- 2. Render tin nhắn ---
-        const entryChar = this.state.meta?.entryCharacter || 'player';
+        const entryChar = this.api.engine.state.get('entryCharacter') || 'player';
         const playerLine = { nameID: entryChar, text: choice.text };
 
         this.api.engine.state.update('chat.history', history => [...(history || []), playerLine], { id: this.chatState.id });
