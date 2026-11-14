@@ -1,3 +1,5 @@
+import { escapeHtml, sanitizeInlineHtml } from '../utils/security.js';
+
 // htdocs/components/ChatBubble.js
 
 export const ChatBubble = ({ isPlayer, displayName, text, avatar }) => {
@@ -9,8 +11,8 @@ export const ChatBubble = ({ isPlayer, displayName, text, avatar }) => {
         <div class="flex w-full mb-3 ${isPlayer ? 'justify-end' : 'justify-start'} animate-fade-in">
             ${!isPlayer ? avatar : ''}
             <div class="max-w-[80%] ${bubbleClass} px-3.5 py-2.5 shadow-sm flex flex-col relative group">
-                ${!isPlayer ? `<span class="text-[9px] text-[var(--vsr-ink-400)] font-bold mb-1 ml-0.5 uppercase tracking-wide hidden group-hover:block transition-all">${displayName}</span>` : ''}
-                <span class="text-sm leading-relaxed whitespace-pre-wrap font-sans">${text}</span>
+                ${!isPlayer ? `<span class="text-[9px] text-[var(--vsr-ink-400)] font-bold mb-1 ml-0.5 uppercase tracking-wide hidden group-hover:block transition-all">${escapeHtml(displayName)}</span>` : ''}
+                <span class="text-sm leading-relaxed whitespace-pre-wrap font-sans">${sanitizeInlineHtml(text)}</span>
             </div>
         </div>
     `;
