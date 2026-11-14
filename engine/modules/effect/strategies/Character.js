@@ -143,11 +143,11 @@ export const CharacterStrategies = {
 
         // Logic check VALIDATE MOVE STATE
         if (!engine.validateMoveState(charId)) {
-            this.taskManager.kill(`move_char_${charId}`);
+            engine.taskManager.kill(`move_char_${charId}`);
             return;
         }
 
-        if (char.set.moving && !this.taskManager.plan[`move_char_${charId}`]) {
+        if (char.set.moving && !engine.taskManager.plan[`move_char_${charId}`]) {
             engine.scheduleCharacterMove(charId);
         }
     }
