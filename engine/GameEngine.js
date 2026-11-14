@@ -122,6 +122,13 @@ export class GameEngine {
   const remaining = challenge.deadlineAt - this.passwordSystem.clock();
   return this.scheduleDelay(Math.max(1, remaining), async () => {
    if (this.pendingPasswordAction?.challengeId !== challenge.challengeId) return;
+   const activeScene = this.state.scenes?.[challenge.sceneId];
+   if (this.state.sceneId !== challenge.sceneId || activeScene?.activeRouterId !== challenge.routerId) {
+    this.passwordSystem.finish(challenge, 'cancelled');
+    this.pendingPasswordAction = null;
+    this.api.engine.state.set('session.passwordChallenge', null);
+    return;
+   }
    const inspected = this.passwordSystem.inspect(challenge);
    if (inspected.accepted) return;
    this.passwordSystem.finish(challenge, 'expired');
