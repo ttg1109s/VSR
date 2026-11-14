@@ -22,6 +22,7 @@ function createPresentation(engine) {
     };
     const node = (path = '') => new Proxy((...args) => publish(path, args), {
         get(_target, property) {
+            if (path === '' && property === 'notification') return notification;
             if (property === 'then' || property === 'toJSON') return undefined;
             if (property === Symbol.toStringTag) return 'VSRPresentationCommand';
             if (property === 'name') return path;
