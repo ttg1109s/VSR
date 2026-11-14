@@ -308,7 +308,7 @@ test('malformed collection shapes produce validation errors instead of crashing 
 test('scenario format migration rejects unsupported versions explicitly', () => {
   const oldFormat = validScenario();
   oldFormat.formatVersion = 0;
-  assert.throws(() => migrateScenario(oldFormat), /no scenario migration is registered from formatVersion 0/);
+  assert.throws(() => migrateScenario(oldFormat), /unsupported scenario formatVersion '0'/);
   const futureFormat = validScenario();
   futureFormat.formatVersion = 2;
   assert.throws(() => migrateScenario(futureFormat), /newer than supported version/);
