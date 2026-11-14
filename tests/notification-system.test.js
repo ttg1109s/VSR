@@ -56,6 +56,18 @@ test('notification manager deduplicates, tracks read state, and expires notifica
   assert.equal(notifications.getHistory()[0].status, 'expired');
 });
 
+test('notification manager deduplicates identical notices by default but keeps sources isolated', () => {
+  const protocol = makeProtocol();
+  const notifications = new NotificationSystem({ protocol, clock: () => 10 });
+  const first = notifications.add('Lỗi', 'Không tìm thấy', 'danger', { source: 'inventory' });
+  const repeated = notifications.add('Lỗi', 'Không tìm thấy', 'danger', { source: 'inventory' });
+  const otherSource = notifications.add('Lỗi', 'Không tìm thấy', 'danger', { source: 'action' });
+  assert.equal(repeated.deduplicated, true);
+  assert.equal(otherSource.deduplicated, false);
+  assert.notEqual(first.notification.id, otherSource.notification.id);
+  assert.equal(notifications.getHistory().length, 2);
+});
+
 test('notification manager prioritizes pending entries and bounds its queue', () => {
   const protocol = makeProtocol();
   const notifications = new NotificationSystem({
