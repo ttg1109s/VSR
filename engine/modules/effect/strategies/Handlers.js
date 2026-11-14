@@ -53,13 +53,13 @@ export const CharacterPropertyHandlers = {
         if (val === true) {
             engine.scheduleCharacterMove(charId);
         } else {
-            this.taskManager.kill(`move_char_${charId}`);
+            engine.taskManager.kill(`move_char_${charId}`);
             if (engine.checkQueueAndResume) {
                 engine.checkQueueAndResume();
             }
         }
     },
-    met: (engine, char, val) => { char.set.met = val; ui.renderCharScreen(); },
+    met: (engine, char, val) => { char.set.met = val; API.presentation.components.renderCharacterScreen(); },
 
     __default__: (engine, char, val, charId, prop) => { char.set[prop] = val; }
 };
