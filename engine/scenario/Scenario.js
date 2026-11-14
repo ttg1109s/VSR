@@ -102,17 +102,58 @@ function validateReferences(scenario) {
   }
 
   const validatePasswordRef = (reference, path) => {
-    if (typeof reference !== 'string') return;
+    if (typeof reference !== 'string' || reference.includes('$(')) return;
     const parts = reference.split(':');
     if (parts.length !== 2 || !parts[0] || !parts[1] || !Object.hasOwn(passwords[parts[0]] || {}, parts[1])) {
       add(path, `references invalid password '${reference}' (expected type:id)`);
     }
   };
 
-  const validateRequirementRef = (requirement, path) => {
-    if (!isObject(requirement) || typeof requirement.ref !== 'string') return;
-    if (!Object.hasOwn(templates.requirements || {}, requirement.ref)) {
-      add(path, `references missing requirement template '${requirement.ref}'`);
+  const validateRequirement = (requirement, path) => {
+    if (!isObject(requirement)) return;
+    if (typeof requirement.ref === 'string') {
+      if (!Object.hasOwn(templates.requirements || {}, requirement.ref)) {
+        add(path, "references missing requirement template '" + requirement.ref + "'");
+      }
+      return;
+    }
+    for (const [index, check] of (requirement.check || []).entries()) {
+      const checkPath = path + ".check[" + index + "]";
+      if (check.type === 'state' && !Object.hasOwn(scenario.globalStates || {}, check.target)) {
+        add(checkPath + ".target", "references missing global state '" + check.target + "'");
+      }
+      if (check.type === 'item') {
+        if (check.subtype === 'usage' && !Object.hasOwn(items, check.target)) {
+          add(checkPath + ".target", "references missing item '" + check.target + "'");
+        }
+        if ((check.subtype === 'inventory' || check.subtype === 'hand') && typeof check.value === 'string' && !Object.hasOwn(items, check.value)) {
+          add(checkPath + ".value", "references missing item '" + check.value + "'");
+        }
+        if (check.subtype === 'hand' && Array.isArray(check.value)) {
+          check.value.forEach((id, itemIndex) => {
+            if (!Object.hasOwn(items, id)) add(checkPath + ".value[" + itemIndex + "]", "references missing item '" + id + "'");
+          });
+        }
+      }
+      if (check.type === 'stats') {
+        const collection = check.subtype === 'characters' ? characters : items;
+        if (!Object.hasOwn(collection, check.target)) add(checkPath + ".target", "references missing stat owner '" + check.target + "'");
+        else if (check.property && !Object.hasOwn(collection[check.target]?.stats || {}, check.property)) {
+          add(checkPath + ".property", "references missing stat '" + check.property + "'");
+        }
+      }
+      if (check.type === 'set') {
+        const exists = {
+          scene: () => Object.hasOwn(scenes, check.target),
+          router: () => routerExists(check.target),
+          action: () => Object.hasOwn(actions, check.target) || Object.values(scenes).some(scene => Object.values(scene.routers || {}).some(router => (Array.isArray(router.actions) ? router.actions : Object.values(router.actions || {})).some(item => isObject(item) && item.id === check.target))),
+          characters: () => characterExists(check.target),
+          chat: () => Object.hasOwn(chats, check.target),
+          chat_choice: () => Object.values(chats).some(chat => Object.hasOwn(chat.choice || {}, check.target)),
+          automation: () => Object.hasOwn(templates.automation || {}, check.target)
+        }[check.subtype];
+        if (exists && !exists()) add(checkPath + ".target", "references missing " + check.subtype + " target '" + check.target + "'");
+      }
     }
   };
 
@@ -128,10 +169,7 @@ function validateReferences(scenario) {
     if (wrapper.type === 'manage_effect' && !wrapper.inline) {
       add(path, "type 'manage_effect' requires an inline management payload");
     }
-    if (wrapper.type === 'automation') {
-      add(path, "type 'automation' is not an executable wrapper; start a declared automation through the supported set effect");
-    }
-    validateRequirementRef(wrapper.req, `${path}.req`);
+    validateRequirement(wrapper.req, path + '.req');
   };
 
   const validateAction = (action, path) => {
@@ -152,12 +190,13 @@ function validateReferences(scenario) {
         if (!characterExists(id)) add(`${path}.set.charAllow[${index}]`, `references missing character '${id}'`);
       });
     }
-    validateRequirementRef(action.requirement, `${path}.requirement`);
+    validateRequirement(action.requirement, path + '.requirement');
   };
 
   const validateEffectPayload = (effect, path) => {
     if (!isObject(effect)) return;
-    if (effect.type === 'goto') {
+    const dynamicTarget = typeof effect.target === 'string' && effect.target.includes('$(');
+    if (effect.type === 'goto' && !dynamicTarget) {
       if (effect.subtype === 'scene' && effect.target && !Object.hasOwn(scenes, effect.target)) {
         add(`${path}.target`, `references missing scene '${effect.target}'`);
       } else if (effect.subtype === 'router' && effect.target && !routerExists(effect.target)) {
@@ -171,10 +210,10 @@ function validateReferences(scenario) {
         if (!characterExists(targetCharacter)) add(`${path}.target`, `references missing faker character '${targetCharacter}'`);
       }
     }
-    if (effect.type === 'item' && effect.target && !Object.hasOwn(items, effect.target)) {
+    if (effect.type === 'item' && effect.target && !dynamicTarget && !Object.hasOwn(items, effect.target)) {
       add(`${path}.target`, `references missing item '${effect.target}'`);
     }
-    if (effect.type === 'characters' && effect.target && !characterExists(effect.target)) {
+    if (effect.type === 'characters' && effect.target && !dynamicTarget && !characterExists(effect.target)) {
       add(`${path}.target`, `references missing character '${effect.target}'`);
     }
   };
@@ -196,7 +235,9 @@ function validateReferences(scenario) {
     for (const [key, child] of Object.entries(value)) inspect(child, `${path}.${key}`);
   };
 
-  for (const [actionId, action] of Object.entries(actions)) validateAction(action, `actions.${actionId}`);
+  for (const [actionId, action] of Object.entries(actions)) validateAction(action, 'actions.' + actionId);
+  for (const [itemId, item] of Object.entries(items)) validateRequirement(item.requirements, 'itemInfo.' + itemId + '.requirements');
+  for (const [templateId, requirement] of Object.entries(templates.requirements || {})) validateRequirement(requirement, 'templates.requirements.' + templateId);
   for (const [sceneId, scene] of Object.entries(scenes)) {
     for (const [routerId, router] of Object.entries(scene?.routers || {})) {
       const entries = Array.isArray(router.actions)
