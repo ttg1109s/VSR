@@ -23,33 +23,32 @@ const LogicGates = {
 
 // [LEGACY] ObjectRetrievers maintained for 'set' checks which might need object references
 const ObjectRetrievers = {
-    scene: (engine, target) => engine.state.scenes[target],
+    scene: (engine, target) => engine.api.engine.state.getRuntime('scenes.[id]', { id: target }),
     router: (engine, target) => {
-        let rKey = `${engine.state.sceneId}_${target}`;
-        if (!engine.state.routers[rKey] && engine.src.path.routers[target]) {
-            rKey = `${engine.src.path.routers[target][0]}_${target}`;
+        const state = engine.api.engine.state;
+        let key = `${state.sceneId}_${target}`;
+        if (!state.getRuntime('routers.[routerKey]', { routerKey: key })) {
+            const sourceSceneId = state.getSource('path.routers.[id]', { id: target });
+            if (sourceSceneId) key = `${sourceSceneId}_${target}`;
         }
-        return engine.state.routers[rKey];
+        return state.getRuntime('routers.[routerKey]', { routerKey: key });
     },
     action: (engine, target) => {
-        let aKey = `${engine.state.sceneId}_${engine.state.scenes[engine.state.sceneId].activeRouterId}_${target}`;
-        if (!engine.state.actions[aKey] && engine.src.path.actions[target]) {
-            const p = engine.src.path.actions[target];
-            aKey = `${p[1]}_${p[0]}_${target}`;
-        }
-        return engine.state.actions[aKey];
+        const state = engine.api.engine.state;
+        const sceneId = state.sceneId;
+        const routerId = state.get('scene.activeRouterId', { id: sceneId });
+        const key = `${sceneId}_${routerId}_${target}`;
+        return state.getRuntime('actions.[actionKey]', { actionKey: key });
     },
-    characters: (engine, target) => engine.state.characters[engine.redirectTarget(target)],
-    chat: (engine, target) => engine.state.chats[target],
+    characters: (engine, target) => engine.api.engine.state.getRuntime('characters.[id]', { id: engine.redirectTarget(target) }),
+    chat: (engine, target) => engine.api.engine.state.getRuntime('chats.[id]', { id: target }),
     chat_choice: (engine, target) => {
-        const map = engine.state.map.choices[target];
-        if (map) {
-            const chat = engine.state.chats[map.chatId];
-            return chat?.blocks?.[map.blockId]?.choices?.[map.idx];
-        }
-        return null;
+        const state = engine.api.engine.state;
+        const map = state.getRuntime('map.choices.[id]', { id: target });
+        if (!map) return null;
+        return state.getRuntime('chats.[chatId].blocks.[blockId].choices.[idx]', map);
     },
-    automation: (engine, target) => engine.state.automations[target]
+    automation: (engine, target) => engine.api.engine.state.getRuntime('automations.[id]', { id: target })
 };
 
 const ItemStrategies = {
@@ -63,7 +62,7 @@ const ItemStrategies = {
         const allowBroken = broken !== false;
 
         const validInventory = allowBroken ? inv : inv.filter(id => {
-            const usage = engine.state.itemInfo[id]?.usage;
+            const usage = engine.api.engine.state.getRuntime('itemInfo.[id].usage', { id });
             return !usage || usage.current < usage.max;
         });
 
