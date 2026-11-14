@@ -66,9 +66,8 @@ export class NotificationSystem {
     this.timers.delete(id);
   }
 
-  publish(kind, notification, args = null) {
-    const payload = { notification, ...(args ? { args } : {}) };
-    return this.protocol.publish(`presentation.notification.${kind}`, payload);
+  publish(kind, notification) {
+    return this.protocol.publish(`presentation.notification.${kind}`, { notification });
   }
 
   add(title, message, level = 'info', options = {}) {
@@ -100,7 +99,7 @@ export class NotificationSystem {
         previous.expiresAt = candidate.expiresAt;
         previous.duration = candidate.duration;
         previous.metadata = candidate.metadata;
-        this.publish('updated', previous, [previous.title, previous.message, previous.level]);
+        this.publish('updated', previous);
         this.scheduleExpiry(previous);
         return { notification: { ...previous }, deduplicated: true };
       }
@@ -136,7 +135,7 @@ export class NotificationSystem {
       this.pending = this.pending.filter(id => id !== removed.id);
       if (removed.dedupeKey && this.dedupe.get(removed.dedupeKey) === removed.id) this.dedupe.delete(removed.dedupeKey);
     }
-    this.publish(presentation === 'modal' ? 'alert' : 'add', candidate, [candidate.title, candidate.message, candidate.level]);
+    this.publish(presentation === 'modal' ? 'alert' : 'add', candidate);
     this.scheduleExpiry(candidate);
     while (this.pending.length > this.maxQueue) {
       const droppedId = this.pending.pop();
