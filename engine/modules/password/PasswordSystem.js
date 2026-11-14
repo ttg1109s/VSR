@@ -35,6 +35,10 @@ export class PasswordSystem {
     const now = this.clock();
     if (!Number.isFinite(now)) throw new TypeError('PasswordSystem clock must return a finite timestamp.');
 
+    const deadlineAt = timerSeconds > 0 ? now + timerSeconds * 1000 : null;
+    if (deadlineAt !== null && !Number.isFinite(deadlineAt)) {
+      throw new TypeError('Password timer deadline exceeds the supported timestamp range.');
+    }
     const challengeId = this.createId();
     if (typeof challengeId !== 'string' || !challengeId.trim()) {
       throw new TypeError('Password challenge ID factory must return a non-empty string.');
@@ -47,7 +51,7 @@ export class PasswordSystem {
       countTest: Math.floor(rawCountTest),
       retryMax,
       startedAt: now,
-      deadlineAt: timerSeconds > 0 ? now + timerSeconds * 1000 : null
+      deadlineAt
     };
   }
 
@@ -55,7 +59,9 @@ export class PasswordSystem {
     if (!challenge || challenge.status !== 'active') return { accepted: false, reason: 'inactive' };
     if (challenge.deadlineAt !== null && challenge.deadlineAt !== undefined) {
       if (!Number.isFinite(challenge.deadlineAt)) return { accepted: false, reason: 'invalid_deadline' };
-      if (this.clock() >= challenge.deadlineAt) return { accepted: false, reason: 'expired' };
+      const now = this.clock();
+      if (!Number.isFinite(now)) return { accepted: false, reason: 'invalid_clock' };
+      if (now >= challenge.deadlineAt) return { accepted: false, reason: 'expired' };
     }
     return {
       accepted: true,
@@ -86,7 +92,9 @@ export class PasswordSystem {
       throw new TypeError(`Invalid terminal Password status: ${status}`);
     }
     challenge.status = status;
-    challenge.closedAt = this.clock();
+    const closedAt = this.clock();
+    if (!Number.isFinite(closedAt)) throw new TypeError('PasswordSystem clock must return a finite timestamp.');
+    challenge.closedAt = closedAt;
     return true;
   }
 }
