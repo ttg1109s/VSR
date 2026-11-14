@@ -149,7 +149,7 @@ export class GameEngine {
         this.state.isSyncQueueRunning = false;
         this.state.isAsyncQueueRunning = false;
         this.clearEffectQueue('all');
-        API.render.navigation.setBlocking(false);
+        API.presentation.navigation.setBlocking(false);
         console.warn("Engine: Force Unlocked");
     }
 
@@ -174,7 +174,7 @@ export class GameEngine {
             const item = this.state.effectQueue.sync.shift();
 
             this.isActionProcessing = true;
-            if (API.render && API.render.navigation) API.render.navigation.setBlocking(true);
+            if (API.presentation && API.presentation.navigation) API.presentation.navigation.setBlocking(true);
 
             try {
                 await this.processRunnables(item.effectiveList, item.context, false, true);
@@ -187,7 +187,7 @@ export class GameEngine {
 
         this.state.isSyncQueueRunning = false;
         this.isActionProcessing = false;
-        if (API.render && API.render.navigation) API.render.navigation.setBlocking(false);
+        if (API.presentation && API.presentation.navigation) API.presentation.navigation.setBlocking(false);
     }
 
     async runAsyncQueue() {
