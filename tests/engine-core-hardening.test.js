@@ -7,6 +7,7 @@ import { LogicSystem } from '../engine/modules/Logic.js';
 import { ActionSystem } from '../engine/modules/Action.js';
 import { SceneSystem } from '../engine/modules/Scene.js';
 import { AutomationSystem } from '../engine/modules/Automation.js';
+import { DEMO_SCRIPT } from '../demo_script.js';
 
 function validScenario() {
   return {
@@ -63,7 +64,7 @@ test('invalid and unresolved requirements fail closed', () => {
 test('requirement template references resolve and evaluate against runtime state', () => {
   const engine = Object.assign({}, LogicSystem, {
     src: { templates: { requirements: { allow: { check: [
-      { type: 'state', subtype: 'global', target: 'flag', op: '==', value: 7 }
+      { type: 'state', property: 'flag', op: '==', value: 7 }
     ] } } } },
     api: { engine: { state: { get: () => 7 } } }
   });
@@ -165,4 +166,88 @@ test('random automation stops after its configured number of complete cycles', a
   await AutomationSystem.processAutomationStep.call(engine, 'random');
   assert.equal(runtime.countCurrent, 1);
   assert.equal(stopped, true);
+});
+
+
+test('the canonical demo scenario satisfies the schema and semantic contract', () => {
+  assert.deepEqual(validateScenario(DEMO_SCRIPT), []);
+  const normalized = normalizeScenario(DEMO_SCRIPT);
+  assert.equal(normalized.formatVersion, 1);
+  assert.equal(normalized.meta.entryScene, 'scene_garden');
+});
+
+test('global state declarations require values that match their declared type', () => {
+  const scenario = validScenario();
+  scenario.globalStates.flag = { type: 'boolean', value: 1 };
+  assert.ok(validateScenario(scenario).some(error => error.includes('must be boolean')));
+});
+
+test('scenario entry scene must be explicit and resolvable', () => {
+  const scenario = validScenario();
+  delete scenario.meta.entryScene;
+  assert.ok(validateScenario(scenario).some(error => error.includes('entryScene')));
+  scenario.meta.entryScene = 'missing';
+  assert.ok(validateScenario(scenario).some(error => error.includes("must reference an existing scene")));
+});
+
+test('router IDs must be globally unique because the loader indexes them globally', () => {
+  const scenario = validScenario();
+  scenario.scenes.other = {
+    meta: { title: 'Other' },
+    set: { activeRouterId: 'main' },
+    routers: { main: { meta: {}, set: { blocked: false, visited: false, countVisited: 0 }, actions: [] } }
+  };
+  assert.ok(validateScenario(scenario).some(error => error.includes('router ID is not globally unique')));
+});
+
+test('chat entry, choice references, and jumps must resolve within the same chat', () => {
+  const scenario = validScenario();
+  scenario.chat.talk = {
+    meta: { loop: false, entry: 'first' },
+    block: { first: { line: [], choice_id: 'missing', choiced: false } },
+    choice: {}
+  };
+  const errors = validateScenario(scenario);
+  assert.ok(errors.some(error => error.includes("references missing choice group 'missing'")));
+  scenario.chat.talk.block.first.choice_id = null;
+  scenario.chat.talk.choice.answer = [{ text: 'Next', jump: 'missing' }];
+  assert.ok(validateScenario(scenario).some(error => error.includes("references missing block 'missing'")));
+});
+
+test('find-way paths must remain in bounds, begin at start, end at target, and use adjacent cells', () => {
+  const scenario = validScenario();
+  scenario.passwords.find_way = {
+    maze: { desc: 'Maze', area: [3, 3], start: [0, 0], target: [2, 2], street: [[0, 0], [2, 2]] }
+  };
+  const errors = validateScenario(scenario);
+  assert.ok(errors.some(error => error.includes('orthogonally adjacent')));
+});
+
+test('requirement checks read global-state IDs from the schema property field', () => {
+  let requested;
+  const engine = Object.assign({}, LogicSystem, {
+    src: {},
+    api: { engine: { state: { get: (key, args) => { requested = args.id; return true; } } } }
+  });
+  const result = engine.checkReq({ logic: 'AND', check: [
+    { type: 'state', property: 'alarm', op: '==', value: true }
+  ] });
+  assert.equal(requested, 'alarm');
+  assert.equal(result.pass, true);
+});
+
+test('unsupported runnable types fail instead of being silently ignored', async () => {
+  const engine = Object.assign({}, EffectSystem, {
+    src: { templates: { effects: {} } },
+    api: { engine: { state: { getRuntimeSnapshot: () => ({}) } } }
+  });
+  await assert.rejects(() => engine.processRunnable({ type: 'automation' }), /Unsupported runnable wrapper type/);
+});
+
+test('effect wrappers reject unresolved template references', async () => {
+  const engine = Object.assign({}, EffectSystem, {
+    src: { templates: { effects: {} } },
+    api: { engine: { state: { getRuntimeSnapshot: () => ({}) } } }
+  });
+  await assert.rejects(() => engine.processRunnable({ type: 'effect', ref: 'missing' }), /Unknown effect template reference/);
 });
