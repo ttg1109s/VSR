@@ -2,7 +2,7 @@ name: Engine quality
 
 on:
   push:
-    branches: [feature/restore-password-domain]
+    branches: [engine-only, feature/restore-password-domain]
   pull_request:
 
 jobs:
