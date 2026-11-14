@@ -128,3 +128,20 @@ test('Chat choice progress stays in runtime state and endChat commits synchronou
  assert.equal(e.state.actions.__chat_action_probe.display,'hide');
  assert.equal(e.chatState.active,false);
 });
+
+test('Starting a chat commits dialogue progress through StateAccess',async()=>{
+ const e=makeEngine();
+ await e.init(structuredClone(DEMO_SCRIPT));
+ const chatId='__chat_dialogue_probe';
+ const chat={meta:{sender:'npc',entry:'start',loop:false},set:{read:false,step:0,bookmark:[]},block:{start:{line:[{text:'Hello',char_id:'npc'}]}},choice:{}};
+ e.src.chat ||= {};
+ e.src.chat[chatId]=structuredClone(chat);
+ e.state.chats[chatId]=structuredClone(chat);
+ e.state.chatHistory[chatId]=[];
+ e.startChat(chatId);
+ assert.equal(e.chatState.active,true);
+ assert.equal(e.chatState.index,1);
+ assert.equal(e.state.chats[chatId].set.step,1);
+ assert.deepEqual(e.state.chatHistory[chatId].map(line=>line.text),['Hello']);
+ assert.deepEqual(e.state.chats[chatId].set.bookmark,['start']);
+});
