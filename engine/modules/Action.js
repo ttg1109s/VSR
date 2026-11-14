@@ -162,7 +162,7 @@ export const ActionSystem = {
         const allDescRead = this.getConfig('allDescRead');
         const actStateKey = `${sId}_${rId}_${actionKey}`;
         // Ensure state checking
-        const currentState = this.state.actions[actStateKey] || {};
+        const currentState = this.api.engine.state.getRuntimeSnapshot('actions.[id]', { id: actStateKey }) || {};
 
         // Does this action effectively require reading?
         const requiresRead = (allDescRead || set.readDesc === true) && !!actDef.meta?.desc;
@@ -182,13 +182,17 @@ export const ActionSystem = {
                 if (this.state.automations[autoId].active) this.stopAutomation(autoId);
             });
 
-            // Update State (Write Operation - Keep Direct Access)
+            // Update the action counter without retaining a mutable state reference.
             const actStateKey = `${sId}_${rId}_${actionKey}`;
-            if (!this.state.actions[actStateKey]) {
-                this.state.actions[actStateKey] = { countClicks: 0, countFails: 0, display: 'show' };
-            }
-            const actState = this.state.actions[actStateKey];
-            actState.countClicks++;
+            const state = this.api.engine.state;
+            state.update('actions.[id]', current => ({
+                countClicks: 0,
+                countFails: 0,
+                display: 'show',
+                ...(current || {}),
+                countClicks: ((current || {}).countClicks || 0) + 1
+            }), { id: actStateKey });
+            const actState = state.getRuntimeSnapshot('actions.[id]', { id: actStateKey });
 
             // Check Cooldown
             // [FIXED] Use internal logic for Cooldown timestamps as they are runtime only (not mapped in Schema for 'End Time')
@@ -221,7 +225,7 @@ export const ActionSystem = {
             }
 
             if (!checkPassed) {
-                actState.countFails++;
+                state.update('actions.[id].countFails', current => (Number(current) || 0) + 1, { id: actStateKey });
                 this.api.presentation.effects.shake(uniqueId);
 
                 const failActions = {
@@ -255,7 +259,7 @@ export const ActionSystem = {
 
                     if (passDef) {
                         passDef._type = passType;
-                        this.pendingPasswordAction = { sceneId: sId, routerId: rId, actionId: actionKey, uniqueId };
+                        state.set('session.passwordChallenge', { sceneId: sId, routerId: rId, actionId: actionKey, uniqueId });
                         this.api.presentation.components.keyboard(
                             { id: actionKey, meta: { title: actDef.meta?.title, desc: actDef.meta?.desc } },
                             actionKey,
@@ -292,12 +296,16 @@ export const ActionSystem = {
 
     async executeActionSuccess(actDef, sId, rId, actionKey, uniqueId) {
         const set = actDef.set || {};
-        const actState = this.state.actions[`${sId}_${rId}_${actionKey}`];
+        const state = this.api.engine.state;
+        const actStateKey = `${sId}_${rId}_${actionKey}`;
 
         // Set Cooldown
-        if (set.cooldown && set.cooldown > 0 && actState) {
-            actState.cooldownEnd = Date.now() + (set.cooldown * 1000);
-            actState.cooldownDuration = set.cooldown;
+        if (set.cooldown && set.cooldown > 0 && state.getRuntimeSnapshot('actions.[id]', { id: actStateKey })) {
+            state.update('actions.[id]', current => ({
+                ...(current || {}),
+                cooldownEnd: Date.now() + (set.cooldown * 1000),
+                cooldownDuration: set.cooldown
+            }), { id: actStateKey });
         }
 
         // Pass Effect
@@ -330,11 +338,11 @@ export const ActionSystem = {
                 await this.executeActionSuccess(actDef, sId, rId, actionKey, uniqueId);
                 if (!this.isTransitioning) this.commitState('action.changed');
             } else {
-                const actState = this.state.actions[`${sId}_${rId}_${actionKey}`];
-                if (actState) {
-                    actState.countFails++;
+                const state = this.api.engine.state;
+                const actStateKey = `${sId}_${rId}_${actionKey}`;
+                if (state.getRuntimeSnapshot('actions.[id]', { id: actStateKey })) {
+                    state.update('actions.[id].countFails', current => (Number(current) || 0) + 1, { id: actStateKey });
                     // [REQ] countTest = retryMax => pwFail effect ONLY. Do NOT lock action.
-                    // actState.display = 'locked'; 
                 }
 
                 this.api.presentation.effects.shake(uniqueId);
