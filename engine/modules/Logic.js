@@ -55,7 +55,7 @@ const ItemStrategies = {
     inventory: (engine, c) => {
         const { op, value, broken } = c;
         const val = resolveValue(value, engine);
-        const inv = engine.getInventory ? engine.getInventory() : engine.state.inventory;
+        const inv = engine.getInventory ? engine.getInventory() : (engine.api.engine.state.getRuntime('inventory') || []);
 
         // [UPDATED] Broken Logic: Default true (Allow broken items)
         // Set broken: false in logic config to filter them out.
@@ -71,13 +71,13 @@ const ItemStrategies = {
     hand: (engine, c) => {
         const { op, value, broken } = c;
         const val = resolveValue(value, engine);
-        const hand = engine.getHand ? engine.getHand() : engine.state.hand;
+        const hand = engine.getHand ? engine.getHand() : (engine.api.engine.state.getRuntime('hand') || []);
 
         // [UPDATED] Broken Logic: Default true
         const allowBroken = broken !== false;
 
         const validHand = allowBroken ? hand : hand.filter(id => {
-            const usage = engine.state.itemInfo[id]?.usage;
+            const usage = engine.api.engine.state.getRuntime('itemInfo.[id].usage', { id });
             return !usage || usage.current < usage.max;
         });
 
