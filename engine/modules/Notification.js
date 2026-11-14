@@ -7,10 +7,10 @@ const SEVERITY_ALIASES = Object.freeze({
 const PRIORITY = Object.freeze({ danger: 5, warning: 4, special: 3, success: 2, info: 1 });
 
 export class NotificationSystem {
-  constructor({ protocol, engineId = 'vsr', clock = () => Date.now(), schedule = (callback, delay) => setTimeout(callback, delay), cancelSchedule = handle => clearTimeout(handle), maxHistory = 200, maxQueue = 100, dedupeWindowMs = 750, rateWindowMs = 1000, maxPerWindow = 20, defaultDurationMs = 5000 } = {}) {
+  constructor({ protocol, engineId = 'vsr', clock = () => Date.now(), schedule = (callback, delay) => setTimeout(callback, delay), cancelSchedule = handle => clearTimeout(handle), maxHistory = 200, maxQueue = 100, dedupeWindowMs = 750, rateWindowMs = 1000, maxPerWindow = 20, maxRateBuckets = 500, defaultDurationMs = 5000 } = {}) {
     if (!protocol || typeof protocol.publish !== 'function') throw new TypeError('NotificationSystem requires a Protocol publisher.');
     if (typeof clock !== 'function') throw new TypeError('NotificationSystem clock must be a function.');
-    Object.assign(this, { protocol, engineId, clock, schedule, cancelSchedule, maxHistory, maxQueue, dedupeWindowMs, rateWindowMs, maxPerWindow, defaultDurationMs });
+    Object.assign(this, { protocol, engineId, clock, schedule, cancelSchedule, maxHistory, maxQueue, dedupeWindowMs, rateWindowMs, maxPerWindow, maxRateBuckets, defaultDurationMs });
     this.sequence = 0;
     this.history = [];
     this.pending = [];
@@ -107,6 +107,9 @@ export class NotificationSystem {
       this.dedupe.set(candidate.dedupeKey, candidate.id);
     }
     const rateKey = `${candidate.source}:${candidate.category}`;
+    if (!this.rateBuckets.has(rateKey) && this.rateBuckets.size >= this.maxRateBuckets) {
+      this.rateBuckets.delete(this.rateBuckets.keys().next().value);
+    }
     const recent = (this.rateBuckets.get(rateKey) || []).filter(timestamp => now - timestamp < this.rateWindowMs);
     if (recent.length >= this.maxPerWindow) {
       this.rateBuckets.set(rateKey, recent);
@@ -167,7 +170,8 @@ export class NotificationSystem {
     notification.dismissedAt = this.clock();
     notification.dismissReason = String(reason);
     this.pending = this.pending.filter(itemId => itemId !== notification.id);
-    this.publish(reason === 'expired' ? 'expired' : 'dismiss', notification);
+    const eventKind = reason === 'expired' ? 'expired' : reason === 'cleared' ? 'cleared' : 'dismiss';
+    this.publish(eventKind, notification);
     return true;
   }
 
