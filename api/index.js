@@ -6,6 +6,27 @@ import { fb } from '../plugin/basefunction.js'; // Plugin: BaseFunction
 
 export const API = {
     // -------------------------------------------------------------------------
+    // Stable JSON protocol (Snapshot + Event + Command)
+    // -------------------------------------------------------------------------
+    protocol: {
+        snapshot: (options) => {
+            const engine = window.engine;
+            return engine?.protocol?.createSnapshot(engine, options);
+        },
+        subscribe: (listener) => window.engine?.protocol?.subscribe(listener) || (() => {}),
+        command: (name, payload, options) => {
+            const engine = window.engine;
+            if (!engine?.protocol) return Promise.reject(new Error('VSR protocol is unavailable.'));
+            return engine.protocol.dispatch(engine.protocol.createCommand(name, payload, options));
+        },
+        dispatch: (command, context) => {
+            const engine = window.engine;
+            if (!engine?.protocol) return Promise.reject(new Error('VSR protocol is unavailable.'));
+            return engine.protocol.dispatch(command, context);
+        },
+        eventsSince: (revision) => window.engine?.protocol?.getEventsSince(revision)
+    },
+    // -------------------------------------------------------------------------
     // UI (Render) gọi xuống Engine (Logic)
     // -------------------------------------------------------------------------
     engine: {
