@@ -5,33 +5,31 @@ export const ItemSystem = {
 
     getInventory() {
         const ownerId = this.getOwnerId();
-        return this.api.engine.state.getRuntime('characters.[id].inventory', { id: ownerId }) || [];
+        return this.api.engine.state.getRuntimeSnapshot('characters.[id].inventory', { id: ownerId }) || [];
     },
 
     getHand() {
         const ownerId = this.getOwnerId();
-        return this.api.engine.state.getRuntime('characters.[id].hand', { id: ownerId }) || [];
+        return this.api.engine.state.getRuntimeSnapshot('characters.[id].hand', { id: ownerId }) || [];
     },
 
-    addItem(itemId) {
+    async addItem(itemId) {
         const state = this.api.engine.state;
         const ownerId = this.getOwnerId();
-        const inventory = [...(state.getRuntime('characters.[id].inventory', { id: ownerId }) || [])];
-        if (!state.getRuntime('characters.[id]', { id: ownerId })) return false;
-
-        if (!inventory.includes(itemId)) {
-            const maxInvList = (this.getConfig ? this.getConfig('maxInventory') : null) || [];
-            const ownerLimitPair = Array.isArray(maxInvList) ? maxInvList.find(pair => Array.isArray(pair) && pair[1] === ownerId) : null;
-            const limit = ownerLimitPair ? ownerLimitPair[0] : 0;
-            if (limit > 0 && inventory.length >= limit) {
-                this.api.presentation.notification.add("Không thể nhặt", "Túi đồ đã đầy.", "warn");
-                return false;
-            }
+        const maxInvList = (this.getConfig ? this.getConfig('maxInventory') : null) || [];
+        const ownerLimitPair = Array.isArray(maxInvList) ? maxInvList.find(pair => Array.isArray(pair) && pair[1] === ownerId) : null;
+        const limit = ownerLimitPair ? ownerLimitPair[0] : 0;
+        const result = await state.transaction(tx => {
+            if (!tx.get('characters.[id]', { id: ownerId })) return 'missing';
+            const inventory = tx.get('characters.[id].inventory', { id: ownerId }) || [];
+            if (inventory.includes(itemId)) return 'duplicate';
+            if (limit > 0 && inventory.length >= limit) return 'full';
             inventory.push(itemId);
-            state.set('characters.[id].inventory', inventory, { id: ownerId });
-            return true;
-        }
-        return false;
+            tx.set('characters.[id].inventory', inventory, { id: ownerId });
+            return 'added';
+        });
+        if (result === 'full') this.api.presentation.notification.add("Không thể nhặt", "Túi đồ đã đầy.", "warn");
+        return result === 'added';
     },
 
     isBroken(itemId) {
@@ -43,36 +41,47 @@ export const ItemSystem = {
     async toggleHand(id) {
         const state = this.api.engine.state;
         const ownerId = this.getOwnerId();
-        const hand = [...(state.getRuntime('characters.[id].hand', { id: ownerId }) || [])];
-        if (!state.getRuntime('characters.[id]', { id: ownerId })) return;
-        const info = state.getRuntime('itemInfo.[id]', { id });
+        const info = state.getRuntimeSnapshot('itemInfo.[id]', { id });
 
         if (!info) {
             this.api.presentation.notification.add("Lỗi", "Vật phẩm không tồn tại.", "danger");
             return;
         }
 
-        const idx = hand.indexOf(id);
-        if (idx > -1) {
-            hand.splice(idx, 1);
-            state.set('characters.[id].hand', hand, { id: ownerId });
+        const idx = (this.getHand() || []).indexOf(id);
+        const maxHand = (this.getConfig ? this.getConfig('maxHandOn') : state.getRuntime('config.maxHandOn')) || 10;
+        if (idx < 0 && info.requirements) {
+            const res = this.checkReq(info.requirements);
+            if (!res.pass) {
+                this.api.presentation.notification.add("Không thể cầm", "Chưa đủ điều kiện sử dụng.", "danger");
+                return;
+            }
+        }
+
+        const result = await state.transaction(tx => {
+            if (!tx.get('characters.[id]', { id: ownerId })) return 'missing';
+            const hand = tx.get('characters.[id].hand', { id: ownerId }) || [];
+            const currentIndex = hand.indexOf(id);
+            if (currentIndex > -1) {
+                hand.splice(currentIndex, 1);
+                tx.set('characters.[id].hand', hand, { id: ownerId });
+                return 'unequipped';
+            }
+            if (hand.length >= maxHand) return 'full';
+            hand.push(id);
+            tx.set('characters.[id].hand', hand, { id: ownerId });
+            return 'equipped';
+        });
+
+        if (result === 'missing') return;
+        if (result === 'full') {
+            this.api.presentation.notification.add("Không thể cầm", "Tay đã đầy.", "warn");
+            return;
+        }
+        if (result === 'unequipped') {
             this.api.presentation.notification.add("Đã cất", "Bỏ vật phẩm vào túi", "info");
             if (info.effect?.unequip) await this.processRunnables(info.effect.unequip, { itemId: id });
         } else {
-            const maxHand = (this.getConfig ? this.getConfig('maxHandOn') : state.getRuntime('config.maxHandOn')) || 10;
-            if (hand.length >= maxHand) {
-                this.api.presentation.notification.add("Không thể cầm", "Tay đã đầy.", "warn");
-                return;
-            }
-            if (info.requirements) {
-                const res = this.checkReq(info.requirements);
-                if (!res.pass) {
-                    this.api.presentation.notification.add("Không thể cầm", "Chưa đủ điều kiện sử dụng.", "danger");
-                    return;
-                }
-            }
-            hand.push(id);
-            state.set('characters.[id].hand', hand, { id: ownerId });
             this.api.presentation.notification.add("Đã cầm", `${info.name} đang ở trên tay`, "success");
             if (info.effect?.equip) await this.processRunnables(info.effect.equip, { itemId: id });
         }
