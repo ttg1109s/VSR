@@ -71,7 +71,7 @@ The built-in scenario validator checks core root, scene, and router invariants. 
 
 ## Runtime ownership
 
-Each `GameEngine` instance owns its API facade, protocol, mutable state, password challenge state, and `TaskManager`. Create one Engine per game session. Call `engine.taskManager.killAll()` when disposing the instance to stop scheduled background work and timers.
+Each `GameEngine` instance owns its API facade, protocol, gameplay state, session state, Engine-internal orchestration state, and `TaskManager`. Effect queues and queue-running flags live under `engine.runtime`, separate from serializable gameplay state. Create one Engine per game session. Call `engine.dispose()` when disposing the instance to stop scheduled background work and timers.
 
 ## State access
 
@@ -83,4 +83,4 @@ Reusable helpers live in `utils/` and are available through `createUtils()` or t
 
 ## Verification status
 
-There is currently no `test` script in `package.json`, and the repository contains no checked-in automated test suite. Do not use `npm test` as a verification command unless a test script and tests are added again. Runtime behavior and integrations must be verified with an appropriate external test harness before release.
+Run `npm test` for the checked-in Node.js regression tests and `npm run audit:state` for heuristic direct-state-access candidates. The audit is regex-based, not AST-based, and requires manual review. CI runs both commands on pushes to this branch and pull requests. Runtime behavior and integrations still require validation in the target host/client environment.
