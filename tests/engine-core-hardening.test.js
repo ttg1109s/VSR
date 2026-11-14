@@ -276,6 +276,7 @@ test('loader keeps the normalized scenario separate from runtime-only indexes', 
 
 test('nested effect templates are valid runnable graphs and resolve their references', () => {
   const scenario = validScenario();
+  scenario.templates.effects = {};
   scenario.templates.effects.base = [{ type: 'notify', text: 'Nested template' }];
   scenario.templates.effects.outer = [{ type: 'effect', ref: 'base' }];
   assert.deepEqual(validateScenario(scenario), []);
