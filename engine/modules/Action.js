@@ -75,7 +75,7 @@ export const ActionSystem = {
         console.log(`[Action] Marked as read: ${uniqueId}`);
     },
 
-    async handleAction(actionKey, uniqueId) {
+    async handleAction(actionKey, uniqueId = actionKey) {
         if (this.isActionProcessing || this.isTransitioning) {
             console.warn(`[Flow] Action ignored. Busy: Processing=${this.isActionProcessing}, Trans=${this.isTransitioning}`);
             return;
