@@ -31,6 +31,33 @@ function clone(input) {
   }
 }
 
+const SCENARIO_MIGRATIONS = new Map();
+
+export function migrateScenario(input) {
+  let scenario = clone(input);
+  if (!isObject(scenario)) throw new ScenarioValidationError(['root must be a JSON object']);
+
+  let version = scenario.formatVersion ?? SCENARIO_FORMAT_VERSION;
+  if (!Number.isInteger(version) || version < 1) {
+    throw new ScenarioValidationError([`unsupported scenario formatVersion '${version}'`]);
+  }
+  if (version > SCENARIO_FORMAT_VERSION) {
+    throw new ScenarioValidationError([`scenario formatVersion ${version} is newer than supported version ${SCENARIO_FORMAT_VERSION}`]);
+  }
+
+  while (version < SCENARIO_FORMAT_VERSION) {
+    const migration = SCENARIO_MIGRATIONS.get(version);
+    if (typeof migration !== 'function') {
+      throw new ScenarioValidationError([`no scenario migration is registered from formatVersion ${version}`]);
+    }
+    scenario = migration(scenario);
+    version += 1;
+    scenario.formatVersion = version;
+  }
+  scenario.formatVersion = SCENARIO_FORMAT_VERSION;
+  return scenario;
+}
+
 function isObject(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
@@ -468,8 +495,7 @@ export function validateScenario(scenario) {
 }
 
 export function normalizeScenario(input) {
-  const scenario = clone(input);
-  if (!isObject(scenario)) throw new ScenarioValidationError(['root must be a JSON object']);
+  const scenario = migrateScenario(input);
 
   if (isObject(scenario.meta) && scenario.meta.entryCharacter == null) {
     scenario.meta.entryCharacter = 'player';
