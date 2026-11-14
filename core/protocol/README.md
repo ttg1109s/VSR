@@ -1,28 +1,33 @@
-# VSR JSON Protocol (Hybrid)
+# VSR JSON Protocol v1 — Hybrid
 
-The protocol is an additive boundary between the game engine and any presentation client. It does not replace or rewrite the scenario schema, legacy save layout, or in-memory domain state.
+The protocol is the public boundary between the headless VSR Engine and external clients. It uses snapshots for authoritative state, events for ordered changes and presentation intent, and commands for validated input.
 
 ## Envelope types
 
-- **Snapshot**: a complete JSON-safe projection of the current domain state. Runtime-only queues, task callbacks, promises, and scheduler internals are excluded.
-- **Event**: an ordered notification with `eventId`, `sequence`, and monotonically increasing `revision`. A `state.snapshot` event carries a recovery snapshot.
-- **Command**: a validated request to the engine. Commands are allow-listed, carry a unique `commandId`, and may include `expectedRevision` for optimistic concurrency.
-- **Ack**: command result or a stable error code.
+- **Snapshot** — a complete JSON-safe projection of current Engine state. Runtime-only queues, callbacks, promises, and scheduler internals are excluded.
+- **Event** — ordered notification with `eventId`, `sequence`, `revision`, timestamp, event name, and JSON payload. The bounded event log supports replay by revision and reports when the requested range has expired.
+- **Command** — allow-listed input with unique `commandId`, command name, JSON object payload, and optional `expectedRevision`.
+- **Ack** — command result or stable error object.
 
-## Compatibility
-
-Scenario JSON and the existing Engine state shape remain authoritative. Protocol envelopes are separate objects and are never written into legacy scenario or save objects. The snapshot's `state` is a JSON-safe projection of existing state keys, with only runtime-only fields omitted. No migration of old scenario files is required.
-
-## Initial command set
+## Commands
 
 - `engine.init` — initialize from a scenario JSON object.
 - `action.trigger` — execute an action by ID.
-- `chat.next` and `chat.selectChoice` — advance chat or choose an option.
-- `inventory.toggleHand` — equip/unequip an item.
+- `chat.next` and `chat.selectChoice` — advance chat or select an option.
+- `inventory.toggleHand` — equip or unequip an item.
 - `scene.enter` — enter a scene.
+- `password.submit` — submit raw input for domain-level password verification.
 
-The protocol intentionally does not accept arbitrary method names or executable values.
+Commands are registered explicitly. The protocol does not resolve arbitrary method names or accept executable values. Repeated command IDs return the original acknowledgement; `expectedRevision` supports optimistic concurrency.
 
-## Current migration boundary
+## Presentation events
 
-The protocol core is DOM-free and can be instantiated in headless tests. Existing UI calls through `API.render` remain as a compatibility adapter during migration. Removing `render/` is blocked until those calls, DOM access in Engine modules, password verification, app bootstrap, and browser integration tests have been migrated.
+The Engine emits `presentation.*` events for transient client-facing effects such as notifications, transitions, chat affordances, VFX requests, and input prompts. They are not authoritative game state. A client should derive durable view state from snapshots and use presentation events for transient effects.
+
+## Scenario compatibility
+
+The existing scenario schema and scenario JSON remain authoritative. Protocol envelopes are separate transport objects; they do not rewrite scenario documents. Runtime scheduler objects are not serialized.
+
+## Headless runtime
+
+The protocol has no DOM or browser dependencies. Use `engine/index.js` as the public entry point and `npm test` to run the headless integration suite. See `DEPENDENCY_MAP.md` for the current runtime dependency graph.
