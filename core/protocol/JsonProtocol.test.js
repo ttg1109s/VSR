@@ -1,4 +1,5 @@
 import { JsonProtocol } from './JsonProtocol.js';
+import { verifyPassword } from '../../password/verify.js';
 
 function assert(condition, message) {
     if (!condition) throw new Error(message);
@@ -60,5 +61,10 @@ assert(circularRejected, 'circular event payload rejected');
 let invalidCommandRejected = false;
 try { protocol.createCommand('test.invalid', []); } catch (_) { invalidCommandRejected = true; }
 assert(invalidCommandRejected, 'non-object command payload rejected');
+
+assert(verifyPassword('string', { value: 'OpenAI' }, 'openai'), 'string password is case insensitive');
+assert(verifyPassword('puzzle', { value: 'solved' }, 'solved'), 'puzzle solved token');
+assert(verifyPassword('find_way', { street: [[0, 0], [1, 0]] }, '[[0,0],[1,0]]'), 'find-way path');
+assert(!verifyPassword('find_way', { street: [[0, 0], [1, 0]] }, '[[0,0],[0,1]]'), 'invalid find-way path rejected');
 
 console.log('VSR JSON Protocol tests: PASS');
