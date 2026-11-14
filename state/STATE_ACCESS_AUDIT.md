@@ -32,9 +32,9 @@ Do not mechanically move every Engine-owned value into StateAccess. TaskManager 
 
 ## Scanner limitations
 
-The scanner is intentionally described as heuristic. It uses regular expressions, not an AST or symbol table. It improves direct mutation classification, but it cannot reliably resolve lexical scope, alias reassignment, destructuring, computed property access, reflection, or indirect references. It can also produce false positives from strings and non-leading comments. Its output is a candidate list for review, not proof of compliance.
+The scanner now parses JavaScript with Acorn and walks AST member expressions. It classifies direct reads, assignments, updates, and common mutating method calls, and recognizes simple aliases declared from `this.state` or `engine.state`. It also detects direct object destructuring.
 
-A full AST audit remains a separate engineering task requiring a parser dependency and rules for scope-aware alias tracking. No AST-level completeness claim is made by this branch.
+This is an AST-based candidate audit, not a complete scope/data-flow analysis. Alias reassignment, shadowing, interprocedural returns, reflective access, complex computed properties, and references passed through helper functions can still evade or confuse the scanner. Findings require manual review; do not treat the report as a proof of zero violations.
 
 ## Verification
 
