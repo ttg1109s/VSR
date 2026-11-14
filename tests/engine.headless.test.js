@@ -190,3 +190,15 @@ test('Item effect strategies update inventory, hand and usage through StateAcces
  await e.applyEffect({type:'item',subtype:'remove',target:'__item_effect_probe'});
  assert.deepEqual(e.state.characters[ownerId].inventory,[]);
 });
+
+test('Character stat effects mutate detached drafts and persist through StateAccess',async()=>{
+ const e=makeEngine();
+ await e.init(structuredClone(DEMO_SCRIPT));
+ await e.applyEffect({type:'characters',subtype:'mng_stats',exec:'add_stats',target:'player',value:'__focus_probe:3:10:Focus'});
+ assert.equal(e.state.characters.player.stats.__focus_probe.current,3);
+ await e.applyEffect({type:'characters',subtype:'edit_stats',target:'player',property:'__focus_probe',field:'current',mode:'add',value:2});
+ assert.equal(e.state.characters.player.stats.__focus_probe.current,5);
+ const detached=e.api.engine.state.getRuntimeSnapshot('characters.[id]',{id:'player'});
+ detached.stats.__focus_probe.current=99;
+ assert.equal(e.state.characters.player.stats.__focus_probe.current,5);
+});
