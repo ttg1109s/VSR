@@ -102,7 +102,7 @@ export const ChatSystem = {
         console.log(`[ChatSystem] startChat: ${id} Trigger: ${triggerActionId}`);
         const ownerId = this.getChatOwner(id);
         const state = this.api.engine.state;
-        const chatRuntime = state.getRuntimeSnapshot('chat.data', { id }) || {};
+        const chatRuntime = state.getSnapshot('chat.data', { id }) || {};
         if (!chatRuntime.set) chatRuntime.set = { read: false, step: 0, bookmark: [] };
 
         // Normalize legacy single-value bookmarks without mutating the live state object.
@@ -119,7 +119,7 @@ export const ChatSystem = {
         }
         chatRuntime.set.lastInteraction = Date.now();
 
-        let chatHistory = state.getRuntimeSnapshot('chat.history', { id }) || [];
+        let chatHistory = state.getSnapshot('chat.history', { id }) || [];
         const isLoop = c.meta && c.meta.loop === true;
         const bookmark = chatRuntime.set.bookmark;
         const hasRead = bookmark.length > 0;
@@ -232,7 +232,7 @@ export const ChatSystem = {
     },
 
     resolveBlock(chatId, blockId) {
-        const chat = this.api.engine.state.getRuntimeSnapshot('chat.data', { id: chatId }) || this.src.chat[chatId];
+        const chat = this.api.engine.state.getSnapshot('chat.data', { id: chatId }) || this.src.chat[chatId];
         if (!chat || !chat.block) return null;
 
         let block = chat.block[blockId];
@@ -294,7 +294,7 @@ export const ChatSystem = {
         }
 
         // Logic check choiced khi BẮT ĐẦU vào block (để chặn loop nếu cấu hình loop=false)
-        const chatSrc = this.api.engine.state.getRuntimeSnapshot('chat.data', { id: this.chatState.id }) || this.src.chat[this.chatState.id];
+        const chatSrc = this.api.engine.state.getSnapshot('chat.data', { id: this.chatState.id }) || this.src.chat[this.chatState.id];
         const rawBlock = chatSrc.block[block.id];
         const isChoiced = rawBlock && rawBlock.choiced === true;
         const isLoopAllowed = chatSrc.meta && chatSrc.meta.loop === true;
@@ -364,7 +364,7 @@ export const ChatSystem = {
 
         // --- 4. Logic JUMP + Kiểm tra CHOICED của Đích ---
         let nextBlockId = choice.jump;
-        const chatData = this.api.engine.state.getRuntimeSnapshot('chat.data', { id: this.chatState.id }) || this.src.chat[this.chatState.id];
+        const chatData = this.api.engine.state.getSnapshot('chat.data', { id: this.chatState.id }) || this.src.chat[this.chatState.id];
 
         // Nếu jump hợp lệ, kiểm tra xem block đích có tồn tại không
         if (nextBlockId) {
