@@ -50,10 +50,16 @@ export class JsonProtocol{
 
   // Authorize before reading idempotency storage so rejected callers cannot
   // replay a known commandId to retrieve a prior acknowledgement.
-  if(this.authorizeCommand&&!await this.authorizeCommand({command:command.command,payload,context})) {
-   return {protocol:'vsr',protocolVersion:this.protocolVersion,type:'ack',commandId:command.commandId,ok:false,error:{code:'FORBIDDEN'},revision:this.stateRevision,stateRevision:this.stateRevision};
+  let authorized=true;
+  if(this.authorizeCommand) {
+   try { authorized=!!(await this.authorizeCommand({command:command.command,payload,context})); }
+   catch (_) { authorized=false; }
   }
   const principalId=context?.principal?.id??context?.principalId??null;
+  if(this.requireAuthorization&&(principalId===null||String(principalId).trim()===''))authorized=false;
+  if(!authorized) {
+   return {protocol:'vsr',protocolVersion:this.protocolVersion,type:'ack',commandId:command.commandId,ok:false,error:{code:'FORBIDDEN'},revision:this.stateRevision,stateRevision:this.stateRevision};
+  }
   const idempotencyKey=principalId===null?command.commandId:`${String(principalId)}:${command.commandId}`;
   if(this.commandResults.has(idempotencyKey))return cloneJsonValue(this.commandResults.get(idempotencyKey));
   if(expected!==undefined&&expected!==this.stateRevision)return this.#remember(idempotencyKey,{protocol:'vsr',protocolVersion:this.protocolVersion,type:'ack',commandId:command.commandId,ok:false,error:{code:'REVISION_CONFLICT',expected,actual:this.stateRevision},revision:this.stateRevision,stateRevision:this.stateRevision});
