@@ -25,11 +25,12 @@ assert(JSON.stringify(snapshot).includes('scene_1'), 'snapshot is JSON serializa
 
 let received = null;
 protocol.subscribe(event => { received = event; });
-const event = protocol.publishSnapshot(engine, 'test');
-assert(received?.eventId === event.eventId, 'event delivered');
-assert(event.revision === 1, 'revision increments');
-assert(event.payload.snapshot.state.sceneId === 'scene_1', 'snapshot event payload');
-assert(event.payload.snapshot.revision === event.revision, 'snapshot and event revisions align');
+const snapshot = protocol.publishSnapshot(engine, 'test');
+assert(received?.event === 'state.snapshot', 'event delivered');
+assert(received.payload.snapshot.state.sceneId === 'scene_1', 'snapshot event payload');
+assert(snapshot.state.sceneId === 'scene_1', 'snapshot returned to caller');
+assert(snapshot.revision === received.revision, 'snapshot and event revisions align');
+assert(received.revision === 1, 'revision increments');
 assert(protocol.getEventsSince(0).events.length === 1, 'event replay returns ordered event');
 assert(protocol.getEventsSince(0).gap === false, 'event replay has no gap');
 
