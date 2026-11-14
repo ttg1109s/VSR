@@ -11,6 +11,7 @@ export const AutomationSystem = {
         access.set('automation.active', true, { id: autoId });
         access.set('automation.countCurrent', 0, { id: autoId });
         access.set('automation.stepIndex', state.moveDirection === 'last' ? template.plan.length : -1, { id: autoId });
+        access.set('automation.randomStepCount', 0, { id: autoId });
 
         if (access.get('automation.banClick', { id: autoId })) {
             this.api.presentation.navigation.setBlocking(true);
@@ -68,6 +69,15 @@ export const AutomationSystem = {
 
         let nextIndex = -1;
         const planLen = template.plan.length;
+        if (state.move === 'random' && (Number(state.randomStepCount) || 0) >= planLen) {
+            const nextCount = countCurrent + 1;
+            access.set('automation.countCurrent', nextCount, { id: autoId });
+            access.set('automation.randomStepCount', 0, { id: autoId });
+            if (!runInfinity && nextCount >= numberCycleAllow) {
+                this.stopAutomation(autoId);
+                return;
+            }
+        }
         if (state.move === 'random') {
             nextIndex = Math.floor(Math.random() * planLen);
         } else if (state.moveDirection === 'last') {
@@ -95,6 +105,9 @@ export const AutomationSystem = {
         const step = template.plan[nextIndex];
         if (step?.effect) await this.processRunnables(step.effect, { automationId: autoId }, true);
         if (!access.get('automation.active', { id: autoId })) return;
+        if (state.move === 'random') {
+            access.set('automation.randomStepCount', (Number(state.randomStepCount) || 0) + 1, { id: autoId });
+        }
 
         const minTime = this.getConfig ? this.getConfig('minAutomationNextStep') : 2;
         const rawSeconds = step?.seconds ? resolveValue(step.seconds) : minTime;
