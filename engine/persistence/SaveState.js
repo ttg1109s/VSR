@@ -13,6 +13,11 @@ export function createSaveEnvelope(engine) {
   if (engine.taskManager?.hasBusyTasks?.(['auto_', 'move_char_'])) {
     throw new Error('Cannot save while a background task is executing.');
   }
+  for (const [id, automation] of Object.entries(engine.state?.automations ?? {})) {
+    if (automation?.active && !engine.taskManager?.plan?.[`auto_${id}`]) {
+      throw new Error('Cannot save while an automation step is in flight.');
+    }
+  }
   const state = cloneJsonValue(engine.state);
   for (const key of RUNTIME_KEYS) delete state[key];
   return {
@@ -23,6 +28,7 @@ export function createSaveEnvelope(engine) {
     chatState: cloneJsonValue(engine.chatState),
     pendingPasswordAction: cloneJsonValue(engine.pendingPasswordAction),
     taskRemainingMs: engine.taskManager?.snapshotRemaining?.(['auto_', 'move_char_']) ?? {},
+    pausedTasks: engine.taskManager?.snapshotPaused?.(['auto_', 'move_char_']) ?? [],
     savedAt: new Date().toISOString()
   };
 }
@@ -39,6 +45,9 @@ function validateSaveShape(save) {
   if (save.pendingPasswordAction !== undefined && save.pendingPasswordAction !== null &&
       (typeof save.pendingPasswordAction !== 'object' || Array.isArray(save.pendingPasswordAction))) {
     throw new TypeError('Save pendingPasswordAction must be an object or null.');
+  }
+  if (save.pausedTasks !== undefined && (!Array.isArray(save.pausedTasks) || save.pausedTasks.some(name => typeof name !== 'string' || !/^(auto_|move_char_)[^/]+$/.test(name)))) {
+    throw new TypeError('Save pausedTasks must contain valid task names.');
   }
   if (save.taskRemainingMs !== undefined) {
     if (!save.taskRemainingMs || typeof save.taskRemainingMs !== 'object' || Array.isArray(save.taskRemainingMs)) {
@@ -61,7 +70,8 @@ export function normalizeSaveEnvelope(input) {
       protocol: 'vsr-save',
       saveVersion: SAVE_VERSION,
       pendingPasswordAction: input.pendingPasswordAction ?? null,
-      taskRemainingMs: {}
+      taskRemainingMs: {},
+      pausedTasks: []
     };
   }
   if (version !== SAVE_VERSION) throw new Error(`Unsupported save version: ${version}`);
@@ -69,6 +79,7 @@ export function normalizeSaveEnvelope(input) {
     ...input,
     protocol: 'vsr-save',
     pendingPasswordAction: input.pendingPasswordAction ?? null,
-    taskRemainingMs: input.taskRemainingMs ?? {}
+    taskRemainingMs: input.taskRemainingMs ?? {},
+    pausedTasks: input.pausedTasks ?? []
   };
 }
