@@ -1126,7 +1126,7 @@
         },
         "subtype": {
           "type": "string",
-          "description": "Biến thể cụ thể trong nhóm 'type'. Ví dụ: type=characters -> subtype in [edit_stats, mng_stats, moving, ...]; type=item -> subtype in [add, remove, usage, ...]; type=notify -> subtype in [toast, modal, ...]."
+          "minLength": 1
         },
         "target": {
           "description": "ID đối tượng bị tác động (character id, scene id, action id, item id...). Có thể là chuỗi resolver $(...)."
@@ -1172,8 +1172,7 @@
             "warn",
             "danger",
             "error"
-          ],
-          "description": "Mức độ / màu sắc thông báo (type=notify)."
+          ]
         },
         "table": {
           "type": "string",
@@ -1378,6 +1377,487 @@
               ]
             }
           }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "item"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "subtype",
+              "target"
+            ],
+            "properties": {
+              "subtype": {
+                "enum": [
+                  "stats",
+                  "add",
+                  "remove",
+                  "hand_off",
+                  "hand_on",
+                  "usage"
+                ]
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "const": "stats"
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "property",
+                    "value"
+                  ]
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "const": "usage"
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "value"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "characters"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "subtype",
+              "target"
+            ],
+            "properties": {
+              "subtype": {
+                "enum": [
+                  "edit_stats",
+                  "mng_stats",
+                  "moving"
+                ]
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "const": "edit_stats"
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "property",
+                    "value"
+                  ]
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "const": "mng_stats"
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "exec",
+                    "value"
+                  ],
+                  "properties": {
+                    "exec": {
+                      "enum": [
+                        "swap",
+                        "copy_to",
+                        "cut_to",
+                        "delete"
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "const": "moving"
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "exec",
+                    "property",
+                    "value"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "set"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "subtype",
+              "value"
+            ],
+            "properties": {
+              "subtype": {
+                "enum": [
+                  "state",
+                  "scene",
+                  "router",
+                  "automation",
+                  "action",
+                  "character"
+                ]
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "enum": [
+                        "state",
+                        "scene",
+                        "automation",
+                        "action",
+                        "character"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "target"
+                  ]
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "enum": [
+                        "scene",
+                        "automation",
+                        "action",
+                        "character"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "property"
+                  ]
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "const": "router"
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "property"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "goto"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "subtype"
+            ],
+            "properties": {
+              "subtype": {
+                "enum": [
+                  "scene",
+                  "router",
+                  "chat",
+                  "end",
+                  "in_faker",
+                  "out_faker"
+                ]
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "enum": [
+                        "scene",
+                        "router",
+                        "chat",
+                        "end",
+                        "in_faker"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "target"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "cms"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "table",
+              "id",
+              "column",
+              "method"
+            ],
+            "properties": {
+              "table": {
+                "enum": [
+                  "characters",
+                  "routers"
+                ]
+              },
+              "column": {
+                "enum": [
+                  "relationship",
+                  "met",
+                  "actions"
+                ]
+              },
+              "method": {
+                "enum": [
+                  "add",
+                  "remove",
+                  "insert",
+                  "empty",
+                  "set"
+                ]
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "table": {
+                      "const": "characters"
+                    }
+                  },
+                  "required": [
+                    "table"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "column": {
+                      "enum": [
+                        "relationship",
+                        "met"
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "table": {
+                      "const": "routers"
+                    }
+                  },
+                  "required": [
+                    "table"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "column": {
+                      "const": "actions"
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "method": {
+                      "enum": [
+                        "add",
+                        "remove",
+                        "insert",
+                        "set"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "method"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "value"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "notify"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "text"
+            ],
+            "properties": {
+              "subtype": {
+                "enum": [
+                  "toast",
+                  "modal"
+                ]
+              },
+              "level": {
+                "enum": [
+                  "info",
+                  "success",
+                  "warn",
+                  "danger",
+                  "error"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "vfx"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "subtype"
+            ],
+            "anyOf": [
+              {
+                "required": [
+                  "target"
+                ]
+              },
+              {
+                "required": [
+                  "id"
+                ]
+              }
+            ]
+          }
         }
       ]
     },
@@ -1402,7 +1882,7 @@
         },
         "subtype": {
           "type": "string",
-          "description": "Biến thể cụ thể trong nhóm 'type'. Ví dụ: type=characters -> subtype in [edit_stats, mng_stats, moving, ...]; type=item -> subtype in [add, remove, usage, ...]; type=notify -> subtype in [toast, modal, ...]."
+          "minLength": 1
         },
         "target": {
           "description": "ID đối tượng bị tác động (character id, scene id, action id, item id...). Có thể là chuỗi resolver $(...)."
@@ -1448,8 +1928,7 @@
             "warn",
             "danger",
             "error"
-          ],
-          "description": "Mức độ / màu sắc thông báo (type=notify)."
+          ]
         },
         "table": {
           "type": "string",
@@ -1583,6 +2062,487 @@
           "then": {
             "required": [
               "inline"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "item"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "subtype",
+              "target"
+            ],
+            "properties": {
+              "subtype": {
+                "enum": [
+                  "stats",
+                  "add",
+                  "remove",
+                  "hand_off",
+                  "hand_on",
+                  "usage"
+                ]
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "const": "stats"
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "property",
+                    "value"
+                  ]
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "const": "usage"
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "value"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "characters"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "subtype",
+              "target"
+            ],
+            "properties": {
+              "subtype": {
+                "enum": [
+                  "edit_stats",
+                  "mng_stats",
+                  "moving"
+                ]
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "const": "edit_stats"
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "property",
+                    "value"
+                  ]
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "const": "mng_stats"
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "exec",
+                    "value"
+                  ],
+                  "properties": {
+                    "exec": {
+                      "enum": [
+                        "swap",
+                        "copy_to",
+                        "cut_to",
+                        "delete"
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "const": "moving"
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "exec",
+                    "property",
+                    "value"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "set"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "subtype",
+              "value"
+            ],
+            "properties": {
+              "subtype": {
+                "enum": [
+                  "state",
+                  "scene",
+                  "router",
+                  "automation",
+                  "action",
+                  "character"
+                ]
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "enum": [
+                        "state",
+                        "scene",
+                        "automation",
+                        "action",
+                        "character"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "target"
+                  ]
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "enum": [
+                        "scene",
+                        "automation",
+                        "action",
+                        "character"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "property"
+                  ]
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "const": "router"
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "property"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "goto"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "subtype"
+            ],
+            "properties": {
+              "subtype": {
+                "enum": [
+                  "scene",
+                  "router",
+                  "chat",
+                  "end",
+                  "in_faker",
+                  "out_faker"
+                ]
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "enum": [
+                        "scene",
+                        "router",
+                        "chat",
+                        "end",
+                        "in_faker"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "target"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "cms"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "table",
+              "id",
+              "column",
+              "method"
+            ],
+            "properties": {
+              "table": {
+                "enum": [
+                  "characters",
+                  "routers"
+                ]
+              },
+              "column": {
+                "enum": [
+                  "relationship",
+                  "met",
+                  "actions"
+                ]
+              },
+              "method": {
+                "enum": [
+                  "add",
+                  "remove",
+                  "insert",
+                  "empty",
+                  "set"
+                ]
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "table": {
+                      "const": "characters"
+                    }
+                  },
+                  "required": [
+                    "table"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "column": {
+                      "enum": [
+                        "relationship",
+                        "met"
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "table": {
+                      "const": "routers"
+                    }
+                  },
+                  "required": [
+                    "table"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "column": {
+                      "const": "actions"
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "method": {
+                      "enum": [
+                        "add",
+                        "remove",
+                        "insert",
+                        "set"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "method"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "value"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "notify"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "text"
+            ],
+            "properties": {
+              "subtype": {
+                "enum": [
+                  "toast",
+                  "modal"
+                ]
+              },
+              "level": {
+                "enum": [
+                  "info",
+                  "success",
+                  "warn",
+                  "danger",
+                  "error"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "vfx"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "subtype"
+            ],
+            "anyOf": [
+              {
+                "required": [
+                  "target"
+                ]
+              },
+              {
+                "required": [
+                  "id"
+                ]
+              }
             ]
           }
         }
