@@ -5,7 +5,12 @@ export const ActionSystem = {
 
         const router = this.src.scenes[sId].routers[rId];
         let actions = [];
-        const ensureThumb = (act) => { if (!act.meta.thumb) act.meta.thumb = 'assets/images/thumbnail.jpg'; return act; };
+        const ensureThumb = (act) => {
+            // Do not mutate nested metadata shared with the immutable scenario source.
+            act.meta = { ...(act.meta || {}) };
+            if (!act.meta.thumb) act.meta.thumb = 'assets/images/thumbnail.jpg';
+            return act;
+        };
 
         // [Refactor] Strict Mode: Prioritize Array format (Global Refs or Inline)
         if (Array.isArray(router.actions)) {
@@ -258,7 +263,6 @@ export const ActionSystem = {
                     const passDef = this.src.passwords && this.src.passwords[passType] ? this.src.passwords[passType][passId] : null;
 
                     if (passDef) {
-                        passDef._type = passType;
                         state.set('session.passwordChallenge', { sceneId: sId, routerId: rId, actionId: actionKey, uniqueId });
                         this.api.presentation.components.keyboard(
                             { id: actionKey, meta: { title: actDef.meta?.title, desc: actDef.meta?.desc } },

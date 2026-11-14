@@ -1,89 +1,69 @@
-// htdocs/engine/modules/entity/Faker.js
-
+// Identity switching is runtime state. Scenario source data is never mutated here.
 export const FakerSystem = {
     redirectTarget(targetId) {
-        if (this.state.faker && this.state.faker.active && targetId === this.state.faker.targetId) {
-            return 'player';
-        }
-        return targetId;
+        const faker = this.api.engine.state.getRuntimeSnapshot('faker') || {};
+        return faker.active && targetId === faker.targetId ? 'player' : targetId;
     },
 
     calculateSyncStat(val, min, max, pMin, pMax) {
         if (max === undefined || min === undefined || pMin === undefined || pMax === undefined) return pMin || 0;
         if (max === min) return pMin;
-
         const ratio = (val - min) / (max - min);
         const newVal = pMin + ratio * (pMax - pMin);
-
         return Math.max(pMin, Math.min(pMax, newVal));
     },
 
     async enterFaker(targetString) {
-        // [Lifecycle] Strict: Exit -> Clean -> Enter
-        if (this.state.faker && this.state.faker.active) {
-            this.exitFaker();
-        }
+        const state = this.api.engine.state;
+        const activeFaker = state.getRuntimeSnapshot('faker') || {};
+        if (activeFaker.active) this.exitFaker();
 
-        // Parse Target: "mode:targetId"
         const parts = targetString.split(':');
         const mode = parts[0];
         const targetId = parts[1];
-
         if (!mode || !targetId) {
             this.api.presentation.notification.add("Lỗi Faker", "Sai định dạng target (mode:id)", "error");
             return;
         }
-
-        const validModes = ['soul', 'mask', 'swap'];
-        if (!validModes.includes(mode)) {
+        if (!['soul', 'mask', 'swap'].includes(mode)) {
             this.api.presentation.notification.add("Lỗi Faker", `Mode không hợp lệ: ${mode}`, "error");
             return;
         }
 
-        const player = this.state.characters.player;
-        const target = this.state.characters[targetId];
-
+        const player = state.getRuntimeSnapshot('characters.[id]', { id: 'player' });
+        const target = state.getRuntimeSnapshot('characters.[id]', { id: targetId });
         if (!target) {
             this.api.presentation.notification.add("Lỗi Faker", "Mục tiêu không tồn tại", "error");
             return;
         }
 
-        // --- SETUP ---
-        if (!this.state.faker) this.state.faker = {};
-        this.state.faker.active = true;
-        this.state.faker.targetId = targetId;
-        this.state.faker.mode = mode; // Save mode for exit logic
-
-        // Backup Player Data
-        this.state.faker.backupPlayer = {
-            set: JSON.parse(JSON.stringify(player.set || {})),
-            stats: JSON.parse(JSON.stringify(player.stats || {})),
-            entryCharacter: this.state.meta.entryCharacter
-        };
+        state.update('faker', current => ({
+            ...(current || {}),
+            active: true,
+            targetId,
+            mode,
+            backupPlayer: {
+                set: JSON.parse(JSON.stringify(player?.set || {})),
+                stats: JSON.parse(JSON.stringify(player?.stats || {})),
+                entryCharacter: state.getRuntime('meta.entryCharacter')
+            }
+        }));
 
         console.log(`[Faker] Enter: ${mode} -> ${targetId}`);
-
         if (mode === 'swap') {
-            // --- SWAP MODE ---
-            this.state.meta.entryCharacter = targetId;
-            // [FIX] set.name không được kịch bản nào khai báo (chỉ có meta.name theo
-            // schema) — fallback về meta.name giống render/modules/scene.js:305,
-            // nếu không notification sẽ hiện chữ "undefined".
-            this.api.presentation.notification.add("Chuyển sinh", `Bạn đã trở thành ${target.set.name || target.meta.name}`, "success");
-
+            state.set('entryCharacter', targetId);
+            this.api.presentation.notification.add("Chuyển sinh", `Bạn đã trở thành ${target.set?.name || target.meta?.name}`, "success");
         } else if (mode === 'mask') {
-            // --- MASK MODE ---
-            player.set.name = target.set.name || target.meta.name;
-            player.set.desc = target.set.desc;
-            player.set.relationship = target.set.relationship;
-            this.api.presentation.notification.add("Cải trang", `Bạn đang khoác lên mình ${target.set.name || target.meta.name}`, "info");
-
+            state.update('characters.[id].set', current => ({
+                ...(current || {}),
+                name: target.set?.name || target.meta?.name,
+                desc: target.set?.desc,
+                relationship: target.set?.relationship
+            }), { id: 'player' });
+            this.api.presentation.notification.add("Cải trang", `Bạn đang khoác lên mình ${target.set?.name || target.meta?.name}`, "info");
         } else {
-            // --- SOUL MODE (Default) ---
-            if (player.stats && target.stats) {
-                this._syncStats(player, target);
-            }
-            this.api.presentation.notification.add("Đoạt xá", `Đã chiếm lấy cơ thể ${target.set.name || target.meta.name}`, "magic");
+            this._syncStats('player', targetId);
+            this.api.presentation.notification.add("Đoạt xá", `Đã chiếm lấy cơ thể ${target.set?.name || target.meta?.name}`, "magic");
         }
 
         this.api.presentation.components.closePlayerCard();
@@ -92,80 +72,64 @@ export const FakerSystem = {
     },
 
     exitFaker() {
-        if (!this.state.faker || !this.state.faker.active || !this.state.faker.backupPlayer) return;
+        const state = this.api.engine.state;
+        const faker = state.getRuntimeSnapshot('faker') || {};
+        if (!faker.active || !faker.backupPlayer) return;
 
-        const mode = this.state.faker.mode || 'soul';
-        const backup = this.state.faker.backupPlayer;
-        const player = this.state.characters.player;
-        const targetId = this.state.faker.targetId;
-        const target = this.state.characters[targetId];
-
+        const mode = faker.mode || 'soul';
+        const backup = faker.backupPlayer;
+        const targetId = faker.targetId;
+        const target = state.getRuntimeSnapshot('characters.[id]', { id: targetId });
         console.log(`[Faker] Exit: ${mode}`);
 
         if (mode === 'swap') {
-            // --- REVERT SWAP ---
-            this.state.meta.entryCharacter = backup.entryCharacter || 'player';
+            state.set('entryCharacter', backup.entryCharacter || 'player');
             this.api.presentation.notification.add("Hoàn trả", "Trở về nhân vật gốc", "info");
-
         } else if (mode === 'mask') {
-            // --- REVERT MASK ---
-            player.set.name = backup.set.name;
-            player.set.desc = backup.set.desc;
-            player.set.relationship = backup.set.relationship;
+            state.set('characters.[id].set', backup.set || {}, { id: 'player' });
             this.api.presentation.notification.add("Gỡ bỏ", "Tháo bỏ lớp ngụy trang", "info");
-
         } else {
-            // --- REVERT SOUL ---
-            if (player.stats && target && target.stats) {
-                this._syncStats(player, target, true); // Reverse
-            }
+            if (target?.stats) this._syncStats('player', targetId, true);
             this.api.presentation.notification.add("Thoát xác", "Trở về cơ thể gốc", "info");
         }
 
-        // Reset State
-        this.state.faker.active = false;
-        this.state.faker.targetId = null;
-        this.state.faker.backupPlayer = null;
-        this.state.faker.mode = null;
+        state.update('faker', current => ({
+            ...(current || {}),
+            active: false,
+            targetId: null,
+            backupPlayer: null,
+            mode: null
+        }));
 
         this.api.presentation.components.closePlayerCard();
         this.api.presentation.components.updatePlayerCard();
-
-        if (targetId && this.scheduleCharacterMove) {
-            this.scheduleCharacterMove(targetId);
-        }
-
+        if (targetId && this.scheduleCharacterMove) this.scheduleCharacterMove(targetId);
         if (this.commitState) this.commitState('identity.changed');
     },
 
-    _syncStats(source, target, reverse = false) {
-        const npcLink = target.set && target.set.linkEffect === true;
+    _syncStats(sourceId, targetId, reverse = false) {
+        const state = this.api.engine.state;
+        state.update('characters', characters => {
+            const source = characters?.[sourceId];
+            const target = characters?.[targetId];
+            const npcLink = target?.set?.linkEffect === true;
+            if (!source?.stats || !target?.stats) return characters;
 
-        if (!source.stats || !target.stats) return;
-
-        Object.keys(source.stats).forEach(key => {
-            const sStat = source.stats[key];
-            const tStat = target.stats[key];
-
-            if (npcLink && tStat) {
+            Object.keys(source.stats).forEach(key => {
+                const sourceStat = source.stats[key];
+                const targetStat = target.stats[key];
+                if (!npcLink || !targetStat) return;
                 if (reverse) {
-                    // Reverse: NPC (Target) -> Player (Source)
-                    const newVal = this.calculateSyncStat(
-                        tStat.current,
-                        0, tStat.max,
-                        0, sStat.max
-                    );
-                    sStat.current = Math.round(newVal);
+                    sourceStat.current = Math.round(this.calculateSyncStat(
+                        targetStat.current, 0, targetStat.max, 0, sourceStat.max
+                    ));
                 } else {
-                    // Forward: Player (Source) -> NPC (Target)
-                    const newVal = this.calculateSyncStat(
-                        sStat.current,
-                        0, sStat.max,
-                        0, tStat.max
-                    );
-                    tStat.current = Math.round(newVal);
+                    targetStat.current = Math.round(this.calculateSyncStat(
+                        sourceStat.current, 0, sourceStat.max, 0, targetStat.max
+                    ));
                 }
-            }
+            });
+            return characters;
         });
     }
 };
