@@ -1131,6 +1131,10 @@
         "target": {
           "description": "ID đối tượng bị tác động (character id, scene id, action id, item id...). Có thể là chuỗi resolver $(...)."
         },
+        "source": {
+          "type": "string",
+          "description": "ID nhân vật nguồn cho characters/mng_stats. Ưu tiên field này thay cho cú pháp legacy 'đích:nguồn' trong target."
+        },
         "property": {
           "type": "string",
           "description": "Tên thuộc tính bị chỉnh sửa (vd tên chỉ số 'HP', hoặc property của scene/router/action khi type=set)."
