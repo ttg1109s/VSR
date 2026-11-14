@@ -27,6 +27,7 @@ export class TaskManager {
  getRemaining(name){return this.plan[name]&&this.running[name]?this.plan[name].remaining():null;}
  hasBusyTasks(prefixes=['auto_','move_char_']){return Object.keys(this.plan).some(name=>prefixes.some(prefix=>name.startsWith(prefix))&&this.plan[name]?.isBusy);}
  snapshotRemaining(prefixes=['auto_','move_char_']){const result={};for(const name of Object.keys(this.plan)){if(prefixes.some(prefix=>name.startsWith(prefix))){const remaining=this.getRemaining(name);if(remaining!==null)result[name]=remaining;}}return result;}
+ snapshotPaused(prefixes=['auto_','move_char_']){return Object.keys(this.plan).filter(name=>prefixes.some(prefix=>name.startsWith(prefix))&&this.plan[name]?.isPaused);}
  pause(name){if(this.plan[name]&&this.running[name])this.plan[name].pause();}
  resume(name){if(this.plan[name]&&this.running[name])this.plan[name].resume();}
 }
