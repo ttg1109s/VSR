@@ -1,19 +1,23 @@
 # VSR Engine
 
-VSR is now distributed as a headless game engine. The legacy browser UI, DOM renderer, visual-effects layer, and UI component templates have been removed. A separate client can consume the engine through its versioned JSON protocol.
+VSR is a headless game engine. The legacy browser UI, DOM renderer, visual-effects layer, and UI component templates are not part of this package. A separate client can consume the Engine through its versioned JSON protocol.
 
 ## Requirements
 
-- Node.js 20 or newer
-- No runtime UI framework or browser DOM is required
+- Node.js 20 or newer.
+- No runtime UI framework or browser DOM is required.
 
-## Install and test
+## Package entry points
 
-```bash
-npm test
-```
+The package is private and exposes these entry points:
 
-The test suite imports the Engine in a Node process without defining `window` or `document`, loads the complete demo scenario, enters scenes, dispatches commands, and checks JSON presentation events.
+- `vsr-engine` — Engine exports from `engine/index.js`.
+- `vsr-engine/protocol` — JSON protocol implementation.
+- `vsr-engine/scenario-schema` — scenario JSON schema.
+- `vsr-engine/scenario` — scenario loader and model utilities.
+- `vsr-engine/save-schema` — save-envelope JSON schema.
+- `vsr-engine/state` — StateAccess implementation.
+- `vsr-engine/utils` — reusable utility facade.
 
 ## Basic usage
 
@@ -27,7 +31,7 @@ const snapshot = engine.protocol.createSnapshot(engine);
 console.log(snapshot);
 
 const unsubscribe = engine.protocol.subscribe(event => {
-  // Send this JSON event to a renderer, client, or transport.
+  // Forward JSON events to a renderer, client, or transport.
   console.log(event);
 });
 
@@ -39,43 +43,44 @@ const command = engine.protocol.createCommand('scene.enter', {
 const acknowledgement = await engine.dispatchProtocolCommand(command);
 console.log(acknowledgement);
 
-// Dispose runtime timers when the engine instance is no longer used.
+// Dispose runtime timers when the Engine instance is no longer used.
 unsubscribe();
 engine.taskManager.killAll();
 ```
 
 ## Hybrid JSON protocol v2
 
-The protocol consists of four envelope types:
+The protocol uses four envelope types:
 
-- **Snapshot** — JSON-safe projection of Engine domain state. Runtime callbacks, promises, scheduler objects, and circular references are excluded.
-- **Event** — ordered domain and presentation notifications with event ID, sequence, timestamp, and revision.
-- **Command** — allow-listed input with an idempotent command ID and optional expected revision.
-- **Ack** — command result or structured error.
+- **Snapshot** — a JSON-safe projection of Engine state. Runtime callbacks, promises, scheduler objects, and circular references are excluded.
+- **Event** — an ordered domain or presentation notification with an event ID, sequence, timestamp, and state revision.
+- **Command** — allow-listed input with an idempotency key and an optional expected state revision.
+- **Ack** — the command result or a structured error.
 
-See `protocol/README.md` and `protocol/protocol.schema.json`.
+See `protocol/README.md` and `protocol/protocol.schema.json` for the transport contract.
 
 ## Presentation boundary
 
-Engine modules do not import a renderer or access DOM APIs. Calls such as notification, chat updates, transitions, VFX requests, and input requests are emitted as `presentation.*` JSON events. The Engine does not attempt to draw them. A consumer may ignore, log, persist, or render these events using any client technology.
+Engine modules do not render UI or access browser DOM APIs. Notifications, chat updates, transitions, visual-effect requests, and input requests are emitted as presentation events. A client may ignore, log, persist, or render those events using its own technology.
 
-## Scenario compatibility
+## Scenario and save compatibility
 
-`scenario.schema.json` remains the source contract for scenario JSON. Existing scenario structure is loaded by `LoaderSystem`; protocol envelopes are separate transport objects and do not rewrite the scenario schema.
+`scenario.schema.json` defines the scenario authoring contract. Scenario data and save data are separate formats. Save data uses the versioned `vsr-save` envelope described by `engine/persistence/save.schema.json`; it does not replace or rewrite the scenario format.
+
+The built-in scenario validator checks core root, scene, and router invariants. It is not a complete JSON Schema validator.
 
 ## Runtime ownership
 
-Each `GameEngine` instance owns its own `TaskManager`, implemented under `engine/runtime/TaskManager.js`. Create one Engine per game session. Call `engine.taskManager.killAll()` when disposing the instance to stop background automation, character movement, and timers.
+Each `GameEngine` instance owns its API facade, protocol, mutable state, password challenge state, and `TaskManager`. Create one Engine per game session. Call `engine.taskManager.killAll()` when disposing the instance to stop scheduled background work and timers.
 
-## Dependency map
+## State access
 
-See `protocol/DEPENDENCY_MAP.md` for the Engine module map and remaining domain boundaries.
-
-
-## Kiến trúc protocol v2
-
-Engine chạy headless, mỗi instance sở hữu API facade và protocol riêng. `stateRevision` chỉ thay đổi khi commit snapshot; `eventSequence` tăng theo mọi event. Command được tuần tự hóa và có thể kiểm tra quyền qua `authorizeCommand`. Password submit chỉ nhận action ID và input thô; cấu hình mật khẩu được tra cứu từ scenario phía Engine. Save game có envelope phiên bản riêng, không thay đổi scenario authoring format.
+The StateAccess facade provides explicit reads, writes, deletes, snapshots, and serialized transactions across source, runtime, and session namespaces. Scenario source is read-only through this interface. Legacy getters retain reference semantics; prefer snapshot methods for read-only consumers.
 
 ## Shared utilities
 
-Reusable helper functions live in `utils/` and are available through `createUtils()` or the package subpath `vsr-engine/utils`. The utility facade exposes `check`, `random`, `number`, and `array`; it does not access Engine state or register runtime plugins. Each API facade exposes the same capability as `engine.api.utils`. The scheduler is a Runtime component under `engine/runtime/`, not a plugin.
+Reusable helpers live in `utils/` and are available through `createUtils()` or the `vsr-engine/utils` package subpath. The utility facade exposes `check`, `random`, `number`, and `array`. It does not access Engine state or register runtime plugins. Each Engine API facade exposes the same capability as `engine.api.utils`.
+
+## Verification status
+
+There is currently no `test` script in `package.json`, and the repository contains no checked-in automated test suite. Do not use `npm test` as a verification command unless a test script and tests are added again. Runtime behavior and integrations must be verified with an appropriate external test harness before release.
