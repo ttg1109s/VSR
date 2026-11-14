@@ -34,7 +34,7 @@ export const AutomationSystem = {
         if (!state) return;
 
         state.active = false;
-        taskManager.kill(`auto_${autoId}`);
+        this.taskManager.kill(`auto_${autoId}`);
 
         // Check if ANY automation is blocking
         // [FIXED] Use API in loop if possible, but object iteration is faster here
@@ -53,8 +53,8 @@ export const AutomationSystem = {
         // [Config] stopEffectWhenChat
         if (this.getConfig && this.getConfig('stopEffectWhenChat') && this.chatState && this.chatState.active) {
             const taskId = `auto_${autoId}`;
-            taskManager.kill(taskId);
-            taskManager.addNew(taskId, {
+            this.taskManager.kill(taskId);
+            this.taskManager.addNew(taskId, {
                 time: 1000,
                 mode: 'timeout',
                 count: 1,
@@ -62,7 +62,7 @@ export const AutomationSystem = {
                     this.processAutomationStep(autoId);
                 }
             });
-            taskManager.operator(taskId, 'enabled');
+            this.taskManager.operator(taskId, 'enabled');
             return;
         }
 
@@ -128,7 +128,7 @@ export const AutomationSystem = {
 
         const taskId = `auto_${autoId}`;
 
-        taskManager.addNew(taskId, {
+        this.taskManager.addNew(taskId, {
             time: finalSeconds * 1000,
             mode: 'timeout',
             count: 1,
@@ -136,6 +136,6 @@ export const AutomationSystem = {
                 this.processAutomationStep(autoId);
             }
         });
-        taskManager.operator(taskId, 'enabled');
+        this.taskManager.operator(taskId, 'enabled');
     }
 };
