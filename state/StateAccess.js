@@ -136,11 +136,11 @@ export class StateAccess {
     const namespace = options.namespace ?? STATE_SCHEMA[path]?.[0] ?? 'runtime';
     if (namespace === 'source') throw new StatePathError('Scenario source is read-only.', 'READ_ONLY_NAMESPACE');
     const resolvedPath = STATE_SCHEMA[path]?.[1] ?? path;
-    if (namespace === 'session' && resolvedPath === 'chatState') { this.engine.chatState = value; this.engine.commitState?.('state.set'); return value; }
-    if (namespace === 'session' && resolvedPath === 'pendingPasswordAction') { this.engine.pendingPasswordAction = value; this.engine.commitState?.('state.set'); return value; }
+    if (namespace === 'session' && resolvedPath === 'chatState') { this.engine.chatState = value === undefined ? undefined : clone(value); this.engine.commitState?.('state.set'); return value; }
+    if (namespace === 'session' && resolvedPath === 'pendingPasswordAction') { this.engine.pendingPasswordAction = value === undefined || value === null ? value : clone(value); this.engine.commitState?.('state.set'); return value; }
     const root = this.#root(namespace);
     const { parent, leaf } = parentFor(root, resolvedPath, resolveContext(path, context, this.engine), true);
-    parent[leaf] = value;
+    parent[leaf] = value !== undefined ? clone(value) : value;
     this.engine.commitState?.('state.set');
     return value;
   }
@@ -184,19 +184,22 @@ export class StateAccess {
       const sessionBaseline = JSON.stringify(sessionOriginal);
       const runtimeDraft = clone(runtimeOriginal);
       const sessionDraft = clone(sessionOriginal);
-      const roots = { source: engine.src, runtime: runtimeDraft, session: sessionDraft };
+      // A transaction owns detached drafts for every namespace. In particular, source
+      // reads must never expose engine.src through a mutable object reference.
+      const roots = { source: clone(engine.src ?? {}), runtime: runtimeDraft, session: sessionDraft };
       const tx = Object.freeze({
         get: (path, context = {}, options = {}) => {
           const namespace = options.namespace ?? STATE_SCHEMA[path]?.[0] ?? 'runtime';
           if (!roots[namespace]) throw new StatePathError(`Unknown state namespace "${namespace}".`);
-          return readPath(roots[namespace], STATE_SCHEMA[path]?.[1] ?? path, resolveContext(path, context, engine));
+          const value = readPath(roots[namespace], STATE_SCHEMA[path]?.[1] ?? path, resolveContext(path, context, engine));
+          return value === undefined ? undefined : clone(value);
         },
         set: (path, value, context = {}, options = {}) => {
           const namespace = options.namespace ?? STATE_SCHEMA[path]?.[0] ?? 'runtime';
           if (namespace === "source") throw new StatePathError("Scenario source is read-only.", "READ_ONLY_NAMESPACE");
           if (!roots[namespace]) throw new StatePathError(`Unknown state namespace "${namespace}".`);
           const { parent, leaf } = parentFor(roots[namespace], STATE_SCHEMA[path]?.[1] ?? path, resolveContext(path, context, engine), true);
-          parent[leaf] = value;
+          parent[leaf] = value === undefined ? undefined : clone(value);
           return value;
         },
         delete: (path, context = {}, options = {}) => {
@@ -237,9 +240,19 @@ export class StateAccess {
 
   has(key, context = {}, options = {}) { return this.get(key, context, options) !== undefined; }
   resolve(path, context = {}, namespace = 'runtime') { return this.getFrom(namespace, path, context); }
+  // Legacy getters intentionally retain reference semantics for compatibility.
+  // New module code should use the snapshot variants for all read-only access.
   getSource(path, context = {}) { return this.getFrom('source', path, context); }
   getRuntime(path, context = {}) { return this.getFrom('runtime', path, context); }
   getSession(path, context = {}) { return this.getFrom('session', path, context); }
+  getSourceSnapshot(path, context = {}) {
+    const value = this.getSource(path, context);
+    return value === undefined ? undefined : clone(value);
+  }
+  getSessionSnapshot(path, context = {}) {
+    const value = this.getSession(path, context);
+    return value === undefined ? undefined : clone(value);
+  }
   getSnapshot(path, context = {}, options = {}) {
     const namespace = options.namespace ?? STATE_SCHEMA[path]?.[0] ?? 'runtime';
     const value = this.get(path, context, options);
@@ -257,8 +270,10 @@ export function createStateAccess(engine) {
     get: (key, context = {}, options = {}) => access.get(key, context, options),
     getFrom: (namespace, path, context = {}) => access.getFrom(namespace, path, context),
     getSource: (path, context = {}) => access.getSource(path, context),
+    getSourceSnapshot: (path, context = {}) => access.getSourceSnapshot(path, context),
     getRuntime: (path, context = {}) => access.getRuntime(path, context),
     getSession: (path, context = {}) => access.getSession(path, context),
+    getSessionSnapshot: (path, context = {}) => access.getSessionSnapshot(path, context),
     getSnapshot: (path, context = {}, options = {}) => access.getSnapshot(path, context, options),
     getRuntimeSnapshot: (path, context = {}) => access.getRuntimeSnapshot(path, context),
     set: (path, value, context = {}, options = {}) => access.set(path, value, context, options),
