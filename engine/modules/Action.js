@@ -270,6 +270,7 @@ export const ActionSystem = {
                             type: passType, passwordId: passId, config: passDef
                         });
                         this.pendingPasswordAction = challenge;
+                        this.schedulePasswordExpiry(challenge, actDef);
                         state.set('session.passwordChallenge', challenge);
                         this.api.presentation.components.keyboard(
                             { id: actionKey, meta: { title: actDef.meta?.title, desc: actDef.meta?.desc } },
