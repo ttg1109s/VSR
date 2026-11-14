@@ -114,7 +114,9 @@ export class GameEngine {
   const timers=this.restoredTaskTimers||{};
   for(const charId of Object.keys(this.state.characters||{})) {
    const remaining=timers[`move_char_${charId}`];
+   const taskId=`move_char_${charId}`;
    this.scheduleCharacterMove(charId,Number.isFinite(remaining)?remaining:null);
+   if(this.restoredPausedTasks.includes(taskId))this.taskManager.pause(taskId);
   }
   for(const[id,state]of Object.entries(this.state.automations||{})) {
    if(!state?.active)continue;
