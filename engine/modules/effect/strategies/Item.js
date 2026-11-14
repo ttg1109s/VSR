@@ -66,7 +66,7 @@ export const ItemStrategies = {
                 engine.api.engine.state.update('characters.[id].inventory', inventory => [...(inventory || []), eff.target], {
                     id: ItemStrategies._getOwnerId(engine)
                 });
-                engine.api.presentation.notification.add("Nhận vật phẩm", engine.api.engine.state.getRuntime('itemInfo.[id].name', { id: eff.target }) || eff.target, "success");
+                engine.api.presentation.notification.add("Nhận vật phẩm", engine.api.engine.state.getRuntimeSnapshot('itemInfo.[id].name', { id: eff.target }) || eff.target, "success");
                 engine.api.presentation.components.explorer();
             }
         }
