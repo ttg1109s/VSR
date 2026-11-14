@@ -42,17 +42,30 @@ class AppController {
     }
 
     importScript(e) {
-        const f = e.target.files[0];
+        const input = e?.target;
+        const f = input?.files?.[0];
         if (!f) return;
+        if (f.size > 5 * 1024 * 1024) {
+            API.render.notification.alert("Import Error", "Tệp kịch bản vượt quá giới hạn 5 MB.", "danger");
+            input.value = '';
+            return;
+        }
+        if (f.type && f.type !== 'application/json' && !/\.json$/i.test(f.name || '')) {
+            API.render.notification.alert("Import Error", "Chỉ chấp nhận tệp JSON.", "danger");
+            input.value = '';
+            return;
+        }
 
         const r = new FileReader();
+        r.onerror = () => API.render.notification.alert("Import Error", "Không thể đọc tệp JSON.", "danger");
         r.onload = (e) => {
             try {
-                this.script = JSON.parse(e.target.result);
-
-                if (!this.script.meta) {
-                    throw new Error("Dữ liệu thiếu thông tin 'meta' bắt buộc.");
+                const parsed = JSON.parse(e.target.result);
+                if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed) ||
+                    !parsed.meta || typeof parsed.meta !== 'object' || Array.isArray(parsed.meta)) {
+                    throw new Error("Cấu trúc kịch bản không hợp lệ: cần object gốc và meta dạng object.");
                 }
+                this.script = parsed;
 
                 // [Refactor] Sử dụng API Setup
                 if (API.render.setup) API.render.setup.scriptInfo(this.script);
