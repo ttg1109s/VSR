@@ -103,7 +103,8 @@ export const StatsHelpers = {
             engine.api.presentation.notification.add(
                 isChar ? "Chỉ số" : "Vật phẩm",
                 `${name} (${label}): ${sign}${diff}`,
-                type
+                type,
+                { source: 'scenario', category: 'scenario.stats.changed' }
             );
         }
 
