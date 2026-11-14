@@ -90,6 +90,7 @@ export class NotificationSystem {
       this.pending = this.pending.filter(id => id !== removed.id);
       if (removed.dedupeKey && this.dedupe.get(removed.dedupeKey) === removed.id) this.dedupe.delete(removed.dedupeKey);
     }
+    this.publish('add', candidate, [candidate.title, candidate.message, candidate.level]);
     while (this.pending.length > this.maxQueue) {
       const droppedId = this.pending.pop();
       const dropped = this.byId.get(droppedId);
@@ -100,7 +101,6 @@ export class NotificationSystem {
         this.publish('dropped', dropped);
       }
     }
-    this.publish('add', candidate, [candidate.title, candidate.message, candidate.level]);
     return { notification: { ...candidate }, deduplicated: false };
   }
 
@@ -150,6 +150,7 @@ export class NotificationSystem {
 
   getHistory({ limit = this.maxHistory, source, unreadOnly = false } = {}) {
     const safeLimit = Number.isInteger(limit) && limit >= 0 ? limit : this.maxHistory;
+    if (safeLimit === 0) return [];
     return this.history
       .filter(item => (source === undefined || item.source === source) && (!unreadOnly || !item.read))
       .slice(-safeLimit)
