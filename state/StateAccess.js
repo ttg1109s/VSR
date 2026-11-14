@@ -67,9 +67,23 @@ function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
-function replaceObject(target, source) {
-  for (const key of Object.keys(target)) delete target[key];
-  for (const key of Object.keys(source)) target[key] = source[key];
+function reconcile(target, source) {
+  if (Array.isArray(target) && Array.isArray(source)) {
+    target.length = source.length;
+    for (let index = 0; index < source.length; index++) {
+      const current = target[index], next = source[index];
+      if (current && next && typeof current === 'object' && typeof next === 'object' && Array.isArray(current) === Array.isArray(next)) reconcile(current, next);
+      else target[index] = next;
+    }
+    return target;
+  }
+  for (const key of Object.keys(target)) if (!Object.prototype.hasOwnProperty.call(source, key)) delete target[key];
+  for (const key of Object.keys(source)) {
+    const current = target[key], next = source[key];
+    if (current && next && typeof current === 'object' && typeof next === 'object' && Array.isArray(current) === Array.isArray(next)) reconcile(current, next);
+    else target[key] = next;
+  }
+  return target;
 }
 
 function routerKey(context) {
@@ -153,7 +167,7 @@ export class StateAccess {
         chatState: engine.chatState,
         pendingPasswordAction: engine.pendingPasswordAction
       };
-      const runtimeDraft = clone(runtimeOriginal);
+      const runtimeBaseline = JSON.stringify(runtimeOriginal);\n      const sessionBaseline = JSON.stringify(sessionOriginal);\n      const runtimeDraft = clone(runtimeOriginal);
       const sessionDraft = clone(sessionOriginal);
       const roots = { runtime: runtimeDraft, session: sessionDraft };
       const tx = Object.freeze({
@@ -178,13 +192,14 @@ export class StateAccess {
       });
       const result = await callback(tx);
       if (engine.state !== runtimeOriginal || engine.chatState !== sessionOriginal.chatState ||
-          engine.pendingPasswordAction !== sessionOriginal.pendingPasswordAction) {
+          engine.pendingPasswordAction !== sessionOriginal.pendingPasswordAction ||
+          JSON.stringify(runtimeOriginal) !== runtimeBaseline || JSON.stringify({ chatState: engine.chatState, pendingPasswordAction: engine.pendingPasswordAction }) !== sessionBaseline) {
         throw new StatePathError('Engine state changed outside the active transaction.', 'TRANSACTION_CONFLICT');
       }
-      replaceObject(runtimeOriginal, runtimeDraft);
-      if (sessionOriginal.chatState && sessionDraft.chatState) replaceObject(sessionOriginal.chatState, sessionDraft.chatState);
+      reconcile(runtimeOriginal, runtimeDraft);
+      if (sessionOriginal.chatState && sessionDraft.chatState) reconcile(sessionOriginal.chatState, sessionDraft.chatState);
       else engine.chatState = sessionDraft.chatState;
-      if (sessionOriginal.pendingPasswordAction && sessionDraft.pendingPasswordAction) replaceObject(sessionOriginal.pendingPasswordAction, sessionDraft.pendingPasswordAction);
+      if (sessionOriginal.pendingPasswordAction && sessionDraft.pendingPasswordAction) reconcile(sessionOriginal.pendingPasswordAction, sessionDraft.pendingPasswordAction);
       else engine.pendingPasswordAction = sessionDraft.pendingPasswordAction;
       engine.commitState?.('state.transaction');
       return result;
