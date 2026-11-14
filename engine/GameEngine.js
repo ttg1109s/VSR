@@ -240,7 +240,7 @@ export class GameEngine {
   }finally{this.runtime.isAsyncQueueRunning=false;}
  }
  clearEffectQueue(queueType='all'){
-  if(!this.state?.effectQueue)return;
+  if(!this.runtime?.effectQueue)return;
   const cancel=queue=>{for(const item of queue.splice(0))item.resolve?.({cancelled:true});};
   if(queueType==='all'||queueType==='sync')cancel(this.runtime.effectQueue.sync);
   if(queueType==='all'||queueType==='async')cancel(this.runtime.effectQueue.async);
