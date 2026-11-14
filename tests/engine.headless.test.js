@@ -54,3 +54,20 @@ test('Real Engine State Access transaction commits one coherent revision',async(
  snapshot.value=99;
  assert.equal(e.state.global.__state_layer_probe.value,17);
 });
+
+test('CMS effects commit against the real GameEngine runtime',async()=>{
+ const e=makeEngine();
+ await e.init(structuredClone(DEMO_SCRIPT));
+ const charId=Object.keys(e.state.characters)[0];
+ assert.ok(charId);
+ e.state.characters[charId].set ||= {};
+ e.state.characters[charId].set.relationship=[];
+ const sceneId=e.state.sceneId;
+ const routerId=e.state.scenes[sceneId].activeRouterId;
+ const routerKey=`${sceneId}_${routerId}`;
+ e.state.routers[routerKey].actions ||= [];
+ await e.applyEffect({type:'cms',table:'characters',id:charId,column:'relationship',method:'add',value:['npc','friend']});
+ await e.applyEffect({type:'cms',table:'routers',id:routerId,column:'actions',method:'add',value:'__cms_probe_action'});
+ assert.deepEqual(e.state.characters[charId].set.relationship,[['npc','friend']]);
+ assert.ok(e.state.routers[routerKey].actions.includes('__cms_probe_action'));
+});
