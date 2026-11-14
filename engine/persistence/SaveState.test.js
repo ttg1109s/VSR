@@ -81,3 +81,23 @@ test('migrates legacy saves that predate the protocol field', () => {
   assert.equal(migrated.protocol, 'vsr-save');
   assert.deepEqual(migrated.pausedTasks, []);
 });
+
+
+test('normalization detaches the save envelope from caller-owned objects', () => {
+  const input = {
+    protocol: 'vsr-save', saveVersion: 2,
+    scenario: { meta: { title: 'Original' } },
+    state: { sceneId: 'hall', scenes: { hall: {} } },
+    chatState: { active: false },
+    taskRemainingMs: { auto_patrol: 100 },
+    pausedTasks: [],
+    savedAt: new Date().toISOString()
+  };
+  const normalized = normalizeSaveEnvelope(input);
+  input.scenario.meta.title = 'Changed';
+  input.state.scenes.hall.changed = true;
+  input.taskRemainingMs.auto_patrol = 999;
+  assert.equal(normalized.scenario.meta.title, 'Original');
+  assert.equal(normalized.state.scenes.hall.changed, undefined);
+  assert.equal(normalized.taskRemainingMs.auto_patrol, 100);
+});

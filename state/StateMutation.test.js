@@ -125,3 +125,39 @@ test('snapshot reads preserve undefined and clone nested arrays', () => {
   assert.equal(e.state.items[0].id, 'a');
   assert.equal(state.getSnapshot('missing'), undefined);
 });
+
+
+test('StateAccess.set detaches caller-owned values', () => {
+  const e = engine(), state = new StateAccess(e);
+  const payload = { nested: { value: 1 } };
+  state.set('payload', payload);
+  payload.nested.value = 9;
+  assert.equal(e.state.payload.nested.value, 1);
+});
+
+test('transaction reads and writes are detached, including source namespace', async () => {
+  const e = engine(), state = new StateAccess(e);
+  let sourceRead, runtimeRead;
+  await state.transaction(tx => {
+    sourceRead = tx.get('meta', {}, { namespace: 'source' });
+    runtimeRead = tx.get('nested');
+    sourceRead.title = 'mutated';
+    runtimeRead.count = 88;
+    const payload = { value: 1 };
+    tx.set('payload', payload);
+    payload.value = 2;
+  });
+  assert.equal(e.src.meta.title, 'Immutable source');
+  assert.equal(e.state.nested.count, 2);
+  assert.equal(e.state.payload.value, 1);
+});
+
+test('source and session snapshots cannot mutate engine-owned objects', () => {
+  const e = engine(), state = new StateAccess(e);
+  const source = state.getSourceSnapshot('meta');
+  const session = state.getSessionSnapshot('chatState');
+  source.title = 'changed';
+  session.active = true;
+  assert.equal(e.src.meta.title, 'Immutable source');
+  assert.equal(e.chatState.active, false);
+});

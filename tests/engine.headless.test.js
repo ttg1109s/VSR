@@ -36,3 +36,21 @@ test('Save roundtrip excludes runtime queues and restores domain state',async()=
 test('Presentation events are JSON-safe without renderer',async()=>{const e=makeEngine();await e.init(structuredClone(DEMO_SCRIPT));const events=e.protocol.getEventsAfter(0).events;assert.ok(events.some(x=>x.event.startsWith('presentation.')));for(const event of events)assert.doesNotThrow(()=>JSON.stringify(event));});
 
 test('Chat presentation helper is scoped to its Engine',async()=>{const a=makeEngine(),b=makeEngine();await a.init(structuredClone(DEMO_SCRIPT));await b.init(structuredClone(DEMO_SCRIPT));const beforeA=a.protocol.eventSequence,beforeB=b.protocol.eventSequence;a.endChat();assert.ok(a.protocol.eventSequence>beforeA);assert.equal(b.protocol.eventSequence,beforeB);});
+
+test('Real Engine State Access transaction commits one coherent revision',async()=>{
+ const e=makeEngine();
+ await e.init(structuredClone(DEMO_SCRIPT));
+ const before=e.protocol.stateRevision;
+ const source=e.src.meta;
+ await e.api.engine.state.transaction(tx=>{
+  tx.set('global.__state_layer_probe',{type:'number',value:17});
+  const detached=tx.get('meta',{}, {namespace:'source'});
+  detached.title='tampered';
+ });
+ assert.equal(e.state.global.__state_layer_probe.value,17);
+ assert.equal(e.src.meta.title,source.title);
+ assert.ok(e.protocol.stateRevision>before);
+ const snapshot=e.api.engine.state.getRuntimeSnapshot('global.__state_layer_probe');
+ snapshot.value=99;
+ assert.equal(e.state.global.__state_layer_probe.value,17);
+});

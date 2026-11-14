@@ -66,7 +66,7 @@ export function normalizeSaveEnvelope(input) {
   const version = input.saveVersion ?? 1;
   if (version === 1) {
     return {
-      ...input,
+      ...cloneJsonValue(input),
       protocol: 'vsr-save',
       saveVersion: SAVE_VERSION,
       pendingPasswordAction: input.pendingPasswordAction ?? null,
