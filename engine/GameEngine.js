@@ -39,7 +39,7 @@ export class GameEngine {
   const pending=this.pendingPasswordAction;
   if(!pending)throw new Error('No active password challenge.');
   if(payload.challengeId!==pending.challengeId)throw new Error('Password challenge ID mismatch or stale challenge.');
-  if(pending.sceneId!==this.state.sceneId||pending.routerId!==this.state.scenes?.[pending.sceneId]?.activeRouterId)throw new Error('Password challenge is no longer active.');
+  if(pending.sceneId!==this.api.engine.state.get('sceneId')||pending.routerId!==this.api.engine.state.get('scene.activeRouterId', { id: pending.sceneId }))throw new Error('Password challenge is no longer active.');
   const action=this.getEffectiveActions(pending.sceneId,pending.routerId).find(item=>item.id===pending.actionId);
   if(!action||!action.set?.password)throw new Error('Password action no longer exists.');
   const config=this.src?.passwords?.[pending.type]?.[pending.passwordId];
@@ -104,8 +104,8 @@ export class GameEngine {
   this.reset();
   this.scenario=sourceCopy;this.src=loaded.src;this.state=loaded.state;
   this.initCharactersMoving();
-  const entry=this.src.meta?.entryScene||Object.keys(this.state.scenes)[0];
-  if(!this.state.scenes[entry])throw new Error(`Entry scene '${entry}' does not exist.`);
+  const entry=this.src.meta?.entryScene||Object.keys(this.api.engine.state.getRuntimeSnapshot('scenes') || {})[0];
+  if(!this.api.engine.state.getRuntimeSnapshot('scenes.[id]', { id: entry }))throw new Error(`Entry scene '${entry}' does not exist.`);
   await this.enterScene(entry);
   this.api.engine.state.update('playerMoveHistory', history => [...(history || []), entry]);
   this.commitState('engine.initialized');
@@ -123,8 +123,8 @@ export class GameEngine {
   const remaining = challenge.deadlineAt - this.passwordSystem.clock();
   return this.scheduleDelay(Math.max(1, remaining), async () => {
    if (this.pendingPasswordAction?.challengeId !== challenge.challengeId) return;
-   const activeScene = this.state.scenes?.[challenge.sceneId];
-   if (this.state.sceneId !== challenge.sceneId || activeScene?.activeRouterId !== challenge.routerId) {
+   const activeRouterId = this.api.engine.state.get('scene.activeRouterId', { id: challenge.sceneId });
+   if (this.state.sceneId !== challenge.sceneId || activeRouterId !== challenge.routerId) {
     this.passwordSystem.finish(challenge, 'cancelled');
     this.pendingPasswordAction = null;
     this.api.engine.state.set('session.passwordChallenge', null);
@@ -177,9 +177,9 @@ export class GameEngine {
   const action = this.getEffectiveActions(challenge.sceneId, challenge.routerId)
    .find(item => item.id === challenge.actionId);
   const config = this.src?.passwords?.[challenge.type]?.[challenge.passwordId];
-  const scene = this.state.scenes?.[challenge.sceneId];
+  const activeRouterId = this.api.engine.state.get('scene.activeRouterId', { id: challenge.sceneId });
   if (!action?.set?.password || !config || this.state.sceneId !== challenge.sceneId ||
-      scene?.activeRouterId !== challenge.routerId) {
+      activeRouterId !== challenge.routerId) {
    this.pendingPasswordAction = null;
    this.api.engine.state.set('session.passwordChallenge', null);
    return;
@@ -188,13 +188,13 @@ export class GameEngine {
  }
  rehydrateBackgroundTasks(){
   const timers=this.restoredTaskTimers||{};
-  for(const charId of Object.keys(this.state.characters||{})) {
+  for(const charId of Object.keys(this.api.engine.state.getRuntimeSnapshot('characters') || {})) {
    const remaining=timers[`move_char_${charId}`];
    const taskId=`move_char_${charId}`;
    this.scheduleCharacterMove(charId,Number.isFinite(remaining)?remaining:null);
    if(this.restoredPausedTasks.includes(taskId))this.taskManager.pause(taskId);
   }
-  for(const[id,state]of Object.entries(this.state.automations||{})) {
+  for(const[id,state]of Object.entries(this.api.engine.state.getRuntimeSnapshot('automations') || {})) {
    if(!state?.active)continue;
    const taskId=`auto_${id}`;
    const remaining=timers[taskId];
@@ -246,7 +246,7 @@ export class GameEngine {
   if(queueType==='all'||queueType==='async')cancel(this.runtime.effectQueue.async);
  }
  pauseBackgroundTasks(){
-  for(const id of Object.keys(this.state.automations||{}))if(this.state.automations[id]?.active)this.taskManager.pause(`auto_${id}`);
+  for(const id of Object.keys(this.api.engine.state.getRuntimeSnapshot('automations') || {}))if(this.state.automations[id]?.active)this.taskManager.pause(`auto_${id}`);
   for(const id of Object.keys(this.state.characters||{}))this.taskManager.pause(`move_char_${id}`);
  }
  resumeBackgroundTasks(){
