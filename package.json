@@ -15,5 +15,9 @@
     "./save-schema": "./engine/persistence/save.schema.json",
     "./state": "./state/StateAccess.js",
     "./utils": "./utils/index.js"
+  },
+  "scripts": {
+    "test": "node --test",
+    "audit:state": "node tools/audit-state-access.js"
   }
 }
