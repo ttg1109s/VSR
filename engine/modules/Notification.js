@@ -51,7 +51,9 @@ export class NotificationSystem {
     const delay = Math.max(0, notification.expiresAt - this.clock());
     const timer = this.schedule(() => {
       this.timers.delete(notification.id);
-      this.expire(notification.id);
+      if (!this.expire(notification.id) && this.byId.get(notification.id)?.status === 'pending') {
+        this.scheduleExpiry(notification);
+      }
     }, delay);
     timer?.unref?.();
     this.timers.set(notification.id, timer);
@@ -112,6 +114,7 @@ export class NotificationSystem {
     });
     while (this.history.length > this.maxHistory) {
       const removed = this.history.shift();
+      this.cancelExpiry(removed.id);
       this.byId.delete(removed.id);
       this.pending = this.pending.filter(id => id !== removed.id);
       if (removed.dedupeKey && this.dedupe.get(removed.dedupeKey) === removed.id) this.dedupe.delete(removed.dedupeKey);
