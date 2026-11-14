@@ -1,5 +1,5 @@
 import { escapeHtml } from '../utils/security.js';
-import { StatStyles } from '../render/modules/character/utils.js';
+import { StatStyles } from '../shared/presentation/StatStyles.js';
 
 // Item trong danh sách Faker (Nhập hồn)
 export const FakerRow = ({ name, initials }) => {
