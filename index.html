@@ -523,9 +523,13 @@
 
     const t=new Date().toLocaleTimeString();
 
-    div.innerHTML=
-    '<span class="time">'+t+'</span>'+
-    args.map(stringify).join(" ");
+    const timeEl=document.createElement("span");
+    timeEl.className="time";
+    timeEl.textContent=t;
+    div.appendChild(timeEl);
+    const messageEl=document.createElement("span");
+    messageEl.textContent=args.map(stringify).join(" ");
+    div.appendChild(messageEl);
 
     body.appendChild(div);
 
