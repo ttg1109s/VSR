@@ -277,13 +277,21 @@ function validateReferences(scenario) {
     if (effect.type === 'characters' && effect.target && !dynamicTarget && !characterExists(effect.target)) {
       add(`${path}.target`, `references missing character '${effect.target}'`);
     }
+    if (effect.type === 'cms' && typeof effect.id === 'string' && !effect.id.includes('$(')) {
+      if (effect.table === 'characters' && !characterExists(effect.id)) {
+        add(`${path}.id`, `references missing character '${effect.id}'`);
+      }
+      if (effect.table === 'routers' && !routerExists(effect.id)) {
+        add(`${path}.id`, `references missing router '${effect.id}'`);
+      }
+    }
     if (effect.type === 'set' && effect.target && !dynamicTarget) {
       const exists = {
         state: () => Object.hasOwn(scenario.globalStates || {}, effect.target),
         scene: () => Object.hasOwn(scenes, effect.target),
         router: () => routerExists(effect.target),
         action: () => actionExists(effect.target),
-        characters: () => characterExists(effect.target),
+        character: () => characterExists(effect.target),
         chat: () => Object.hasOwn(chats, effect.target),
         chat_choice: () => Object.values(chats).some(chat => Object.hasOwn(chat?.choice || {}, effect.target)),
         automation: () => Object.hasOwn(templates.automation || {}, effect.target)
