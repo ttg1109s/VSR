@@ -1,6 +1,6 @@
 // htdocs/engine/modules/Chat.js
 
-import { hideInput } from './chat/UIHelper.js';
+import { hideInput } from './chat/Presentation.js';
 import { ChatBlockHandlers } from './chat/BlockHandler.js';
 import { API } from '../../api/index.js';
 
