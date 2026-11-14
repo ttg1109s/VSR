@@ -6,6 +6,7 @@ import { validateScenario, normalizeScenario, ScenarioValidationError } from '..
 import { LogicSystem } from '../engine/modules/Logic.js';
 import { ActionSystem } from '../engine/modules/Action.js';
 import { SceneSystem } from '../engine/modules/Scene.js';
+import { AutomationSystem } from '../engine/modules/Automation.js';
 
 function validScenario() {
   return {
@@ -126,4 +127,42 @@ test('entering a locked scene is rejected by the engine', async () => {
 test('generated runtime schema stays identical to scenario.schema.json', () => {
   const sourceSchema = JSON.parse(readFileSync(new URL('../scenario.schema.json', import.meta.url), 'utf8'));
   assert.deepEqual(scenarioSchema, sourceSchema);
+});
+
+test('random automation stops after its configured number of complete cycles', async () => {
+  const runtime = {
+    active: true, move: 'random', moveDirection: 'first', stepIndex: -1,
+    randomStepCount: 0, countCurrent: 0, banClick: false,
+    runInfinity: false, numberCycleAllow: 1
+  };
+  let stopped = false;
+  const access = {
+    getRuntime: () => runtime,
+    getSource: () => ({ plan: [{ seconds: 1 }] }),
+    getSession: () => null,
+    get(key) {
+      if (key === 'automation.countCurrent') return runtime.countCurrent;
+      if (key === 'automation.banClick') return runtime.banClick;
+      if (key === 'automation.runInfinity') return runtime.runInfinity;
+      if (key === 'automation.numberCycleAllow') return runtime.numberCycleAllow;
+      if (key === 'automation.active') return runtime.active;
+      return undefined;
+    },
+    set(key, value) {
+      const field = key.split('.').at(-1);
+      runtime[field] = value;
+    }
+  };
+  const engine = {
+    api: { engine: { state: access } },
+    getConfig: () => 1,
+    processRunnables: async () => {},
+    taskManager: { addNew() {}, operator() {} },
+    stopAutomation() { stopped = true; runtime.active = false; }
+  };
+  await AutomationSystem.processAutomationStep.call(engine, 'random');
+  assert.equal(runtime.randomStepCount, 1);
+  await AutomationSystem.processAutomationStep.call(engine, 'random');
+  assert.equal(runtime.countCurrent, 1);
+  assert.equal(stopped, true);
 });
