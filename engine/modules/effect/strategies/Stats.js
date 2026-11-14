@@ -1,105 +1,107 @@
 // htdocs/engine/modules/effect/strategies/Stats.js
 import { resolveValue } from './Logic.js';
 
+const toFiniteNumber = (value) => {
+    const number = Number(value);
+    return Number.isFinite(number) ? number : null;
+};
+
 export const StatsCalculators = {
-    max: { set: (o, m, v) => Number(v), add: (o, m, v) => o + Number(v) },
-    current: { set: (o, m, v) => Number(v), full: (o, m, v) => Number(m), add: (o, m, v) => o + Number(v) }
+    max: { set: (_old, _max, value) => Number(value), add: (old, _max, value) => old + Number(value) },
+    current: {
+        set: (_old, _max, value) => Number(value),
+        full: (_old, max) => Number(max),
+        add: (old, _max, value) => old + Number(value)
+    }
 };
 
 export const StatsHelpers = {
     remove_stats: (targetObj, eff, isChar, effectiveTarget, engine) => {
         const prop = resolveValue(eff.property);
+        if (!targetObj?.stats || !Object.prototype.hasOwnProperty.call(targetObj.stats, prop)) return;
 
-        if (targetObj.stats[prop]) {
-            delete targetObj.stats[prop];
-            // [API FIX]
-            if (eff.notify) engine.api.notifications.add("Xóa chỉ số", `Đã xóa ${prop}`, "info", { source: 'scenario', category: 'scenario.stats.removed' });
-            const entryChar = engine.api.engine.state.getRuntime('meta.entryCharacter') || 'player';
-            if (isChar && effectiveTarget === entryChar) engine.api.presentation.components.updatePlayerCard();
-            if (isChar && engine.api.presentation.updateContactDetails) engine.api.presentation.updateContactDetails(effectiveTarget);
-            if (!isChar) engine.api.presentation.components.explorer();
-        }
+        delete targetObj.stats[prop];
+        if (eff.notify) engine.api.notifications.add("Xóa chỉ số", `Đã xóa ${prop}`, "info", { source: 'scenario', category: 'scenario.stats.removed' });
+        const entryChar = engine.api.engine.state.getRuntime('meta.entryCharacter') || 'player';
+        if (isChar && effectiveTarget === entryChar) engine.api.presentation.components.updatePlayerCard();
+        if (isChar && engine.api.presentation.updateContactDetails) engine.api.presentation.updateContactDetails(effectiveTarget);
+        if (!isChar) engine.api.presentation.components.explorer();
     },
+
     add_stats: (targetObj, eff, isChar, effectiveTarget, engine) => {
         const prop = resolveValue(eff.property);
-        const valStr = String(eff.value);
-        const parts = valStr.split(':');
+        if (!prop || !targetObj) return false;
 
-        const currentVal = Number(parts[0]) || 0;
+        const parts = String(eff.value ?? '').split(':');
+        const parsedCurrent = toFiniteNumber(parts[0] === '' ? 0 : parts[0]);
+        if (parsedCurrent === null) return false;
 
+        // An omitted max defaults to current; an explicit zero remains zero.
+        const parsedMax = parts[1] === undefined || parts[1] === ''
+            ? parsedCurrent
+            : toFiniteNumber(parts[1]);
+        if (parsedMax === null) return false;
+
+        const max = Math.max(0, parsedMax);
+        const current = Math.min(max, Math.max(0, parsedCurrent));
         const newStat = {
-            current: currentVal,
-            max: Number(parts[1]) || currentVal || 0,
+            current,
+            max,
             label: parts[2] || prop,
             color: parts[3] || null
         };
 
+        targetObj.stats ||= {};
         targetObj.stats[prop] = newStat;
 
-        // [LOGIC FIX] Check âm/dương để hiển thị màu thông báo phù hợp
         if (eff.notify) {
-            const isNegative = newStat.current < 0;
-            const type = isNegative ? "danger" : "success";
-            const msg = newStat.current;
-            engine.api.notifications.add(newStat.label, msg, type, { source: 'scenario', category: 'scenario.stats.added' });
+            const type = current < 0 ? "danger" : "success";
+            engine.api.notifications.add(newStat.label, current, type, { source: 'scenario', category: 'scenario.stats.added' });
         }
 
         const entryChar = engine.api.engine.state.getRuntime('meta.entryCharacter') || 'player';
         if (isChar && effectiveTarget === entryChar) engine.api.presentation.components.updatePlayerCard();
         if (isChar && engine.api.presentation.updateContactDetails) engine.api.presentation.updateContactDetails(effectiveTarget);
         if (!isChar) engine.api.presentation.components.explorer();
+        return true;
     },
+
     edit_value: (targetObj, eff, isChar, effectiveTarget, engine) => {
         const prop = resolveValue(eff.property);
+        const stat = targetObj?.stats?.[prop];
+        if (!stat || typeof stat !== 'object') return false;
 
-        if (!targetObj.stats[prop]) return;
-
-        const s = targetObj.stats[prop];
         const field = eff.field === 'max' ? 'max' : 'current';
         const mode = eff.mode || 'add';
-        const calc = StatsCalculators[field][mode] || StatsCalculators[field].add;
+        const calculator = StatsCalculators[field][mode] || StatsCalculators[field].add;
+        const oldValue = toFiniteNumber(stat[field]);
+        if (oldValue === null) return false;
 
-        const oldVal = field === 'max' ? Number(s.max) : Number(s.current);
-        const valToApply = resolveValue(eff.value);
+        const rawValue = resolveValue(eff.value);
+        const value = mode === 'full' && field === 'current'
+            ? toFiniteNumber(stat.max)
+            : toFiniteNumber(rawValue);
+        if (value === null) return false;
 
-        const newVal = calc(oldVal, s.max, valToApply);
+        const maxValue = toFiniteNumber(stat.max);
+        if (maxValue === null) return false;
+        const calculated = calculator(oldValue, maxValue, value);
+        if (!Number.isFinite(calculated)) return false;
 
-        // [LOGIC UPDATE] Tường minh hóa logic giới hạn giá trị
         if (field === 'max') {
-            // Logic Max: Không cho phép Max < 0
-            s.max = newVal < 0 ? 0 : newVal;
-
-            // Đồng bộ: Nếu Current đang lớn hơn Max mới thì gán xuống Max
-            if (Number(s.current) > s.max) s.current = s.max;
+            stat.max = Math.max(0, calculated);
+            const current = toFiniteNumber(stat.current);
+            stat.current = Math.min(stat.max, Math.max(0, current ?? 0));
         } else {
-            // Logic Current: 
-            // 1. Cận dưới: Không nhỏ hơn 0
-            let clampedVal = newVal < 0 ? 0 : newVal;
-
-            // 2. Cận trên: Không lớn hơn Max
-            // (Lưu ý: s.max có thể là 0, vẫn cần check)
-            if (clampedVal > s.max) clampedVal = s.max;
-
-            s.current = clampedVal;
+            stat.current = Math.min(maxValue, Math.max(0, calculated));
         }
 
-        // [API FIX] & [LOGIC FIX] Tách màu sắc rõ ràng cho Tăng/Giảm
         if (eff.notify) {
-            const diff = (field === 'max' ? s.max : s.current) - oldVal;
-            const label = s.label || prop;
-            const name = (targetObj?.set?.name || targetObj?.name || effectiveTarget);
-
-            let type = "info";
-            let sign = "";
-
-            if (diff > 0) {
-                type = "success";
-                sign = "+";
-            } else if (diff < 0) {
-                type = "danger";
-                // diff đã có dấu trừ sẵn
-            }
-
+            const diff = stat[field] - oldValue;
+            const label = stat.label || prop;
+            const name = targetObj?.set?.name || targetObj?.name || effectiveTarget;
+            const type = diff > 0 ? "success" : diff < 0 ? "danger" : "info";
+            const sign = diff > 0 ? "+" : "";
             engine.api.notifications.add(
                 isChar ? "Chỉ số" : "Vật phẩm",
                 `${name} (${label}): ${sign}${diff}`,
@@ -112,6 +114,7 @@ export const StatsHelpers = {
         if (isChar && effectiveTarget === entryChar) engine.api.presentation.components.updatePlayerCard();
         if (isChar && engine.api.presentation.updateContactDetails) engine.api.presentation.updateContactDetails(effectiveTarget);
         if (!isChar) engine.api.presentation.components.explorer();
+        return true;
     }
 };
 
