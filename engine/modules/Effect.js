@@ -40,18 +40,27 @@ export const EffectSystem = {
     },
 
     async processRunnable(wrapper, context = {}, listKey = null, sourceList = [], isAsync = false) {
-        if (!wrapper || typeof wrapper !== 'object') return;
+        if (!wrapper || typeof wrapper !== 'object') throw new TypeError('Runnable wrapper must be an object.');
+        if (wrapper.skip === true) return;
         if (wrapper.req && !this.checkReq(wrapper.req).pass) return;
 
+        if (wrapper.type === 'skip_all') return;
         if (wrapper.type === 'effect') {
-            const process = async (content) => Array.isArray(content) ? await this.processRunnables(content, context, isAsync, true) : await this.applyEffect(content, context, listKey, sourceList);
-            if (wrapper.ref) { const templateContent = this.src.templates.effects[wrapper.ref]; if (templateContent) await process(templateContent); else console.warn(`Effect Ref Not Found: ${wrapper.ref}`); }
+            const templateContent = wrapper.ref ? this.src?.templates?.effects?.[wrapper.ref] : null;
+            if (wrapper.ref && !templateContent) throw new Error(`Unknown effect template reference: ${wrapper.ref}`);
+            if (!wrapper.ref && !wrapper.inline) throw new TypeError("An 'effect' wrapper requires ref or inline.");
+            const process = async (content) => Array.isArray(content)
+                ? await this.processRunnables(content, context, isAsync, true)
+                : await this.applyEffect(content, context, listKey, sourceList);
+            if (templateContent) await process(templateContent);
             if (wrapper.inline) await process(wrapper.inline);
             return;
         }
 
-        if (wrapper.type === 'req') return;
-        if (wrapper.type && EffectHandlers[wrapper.type]) { await this.applyEffect(wrapper, context, listKey, sourceList); }
+        if (!EffectHandlers[wrapper.type]) {
+            throw new TypeError(`Unsupported runnable wrapper type: ${String(wrapper.type)}`);
+        }
+        await this.applyEffect(wrapper, context, listKey, sourceList);
     },
 
     getStaticList(scope, params) {
@@ -86,11 +95,15 @@ export const EffectSystem = {
     },
 
     async applyEffect(eff, context, listKey = null, sourceList = []) {
-        if (!eff || !eff.type) return;
+        if (!eff || !eff.type) throw new TypeError('Effect payload must declare a type.');
+        const handler = EffectHandlers[eff.type];
+        if (typeof handler !== 'function') throw new TypeError(`Unsupported effect payload type: ${String(eff.type)}`);
         try {
-            await EffectHandlers[eff.type]?.call(this, eff, context, listKey, sourceList);
-        } catch (err) {
-            console.error(`SAFEGUARD: Error applying effect [${eff.type}]`, eff, err);
+            await handler.call(this, eff, context, listKey, sourceList);
+        } catch (error) {
+            const wrapped = new Error(`Effect '${eff.type}' failed: ${error.message}`, { cause: error });
+            wrapped.code = 'EFFECT_EXECUTION_FAILED';
+            throw wrapped;
         }
     }
 };

@@ -126,7 +126,10 @@ export const ChatSystem = {
         const hasRead = bookmark.length > 0;
         console.log(`[ChatSystem] Logic check: isLoop=${isLoop}, hasRead=${hasRead}, readState=${chatRuntime.set.read}`);
 
-        let startBlock = c.meta?.entry || c.entry;
+        let startBlock = c.meta.entry;
+        if (!startBlock || !Object.hasOwn(c.block || {}, startBlock)) {
+            throw new Error(`Chat '${id}' has an invalid or missing meta.entry block.`);
+        }
         const startIndex = 0;
         let shouldProcessBlock = true;
 
@@ -243,7 +246,10 @@ export const ChatSystem = {
         block = JSON.parse(JSON.stringify(block));
 
         if (block) {
-            if (block.choice_id && chat.choice && chat.choice[block.choice_id]) {
+            if (block.choice_id) {
+                if (!chat.choice || !Object.hasOwn(chat.choice, block.choice_id)) {
+                    throw new Error(`Chat '${chatId}' block '${blockId}' references missing choice group '${block.choice_id}'.`);
+                }
                 block.choices = chat.choice[block.choice_id];
             } else {
                 block.choices = [];
@@ -369,9 +375,8 @@ export const ChatSystem = {
 
         // Nếu jump hợp lệ, kiểm tra xem block đích có tồn tại không
         if (nextBlockId) {
-            if (!chatData || !chatData.block || !chatData.block[nextBlockId]) {
-                console.warn(`[ChatSystem] Target '${nextBlockId}' not found. End.`);
-                nextBlockId = null;
+            if (!chatData || !chatData.block || !Object.hasOwn(chatData.block, nextBlockId)) {
+                throw new Error(`Chat '${this.chatState.id}' choice jump references missing block '${nextBlockId}'.`);
             } else {
                 const targetBlockInfo = this.resolveBlock(this.chatState.id, nextBlockId);
                 if (targetBlockInfo) {

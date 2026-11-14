@@ -104,11 +104,17 @@ Notification events use the canonical `presentation.notification.*` event namesp
 
 Engine modules do not render UI or access browser DOM APIs. Notifications, chat updates, transitions, visual-effect requests, and input requests are emitted as presentation events. A client may ignore, log, persist, or render those events using its own technology.
 
-## Scenario and save compatibility
+## Scenario schema is the source of truth
 
-`scenario.schema.json` defines the scenario authoring contract. Scenario data and save data are separate formats. Save data uses the versioned `vsr-save` envelope described by `engine/persistence/save.schema.json`; it does not replace or rewrite the scenario format.
+`scenario.schema.json` is the canonical Draft-07 contract for authored scenarios. The Engine runtime schema module at `engine/scenario/ScenarioSchema.js` is generated from that file; it must never be edited independently. Run `npm run schema:sync` to regenerate it and `npm run schema:check` to verify that the committed runtime module is synchronized.
 
-The built-in scenario validator checks core root, scene, and router invariants. It is not a complete JSON Schema validator.
+Scenario loading follows one pipeline: clone JSON-compatible input, apply declared schema defaults, assign deterministic IDs to inline actions, validate the JSON Schema, validate cross-object references and domain invariants, and only then build runtime indexes and state. `validateScenario()` returns diagnostics without mutating the caller's object; `normalizeScenario()` returns the normalized scenario or throws `ScenarioValidationError`. `meta.entryScene` is mandatory and must resolve. `meta.entryCharacter` defaults to `player`. `formatVersion` is the data-format version (currently 1), separate from the content release `meta.version`.
+
+Fixed structures reject undeclared properties. Dynamic dictionaries remain open only where the contract explicitly declares dictionary values, such as scenes, routers, characters, items, templates, endings, and global states. Semantic validation covers cross-references that JSON Schema cannot express, including globally unique router IDs, action and effect targets, chat entries/choices/jumps, password references, character/item references, scene-parent cycles, and find-way path geometry.
+
+The runtime dispatch table is the implementation of the schema's runnable types. Unsupported wrapper/effect types and unresolved effect-template or chat references fail explicitly; they are not silently ignored. Effect templates contain runnable wrappers and may reference other templates. Save data remains a separate versioned `vsr-save` envelope. On restore, the embedded scenario is passed through the same Loader/schema pipeline, and the normalized scenario—not runtime-only indexes—is retained for subsequent saves.
+
+The current scenario format is version 1. A future format change must add an explicit migration before changing the version constant; unsupported future or legacy versions are rejected rather than interpreted heuristically.
 
 ## Runtime ownership
 
@@ -124,4 +130,4 @@ Reusable helpers live in `utils/` and are available through `createUtils()` or t
 
 ## Verification status
 
-Run `npm test` for the checked-in Node.js regression tests, `npm run audit:state` for the AST candidate report, and `npm run audit:state:strict` to enforce the reviewed allowlist. The Acorn-based audit is syntax- and member-expression-aware, but it is not a complete interprocedural data-flow proof. CI runs tests and strict audit on pushes to this branch and pull requests. Runtime behavior and integrations still require validation in the target host/client environment.
+Run `npm run schema:check` to verify generated schema parity and `npm test` for the checked-in Node.js regression tests, `npm run audit:state` for the AST candidate report, and `npm run audit:state:strict` to enforce the reviewed allowlist. The Acorn-based audit is syntax- and member-expression-aware, but it is not a complete interprocedural data-flow proof. CI runs tests and strict audit on pushes to this branch and pull requests. Runtime behavior and integrations still require validation in the target host/client environment.

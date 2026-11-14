@@ -20,7 +20,9 @@
   "scripts": {
     "test": "node --test",
     "audit:state": "node tools/audit-state-access.js",
-    "audit:state:strict": "node tools/audit-state-access.js --strict"
+    "audit:state:strict": "node tools/audit-state-access.js --strict",
+    "schema:sync": "node tools/generate-scenario-schema.js",
+    "schema:check": "node tools/generate-scenario-schema.js && git diff --exit-code -- engine/scenario/ScenarioSchema.js"
   },
   "devDependencies": {
     "acorn": "^8.15.0"

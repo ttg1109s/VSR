@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Scenario Specification Schema V9.2 (Chat Refactor)",
-  "description": "Game scenario structure V9.2 with refactored Chat system, Passwords, Item Effects and Character Actions.",
+  "title": "VSR Scenario Contract v1",
+  "description": "Canonical VSR scenario authoring contract. Runtime behavior must conform to this schema.",
   "type": "object",
   "required": [
     "meta",
@@ -18,7 +18,12 @@
   ],
   "additionalProperties": false,
   "properties": {
-    "formatVersion": { "type": "integer", "minimum": 1, "maximum": 1, "default": 1, "description": "VSR data format version, independent from meta.version." },
+    "formatVersion": {
+      "type": "integer",
+      "const": 1,
+      "default": 1,
+      "description": "Scenario data format version. Independent from meta.version."
+    },
     "config": {
       "type": "object",
       "description": "General configuration for the game scenario.",
@@ -49,14 +54,22 @@
         },
         "maxInventory": {
           "type": "array",
-          "description": "Maximum inventory items (eg: [50, char_id], [20, char_id]). If [] to infinite.",
           "default": [],
+          "description": "Per-character inventory caps as [limit, characterId]. Empty means unlimited.",
           "items": {
             "type": "array",
+            "minItems": 1,
             "maxItems": 2,
-            "items": {
-              "type": "number"
-            }
+            "items": [
+              {
+                "type": "number",
+                "minimum": 0
+              },
+              {
+                "type": "string",
+                "minLength": 1
+              }
+            ]
           }
         },
         "maxHandOn": {
@@ -98,8 +111,14 @@
           "type": "boolean",
           "default": false,
           "description": "Force players to wait for descriptions on actions."
+        },
+        "clickHintDesc": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Number of unsuccessful description-gated clicks before the UI shows a hint."
         }
-      }
+      },
+      "additionalProperties": false
     },
     "meta": {
       "type": "object",
@@ -111,7 +130,8 @@
         "language",
         "writer",
         "ageRating",
-        "tags"
+        "tags",
+        "entryScene"
       ],
       "properties": {
         "title": {
@@ -162,7 +182,7 @@
           "properties": {
             "url": {
               "type": "string",
-              "format": "uri"
+              "format": "uri-reference"
             },
             "ratio": {
               "enum": [
@@ -177,7 +197,11 @@
                 "null"
               ]
             }
-          }
+          },
+          "additionalProperties": false,
+          "required": [
+            "url"
+          ]
         },
         "tags": {
           "type": "array",
@@ -204,18 +228,17 @@
           "description": "Estimated playtime (minutes)."
         },
         "entryScene": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "description": "ID of the first Scene when starting the game."
+          "type": "string",
+          "minLength": 1,
+          "description": "Required ID of the first scene entered when a new game starts."
         },
         "entryCharacter": {
           "type": [
             "string",
             "null"
           ],
-          "description": "ID of the Character that the player will roleplay as initially."
+          "default": "player",
+          "description": "Initial player character ID. Null or omitted is normalized to the built-in player."
         },
         "createdAt": {
           "type": "string",
@@ -237,7 +260,8 @@
             "null"
           ]
         }
-      }
+      },
+      "additionalProperties": false
     },
     "globalStates": {
       "type": "object",
@@ -248,18 +272,49 @@
           "type",
           "value"
         ],
+        "additionalProperties": false,
+        "oneOf": [
+          {
+            "properties": {
+              "type": {
+                "const": "boolean"
+              },
+              "value": {
+                "type": "boolean"
+              }
+            }
+          },
+          {
+            "properties": {
+              "type": {
+                "const": "number"
+              },
+              "value": {
+                "type": "number"
+              }
+            }
+          },
+          {
+            "properties": {
+              "type": {
+                "const": "string"
+              },
+              "value": {
+                "type": "string"
+              }
+            }
+          }
+        ],
         "properties": {
           "type": {
+            "type": "string",
             "enum": [
               "boolean",
               "number",
               "string"
-            ],
-            "description": "Data type of the variable."
+            ]
           },
-          "value": {
-            "description": "Initial value."
-          }
+          "value": {}
         }
       }
     },
@@ -271,7 +326,7 @@
           "type": "object",
           "description": "Definitions of logic requirements.",
           "additionalProperties": {
-            "$ref": "#/definitions/requirement_details"
+            "$ref": "#/definitions/requirement_definition"
           }
         },
         "effects": {
@@ -279,8 +334,9 @@
           "description": "Definitions of effect chains.",
           "additionalProperties": {
             "type": "array",
+            "minItems": 1,
             "items": {
-              "$ref": "#/definitions/effect_details"
+              "$ref": "#/definitions/runnable_wrapper"
             }
           }
         },
@@ -342,7 +398,8 @@
                     "default": true,
                     "description": "Whether to ban clicks during automation. Be careful with this setting with runInfinity true because it can cause an infinite loop."
                   }
-                }
+                },
+                "additionalProperties": false
               },
               "plan": {
                 "type": "array",
@@ -360,13 +417,16 @@
                         "$ref": "#/definitions/runnable_wrapper"
                       }
                     }
-                  }
+                  },
+                  "additionalProperties": false
                 }
               }
-            }
+            },
+            "additionalProperties": false
           }
         }
-      }
+      },
+      "additionalProperties": false
     },
     "itemInfo": {
       "type": "object",
@@ -428,7 +488,8 @@
                 },
                 "description": "Effect when item is unequipped."
               }
-            }
+            },
+            "additionalProperties": false
           },
           "usage": {
             "type": "object",
@@ -458,14 +519,28 @@
                     "broken"
                   ]
                 ],
-                "description": "Status of the item is an array of [value percents, label]."
+                "description": "Status of the item is an array of [value percents, label].",
+                "items": {
+                  "type": "array",
+                  "minItems": 2,
+                  "maxItems": 2,
+                  "items": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "string"
+                    }
+                  ]
+                }
               },
               "autoInc": {
                 "type": "boolean",
                 "default": true,
                 "description": "Auto increment usage current value when used."
               }
-            }
+            },
+            "additionalProperties": false
           },
           "stats": {
             "type": "object",
@@ -491,10 +566,12 @@
                   "type": "string",
                   "pattern": "^#[0-9a-fA-F]{6}$"
                 }
-              }
+              },
+              "additionalProperties": false
             }
           }
-        }
+        },
+        "additionalProperties": false
       }
     },
     "passwords": {
@@ -559,10 +636,11 @@
           },
           "url": {
             "type": "string",
-            "format": "uri",
+            "format": "uri-reference",
             "description": "URL to the media resource."
           }
-        }
+        },
+        "additionalProperties": false
       }
     },
     "scenes": {
@@ -594,7 +672,8 @@
             "type": "object",
             "description": "Chat metadata.",
             "required": [
-              "loop"
+              "loop",
+              "entry"
             ],
             "properties": {
               "title": {
@@ -617,11 +696,9 @@
                 "description": "Character ID of sender, or null for unknown/spam."
               },
               "entry": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "ID of the starting block."
+                "type": "string",
+                "minLength": 1,
+                "description": "Starting block ID; must resolve within this chat."
               },
               "to": {
                 "type": "array",
@@ -630,7 +707,8 @@
                 },
                 "description": "List of recipient Character IDs."
               }
-            }
+            },
+            "additionalProperties": false
           },
           "block": {
             "type": "object",
@@ -660,7 +738,8 @@
                         "type": "string",
                         "description": "Dialogue line."
                       }
-                    }
+                    },
+                    "additionalProperties": false
                   }
                 },
                 "choice_id": {
@@ -668,14 +747,15 @@
                     "string",
                     "null"
                   ],
-                  "description": "Reference to a key in the choice object."
+                  "description": "Choice group ID; when non-null it must exist in this chat's choice map."
                 },
                 "choiced": {
                   "type": "boolean",
                   "default": false,
                   "description": "State: Has this block been completed/selected?"
                 }
-              }
+              },
+              "additionalProperties": false
             }
           },
           "choice": {
@@ -705,12 +785,18 @@
                       "null"
                     ],
                     "description": "Block ID to jump to. If null or duplicate with choice that Block ID contains it or not met, ends chat."
+                  },
+                  "id": {
+                    "type": "string",
+                    "description": "Optional stable choice ID."
                   }
-                }
+                },
+                "additionalProperties": false
               }
             }
           }
-        }
+        },
+        "additionalProperties": false
       }
     },
     "characters": {
@@ -747,7 +833,8 @@
                 "type": "string",
                 "description": "Character avatar URL."
               }
-            }
+            },
+            "additionalProperties": false
           },
           "set": {
             "type": "object",
@@ -806,7 +893,8 @@
                 ],
                 "description": "ID of the main action for this character."
               }
-            }
+            },
+            "additionalProperties": false
           },
           "moveList": {
             "type": "array",
@@ -851,7 +939,8 @@
                     "$ref": "#/definitions/runnable_wrapper"
                   }
                 }
-              }
+              },
+              "additionalProperties": false
             }
           },
           "effect": {
@@ -878,7 +967,8 @@
                   }
                 }
               }
-            }
+            },
+            "additionalProperties": false
           },
           "stats": {
             "type": "object",
@@ -909,7 +999,8 @@
                   "type": "string",
                   "pattern": "^#[0-9a-fA-F]{6}$"
                 }
-              }
+              },
+              "additionalProperties": false
             }
           },
           "met": {
@@ -942,1505 +1033,48 @@
                 "type": "string",
                 "description": "Current scene ID of the place."
               }
-            }
+            },
+            "additionalProperties": false,
+            "required": [
+              "scene_id",
+              "currentIndex"
+            ]
           },
           "inventory": {
             "type": "array",
-            "description": "Inventory items of the character."
+            "description": "Inventory items of the character.",
+            "items": {
+              "type": "string"
+            }
+          },
+          "hand": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Items currently held by the character."
           }
-        }
+        },
+        "additionalProperties": false
       }
     },
     "endings": {
       "type": "object",
-      "description": "Definitions of game endings.",
+      "description": "Dictionary of terminal game outcomes keyed by ending ID.",
       "additionalProperties": {
         "type": "object",
-        "required": [],
-        "properties": {
-          "set": {
-            "type": "object",
-            "description": "Description of the ending."
-          }
-        }
-      }
-    },
-    "definitions": {
-      "runnable_wrapper": {
-        "type": "object",
-        "description": "Wrapper for all logic actions (Effect, Requirement, Manage Effect).",
         "required": [
-          "type",
-          "skip"
-        ],
-        "properties": {
-          "skip": {
-            "type": "boolean",
-            "description": "Skip this action if true.",
-            "default": false
-          },
-          "type": {
-            "enum": [
-              "effect",
-              "req",
-              "manage_effect"
-            ]
-          },
-          "ref": {
-            "type": "string",
-            "description": "Reference to ID in templates."
-          },
-          "inline": {
-            "type": "object",
-            "description": "Inline content definition."
-          },
-          "req": {
-            "$ref": "#/definitions/requirement_details",
-            "description": "Attached execution requirement."
-          }
-        },
-        "allOf": [
-          {
-            "if": {
-              "properties": {
-                "type": {
-                  "const": "effect"
-                }
-              }
-            },
-            "then": {
-              "properties": {
-                "inline": {
-                  "$ref": "#/definitions/effect_details"
-                }
-              }
-            }
-          },
-          {
-            "if": {
-              "properties": {
-                "type": {
-                  "const": "req"
-                }
-              }
-            },
-            "then": {
-              "properties": {
-                "inline": {
-                  "$ref": "#/definitions/requirement_details"
-                },
-                "req": {
-                  "not": {}
-                }
-              }
-            }
-          }
-        ]
-      },
-      "requirement_details": {
-        "type": "object",
-        "description": "Logic condition details.",
-        "properties": {
-          "logic": {
-            "enum": [
-              "AND",
-              "OR",
-              "NOT",
-              "XOR",
-              null
-            ],
-            "description": "Combining logic operator."
-          },
-          "check": {
-            "type": "array",
-            "description": "List of single checks.",
-            "items": {
-              "$ref": "#/definitions/requirement_check"
-            }
-          }
-        }
-      },
-      "requirement_check": {
-        "type": "object",
-        "description": "A single logic check.",
-        "required": [
-          "type",
-          "subtype",
-          "op",
-          "value"
-        ],
-        "properties": {
-          "type": {
-            "enum": [
-              "item",
-              "stats",
-              "state",
-              "set",
-              "relationship"
-            ],
-            "description": "Type of object to check."
-          },
-          "subtype": {
-            "type": "string",
-            "description": "Subtype (inventory, global, scene...)."
-          },
-          "target": {
-            "type": "string",
-            "description": "ID of the object to check."
-          },
-          "property": {
-            "type": "string",
-            "description": "Property to compare."
-          },
-          "op": {
-            "enum": [
-              "==",
-              "!=",
-              ">",
-              "<",
-              ">=",
-              "<=",
-              "has",
-              "!has"
-            ],
-            "description": "Comparison operator."
-          },
-          "value": {
-            "description": "Value to compare."
-          }
-        },
-        "allOf": [
-          {
-            "if": {
-              "properties": {
-                "type": {
-                  "const": "item"
-                }
-              }
-            },
-            "then": {
-              "oneOf": [
-                {
-                  "properties": {
-                    "subtype": {
-                      "const": "inventory"
-                    },
-                    "op": {
-                      "enum": [
-                        "has",
-                        "!has"
-                      ]
-                    },
-                    "value": {
-                      "type": "string"
-                    }
-                  }
-                },
-                {
-                  "properties": {
-                    "subtype": {
-                      "const": "hand"
-                    },
-                    "op": {
-                      "const": "=="
-                    },
-                    "value": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      }
-                    }
-                  }
-                },
-                {
-                  "properties": {
-                    "subtype": {
-                      "const": "usage"
-                    },
-                    "op": {
-                      "enum": [
-                        "<",
-                        ">",
-                        "==",
-                        "!=",
-                        "<=",
-                        ">="
-                      ]
-                    },
-                    "value": {
-                      "type": "number"
-                    }
-                  }
-                }
-              ]
-            }
-          },
-          {
-            "if": {
-              "properties": {
-                "type": {
-                  "const": "stats"
-                }
-              }
-            },
-            "then": {
-              "properties": {
-                "subtype": {
-                  "enum": [
-                    "item",
-                    "characters"
-                  ]
-                }
-              }
-            }
-          },
-          {
-            "if": {
-              "properties": {
-                "type": {
-                  "const": "state"
-                }
-              }
-            },
-            "then": {
-              "properties": {
-                "subtype": {
-                  "const": "global"
-                }
-              }
-            }
-          },
-          {
-            "if": {
-              "properties": {
-                "type": {
-                  "const": "set"
-                }
-              }
-            },
-            "then": {
-              "properties": {
-                "subtype": {
-                  "enum": [
-                    "state",
-                    "scene",
-                    "router",
-                    "action",
-                    "chat",
-                    "characters",
-                    "chat_choice",
-                    "chat_block",
-                    "automation",
-                    "block_chat"
-                  ]
-                }
-              }
-            }
-          },
-          {
-            "if": {
-              "properties": {
-                "type": {
-                  "const": "relationship"
-                }
-              }
-            },
-            "then": {
-              "properties": {
-                "subtype": {
-                  "enum": [
-                    "tag"
-                  ]
-                },
-                "property": {
-                  "type": "string",
-                  "description": "Format: 'targetCharID'"
-                }
-              }
-            }
-          }
-        ]
-      },
-      "effect_details": {
-        "type": "object",
-        "description": "Impact effect details.",
-        "required": [
-          "type"
-        ],
-        "properties": {
-          "type": {
-            "enum": [
-              "notify",
-              "set",
-              "item",
-              "goto",
-              "vfx",
-              "characters",
-              "cms",
-              "skip_all"
-            ],
-            "description": "Type of effect."
-          },
-          "subtype": {
-            "type": "string",
-            "description": "Impact subtype."
-          },
-          "target": {
-            "type": "string",
-            "description": "ID of the target object."
-          },
-          "property": {
-            "type": "string",
-            "description": "Property to change."
-          },
-          "value": {
-            "description": "New value or increment value."
-          },
-          "text": {
-            "type": "string",
-            "description": "Notification content (for notify)."
-          },
-          "level": {
-            "enum": [
-              "info",
-              "success",
-              "warn",
-              "error"
-            ],
-            "description": "Notification level (color)."
-          },
-          "index": {
-            "type": "array",
-            "items": {
-              "type": "number"
-            },
-            "description": "Indices for npc_moving_ctrl."
-          },
-          "duration": {
-            "type": "number",
-            "description": "Duration in seconds for VFX."
-          },
-          "format": {
-            "enum": [
-              "photo",
-              "video",
-              "sound"
-            ],
-            "description": "Format for media VFX."
-          },
-          "control": {
-            "enum": [
-              "start",
-              "stop",
-              "repeat"
-            ],
-            "description": "Control action for media."
-          },
-          "mode": {
-            "type": "string",
-            "description": "Mode for stats effect (add_stats, remove_stats)."
-          },
-          "notify": {
-            "type": "boolean",
-            "description": "Show notification for stats effect."
-          },
-          "space": {
-            "enum": [
-              "router",
-              "action",
-              "characters",
-              "item",
-              "chat"
-            ],
-            "description": "Scope (for manage_effect)."
-          },
-          "in": {
-            "enum": [
-              "still",
-              "leave",
-              "enter",
-              "pass",
-              "fail",
-              "normal",
-              "t_start",
-              "t_end",
-              "meeting",
-              "pwFailed",
-              "use",
-              "equip",
-              "unequip"
-            ],
-            "description": "Hook name (for manage_effect)."
-          },
-          "inline": {
-            "$ref": "#/definitions/runnable_wrapper",
-            "description": "Content to inject (for manage_effect add_effect). Note: originally 'content' in wrapper."
-          }
-        },
-        "allOf": [
-          {
-            "if": {
-              "properties": {
-                "type": {
-                  "const": "notify"
-                }
-              }
-            },
-            "then": {
-              "properties": {
-                "subtype": {
-                  "enum": [
-                    "modal",
-                    "toast"
-                  ]
-                }
-              }
-            }
-          },
-          {
-            "if": {
-              "properties": {
-                "type": {
-                  "const": "set"
-                }
-              }
-            },
-            "then": {
-              "properties": {
-                "subtype": {
-                  "enum": [
-                    "state",
-                    "scene",
-                    "router",
-                    "action",
-                    "chat",
-                    "characters",
-                    "chat_choice",
-                    "chat_block",
-                    "automation"
-                  ]
-                }
-              }
-            }
-          },
-          {
-            "if": {
-              "properties": {
-                "type": {
-                  "const": "item"
-                }
-              }
-            },
-            "then": {
-              "properties": {
-                "subtype": {
-                  "enum": [
-                    "add",
-                    "remove",
-                    "hand_on",
-                    "hand_off",
-                    "usage",
-                    "stats"
-                  ]
-                },
-                "target": {
-                  "type": "string"
-                },
-                "hide": {
-                  "type": "boolean",
-                  "description": "Auto hide action after execution."
-                }
-              }
-            }
-          },
-          {
-            "if": {
-              "properties": {
-                "type": {
-                  "const": "characters"
-                },
-                "subtype": {
-                  "const": "edit_stats"
-                }
-              }
-            },
-            "then": {
-              "properties": {
-                "exec": {
-                  "enum": [
-                    "add",
-                    "set",
-                    "add_stats",
-                    "remove_stats"
-                  ]
-                },
-                "target": {
-                  "type": "string"
-                },
-                "property": {
-                  "type": "string"
-                },
-                "value": {
-                  "description": "Value or increment."
-                }
-              },
-              "required": [
-                "target",
-                "property",
-                "value"
-              ]
-            }
-          },
-          {
-            "if": {},
-            "then": {
-              "properties": {
-                "subtype": {
-                  "enum": [
-                    "locked",
-                    "unlocked",
-                    "add_effect",
-                    "remove_effect"
-                  ]
-                },
-                "required": [
-                  "space",
-                  "in",
-                  "subtype"
-                ]
-              }
-            }
-          },
-          {
-            "if": {
-              "properties": {
-                "type": {
-                  "const": "manage_effect"
-                }
-              }
-            },
-            "then": {
-              "properties": {
-                "subtype": {
-                  "enum": [
-                    "locked",
-                    "unlocked",
-                    "add_effect",
-                    "remove_effect"
-                  ]
-                },
-                "required": [
-                  "space",
-                  "in",
-                  "subtype"
-                ]
-              }
-            }
-          },
-          {
-            "if": {
-              "properties": {
-                "type": {
-                  "const": "goto"
-                }
-              }
-            },
-            "then": {
-              "properties": {
-                "subtype": {
-                  "enum": [
-                    "chat",
-                    "end",
-                    "scene",
-                    "router",
-                    "in_faker",
-                    "out_faker"
-                  ]
-                }
-              }
-            }
-          },
-          {
-            "if": {
-              "properties": {
-                "type": {
-                  "const": "vfx"
-                }
-              }
-            },
-            "then": {
-              "properties": {
-                "subtype": {
-                  "enum": [
-                    "media",
-                    "frame",
-                    "overlay"
-                  ]
-                },
-                "id": {
-                  "type": "string",
-                  "description": "Unique ID for the effect instance. If duplicate, overrides existing."
-                },
-                "target": {
-                  "type": "string"
-                },
-                "flicker": {
-                  "type": "number",
-                  "description": "Flicker interval in seconds (for overlay). If < 2, null or empty -> false."
-                },
-                "loop": {
-                  "type": "boolean",
-                  "description": "Enable looping (for frame)."
-                },
-                "loopSecond": {
-                  "type": "number",
-                  "description": "Loop interval in seconds (for frame). If < 1, null or empty -> false."
-                },
-                "format": {
-                  "enum": [
-                    "sound",
-                    "video",
-                    "photo"
-                  ],
-                  "description": "Media format (for media)."
-                },
-                "control": {
-                  "enum": [
-                    "stop",
-                    "play",
-                    "pause"
-                  ],
-                  "description": "Playback control (for media)."
-                },
-                "repeat": {
-                  "type": "boolean",
-                  "description": "Enable repeat (for media)."
-                }
-              }
-            }
-          },
-          {
-            "if": {
-              "properties": {
-                "type": {
-                  "const": "characters"
-                },
-                "subtype": {
-                  "const": "mng_stats"
-                }
-              }
-            },
-            "then": {
-              "properties": {
-                "exec": {
-                  "enum": [
-                    "swap",
-                    "copy_to",
-                    "cut_to",
-                    "delete",
-                    "add_stats",
-                    "remove_stats"
-                  ]
-                },
-                "target": {
-                  "type": "string",
-                  "description": "Format: 'dest_id:src_id' or 'target_id'"
-                },
-                "value": {
-                  "type": "string",
-                  "description": "Stat Key to copy/cut/delete"
-                }
-              }
-            }
-          },
-          {
-            "if": {
-              "properties": {
-                "type": {
-                  "const": "characters"
-                },
-                "subtype": {
-                  "const": "moving"
-                }
-              }
-            },
-            "then": {
-              "properties": {
-                "exec": {
-                  "enum": [
-                    "skip",
-                    "edit"
-                  ]
-                },
-                "target": {
-                  "type": "string"
-                },
-                "index": {
-                  "type": "array"
-                }
-              }
-            }
-          },
-          {
-            "if": {
-              "properties": {
-                "type": {
-                  "const": "cms"
-                }
-              }
-            },
-            "then": {
-              "properties": {
-                "table": {
-                  "enum": [
-                    "characters",
-                    "routers"
-                  ],
-                  "description": "Target strategy table."
-                },
-                "column": {
-                  "enum": [
-                    "actions",
-                    "relationship",
-                    "met"
-                  ],
-                  "description": "Target column/property."
-                },
-                "method": {
-                  "enum": [
-                    "add",
-                    "remove",
-                    "insert",
-                    "empty",
-                    "set"
-                  ],
-                  "description": "Manipulation method"
-                },
-                "id": {
-                  "type": "string",
-                  "description": "ID of the target object (Character or Router)."
-                },
-                "value": {
-                  "description": "Value to add/remove/insert"
-                },
-                "index": {
-                  "type": "number",
-                  "description": "Index for 'insert' method"
-                }
-              },
-              "required": [
-                "subtype",
-                "method"
-              ]
-            }
-          }
-        ]
-      },
-      "password_common": {
-        "type": "object",
-        "required": [
+          "title",
           "desc"
         ],
+        "additionalProperties": false,
         "properties": {
           "title": {
             "type": "string",
-            "description": "Title of the password."
+            "minLength": 1
           },
           "desc": {
-            "type": "string",
-            "description": "Description or hint for the password."
-          },
-          "retryMax": {
-            "type": "number",
-            "minimum": 0,
-            "default": 3,
-            "description": "Max attempts allowed. 0 means infinite."
-          },
-          "countTest": {
-            "type": "number",
-            "default": 0,
-            "description": "Current number of failed attempts."
-          },
-          "timer": {
-            "type": "number",
-            "minimum": 0,
-            "default": 0,
-            "description": "Time limit in seconds. 0 means no limit."
-          }
-        }
-      },
-      "password_number": {
-        "type": "object",
-        "allOf": [
-          {
-            "$ref": "#/definitions/password_common"
-          }
-        ],
-        "required": [
-          "display",
-          "value"
-        ],
-        "properties": {
-          "display": {
-            "enum": [
-              "keyboard",
-              "combination",
-              "rotary_dial"
-            ],
-            "description": "UI Style for number input."
-          },
-          "value": {
-            "type": [
-              "number",
-              "string"
-            ],
-            "pattern": "^[0-9]+$",
-            "description": "The correct number combination. Use string to preserve leading zeros."
-          }
-        }
-      },
-      "password_string": {
-        "type": "object",
-        "allOf": [
-          {
-            "$ref": "#/definitions/password_common"
-          }
-        ],
-        "required": [
-          "value"
-        ],
-        "properties": {
-          "value": {
-            "type": "string",
-            "description": "The correct string password."
-          },
-          "hint": {
-            "type": "array",
-            "items": {
-              "type": "number"
-            },
-            "description": "Indices of characters to reveal as hint."
-          }
-        }
-      },
-      "password_find_way": {
-        "type": "object",
-        "allOf": [
-          {
-            "$ref": "#/definitions/password_common"
-          }
-        ],
-        "required": [
-          "start",
-          "target",
-          "street",
-          "area"
-        ],
-        "properties": {
-          "area": {
-            "type": "array",
-            "items": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 100
-            },
-            "minItems": 2,
-            "maxItems": 2
-          },
-          "start": {
-            "type": "array",
-            "items": {
-              "type": "integer",
-              "minimum": 0
-            },
-            "minItems": 2,
-            "maxItems": 2
-          },
-          "target": {
-            "type": "array",
-            "items": {
-              "type": "integer",
-              "minimum": 0
-            },
-            "minItems": 2,
-            "maxItems": 2
-          },
-          "street": {
-            "type": "array",
-            "minItems": 2,
-            "maxItems": 10000,
-            "items": {
-              "type": "array",
-              "minItems": 2,
-              "maxItems": 2,
-              "items": {
-                "type": "integer",
-                "minimum": 0
-              }
-            },
-            "description": "The ordered list of coordinates representing the correct path."
-          }
-        }
-      },
-      "password_puzzle": {
-        "type": "object",
-        "allOf": [
-          {
-            "$ref": "#/definitions/password_common"
-          }
-        ],
-        "required": [
-          "url",
-          "level"
-        ],
-        "properties": {
-          "url": {
-            "type": "string",
-            "format": "uri",
-            "description": "URL to the external puzzle resource."
-          },
-          "ratio": {
-            "type": "array",
-            "items": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 20
-            },
-            "minItems": 2,
-            "maxItems": 2,
-            "default": [
-              3,
-              3
-            ],
-            "description": "Aspect ratio of the puzzle [width, height]."
-          },
-          "level": {
-            "enum": [
-              "easy",
-              "normal",
-              "hard"
-            ]
-          }
-        }
-      },
-      "password_switch": {
-        "type": "object",
-        "allOf": [
-          {
-            "$ref": "#/definitions/password_common"
-          }
-        ],
-        "required": [
-          "value"
-        ],
-        "properties": {
-          "value": {
-            "type": "string",
-            "pattern": "^[0-9]+$",
-            "description": "Correct combination (e.g. '0123'). Each digit represents a switch state."
-          }
-        }
-      },
-      "scene": {
-        "type": "object",
-        "required": [
-          "meta",
-          "set",
-          "routers"
-        ],
-        "properties": {
-          "meta": {
-            "type": "object",
-            "description": "Scene meta information.",
-            "required": [
-              "title",
-              "parentScene"
-            ],
-            "properties": {
-              "title": {
-                "type": "string",
-                "description": "Scene name."
-              },
-              "parentScene": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "ID of the parent Scene."
-              }
-            }
-          },
-          "set": {
-            "type": "object",
-            "description": "Scene configuration.",
-            "required": [
-              "activeRouterId",
-              "blocked",
-              "transition",
-              "transitionDuration"
-            ],
-            "properties": {
-              "activeRouterId": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "Router ID to activate immediately upon entering Scene."
-              },
-              "blocked": {
-                "type": [
-                  "boolean",
-                  "null"
-                ],
-                "description": "Lock this Scene from entry."
-              },
-              "transition": {
-                "enum": [
-                  "fade",
-                  "fade",
-                  "flash",
-                  "zoom_in",
-                  "zoom_out",
-                  "glitch",
-                  "crt_off",
-                  "spin",
-                  "slide_left",
-                  "slide_right",
-                  "slide_up",
-                  "slide_down",
-                  "iris_circle",
-                  "invert_flash",
-                  "warp",
-                  null
-                ],
-                "description": "Transition effect when entering Scene."
-              },
-              "transitionDuration": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "default": 1.5,
-                "description": "Effect duration (seconds)."
-              }
-            }
-          },
-          "routers": {
-            "type": "object",
-            "description": "List of Routers (status, viewpoint) in the Scene.",
-            "additionalProperties": {
-              "$ref": "#/definitions/router"
-            }
-          }
-        }
-      },
-      "router": {
-        "type": "object",
-        "required": [
-          "meta",
-          "set",
-          "actions"
-        ],
-        "properties": {
-          "meta": {
-            "type": "object",
-            "description": "Router display information.",
-            "required": [
-              "sceneID",
-              "desc"
-            ],
-            "properties": {
-              "sceneID": {
-                "type": "string",
-                "description": "Scene ID containing this Router."
-              },
-              "subTitleStatus": {
-                "type": "string",
-                "description": "Subtitle (status)."
-              },
-              "desc": {
-                "type": "string",
-                "description": "Router content description."
-              },
-              "cover": {
-                "type": "string",
-                "description": "Router background image."
-              }
-            }
-          },
-          "set": {
-            "type": "object",
-            "description": "Router configuration.",
-            "required": [
-              "blocked",
-              "visited",
-              "countVisited",
-              "secondsStill",
-              "timer",
-              "timerSeconds",
-              "timerDisplay",
-              "timerEnd",
-              "transition",
-              "transitionDuration",
-              "overlay",
-              "overlayFlick",
-              "overlayFlickDuration"
-            ],
-            "properties": {
-              "blocked": {
-                "type": [
-                  "boolean",
-                  "null"
-                ],
-                "description": "Lock router access."
-              },
-              "visited": {
-                "type": [
-                  "boolean",
-                  "null"
-                ],
-                "description": "Has been visited."
-              },
-              "countVisited": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "description": "Visit count."
-              },
-              "secondsStill": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "default": 0,
-                "description": "Wait time before triggering Still Loop (seconds)."
-              },
-              "timer": {
-                "type": [
-                  "boolean",
-                  "null"
-                ],
-                "description": "Activate timer."
-              },
-              "timerSeconds": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "default": 60,
-                "description": "Total countdown time (seconds)."
-              },
-              "timerDisplay": {
-                "enum": [
-                  "dec",
-                  "inc",
-                  null
-                ],
-                "description": "Timer display: counting down (dec) or up (inc)."
-              },
-              "timerEnd": {
-                "enum": [
-                  "still",
-                  "out",
-                  null
-                ],
-                "description": "Action on timeout: Run loop (still) or exit (out)."
-              },
-              "transition": {
-                "enum": [
-                  "shake_random_blur",
-                  "shake_left_right_blur",
-                  "shake_up_down_blur",
-                  "blur",
-                  "glitch",
-                  "crt_off",
-                  "spin",
-                  "slide_left",
-                  "slide_right",
-                  "slide_up",
-                  "slide_down",
-                  "iris_circle",
-                  "invert_flash",
-                  "warp",
-                  null
-                ],
-                "description": "Internal transition effect."
-              },
-              "transitionDuration": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "default": 3,
-                "description": "Transition duration (seconds)."
-              },
-              "overlay": {
-                "enum": [
-                  "none",
-                  "dark",
-                  "light",
-                  "blood",
-                  "classic movie",
-                  "dreaming",
-                  "noise",
-                  null
-                ],
-                "description": "Visual effect overlay."
-              },
-              "overlayFlick": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "description": "Duration in seconds for overlay flicker. If <= 1 or null/false, no flicker (permanent)."
-              }
-            }
-          },
-          "loop": {
-            "type": "object",
-            "description": "Events automatically running per router lifecycle.",
-            "properties": {
-              "enter": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/runnable_wrapper"
-                },
-                "description": "Run when entering Router."
-              },
-              "leave": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/runnable_wrapper"
-                },
-                "description": "Run when leaving Router."
-              },
-              "still": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/runnable_wrapper"
-                },
-                "description": "Run repeatedly after secondsStill interval."
-              }
-            }
-          },
-          "timer": {
-            "type": "object",
-            "description": "Events associated with Timer.",
-            "properties": {
-              "start": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/runnable_wrapper"
-                },
-                "description": "Run when Timer starts."
-              },
-              "end": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/runnable_wrapper"
-                },
-                "description": "Run when Timer ends (if timerEnd = still)."
-              }
-            }
-          },
-          "actions": {
-            "type": "array",
-            "description": "List of Action IDs available in this router.",
-            "items": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "action": {
-        "type": "object",
-        "required": [
-          "meta",
-          "set"
-        ],
-        "properties": {
-          "meta": {
-            "type": "object",
-            "description": "Action display information.",
-            "required": [
-              "buttonLabel",
-              "buttonLabel"
-            ],
-            "properties": {
-              "title": {
-                "type": "string",
-                "description": "Display title."
-              },
-              "parentScene": {
-                "type": "string",
-                "description": "ID of parent scene."
-              },
-              "thumb": {
-                "type": "string",
-                "description": "Thumbnail image."
-              },
-              "desc": {
-                "type": "string",
-                "description": "Short description."
-              },
-              "buttonIcon": {
-                "type": "string",
-                "description": "Icon on button."
-              },
-              "buttonLabel": {
-                "type": "string",
-                "description": "Label on button."
-              }
-            }
-          },
-          "set": {
-            "type": "object",
-            "description": "Action configuration and state (Strict Mode).",
-            "required": [
-              "requirement",
-              "password",
-              "countClicks",
-              "countFails",
-              "display",
-              "charAllow"
-            ],
-            "properties": {
-              "requirement": {
-                "type": [
-                  "boolean",
-                  "null"
-                ],
-                "description": "Check requirement or not."
-              },
-              "password": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "pattern": "^type_pass:.+$",
-                "description": "Reference to password ID in 'type_pass:password_id' format."
-              },
-              "countClicks": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "description": "Click count."
-              },
-              "countFails": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "description": "Fail count."
-              },
-              "display": {
-                "enum": [
-                  "show",
-                  "hide",
-                  "locked",
-                  null
-                ],
-                "description": "Display status."
-              },
-              "charAllow": {
-                "type": [
-                  "array",
-                  "null"
-                ],
-                "items": {
-                  "type": "string"
-                },
-                "description": "List of Character IDs permitted to execute this action."
-              },
-              "cooldown": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "default": 0,
-                "description": "Cooldown time in seconds."
-              },
-              "sound": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "Sound ID."
-              },
-              "readDesc": {
-                "type": "boolean",
-                "default": false,
-                "description": "Has the description been read? (Runtime)"
-              },
-              "clickHintDesc": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "description": "Number of clicks before showing hint."
-              }
-            }
-          },
-          "requirement": {
-            "type": "object",
-            "description": "Requirement to execute action (if set.requirement = true).",
-            "properties": {
-              "ref": {
-                "type": "string",
-                "description": "Reference to requirement template."
-              },
-              "logic": {
-                "enum": [
-                  "AND",
-                  "OR",
-                  "NOT",
-                  "XOR",
-                  null
-                ]
-              },
-              "check": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/requirement_check"
-                }
-              }
-            }
-          },
-          "effect": {
-            "type": "object",
-            "description": "Effect occurring when action executed.",
-            "properties": {
-              "fail": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/runnable_wrapper"
-                },
-                "description": "Run on failure."
-              },
-              "pass": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/runnable_wrapper"
-                },
-                "description": "Run on success."
-              },
-              "normal": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/runnable_wrapper"
-                },
-                "description": "Run on click (condition ignored)."
-              },
-              "pwFailed": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/runnable_wrapper"
-                },
-                "description": "Run on password failure."
-              }
-            }
+            "type": "string"
           }
         }
       }
@@ -2449,7 +1083,7 @@
   "definitions": {
     "runnable_wrapper": {
       "type": "object",
-      "description": "Một bước hiệu ứng trong chuỗi effect (mảng fail/pass/normal/pwFailed, loop.enter/leave/still, item.effect.use/equip/unequip...). Engine đọc field 'type' để dispatch (xem engine/modules/effect/Strategies.js: manage_effect, cms, characters, notify, vfx, item, set, goto). Phải cung cấp 'ref' (tham chiếu templates.effects) HOẶC 'inline' (định nghĩa trực tiếp), không cả hai.",
+      "description": "A single executable wrapper. The engine supports only the dispatch types listed here.",
       "type_alt_note": "Trường 'type' ở CẤP NÀY dùng để engine dispatch effect handler, KHÁC với 'type' bên trong 'inline' nếu có (đó là type của effect_details).",
       "required": [
         "type"
@@ -2466,8 +1100,8 @@
             "cms",
             "notify",
             "vfx",
-            "automation",
-            "manage_effect"
+            "manage_effect",
+            "skip_all"
           ],
           "description": "Loại effect handler sẽ xử lý bước này."
         },
@@ -2476,13 +1110,10 @@
           "description": "ID tham chiếu tới templates.effects.<ref> (dùng lại effect đã định nghĩa sẵn)."
         },
         "inline": {
-          "$ref": "#/definitions/effect_details",
-          "description": "Định nghĩa effect trực tiếp (thay vì tham chiếu qua 'ref')."
+          "description": "Inline payload; its schema is selected by wrapper.type."
         },
         "hide": {
-          "type": "boolean",
-          "default": false,
-          "description": "Với type=item/subtype=add: ẩn thông báo 'đã nhận vật phẩm' mặc định."
+          "type": "boolean"
         },
         "skip": {
           "type": "boolean",
@@ -2492,33 +1123,10 @@
         "req": {
           "$ref": "#/definitions/requirement_details",
           "description": "Điều kiện cổng cho RIÊNG bước này: nếu check() không pass thì bước này bị bỏ qua (KHÔNG dừng cả danh sách). Đây là cơ chế đúng để 'gate' một effect — KHÔNG dùng { type: 'req' } (giá trị này luôn bị engine no-op, xem engine/modules/Effect.js dòng ~54)."
-        }
-      },
-      "additionalProperties": true
-    },
-    "effect_details": {
-      "type": "object",
-      "description": "Payload thực thi của một effect (thường nằm trong runnable_wrapper.inline, hoặc trực tiếp trong templates.effects.<id>[]). Cấu trúc cụ thể phụ thuộc 'type'/'subtype' — xem engine/modules/effect/strategies/*.js. Được mô hình hoá permissive (additionalProperties: true) vì có rất nhiều biến thể subtype. Lưu ý: payload của 'manage_effect' KHÔNG có field 'type' (dùng space/in/target/subtype/content thay thế), nên 'type' ở đây là optional chứ không required.",
-      "properties": {
-        "type": {
-          "type": "string",
-          "enum": [
-            "effect",
-            "item",
-            "set",
-            "goto",
-            "characters",
-            "cms",
-            "notify",
-            "vfx",
-            "automation",
-            "manage_effect"
-          ],
-          "description": "Loại effect (giống runnable_wrapper.type khi dùng inline)."
         },
         "subtype": {
           "type": "string",
-          "description": "Biến thể cụ thể trong nhóm 'type'. Ví dụ: type=characters -> subtype in [edit_stats, mng_stats, moving, ...]; type=item -> subtype in [add, remove, usage, ...]; type=notify -> subtype in [toast, modal, ...]."
+          "minLength": 1
         },
         "target": {
           "description": "ID đối tượng bị tác động (character id, scene id, action id, item id...). Có thể là chuỗi resolver $(...)."
@@ -2533,20 +1141,18 @@
         "mode": {
           "type": "string",
           "enum": [
-            "add",
-            "subtract",
             "set",
-            "multiply"
+            "add",
+            "full"
           ],
-          "description": "Cách áp dụng 'value' lên chỉ số hiện tại (mặc định 'add')."
+          "description": "Stat operation supported by the runtime calculators."
         },
         "field": {
           "type": "string",
           "enum": [
             "current",
             "max"
-          ],
-          "description": "Với hiệu ứng chỉnh chỉ số: áp dụng lên field 'current' hay 'max' (mặc định 'current')."
+          ]
         },
         "text": {
           "type": "string",
@@ -2564,8 +1170,7 @@
             "warn",
             "danger",
             "error"
-          ],
-          "description": "Mức độ / màu sắc thông báo (type=notify)."
+          ]
         },
         "table": {
           "type": "string",
@@ -2603,7 +1208,13 @@
         },
         "space": {
           "type": "string",
-          "description": "Phạm vi quản lý cho manage_effect, vd 'router' | 'scene' | 'action' | 'character'."
+          "enum": [
+            "router",
+            "character",
+            "action",
+            "chat",
+            "item"
+          ]
         },
         "in": {
           "type": "string",
@@ -2612,16 +1223,1472 @@
         "content": {
           "$ref": "#/definitions/runnable_wrapper",
           "description": "Effect được thêm/xoá khỏi danh sách target (dùng bởi manage_effect)."
+        },
+        "id": {
+          "type": "string"
+        },
+        "flicker": {
+          "type": "number"
+        },
+        "loop": {
+          "type": "boolean"
+        },
+        "loopSecond": {
+          "type": "number"
+        },
+        "repeat": {
+          "type": "boolean"
+        },
+        "column": {
+          "type": "string"
+        },
+        "method": {
+          "type": "string"
+        },
+        "index": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          ]
+        },
+        "format": {
+          "type": "string",
+          "enum": [
+            "photo",
+            "video",
+            "sound"
+          ]
+        },
+        "control": {
+          "type": "string",
+          "enum": [
+            "start",
+            "stop",
+            "repeat",
+            "play",
+            "pause"
+          ]
+        },
+        "dedupeKey": {
+          "type": "string"
         }
       },
-      "additionalProperties": true
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "effect"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "inline": {
+                "oneOf": [
+                  {
+                    "$ref": "#/definitions/effect_details"
+                  },
+                  {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                      "$ref": "#/definitions/runnable_wrapper"
+                    }
+                  }
+                ]
+              }
+            },
+            "anyOf": [
+              {
+                "required": [
+                  "ref"
+                ]
+              },
+              {
+                "required": [
+                  "inline"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "manage_effect"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "inline"
+            ],
+            "properties": {
+              "inline": {
+                "$ref": "#/definitions/manage_effect_details"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "skip_all"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "ref"
+                  ]
+                },
+                {
+                  "required": [
+                    "inline"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "item"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "subtype",
+              "target"
+            ],
+            "properties": {
+              "subtype": {
+                "enum": [
+                  "stats",
+                  "add",
+                  "remove",
+                  "hand_off",
+                  "hand_on",
+                  "usage"
+                ]
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "const": "stats"
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "property",
+                    "value"
+                  ],
+                  "properties": {
+                    "exec": {
+                      "enum": [
+                        "add_stats",
+                        "remove_stats",
+                        "add",
+                        "set",
+                        "full"
+                      ],
+                      "default": "add"
+                    },
+                    "field": {
+                      "enum": [
+                        "current",
+                        "max"
+                      ],
+                      "default": "current"
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "const": "usage"
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "value"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "characters"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "subtype",
+              "target"
+            ],
+            "properties": {
+              "subtype": {
+                "enum": [
+                  "edit_stats",
+                  "mng_stats",
+                  "moving"
+                ]
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "const": "edit_stats"
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "property",
+                    "value"
+                  ],
+                  "properties": {
+                    "field": {
+                      "enum": [
+                        "current",
+                        "max"
+                      ],
+                      "default": "current"
+                    },
+                    "mode": {
+                      "enum": [
+                        "set",
+                        "add",
+                        "full"
+                      ],
+                      "default": "add"
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "const": "mng_stats"
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "exec",
+                    "value"
+                  ],
+                  "properties": {
+                    "exec": {
+                      "enum": [
+                        "swap",
+                        "copy_to",
+                        "cut_to",
+                        "delete"
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "const": "moving"
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "exec",
+                    "property",
+                    "value"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "set"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "subtype",
+              "value"
+            ],
+            "properties": {
+              "subtype": {
+                "enum": [
+                  "state",
+                  "scene",
+                  "router",
+                  "automation",
+                  "action",
+                  "character"
+                ]
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "enum": [
+                        "state",
+                        "scene",
+                        "automation",
+                        "action",
+                        "character"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "target"
+                  ]
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "enum": [
+                        "scene",
+                        "automation",
+                        "action",
+                        "character"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "property"
+                  ]
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "const": "router"
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "property"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "goto"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "subtype"
+            ],
+            "properties": {
+              "subtype": {
+                "enum": [
+                  "scene",
+                  "router",
+                  "chat",
+                  "end",
+                  "in_faker",
+                  "out_faker"
+                ]
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "enum": [
+                        "scene",
+                        "router",
+                        "chat",
+                        "end",
+                        "in_faker"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "target"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "cms"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "table",
+              "id",
+              "column",
+              "method"
+            ],
+            "properties": {
+              "table": {
+                "enum": [
+                  "characters",
+                  "routers"
+                ]
+              },
+              "column": {
+                "enum": [
+                  "relationship",
+                  "met",
+                  "actions"
+                ]
+              },
+              "method": {
+                "enum": [
+                  "add",
+                  "remove",
+                  "insert",
+                  "empty",
+                  "set"
+                ]
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "table": {
+                      "const": "characters"
+                    }
+                  },
+                  "required": [
+                    "table"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "column": {
+                      "enum": [
+                        "relationship",
+                        "met"
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "table": {
+                      "const": "routers"
+                    }
+                  },
+                  "required": [
+                    "table"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "column": {
+                      "const": "actions"
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "method": {
+                      "enum": [
+                        "add",
+                        "remove",
+                        "insert",
+                        "set"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "method"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "value"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "notify"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "text"
+            ],
+            "properties": {
+              "subtype": {
+                "enum": [
+                  "default",
+                  "toast",
+                  "modal"
+                ],
+                "default": "toast"
+              },
+              "level": {
+                "enum": [
+                  "info",
+                  "success",
+                  "warn",
+                  "danger",
+                  "error"
+                ],
+                "default": "info"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "vfx"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "subtype"
+            ],
+            "anyOf": [
+              {
+                "required": [
+                  "target"
+                ]
+              },
+              {
+                "required": [
+                  "id"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "field": {
+                "const": "max"
+              }
+            },
+            "required": [
+              "field"
+            ]
+          },
+          "then": {
+            "properties": {
+              "mode": {
+                "enum": [
+                  "set",
+                  "add"
+                ]
+              },
+              "exec": {
+                "enum": [
+                  "add_stats",
+                  "remove_stats",
+                  "add",
+                  "set"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "effect_details": {
+      "type": "object",
+      "description": "Payload accepted by the corresponding EffectHandlers implementation.",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "manage_effect",
+            "cms",
+            "characters",
+            "notify",
+            "vfx",
+            "item",
+            "set",
+            "goto",
+            "skip_all"
+          ],
+          "description": "Loại effect (giống runnable_wrapper.type khi dùng inline)."
+        },
+        "subtype": {
+          "type": "string",
+          "minLength": 1
+        },
+        "target": {
+          "description": "ID đối tượng bị tác động (character id, scene id, action id, item id...). Có thể là chuỗi resolver $(...)."
+        },
+        "property": {
+          "type": "string",
+          "description": "Tên thuộc tính bị chỉnh sửa (vd tên chỉ số 'HP', hoặc property của scene/router/action khi type=set)."
+        },
+        "value": {
+          "description": "Giá trị áp dụng. Có thể là số, chuỗi, bool, hoặc chuỗi resolver $(...)."
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "set",
+            "add",
+            "full"
+          ],
+          "description": "Stat operation supported by the runtime calculators."
+        },
+        "field": {
+          "type": "string",
+          "enum": [
+            "current",
+            "max"
+          ]
+        },
+        "text": {
+          "type": "string",
+          "description": "Nội dung thông báo (type=notify)."
+        },
+        "title": {
+          "type": "string",
+          "description": "Tiêu đề thông báo (type=notify)."
+        },
+        "level": {
+          "type": "string",
+          "enum": [
+            "info",
+            "success",
+            "warn",
+            "danger",
+            "error"
+          ]
+        },
+        "table": {
+          "type": "string",
+          "description": "Tên bảng CMS bị tác động (type=cms)."
+        },
+        "exec": {
+          "type": "string",
+          "description": "Thao tác cụ thể (vd type=characters/subtype=mng_stats dùng 'exec': 'swap' | 'copy_to' | 'cut_to')."
+        },
+        "logic": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "AND",
+            "OR",
+            null
+          ],
+          "description": "Dùng khi effect_details lồng một requirement (vd type=set/subtype liên quan điều kiện)."
+        },
+        "check": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/requirement_check"
+          }
+        },
+        "duration": {
+          "type": "number",
+          "description": "Thời lượng hiệu ứng (giây), dùng cho type=vfx."
+        },
+        "notify": {
+          "type": "boolean",
+          "description": "Có hiển thị toast khi effect này chạy hay không."
+        },
+        "space": {
+          "type": "string",
+          "enum": [
+            "router",
+            "character",
+            "action",
+            "chat",
+            "item"
+          ]
+        },
+        "in": {
+          "type": "string",
+          "description": "Danh sách con bị chỉnh sửa trong manage_effect, vd 'still' | 'enter' | 'leave' | 'pass' | 'fail'."
+        },
+        "content": {
+          "$ref": "#/definitions/runnable_wrapper",
+          "description": "Effect được thêm/xoá khỏi danh sách target (dùng bởi manage_effect)."
+        },
+        "inline": {
+          "$ref": "#/definitions/manage_effect_details"
+        },
+        "hide": {
+          "type": "boolean"
+        },
+        "id": {
+          "type": "string"
+        },
+        "flicker": {
+          "type": "number"
+        },
+        "loop": {
+          "type": "boolean"
+        },
+        "loopSecond": {
+          "type": "number"
+        },
+        "repeat": {
+          "type": "boolean"
+        },
+        "column": {
+          "type": "string"
+        },
+        "method": {
+          "type": "string"
+        },
+        "index": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          ]
+        },
+        "format": {
+          "type": "string",
+          "enum": [
+            "photo",
+            "video",
+            "sound"
+          ]
+        },
+        "control": {
+          "type": "string",
+          "enum": [
+            "start",
+            "stop",
+            "repeat",
+            "play",
+            "pause"
+          ]
+        },
+        "dedupeKey": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "manage_effect"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "inline"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "item"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "subtype",
+              "target"
+            ],
+            "properties": {
+              "subtype": {
+                "enum": [
+                  "stats",
+                  "add",
+                  "remove",
+                  "hand_off",
+                  "hand_on",
+                  "usage"
+                ]
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "const": "stats"
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "property",
+                    "value"
+                  ],
+                  "properties": {
+                    "exec": {
+                      "enum": [
+                        "add_stats",
+                        "remove_stats",
+                        "add",
+                        "set",
+                        "full"
+                      ],
+                      "default": "add"
+                    },
+                    "field": {
+                      "enum": [
+                        "current",
+                        "max"
+                      ],
+                      "default": "current"
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "const": "usage"
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "value"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "characters"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "subtype",
+              "target"
+            ],
+            "properties": {
+              "subtype": {
+                "enum": [
+                  "edit_stats",
+                  "mng_stats",
+                  "moving"
+                ]
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "const": "edit_stats"
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "property",
+                    "value"
+                  ],
+                  "properties": {
+                    "field": {
+                      "enum": [
+                        "current",
+                        "max"
+                      ],
+                      "default": "current"
+                    },
+                    "mode": {
+                      "enum": [
+                        "set",
+                        "add",
+                        "full"
+                      ],
+                      "default": "add"
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "const": "mng_stats"
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "exec",
+                    "value"
+                  ],
+                  "properties": {
+                    "exec": {
+                      "enum": [
+                        "swap",
+                        "copy_to",
+                        "cut_to",
+                        "delete"
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "const": "moving"
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "exec",
+                    "property",
+                    "value"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "set"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "subtype",
+              "value"
+            ],
+            "properties": {
+              "subtype": {
+                "enum": [
+                  "state",
+                  "scene",
+                  "router",
+                  "automation",
+                  "action",
+                  "character"
+                ]
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "enum": [
+                        "state",
+                        "scene",
+                        "automation",
+                        "action",
+                        "character"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "target"
+                  ]
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "enum": [
+                        "scene",
+                        "automation",
+                        "action",
+                        "character"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "property"
+                  ]
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "const": "router"
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "property"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "goto"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "subtype"
+            ],
+            "properties": {
+              "subtype": {
+                "enum": [
+                  "scene",
+                  "router",
+                  "chat",
+                  "end",
+                  "in_faker",
+                  "out_faker"
+                ]
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "enum": [
+                        "scene",
+                        "router",
+                        "chat",
+                        "end",
+                        "in_faker"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "target"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "cms"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "table",
+              "id",
+              "column",
+              "method"
+            ],
+            "properties": {
+              "table": {
+                "enum": [
+                  "characters",
+                  "routers"
+                ]
+              },
+              "column": {
+                "enum": [
+                  "relationship",
+                  "met",
+                  "actions"
+                ]
+              },
+              "method": {
+                "enum": [
+                  "add",
+                  "remove",
+                  "insert",
+                  "empty",
+                  "set"
+                ]
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "table": {
+                      "const": "characters"
+                    }
+                  },
+                  "required": [
+                    "table"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "column": {
+                      "enum": [
+                        "relationship",
+                        "met"
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "table": {
+                      "const": "routers"
+                    }
+                  },
+                  "required": [
+                    "table"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "column": {
+                      "const": "actions"
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "method": {
+                      "enum": [
+                        "add",
+                        "remove",
+                        "insert",
+                        "set"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "method"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "value"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "notify"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "text"
+            ],
+            "properties": {
+              "subtype": {
+                "enum": [
+                  "default",
+                  "toast",
+                  "modal"
+                ],
+                "default": "toast"
+              },
+              "level": {
+                "enum": [
+                  "info",
+                  "success",
+                  "warn",
+                  "danger",
+                  "error"
+                ],
+                "default": "info"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "vfx"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "subtype"
+            ],
+            "anyOf": [
+              {
+                "required": [
+                  "target"
+                ]
+              },
+              {
+                "required": [
+                  "id"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "field": {
+                "const": "max"
+              }
+            },
+            "required": [
+              "field"
+            ]
+          },
+          "then": {
+            "properties": {
+              "mode": {
+                "enum": [
+                  "set",
+                  "add"
+                ]
+              },
+              "exec": {
+                "enum": [
+                  "add_stats",
+                  "remove_stats",
+                  "add",
+                  "set"
+                ]
+              }
+            }
+          }
+        }
+      ]
     },
     "requirement_check": {
       "type": "object",
       "description": "Một điều kiện đơn lẻ trong requirement.check[] (xem engine/modules/Logic.js cho danh sách op được hỗ trợ).",
       "required": [
         "type",
-        "op"
+        "op",
+        "value"
       ],
       "properties": {
         "type": {
@@ -2642,7 +2709,7 @@
           "type": "string",
           "enum": [
             "has",
-            "not_has",
+            "!has",
             "==",
             "!=",
             ">",
@@ -2658,53 +2725,236 @@
         "property": {
           "type": "string",
           "description": "Tên global state / chỉ số cần kiểm tra (bắt buộc khi type=state hoặc type=stat)."
+        },
+        "target": {
+          "type": "string",
+          "minLength": 1
+        },
+        "field": {
+          "type": "string",
+          "enum": [
+            "current",
+            "max"
+          ]
+        },
+        "broken": {
+          "type": "boolean"
         }
       },
-      "additionalProperties": true
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "item"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "subtype"
+            ],
+            "properties": {
+              "subtype": {
+                "enum": [
+                  "inventory",
+                  "hand",
+                  "usage"
+                ]
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "const": "inventory"
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "op": {
+                      "enum": [
+                        "has",
+                        "!has"
+                      ]
+                    },
+                    "value": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "const": "hand"
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "op": {
+                      "const": "=="
+                    },
+                    "value": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "const": "usage"
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "target"
+                  ],
+                  "properties": {
+                    "op": {
+                      "enum": [
+                        "==",
+                        "!=",
+                        ">",
+                        ">=",
+                        "<",
+                        "<="
+                      ]
+                    },
+                    "value": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "state"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "property"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "stats"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "subtype",
+              "target",
+              "property"
+            ],
+            "properties": {
+              "subtype": {
+                "enum": [
+                  "characters",
+                  "item"
+                ]
+              },
+              "field": {
+                "enum": [
+                  "current",
+                  "max"
+                ]
+              },
+              "value": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "set"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "subtype",
+              "target",
+              "property"
+            ],
+            "properties": {
+              "subtype": {
+                "enum": [
+                  "scene",
+                  "router",
+                  "action",
+                  "characters",
+                  "chat",
+                  "chat_choice",
+                  "automation"
+                ]
+              }
+            }
+          }
+        }
+      ]
     },
     "requirement_details": {
       "description": "Điều kiện tổng hợp: HOẶC định nghĩa trực tiếp {logic, check[]}, HOẶC tham chiếu {ref: templates.requirements.<id>}.",
       "oneOf": [
         {
-          "type": "object",
-          "description": "Điều kiện tổng hợp (dùng cho action.requirement, itemInfo.requirements, templates.requirements.<id>).",
-          "required": [
-            "logic",
-            "check"
-          ],
-          "properties": {
-            "logic": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "enum": [
-                "AND",
-                "OR",
-                null
-              ],
-              "default": null,
-              "description": "Cách kết hợp các điều kiện trong 'check'. null nếu 'check' rỗng."
-            },
-            "check": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/requirement_check"
-              },
-              "default": []
-            }
-          },
-          "additionalProperties": false
+          "$ref": "#/definitions/requirement_definition"
         },
         {
           "type": "object",
-          "description": "Tham chiếu tới templates.requirements.<id> thay vì định nghĩa logic/check trực tiếp.",
           "required": [
             "ref"
           ],
           "properties": {
             "ref": {
-              "type": "string"
+              "type": "string",
+              "minLength": 1
             }
           },
           "additionalProperties": false
@@ -2856,9 +3106,7 @@
             "items": {
               "type": "integer",
               "minimum": 0
-            },
-            "minItems": 2,
-            "maxItems": 2
+            }
           },
           "description": "Danh sách toạ độ [x, y] tạo thành đường đi đúng, theo thứ tự."
         }
@@ -2892,7 +3140,7 @@
         },
         "url": {
           "type": "string",
-          "format": "uri",
+          "format": "uri-reference",
           "description": "URL ảnh dùng để ghép."
         },
         "ratio": {
@@ -3004,7 +3252,8 @@
           },
           "required": [
             "title"
-          ]
+          ],
+          "additionalProperties": false
         },
         "set": {
           "type": "object",
@@ -3025,7 +3274,7 @@
                 "string",
                 "null"
               ],
-              "description": "ID đích tương ứng với 'type' (scene id / router id / item id / character id)."
+              "minLength": 1
             },
             "requirement": {
               "type": "boolean",
@@ -3084,7 +3333,8 @@
           },
           "required": [
             "display"
-          ]
+          ],
+          "additionalProperties": false
         },
         "requirement": {
           "$ref": "#/definitions/requirement_details"
@@ -3120,9 +3370,16 @@
               },
               "description": "Chạy khi nhập sai mật khẩu bảo vệ action."
             }
-          }
+          },
+          "additionalProperties": false
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Stable inline action identifier; generated deterministically when omitted."
         }
-      }
+      },
+      "additionalProperties": false
     },
     "router": {
       "type": "object",
@@ -3160,7 +3417,8 @@
               ],
               "description": "Ảnh/video nền riêng cho router này (ghi đè scene.meta.cover). Hỗ trợ tiền tố 'video:' / 'photo:' hoặc media id."
             }
-          }
+          },
+          "additionalProperties": false
         },
         "set": {
           "type": "object",
@@ -3244,7 +3502,8 @@
             "blocked",
             "visited",
             "countVisited"
-          ]
+          ],
+          "additionalProperties": false
         },
         "loop": {
           "type": "object",
@@ -3271,7 +3530,8 @@
               },
               "description": "Chạy khi người chơi đứng yên tại router quá 'set.secondsStill' giây."
             }
-          }
+          },
+          "additionalProperties": false
         },
         "timer": {
           "type": "object",
@@ -3289,7 +3549,8 @@
                 "$ref": "#/definitions/runnable_wrapper"
               }
             }
-          }
+          },
+          "additionalProperties": false
         },
         "actions": {
           "description": "Danh sách action thuộc router. Model hiện tại: MẢNG gồm string (ID tham chiếu tới 'actions' toàn cục) hoặc object action inline. (Model cũ: object map {actionId: {...action}} vẫn được engine hỗ trợ ngược nhưng KHÔNG khuyến khích dùng cho kịch bản mới.)",
@@ -3328,10 +3589,12 @@
                 "type": "string",
                 "description": "ID router nguồn."
               }
-            }
+            },
+            "additionalProperties": false
           }
         }
-      }
+      },
+      "additionalProperties": false
     },
     "scene": {
       "type": "object",
@@ -3386,14 +3649,16 @@
           },
           "required": [
             "title"
-          ]
+          ],
+          "additionalProperties": false
         },
         "set": {
           "type": "object",
           "properties": {
             "activeRouterId": {
               "type": "string",
-              "description": "ID router đang active mặc định khi vào scene."
+              "minLength": 1,
+              "description": "Router ID activated when entering this scene."
             },
             "blocked": {
               "type": "boolean",
@@ -3409,16 +3674,234 @@
           },
           "required": [
             "activeRouterId"
-          ]
+          ],
+          "additionalProperties": false
         },
         "routers": {
           "type": "object",
           "description": "Danh sách router, key là router ID.",
           "additionalProperties": {
             "$ref": "#/definitions/router"
+          },
+          "minProperties": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "manage_effect_details": {
+      "type": "object",
+      "description": "Management payload used by EffectHandlers.manage_effect.",
+      "required": [
+        "space",
+        "in",
+        "subtype",
+        "target"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "space": {
+          "type": "string",
+          "enum": [
+            "router",
+            "character",
+            "action",
+            "chat",
+            "item"
+          ]
+        },
+        "in": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Target hook; chat hooks use blockId:choiceId."
+        },
+        "subtype": {
+          "type": "string",
+          "enum": [
+            "locked",
+            "unlocked",
+            "add_effect",
+            "remove_effect"
+          ]
+        },
+        "target": {
+          "type": "string",
+          "minLength": 1
+        },
+        "index": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          ]
+        },
+        "content": {
+          "$ref": "#/definitions/runnable_wrapper"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "subtype": {
+                "const": "add_effect"
+              }
+            },
+            "required": [
+              "subtype"
+            ]
+          },
+          "then": {
+            "required": [
+              "content"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "subtype": {
+                "const": "locked"
+              }
+            },
+            "required": [
+              "subtype"
+            ]
+          },
+          "then": {
+            "required": [
+              "index"
+            ],
+            "properties": {
+              "index": {
+                "type": "array",
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "subtype": {
+                "const": "unlocked"
+              }
+            },
+            "required": [
+              "subtype"
+            ]
+          },
+          "then": {
+            "required": [
+              "index"
+            ],
+            "properties": {
+              "index": {
+                "type": "array",
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "subtype": {
+                "const": "remove_effect"
+              }
+            },
+            "required": [
+              "subtype"
+            ]
+          },
+          "then": {
+            "required": [
+              "index"
+            ]
           }
         }
-      }
+      ]
+    },
+    "requirement_definition": {
+      "type": "object",
+      "description": "Canonical inline requirement template; templates are definitions, not aliases.",
+      "required": [
+        "logic",
+        "check"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "logic": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "AND",
+            "OR",
+            "NOT",
+            "XOR",
+            null
+          ]
+        },
+        "check": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/definitions/requirement_check"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "logic": {
+                "const": "NOT"
+              }
+            },
+            "required": [
+              "logic"
+            ]
+          },
+          "then": {
+            "properties": {
+              "check": {
+                "minItems": 1,
+                "maxItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "logic": {
+                "const": null
+              }
+            },
+            "required": [
+              "logic"
+            ]
+          },
+          "then": {
+            "properties": {
+              "check": {
+                "minItems": 1,
+                "maxItems": 1
+              }
+            }
+          }
+        }
+      ]
     }
-  }
+  },
+  "$id": "https://vsr.engine/scenario/v1/schema.json"
 }

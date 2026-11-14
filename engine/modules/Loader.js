@@ -5,6 +5,7 @@ import { normalizeScenario } from '../scenario/Scenario.js';
 export const LoaderSystem = {
     loadScript(input, api) {
         const script = normalizeScenario(input);
+        const scenario = JSON.parse(JSON.stringify(script));
         const src = script;
         src.path = { routers: {}, chats: {}, characters: {} };
 
@@ -208,7 +209,7 @@ export const LoaderSystem = {
         }
 
         state.sceneTree = this.buildSceneTree(script.scenes);
-        return { src, state };
+        return { src, state, scenario };
     },
 
     buildSceneTree(scenes) {

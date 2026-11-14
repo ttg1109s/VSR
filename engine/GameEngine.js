@@ -115,11 +115,11 @@ export class GameEngine {
  async init(script){
   const loaded=LoaderSystem.loadScript(script,this.api);
   if(!loaded)throw new Error('Scenario loading failed.');
-  const sourceCopy=cloneJsonValue(script);
+  const sourceCopy=cloneJsonValue(loaded.scenario);
   this.reset();
   this.scenario=sourceCopy;this.src=loaded.src;this.state=loaded.state;
   this.initCharactersMoving();
-  const entry=this.src.meta?.entryScene||Object.keys(this.api.engine.state.getRuntimeSnapshot('scenes') || {})[0];
+  const entry=this.src.meta.entryScene;
   if(!this.api.engine.state.getRuntimeSnapshot('scenes.[id]', { id: entry }))throw new Error(`Entry scene '${entry}' does not exist.`);
   await this.enterScene(entry);
   this.api.engine.state.update('playerMoveHistory', history => [...(history || []), entry]);
@@ -186,7 +186,7 @@ export class GameEngine {
    if(!normalized.state.scenes?.[sceneId])throw new TypeError(`Save contains unknown scene "${sceneId}".`);
   }
   this.reset();
-  this.scenario=cloneJsonValue(save.scenario);
+  this.scenario=cloneJsonValue(normalized.scenario);
   this.src=normalized.src;
   this.state=restored;
   this.chatState={...this.chatState,...(cloneJsonValue(save.chatState)||{})};

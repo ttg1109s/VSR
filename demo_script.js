@@ -775,10 +775,6 @@ export const DEMO_SCRIPT = {
                 "cooldown": 0,
                 "readDesc": false
             },
-            "requirement": {
-                "logic": null,
-                "check": []
-            },
             "effect": {
                 "normal": [],
                 "pass": [
@@ -818,10 +814,6 @@ export const DEMO_SCRIPT = {
                 "charAllow": [],
                 "cooldown": 0,
                 "readDesc": false
-            },
-            "requirement": {
-                "logic": null,
-                "check": []
             },
             "effect": {
                 "normal": [],
@@ -917,10 +909,6 @@ export const DEMO_SCRIPT = {
                 "cooldown": 0,
                 "readDesc": false
             },
-            "requirement": {
-                "logic": null,
-                "check": []
-            },
             "effect": {
                 "normal": [],
                 "pass": [
@@ -953,10 +941,6 @@ export const DEMO_SCRIPT = {
                 "charAllow": [],
                 "cooldown": 0,
                 "readDesc": false
-            },
-            "requirement": {
-                "logic": null,
-                "check": []
             },
             "effect": {
                 "normal": [],
@@ -1013,10 +997,6 @@ export const DEMO_SCRIPT = {
                 "cooldown": 0,
                 "readDesc": false
             },
-            "requirement": {
-                "logic": null,
-                "check": []
-            },
             "effect": {
                 "normal": [],
                 "pass": [
@@ -1050,10 +1030,6 @@ export const DEMO_SCRIPT = {
                 "cooldown": 0,
                 "readDesc": false
             },
-            "requirement": {
-                "logic": null,
-                "check": []
-            },
             "effect": {
                 "normal": [],
                 "pass": [
@@ -1086,10 +1062,6 @@ export const DEMO_SCRIPT = {
                 "charAllow": [],
                 "cooldown": 0,
                 "readDesc": false
-            },
-            "requirement": {
-                "logic": null,
-                "check": []
             },
             "effect": {
                 "normal": [],
@@ -1192,10 +1164,6 @@ export const DEMO_SCRIPT = {
                 "cooldown": 0,
                 "readDesc": false
             },
-            "requirement": {
-                "logic": null,
-                "check": []
-            },
             "effect": {
                 "normal": [],
                 "pass": [
@@ -1228,10 +1196,6 @@ export const DEMO_SCRIPT = {
                 "charAllow": [],
                 "cooldown": 0,
                 "readDesc": false
-            },
-            "requirement": {
-                "logic": null,
-                "check": []
             },
             "effect": {
                 "normal": [],
@@ -1333,10 +1297,6 @@ export const DEMO_SCRIPT = {
                 "cooldown": 0,
                 "readDesc": false
             },
-            "requirement": {
-                "logic": null,
-                "check": []
-            },
             "effect": {
                 "normal": [],
                 "pass": [
@@ -1369,10 +1329,6 @@ export const DEMO_SCRIPT = {
                 "charAllow": [],
                 "cooldown": 0,
                 "readDesc": false
-            },
-            "requirement": {
-                "logic": null,
-                "check": []
             },
             "effect": {
                 "normal": [],
@@ -1534,10 +1490,6 @@ export const DEMO_SCRIPT = {
                 "cooldown": 0,
                 "readDesc": false
             },
-            "requirement": {
-                "logic": null,
-                "check": []
-            },
             "effect": {
                 "normal": [],
                 "pass": [
@@ -1570,10 +1522,6 @@ export const DEMO_SCRIPT = {
                 "charAllow": [],
                 "cooldown": 0,
                 "readDesc": false
-            },
-            "requirement": {
-                "logic": null,
-                "check": []
             },
             "effect": {
                 "normal": [],
@@ -1616,10 +1564,6 @@ export const DEMO_SCRIPT = {
                 "cooldown": 0,
                 "readDesc": false
             },
-            "requirement": {
-                "logic": null,
-                "check": []
-            },
             "effect": {
                 "normal": [],
                 "pass": [
@@ -1653,10 +1597,6 @@ export const DEMO_SCRIPT = {
                 "cooldown": 0,
                 "readDesc": false
             },
-            "requirement": {
-                "logic": null,
-                "check": []
-            },
             "effect": {
                 "normal": [],
                 "pass": [
@@ -1689,10 +1629,6 @@ export const DEMO_SCRIPT = {
                 "charAllow": [],
                 "cooldown": 0,
                 "readDesc": false
-            },
-            "requirement": {
-                "logic": null,
-                "check": []
             },
             "effect": {
                 "normal": [],
@@ -1780,10 +1716,6 @@ export const DEMO_SCRIPT = {
                 "cooldown": 0,
                 "readDesc": false
             },
-            "requirement": {
-                "logic": null,
-                "check": []
-            },
             "effect": {
                 "normal": [],
                 "pass": [
@@ -1836,10 +1768,6 @@ export const DEMO_SCRIPT = {
                 "cooldown": 0,
                 "readDesc": false
             },
-            "requirement": {
-                "logic": null,
-                "check": []
-            },
             "effect": {
                 "normal": [],
                 "pass": [
@@ -1872,10 +1800,6 @@ export const DEMO_SCRIPT = {
                 "charAllow": [],
                 "cooldown": 0,
                 "readDesc": false
-            },
-            "requirement": {
-                "logic": null,
-                "check": []
             },
             "effect": {
                 "normal": [],

@@ -126,7 +126,8 @@ const CheckTypeHandlers = {
     item: (engine, c) => ItemStrategies[c.subtype]?.(engine, c) ?? false,
     state: (engine, c) => {
         // [REFACTOR] Use API State (Global State)
-        const val = engine.api.engine.state.get('globalState.value', { id: c.target });
+        const stateId = c.property;
+        const val = engine.api.engine.state.get('globalState.value', { id: stateId });
         return val !== undefined ? (Operations[c.op]?.(val, resolveValue(c.value, engine)) ?? false) : false;
     },
     stats: (engine, c) => StatsStrategies[c.subtype]?.(engine, c) ?? false,
