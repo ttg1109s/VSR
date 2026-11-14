@@ -52,7 +52,7 @@ test('semantic validation rejects missing scene parents and global action refere
   scenario.scenes.start.meta.parentScene = 'missing';
   scenario.scenes.start.routers.main.actions = ['missing_action'];
   const errors = validateScenario(scenario);
-  assert.ok(errors.some(error => error.includes('parentScene references missing scene')));
+  assert.ok(errors.some(error => error.includes('meta.parentScene: references missing scene')));
   assert.ok(errors.some(error => error.includes("references missing global action 'missing_action'")));
 });
 
@@ -87,7 +87,7 @@ test('semantic validation rejects empty automation plans', () => {
   scenario.templates.automation = {
     empty: { set: { move: 'step_by_step', moveDirection: 'first', numberCycleAllow: 1, countCurrent: 0, runInfinity: false, banClick: false }, plan: [] }
   };
-  assert.ok(validateScenario(scenario).some(error => error.includes('plan must contain at least one step')));
+  assert.ok(validateScenario(scenario).some(error => error.includes('must contain at least one step')));
 });
 
 test('scenario cloning rejects cyclic non-JSON input', () => {
