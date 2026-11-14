@@ -7,15 +7,16 @@ const SEVERITY_ALIASES = Object.freeze({
 const PRIORITY = Object.freeze({ danger: 5, warning: 4, special: 3, success: 2, info: 1 });
 
 export class NotificationSystem {
-  constructor({ protocol, engineId = 'vsr', clock = () => Date.now(), maxHistory = 200, maxQueue = 100, dedupeWindowMs = 750, defaultDurationMs = 5000 } = {}) {
+  constructor({ protocol, engineId = 'vsr', clock = () => Date.now(), schedule = (callback, delay) => setTimeout(callback, delay), cancelSchedule = handle => clearTimeout(handle), maxHistory = 200, maxQueue = 100, dedupeWindowMs = 750, defaultDurationMs = 5000 } = {}) {
     if (!protocol || typeof protocol.publish !== 'function') throw new TypeError('NotificationSystem requires a Protocol publisher.');
     if (typeof clock !== 'function') throw new TypeError('NotificationSystem clock must be a function.');
-    Object.assign(this, { protocol, engineId, clock, maxHistory, maxQueue, dedupeWindowMs, defaultDurationMs });
+    Object.assign(this, { protocol, engineId, clock, schedule, cancelSchedule, maxHistory, maxQueue, dedupeWindowMs, defaultDurationMs });
     this.sequence = 0;
     this.history = [];
     this.pending = [];
     this.byId = new Map();
     this.dedupe = new Map();
+    this.timers = new Map();
   }
 
   normalize(input = {}, presentation = 'toast') {
@@ -42,6 +43,24 @@ export class NotificationSystem {
       status: 'pending', read: false,
       metadata: input.metadata && typeof input.metadata === 'object' && !Array.isArray(input.metadata) ? cloneJsonValue(input.metadata) : {}
     };
+  }
+
+  scheduleExpiry(notification) {
+    this.cancelExpiry(notification.id);
+    if (notification.expiresAt === null || notification.status !== 'pending') return;
+    const delay = Math.max(0, notification.expiresAt - this.clock());
+    const timer = this.schedule(() => {
+      this.timers.delete(notification.id);
+      this.expire(notification.id);
+    }, delay);
+    timer?.unref?.();
+    this.timers.set(notification.id, timer);
+  }
+
+  cancelExpiry(id) {
+    if (!this.timers.has(id)) return;
+    this.cancelSchedule(this.timers.get(id));
+    this.timers.delete(id);
   }
 
   publish(kind, notification, args = null) {
@@ -79,6 +98,7 @@ export class NotificationSystem {
         previous.duration = candidate.duration;
         previous.metadata = candidate.metadata;
         this.publish('updated', previous, [previous.title, previous.message, previous.level]);
+        this.scheduleExpiry(previous);
         return { notification: { ...previous }, deduplicated: true };
       }
       this.dedupe.set(candidate.dedupeKey, candidate.id);
@@ -97,10 +117,12 @@ export class NotificationSystem {
       if (removed.dedupeKey && this.dedupe.get(removed.dedupeKey) === removed.id) this.dedupe.delete(removed.dedupeKey);
     }
     this.publish(presentation === 'modal' ? 'alert' : 'add', candidate, [candidate.title, candidate.message, candidate.level]);
+    this.scheduleExpiry(candidate);
     while (this.pending.length > this.maxQueue) {
       const droppedId = this.pending.pop();
       const dropped = this.byId.get(droppedId);
       if (dropped) {
+        this.cancelExpiry(dropped.id);
         dropped.status = 'dropped';
         dropped.dismissedAt = now;
         dropped.dismissReason = 'queue_overflow';
@@ -123,6 +145,7 @@ export class NotificationSystem {
   dismiss(id, reason = 'dismissed') {
     const notification = this.byId.get(String(id));
     if (!notification || notification.status !== 'pending') return false;
+    this.cancelExpiry(notification.id);
     notification.status = reason === 'expired' ? 'expired' : 'dismissed';
     notification.dismissedAt = this.clock();
     notification.dismissReason = String(reason);
@@ -169,6 +192,8 @@ export class NotificationSystem {
 
   reset({ clearHistory = true } = {}) {
     if (clearHistory) {
+      for (const timer of this.timers.values()) this.cancelSchedule(timer);
+      this.timers.clear();
       this.history = [];
       this.pending = [];
       this.byId.clear();
