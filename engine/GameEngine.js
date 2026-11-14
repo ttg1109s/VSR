@@ -11,6 +11,7 @@ import {LoaderSystem} from './modules/Loader.js';
 import {createEngineAPI} from '../api/index.js';
 import {JsonProtocol,cloneJsonValue} from '../core/protocol/JsonProtocol.js';
 import {verifyPassword} from '../password/verify.js';
+import {PasswordSystem} from './modules/Password/PasswordSystem.js';
 import {TaskManager} from '../plugin/taskmanager.js';
 import {createSaveEnvelope,normalizeSaveEnvelope,SAVE_VERSION} from './persistence/SaveState.js';
 
@@ -21,6 +22,7 @@ export class GameEngine {
    if(command!=='engine.init'&&this.protocol.stateRevision===revisionBefore)this.commitState(`command:${command}`);
   }});
   this.api=createEngineAPI(this);
+  this.passwordSystem=new PasswordSystem({clock:clock||(()=>Date.now())});
   this.reset();
   this.registerProtocolCommands();
  }
@@ -33,23 +35,50 @@ export class GameEngine {
   this.protocol.registerCommand('scene.enter',payload=>{if(typeof payload.sceneId!=='string'||!payload.sceneId)throw new TypeError('scene.enter requires sceneId.');return this.enterScene(payload.sceneId,payload.skipTransition===true);});
   this.protocol.registerCommand('password.submit',payload=>this.submitPassword(payload));
  }
- submitPassword(payload={}){
-  if(typeof payload.actionId!=='string'||!payload.actionId)throw new TypeError('password.submit requires actionId.');
+ submitPassword(payload={}) {
   const pending=this.pendingPasswordAction;
-  if(!pending||pending.actionId!==payload.actionId)throw new Error('No matching pending password challenge.');
-  if(pending.sceneId!==this.state.sceneId||pending.routerId!==this.state.scenes?.[this.state.sceneId]?.activeRouterId)throw new Error('Password challenge is no longer active.');
-  const uniqueId=payload.uniqueId||pending.uniqueId;
-  if(uniqueId!==pending.uniqueId)throw new Error('Password challenge identifier mismatch.');
-  const sceneId=pending.sceneId,routerId=pending.routerId;
-  const action=this.getEffectiveActions(sceneId,routerId).find(item=>item.id===pending.actionId);
+  if(!pending)throw new Error('No active password challenge.');
+  if(payload.challengeId!==pending.challengeId)throw new Error('Password challenge ID mismatch or stale challenge.');
+  if(pending.sceneId!==this.state.sceneId||pending.routerId!==this.state.scenes?.[pending.sceneId]?.activeRouterId)throw new Error('Password challenge is no longer active.');
+  const action=this.getEffectiveActions(pending.sceneId,pending.routerId).find(item=>item.id===pending.actionId);
   if(!action||!action.set?.password)throw new Error('Password action no longer exists.');
-  if(payload.cancel===true){this.api.engine.state.set('session.passwordChallenge',null);return this.finishPasswordAction(action,pending.actionId,uniqueId,'cancel');}
+  const config=this.src?.passwords?.[pending.type]?.[pending.passwordId];
+  if(!config)throw new Error('Password definition not found in loaded scenario.');
+  const inspected=this.passwordSystem.inspect(pending);
+  if(!inspected.accepted) {
+   if(inspected.reason==='expired') {
+    this.passwordSystem.finish(pending,'expired');
+    this.pendingPasswordAction=null;
+    this.api.engine.state.set('session.passwordChallenge',null);
+    this.api.presentation.events?.publish?.('password.expired',{challengeId:pending.challengeId});
+    return this.finishPasswordAction(action,pending.actionId,pending.uniqueId,'expired');
+   }
+   throw new Error('Password challenge is not active.');
+  }
+  if(payload.cancel===true) {
+   this.passwordSystem.finish(pending,'cancelled');
+   this.pendingPasswordAction=null;
+   this.api.engine.state.set('session.passwordChallenge',null);
+   return this.finishPasswordAction(action,pending.actionId,pending.uniqueId,'cancel');
+  }
   if(!Object.prototype.hasOwnProperty.call(payload,'input'))throw new TypeError('password.submit requires raw input.');
-  const [type,id]=String(action.set.password).split(':');
-  const config=this.src?.passwords?.[type]?.[id];
-  if(!type||!id||!config)throw new Error('Password definition not found in loaded scenario.');
+  const valid=verifyPassword(pending.type,config,payload.input);
+  if(valid) {
+   this.passwordSystem.finish(pending,'succeeded');
+   this.pendingPasswordAction=null;
+   this.api.engine.state.set('session.passwordChallenge',null);
+   return this.finishPasswordAction(action,pending.actionId,pending.uniqueId,true);
+  }
+  const attempt=this.passwordSystem.recordFailure(pending);
+  this.api.presentation.effects.shake(pending.uniqueId);
+  if(!attempt.exhausted) {
+   this.api.presentation.events?.publish?.('password.retry',{challengeId:pending.challengeId,countTest:pending.countTest,remainingAttempts:attempt.remainingAttempts});
+   this.commitState('password.retry');
+   return {success:false,retry:true,countTest:pending.countTest,remainingAttempts:attempt.remainingAttempts};
+  }
+  this.pendingPasswordAction=null;
   this.api.engine.state.set('session.passwordChallenge',null);
-  return this.finishPasswordAction(action,pending.actionId,uniqueId,verifyPassword(type,config,payload.input));
+  return this.finishPasswordAction(action,pending.actionId,pending.uniqueId,'exhausted');
  }
  publishProtocolSnapshot(reason='state.changed'){return this.protocol?.publishSnapshot(this,reason)??null;}
  commitState(reason='state.changed'){return this.protocol?.commitState(this,reason)??null;}
