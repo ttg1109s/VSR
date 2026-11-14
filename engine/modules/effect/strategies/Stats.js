@@ -14,11 +14,11 @@ export const StatsHelpers = {
         if (targetObj.stats[prop]) {
             delete targetObj.stats[prop];
             // [API FIX]
-            if (eff.notify) API.render.notification.add("Xóa chỉ số", `Đã xóa ${prop}`, "info");
+            if (eff.notify) API.presentation.notification.add("Xóa chỉ số", `Đã xóa ${prop}`, "info");
             const entryChar = API.engine.state.meta?.entryCharacter || 'player';
-            if (isChar && effectiveTarget === entryChar) API.render.components.updatePlayerCard();
-            if (isChar && API.render.updateContactDetails) API.render.updateContactDetails(effectiveTarget);
-            if (!isChar) API.render.components.explorer();
+            if (isChar && effectiveTarget === entryChar) API.presentation.components.updatePlayerCard();
+            if (isChar && API.presentation.updateContactDetails) API.presentation.updateContactDetails(effectiveTarget);
+            if (!isChar) API.presentation.components.explorer();
         }
     },
     add_stats: (targetObj, eff, isChar, effectiveTarget) => {
@@ -42,13 +42,13 @@ export const StatsHelpers = {
             const isNegative = newStat.current < 0;
             const type = isNegative ? "danger" : "success";
             const msg = newStat.current;
-            API.render.notification.add(newStat.label, msg, type);
+            API.presentation.notification.add(newStat.label, msg, type);
         }
 
         const entryChar = API.engine.state.meta?.entryCharacter || 'player';
-        if (isChar && effectiveTarget === entryChar) API.render.components.updatePlayerCard();
-        if (isChar && API.render.updateContactDetails) API.render.updateContactDetails(effectiveTarget);
-        if (!isChar) API.render.components.explorer();
+        if (isChar && effectiveTarget === entryChar) API.presentation.components.updatePlayerCard();
+        if (isChar && API.presentation.updateContactDetails) API.presentation.updateContactDetails(effectiveTarget);
+        if (!isChar) API.presentation.components.explorer();
     },
     edit_value: (targetObj, eff, isChar, effectiveTarget) => {
         const prop = resolveValue(eff.property);
@@ -101,7 +101,7 @@ export const StatsHelpers = {
                 // diff đã có dấu trừ sẵn
             }
 
-            API.render.notification.add(
+            API.presentation.notification.add(
                 isChar ? "Chỉ số" : "Vật phẩm",
                 `${name} (${label}): ${sign}${diff}`,
                 type
@@ -109,9 +109,9 @@ export const StatsHelpers = {
         }
 
         const entryChar = API.engine.state.meta?.entryCharacter || 'player';
-        if (isChar && effectiveTarget === entryChar) API.render.components.updatePlayerCard();
-        if (isChar && API.render.updateContactDetails) API.render.updateContactDetails(effectiveTarget);
-        if (!isChar) API.render.components.explorer();
+        if (isChar && effectiveTarget === entryChar) API.presentation.components.updatePlayerCard();
+        if (isChar && API.presentation.updateContactDetails) API.presentation.updateContactDetails(effectiveTarget);
+        if (!isChar) API.presentation.components.explorer();
     }
 };
 
