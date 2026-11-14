@@ -24,10 +24,11 @@ function segmentsFor(path, context = {}) {
     throw new StatePathError('State path must be a non-empty string.');
   }
   return path.split('.').map(segment => {
-    const match = /^\\[([A-Za-z_$][\\w$]*)\\]$/.exec(segment);
-    const key = match ? context[match[1]] : segment;
-    if (match && (key === undefined || key === null || key === '')) {
-      throw new StatePathError(`Missing context "${match[1]}" for path "${path}".`, 'MISSING_STATE_CONTEXT');
+    const placeholder = segment.startsWith('[') && segment.endsWith(']') ? segment.slice(1, -1) : null;
+    const isPlaceholder = placeholder !== null && /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(placeholder);
+    const key = isPlaceholder ? context[placeholder] : segment;
+    if (isPlaceholder && (key === undefined || key === null || key === '')) {
+      throw new StatePathError(`Missing context "${placeholder}" for path "${path}".`, 'MISSING_STATE_CONTEXT');
     }
     if (typeof key !== 'string' && typeof key !== 'number') {
       throw new StatePathError(`Invalid path segment in "${path}".`);
