@@ -1,3 +1,5 @@
+import { escapeHtml, safeMediaUrl } from '../utils/security.js';
+
 export const ActionCard = ({ uId, meta, set, isLocked, isFakerActive, styleClass, statusBadge, cooldownHTML, thumbUrl, iconHtml, restricted = false, isVideo = false, showHint = false }) => {
     // 1. Xử lý Class trạng thái
     let statusClass = "";
@@ -33,16 +35,16 @@ export const ActionCard = ({ uId, meta, set, isLocked, isFakerActive, styleClass
                 w-full md:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-0.75rem)]
                 bg-white border border-[var(--vsr-border)] 
                 hover:border-red-400 hover:shadow-[0_4px_20px_rgba(220,38,38,0.15)] 
-                transition-transform duration-300 rounded-xl overflow-hidden ${styleClass} ${statusClass}" 
-            id="card-${uId}">
+                transition-transform duration-300 rounded-xl overflow-hidden ${escapeHtml(styleClass)} ${statusClass}" 
+            id="card-${escapeHtml(uId)}">
         
         ${cooldownHTML}
 
         <!-- Phần 1: Ảnh (thumb vuông nhỏ bên trái trên mobile, dọc full-width trên desktop) -->
         <div class="relative shrink-0 w-24 h-24 md:w-full md:h-auto md:aspect-[4/3] bg-[var(--vsr-surface-3)] overflow-hidden border-r md:border-r-0 md:border-b border-[var(--vsr-border)]">
             ${isVideo
-            ? `<video src="${thumbUrl}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" autoplay loop muted playsinline></video>`
-            : `<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style="background-image: url('${thumbUrl}');"></div>`
+            ? `<video src="${escapeHtml(safeMediaUrl(thumbUrl))}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" autoplay loop muted playsinline></video>`
+            : `<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style="background-image: url('${escapeHtml(safeMediaUrl(thumbUrl))}');"></div>`
         }
             <div class="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/70 to-transparent opacity-80 hidden md:block"></div>
             
@@ -59,18 +61,18 @@ export const ActionCard = ({ uId, meta, set, isLocked, isFakerActive, styleClass
         <div class="flex-1 min-w-0 flex flex-col justify-center md:justify-start p-3 relative">
             <div class="flex justify-between items-start gap-2">
                 <h4 class="text-[var(--vsr-ink-900)] font-bold text-sm leading-5 line-clamp-2 md:min-h-[2.5rem] transition-colors">
-                    ${meta.title || "Untitled Card Content"}
+                    ${escapeHtml(meta.title || "Untitled Card Content")}
                 </h4>
                 ${meta.desc ?
             `<button class="info-trigger shrink-0 text-[var(--vsr-ink-300)] hover:text-red-500 transition-colors ${showHint ? 'animate-bounce text-amber-500' : ''}" 
-                        data-pop-desc="${meta.desc}">
+                        data-pop-desc="${escapeHtml(meta.desc)}">
                     <span class="material-icons-round text-base">info</span>
                 </button>` : ''}
             </div>
             <div class="mt-2 md:mt-auto md:pt-2 md:border-t border-[var(--vsr-border)]">
                 <button class="action-trigger w-full flex justify-between items-center p-2 bg-[var(--vsr-surface-2)] hover:bg-red-600 hover:text-white text-[var(--vsr-ink-700)] text-xs font-bold uppercase tracking-wider rounded-lg transition-all active:scale-95 border border-[var(--vsr-border)] hover:border-red-600 flex items-center justify-center gap-2 ${isLocked || restricted ? 'pointer-events-none opacity-40' : ''} ${restricted ? 'cursor-not-allowed bg-amber-100' : ''}">
                     ${iconHtml}
-                    <span>${restricted ? "RESTRICTED" : (meta.buttonLabel || "SELECT")}</span>
+                    <span>${restricted ? "RESTRICTED" : escapeHtml(meta.buttonLabel || "SELECT")}</span>
                 </button>
             </div>
         </div>
