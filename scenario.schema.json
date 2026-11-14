@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Scenario Specification Schema V9.2 (Chat Refactor)",
-  "description": "Game scenario structure V9.2 with refactored Chat system, Passwords, Item Effects and Character Actions.",
+  "title": "VSR Scenario Contract v1",
+  "description": "Canonical VSR scenario authoring contract. Runtime behavior must conform to this schema.",
   "type": "object",
   "required": [
     "meta",
@@ -18,7 +18,12 @@
   ],
   "additionalProperties": false,
   "properties": {
-    "formatVersion": { "type": "integer", "minimum": 1, "maximum": 1, "default": 1, "description": "VSR data format version, independent from meta.version." },
+    "formatVersion": {
+      "type": "integer",
+      "const": 1,
+      "default": 1,
+      "description": "Scenario data format version. Independent from meta.version."
+    },
     "config": {
       "type": "object",
       "description": "General configuration for the game scenario.",
@@ -98,6 +103,11 @@
           "type": "boolean",
           "default": false,
           "description": "Force players to wait for descriptions on actions."
+        },
+        "clickHintDesc": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Number of unsuccessful description-gated clicks before the UI shows a hint."
         }
       }
     },
@@ -111,7 +121,8 @@
         "language",
         "writer",
         "ageRating",
-        "tags"
+        "tags",
+        "entryScene"
       ],
       "properties": {
         "title": {
@@ -204,18 +215,17 @@
           "description": "Estimated playtime (minutes)."
         },
         "entryScene": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "description": "ID of the first Scene when starting the game."
+          "type": "string",
+          "minLength": 1,
+          "description": "Required ID of the first scene entered when a new game starts."
         },
         "entryCharacter": {
           "type": [
             "string",
             "null"
           ],
-          "description": "ID of the Character that the player will roleplay as initially."
+          "default": "player",
+          "description": "Initial player character ID. Null or omitted is normalized to the built-in player."
         },
         "createdAt": {
           "type": "string",
@@ -248,19 +258,39 @@
           "type",
           "value"
         ],
-        "properties": {
-          "type": {
-            "enum": [
-              "boolean",
-              "number",
-              "string"
-            ],
-            "description": "Data type of the variable."
+        "additionalProperties": false,
+        "oneOf": [
+          {
+            "properties": {
+              "type": {
+                "const": "boolean"
+              },
+              "value": {
+                "type": "boolean"
+              }
+            }
           },
-          "value": {
-            "description": "Initial value."
+          {
+            "properties": {
+              "type": {
+                "const": "number"
+              },
+              "value": {
+                "type": "number"
+              }
+            }
+          },
+          {
+            "properties": {
+              "type": {
+                "const": "string"
+              },
+              "value": {
+                "type": "string"
+              }
+            }
           }
-        }
+        ]
       }
     },
     "templates": {
@@ -594,7 +624,8 @@
             "type": "object",
             "description": "Chat metadata.",
             "required": [
-              "loop"
+              "loop",
+              "entry"
             ],
             "properties": {
               "title": {
@@ -617,11 +648,9 @@
                 "description": "Character ID of sender, or null for unknown/spam."
               },
               "entry": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "ID of the starting block."
+                "type": "string",
+                "minLength": 1,
+                "description": "Starting block ID; must resolve within this chat."
               },
               "to": {
                 "type": "array",
@@ -660,7 +689,8 @@
                         "type": "string",
                         "description": "Dialogue line."
                       }
-                    }
+                    },
+                    "additionalProperties": false
                   }
                 },
                 "choice_id": {
@@ -668,14 +698,15 @@
                     "string",
                     "null"
                   ],
-                  "description": "Reference to a key in the choice object."
+                  "description": "Choice group ID; when non-null it must exist in this chat's choice map."
                 },
                 "choiced": {
                   "type": "boolean",
                   "default": false,
                   "description": "State: Has this block been completed/selected?"
                 }
-              }
+              },
+              "additionalProperties": false
             }
           },
           "choice": {
@@ -705,8 +736,13 @@
                       "null"
                     ],
                     "description": "Block ID to jump to. If null or duplicate with choice that Block ID contains it or not met, ends chat."
+                  },
+                  "id": {
+                    "type": "string",
+                    "description": "Optional stable choice ID."
                   }
-                }
+                },
+                "additionalProperties": false
               }
             }
           }
@@ -953,1494 +989,25 @@
     },
     "endings": {
       "type": "object",
-      "description": "Definitions of game endings.",
+      "description": "Dictionary of terminal game outcomes keyed by ending ID.",
       "additionalProperties": {
         "type": "object",
-        "required": [],
-        "properties": {
-          "set": {
-            "type": "object",
-            "description": "Description of the ending."
-          }
-        }
-      }
-    },
-    "definitions": {
-      "runnable_wrapper": {
-        "type": "object",
-        "description": "Wrapper for all logic actions (Effect, Requirement, Manage Effect).",
         "required": [
-          "type",
-          "skip"
-        ],
-        "properties": {
-          "skip": {
-            "type": "boolean",
-            "description": "Skip this action if true.",
-            "default": false
-          },
-          "type": {
-            "enum": [
-              "effect",
-              "req",
-              "manage_effect"
-            ]
-          },
-          "ref": {
-            "type": "string",
-            "description": "Reference to ID in templates."
-          },
-          "inline": {
-            "type": "object",
-            "description": "Inline content definition."
-          },
-          "req": {
-            "$ref": "#/definitions/requirement_details",
-            "description": "Attached execution requirement."
-          }
-        },
-        "allOf": [
-          {
-            "if": {
-              "properties": {
-                "type": {
-                  "const": "effect"
-                }
-              }
-            },
-            "then": {
-              "properties": {
-                "inline": {
-                  "$ref": "#/definitions/effect_details"
-                }
-              }
-            }
-          },
-          {
-            "if": {
-              "properties": {
-                "type": {
-                  "const": "req"
-                }
-              }
-            },
-            "then": {
-              "properties": {
-                "inline": {
-                  "$ref": "#/definitions/requirement_details"
-                },
-                "req": {
-                  "not": {}
-                }
-              }
-            }
-          }
-        ]
-      },
-      "requirement_details": {
-        "type": "object",
-        "description": "Logic condition details.",
-        "properties": {
-          "logic": {
-            "enum": [
-              "AND",
-              "OR",
-              "NOT",
-              "XOR",
-              null
-            ],
-            "description": "Combining logic operator."
-          },
-          "check": {
-            "type": "array",
-            "description": "List of single checks.",
-            "items": {
-              "$ref": "#/definitions/requirement_check"
-            }
-          }
-        }
-      },
-      "requirement_check": {
-        "type": "object",
-        "description": "A single logic check.",
-        "required": [
-          "type",
-          "subtype",
-          "op",
-          "value"
-        ],
-        "properties": {
-          "type": {
-            "enum": [
-              "item",
-              "stats",
-              "state",
-              "set",
-              "relationship"
-            ],
-            "description": "Type of object to check."
-          },
-          "subtype": {
-            "type": "string",
-            "description": "Subtype (inventory, global, scene...)."
-          },
-          "target": {
-            "type": "string",
-            "description": "ID of the object to check."
-          },
-          "property": {
-            "type": "string",
-            "description": "Property to compare."
-          },
-          "op": {
-            "enum": [
-              "==",
-              "!=",
-              ">",
-              "<",
-              ">=",
-              "<=",
-              "has",
-              "!has"
-            ],
-            "description": "Comparison operator."
-          },
-          "value": {
-            "description": "Value to compare."
-          }
-        },
-        "allOf": [
-          {
-            "if": {
-              "properties": {
-                "type": {
-                  "const": "item"
-                }
-              }
-            },
-            "then": {
-              "oneOf": [
-                {
-                  "properties": {
-                    "subtype": {
-                      "const": "inventory"
-                    },
-                    "op": {
-                      "enum": [
-                        "has",
-                        "!has"
-                      ]
-                    },
-                    "value": {
-                      "type": "string"
-                    }
-                  }
-                },
-                {
-                  "properties": {
-                    "subtype": {
-                      "const": "hand"
-                    },
-                    "op": {
-                      "const": "=="
-                    },
-                    "value": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      }
-                    }
-                  }
-                },
-                {
-                  "properties": {
-                    "subtype": {
-                      "const": "usage"
-                    },
-                    "op": {
-                      "enum": [
-                        "<",
-                        ">",
-                        "==",
-                        "!=",
-                        "<=",
-                        ">="
-                      ]
-                    },
-                    "value": {
-                      "type": "number"
-                    }
-                  }
-                }
-              ]
-            }
-          },
-          {
-            "if": {
-              "properties": {
-                "type": {
-                  "const": "stats"
-                }
-              }
-            },
-            "then": {
-              "properties": {
-                "subtype": {
-                  "enum": [
-                    "item",
-                    "characters"
-                  ]
-                }
-              }
-            }
-          },
-          {
-            "if": {
-              "properties": {
-                "type": {
-                  "const": "state"
-                }
-              }
-            },
-            "then": {
-              "properties": {
-                "subtype": {
-                  "const": "global"
-                }
-              }
-            }
-          },
-          {
-            "if": {
-              "properties": {
-                "type": {
-                  "const": "set"
-                }
-              }
-            },
-            "then": {
-              "properties": {
-                "subtype": {
-                  "enum": [
-                    "state",
-                    "scene",
-                    "router",
-                    "action",
-                    "chat",
-                    "characters",
-                    "chat_choice",
-                    "chat_block",
-                    "automation",
-                    "block_chat"
-                  ]
-                }
-              }
-            }
-          },
-          {
-            "if": {
-              "properties": {
-                "type": {
-                  "const": "relationship"
-                }
-              }
-            },
-            "then": {
-              "properties": {
-                "subtype": {
-                  "enum": [
-                    "tag"
-                  ]
-                },
-                "property": {
-                  "type": "string",
-                  "description": "Format: 'targetCharID'"
-                }
-              }
-            }
-          }
-        ]
-      },
-      "effect_details": {
-        "type": "object",
-        "description": "Impact effect details.",
-        "required": [
-          "type"
-        ],
-        "properties": {
-          "type": {
-            "enum": [
-              "notify",
-              "set",
-              "item",
-              "goto",
-              "vfx",
-              "characters",
-              "cms",
-              "skip_all"
-            ],
-            "description": "Type of effect."
-          },
-          "subtype": {
-            "type": "string",
-            "description": "Impact subtype."
-          },
-          "target": {
-            "type": "string",
-            "description": "ID of the target object."
-          },
-          "property": {
-            "type": "string",
-            "description": "Property to change."
-          },
-          "value": {
-            "description": "New value or increment value."
-          },
-          "text": {
-            "type": "string",
-            "description": "Notification content (for notify)."
-          },
-          "level": {
-            "enum": [
-              "info",
-              "success",
-              "warn",
-              "error"
-            ],
-            "description": "Notification level (color)."
-          },
-          "index": {
-            "type": "array",
-            "items": {
-              "type": "number"
-            },
-            "description": "Indices for npc_moving_ctrl."
-          },
-          "duration": {
-            "type": "number",
-            "description": "Duration in seconds for VFX."
-          },
-          "format": {
-            "enum": [
-              "photo",
-              "video",
-              "sound"
-            ],
-            "description": "Format for media VFX."
-          },
-          "control": {
-            "enum": [
-              "start",
-              "stop",
-              "repeat"
-            ],
-            "description": "Control action for media."
-          },
-          "mode": {
-            "type": "string",
-            "description": "Mode for stats effect (add_stats, remove_stats)."
-          },
-          "notify": {
-            "type": "boolean",
-            "description": "Show notification for stats effect."
-          },
-          "space": {
-            "enum": [
-              "router",
-              "action",
-              "characters",
-              "item",
-              "chat"
-            ],
-            "description": "Scope (for manage_effect)."
-          },
-          "in": {
-            "enum": [
-              "still",
-              "leave",
-              "enter",
-              "pass",
-              "fail",
-              "normal",
-              "t_start",
-              "t_end",
-              "meeting",
-              "pwFailed",
-              "use",
-              "equip",
-              "unequip"
-            ],
-            "description": "Hook name (for manage_effect)."
-          },
-          "inline": {
-            "$ref": "#/definitions/runnable_wrapper",
-            "description": "Content to inject (for manage_effect add_effect). Note: originally 'content' in wrapper."
-          }
-        },
-        "allOf": [
-          {
-            "if": {
-              "properties": {
-                "type": {
-                  "const": "notify"
-                }
-              }
-            },
-            "then": {
-              "properties": {
-                "subtype": {
-                  "enum": [
-                    "modal",
-                    "toast"
-                  ]
-                }
-              }
-            }
-          },
-          {
-            "if": {
-              "properties": {
-                "type": {
-                  "const": "set"
-                }
-              }
-            },
-            "then": {
-              "properties": {
-                "subtype": {
-                  "enum": [
-                    "state",
-                    "scene",
-                    "router",
-                    "action",
-                    "chat",
-                    "characters",
-                    "chat_choice",
-                    "chat_block",
-                    "automation"
-                  ]
-                }
-              }
-            }
-          },
-          {
-            "if": {
-              "properties": {
-                "type": {
-                  "const": "item"
-                }
-              }
-            },
-            "then": {
-              "properties": {
-                "subtype": {
-                  "enum": [
-                    "add",
-                    "remove",
-                    "hand_on",
-                    "hand_off",
-                    "usage",
-                    "stats"
-                  ]
-                },
-                "target": {
-                  "type": "string"
-                },
-                "hide": {
-                  "type": "boolean",
-                  "description": "Auto hide action after execution."
-                }
-              }
-            }
-          },
-          {
-            "if": {
-              "properties": {
-                "type": {
-                  "const": "characters"
-                },
-                "subtype": {
-                  "const": "edit_stats"
-                }
-              }
-            },
-            "then": {
-              "properties": {
-                "exec": {
-                  "enum": [
-                    "add",
-                    "set",
-                    "add_stats",
-                    "remove_stats"
-                  ]
-                },
-                "target": {
-                  "type": "string"
-                },
-                "property": {
-                  "type": "string"
-                },
-                "value": {
-                  "description": "Value or increment."
-                }
-              },
-              "required": [
-                "target",
-                "property",
-                "value"
-              ]
-            }
-          },
-          {
-            "if": {},
-            "then": {
-              "properties": {
-                "subtype": {
-                  "enum": [
-                    "locked",
-                    "unlocked",
-                    "add_effect",
-                    "remove_effect"
-                  ]
-                },
-                "required": [
-                  "space",
-                  "in",
-                  "subtype"
-                ]
-              }
-            }
-          },
-          {
-            "if": {
-              "properties": {
-                "type": {
-                  "const": "manage_effect"
-                }
-              }
-            },
-            "then": {
-              "properties": {
-                "subtype": {
-                  "enum": [
-                    "locked",
-                    "unlocked",
-                    "add_effect",
-                    "remove_effect"
-                  ]
-                },
-                "required": [
-                  "space",
-                  "in",
-                  "subtype"
-                ]
-              }
-            }
-          },
-          {
-            "if": {
-              "properties": {
-                "type": {
-                  "const": "goto"
-                }
-              }
-            },
-            "then": {
-              "properties": {
-                "subtype": {
-                  "enum": [
-                    "chat",
-                    "end",
-                    "scene",
-                    "router",
-                    "in_faker",
-                    "out_faker"
-                  ]
-                }
-              }
-            }
-          },
-          {
-            "if": {
-              "properties": {
-                "type": {
-                  "const": "vfx"
-                }
-              }
-            },
-            "then": {
-              "properties": {
-                "subtype": {
-                  "enum": [
-                    "media",
-                    "frame",
-                    "overlay"
-                  ]
-                },
-                "id": {
-                  "type": "string",
-                  "description": "Unique ID for the effect instance. If duplicate, overrides existing."
-                },
-                "target": {
-                  "type": "string"
-                },
-                "flicker": {
-                  "type": "number",
-                  "description": "Flicker interval in seconds (for overlay). If < 2, null or empty -> false."
-                },
-                "loop": {
-                  "type": "boolean",
-                  "description": "Enable looping (for frame)."
-                },
-                "loopSecond": {
-                  "type": "number",
-                  "description": "Loop interval in seconds (for frame). If < 1, null or empty -> false."
-                },
-                "format": {
-                  "enum": [
-                    "sound",
-                    "video",
-                    "photo"
-                  ],
-                  "description": "Media format (for media)."
-                },
-                "control": {
-                  "enum": [
-                    "stop",
-                    "play",
-                    "pause"
-                  ],
-                  "description": "Playback control (for media)."
-                },
-                "repeat": {
-                  "type": "boolean",
-                  "description": "Enable repeat (for media)."
-                }
-              }
-            }
-          },
-          {
-            "if": {
-              "properties": {
-                "type": {
-                  "const": "characters"
-                },
-                "subtype": {
-                  "const": "mng_stats"
-                }
-              }
-            },
-            "then": {
-              "properties": {
-                "exec": {
-                  "enum": [
-                    "swap",
-                    "copy_to",
-                    "cut_to",
-                    "delete",
-                    "add_stats",
-                    "remove_stats"
-                  ]
-                },
-                "target": {
-                  "type": "string",
-                  "description": "Format: 'dest_id:src_id' or 'target_id'"
-                },
-                "value": {
-                  "type": "string",
-                  "description": "Stat Key to copy/cut/delete"
-                }
-              }
-            }
-          },
-          {
-            "if": {
-              "properties": {
-                "type": {
-                  "const": "characters"
-                },
-                "subtype": {
-                  "const": "moving"
-                }
-              }
-            },
-            "then": {
-              "properties": {
-                "exec": {
-                  "enum": [
-                    "skip",
-                    "edit"
-                  ]
-                },
-                "target": {
-                  "type": "string"
-                },
-                "index": {
-                  "type": "array"
-                }
-              }
-            }
-          },
-          {
-            "if": {
-              "properties": {
-                "type": {
-                  "const": "cms"
-                }
-              }
-            },
-            "then": {
-              "properties": {
-                "table": {
-                  "enum": [
-                    "characters",
-                    "routers"
-                  ],
-                  "description": "Target strategy table."
-                },
-                "column": {
-                  "enum": [
-                    "actions",
-                    "relationship",
-                    "met"
-                  ],
-                  "description": "Target column/property."
-                },
-                "method": {
-                  "enum": [
-                    "add",
-                    "remove",
-                    "insert",
-                    "empty",
-                    "set"
-                  ],
-                  "description": "Manipulation method"
-                },
-                "id": {
-                  "type": "string",
-                  "description": "ID of the target object (Character or Router)."
-                },
-                "value": {
-                  "description": "Value to add/remove/insert"
-                },
-                "index": {
-                  "type": "number",
-                  "description": "Index for 'insert' method"
-                }
-              },
-              "required": [
-                "subtype",
-                "method"
-              ]
-            }
-          }
-        ]
-      },
-      "password_common": {
-        "type": "object",
-        "required": [
+          "title",
           "desc"
         ],
+        "additionalProperties": false,
         "properties": {
           "title": {
             "type": "string",
-            "description": "Title of the password."
+            "minLength": 1
           },
           "desc": {
-            "type": "string",
-            "description": "Description or hint for the password."
-          },
-          "retryMax": {
-            "type": "number",
-            "minimum": 0,
-            "default": 3,
-            "description": "Max attempts allowed. 0 means infinite."
-          },
-          "countTest": {
-            "type": "number",
-            "default": 0,
-            "description": "Current number of failed attempts."
-          },
-          "timer": {
-            "type": "number",
-            "minimum": 0,
-            "default": 0,
-            "description": "Time limit in seconds. 0 means no limit."
-          }
-        }
-      },
-      "password_number": {
-        "type": "object",
-        "allOf": [
-          {
-            "$ref": "#/definitions/password_common"
-          }
-        ],
-        "required": [
-          "display",
-          "value"
-        ],
-        "properties": {
-          "display": {
-            "enum": [
-              "keyboard",
-              "combination",
-              "rotary_dial"
-            ],
-            "description": "UI Style for number input."
-          },
-          "value": {
-            "type": [
-              "number",
-              "string"
-            ],
-            "pattern": "^[0-9]+$",
-            "description": "The correct number combination. Use string to preserve leading zeros."
-          }
-        }
-      },
-      "password_string": {
-        "type": "object",
-        "allOf": [
-          {
-            "$ref": "#/definitions/password_common"
-          }
-        ],
-        "required": [
-          "value"
-        ],
-        "properties": {
-          "value": {
-            "type": "string",
-            "description": "The correct string password."
-          },
-          "hint": {
-            "type": "array",
-            "items": {
-              "type": "number"
-            },
-            "description": "Indices of characters to reveal as hint."
-          }
-        }
-      },
-      "password_find_way": {
-        "type": "object",
-        "allOf": [
-          {
-            "$ref": "#/definitions/password_common"
-          }
-        ],
-        "required": [
-          "start",
-          "target",
-          "street",
-          "area"
-        ],
-        "properties": {
-          "area": {
-            "type": "array",
-            "items": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 100
-            },
-            "minItems": 2,
-            "maxItems": 2
-          },
-          "start": {
-            "type": "array",
-            "items": {
-              "type": "integer",
-              "minimum": 0
-            },
-            "minItems": 2,
-            "maxItems": 2
-          },
-          "target": {
-            "type": "array",
-            "items": {
-              "type": "integer",
-              "minimum": 0
-            },
-            "minItems": 2,
-            "maxItems": 2
-          },
-          "street": {
-            "type": "array",
-            "minItems": 2,
-            "maxItems": 10000,
-            "items": {
-              "type": "array",
-              "minItems": 2,
-              "maxItems": 2,
-              "items": {
-                "type": "integer",
-                "minimum": 0
-              }
-            },
-            "description": "The ordered list of coordinates representing the correct path."
-          }
-        }
-      },
-      "password_puzzle": {
-        "type": "object",
-        "allOf": [
-          {
-            "$ref": "#/definitions/password_common"
-          }
-        ],
-        "required": [
-          "url",
-          "level"
-        ],
-        "properties": {
-          "url": {
-            "type": "string",
-            "format": "uri",
-            "description": "URL to the external puzzle resource."
-          },
-          "ratio": {
-            "type": "array",
-            "items": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 20
-            },
-            "minItems": 2,
-            "maxItems": 2,
-            "default": [
-              3,
-              3
-            ],
-            "description": "Aspect ratio of the puzzle [width, height]."
-          },
-          "level": {
-            "enum": [
-              "easy",
-              "normal",
-              "hard"
-            ]
-          }
-        }
-      },
-      "password_switch": {
-        "type": "object",
-        "allOf": [
-          {
-            "$ref": "#/definitions/password_common"
-          }
-        ],
-        "required": [
-          "value"
-        ],
-        "properties": {
-          "value": {
-            "type": "string",
-            "pattern": "^[0-9]+$",
-            "description": "Correct combination (e.g. '0123'). Each digit represents a switch state."
-          }
-        }
-      },
-      "scene": {
-        "type": "object",
-        "required": [
-          "meta",
-          "set",
-          "routers"
-        ],
-        "properties": {
-          "meta": {
-            "type": "object",
-            "description": "Scene meta information.",
-            "required": [
-              "title",
-              "parentScene"
-            ],
-            "properties": {
-              "title": {
-                "type": "string",
-                "description": "Scene name."
-              },
-              "parentScene": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "ID of the parent Scene."
-              }
-            }
+            "type": "string"
           },
           "set": {
             "type": "object",
-            "description": "Scene configuration.",
-            "required": [
-              "activeRouterId",
-              "blocked",
-              "transition",
-              "transitionDuration"
-            ],
-            "properties": {
-              "activeRouterId": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "Router ID to activate immediately upon entering Scene."
-              },
-              "blocked": {
-                "type": [
-                  "boolean",
-                  "null"
-                ],
-                "description": "Lock this Scene from entry."
-              },
-              "transition": {
-                "enum": [
-                  "fade",
-                  "fade",
-                  "flash",
-                  "zoom_in",
-                  "zoom_out",
-                  "glitch",
-                  "crt_off",
-                  "spin",
-                  "slide_left",
-                  "slide_right",
-                  "slide_up",
-                  "slide_down",
-                  "iris_circle",
-                  "invert_flash",
-                  "warp",
-                  null
-                ],
-                "description": "Transition effect when entering Scene."
-              },
-              "transitionDuration": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "default": 1.5,
-                "description": "Effect duration (seconds)."
-              }
-            }
-          },
-          "routers": {
-            "type": "object",
-            "description": "List of Routers (status, viewpoint) in the Scene.",
-            "additionalProperties": {
-              "$ref": "#/definitions/router"
-            }
-          }
-        }
-      },
-      "router": {
-        "type": "object",
-        "required": [
-          "meta",
-          "set",
-          "actions"
-        ],
-        "properties": {
-          "meta": {
-            "type": "object",
-            "description": "Router display information.",
-            "required": [
-              "sceneID",
-              "desc"
-            ],
-            "properties": {
-              "sceneID": {
-                "type": "string",
-                "description": "Scene ID containing this Router."
-              },
-              "subTitleStatus": {
-                "type": "string",
-                "description": "Subtitle (status)."
-              },
-              "desc": {
-                "type": "string",
-                "description": "Router content description."
-              },
-              "cover": {
-                "type": "string",
-                "description": "Router background image."
-              }
-            }
-          },
-          "set": {
-            "type": "object",
-            "description": "Router configuration.",
-            "required": [
-              "blocked",
-              "visited",
-              "countVisited",
-              "secondsStill",
-              "timer",
-              "timerSeconds",
-              "timerDisplay",
-              "timerEnd",
-              "transition",
-              "transitionDuration",
-              "overlay",
-              "overlayFlick",
-              "overlayFlickDuration"
-            ],
-            "properties": {
-              "blocked": {
-                "type": [
-                  "boolean",
-                  "null"
-                ],
-                "description": "Lock router access."
-              },
-              "visited": {
-                "type": [
-                  "boolean",
-                  "null"
-                ],
-                "description": "Has been visited."
-              },
-              "countVisited": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "description": "Visit count."
-              },
-              "secondsStill": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "default": 0,
-                "description": "Wait time before triggering Still Loop (seconds)."
-              },
-              "timer": {
-                "type": [
-                  "boolean",
-                  "null"
-                ],
-                "description": "Activate timer."
-              },
-              "timerSeconds": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "default": 60,
-                "description": "Total countdown time (seconds)."
-              },
-              "timerDisplay": {
-                "enum": [
-                  "dec",
-                  "inc",
-                  null
-                ],
-                "description": "Timer display: counting down (dec) or up (inc)."
-              },
-              "timerEnd": {
-                "enum": [
-                  "still",
-                  "out",
-                  null
-                ],
-                "description": "Action on timeout: Run loop (still) or exit (out)."
-              },
-              "transition": {
-                "enum": [
-                  "shake_random_blur",
-                  "shake_left_right_blur",
-                  "shake_up_down_blur",
-                  "blur",
-                  "glitch",
-                  "crt_off",
-                  "spin",
-                  "slide_left",
-                  "slide_right",
-                  "slide_up",
-                  "slide_down",
-                  "iris_circle",
-                  "invert_flash",
-                  "warp",
-                  null
-                ],
-                "description": "Internal transition effect."
-              },
-              "transitionDuration": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "default": 3,
-                "description": "Transition duration (seconds)."
-              },
-              "overlay": {
-                "enum": [
-                  "none",
-                  "dark",
-                  "light",
-                  "blood",
-                  "classic movie",
-                  "dreaming",
-                  "noise",
-                  null
-                ],
-                "description": "Visual effect overlay."
-              },
-              "overlayFlick": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "description": "Duration in seconds for overlay flicker. If <= 1 or null/false, no flicker (permanent)."
-              }
-            }
-          },
-          "loop": {
-            "type": "object",
-            "description": "Events automatically running per router lifecycle.",
-            "properties": {
-              "enter": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/runnable_wrapper"
-                },
-                "description": "Run when entering Router."
-              },
-              "leave": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/runnable_wrapper"
-                },
-                "description": "Run when leaving Router."
-              },
-              "still": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/runnable_wrapper"
-                },
-                "description": "Run repeatedly after secondsStill interval."
-              }
-            }
-          },
-          "timer": {
-            "type": "object",
-            "description": "Events associated with Timer.",
-            "properties": {
-              "start": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/runnable_wrapper"
-                },
-                "description": "Run when Timer starts."
-              },
-              "end": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/runnable_wrapper"
-                },
-                "description": "Run when Timer ends (if timerEnd = still)."
-              }
-            }
-          },
-          "actions": {
-            "type": "array",
-            "description": "List of Action IDs available in this router.",
-            "items": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "action": {
-        "type": "object",
-        "required": [
-          "meta",
-          "set"
-        ],
-        "properties": {
-          "meta": {
-            "type": "object",
-            "description": "Action display information.",
-            "required": [
-              "buttonLabel",
-              "buttonLabel"
-            ],
-            "properties": {
-              "title": {
-                "type": "string",
-                "description": "Display title."
-              },
-              "parentScene": {
-                "type": "string",
-                "description": "ID of parent scene."
-              },
-              "thumb": {
-                "type": "string",
-                "description": "Thumbnail image."
-              },
-              "desc": {
-                "type": "string",
-                "description": "Short description."
-              },
-              "buttonIcon": {
-                "type": "string",
-                "description": "Icon on button."
-              },
-              "buttonLabel": {
-                "type": "string",
-                "description": "Label on button."
-              }
-            }
-          },
-          "set": {
-            "type": "object",
-            "description": "Action configuration and state (Strict Mode).",
-            "required": [
-              "requirement",
-              "password",
-              "countClicks",
-              "countFails",
-              "display",
-              "charAllow"
-            ],
-            "properties": {
-              "requirement": {
-                "type": [
-                  "boolean",
-                  "null"
-                ],
-                "description": "Check requirement or not."
-              },
-              "password": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "pattern": "^type_pass:.+$",
-                "description": "Reference to password ID in 'type_pass:password_id' format."
-              },
-              "countClicks": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "description": "Click count."
-              },
-              "countFails": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "description": "Fail count."
-              },
-              "display": {
-                "enum": [
-                  "show",
-                  "hide",
-                  "locked",
-                  null
-                ],
-                "description": "Display status."
-              },
-              "charAllow": {
-                "type": [
-                  "array",
-                  "null"
-                ],
-                "items": {
-                  "type": "string"
-                },
-                "description": "List of Character IDs permitted to execute this action."
-              },
-              "cooldown": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "default": 0,
-                "description": "Cooldown time in seconds."
-              },
-              "sound": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "Sound ID."
-              },
-              "readDesc": {
-                "type": "boolean",
-                "default": false,
-                "description": "Has the description been read? (Runtime)"
-              },
-              "clickHintDesc": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "description": "Number of clicks before showing hint."
-              }
-            }
-          },
-          "requirement": {
-            "type": "object",
-            "description": "Requirement to execute action (if set.requirement = true).",
-            "properties": {
-              "ref": {
-                "type": "string",
-                "description": "Reference to requirement template."
-              },
-              "logic": {
-                "enum": [
-                  "AND",
-                  "OR",
-                  "NOT",
-                  "XOR",
-                  null
-                ]
-              },
-              "check": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/requirement_check"
-                }
-              }
-            }
-          },
-          "effect": {
-            "type": "object",
-            "description": "Effect occurring when action executed.",
-            "properties": {
-              "fail": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/runnable_wrapper"
-                },
-                "description": "Run on failure."
-              },
-              "pass": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/runnable_wrapper"
-                },
-                "description": "Run on success."
-              },
-              "normal": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/runnable_wrapper"
-                },
-                "description": "Run on click (condition ignored)."
-              },
-              "pwFailed": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/runnable_wrapper"
-                },
-                "description": "Run on password failure."
-              }
-            }
+            "description": "Optional engine/client extension metadata for this ending."
           }
         }
       }
@@ -2449,7 +1016,7 @@
   "definitions": {
     "runnable_wrapper": {
       "type": "object",
-      "description": "Một bước hiệu ứng trong chuỗi effect (mảng fail/pass/normal/pwFailed, loop.enter/leave/still, item.effect.use/equip/unequip...). Engine đọc field 'type' để dispatch (xem engine/modules/effect/Strategies.js: manage_effect, cms, characters, notify, vfx, item, set, goto). Phải cung cấp 'ref' (tham chiếu templates.effects) HOẶC 'inline' (định nghĩa trực tiếp), không cả hai.",
+      "description": "A single executable wrapper. The engine supports only the dispatch types listed here.",
       "type_alt_note": "Trường 'type' ở CẤP NÀY dùng để engine dispatch effect handler, KHÁC với 'type' bên trong 'inline' nếu có (đó là type của effect_details).",
       "required": [
         "type"
@@ -2466,8 +1033,8 @@
             "cms",
             "notify",
             "vfx",
-            "automation",
-            "manage_effect"
+            "manage_effect",
+            "skip_all"
           ],
           "description": "Loại effect handler sẽ xử lý bước này."
         },
@@ -2494,25 +1061,96 @@
           "description": "Điều kiện cổng cho RIÊNG bước này: nếu check() không pass thì bước này bị bỏ qua (KHÔNG dừng cả danh sách). Đây là cơ chế đúng để 'gate' một effect — KHÔNG dùng { type: 'req' } (giá trị này luôn bị engine no-op, xem engine/modules/Effect.js dòng ~54)."
         }
       },
-      "additionalProperties": true
+      "additionalProperties": true,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "effect"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "anyOf": [
+              {
+                "required": [
+                  "ref"
+                ]
+              },
+              {
+                "required": [
+                  "inline"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "manage_effect"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "inline"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "skip_all"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "ref"
+                  ]
+                },
+                {
+                  "required": [
+                    "inline"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ]
     },
     "effect_details": {
       "type": "object",
-      "description": "Payload thực thi của một effect (thường nằm trong runnable_wrapper.inline, hoặc trực tiếp trong templates.effects.<id>[]). Cấu trúc cụ thể phụ thuộc 'type'/'subtype' — xem engine/modules/effect/strategies/*.js. Được mô hình hoá permissive (additionalProperties: true) vì có rất nhiều biến thể subtype. Lưu ý: payload của 'manage_effect' KHÔNG có field 'type' (dùng space/in/target/subtype/content thay thế), nên 'type' ở đây là optional chứ không required.",
+      "description": "Payload accepted by the corresponding EffectHandlers implementation.",
       "properties": {
         "type": {
           "type": "string",
           "enum": [
-            "effect",
-            "item",
-            "set",
-            "goto",
-            "characters",
+            "manage_effect",
             "cms",
+            "characters",
             "notify",
             "vfx",
-            "automation",
-            "manage_effect"
+            "item",
+            "set",
+            "goto"
           ],
           "description": "Loại effect (giống runnable_wrapper.type khi dùng inline)."
         },
@@ -2614,14 +1252,16 @@
           "description": "Effect được thêm/xoá khỏi danh sách target (dùng bởi manage_effect)."
         }
       },
-      "additionalProperties": true
+      "additionalProperties": true,
+      "allOf": []
     },
     "requirement_check": {
       "type": "object",
       "description": "Một điều kiện đơn lẻ trong requirement.check[] (xem engine/modules/Logic.js cho danh sách op được hỗ trợ).",
       "required": [
         "type",
-        "op"
+        "op",
+        "value"
       ],
       "properties": {
         "type": {
@@ -2642,7 +1282,7 @@
           "type": "string",
           "enum": [
             "has",
-            "not_has",
+            "!has",
             "==",
             "!=",
             ">",
@@ -2660,7 +1300,123 @@
           "description": "Tên global state / chỉ số cần kiểm tra (bắt buộc khi type=state hoặc type=stat)."
         }
       },
-      "additionalProperties": true
+      "additionalProperties": true,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "item"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "subtype"
+            ],
+            "properties": {
+              "subtype": {
+                "enum": [
+                  "inventory",
+                  "hand",
+                  "usage"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "state"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "target",
+              "subtype"
+            ],
+            "properties": {
+              "subtype": {
+                "const": "global"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "stats"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "subtype",
+              "target",
+              "property"
+            ],
+            "properties": {
+              "subtype": {
+                "enum": [
+                  "characters",
+                  "item"
+                ]
+              },
+              "field": {
+                "enum": [
+                  "current",
+                  "max"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "set"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "subtype",
+              "target",
+              "property"
+            ],
+            "properties": {
+              "subtype": {
+                "enum": [
+                  "scene",
+                  "router",
+                  "action",
+                  "characters",
+                  "chat",
+                  "chat_choice",
+                  "automation"
+                ]
+              }
+            }
+          }
+        }
+      ]
     },
     "requirement_details": {
       "description": "Điều kiện tổng hợp: HOẶC định nghĩa trực tiếp {logic, check[]}, HOẶC tham chiếu {ref: templates.requirements.<id>}.",
@@ -2681,6 +1437,8 @@
               "enum": [
                 "AND",
                 "OR",
+                "NOT",
+                "XOR",
                 null
               ],
               "default": null,
@@ -2691,10 +1449,53 @@
               "items": {
                 "$ref": "#/definitions/requirement_check"
               },
-              "default": []
+              "default": [],
+              "minItems": 1
             }
           },
-          "additionalProperties": false
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "logic": {
+                    "const": "NOT"
+                  }
+                },
+                "required": [
+                  "logic"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "check": {
+                    "minItems": 1,
+                    "maxItems": 1
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "logic": {
+                    "const": null
+                  }
+                },
+                "required": [
+                  "logic"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "check": {
+                    "minItems": 1,
+                    "maxItems": 1
+                  }
+                }
+              }
+            }
+          ]
         },
         {
           "type": "object",
@@ -2856,9 +1657,7 @@
             "items": {
               "type": "integer",
               "minimum": 0
-            },
-            "minItems": 2,
-            "maxItems": 2
+            }
           },
           "description": "Danh sách toạ độ [x, y] tạo thành đường đi đúng, theo thứ tự."
         }
@@ -3416,9 +2215,11 @@
           "description": "Danh sách router, key là router ID.",
           "additionalProperties": {
             "$ref": "#/definitions/router"
-          }
+          },
+          "minProperties": 1
         }
       }
     }
-  }
+  },
+  "$id": "https://vsr.engine/scenario/v1/schema.json"
 }
