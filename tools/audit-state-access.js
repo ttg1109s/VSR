@@ -127,6 +127,18 @@ const files = walk(ROOT);
 const findings = files.flatMap(analyze).sort((a, b) =>
   a.file.localeCompare(b.file) || a.line - b.line || a.column - b.column
 );
+
+function isAllowed(item) {
+  if (item.file === 'state/StateAccess.js') return true;
+  if (item.file === 'engine/GameEngine.js') return item.expression === 'this.state' && item.access === 'WRITE';
+  if (item.file === 'engine/persistence/SaveState.js' || item.file === 'protocol/JsonProtocol.js') return item.access === 'READ';
+  if (item.file.startsWith('tests/')) return item.access === 'READ';
+  return false;
+}
+
+const strict = process.argv.includes('--strict');
+const violations = findings.filter(item => !isAllowed(item));
+
 const counts = findings.reduce((result, item) => {
   result[item.access] = (result[item.access] || 0) + 1;
   return result;
@@ -139,6 +151,11 @@ if (process.argv.includes('--json')) {
   console.log(`Scanned ${files.length} JavaScript files; found ${findings.length} candidates.`);
   console.log(`Classification: READ=${counts.READ || 0}, WRITE=${counts.WRITE || 0}, MUTATION=${counts.MUTATION || 0}.\\n`);
   for (const item of findings) {
-    console.log(`[${item.access}]${item.alias ? '[ALIAS]' : ''} ${item.file}:${item.line}:${item.column}  ${item.expression}`);
+    const marker = strict && !isAllowed(item) ? ' [VIOLATION]' : '';
+    console.log(`[${item.access}]${item.alias ? '[ALIAS]' : ''}${marker} ${item.file}:${item.line}:${item.column}  ${item.expression}`);
+  }
+  if (strict) {
+    console.log(`\\nStrict allowlist: ${findings.length - violations.length} allowed; ${violations.length} violations.`);
+    if (violations.length) process.exitCode = 1;
   }
 }
