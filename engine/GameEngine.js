@@ -182,17 +182,37 @@ export class GameEngine {
  }
  rehydratePasswordChallenge() {
   const challenge = this.pendingPasswordAction;
-  if (!challenge || challenge.status !== 'active') return;
-  const action = this.getEffectiveActions(challenge.sceneId, challenge.routerId)
-   .find(item => item.id === challenge.actionId);
-  const config = this.src?.passwords?.[challenge.type]?.[challenge.passwordId];
-  const activeRouterId = this.api.engine.state.get('scene.activeRouterId', { id: challenge.sceneId });
-  if (!action?.set?.password || !config || this.api.engine.state.get('sceneId') !== challenge.sceneId ||
+  if (!challenge) {
+   this.api.engine.state.set('session.passwordChallenge', null);
+   return;
+  }
+  const validChallenge =
+   typeof challenge.challengeId === 'string' && challenge.challengeId.length > 0 &&
+   typeof challenge.actionId === 'string' && typeof challenge.uniqueId === 'string' &&
+   typeof challenge.sceneId === 'string' && typeof challenge.routerId === 'string' &&
+   typeof challenge.type === 'string' && typeof challenge.passwordId === 'string' &&
+   challenge.status === 'active' &&
+   Number.isFinite(challenge.startedAt) &&
+   Number.isInteger(challenge.countTest) && challenge.countTest >= 0 &&
+   Number.isInteger(challenge.retryMax) && challenge.retryMax >= 0 &&
+   (challenge.retryMax === 0 || challenge.countTest < challenge.retryMax) &&
+   (challenge.deadlineAt === null || Number.isFinite(challenge.deadlineAt));
+  const action = validChallenge
+   ? this.getEffectiveActions(challenge.sceneId, challenge.routerId).find(item => item.id === challenge.actionId)
+   : null;
+  const config = validChallenge ? this.src?.passwords?.[challenge.type]?.[challenge.passwordId] : null;
+  const activeRouterId = validChallenge
+   ? this.api.engine.state.get('scene.activeRouterId', { id: challenge.sceneId })
+   : null;
+  const expectedReference = validChallenge ? `${challenge.type}:${challenge.passwordId}` : null;
+  if (!validChallenge || !action?.set?.password || action.set.password !== expectedReference ||
+      !config || this.api.engine.state.get('sceneId') !== challenge.sceneId ||
       activeRouterId !== challenge.routerId) {
    this.pendingPasswordAction = null;
    this.api.engine.state.set('session.passwordChallenge', null);
    return;
   }
+  this.api.engine.state.set('session.passwordChallenge', challenge);
   this.schedulePasswordExpiry(challenge, action);
  }
  rehydrateBackgroundTasks(){
