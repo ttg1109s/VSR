@@ -19,17 +19,17 @@ export class PasswordSystem {
       throw new TypeError('Password challenge config must be an object.');
     }
 
-    const rawRetryMax = config.retryMax === undefined ? 3 : Number(config.retryMax);
-    if (!Number.isFinite(rawRetryMax) || rawRetryMax < 0) {
+    const rawRetryMax = config.retryMax === undefined ? 3 : config.retryMax;
+    if (typeof rawRetryMax !== 'number' || !Number.isFinite(rawRetryMax) || rawRetryMax < 0) {
       throw new TypeError('Password retryMax must be a non-negative finite number.');
     }
     const retryMax = Math.floor(rawRetryMax);
-    const timerSeconds = config.timer === undefined ? 0 : Number(config.timer);
-    if (!Number.isFinite(timerSeconds) || timerSeconds < 0) {
+    const timerSeconds = config.timer === undefined ? 0 : config.timer;
+    if (typeof timerSeconds !== 'number' || !Number.isFinite(timerSeconds) || timerSeconds < 0) {
       throw new TypeError('Password timer must be a non-negative finite number.');
     }
-    const rawCountTest = runtime.countTest === undefined ? 0 : Number(runtime.countTest);
-    if (!Number.isFinite(rawCountTest) || rawCountTest < 0) {
+    const rawCountTest = runtime.countTest === undefined ? 0 : runtime.countTest;
+    if (typeof rawCountTest !== 'number' || !Number.isFinite(rawCountTest) || rawCountTest < 0) {
       throw new TypeError('Password countTest must be a non-negative finite number.');
     }
     const now = this.clock();
