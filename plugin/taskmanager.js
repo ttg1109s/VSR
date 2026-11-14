@@ -150,7 +150,10 @@ export class Loop {
                 this.#runInterval();
             } else {
                 this.expected = Date.now() + this.time;
-                this.#runTimeout();
+                // Resume already ran the current tick above; schedule the next one.
+                this.timerId = setTimeout(() => {
+                    if (this.isRunning && !this.isPaused) this.#runTimeout();
+                }, this.time);
             }
         }, this.remainingTime);
     }
