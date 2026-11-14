@@ -9,7 +9,7 @@ export const ItemStrategies = {
         // The effect system usually modifies the global state or specific character state.
         // For items, `eff.target` is item ID.
         // Users likely want to modify the global item definition (e.g. upgrade a weapon's damage).
-        // Let's modify `engine.state.itemInfo[eff.target]`.
+        // Item templates are updated through the controlled runtime-state API.
 
         const itemId = resolveValue(eff.target, engine);
         const state = engine.api.engine.state;
@@ -35,10 +35,9 @@ export const ItemStrategies = {
         }
     },
     // Helper để lấy Inventory của nhân vật đang nhập vai
-    _getChar: (engine) => {
-        const ownerId = engine.getOwnerId ? engine.getOwnerId() : (engine.state.meta?.entryCharacter || 'player');
-        return engine.api.engine.state.getRuntimeSnapshot('characters.[id]', { id: ownerId });
-    },
+    _getOwnerId: (engine) => engine.getOwnerId?.() || engine.api.engine.state.getRuntimeSnapshot('meta.entryCharacter') || 'player',
+
+    _getChar: (engine) => engine.api.engine.state.getRuntimeSnapshot('characters.[id]', { id: ItemStrategies._getOwnerId(engine) }),
 
     // Helper: Hide Action if requested
     _tryHideAction: (engine, eff, context) => {
@@ -57,7 +56,7 @@ export const ItemStrategies = {
         if (engine.addItem) {
             const added = engine.addItem(eff.target);
             if (added) {
-                engine.api.presentation.notification.add("Nhận vật phẩm", engine.state.itemInfo[eff.target]?.name || eff.target, "success");
+                engine.api.presentation.notification.add("Nhận vật phẩm", engine.api.engine.state.getRuntimeSnapshot('itemInfo.[id].name', { id: eff.target }) || eff.target, "success");
                 engine.api.presentation.components.explorer();
             }
         } else {
@@ -65,7 +64,7 @@ export const ItemStrategies = {
             const char = ItemStrategies._getChar(engine);
             if (char && !(char.inventory || []).includes(eff.target)) {
                 engine.api.engine.state.update('characters.[id].inventory', inventory => [...(inventory || []), eff.target], {
-                    id: engine.getOwnerId ? engine.getOwnerId() : (engine.state.meta?.entryCharacter || 'player')
+                    id: ItemStrategies._getOwnerId(engine)
                 });
                 engine.api.presentation.notification.add("Nhận vật phẩm", engine.api.engine.state.getRuntime('itemInfo.[id].name', { id: eff.target }) || eff.target, "success");
                 engine.api.presentation.components.explorer();
@@ -81,7 +80,7 @@ export const ItemStrategies = {
 
         const idx = (char.inventory || []).indexOf(eff.target);
         if (idx > -1) {
-            const ownerId = engine.getOwnerId ? engine.getOwnerId() : (engine.state.meta?.entryCharacter || 'player');
+            const ownerId = ItemStrategies._getOwnerId(engine);
             engine.api.engine.state.update('characters.[id]', current => ({
                 ...current,
                 inventory: (current.inventory || []).filter(itemId => itemId !== eff.target),
@@ -99,7 +98,7 @@ export const ItemStrategies = {
 
         const idx = (char.hand || []).indexOf(eff.target);
         if (idx > -1) {
-            const ownerId = engine.getOwnerId ? engine.getOwnerId() : (engine.state.meta?.entryCharacter || 'player');
+            const ownerId = ItemStrategies._getOwnerId(engine);
             engine.api.engine.state.update('characters.[id].hand', hand => (hand || []).filter(itemId => itemId !== eff.target), { id: ownerId });
             engine.api.presentation.components.explorer();
         }
@@ -122,7 +121,7 @@ export const ItemStrategies = {
                 engine.api.presentation.notification.add("Không thể cầm", "Tay đã đầy.", "warn");
                 return;
             }
-            const ownerId = engine.getOwnerId ? engine.getOwnerId() : (engine.state.meta?.entryCharacter || 'player');
+            const ownerId = ItemStrategies._getOwnerId(engine);
             engine.api.engine.state.update('characters.[id].hand', current => [...(current || []), eff.target], { id: ownerId });
             engine.api.presentation.components.explorer();
         }
