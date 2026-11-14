@@ -432,7 +432,7 @@ export const ChatSystem = {
         }
 
         if (nextBlockId) {
-            this.scheduleDelay('chat_transition', 500, () => {
+            this.scheduleDelay(500, () => {
                 this.chatState.blockId = nextBlockId;
                 this.chatState.index = 0;
 
@@ -448,12 +448,12 @@ export const ChatSystem = {
                 this.api.presentation.components.inputBar();
                 this.commitState('chat.block.transition');
 
-            }, 500);
+            }, 'chat_transition');
         } else {
             // End Chat
-            this.scheduleDelay('chat_transition', 500, () => {
+            this.scheduleDelay(500, () => {
                 this.endChat();
-            }, 500);
+            }, 'chat_transition');
         }
     },
 
@@ -476,7 +476,7 @@ export const ChatSystem = {
         this.chatState.active = false;
         this.chatState.blocking = false;
         this.toggleChatOverlay(false);
-        hideInput();
+        hideInput(this);
 
         this.api.presentation.chat.renderContactList();
         this.api.presentation.refresh();

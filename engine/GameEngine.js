@@ -89,7 +89,7 @@ export class GameEngine {
   const normalized=LoaderSystem.loadScript(save.scenario,this.api);
   if(!normalized)throw new TypeError('Save scenario is invalid.');
   const restored=cloneJsonValue(save.state);
-  if(!restored.scenes||!restored.characters||!restored.sceneId||!restored.scenes[restored.sceneId])throw new TypeError('Save state does not match scenario.');
+  if(!restored.scenes||!restored.characters||!restored.sceneId||!restored.scenes[restored.sceneId]||!normalized.state.scenes?.[restored.sceneId])throw new TypeError('Save state does not match scenario.');
   await this.init(save.scenario);
   restored.effectQueue={sync:[],async:[]};restored.isSyncQueueRunning=false;restored.isAsyncQueueRunning=false;restored.pausedBackgroundTasks={automations:{},characters:{}};
   this.state=restored;this.chatState={...this.chatState,...(cloneJsonValue(save.chatState)||{})};

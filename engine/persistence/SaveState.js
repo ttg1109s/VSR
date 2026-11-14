@@ -8,6 +8,7 @@ export function createSaveEnvelope(engine){
 }
 export function normalizeSaveEnvelope(save){
  if(!save||typeof save!=='object'||Array.isArray(save)||!save.scenario||!save.state)throw new TypeError('Invalid VSR save envelope.');
+ if(save.protocol!==undefined&&save.protocol!=='vsr-save')throw new TypeError('Invalid save protocol.');
  const version=save.saveVersion??1;if(version!==SAVE_VERSION)throw new Error(`Unsupported save version: ${version}`);
  return{...save,saveVersion:SAVE_VERSION};
 }
