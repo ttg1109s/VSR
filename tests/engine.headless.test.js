@@ -71,3 +71,24 @@ test('CMS effects commit against the real GameEngine runtime',async()=>{
  assert.deepEqual(e.state.characters[charId].set.relationship,[['npc','friend']]);
  assert.ok(e.state.routers[routerKey].actions.includes('__cms_probe_action'));
 });
+
+test('Item inventory and hand operations preserve synchronous add and transactional hand updates',async()=>{
+ const e=makeEngine();
+ await e.init(structuredClone(DEMO_SCRIPT));
+ const ownerId=e.state.meta?.entryCharacter||'player';
+ const character=e.state.characters[ownerId];
+ assert.ok(character);
+ character.inventory=[];
+ character.hand=[];
+ e.state.itemInfo.__item_probe={name:'Probe'};
+ const before=e.protocol.stateRevision;
+ const added=e.addItem('__item_probe');
+ assert.equal(added,true);
+ assert.deepEqual(e.state.characters[ownerId].inventory,['__item_probe']);
+ assert.equal(e.addItem('__item_probe'),false);
+ assert.equal(e.protocol.stateRevision,before+1);
+ await e.toggleHand('__item_probe');
+ assert.deepEqual(e.state.characters[ownerId].hand,['__item_probe']);
+ await e.toggleHand('__item_probe');
+ assert.deepEqual(e.state.characters[ownerId].hand,[]);
+});
