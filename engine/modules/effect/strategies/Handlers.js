@@ -49,8 +49,11 @@ export const RouterPropertyHandlers = {
 export const ActionPropertyHandlers = {
     __default__: (engine, action, val, actKey, prop) => {
         stateOf(engine).set('actions.[actionKey].[property]', val, { actionKey: actKey, property: prop });
-        const chatState = stateOf(engine).getSession('chatState');
-        if (chatState?.active && chatState.triggerActionId === actKey) chatState.actionModified = true;
+        const state = stateOf(engine);
+        const chatState = state.getSession('chatState');
+        if (chatState?.active && chatState.triggerActionId === actKey) {
+            state.set('chatState.actionModified', true, {}, { namespace: 'session' });
+        }
         engine.render();
     }
 };
@@ -58,10 +61,8 @@ export const ActionPropertyHandlers = {
 export const CharacterPropertyHandlers = {
     meeting: () => { },
     moveList: (engine, char, val, charId) => {
-        stateOf(engine).transaction(tx => {
-            tx.set('characters.[id].place.currentIndex', 0, { id: charId });
-            tx.set('characters.[id].moveList', val, { id: charId });
-        });
+        stateOf(engine).set('characters.[id].place.currentIndex', 0, { id: charId });
+        stateOf(engine).set('characters.[id].moveList', val, { id: charId });
     },
     moving: (engine, char, val, charId) => {
         stateOf(engine).set('characters.[id].set.moving', val, { id: charId });
