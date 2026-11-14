@@ -337,6 +337,9 @@ export const SceneSystem = {
 
         const actions = this.getEffectiveActions(sId, rId);
 
+        // Publish a JSON-safe state projection independently of the UI adapter.
+        if (this.publishProtocolSnapshot) this.publishProtocolSnapshot('scene.render');
+
         API.render.scene.render(s, r, actions);
     },
 };
