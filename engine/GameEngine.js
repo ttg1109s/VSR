@@ -119,7 +119,7 @@ export class GameEngine {
   this.reset();
   this.scenario=sourceCopy;this.src=loaded.src;this.state=loaded.state;
   this.initCharactersMoving();
-  const entry=this.src.meta?.entryScene||Object.keys(this.api.engine.state.getRuntimeSnapshot('scenes') || {})[0];
+  const entry=this.src.meta.entryScene;
   if(!this.api.engine.state.getRuntimeSnapshot('scenes.[id]', { id: entry }))throw new Error(`Entry scene '${entry}' does not exist.`);
   await this.enterScene(entry);
   this.api.engine.state.update('playerMoveHistory', history => [...(history || []), entry]);
