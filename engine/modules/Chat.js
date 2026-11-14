@@ -307,21 +307,18 @@ export const ChatSystem = {
     async processChatBlock() {
         if (!this.chatState.active) return;
 
-        if (this.state.chats[this.chatState.id].set) {
-            this.state.chats[this.chatState.id].set.lastInteraction = Date.now();
-
-            // [Bookmark] Append to history array
-            if (!Array.isArray(this.state.chats[this.chatState.id].set.bookmark)) {
-                this.state.chats[this.chatState.id].set.bookmark = [];
+        const state = this.api.engine.state;
+        state.update('chat.data', current => {
+            if (!current?.set) return current;
+            current.set.lastInteraction = Date.now();
+            if (!Array.isArray(current.set.bookmark)) current.set.bookmark = [];
+            const bookmark = current.set.bookmark;
+            if (bookmark.length === 0 || bookmark[bookmark.length - 1] !== this.chatState.blockId) {
+                bookmark.push(this.chatState.blockId);
             }
-            const b = this.state.chats[this.chatState.id].set.bookmark;
-            // Prevent duplicate adjacent entries
-            if (b.length === 0 || b[b.length - 1] !== this.chatState.blockId) {
-                b.push(this.chatState.blockId);
-            }
-
-            this.state.chats[this.chatState.id].set.step = this.chatState.index;
-        }
+            current.set.step = this.chatState.index;
+            return current;
+        }, { id: this.chatState.id });
 
         const block = this.resolveBlock(this.chatState.id, this.chatState.blockId);
 
@@ -390,7 +387,7 @@ export const ChatSystem = {
         const entryChar = this.state.meta?.entryCharacter || 'player';
         const playerLine = { nameID: entryChar, text: choice.text };
 
-        this.state.chatHistory[this.chatState.id].push(playerLine);
+        this.api.engine.state.update('chat.history', history => [...(history || []), playerLine], { id: this.chatState.id });
         this.api.presentation.chat.renderBubble(playerLine, null);
 
         this.api.presentation.chat.clearChoices();
@@ -428,14 +425,15 @@ export const ChatSystem = {
 
         if (nextBlockId) {
             this.scheduleDelay(500, () => {
-                this.chatState.blockId = nextBlockId;
-                this.chatState.index = 0;
-
-                if (this.state.chats[this.chatState.id].set) {
-                    // [FIX] Do NOT overwrite bookmark with single ID. It is an array.
-                    // ProcessChatBlock will append the new ID.
-                    this.state.chats[this.chatState.id].set.step = 0;
-                }
+                this.api.engine.state.update('session.chat', current => ({
+                    ...current,
+                    blockId: nextBlockId,
+                    index: 0
+                }));
+                this.api.engine.state.update('chat.data', current => {
+                    if (current?.set) current.set.step = 0;
+                    return current;
+                }, { id: this.chatState.id });
 
                 this.processChatBlock();
                 this.toggleChatOverlay(true);
@@ -453,26 +451,30 @@ export const ChatSystem = {
     },
 
     endChat() {
-        console.log(`[ChatSystem] endChat: ${this.chatState.id}`);
-        if (this.state.chats[this.chatState.id] && this.state.chats[this.chatState.id].set) {
-            this.state.chats[this.chatState.id].set.read = true;
-            console.log(`chat '${this.chatState.id}' marked as READ.`);
-        }
+        const chatId = this.chatState.id;
+        console.log(`[ChatSystem] endChat: ${chatId}`);
 
-        if (this.state.actions) {
-            Object.keys(this.state.actions).forEach(key => {
-                const actState = this.state.actions[key];
-                if (actState.type === 'show_chat' && actState.target === this.chatState.id) {
-                    actState.display = 'hide';
+        this.api.engine.state.transaction(tx => {
+            if (chatId) {
+                const chat = tx.get('chat.data', { id: chatId });
+                if (chat?.set) {
+                    chat.set.read = true;
+                    tx.set('chat.data', chat, { id: chatId });
                 }
-            });
-        }
+                const actions = tx.get('actions') || {};
+                for (const actionState of Object.values(actions)) {
+                    if (actionState.type === 'show_chat' && actionState.target === chatId) {
+                        actionState.display = 'hide';
+                    }
+                }
+                tx.set('actions', actions);
+            }
+            const session = tx.get('session.chat') || {};
+            tx.set('session.chat', { ...session, active: false, blocking: false });
+        }).catch(error => console.error('[ChatSystem] Failed to commit endChat state:', error));
 
-        this.chatState.active = false;
-        this.chatState.blocking = false;
         this.toggleChatOverlay(false);
         hideInput(this);
-
         this.api.presentation.chat.renderContactList();
         this.api.presentation.refresh();
     }
