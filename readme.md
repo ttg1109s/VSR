@@ -44,7 +44,7 @@ unsubscribe();
 engine.taskManager.killAll();
 ```
 
-## Hybrid JSON protocol v1
+## Hybrid JSON protocol v2
 
 The protocol consists of four envelope types:
 
@@ -53,7 +53,7 @@ The protocol consists of four envelope types:
 - **Command** — allow-listed input with an idempotent command ID and optional expected revision.
 - **Ack** — command result or structured error.
 
-See `core/protocol/README.md` and `core/protocol/protocol.schema.json`.
+See `protocol/README.md` and `protocol/protocol.schema.json`.
 
 ## Presentation boundary
 
@@ -69,7 +69,7 @@ Each `GameEngine` instance owns its own `TaskManager`. Create one Engine per gam
 
 ## Dependency map
 
-See `core/protocol/DEPENDENCY_MAP.md` for the Engine module map and remaining domain boundaries.
+See `protocol/DEPENDENCY_MAP.md` for the Engine module map and remaining domain boundaries.
 
 
 ## Kiến trúc protocol v2

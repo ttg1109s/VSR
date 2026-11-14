@@ -12,7 +12,7 @@
   "main": "./engine/index.js",
   "exports": {
     ".": "./engine/index.js",
-    "./protocol": "./core/protocol/JsonProtocol.js",
+    "./protocol": "./protocol/JsonProtocol.js",
     "./scenario-schema": "./scenario.schema.json",
     "./scenario": "./engine/scenario/Scenario.js",
     "./save-schema": "./engine/persistence/save.schema.json",

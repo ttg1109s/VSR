@@ -1,5 +1,5 @@
 import{JsonProtocol}from'./JsonProtocol.js';
-import{verifyPassword}from'../../engine/modules/password/verify.js';
+import{verifyPassword}from'../engine/modules/password/verify.js';
 const assert=(v,m)=>{if(!v)throw new Error(m);};
 const p=new JsonProtocol({engineId:'test-engine'}),engine={src:{meta:{title:'Test'}},state:{sceneId:'s1',scenes:{s1:{activeRouterId:'r1'}},effectQueue:{sync:[{resolve(){}}],async:[]},characters:{player:{inventory:[]}}}};
 const initial=p.createSnapshot(engine);assert(initial.game.routerId==='r1','scene projection');assert(!('effectQueue'in initial.state),'runtime state excluded');

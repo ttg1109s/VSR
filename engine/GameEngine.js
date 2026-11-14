@@ -9,7 +9,7 @@ import {ChatSystem} from './modules/Chat.js?v=3.1.6';
 import {AutomationSystem} from './modules/Automation.js';
 import {LoaderSystem} from './modules/Loader.js';
 import {createEngineAPI} from '../api/index.js';
-import {JsonProtocol,cloneJsonValue} from '../core/protocol/JsonProtocol.js';
+import {JsonProtocol,cloneJsonValue} from '../protocol/JsonProtocol.js';
 import {verifyPassword} from './modules/password/verify.js';
 import {PasswordSystem} from './modules/password/PasswordSystem.js';
 import {TaskManager} from '../plugin/taskmanager.js';

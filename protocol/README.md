@@ -18,4 +18,4 @@ Commands are allow-listed and serialized per Engine. `commandId` idempotency is 
 ## Scenario and saves
 Scenario JSON is separate from save data. `formatVersion` is optional and defaults to 1, independent of `meta.version`. Loader normalization clones its input and preserves legacy object-map router actions. The built-in validator checks root/scene/router invariants; it is not a full JSON Schema validator.
 
-Save data uses a separate `vsr-save` version-1 envelope. Runtime queues and timer handles are excluded; movement and active automation tasks are rehydrated from domain state. See `../persistence/save.schema.json`.
+Save data uses a separate `vsr-save` version-1 envelope. Runtime queues and timer handles are excluded; movement and active automation tasks are rehydrated from domain state. See `../engine/persistence/save.schema.json`.

@@ -1,5 +1,5 @@
 export { GameEngine } from './GameEngine.js';
-export { JsonProtocol, cloneJsonValue } from '../core/protocol/JsonProtocol.js';
+export { JsonProtocol, cloneJsonValue } from '../protocol/JsonProtocol.js';
 export { verifyPassword } from './modules/password/verify.js';
 export { API, createEngineAPI } from '../api/index.js';
 export { TaskManager, Loop } from '../plugin/taskmanager.js';
