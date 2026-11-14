@@ -128,7 +128,7 @@ const SCHEMA_MAP = {
     'chat.loop': 'chat.[id].meta.loop',
     'chat.title': 'chat.[id].meta.title',
     'chat.to': 'chat.[id].meta.to', // New field
-    'chat.bookmark': 'chats.[id].bookmark',
+    'chat.bookmark': 'chats.[id].set.bookmark',
     // [VÍ DỤ IDX] idx ở đây là số thứ tự dòng chat trong block
     'chat.block.text': 'chat.[chatId].block.[blockId].line.[idx].text',
     // [VÍ DỤ IDX] idx ở đây là số thứ tự lựa chọn (choice 0, choice 1...)
