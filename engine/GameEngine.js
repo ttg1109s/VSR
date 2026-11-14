@@ -124,7 +124,7 @@ export class GameEngine {
   return this.scheduleDelay(Math.max(1, remaining), async () => {
    if (this.pendingPasswordAction?.challengeId !== challenge.challengeId) return;
    const activeRouterId = this.api.engine.state.get('scene.activeRouterId', { id: challenge.sceneId });
-   if (this.state.sceneId !== challenge.sceneId || activeRouterId !== challenge.routerId) {
+   if (this.api.engine.state.get('sceneId') !== challenge.sceneId || activeRouterId !== challenge.routerId) {
     this.passwordSystem.finish(challenge, 'cancelled');
     this.pendingPasswordAction = null;
     this.api.engine.state.set('session.passwordChallenge', null);
@@ -178,7 +178,7 @@ export class GameEngine {
    .find(item => item.id === challenge.actionId);
   const config = this.src?.passwords?.[challenge.type]?.[challenge.passwordId];
   const activeRouterId = this.api.engine.state.get('scene.activeRouterId', { id: challenge.sceneId });
-  if (!action?.set?.password || !config || this.state.sceneId !== challenge.sceneId ||
+  if (!action?.set?.password || !config || this.api.engine.state.get('sceneId') !== challenge.sceneId ||
       activeRouterId !== challenge.routerId) {
    this.pendingPasswordAction = null;
    this.api.engine.state.set('session.passwordChallenge', null);
@@ -246,12 +246,12 @@ export class GameEngine {
   if(queueType==='all'||queueType==='async')cancel(this.runtime.effectQueue.async);
  }
  pauseBackgroundTasks(){
-  for(const id of Object.keys(this.api.engine.state.getRuntimeSnapshot('automations') || {}))if(this.state.automations[id]?.active)this.taskManager.pause(`auto_${id}`);
-  for(const id of Object.keys(this.state.characters||{}))this.taskManager.pause(`move_char_${id}`);
+  for(const id of Object.keys(this.api.engine.state.getRuntimeSnapshot('automations') || {}))if(this.api.engine.state.get('automation.active', { id }))this.taskManager.pause(`auto_${id}`);
+  for(const id of Object.keys(this.api.engine.state.getRuntimeSnapshot('characters') || {}))this.taskManager.pause(`move_char_${id}`);
  }
  resumeBackgroundTasks(){
-  for(const id of Object.keys(this.state.automations||{}))if(this.state.automations[id]?.active)this.taskManager.resume(`auto_${id}`);
-  for(const id of Object.keys(this.state.characters||{}))this.taskManager.resume(`move_char_${id}`);
+  for(const id of Object.keys(this.api.engine.state.getRuntimeSnapshot('automations') || {}))if(this.api.engine.state.get('automation.active', { id }))this.taskManager.resume(`auto_${id}`);
+  for(const id of Object.keys(this.api.engine.state.getRuntimeSnapshot('characters') || {}))this.taskManager.resume(`move_char_${id}`);
  }
 }
 Object.assign(GameEngine.prototype,ConfigSystem,LogicSystem,EffectSystem,ActionSystem,SceneSystem,EntitySystem,ItemSystem,ChatSystem,AutomationSystem);
