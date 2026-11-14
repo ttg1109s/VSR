@@ -6,7 +6,7 @@ export const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (ch
 export const safeMediaUrl = (value) => {
     if (typeof value !== 'string' || !value.trim()) return '';
     const raw = value.trim();
-    if (/^(?:https?:|blob:|data:image\/(?:png|jpeg|gif|webp);base64,)/i.test(raw)) {
+    if (/^(?:\/\/|[a-z][a-z0-9+.-]*:)/i.test(raw) || /[\u0000-\u001f\\]/.test(raw)) return '';
         try {
             const url = new URL(raw, window.location.href);
             if (url.protocol === 'http:' || url.protocol === 'https:' || url.protocol === 'blob:' || url.protocol === 'data:') return url.href;
@@ -14,7 +14,7 @@ export const safeMediaUrl = (value) => {
     }
     // Resolve relative paths against the current origin; reject protocol-relative,
     // script-like, control-character and backslash-based URL tricks.
-    if (/^(?:\\/\\/|[a-z][a-z0-9+.-]*:)/i.test(raw) || /[\\u0000-\\u001f\\\\]/.test(raw)) return '';
+    if (/^(?:\/\/|[a-z][a-z0-9+.-]*:)/i.test(raw) || /[\u0000-\u001f\\]/.test(raw)) return '';
     try {
         const url = new URL(raw, window.location.href);
         return url.protocol === 'http:' || url.protocol === 'https:' ? url.href : '';
