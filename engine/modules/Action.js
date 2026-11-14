@@ -287,7 +287,7 @@ export const ActionSystem = {
                         remainingAttempts: challenge.retryMax === 0 ? null : challenge.retryMax,
                         deadlineAt: challenge.deadlineAt,
                         ...(passType === 'puzzle' ? {
-                            puzzle: { url: passDef.url, ratio: passDef.ratio, level: passDef.level }
+                            puzzle: { url: passDef.url, ratio: passDef.ratio ?? [3, 3], level: passDef.level }
                         } : {}),
                         ...(passType === 'find_way' ? {
                             findWay: {
