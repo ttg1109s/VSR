@@ -81,6 +81,25 @@ The protocol uses four envelope types:
 
 See `protocol/README.md` and `protocol/protocol.schema.json` for the transport contract.
 
+## Notifications API
+
+Notifications are exposed only through `engine.api.notifications`. Engine modules and scenario effect strategies must use this API; the generic presentation command proxy does not expose a notification facade.
+
+```js
+engine.api.notifications.add('Thông báo', 'Nội dung', 'success', {
+  source: 'engine',
+  category: 'engine.example'
+});
+
+engine.api.notifications.alert('Cảnh báo', 'Nội dung', 'warning');
+engine.api.notifications.markRead(notificationId);
+engine.api.notifications.dismiss(notificationId);
+engine.api.notifications.getHistory();
+engine.api.notifications.getPending();
+```
+
+Notification events use the canonical `presentation.notification.*` event namespace and carry a single `notification` object in the payload. The former positional `args` payload is not emitted.
+
 ## Presentation boundary
 
 Engine modules do not render UI or access browser DOM APIs. Notifications, chat updates, transitions, visual-effect requests, and input requests are emitted as presentation events. A client may ignore, log, persist, or render those events using its own technology.
