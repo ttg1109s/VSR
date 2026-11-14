@@ -91,7 +91,8 @@ export class GameEngine {
  reset(){
   this.clearEffectQueue?.('all');
   this.taskManager?.killAll?.();
-  this.state={sceneId:'',scenes:{},routers:{},actions:{},global:{},characters:{},itemInfo:{},chats:{},chatHistory:{},executed:[],effect_overrides:{},effectQueue:{sync:[],async:[]},isSyncQueueRunning:false,isAsyncQueueRunning:false,pausedBackgroundTasks:{automations:{},characters:{}},prevRouter:null,map:{choices:{},blocks:{}},automations:{},faker:{active:false,targetId:null,backupPlayer:null},playerMoveHistory:[],sceneTree:{},config:{}};
+  this.state={sceneId:'',scenes:{},routers:{},actions:{},global:{},characters:{},itemInfo:{},chats:{},chatHistory:{},executed:[],effect_overrides:{},prevRouter:null,map:{choices:{},blocks:{}},automations:{},faker:{active:false,targetId:null,backupPlayer:null},playerMoveHistory:[],sceneTree:{},config:{}};
+  this.runtime={effectQueue:{sync:[],async:[]},isSyncQueueRunning:false,isAsyncQueueRunning:false};
   this.src=null;this.scenario=null;this.pendingPasswordAction=null;
   this.chatState={active:false,blocking:false,id:null,blockId:null,index:0,triggerActionId:null,actionModified:false};
   this.taskSequence=0;this.currentStillTask=null;this.activeTimerTasks=[];this.isActionProcessing=false;this.isTransitioning=false;this.disposed=false;this.restoredTaskTimers={};this.restoredPausedTasks=[];
@@ -205,11 +206,11 @@ export class GameEngine {
   this.restoredPausedTasks=[];
  }
  dispose(){this.clearEffectQueue('all');this.taskManager?.killAll?.();this.protocol?.publish('engine.disposed',{});this.disposed=true;}
- forceUnlock(){this.isTransitioning=false;this.isActionProcessing=false;this.state.isSyncQueueRunning=false;this.state.isAsyncQueueRunning=false;this.clearEffectQueue('all');this.api.presentation.navigation.setBlocking(false);}
+ forceUnlock(){this.isTransitioning=false;this.isActionProcessing=false;this.runtime.isSyncQueueRunning=false;this.runtime.isAsyncQueueRunning=false;this.clearEffectQueue('all');this.api.presentation.navigation.setBlocking(false);}
  pushToEffectQueue(effectiveList,context,isAsync=false){
   return new Promise(resolve=>{
    const item={effectiveList,context,isAsync,resolve};
-   const queue=isAsync?this.state.effectQueue.async:this.state.effectQueue.sync;queue.push(item);
+   const queue=isAsync?this.runtime.effectQueue.async:this.state.effectQueue.sync;queue.push(item);
    if(isAsync&&!this.state.isAsyncQueueRunning)this.runAsyncQueue();
    if(!isAsync&&!this.state.isSyncQueueRunning)this.runSyncQueue();
   });
