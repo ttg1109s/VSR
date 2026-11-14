@@ -1429,7 +1429,15 @@
                         "add",
                         "set",
                         "full"
-                      ]
+                      ],
+                      "default": "add"
+                    },
+                    "field": {
+                      "enum": [
+                        "current",
+                        "max"
+                      ],
+                      "default": "current"
                     }
                   }
                 }
@@ -1495,7 +1503,24 @@
                   "required": [
                     "property",
                     "value"
-                  ]
+                  ],
+                  "properties": {
+                    "field": {
+                      "enum": [
+                        "current",
+                        "max"
+                      ],
+                      "default": "current"
+                    },
+                    "mode": {
+                      "enum": [
+                        "set",
+                        "add",
+                        "full"
+                      ],
+                      "default": "add"
+                    }
+                  }
                 }
               },
               {
@@ -1825,7 +1850,8 @@
                 "enum": [
                   "toast",
                   "modal"
-                ]
+                ],
+                "default": "toast"
               },
               "level": {
                 "enum": [
@@ -1834,7 +1860,8 @@
                   "warn",
                   "danger",
                   "error"
-                ]
+                ],
+                "default": "info"
               }
             }
           }
@@ -2155,7 +2182,15 @@
                         "add",
                         "set",
                         "full"
-                      ]
+                      ],
+                      "default": "add"
+                    },
+                    "field": {
+                      "enum": [
+                        "current",
+                        "max"
+                      ],
+                      "default": "current"
                     }
                   }
                 }
@@ -2221,7 +2256,24 @@
                   "required": [
                     "property",
                     "value"
-                  ]
+                  ],
+                  "properties": {
+                    "field": {
+                      "enum": [
+                        "current",
+                        "max"
+                      ],
+                      "default": "current"
+                    },
+                    "mode": {
+                      "enum": [
+                        "set",
+                        "add",
+                        "full"
+                      ],
+                      "default": "add"
+                    }
+                  }
                 }
               },
               {
@@ -2551,7 +2603,8 @@
                 "enum": [
                   "toast",
                   "modal"
-                ]
+                ],
+                "default": "toast"
               },
               "level": {
                 "enum": [
@@ -2560,7 +2613,8 @@
                   "warn",
                   "danger",
                   "error"
-                ]
+                ],
+                "default": "info"
               }
             }
           }
