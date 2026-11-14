@@ -163,6 +163,14 @@ export class JsonProtocol {
         return cloneJsonValue(event.payload.snapshot);
     }
 
+    rememberCommand(commandId, ack) {
+        this.commandResults.set(commandId, ack);
+        if (this.commandResults.size > this.maxRememberedCommands) {
+            this.commandResults.delete(this.commandResults.keys().next().value);
+        }
+        return cloneJsonValue(ack);
+    }
+
     async dispatch(command, context = {}) {
         if (!command || typeof command !== 'object' || Array.isArray(command)) {
             throw new TypeError('Command must be a JSON object.');
@@ -179,26 +187,26 @@ export class JsonProtocol {
             return cloneJsonValue(this.commandResults.get(command.commandId));
         }
         if (command.expectedRevision !== undefined && command.expectedRevision !== this.revision) {
-            return {
+            return this.rememberCommand(command.commandId, {
                 protocol: 'vsr',
                 protocolVersion: this.protocolVersion,
                 type: 'ack',
                 commandId: command.commandId,
                 ok: false,
                 error: { code: 'REVISION_CONFLICT', expected: command.expectedRevision, actual: this.revision }
-            };
+            });
         }
 
         const handler = this.commandHandlers.get(command.command);
         if (!handler) {
-            return {
+            return this.rememberCommand(command.commandId, {
                 protocol: 'vsr',
                 protocolVersion: this.protocolVersion,
                 type: 'ack',
                 commandId: command.commandId,
                 ok: false,
                 error: { code: 'UNKNOWN_COMMAND', command: command.command }
-            };
+            });
         }
 
         if (command.payload !== undefined &&
@@ -226,8 +234,7 @@ export class JsonProtocol {
                 error: { code: 'COMMAND_FAILED', message: error?.message || String(error) },
                 revision: this.revision
             };
-            this.commandResults.set(command.commandId, failed);
-            return failed;
+            return this.rememberCommand(command.commandId, failed);
         }
         this.publish('command.completed', { commandId: command.commandId, command: command.command });
         const ack = {
@@ -239,14 +246,19 @@ export class JsonProtocol {
             revision: this.revision,
             result
         };
-        this.commandResults.set(command.commandId, ack);
-        if (this.commandResults.size > this.maxRememberedCommands) {
-            this.commandResults.delete(this.commandResults.keys().next().value);
-        }
-        return cloneJsonValue(ack);
+        return this.rememberCommand(command.commandId, ack);
     }
 
     createCommand(command, payload = {}, { commandId, expectedRevision } = {}) {
+        if (typeof command !== 'string' || !command.trim()) {
+            throw new TypeError('Command name is required.');
+        }
+        if (commandId !== undefined && (typeof commandId !== 'string' || !commandId.trim())) {
+            throw new TypeError('commandId must be a non-empty string.');
+        }
+        if (expectedRevision !== undefined && (!Number.isInteger(expectedRevision) || expectedRevision < 0)) {
+            throw new TypeError('expectedRevision must be a non-negative integer.');
+        }
         if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
             throw new TypeError('Command payload must be a JSON object.');
         }
