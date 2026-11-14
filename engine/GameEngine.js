@@ -107,7 +107,7 @@ export class GameEngine {
   const entry=this.src.meta?.entryScene||Object.keys(this.state.scenes)[0];
   if(!this.state.scenes[entry])throw new Error(`Entry scene '${entry}' does not exist.`);
   await this.enterScene(entry);
-  this.state.playerMoveHistory.push(entry);
+  this.api.engine.state.update('playerMoveHistory', history => [...(history || []), entry]);
   this.commitState('engine.initialized');
   return this;
  }
