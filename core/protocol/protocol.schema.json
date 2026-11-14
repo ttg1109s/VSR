@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://vsr.engine/protocol/v1/schema.json",
+  "$id": "https://vsr.engine/protocol/v2/schema.json",
   "title": "VSR Hybrid JSON Protocol",
   "oneOf": [
     { "$ref": "#/$defs/snapshot" },

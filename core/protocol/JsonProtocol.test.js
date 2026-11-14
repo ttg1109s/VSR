@@ -1,71 +1,8 @@
-import { JsonProtocol } from './JsonProtocol.js';
-import { verifyPassword } from '../../password/verify.js';
-
-function assert(condition, message) {
-    if (!condition) throw new Error(message);
-}
-
-const protocol = new JsonProtocol({ engineId: 'test-engine' });
-const engine = {
-    src: { meta: { title: 'Test' } },
-    state: {
-        sceneId: 'scene_1',
-        scenes: { scene_1: { activeRouterId: 'router_1' } },
-        effectQueue: { sync: [{ resolve() {} }], async: [] },
-        isSyncQueueRunning: true,
-        characters: { player: { inventory: [] } }
-    }
-};
-
-const snapshot = protocol.createSnapshot(engine);
-assert(snapshot.protocol === 'vsr', 'snapshot envelope');
-assert(snapshot.game.routerId === 'router_1', 'scene projection');
-assert(!('effectQueue' in snapshot.state), 'runtime queue excluded');
-assert(JSON.stringify(snapshot).includes('scene_1'), 'snapshot is JSON serializable');
-
-let received = null;
-protocol.subscribe(event => { received = event; });
-const publishedSnapshot = protocol.publishSnapshot(engine, 'test');
-assert(received?.event === 'state.snapshot', 'event delivered');
-assert(received.payload.snapshot.state.sceneId === 'scene_1', 'snapshot event payload');
-assert(publishedSnapshot.state.sceneId === 'scene_1', 'snapshot returned to caller');
-assert(publishedSnapshot.revision === received.revision, 'snapshot and event revisions align');
-assert(received.revision === 1, 'revision increments');
-assert(protocol.getEventsSince(0).events.length === 1, 'event replay returns ordered event');
-assert(protocol.getEventsSince(0).gap === false, 'event replay has no gap');
-
-let executions = 0;
-protocol.registerCommand('test.increment', payload => {
-    executions += payload.amount;
-    return executions;
-});
-const command = protocol.createCommand('test.increment', { amount: 2 }, { commandId: 'cmd-1' });
-const first = await protocol.dispatch(command);
-const replay = await protocol.dispatch(command);
-assert(first.ok && first.result === 2, 'command executed');
-assert(replay.result === 2 && executions === 2, 'duplicate command is idempotent');
-
-const conflict = await protocol.dispatch(
-    protocol.createCommand('test.increment', { amount: 1 }, { commandId: 'cmd-2', expectedRevision: 99 })
-);
-assert(!conflict.ok && conflict.error.code === 'REVISION_CONFLICT', 'revision conflict');
-
-const unknown = await protocol.dispatch(protocol.createCommand('test.unknown', {}, { commandId: 'cmd-3' }));
-assert(!unknown.ok && unknown.error.code === 'UNKNOWN_COMMAND', 'unknown command rejected');
-
-let circular = {};
-circular.self = circular;
-let circularRejected = false;
-try { protocol.publish('test.circular', circular); } catch (_) { circularRejected = true; }
-assert(circularRejected, 'circular event payload rejected');
-
-let invalidCommandRejected = false;
-try { protocol.createCommand('test.invalid', []); } catch (_) { invalidCommandRejected = true; }
-assert(invalidCommandRejected, 'non-object command payload rejected');
-
-assert(verifyPassword('string', { value: 'OpenAI' }, 'openai'), 'string password is case insensitive');
-assert(verifyPassword('puzzle', { value: 'solved' }, 'solved'), 'puzzle solved token');
-assert(verifyPassword('find_way', { street: [[0, 0], [1, 0]] }, '[[0,0],[1,0]]'), 'find-way path');
-assert(!verifyPassword('find_way', { street: [[0, 0], [1, 0]] }, '[[0,0],[0,1]]'), 'invalid find-way path rejected');
-
-console.log('VSR JSON Protocol tests: PASS');
+import{JsonProtocol}from'./JsonProtocol.js';
+import{verifyPassword}from'../../password/verify.js';
+const assert=(v,m)=>{if(!v)throw new Error(m);};
+const p=new JsonProtocol({engineId:'test-engine'}),engine={src:{meta:{title:'Test'}},state:{sceneId:'s1',scenes:{s1:{activeRouterId:'r1'}},effectQueue:{sync:[{resolve(){}}],async:[]},characters:{player:{inventory:[]}}}};
+const initial=p.createSnapshot(engine);assert(initial.game.routerId==='r1','scene projection');assert(!('effectQueue'in initial.state),'runtime state excluded');
+let event;p.subscribe(e=>event=e);const snap=p.commitState(engine,'unit');assert(event.event==='state.snapshot','snapshot event');assert(snap.stateRevision===event.stateRevision&&event.sequence===1,'separate counters start');p.publish('presentation.toast');assert(p.stateRevision===1&&p.eventSequence===2,'presentation does not increment state revision');assert(p.getEventsAfter(0).events.length===2,'event replay');assert(p.getEventsSince(0).events.length===1,'state revision replay');
+let executions=0;p.registerCommand('increment',x=>++executions+x.amount);const cmd=p.createCommand('increment',{amount:2},{commandId:'idempotent'});const a=await p.dispatch(cmd),b=await p.dispatch(cmd);assert(a.result===3&&b.result===3&&executions===1,'idempotent command');const conflict=await p.dispatch(p.createCommand('increment',{amount:1},{commandId:'conflict',expectedStateRevision:9}));assert(conflict.error.code==='REVISION_CONFLICT','optimistic concurrency');const unknown=await p.dispatch(p.createCommand('missing',{}, {commandId:'missing'}));assert(unknown.error.code==='UNKNOWN_COMMAND','allowlist');
+let circular={};circular.self=circular;let rejected=false;try{p.publish('bad',circular);}catch{rejected=true;}assert(rejected,'reject circular payload');assert(verifyPassword('string',{value:'OpenAI'},'openai'),'string password');assert(verifyPassword('puzzle',{value:'solved'},'solved'),'puzzle password');assert(verifyPassword('find_way',{street:[[0,0],[1,0]]},'[[0,0],[1,0]]'),'find way');assert(!verifyPassword('find_way',{street:[[0,0],[1,0]]},'[[0,0],[0,1]]'),'invalid find way');console.log('VSR JSON Protocol tests: PASS');

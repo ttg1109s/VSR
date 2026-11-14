@@ -107,6 +107,7 @@ export class GameEngine {
         this.src = null;
         this.chatState = { active: false, blocking: false, id: null, blockId: null, index: 0, triggerActionId: null, actionModified: false };
 
+        this.taskSequence = 0;
         this.currentStillTask = null;
         this.activeTimerTasks = [];
         this.isActionProcessing = false;

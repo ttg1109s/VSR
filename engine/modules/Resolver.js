@@ -1,5 +1,4 @@
 // htdocs/engine/modules/Resolver.js
-import { API } from '../../api/index.js'; // [NEW] Import API for State Access
 
 /**
  * Lấy giá trị từ object theo đường dẫn (path)
@@ -116,7 +115,7 @@ export const resolveValue = (val, engine) => {
 
             // [REFACTOR] Use API State.get instead of internal getNestedValue
             // This allows using Schema keys in scripts, e.g., $get('title')
-            const res = API.engine.state.get(path);
+            const res = engine.api.engine.state.get(path);
 
             // console.log(`[Resolver] $get(${path}) ->`, res);
             return res;
@@ -147,7 +146,7 @@ export const resolveValue = (val, engine) => {
         if (val.startsWith('$empty(') && val.endsWith(')')) {
             // [REFACTOR] Use API State.get
             const path = val.substring(7, val.length - 1);
-            const data = API.engine.state.get(path);
+            const data = engine.api.engine.state.get(path);
             return (data === null || data === undefined || data === "" || (Array.isArray(data) && data.length === 0));
         }
 

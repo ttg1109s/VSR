@@ -1,74 +1,23 @@
-import test, { afterEach } from 'node:test';
-import assert from 'node:assert/strict';
-import { GameEngine } from '../engine/GameEngine.js';
-import { DEMO_SCRIPT } from '../demo_script.js';
-import { API } from '../api/index.js';
-import { JsonProtocol } from '../core/protocol/JsonProtocol.js';
-
-const engines = [];
-afterEach(() => {
-    for (const engine of engines.splice(0)) engine.taskManager.killAll();
-});
-
-test('Engine imports and constructs without window or document', () => {
-    assert.equal(typeof globalThis.window, 'undefined');
-    assert.equal(typeof globalThis.document, 'undefined');
-    const engine = new GameEngine();
-    engines.push(engine);
-    assert.ok(engine.protocol instanceof JsonProtocol);
-    assert.equal(API.engineInstance, engine);
-    assert.ok(engine.taskManager);
-});
-
-test('Full demo scenario loads and enters its initial scene headlessly', async () => {
-    const engine = new GameEngine();
-    engines.push(engine);
-    await engine.init(structuredClone(DEMO_SCRIPT));
-
-    assert.ok(engine.src);
-    assert.ok(engine.state.scenes);
-    assert.equal(engine.state.sceneId, DEMO_SCRIPT.meta.entryScene);
-    assert.ok(engine.state.scenes[engine.state.sceneId].activeRouterId);
-    assert.equal(API.engine.state.get('title'), DEMO_SCRIPT.meta.title);
-    assert.doesNotThrow(() => JSON.stringify(engine.protocol.createSnapshot(engine)));
-});
-
-test('Scene commands mutate engine state and publish JSON events', async () => {
-    const engine = new GameEngine();
-    engines.push(engine);
-    await engine.init(structuredClone(DEMO_SCRIPT));
-    const targetScene = Object.keys(engine.state.scenes).find(id => id !== engine.state.sceneId);
-    assert.ok(targetScene);
-
-    const before = engine.protocol.revision;
-    const command = engine.protocol.createCommand(
-        'scene.enter',
-        { sceneId: targetScene, skipTransition: true },
-        { commandId: 'headless-scene-enter-1' }
-    );
-    const ack = await engine.dispatchProtocolCommand(command);
-
-    assert.equal(ack.ok, true);
-    assert.equal(engine.state.sceneId, targetScene);
-    assert.ok(engine.protocol.revision > before);
-    assert.ok(engine.protocol.getEventsSince(before).events.some(event => event.event === 'state.snapshot'));
-});
-
-test('Invalid commands are rejected without invoking arbitrary methods', async () => {
-    const engine = new GameEngine();
-    engines.push(engine);
-    const ack = await engine.dispatchProtocolCommand(
-        engine.protocol.createCommand('constructor', {}, { commandId: 'headless-invalid-1' })
-    );
-    assert.equal(ack.ok, false);
-    assert.equal(ack.error.code, 'UNKNOWN_COMMAND');
-});
-
-test('Presentation effects are emitted as JSON events without a renderer', async () => {
-    const engine = new GameEngine();
-    engines.push(engine);
-    await engine.init(structuredClone(DEMO_SCRIPT));
-    const events = engine.protocol.getEventsSince(0).events;
-    assert.ok(events.some(event => event.event.startsWith('presentation.')));
-    for (const event of events) assert.doesNotThrow(() => JSON.stringify(event));
-});
+import test,{afterEach}from'node:test';
+import assert from'node:assert/strict';
+import{GameEngine}from'../engine/GameEngine.js';
+import{DEMO_SCRIPT}from'../demo_script.js';
+import{JsonProtocol}from'../core/protocol/JsonProtocol.js';
+import{normalizeScenario,validateScenario}from'../engine/scenario/Scenario.js';
+const engines=[];
+const makeEngine=options=>{const e=new GameEngine(options);engines.push(e);return e;};
+afterEach(()=>{for(const e of engines.splice(0))e.dispose();});
+test('Engine constructs headlessly without browser globals',()=>{assert.equal(typeof globalThis.window,'undefined');assert.equal(typeof globalThis.document,'undefined');const e=makeEngine();assert.ok(e.protocol instanceof JsonProtocol);assert.ok(e.api);assert.ok(e.taskManager);});
+test('Scenario normalization clones input and adds independent format version',()=>{const original=structuredClone(DEMO_SCRIPT);const normalized=normalizeScenario(original);assert.equal(original.formatVersion,undefined);assert.equal(normalized.formatVersion,1);assert.notEqual(normalized,original);assert.deepEqual(validateScenario(original),[]);});
+test('Invalid scenario is rejected before source assignment',async()=>{const e=makeEngine();await assert.rejects(()=>e.init({scenes:{}}),/Invalid VSR scenario/);assert.equal(e.src,null);});
+test('Demo scenario loads and enters initial scene without DOM',async()=>{const e=makeEngine();await e.init(structuredClone(DEMO_SCRIPT));assert.ok(e.src);assert.equal(e.state.sceneId,DEMO_SCRIPT.meta.entryScene);assert.ok(e.state.scenes[e.state.sceneId].activeRouterId);assert.equal(e.api.engine.state.get('title'),DEMO_SCRIPT.meta.title);assert.doesNotThrow(()=>JSON.stringify(e.protocol.createSnapshot(e)));});
+test('Two Engine instances isolate state and presentation streams',async()=>{const a=makeEngine({engineId:'session-a'}),b=makeEngine({engineId:'session-b'});const sa=structuredClone(DEMO_SCRIPT),sb=structuredClone(DEMO_SCRIPT);sa.meta.title='A';sb.meta.title='B';await a.init(sa);await b.init(sb);assert.equal(a.api.engine.state.get('title'),'A');assert.equal(b.api.engine.state.get('title'),'B');const beforeA=a.protocol.eventSequence,beforeB=b.protocol.eventSequence;a.api.presentation.notification.add('A','only','info');assert.ok(a.protocol.eventSequence>beforeA);assert.equal(b.protocol.eventSequence,beforeB);});
+test('Scene command awaits completion and commits state',async()=>{const e=makeEngine();await e.init(structuredClone(DEMO_SCRIPT));const target=Object.keys(e.state.scenes).find(id=>id!==e.state.sceneId);assert.ok(target);const before=e.protocol.stateRevision;const ack=await e.dispatchProtocolCommand(e.protocol.createCommand('scene.enter',{sceneId:target,skipTransition:true},{commandId:'scene-enter'}));assert.equal(ack.ok,true);assert.equal(e.state.sceneId,target);assert.ok(e.protocol.stateRevision>before);assert.ok(e.protocol.getEventsAfter(0).events.some(x=>x.event==='state.snapshot'));});
+test('Password command trusts only scenario-owned password definitions',async()=>{const e=makeEngine();const s=structuredClone(DEMO_SCRIPT),sid=s.meta.entryScene,rid=s.scenes[sid].set.activeRouterId;s.passwords.string.vsr_secret={value:'OpenSesame'};s.actions.vsr_password={meta:{title:'Password'},set:{display:'show',password:'string:vsr_secret'},effect:{pass:[],pwFailed:[]}};s.scenes[sid].routers[rid].actions.push('vsr_password');await e.init(s);const spoof=await e.dispatchProtocolCommand(e.protocol.createCommand('password.submit',{actionId:'vsr_password',passwordType:'string',passwordConfig:{value:'fake'},actionDef:{effect:{pass:[]}},input:'fake'},{commandId:'password-spoof'}));assert.equal(spoof.ok,false);const valid=await e.dispatchProtocolCommand(e.protocol.createCommand('password.submit',{actionId:'vsr_password',input:'OpenSesame'},{commandId:'password-valid'}));assert.equal(valid.ok,true);});
+test('Unknown commands and duplicate command IDs are handled safely',async()=>{const p=new JsonProtocol();let n=0;p.registerCommand('test.add',x=>++n+x.amount);const c=p.createCommand('test.add',{amount:1},{commandId:'once'});const a=await p.dispatch(c),b=await p.dispatch(c);assert.equal(a.result,2);assert.equal(b.result,2);assert.equal(n,1);const bad=await p.dispatch(p.createCommand('constructor',{}, {commandId:'unknown'}));assert.equal(bad.error.code,'UNKNOWN_COMMAND');});
+test('State revision and event sequence are independent',async()=>{const p=new JsonProtocol(),engine={src:{},state:{sceneId:'s',scenes:{s:{activeRouterId:'r'}}}};p.registerCommand('mutate',()=>p.commitState(engine,'mutate'));p.publish('presentation.toast');assert.equal(p.stateRevision,0);assert.equal(p.eventSequence,1);const ok=await p.dispatch(p.createCommand('mutate',{}, {commandId:'rev-ok',expectedStateRevision:0}));assert.equal(ok.ok,true);assert.equal(p.stateRevision,1);const stale=await p.dispatch(p.createCommand('mutate',{}, {commandId:'rev-stale',expectedStateRevision:0}));assert.equal(stale.error.code,'REVISION_CONFLICT');});
+test('Command dispatch is serialized',async()=>{const p=new JsonProtocol();let value=0;p.registerCommand('add',async x=>{const old=value;await new Promise(r=>setTimeout(r,4));value=old+x.n;return value;});const [a,b]=await Promise.all([p.dispatch(p.createCommand('add',{n:1},{commandId:'a'})),p.dispatch(p.createCommand('add',{n:1},{commandId:'b'}))]);assert.ok(a.ok&&b.ok);assert.equal(value,2);});
+test('Authorization hook can reject untrusted command context',async()=>{const p=new JsonProtocol({authorizeCommand:({context})=>context.authenticated===true});p.registerCommand('private',()=>1);const ack=await p.dispatch(p.createCommand('private',{}, {commandId:'forbidden'}),{authenticated:false});assert.equal(ack.error.code,'FORBIDDEN');});
+test('Effect queue cancellation resolves pending callers',async()=>{const e=makeEngine();let resolve;const pending=new Promise(r=>resolve=r);e.state.effectQueue.sync.push({resolve});e.clearEffectQueue();assert.deepEqual(await pending,{cancelled:true});});
+test('Save roundtrip excludes runtime queues and restores domain state',async()=>{const a=makeEngine();await a.init(structuredClone(DEMO_SCRIPT));const save=a.exportSave();assert.equal(save.protocol,'vsr-save');assert.equal('effectQueue'in save.state,false);const b=makeEngine();await b.restoreSave(save);assert.equal(b.state.sceneId,a.state.sceneId);assert.equal(b.src.meta.title,a.src.meta.title);});
+test('Presentation events are JSON-safe without renderer',async()=>{const e=makeEngine();await e.init(structuredClone(DEMO_SCRIPT));const events=e.protocol.getEventsAfter(0).events;assert.ok(events.some(x=>x.event.startsWith('presentation.')));for(const event of events)assert.doesNotThrow(()=>JSON.stringify(event));});

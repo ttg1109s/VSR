@@ -1,4 +1,3 @@
-import { API } from '../../api/index.js';
 
 export const ItemSystem = {
     getOwnerId() {
@@ -34,7 +33,7 @@ export const ItemSystem = {
             const ownerLimitPair = Array.isArray(maxInvList) ? maxInvList.find(pair => Array.isArray(pair) && pair[1] === ownerId) : null;
             const limit = ownerLimitPair ? ownerLimitPair[0] : 0;
             if (limit > 0 && char.inventory.length >= limit) {
-                API.presentation.notification.add("Không thể nhặt", "Túi đồ đã đầy.", "warn");
+                this.api.presentation.notification.add("Không thể nhặt", "Túi đồ đã đầy.", "warn");
                 return false;
             }
             char.inventory.push(itemId);
@@ -46,8 +45,8 @@ export const ItemSystem = {
     // [Refactor] Calculate status on-demand (Single Source of Truth)
     isBroken(itemId) {
         // [FIXED] Use API to read state via Schema
-        const current = API.engine.state.get('item.current', { id: itemId });
-        const max = API.engine.state.get('item.max', { id: itemId });
+        const current = this.api.engine.state.get('item.current', { id: itemId });
+        const max = this.api.engine.state.get('item.max', { id: itemId });
 
         // Broken if current usage exceeds or equals max usage (assuming max > 0)
         if (max > 0 && current >= max) {
@@ -66,14 +65,14 @@ export const ItemSystem = {
         const info = this.state.itemInfo[id];
 
         if (!info) {
-            API.presentation.notification.add("Lỗi", "Vật phẩm không tồn tại.", "danger");
+            this.api.presentation.notification.add("Lỗi", "Vật phẩm không tồn tại.", "danger");
             return;
         }
 
         if (idx > -1) {
             // --- UNEQUIP ---
             char.hand.splice(idx, 1);
-            API.presentation.notification.add("Đã cất", "Bỏ vật phẩm vào túi", "info");
+            this.api.presentation.notification.add("Đã cất", "Bỏ vật phẩm vào túi", "info");
 
             if (info.effect && info.effect.unequip) {
                 await this.processRunnables(info.effect.unequip, { itemId: id });
@@ -85,16 +84,16 @@ export const ItemSystem = {
             // Dùng getConfig() để nhất quán với effect/strategies/Item.js.
             const maxHand = (this.getConfig ? this.getConfig('maxHandOn') : this.state.config?.maxHandOn) || 10;
             if (char.hand.length >= maxHand) {
-                API.presentation.notification.add("Không thể cầm", "Tay đã đầy.", "warn");
+                this.api.presentation.notification.add("Không thể cầm", "Tay đã đầy.", "warn");
                 return;
             }
 
             if (info.requirements) {
                 const res = this.checkReq(info.requirements);
-                if (!res.pass) { API.presentation.notification.add("Không thể cầm", "Chưa đủ điều kiện sử dụng.", "danger"); return; }
+                if (!res.pass) { this.api.presentation.notification.add("Không thể cầm", "Chưa đủ điều kiện sử dụng.", "danger"); return; }
             }
             char.hand.push(id);
-            API.presentation.notification.add("Đã cầm", `${info.name} đang ở trên tay`, "success");
+            this.api.presentation.notification.add("Đã cầm", `${info.name} đang ở trên tay`, "success");
 
             if (info.effect && info.effect.equip) {
                 await this.processRunnables(info.effect.equip, { itemId: id });
@@ -102,9 +101,9 @@ export const ItemSystem = {
         }
 
         // Update UI
-        API.presentation.components.updateItemModal(id);
-        API.presentation.components.explorer(); // Refresh inventory grid
-        this.render();
+        this.api.presentation.components.updateItemModal(id);
+        this.api.presentation.components.explorer(); // Refresh inventory grid
+        this.commitState('inventory.changed');
     },
 
     // [NEW] Xử lý hành động "Dùng" (Use) vật phẩm
@@ -116,7 +115,7 @@ export const ItemSystem = {
         if (info.requirements) {
             const res = this.checkReq(info.requirements);
             if (!res.pass) {
-                API.presentation.notification.add("Không thể dùng", "Chưa đủ điều kiện sử dụng.", "danger");
+                this.api.presentation.notification.add("Không thể dùng", "Chưa đủ điều kiện sử dụng.", "danger");
                 return;
             }
         }
@@ -132,7 +131,7 @@ export const ItemSystem = {
             const disableBrokenPenalty = this.getConfig ? this.getConfig('brokenDisable') : false;
 
             if (isBroken && !disableBrokenPenalty) {
-                API.presentation.notification.add("Hỏng", "Vật phẩm đã hỏng hoặc hết lượt dùng.", "warn");
+                this.api.presentation.notification.add("Hỏng", "Vật phẩm đã hỏng hoặc hết lượt dùng.", "warn");
                 return;
             }
 
@@ -148,7 +147,7 @@ export const ItemSystem = {
 
         // 3. Thực thi Effect 'use'
         if (info.effect && info.effect.use) {
-            API.presentation.notification.add("Sử dụng", `Đã dùng ${info.name}`, "info");
+            this.api.presentation.notification.add("Sử dụng", `Đã dùng ${info.name}`, "info");
 
             // Execute runnables defined in schema
             await this.processRunnables(info.effect.use, { itemId: id });
@@ -156,11 +155,11 @@ export const ItemSystem = {
             // Nếu vật phẩm là loại tiêu hao (consumable) và logic game yêu cầu xóa khi hỏng/hết lượt
             // có thể thêm logic xóa tại đây. Hiện tại Engine giữ lại item (chỉ update status).
         } else {
-            API.presentation.notification.add("Thông báo", "Vật phẩm này không có tác dụng khi sử dụng trực tiếp.", "info");
+            this.api.presentation.notification.add("Thông báo", "Vật phẩm này không có tác dụng khi sử dụng trực tiếp.", "info");
         }
 
         // 4. Update UI
-        API.presentation.components.updateItemModal(id);
-        API.presentation.components.explorer();
+        this.api.presentation.components.updateItemModal(id);
+        this.api.presentation.components.explorer();
     }
 };

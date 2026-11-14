@@ -70,3 +70,8 @@ Each `GameEngine` instance owns its own `TaskManager`. Create one Engine per gam
 ## Dependency map
 
 See `core/protocol/DEPENDENCY_MAP.md` for the Engine module map and remaining domain boundaries.
+
+
+## Kiến trúc protocol v2
+
+Engine chạy headless, mỗi instance sở hữu API facade và protocol riêng. `stateRevision` chỉ thay đổi khi commit snapshot; `eventSequence` tăng theo mọi event. Command được tuần tự hóa và có thể kiểm tra quyền qua `authorizeCommand`. Password submit chỉ nhận action ID và input thô; cấu hình mật khẩu được tra cứu từ scenario phía Engine. Save game có envelope phiên bản riêng, không thay đổi scenario authoring format.

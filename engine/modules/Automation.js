@@ -1,5 +1,4 @@
 import { resolveValue } from './effect/strategies/Logic.js';
-import { API } from '../../api/index.js';
 
 export const AutomationSystem = {
     runAutomation(autoId) {
@@ -21,9 +20,9 @@ export const AutomationSystem = {
         }
 
         // [FIXED] Use API to get 'banClick'
-        const isBanClick = API.engine.state.get('automation.banClick', { id: autoId });
+        const isBanClick = this.api.engine.state.get('automation.banClick', { id: autoId });
         if (isBanClick) {
-            API.presentation.navigation.setBlocking(true);
+            this.api.presentation.navigation.setBlocking(true);
         }
 
         this.processAutomationStep(autoId);
@@ -34,13 +33,14 @@ export const AutomationSystem = {
         if (!state) return;
 
         state.active = false;
+        this.commitState('automation.stopped');
         this.taskManager.kill(`auto_${autoId}`);
 
         // Check if ANY automation is blocking
         // [FIXED] Use API in loop if possible, but object iteration is faster here
         const anyBlocking = Object.values(this.state.automations).some(a => a.active && a.banClick);
         if (!anyBlocking) {
-            API.presentation.navigation.setBlocking(false);
+            this.api.presentation.navigation.setBlocking(false);
         }
     },
 
@@ -67,10 +67,10 @@ export const AutomationSystem = {
         }
 
         // [FIXED] Use API for countCurrent check
-        const countCurrent = API.engine.state.get('automation.countCurrent', { id: autoId });
-        const banClick = API.engine.state.get('automation.banClick', { id: autoId });
-        const runInfinity = API.engine.state.get('automation.runInfinity', { id: autoId });
-        const numberCycleAllow = API.engine.state.get('automation.numberCycleAllow', { id: autoId });
+        const countCurrent = this.api.engine.state.get('automation.countCurrent', { id: autoId });
+        const banClick = this.api.engine.state.get('automation.banClick', { id: autoId });
+        const runInfinity = this.api.engine.state.get('automation.runInfinity', { id: autoId });
+        const numberCycleAllow = this.api.engine.state.get('automation.numberCycleAllow', { id: autoId });
 
         if (runInfinity && banClick) {
             if (countCurrent > 5000) {

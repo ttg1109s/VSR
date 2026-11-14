@@ -59,7 +59,7 @@ export const CharacterPropertyHandlers = {
             }
         }
     },
-    met: (engine, char, val) => { char.set.met = val; API.presentation.components.renderCharacterScreen(); },
+    met: (engine, char, val) => { char.set.met = val; engine.api.presentation.components.renderCharacterScreen(); },
 
     __default__: (engine, char, val, charId, prop) => { char.set[prop] = val; }
 };

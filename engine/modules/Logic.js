@@ -1,6 +1,5 @@
 // engine/modules/Logic.js
 import { resolveValue } from '../../engine/modules/Resolver.js';
-import { API } from '../../api/index.js';
 
 // --- 1. Comparison Operations ---
 const Operations = {
@@ -95,7 +94,7 @@ const ItemStrategies = {
     },
     usage: (engine, { target, op, value }) => {
         // [REFACTOR] Use API State
-        const current = API.engine.state.get('item.current', { id: target });
+        const current = engine.api.engine.state.get('item.current', { id: target });
         return current !== undefined ? (Operations[op]?.(current, resolveValue(value, engine)) ?? false) : false;
     }
 };
@@ -107,7 +106,7 @@ const StatsStrategies = {
         // Schema keys: 'char.current' -> 'characters.[charId].stats.[statId].current'
         const fieldKey = (field === 'max') ? 'char.max' : 'char.current';
 
-        const val = API.engine.state.get(fieldKey, { charId, statId });
+        const val = engine.api.engine.state.get(fieldKey, { charId, statId });
         return val !== undefined ? (Operations[op]?.(val, resolveValue(value, engine)) ?? false) : false;
     },
     item: (engine, { target, property, field, op, value }) => {
@@ -118,7 +117,7 @@ const StatsStrategies = {
 
         // Try direct path construction supported by API
         const path = `itemInfo.${itemId}.stats.${statId}.${f}`;
-        const val = API.engine.state.get(path);
+        const val = engine.api.engine.state.get(path);
 
         return val !== undefined ? (Operations[op]?.(val, resolveValue(value, engine)) ?? false) : false;
     }
@@ -128,7 +127,7 @@ const CheckTypeHandlers = {
     item: (engine, c) => ItemStrategies[c.subtype]?.(engine, c) ?? false,
     state: (engine, c) => {
         // [REFACTOR] Use API State (Global State)
-        const val = API.engine.state.get('globalState.value', { id: c.target });
+        const val = engine.api.engine.state.get('globalState.value', { id: c.target });
         return val !== undefined ? (Operations[c.op]?.(val, resolveValue(c.value, engine)) ?? false) : false;
     },
     stats: (engine, c) => StatsStrategies[c.subtype]?.(engine, c) ?? false,
@@ -173,9 +172,9 @@ export const LogicSystem = {
     checkHardLock(type, target) {
         if (!target) return false;
 
-        // [FIXED] Use API.engine.state.get for blocked status
+        // [FIXED] Use this.api.engine.state.get for blocked status
         if (type === 'scene' || type === 'to_scene') {
-            return API.engine.state.get('scene.blocked', { id: target });
+            return this.api.engine.state.get('scene.blocked', { id: target });
         } else {
             // For router, we need sceneId to construct the context for API
             // Try to find the scene containing this router
@@ -183,12 +182,12 @@ export const LogicSystem = {
             // Note: Schema for router blocked is 'router.blocked' -> 'scenes.[sceneId].routers.[routerId].set.blocked'
 
             // Priority 1: Check in current scene
-            let isBlocked = API.engine.state.get('router.blocked', { sceneId: sId, routerId: target });
+            let isBlocked = this.api.engine.state.get('router.blocked', { sceneId: sId, routerId: target });
 
             // Priority 2: If undefined (maybe router is in another scene referenced globally), use legacy search logic
             if (isBlocked === undefined && this.src.path?.routers[target]) {
                 const parentSceneId = this.src.path.routers[target][0];
-                isBlocked = API.engine.state.get('router.blocked', { sceneId: parentSceneId, routerId: target });
+                isBlocked = this.api.engine.state.get('router.blocked', { sceneId: parentSceneId, routerId: target });
             }
 
             return !!isBlocked;

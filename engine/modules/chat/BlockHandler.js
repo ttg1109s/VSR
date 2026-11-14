@@ -2,7 +2,6 @@
 // [FIXED] Hybrid Logic: Content -> Choice -> (If Null Choice) End
 
 import { ensureInputVisible, hideInput } from './Presentation.js';
-import { API } from '../../../api/index.js';
 
 export const ChatBlockHandlers = {
     dialogue: (engine, block) => {
@@ -17,7 +16,7 @@ export const ChatBlockHandlers = {
                 console.log(`[BlockHandler] Rendering choices...`);
                 hideInput();
 
-                API.presentation.chat.renderChoices(block.choices, null);
+                engine.api.presentation.chat.renderChoices(block.choices, null);
                 return; // Dừng lại đợi user chọn
             }
 
@@ -35,12 +34,12 @@ export const ChatBlockHandlers = {
 
         engine.chatState.index++;
 
-        const history = API.engine.state.get('chat.history', { id: engine.chatState.id });
+        const history = engine.api.engine.state.get('chat.history', { id: engine.chatState.id });
         if (history) history.push(line);
 
-        API.presentation.chat.renderBubble(line, null);
+        engine.api.presentation.chat.renderBubble(line, null);
 
-        const chatData = API.engine.state.get('chat.data', { id: engine.chatState.id });
+        const chatData = engine.api.engine.state.get('chat.data', { id: engine.chatState.id });
         if (chatData?.set) {
             chatData.set.step = engine.chatState.index;
             chatData.set.lastInteraction = Date.now();
@@ -50,6 +49,6 @@ export const ChatBlockHandlers = {
     router: (engine, block) => {
         // Trường hợp block thuần Router (không content)
         hideInput();
-        API.presentation.chat.renderChoices(block.choices, null);
+        engine.api.presentation.chat.renderChoices(block.choices, null);
     }
 };

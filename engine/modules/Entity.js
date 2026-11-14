@@ -2,7 +2,6 @@
 import { MoveAlgorithms } from './entity/Movement.js';
 import { FakerSystem } from './entity/Faker.js';
 import { resolveValue } from '../../engine/modules/Resolver.js';
-import { API } from '../../api/index.js';
 
 export const EntitySystem = {
     ...FakerSystem,
@@ -60,15 +59,15 @@ export const EntitySystem = {
         // [FIXED] Use API to check blocked status (Standardized with Logic.checkHardLock)
 
         // 1. Check Scene Blocked
-        const sceneBlocked = API.engine.state.get('scene.blocked', { id: sceneId });
+        const sceneBlocked = this.api.engine.state.get('scene.blocked', { id: sceneId });
         if (sceneBlocked) return true;
 
         // 2. Check Active Router Blocked
         // Get active router ID via API or fallback to state
-        const activeRouterId = API.engine.state.get('scene.activeRouterId', { id: sceneId });
+        const activeRouterId = this.api.engine.state.get('scene.activeRouterId', { id: sceneId });
 
         if (activeRouterId) {
-            const routerBlocked = API.engine.state.get('router.blocked', { sceneId: sceneId, routerId: activeRouterId });
+            const routerBlocked = this.api.engine.state.get('router.blocked', { sceneId: sceneId, routerId: activeRouterId });
             return !!routerBlocked;
         }
 
@@ -156,8 +155,8 @@ export const EntitySystem = {
         // [FIX] Trigger UI Update AFTER state change if character left the current scene
         if (isLeaving) {
             console.log(`[Entity] Char ${charId} LEAVING scene ${currentScene} -> ${nextSceneId}`);
-            if (API.presentation?.components?.updateCharacterList) {
-                API.presentation.components.updateCharacterList();
+            if (this.api.presentation?.components?.updateCharacterList) {
+                this.api.presentation.components.updateCharacterList();
             }
         }
 
@@ -180,11 +179,11 @@ export const EntitySystem = {
                     }
                 }
 
-                if (API.presentation?.components?.updateCharacterList) {
-                    console.log(`[Entity] Calling API.presentation.components.updateCharacterList() for ${charId}`);
-                    API.presentation.components.updateCharacterList();
+                if (this.api.presentation?.components?.updateCharacterList) {
+                    console.log(`[Entity] Calling this.api.presentation.components.updateCharacterList() for ${charId}`);
+                    this.api.presentation.components.updateCharacterList();
                 } else {
-                    console.error("[Entity] API.presentation.components.updateCharacterList MISSING");
+                    console.error("[Entity] this.api.presentation.components.updateCharacterList MISSING");
                 }
             }
         }

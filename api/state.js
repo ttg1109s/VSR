@@ -167,11 +167,6 @@ const SCHEMA_MAP = {
 };
 
 export default class State {
-    static engine = null;
-
-    static bindEngine(engine) {
-        this.engine = engine || null;
-    }
 
     /**
      * @method get
@@ -186,8 +181,8 @@ export default class State {
      * * // Lấy tag thứ 2 (index 1) của kịch bản
      * API.engine.state.get('tags', { idx: 1 });
      */
-    static get(key, context = {}) {
-        const globalState = this.engine?.state;
+    static getFor(engine, key, context = {}) {
+        const globalState = engine?.state;
         if (!globalState) {
             console.warn("[State] Engine state chưa khởi tạo.");
             return undefined;
@@ -243,4 +238,8 @@ export default class State {
 
         return current;
     }
+}
+
+export function createStateAccess(engine) {
+    return Object.freeze({ get: (key, context = {}) => State.getFor(engine, key, context) });
 }

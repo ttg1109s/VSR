@@ -1,6 +1,5 @@
 // htdocs/engine/modules/effect/strategies/Stats.js
 import { resolveValue } from './Logic.js';
-import { API } from '../../../../api/index.js'; // [NEW] Import API
 
 export const StatsCalculators = {
     max: { set: (o, m, v) => Number(v), add: (o, m, v) => o + Number(v) },
@@ -8,20 +7,20 @@ export const StatsCalculators = {
 };
 
 export const StatsHelpers = {
-    remove_stats: (targetObj, eff, isChar, effectiveTarget) => {
+    remove_stats: (targetObj, eff, isChar, effectiveTarget, engine) => {
         const prop = resolveValue(eff.property);
 
         if (targetObj.stats[prop]) {
             delete targetObj.stats[prop];
             // [API FIX]
-            if (eff.notify) API.presentation.notification.add("Xóa chỉ số", `Đã xóa ${prop}`, "info");
-            const entryChar = API.engine.state.meta?.entryCharacter || 'player';
-            if (isChar && effectiveTarget === entryChar) API.presentation.components.updatePlayerCard();
-            if (isChar && API.presentation.updateContactDetails) API.presentation.updateContactDetails(effectiveTarget);
-            if (!isChar) API.presentation.components.explorer();
+            if (eff.notify) engine.api.presentation.notification.add("Xóa chỉ số", `Đã xóa ${prop}`, "info");
+            const entryChar = engine.state.meta?.entryCharacter || 'player';
+            if (isChar && effectiveTarget === entryChar) engine.api.presentation.components.updatePlayerCard();
+            if (isChar && engine.api.presentation.updateContactDetails) engine.api.presentation.updateContactDetails(effectiveTarget);
+            if (!isChar) engine.api.presentation.components.explorer();
         }
     },
-    add_stats: (targetObj, eff, isChar, effectiveTarget) => {
+    add_stats: (targetObj, eff, isChar, effectiveTarget, engine) => {
         const prop = resolveValue(eff.property);
         const valStr = String(eff.value);
         const parts = valStr.split(':');
@@ -42,15 +41,15 @@ export const StatsHelpers = {
             const isNegative = newStat.current < 0;
             const type = isNegative ? "danger" : "success";
             const msg = newStat.current;
-            API.presentation.notification.add(newStat.label, msg, type);
+            engine.api.presentation.notification.add(newStat.label, msg, type);
         }
 
-        const entryChar = API.engine.state.meta?.entryCharacter || 'player';
-        if (isChar && effectiveTarget === entryChar) API.presentation.components.updatePlayerCard();
-        if (isChar && API.presentation.updateContactDetails) API.presentation.updateContactDetails(effectiveTarget);
-        if (!isChar) API.presentation.components.explorer();
+        const entryChar = engine.state.meta?.entryCharacter || 'player';
+        if (isChar && effectiveTarget === entryChar) engine.api.presentation.components.updatePlayerCard();
+        if (isChar && engine.api.presentation.updateContactDetails) engine.api.presentation.updateContactDetails(effectiveTarget);
+        if (!isChar) engine.api.presentation.components.explorer();
     },
-    edit_value: (targetObj, eff, isChar, effectiveTarget) => {
+    edit_value: (targetObj, eff, isChar, effectiveTarget, engine) => {
         const prop = resolveValue(eff.property);
 
         if (!targetObj.stats[prop]) return;
@@ -101,17 +100,17 @@ export const StatsHelpers = {
                 // diff đã có dấu trừ sẵn
             }
 
-            API.presentation.notification.add(
+            engine.api.presentation.notification.add(
                 isChar ? "Chỉ số" : "Vật phẩm",
                 `${name} (${label}): ${sign}${diff}`,
                 type
             );
         }
 
-        const entryChar = API.engine.state.meta?.entryCharacter || 'player';
-        if (isChar && effectiveTarget === entryChar) API.presentation.components.updatePlayerCard();
-        if (isChar && API.presentation.updateContactDetails) API.presentation.updateContactDetails(effectiveTarget);
-        if (!isChar) API.presentation.components.explorer();
+        const entryChar = engine.state.meta?.entryCharacter || 'player';
+        if (isChar && effectiveTarget === entryChar) engine.api.presentation.components.updatePlayerCard();
+        if (isChar && engine.api.presentation.updateContactDetails) engine.api.presentation.updateContactDetails(effectiveTarget);
+        if (!isChar) engine.api.presentation.components.explorer();
     }
 };
 

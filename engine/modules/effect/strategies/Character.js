@@ -1,6 +1,5 @@
 // htdocs/engine/modules/effect/strategies/Character.js
 import { resolveValue } from './Logic.js';
-import { API } from '../../../../api/index.js';
 import { StatsHelpers } from './Stats.js'; // [NEW]
 
 const StatsLogic = {
@@ -21,8 +20,8 @@ const StatsLogic = {
             charA.stats = JSON.parse(JSON.stringify(charB.stats));
             charB.stats = tempStats;
 
-            if (idA === entryChar || idB === entryChar) API.presentation.components.updatePlayerCard();
-            API.presentation.notification.add("Hoán đổi", `Chỉ số giữa ${charA.set.name} và ${charB.set.name} đã thay đổi.`, "info");
+            if (idA === entryChar || idB === entryChar) engine.api.presentation.components.updatePlayerCard();
+            engine.api.presentation.notification.add("Hoán đổi", `Chỉ số giữa ${charA.set.name} và ${charB.set.name} đã thay đổi.`, "info");
         }
     },
     copy_to: (engine, eff) => {
@@ -38,7 +37,7 @@ const StatsLogic = {
         if (destChar && srcChar && srcChar.stats && srcChar.stats[statKey]) {
             if (!destChar.stats) destChar.stats = {};
             destChar.stats[statKey] = JSON.parse(JSON.stringify(srcChar.stats[statKey]));
-            if (destId === entryChar) API.presentation.components.updatePlayerCard();
+            if (destId === entryChar) engine.api.presentation.components.updatePlayerCard();
         }
     },
     cut_to: (engine, eff) => {
@@ -55,7 +54,7 @@ const StatsLogic = {
             if (!destChar.stats) destChar.stats = {};
             destChar.stats[statKey] = JSON.parse(JSON.stringify(srcChar.stats[statKey]));
             delete srcChar.stats[statKey];
-            if (destId === entryChar || srcId === entryChar) API.presentation.components.updatePlayerCard();
+            if (destId === entryChar || srcId === entryChar) engine.api.presentation.components.updatePlayerCard();
         }
     },
     delete: (engine, eff) => {
@@ -66,7 +65,7 @@ const StatsLogic = {
 
         if (char && char.stats && char.stats[statKey]) {
             delete char.stats[statKey];
-            if (targetId === entryChar) API.presentation.components.updatePlayerCard();
+            if (targetId === entryChar) engine.api.presentation.components.updatePlayerCard();
         }
     },
     add_stats: (engine, eff) => {
@@ -87,7 +86,7 @@ const StatsLogic = {
                     property: prop,
                     value: config,
                     notify: true
-                }, true, charId);
+                }, true, charId, engine);
             } else {
                 // Fallback if no colon, maybe just Key? But add_stats needs config.
                 // Assuming defaults if just Key provided
@@ -95,7 +94,7 @@ const StatsLogic = {
                     property: valRaw,
                     value: "0:0:" + valRaw,
                     notify: true
-                }, true, charId);
+                }, true, charId, engine);
             }
         }
     },
@@ -103,7 +102,7 @@ const StatsLogic = {
         const charId = engine.redirectTarget(eff.target);
         const char = engine.state.characters[charId];
         if (char) {
-            StatsHelpers.remove_stats(char, { property: eff.value, notify: true }, true, charId);
+            StatsHelpers.remove_stats(char, { property: eff.value, notify: true }, true, charId, engine);
         }
     }
 };
@@ -117,7 +116,7 @@ export const CharacterStrategies = {
         if (!char.stats) char.stats = {};
 
         // Delegate to StatsHelpers.edit_value
-        StatsHelpers.edit_value(char, eff, true, charId);
+        StatsHelpers.edit_value(char, eff, true, charId, engine);
     },
     mng_stats: (engine, eff) => {
         const resolvedEff = {

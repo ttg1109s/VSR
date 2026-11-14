@@ -1,5 +1,4 @@
 // htdocs/engine/modules/entity/Faker.js
-import { API } from '../../../api/index.js';
 
 export const FakerSystem = {
     redirectTarget(targetId) {
@@ -31,13 +30,13 @@ export const FakerSystem = {
         const targetId = parts[1];
 
         if (!mode || !targetId) {
-            API.presentation.notification.add("Lỗi Faker", "Sai định dạng target (mode:id)", "error");
+            this.api.presentation.notification.add("Lỗi Faker", "Sai định dạng target (mode:id)", "error");
             return;
         }
 
         const validModes = ['soul', 'mask', 'swap'];
         if (!validModes.includes(mode)) {
-            API.presentation.notification.add("Lỗi Faker", `Mode không hợp lệ: ${mode}`, "error");
+            this.api.presentation.notification.add("Lỗi Faker", `Mode không hợp lệ: ${mode}`, "error");
             return;
         }
 
@@ -45,7 +44,7 @@ export const FakerSystem = {
         const target = this.state.characters[targetId];
 
         if (!target) {
-            API.presentation.notification.add("Lỗi Faker", "Mục tiêu không tồn tại", "error");
+            this.api.presentation.notification.add("Lỗi Faker", "Mục tiêu không tồn tại", "error");
             return;
         }
 
@@ -70,26 +69,26 @@ export const FakerSystem = {
             // [FIX] set.name không được kịch bản nào khai báo (chỉ có meta.name theo
             // schema) — fallback về meta.name giống render/modules/scene.js:305,
             // nếu không notification sẽ hiện chữ "undefined".
-            API.presentation.notification.add("Chuyển sinh", `Bạn đã trở thành ${target.set.name || target.meta.name}`, "success");
+            this.api.presentation.notification.add("Chuyển sinh", `Bạn đã trở thành ${target.set.name || target.meta.name}`, "success");
 
         } else if (mode === 'mask') {
             // --- MASK MODE ---
             player.set.name = target.set.name || target.meta.name;
             player.set.desc = target.set.desc;
             player.set.relationship = target.set.relationship;
-            API.presentation.notification.add("Cải trang", `Bạn đang khoác lên mình ${target.set.name || target.meta.name}`, "info");
+            this.api.presentation.notification.add("Cải trang", `Bạn đang khoác lên mình ${target.set.name || target.meta.name}`, "info");
 
         } else {
             // --- SOUL MODE (Default) ---
             if (player.stats && target.stats) {
                 this._syncStats(player, target);
             }
-            API.presentation.notification.add("Đoạt xá", `Đã chiếm lấy cơ thể ${target.set.name || target.meta.name}`, "magic");
+            this.api.presentation.notification.add("Đoạt xá", `Đã chiếm lấy cơ thể ${target.set.name || target.meta.name}`, "magic");
         }
 
-        API.presentation.components.closePlayerCard();
-        API.presentation.components.updatePlayerCard();
-        if (this.render) this.render();
+        this.api.presentation.components.closePlayerCard();
+        this.api.presentation.components.updatePlayerCard();
+        if (this.commitState) this.commitState('identity.changed');
     },
 
     exitFaker() {
@@ -106,21 +105,21 @@ export const FakerSystem = {
         if (mode === 'swap') {
             // --- REVERT SWAP ---
             this.state.meta.entryCharacter = backup.entryCharacter || 'player';
-            API.presentation.notification.add("Hoàn trả", "Trở về nhân vật gốc", "info");
+            this.api.presentation.notification.add("Hoàn trả", "Trở về nhân vật gốc", "info");
 
         } else if (mode === 'mask') {
             // --- REVERT MASK ---
             player.set.name = backup.set.name;
             player.set.desc = backup.set.desc;
             player.set.relationship = backup.set.relationship;
-            API.presentation.notification.add("Gỡ bỏ", "Tháo bỏ lớp ngụy trang", "info");
+            this.api.presentation.notification.add("Gỡ bỏ", "Tháo bỏ lớp ngụy trang", "info");
 
         } else {
             // --- REVERT SOUL ---
             if (player.stats && target && target.stats) {
                 this._syncStats(player, target, true); // Reverse
             }
-            API.presentation.notification.add("Thoát xác", "Trở về cơ thể gốc", "info");
+            this.api.presentation.notification.add("Thoát xác", "Trở về cơ thể gốc", "info");
         }
 
         // Reset State
@@ -129,14 +128,14 @@ export const FakerSystem = {
         this.state.faker.backupPlayer = null;
         this.state.faker.mode = null;
 
-        API.presentation.components.closePlayerCard();
-        API.presentation.components.updatePlayerCard();
+        this.api.presentation.components.closePlayerCard();
+        this.api.presentation.components.updatePlayerCard();
 
         if (targetId && this.scheduleCharacterMove) {
             this.scheduleCharacterMove(targetId);
         }
 
-        if (this.render) this.render();
+        if (this.commitState) this.commitState('identity.changed');
     },
 
     _syncStats(source, target, reverse = false) {

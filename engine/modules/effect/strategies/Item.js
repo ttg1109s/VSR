@@ -1,5 +1,4 @@
 import { resolveValue } from './Logic.js';
-import { API } from '../../../../api/index.js';
 import { StatsHelpers } from './Stats.js'; // [NEW]
 
 export const ItemStrategies = {
@@ -22,14 +21,14 @@ export const ItemStrategies = {
             const execMode = eff.exec || 'add'; // Default to add if missing/legacy? Or strictly exec.
 
             if (execMode === 'add_stats') {
-                StatsHelpers.add_stats(item, eff, false, itemId);
+                StatsHelpers.add_stats(item, eff, false, itemId, engine);
             } else if (execMode === 'remove_stats') {
-                StatsHelpers.remove_stats(item, eff, false, itemId);
+                StatsHelpers.remove_stats(item, eff, false, itemId, engine);
             } else {
                 // For value editing (add/set values), StatsHelpers expects 'mode'. 
                 // We map 'exec' to 'mode' here.
                 const mappedEff = { ...eff, mode: execMode };
-                StatsHelpers.edit_value(item, mappedEff, false, itemId);
+                StatsHelpers.edit_value(item, mappedEff, false, itemId, engine);
             }
         }
     },
@@ -55,16 +54,16 @@ export const ItemStrategies = {
         if (engine.addItem) {
             const added = engine.addItem(eff.target);
             if (added) {
-                API.presentation.notification.add("Nhận vật phẩm", engine.state.itemInfo[eff.target]?.name || eff.target, "success");
-                API.presentation.components.explorer();
+                engine.api.presentation.notification.add("Nhận vật phẩm", engine.state.itemInfo[eff.target]?.name || eff.target, "success");
+                engine.api.presentation.components.explorer();
             }
         } else {
             // Fallback nếu hàm addItem chưa mixin (hiếm gặp)
             const char = ItemStrategies._getChar(engine);
             if (char && !char.inventory.includes(eff.target)) {
                 char.inventory.push(eff.target);
-                API.presentation.notification.add("Nhận vật phẩm", engine.state.itemInfo[eff.target]?.name || eff.target, "success");
-                API.presentation.components.explorer();
+                engine.api.presentation.notification.add("Nhận vật phẩm", engine.state.itemInfo[eff.target]?.name || eff.target, "success");
+                engine.api.presentation.components.explorer();
             }
         }
     },
@@ -85,7 +84,7 @@ export const ItemStrategies = {
                 if (handIdx > -1) char.hand.splice(handIdx, 1);
             }
 
-            API.presentation.components.explorer();
+            engine.api.presentation.components.explorer();
             // Có thể thêm notify nếu cần thiết
         }
     },
@@ -99,7 +98,7 @@ export const ItemStrategies = {
         const idx = char.hand.indexOf(eff.target);
         if (idx > -1) {
             char.hand.splice(idx, 1);
-            API.presentation.components.explorer();
+            engine.api.presentation.components.explorer();
         }
     },
 
@@ -115,11 +114,11 @@ export const ItemStrategies = {
 
         if (!char.hand.includes(eff.target) && char.inventory.includes(eff.target)) {
             if (char.hand.length >= maxHand) {
-                API.presentation.notification.add("Không thể cầm", "Tay đã đầy.", "warn");
+                engine.api.presentation.notification.add("Không thể cầm", "Tay đã đầy.", "warn");
                 return;
             }
             char.hand.push(eff.target);
-            API.presentation.components.explorer();
+            engine.api.presentation.components.explorer();
         }
     },
 
@@ -135,7 +134,7 @@ export const ItemStrategies = {
             u.current = Math.max(0, Math.min(u.max, oldVal + valToAdd));
 
             // [API FIX] Refresh UI
-            API.presentation.components.explorer();
+            engine.api.presentation.components.explorer();
         }
     }
 };

@@ -8,7 +8,6 @@ import { StatsCalculators, StatsModeHandlers } from './strategies/Stats.js';
 import { NotifyStrategies } from './strategies/UI.js';
 import { EffectKeyStrategies, EffectScopeResolvers, StaticListResolvers, ManageSubtypeHandlers } from './strategies/Management.js';
 import { CmsStrategies } from './strategies/Cms.js';
-import { API } from '../../../api/index.js'; // [NEW]
 
 // [REFACTOR] Wired SetStrategies with Handlers
 const BaseSetStrategies = SetStrategies;
@@ -131,7 +130,7 @@ export const EffectHandlers = {
     },
 
     vfx(eff) {
-        if (API.presentation && API.presentation.vfx) {
+        if (this.api.presentation && this.api.presentation.vfx) {
             const resolvedTarget = resolveValue(eff.target, this);
             let resolvedValue = resolveValue(eff.value, this);
             const resolvedDuration = resolveValue(eff.duration, this);
@@ -169,7 +168,7 @@ export const EffectHandlers = {
                 }
             }
 
-            API.presentation.vfx.exec(eff.subtype, instanceId, {
+            this.api.presentation.vfx.exec(eff.subtype, instanceId, {
                 target: resolvedTarget,
                 property: eff.property,
                 value: resolvedValue,

@@ -433,7 +433,7 @@ export const ChatSystem = {
         }
 
         if (nextBlockId) {
-            setTimeout(() => {
+            this.scheduleDelay('chat_transition', 500, () => {
                 this.chatState.blockId = nextBlockId;
                 this.chatState.index = 0;
 
@@ -451,7 +451,7 @@ export const ChatSystem = {
             }, 500);
         } else {
             // End Chat
-            setTimeout(() => {
+            this.scheduleDelay('chat_transition', 500, () => {
                 this.endChat();
             }, 500);
         }

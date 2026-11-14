@@ -1,6 +1,5 @@
 // htdocs/engine/modules/effect/strategies/Logic.js
 import { resolveValue, getNestedValue } from '../../Resolver.js';
-import { API } from '../../../../api/index.js';
 
 export { resolveValue, getNestedValue };
 
@@ -62,7 +61,7 @@ export const GotoStrategies = {
         // NHẤT trong toàn engine để hiện #ending-screen — luôn no-op im lặng.
         // Bất kỳ kịch bản nào dùng goto/end để thắng/thua game đều không bao
         // giờ thực sự hiện màn kết thúc.
-        if (API.presentation && API.presentation.components) API.presentation.components.ending(eff.target);
+        if (engine.api.presentation && engine.api.presentation.components) engine.api.presentation.components.ending(eff.target);
     },
     in_faker: async (engine, eff) => {
         if (engine.pauseBackgroundTasks) engine.pauseBackgroundTasks();

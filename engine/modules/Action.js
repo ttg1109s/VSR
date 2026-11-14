@@ -1,4 +1,3 @@
-import { API } from '../../api/index.js';
 
 export const ActionSystem = {
     getEffectiveActions(sId, rId) {
@@ -150,9 +149,9 @@ export const ActionSystem = {
             if (actDef.effect?.normal) {
                 await this.processRunnables(actDef.effect.normal, { sceneId: sId, routerId: rId, actionId: actionKey, hook: 'normal' });
             }
-            API.presentation.effects.shake(uniqueId);
-            API.presentation.notification.add("Bị chặn", blockReason, "warn");
-            this.render(); // Re-render to update UI states if needed
+            this.api.presentation.effects.shake(uniqueId);
+            this.api.presentation.notification.add("Bị chặn", blockReason, "warn");
+            this.commitState('action.changed'); // Re-render to update UI states if needed
             return { success: false, reason: 'permission_denied' };
         }
 
@@ -191,9 +190,9 @@ export const ActionSystem = {
             // Check Cooldown
             // [FIXED] Use internal logic for Cooldown timestamps as they are runtime only (not mapped in Schema for 'End Time')
             if (set.cooldown && set.cooldown > 0 && actState.cooldownEnd && actState.cooldownEnd > Date.now()) {
-                API.presentation.effects.shake(uniqueId);
+                this.api.presentation.effects.shake(uniqueId);
                 const rem = Math.ceil((actState.cooldownEnd - Date.now()) / 1000);
-                API.presentation.notification.add("Thao tác thất bại", `Vui lòng đợi ${rem}s`, "warn");
+                this.api.presentation.notification.add("Thao tác thất bại", `Vui lòng đợi ${rem}s`, "warn");
                 this.isActionProcessing = false;
                 return;
             }
@@ -220,17 +219,17 @@ export const ActionSystem = {
 
             if (!checkPassed) {
                 actState.countFails++;
-                API.presentation.effects.shake(uniqueId);
+                this.api.presentation.effects.shake(uniqueId);
 
                 const failActions = {
-                    item_surplus: () => API.presentation.notification.add("Cảnh báo", "Bạn đang cầm thừa vật phẩm!", "warn"),
-                    item_missing: () => API.presentation.notification.add("Cảnh báo", "Thiếu vật phẩm yêu cầu!", "warn"),
-                    item_order: () => API.presentation.notification.add("Cảnh báo", "Sai thứ tự vật phẩm!", "warn")
+                    item_surplus: () => this.api.presentation.notification.add("Cảnh báo", "Bạn đang cầm thừa vật phẩm!", "warn"),
+                    item_missing: () => this.api.presentation.notification.add("Cảnh báo", "Thiếu vật phẩm yêu cầu!", "warn"),
+                    item_order: () => this.api.presentation.notification.add("Cảnh báo", "Sai thứ tự vật phẩm!", "warn")
                 };
                 if (failType && failActions[failType]) {
                     failActions[failType]();
                 } else if (this.getConfig && this.getConfig('defaultNotice')) {
-                    API.presentation.notification.add("Thất bại", "Chưa đủ điều kiện thực hiện.", "warn");
+                    this.api.presentation.notification.add("Thất bại", "Chưa đủ điều kiện thực hiện.", "warn");
                 }
 
                 // Fail Effect
@@ -239,7 +238,7 @@ export const ActionSystem = {
                     await this.processRunnables(actDef.effect.fail, { sceneId: sId, routerId: rId, actionId: actionKey, hook: 'fail' });
                 }
 
-                this.render();
+                this.commitState('action.changed');
                 return;
             }
 
@@ -253,12 +252,12 @@ export const ActionSystem = {
 
                     if (passDef) {
                         passDef._type = passType;
-                        API.presentation.components.keyboard(actDef, actionKey, uniqueId, passDef);
+                        this.api.presentation.components.keyboard(actDef, actionKey, uniqueId, passDef);
                         // Return here and let the PasswordSystem callback handle the rest
                         return;
                     } else {
                         console.error(`[Flow] Password Definition NOT FOUND: ${set.password}`);
-                        API.presentation.notification.add("Lỗi Config", "Không tìm thấy định nghĩa mật khẩu.", "error");
+                        this.api.presentation.notification.add("Lỗi Config", "Không tìm thấy định nghĩa mật khẩu.", "error");
                         this.isActionProcessing = false; // Release lock manually because finally block skips this check
                     }
                 }
@@ -268,7 +267,7 @@ export const ActionSystem = {
             await this.executeActionSuccess(actDef, sId, rId, actionKey, uniqueId);
 
             if (!this.isTransitioning) {
-                this.render();
+                this.commitState('action.changed');
             }
 
         } catch (err) {
@@ -320,7 +319,7 @@ export const ActionSystem = {
 
             if (success) {
                 await this.executeActionSuccess(actDef, sId, rId, actionKey, uniqueId);
-                if (!this.isTransitioning) this.render();
+                if (!this.isTransitioning) this.commitState('action.changed');
             } else {
                 const actState = this.state.actions[`${sId}_${rId}_${actionKey}`];
                 if (actState) {
@@ -329,7 +328,7 @@ export const ActionSystem = {
                     // actState.display = 'locked'; 
                 }
 
-                API.presentation.effects.shake(uniqueId);
+                this.api.presentation.effects.shake(uniqueId);
 
                 if (actDef.effect?.pwFailed) {
                     console.log(`[Flow] Effect 'pwFailed' start`);

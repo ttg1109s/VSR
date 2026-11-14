@@ -1,4 +1,3 @@
-import { API } from '../../api/index.js';
 
 export const SceneSystem = {
 
@@ -93,8 +92,8 @@ export const SceneSystem = {
             // [REFACTOR] Use 'char.place.scene_id'
             if (char.place.scene_id === id) {
                 // [FIX] Use shared updateMetState from EntitySystem (mixed into API.engine)
-                if (API.engine.updateMetState) {
-                    API.engine.updateMetState(charId, currentIdentity);
+                if (this.updateMetState) {
+                    this.updateMetState(charId, currentIdentity);
                 } else {
                     console.warn("API.engine.updateMetState not found, using valid fallback or check mixin.");
                 }
@@ -114,8 +113,8 @@ export const SceneSystem = {
             }
         });
 
-        if (API.presentation && API.presentation.components && API.presentation.components.updateCharacterList) {
-            API.presentation.components.updateCharacterList();
+        if (this.api.presentation && this.api.presentation.components && this.api.presentation.components.updateCharacterList) {
+            this.api.presentation.components.updateCharacterList();
         }
     },
 
@@ -155,14 +154,14 @@ export const SceneSystem = {
         this.isTransitioning = true;
 
         if (transType && transType !== 'none' && !skipTransition) {
-            await API.presentation.scene.transition('start', transType, timeIn / 1000);
+            await this.api.presentation.scene.transition('start', transType, timeIn / 1000);
         }
 
         if (this.currentStillTask) { this.taskManager.kill(this.currentStillTask); this.currentStillTask = null; }
         this.activeTimerTasks.forEach(taskId => this.taskManager.kill(taskId));
         this.activeTimerTasks = [];
 
-        API.presentation.scene.hideTimer();
+        this.api.presentation.scene.hideTimer();
 
         const oldRouterId = this.state.scenes[sId].activeRouterId;
         if (!isSceneEntry && oldRouterId && oldRouterId !== routerId) {
@@ -198,8 +197,8 @@ export const SceneSystem = {
             }
         }
 
-        if (API.presentation.vfx && API.presentation.vfx.exec) {
-            API.presentation.vfx.exec('overlay', ovType || 'none', {
+        if (this.api.presentation.vfx && this.api.presentation.vfx.exec) {
+            this.api.presentation.vfx.exec('overlay', ovType || 'none', {
                 element: 'vfx-layer',
                 duration: null, // Router overlays are usually permanent until changed
                 flicker: ovFlicker,
@@ -208,7 +207,7 @@ export const SceneSystem = {
         }
 
         if (transType && transType !== 'none' && !skipTransition) {
-            await API.presentation.scene.transition('end', transType, timeOut / 1000);
+            await this.api.presentation.scene.transition('end', transType, timeOut / 1000);
         }
 
         this.isTransitioning = false;
@@ -271,7 +270,7 @@ export const SceneSystem = {
                     this.taskManager.kill(uiTaskId);
                     this.taskManager.kill(endTaskId);
 
-                    API.presentation.scene.hideTimer();
+                    this.api.presentation.scene.hideTimer();
 
                     const endMode = rConfigSet.timerEnd || 'out';
                     if (endMode === 'out') this.goBackTimerEnd();
@@ -322,7 +321,7 @@ export const SceneSystem = {
         const m = Math.floor(displayVal / 60).toString().padStart(2, '0');
         const s = (displayVal % 60).toString().padStart(2, '0');
 
-        API.presentation.scene.updateTimer(`${m}:${s}`);
+        this.api.presentation.scene.updateTimer(`${m}:${s}`);
     },
 
     render() {
@@ -338,8 +337,8 @@ export const SceneSystem = {
         const actions = this.getEffectiveActions(sId, rId);
 
         // Publish a JSON-safe state projection independently of the UI adapter.
-        if (this.publishProtocolSnapshot) this.publishProtocolSnapshot('scene.render');
+        if (this.commitState) this.commitState('scene.presentation');
 
-        API.presentation.scene.render(s, r, actions);
+        this.api.presentation.scene.render(s, r, actions);
     },
 };

@@ -18,6 +18,7 @@
   ],
   "additionalProperties": false,
   "properties": {
+    "formatVersion": { "type": "integer", "minimum": 1, "maximum": 1, "default": 1, "description": "VSR data format version, independent from meta.version." },
     "config": {
       "type": "object",
       "description": "General configuration for the game scenario.",

@@ -1,4 +1,3 @@
-import { API } from '../../api/index.js';
 
 export const ConfigSystem = {
     defaultConfig: {
@@ -19,7 +18,7 @@ export const ConfigSystem = {
     getConfig(key) {
         // [FIXED] Try to get via API first (using Schema)
         // This ensures if there is a mapped key (e.g. 'fakerMode'), it is retrieved correctly via state manager
-        const apiVal = API.engine.state.get(key);
+        const apiVal = this.api.engine.state.get(key);
         if (apiVal !== undefined) {
             return apiVal;
         }
