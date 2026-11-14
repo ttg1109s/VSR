@@ -9,6 +9,7 @@ import {ChatSystem} from './modules/Chat.js?v=3.1.6';
 import {AutomationSystem} from './modules/Automation.js';
 import {LoaderSystem} from './modules/Loader.js';
 import {createEngineAPI} from '../api/index.js';
+import {NotificationSystem} from './modules/Notification.js';
 import {JsonProtocol,cloneJsonValue} from '../protocol/JsonProtocol.js';
 import {verifyPassword} from './modules/password/verify.js';
 import {PasswordSystem} from './modules/password/PasswordSystem.js';
@@ -21,6 +22,7 @@ export class GameEngine {
   this.protocol=new JsonProtocol({engineId,protocolVersion:2,authorizeCommand,requireAuthorization,onCommandSuccess:({command,revisionBefore})=>{
    if(command!=='engine.init'&&this.protocol.stateRevision===revisionBefore)this.commitState(`command:${command}`);
   }});
+  this.notifications=new NotificationSystem({protocol:this.protocol,engineId:this.protocol.engineId,clock:clock||(()=>Date.now())});
   this.api=createEngineAPI(this);
   this.passwordSystem=new PasswordSystem({clock:clock||(()=>Date.now())});
   this.reset();
