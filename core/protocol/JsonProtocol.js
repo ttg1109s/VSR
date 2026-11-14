@@ -57,6 +57,8 @@ export class JsonProtocol {
         this.eventSequence = 0;
         this.commandSequence = 0;
         this.listeners = new Set();
+        this.eventLog = [];
+        this.maxEvents = 1000;
         this.commandHandlers = new Map();
         this.commandResults = new Map();
         this.maxRememberedCommands = 500;
@@ -105,6 +107,25 @@ export class JsonProtocol {
         return snapshot;
     }
 
+    getEventsSince(revision = 0) {
+        if (!Number.isInteger(revision) || revision < 0) {
+            throw new TypeError('revision must be a non-negative integer.');
+        }
+        const earliestRevision = this.eventLog[0]?.revision ?? (this.revision + 1);
+        if (revision < earliestRevision - 1) {
+            return {
+                gap: true,
+                currentRevision: this.revision,
+                events: []
+            };
+        }
+        return {
+            gap: false,
+            currentRevision: this.revision,
+            events: this.eventLog.filter(event => event.revision > revision).map(event => cloneJsonValue(event))
+        };
+    }
+
     publish(type, payload = {}, engine = null) {
         if (typeof type !== 'string' || !type.trim()) throw new TypeError('Event type is required.');
         const safePayload = cloneJsonValue(payload);
@@ -121,6 +142,9 @@ export class JsonProtocol {
             event: type,
             payload: safePayload === undefined ? {} : safePayload
         };
+
+        this.eventLog.push(event);
+        if (this.eventLog.length > this.maxEvents) this.eventLog.shift();
 
         this.listeners.forEach(listener => {
             try { listener(event); }
