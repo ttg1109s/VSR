@@ -69,7 +69,10 @@ export class PasswordSystem {
     if (!inspected.accepted) return { ...inspected, challenge };
     challenge.countTest += 1;
     const exhausted = challenge.retryMax > 0 && challenge.countTest >= challenge.retryMax;
-    if (exhausted) challenge.status = 'exhausted';
+    if (exhausted) {
+      challenge.status = 'exhausted';
+      challenge.closedAt = this.clock();
+    }
     return {
       accepted: true, exhausted,
       remainingAttempts: challenge.retryMax === 0 ? null : Math.max(0, challenge.retryMax - challenge.countTest),
