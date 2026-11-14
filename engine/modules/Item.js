@@ -17,22 +17,17 @@ export const ItemSystem = {
         const state = this.api.engine.state;
         const ownerId = this.getOwnerId();
         if (!state.getRuntime('characters.[id]', { id: ownerId })) return false;
+        const inventory = state.getRuntimeSnapshot('characters.[id].inventory', { id: ownerId }) || [];
+        if (inventory.includes(itemId)) return false;
         const maxInvList = (this.getConfig ? this.getConfig('maxInventory') : null) || [];
         const ownerLimitPair = Array.isArray(maxInvList) ? maxInvList.find(pair => Array.isArray(pair) && pair[1] === ownerId) : null;
         const limit = ownerLimitPair ? ownerLimitPair[0] : 0;
-        let result = 'duplicate';
-        state.update('characters.[id].inventory', current => {
-            const inventory = current || [];
-            if (inventory.includes(itemId)) return inventory;
-            if (limit > 0 && inventory.length >= limit) {
-                result = 'full';
-                return inventory;
-            }
-            result = 'added';
-            return [...inventory, itemId];
-        }, { id: ownerId });
-        if (result === 'full') this.api.presentation.notification.add("Không thể nhặt", "Túi đồ đã đầy.", "warn");
-        return result === 'added';
+        if (limit > 0 && inventory.length >= limit) {
+            this.api.presentation.notification.add("Không thể nhặt", "Túi đồ đã đầy.", "warn");
+            return false;
+        }
+        state.set('characters.[id].inventory', [...inventory, itemId], { id: ownerId });
+        return true;
     },
 
     isBroken(itemId) {
