@@ -50,6 +50,57 @@ function splitArgs(str) {
     return parts;
 }
 
+
+const SAFE_MATH = {
+    abs: Math.abs, ceil: Math.ceil, floor: Math.floor, round: Math.round, trunc: Math.trunc,
+    min: Math.min, max: Math.max, sqrt: Math.sqrt, cbrt: Math.cbrt, pow: Math.pow,
+    hypot: Math.hypot, sign: Math.sign, sin: Math.sin, cos: Math.cos, tan: Math.tan,
+    asin: Math.asin, acos: Math.acos, atan: Math.atan, atan2: Math.atan2,
+    log: Math.log, log10: Math.log10, exp: Math.exp
+};
+function evaluateExpression(source) {
+    const tokens = [];
+    const re = /\s*(?:(\d+(?:\.\d*)?(?:[eE][+-]?\d+)?)|("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|(Math\.[A-Za-z]+)|(true|false|null)|(&&|\|\||===|!==|>=|<=|==|!=|\*\*|[()+\-*/%,<>!]))/y;
+    let i = 0;
+    while (i < source.length) {
+        re.lastIndex = i;
+        const m = re.exec(source);
+        if (!m) throw new Error('Token không được phép');
+        i = re.lastIndex;
+        if (m[1]) tokens.push({t:'v',v:Number(m[1])});
+        else if (m[2]) {
+            const s=m[2];
+            tokens.push({t:'v',v:s[0]==='"'?JSON.parse(s):s.slice(1,-1).replace(/\\'/g,"'").replace(/\\\\/g,"\\")});
+        } else if (m[3]) tokens.push({t:'n',v:m[3]});
+        else if (m[4]) tokens.push({t:'v',v:m[4]==='true'?true:m[4]==='false'?false:null});
+        else tokens.push({t:'o',v:m[5]});
+        if(tokens.length>512) throw new Error('Biểu thức quá dài');
+    }
+    let p=0;
+    const prec={'||':1,'&&':2,'==':3,'===':3,'!=':3,'!==':3,'>':4,'<':4,'>=':4,'<=':4,'+':5,'-':5,'*':6,'/':6,'%':6,'**':7};
+    const primary=()=>{
+        const t=tokens[p++];
+        if(!t) throw new Error('Thiếu toán hạng');
+        if(t.t==='v') return t.v;
+        if(t.v==='('){const v=expr(0);if(!tokens[p]||tokens[p++].v!==')')throw new Error('Thiếu )');return v;}
+        if(t.v==='+'||t.v==='-'||t.v==='!'){const v=primary();return t.v==='+'?+v:t.v==='-'?-v:!v;}
+        if(t.t==='n'){
+            if(t.v==='Math.PI')return Math.PI;if(t.v==='Math.E')return Math.E;
+            const fn=t.v.slice(5);if(!(fn in SAFE_MATH)||!tokens[p]||tokens[p++].v!=='(')throw new Error('Hàm không được phép');
+            const args=[];if(tokens[p]&&tokens[p].v!==')'){do{args.push(expr(0));if(!tokens[p]||tokens[p].v!==',')break;p++;}while(true);}
+            if(!tokens[p]||tokens[p++].v!==')')throw new Error('Thiếu )');return SAFE_MATH[fn](...args);
+        }
+        throw new Error('Cú pháp không hợp lệ');
+    };
+    const expr=(min)=>{let left=primary();while(tokens[p]&&prec[tokens[p].v]>=min){const op=tokens[p++].v;const right=expr(prec[op]+(op==='**'?0:1));switch(op){
+        case '+':left=typeof left==='string'||typeof right==='string'?String(left)+String(right):Number(left)+Number(right);break;
+        case '-':left=Number(left)-Number(right);break;case '*':left=Number(left)*Number(right);break;case '/':left=Number(left)/Number(right);break;case '%':left=Number(left)%Number(right);break;case '**':left=Number(left)**Number(right);break;
+        case '>':left=left>right;break;case '<':left=left<right;break;case '>=':left=left>=right;break;case '<=':left=left<=right;break;
+        case '==':case '===':left=left===right;break;case '!=':case '!==':left=left!==right;break;case '&&':left=Boolean(left&&right);break;case '||':left=Boolean(left||right);break;
+    }}return left;};
+    const result=expr(0);if(p!==tokens.length)throw new Error('Token thừa');if(typeof result==='number'&&!Number.isFinite(result))return 0;return result;
+}
+
 /**
  * Cốt lõi của việc xử lý dữ liệu động trong kịch bản
  */
@@ -84,7 +135,7 @@ export const resolveValue = (val, engine) => {
                 console.warn(`[Resolver] Invalid calc content: ${content}`);
                 return 0;
             }
-            try { return new Function('return ' + content)(); } catch (e) { return 0; }
+            try { return evaluateExpression(content); } catch (e) { console.warn('[Resolver] Invalid $calc:', e.message); return 0; }
         }
 
         // 3. $round(number)
@@ -162,13 +213,13 @@ export const resolveValue = (val, engine) => {
         if (val.startsWith('$if(') && val.endsWith(')')) {
             const p = splitArgs(val.substring(4, val.length - 1));
             let cond = p[0];
-            while (cond.includes('$')) {
-                cond = cond.replace(/(\$[a-zA-Z0-9_]+\([^)]+\))/g, (m) => {
-                    const r = resolveValue(m, engine);
-                    return typeof r === 'string' ? `'${r}'` : r;
-                });
+            let loops = 10;
+            while (cond.includes('$') && loops-- > 0) {
+                cond = cond.replace(/(\$[a-zA-Z0-9_]+\((?:[^()]|\([^()]*\))*\))/g, (match) => JSON.stringify(resolveValue(match, engine)));
             }
-            let res = false; try { res = new Function('return ' + cond)(); } catch (e) { }
+            let res = false;
+            try { if (!cond.includes('$')) res = Boolean(evaluateExpression(cond)); }
+            catch (e) { console.warn('[Resolver] Invalid $if:', e.message); }
             return res ? resolveValue(p[1], engine) : resolveValue(p[2], engine);
         }
 
