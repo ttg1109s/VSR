@@ -50,7 +50,7 @@ export class GameEngine {
     this.passwordSystem.finish(pending,'expired');
     this.pendingPasswordAction=null;
     this.api.engine.state.set('session.passwordChallenge',null);
-    this.api.presentation.events?.publish?.('password.expired',{challengeId:pending.challengeId});
+    this.protocol?.publish?.('password.expired',{challengeId:pending.challengeId});
     return this.finishPasswordAction(action,pending.actionId,pending.uniqueId,'expired');
    }
    throw new Error('Password challenge is not active.');
@@ -72,7 +72,7 @@ export class GameEngine {
   const attempt=this.passwordSystem.recordFailure(pending);
   this.api.presentation.effects.shake(pending.uniqueId);
   if(!attempt.exhausted) {
-   this.api.presentation.events?.publish?.('password.retry',{challengeId:pending.challengeId,countTest:pending.countTest,remainingAttempts:attempt.remainingAttempts});
+   this.protocol?.publish?.('password.retry',{challengeId:pending.challengeId,countTest:pending.countTest,remainingAttempts:attempt.remainingAttempts});
    this.commitState('password.retry');
    return {success:false,retry:true,countTest:pending.countTest,remainingAttempts:attempt.remainingAttempts};
   }
