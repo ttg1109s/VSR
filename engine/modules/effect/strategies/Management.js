@@ -71,15 +71,13 @@ export const StaticListResolvers = {
 };
 
 const getEditableList = (engine, key, defaultList) => {
-    if (engine.state.effect_overrides && engine.state.effect_overrides[key]) {
-        return JSON.parse(JSON.stringify(engine.state.effect_overrides[key]));
-    }
-    return defaultList ? JSON.parse(JSON.stringify(defaultList)) : [];
+    const override = engine.api.engine.state.getRuntime('effect_overrides.[key]', { key });
+    if (override) return structuredClone(override);
+    return defaultList ? structuredClone(defaultList) : [];
 };
 
 const saveList = (engine, key, list) => {
-    if (!engine.state.effect_overrides) engine.state.effect_overrides = {};
-    engine.state.effect_overrides[key] = list;
+    engine.api.engine.state.set('effect_overrides.[key]', list, { key });
 };
 
 export const ManageSubtypeHandlers = {
