@@ -21,8 +21,9 @@ export const ChatSystem = {
 
     getThreads(charId) {
         let chatIds = [];
-        const chats = this.state.chats;
-        const histories = this.state.chatHistory;
+        const state = this.api.engine.state;
+        const chats = state.getRuntimeSnapshot('chats') || {};
+        const histories = state.getRuntimeSnapshot('chatHistory') || {};
 
         if (charId === 'spam') {
             // Logic spam: Tìm các chat KHÔNG có sender rõ ràng hoặc sender không tồn tại
@@ -38,7 +39,7 @@ export const ChatSystem = {
             chatIds = Object.keys(chats).filter(id => !allDefinedChats.has(id));
         } else {
             // Logic chuẩn: Tìm các chat có liên quan đến charId (Sender hoặc Receiver)
-            const playerChar = this.state.meta?.entryCharacter || 'player';
+            const playerChar = this.api.engine.state.get('entryCharacter') || 'player';
 
             if (this.src.chat) {
                 chatIds = Object.keys(this.src.chat).filter(cid => {
@@ -357,7 +358,7 @@ export const ChatSystem = {
 
         // --- 3. Run Effect ---
         if (choice.effect) {
-            this.processRunnables(choice.effect, { sceneId: this.state.sceneId }).catch(e => {
+            this.processRunnables(choice.effect, { sceneId: this.api.engine.state.get('sceneId') }).catch(e => {
                 console.warn("Effect Error:", e);
             });
         }
