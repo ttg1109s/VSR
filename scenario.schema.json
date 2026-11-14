@@ -182,7 +182,7 @@
           "properties": {
             "url": {
               "type": "string",
-              "format": "uri"
+              "format": "uri-reference"
             },
             "ratio": {
               "enum": [
@@ -636,7 +636,7 @@
           },
           "url": {
             "type": "string",
-            "format": "uri",
+            "format": "uri-reference",
             "description": "URL to the media resource."
           }
         },
@@ -2057,7 +2057,7 @@
         },
         "url": {
           "type": "string",
-          "format": "uri",
+          "format": "uri-reference",
           "description": "URL ảnh dùng để ghép."
         },
         "ratio": {
