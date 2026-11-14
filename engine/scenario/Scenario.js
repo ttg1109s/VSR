@@ -94,7 +94,7 @@ function validateReferences(scenario) {
         errors.push(`${path || 'scenario'} references missing target scene '${actionSet.target}'`);
       }
       if (actionSet.type === 'swap_router' && actionSet.target &&
-          !Object.values(scenes).some(scene => Object.hasOwn(scene.routers || {}, actionSet.target))) {
+          !Object.values(scenes).some(scene => Object.hasOwn(scene?.routers || {}, actionSet.target))) {
         errors.push(`${path || 'scenario'} references missing target router '${actionSet.target}'`);
       }
     }
