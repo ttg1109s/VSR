@@ -20,9 +20,8 @@ export const EffectSystem = {
             }
         }
 
-        if (listKey && this.state.effect_overrides && this.state.effect_overrides[listKey]) {
-            effectiveList = this.state.effect_overrides[listKey];
-        }
+        const overrides = this.api.engine.state.getRuntimeSnapshot('effect_overrides') || {};
+        if (listKey && overrides[listKey]) effectiveList = overrides[listKey];
 
         if (!isFromQueue && this.pushToEffectQueue) {
             return this.pushToEffectQueue(effectiveList, context, isAsync);
