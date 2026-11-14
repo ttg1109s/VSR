@@ -81,8 +81,9 @@ export const ActionSystem = {
             return;
         }
 
-        const sId = this.state.sceneId;
-        const rId = this.state.scenes[sId].activeRouterId;
+        const state = this.api.engine.state;
+        const sId = state.get('sceneId');
+        const rId = state.get('scene.activeRouterId', { id: sId });
 
         if (!rId || !this.src.scenes[sId].routers[rId]) return;
 
@@ -109,13 +110,14 @@ export const ActionSystem = {
         // --- Identity / Faker Logic ---
         // Determine Current Identity (Who is the player acting as?)
         // --- Identity / Faker Logic ---
-        const entryChar = this.state.meta?.entryCharacter || 'player';
+        const entryChar = state.get('entryCharacter') || 'player';
+        const faker = state.getRuntimeSnapshot('faker') || {};
         const fakerMode = this.getConfig ? this.getConfig('fakerMode') : 'soul';
 
         let actingIds = [entryChar]; // Default: Only the true body can act
 
-        if (this.state.faker && this.state.faker.active) {
-            const targetId = this.state.faker.targetId;
+        if (faker.active) {
+            const targetId = faker.targetId;
             // [Faker Mode Logic]
             if (fakerMode === 'mask') {
                 // Mask Mode: Allow acting as the disguised Identity
@@ -143,10 +145,10 @@ export const ActionSystem = {
             if (!hasPermission) {
                 isAllowed = false;
                 // Determine sensible block reason
-                if (this.state.faker.active) {
+                if (faker.active) {
                     blockReason = `Bạn đang ở dạng ${fakerMode} và không có quyền của nhân vật này.`;
                 } else {
-                    blockReason = `Cần phải là ${charAllow.map(id => this.state.characters[id]?.set?.name || id).join(', ')} mới thực hiện được.`;
+                    blockReason = `Cần phải là ${charAllow.map(id => state.getRuntimeSnapshot('characters.[id]', { id })?.set?.name || id).join(', ')} mới thực hiện được.`;
                 }
             }
         } else {
@@ -183,8 +185,9 @@ export const ActionSystem = {
             this.isActionProcessing = true;
 
             // Stop Automations
-            Object.keys(this.state.automations).forEach(autoId => {
-                if (this.state.automations[autoId].active) this.stopAutomation(autoId);
+            const automations = state.getRuntimeSnapshot('automations') || {};
+            Object.keys(automations).forEach(autoId => {
+                if (automations[autoId].active) this.stopAutomation(autoId);
             });
 
             // Update the action counter without retaining a mutable state reference.
@@ -328,8 +331,9 @@ export const ActionSystem = {
     // executeActionResult REMOVED
 
     async finishPasswordAction(actDef, actionKey, uniqueId, success) {
-        const sId = this.state.sceneId;
-        const rId = this.state.scenes[sId].activeRouterId;
+        const state = this.api.engine.state;
+        const sId = state.get('sceneId');
+        const rId = state.get('scene.activeRouterId', { id: sId });
 
         this.isActionProcessing = true;
         try {
