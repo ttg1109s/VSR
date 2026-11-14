@@ -252,7 +252,7 @@ export class GameEngine {
   this.restoredTaskTimers={};
   this.restoredPausedTasks=[];
  }
- dispose(){this.clearEffectQueue('all');this.taskManager?.killAll?.();this.protocol?.publish('engine.disposed',{});this.disposed=true;}
+ dispose(){this.clearEffectQueue('all');this.notifications?.reset();this.taskManager?.killAll?.();this.protocol?.publish('engine.disposed',{});this.disposed=true;}
  forceUnlock(){this.isTransitioning=false;this.isActionProcessing=false;this.runtime.isSyncQueueRunning=false;this.runtime.isAsyncQueueRunning=false;this.clearEffectQueue('all');this.api.presentation.navigation.setBlocking(false);}
  pushToEffectQueue(effectiveList,context,isAsync=false){
   return new Promise(resolve=>{
