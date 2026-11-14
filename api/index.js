@@ -10,6 +10,16 @@ function createPresentation(engine) {
             return null;
         }
     };
+    const notification = {
+        add: (title, message, level = 'info', options = {}) => engine?.notifications?.add(title, message, level, options) ?? publish('notification.add', [title, message, level]),
+        alert: (title, message, level = 'info', options = {}) => engine?.notifications?.alert(title, message, level, options) ?? publish('notification.alert', [title, message, level]),
+        dismiss: (id, reason) => engine?.notifications?.dismiss(id, reason) ?? false,
+        expire: id => engine?.notifications?.expire(id) ?? false,
+        markRead: id => engine?.notifications?.markRead(id) ?? false,
+        clear: options => engine?.notifications?.clear(options) ?? 0,
+        getHistory: options => engine?.notifications?.getHistory(options) ?? [],
+        getPending: () => engine?.notifications?.getPending() ?? []
+    };
     const node = (path = '') => new Proxy((...args) => publish(path, args), {
         get(_target, property) {
             if (property === 'then' || property === 'toJSON') return undefined;
@@ -73,6 +83,7 @@ export function createEngineAPI(engine) {
             eventsAfter: sequence => engine.protocol?.getEventsAfter(sequence) ?? null
         },
         presentation: createPresentation(engine),
+        notifications: engine.notifications,
         utils
     };
 }
