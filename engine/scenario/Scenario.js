@@ -76,7 +76,7 @@ function validateReferences(scenario) {
     errors.push(`meta.entryScene references missing scene '${entryScene}'`);
   }
   const entryCharacter = scenario.meta?.entryCharacter;
-  if (entryCharacter && !Object.hasOwn(scenario.characters || {}, entryCharacter)) {
+  if (entryCharacter && entryCharacter !== 'player' && !Object.hasOwn(scenario.characters || {}, entryCharacter)) {
     errors.push(`meta.entryCharacter references missing character '${entryCharacter}'`);
   }
 
