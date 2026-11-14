@@ -1,5 +1,6 @@
 // engine/modules/Loader.js
 // Chịu trách nhiệm nạp kịch bản và khởi tạo state mặc định.
+import { API } from '../../api/index.js';
 
 export const LoaderSystem = {
     loadScript(script) {
