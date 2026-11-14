@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="vi">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>VSR Protocol Tests</title></head>
+<body>
+  <h1>VSR JSON Protocol Tests</h1>
+  <pre id="result">Đang chạy kiểm thử...</pre>
+  <script type="module">
+    const output = document.getElementById('result');
+    try {
+      await import('./JsonProtocol.test.js');
+      output.textContent = 'PASS — xem Console để biết chi tiết.';
+    } catch (error) {
+      output.textContent = 'FAIL — ' + (error?.stack || error);
+      throw error;
+    }
+  </script>
+</body>
+</html>
