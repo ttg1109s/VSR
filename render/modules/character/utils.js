@@ -1,3 +1,4 @@
+import { escapeHtml } from '../../../utils/security.js';
 import { MeetingAlertBubble } from '../../../components/Common.js';
 
 export const timeAgo = (date) => {
@@ -51,9 +52,9 @@ export const AlertMethods = {
         item.className = `w-10 h-10 rounded-full bg-white border-2 ${colorClass} flex items-center justify-center text-sm font-bold shadow-lg shrink-0 cursor-pointer hover:scale-105 transition-transform select-none relative group animate-fade-in`;
 
         item.innerHTML = `
-            ${initial}
+            ${escapeHtml(initial)}
             <div class="absolute top-full mt-2 right-0 px-2 py-1 bg-black/90 backdrop-blur text-[10px] text-white rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none border border-white/10 z-50">
-                ${charName}
+                ${escapeHtml(charName)}
             </div>
         `;
 
