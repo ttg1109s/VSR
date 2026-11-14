@@ -60,7 +60,7 @@ export class GameEngine {
   this.state={sceneId:'',scenes:{},routers:{},actions:{},global:{},characters:{},itemInfo:{},chats:{},chatHistory:{},executed:[],effect_overrides:{},effectQueue:{sync:[],async:[]},isSyncQueueRunning:false,isAsyncQueueRunning:false,pausedBackgroundTasks:{automations:{},characters:{}},prevRouter:null,map:{choices:{},blocks:{}},automations:{},faker:{active:false,targetId:null,backupPlayer:null},playerMoveHistory:[],sceneTree:{},config:{}};
   this.src=null;this.scenario=null;this.pendingPasswordAction=null;
   this.chatState={active:false,blocking:false,id:null,blockId:null,index:0,triggerActionId:null,actionModified:false};
-  this.taskSequence=0;this.currentStillTask=null;this.activeTimerTasks=[];this.isActionProcessing=false;this.isTransitioning=false;this.disposed=false;this.restoredTaskTimers={};
+  this.taskSequence=0;this.currentStillTask=null;this.activeTimerTasks=[];this.isActionProcessing=false;this.isTransitioning=false;this.disposed=false;this.restoredTaskTimers={};this.restoredPausedTasks=[];
  }
  async init(script){
   const loaded=LoaderSystem.loadScript(script,this.api);
@@ -105,6 +105,7 @@ export class GameEngine {
   this.chatState={...this.chatState,...(cloneJsonValue(save.chatState)||{})};
   this.pendingPasswordAction=cloneJsonValue(save.pendingPasswordAction)||null;
   this.restoredTaskTimers=cloneJsonValue(save.taskRemainingMs)||{};
+  this.restoredPausedTasks=cloneJsonValue(save.pausedTasks)||[];
   this.rehydrateBackgroundTasks();
   this.commitState('save.restored');
   return{restored:true,saveVersion:SAVE_VERSION};
@@ -121,8 +122,10 @@ export class GameEngine {
    const remaining=timers[taskId];
    if(Number.isFinite(remaining))this.scheduleDelay(remaining,()=>this.processAutomationStep(id),taskId);
    else this.processAutomationStep(id);
+   if(this.restoredPausedTasks.includes(taskId))this.taskManager.pause(taskId);
   }
   this.restoredTaskTimers={};
+  this.restoredPausedTasks=[];
  }
  dispose(){this.clearEffectQueue('all');this.taskManager?.killAll?.();this.protocol?.publish('engine.disposed',{});this.disposed=true;}
  forceUnlock(){this.isTransitioning=false;this.isActionProcessing=false;this.state.isSyncQueueRunning=false;this.state.isAsyncQueueRunning=false;this.clearEffectQueue('all');this.api.presentation.navigation.setBlocking(false);}
