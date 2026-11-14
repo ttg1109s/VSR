@@ -38,7 +38,7 @@ export class NotificationSystem {
       presentation: presentation === 'modal' ? 'modal' : 'toast',
       createdAt: now, updatedAt: now,
       expiresAt: duration === null ? null : now + duration,
-      duration, dedupeKey: input.dedupeKey == null ? null : String(input.dedupeKey),
+      duration, dedupeKey: input.dedupeKey == null ? null : `${input.source || 'engine'}:${input.category || title}:${String(input.dedupeKey)}`,
       status: 'pending', read: false,
       metadata: input.metadata && typeof input.metadata === 'object' && !Array.isArray(input.metadata) ? cloneJsonValue(input.metadata) : {}
     };
@@ -51,9 +51,13 @@ export class NotificationSystem {
 
   add(title, message, level = 'info', options = {}) {
     if (title && typeof title === 'object' && !Array.isArray(title)) {
-      options = message && typeof message === 'object' ? message : {};
-      ({ title, message, level = 'info' } = title);
+      const input = title;
+      options = message && typeof message === 'object' ? message : input;
+      title = input.title;
+      message = input.message;
+      level = input.level || input.severity || 'info';
     }
+    options = options && typeof options === 'object' && !Array.isArray(options) ? options : {};
     const presentation = options.presentation === 'modal' ? 'modal' : 'toast';
     const candidate = this.normalize({
       title, message, level,
@@ -92,7 +96,7 @@ export class NotificationSystem {
       this.pending = this.pending.filter(id => id !== removed.id);
       if (removed.dedupeKey && this.dedupe.get(removed.dedupeKey) === removed.id) this.dedupe.delete(removed.dedupeKey);
     }
-    this.publish('add', candidate, [candidate.title, candidate.message, candidate.level]);
+    this.publish(presentation === 'modal' ? 'alert' : 'add', candidate, [candidate.title, candidate.message, candidate.level]);
     while (this.pending.length > this.maxQueue) {
       const droppedId = this.pending.pop();
       const dropped = this.byId.get(droppedId);
