@@ -16,9 +16,9 @@ import {TaskManager} from './runtime/TaskManager.js';
 import {createSaveEnvelope,normalizeSaveEnvelope,SAVE_VERSION} from './persistence/SaveState.js';
 
 export class GameEngine {
- constructor({taskManager,engineId,authorizeCommand,clock}={}) {
+ constructor({taskManager,engineId,authorizeCommand,requireAuthorization=false,clock}={}) {
   this.taskManager=taskManager||new TaskManager({},120,{clock});
-  this.protocol=new JsonProtocol({engineId,protocolVersion:2,authorizeCommand,onCommandSuccess:({command,revisionBefore})=>{
+  this.protocol=new JsonProtocol({engineId,protocolVersion:2,authorizeCommand,requireAuthorization,onCommandSuccess:({command,revisionBefore})=>{
    if(command!=='engine.init'&&this.protocol.stateRevision===revisionBefore)this.commitState(`command:${command}`);
   }});
   this.api=createEngineAPI(this);
