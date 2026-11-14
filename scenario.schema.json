@@ -54,14 +54,22 @@
         },
         "maxInventory": {
           "type": "array",
-          "description": "Maximum inventory items (eg: [50, char_id], [20, char_id]). If [] to infinite.",
           "default": [],
+          "description": "Per-character inventory caps as [limit, characterId]. Empty means unlimited.",
           "items": {
             "type": "array",
+            "minItems": 1,
             "maxItems": 2,
-            "items": {
-              "type": "number"
-            }
+            "items": [
+              {
+                "type": "number",
+                "minimum": 0
+              },
+              {
+                "type": "string",
+                "minLength": 1
+              }
+            ]
           }
         },
         "maxHandOn": {
@@ -109,7 +117,8 @@
           "minimum": 0,
           "description": "Number of unsuccessful description-gated clicks before the UI shows a hint."
         }
-      }
+      },
+      "additionalProperties": false
     },
     "meta": {
       "type": "object",
@@ -188,7 +197,11 @@
                 "null"
               ]
             }
-          }
+          },
+          "additionalProperties": false,
+          "required": [
+            "url"
+          ]
         },
         "tags": {
           "type": "array",
@@ -247,7 +260,8 @@
             "null"
           ]
         }
-      }
+      },
+      "additionalProperties": false
     },
     "globalStates": {
       "type": "object",
@@ -372,7 +386,8 @@
                     "default": true,
                     "description": "Whether to ban clicks during automation. Be careful with this setting with runInfinity true because it can cause an infinite loop."
                   }
-                }
+                },
+                "additionalProperties": false
               },
               "plan": {
                 "type": "array",
@@ -390,13 +405,16 @@
                         "$ref": "#/definitions/runnable_wrapper"
                       }
                     }
-                  }
+                  },
+                  "additionalProperties": false
                 }
               }
-            }
+            },
+            "additionalProperties": false
           }
         }
-      }
+      },
+      "additionalProperties": false
     },
     "itemInfo": {
       "type": "object",
@@ -458,7 +476,8 @@
                 },
                 "description": "Effect when item is unequipped."
               }
-            }
+            },
+            "additionalProperties": false
           },
           "usage": {
             "type": "object",
@@ -488,14 +507,28 @@
                     "broken"
                   ]
                 ],
-                "description": "Status of the item is an array of [value percents, label]."
+                "description": "Status of the item is an array of [value percents, label].",
+                "items": {
+                  "type": "array",
+                  "minItems": 2,
+                  "maxItems": 2,
+                  "items": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "string"
+                    }
+                  ]
+                }
               },
               "autoInc": {
                 "type": "boolean",
                 "default": true,
                 "description": "Auto increment usage current value when used."
               }
-            }
+            },
+            "additionalProperties": false
           },
           "stats": {
             "type": "object",
@@ -521,10 +554,12 @@
                   "type": "string",
                   "pattern": "^#[0-9a-fA-F]{6}$"
                 }
-              }
+              },
+              "additionalProperties": false
             }
           }
-        }
+        },
+        "additionalProperties": false
       }
     },
     "passwords": {
@@ -592,7 +627,8 @@
             "format": "uri",
             "description": "URL to the media resource."
           }
-        }
+        },
+        "additionalProperties": false
       }
     },
     "scenes": {
@@ -659,7 +695,8 @@
                 },
                 "description": "List of recipient Character IDs."
               }
-            }
+            },
+            "additionalProperties": false
           },
           "block": {
             "type": "object",
@@ -746,7 +783,8 @@
               }
             }
           }
-        }
+        },
+        "additionalProperties": false
       }
     },
     "characters": {
@@ -783,7 +821,8 @@
                 "type": "string",
                 "description": "Character avatar URL."
               }
-            }
+            },
+            "additionalProperties": false
           },
           "set": {
             "type": "object",
@@ -842,7 +881,8 @@
                 ],
                 "description": "ID of the main action for this character."
               }
-            }
+            },
+            "additionalProperties": false
           },
           "moveList": {
             "type": "array",
@@ -887,7 +927,8 @@
                     "$ref": "#/definitions/runnable_wrapper"
                   }
                 }
-              }
+              },
+              "additionalProperties": false
             }
           },
           "effect": {
@@ -914,7 +955,8 @@
                   }
                 }
               }
-            }
+            },
+            "additionalProperties": false
           },
           "stats": {
             "type": "object",
@@ -945,7 +987,8 @@
                   "type": "string",
                   "pattern": "^#[0-9a-fA-F]{6}$"
                 }
-              }
+              },
+              "additionalProperties": false
             }
           },
           "met": {
@@ -978,13 +1021,29 @@
                 "type": "string",
                 "description": "Current scene ID of the place."
               }
-            }
+            },
+            "additionalProperties": false,
+            "required": [
+              "scene_id",
+              "currentIndex"
+            ]
           },
           "inventory": {
             "type": "array",
-            "description": "Inventory items of the character."
+            "description": "Inventory items of the character.",
+            "items": {
+              "type": "string"
+            }
+          },
+          "hand": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Items currently held by the character."
           }
-        }
+        },
+        "additionalProperties": false
       }
     },
     "endings": {
@@ -1004,10 +1063,6 @@
           },
           "desc": {
             "type": "string"
-          },
-          "set": {
-            "type": "object",
-            "description": "Optional engine/client extension metadata for this ending."
           }
         }
       }
@@ -1047,9 +1102,7 @@
           "description": "Inline payload; its exact schema is selected by wrapper.type."
         },
         "hide": {
-          "type": "boolean",
-          "default": false,
-          "description": "Với type=item/subtype=add: ẩn thông báo 'đã nhận vật phẩm' mặc định."
+          "type": "boolean"
         },
         "skip": {
           "type": "boolean",
@@ -1059,9 +1112,148 @@
         "req": {
           "$ref": "#/definitions/requirement_details",
           "description": "Điều kiện cổng cho RIÊNG bước này: nếu check() không pass thì bước này bị bỏ qua (KHÔNG dừng cả danh sách). Đây là cơ chế đúng để 'gate' một effect — KHÔNG dùng { type: 'req' } (giá trị này luôn bị engine no-op, xem engine/modules/Effect.js dòng ~54)."
+        },
+        "subtype": {
+          "type": "string",
+          "description": "Biến thể cụ thể trong nhóm 'type'. Ví dụ: type=characters -> subtype in [edit_stats, mng_stats, moving, ...]; type=item -> subtype in [add, remove, usage, ...]; type=notify -> subtype in [toast, modal, ...]."
+        },
+        "target": {
+          "description": "ID đối tượng bị tác động (character id, scene id, action id, item id...). Có thể là chuỗi resolver $(...)."
+        },
+        "property": {
+          "type": "string",
+          "description": "Tên thuộc tính bị chỉnh sửa (vd tên chỉ số 'HP', hoặc property của scene/router/action khi type=set)."
+        },
+        "value": {
+          "description": "Giá trị áp dụng. Có thể là số, chuỗi, bool, hoặc chuỗi resolver $(...)."
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "add",
+            "subtract",
+            "set",
+            "multiply"
+          ],
+          "description": "Cách áp dụng 'value' lên chỉ số hiện tại (mặc định 'add')."
+        },
+        "field": {
+          "type": "string",
+          "enum": [
+            "current",
+            "max"
+          ],
+          "description": "Với hiệu ứng chỉnh chỉ số: áp dụng lên field 'current' hay 'max' (mặc định 'current')."
+        },
+        "text": {
+          "type": "string",
+          "description": "Nội dung thông báo (type=notify)."
+        },
+        "title": {
+          "type": "string",
+          "description": "Tiêu đề thông báo (type=notify)."
+        },
+        "level": {
+          "type": "string",
+          "enum": [
+            "info",
+            "success",
+            "warn",
+            "danger",
+            "error"
+          ],
+          "description": "Mức độ / màu sắc thông báo (type=notify)."
+        },
+        "table": {
+          "type": "string",
+          "description": "Tên bảng CMS bị tác động (type=cms)."
+        },
+        "exec": {
+          "type": "string",
+          "description": "Thao tác cụ thể (vd type=characters/subtype=mng_stats dùng 'exec': 'swap' | 'copy_to' | 'cut_to')."
+        },
+        "logic": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "AND",
+            "OR",
+            null
+          ],
+          "description": "Dùng khi effect_details lồng một requirement (vd type=set/subtype liên quan điều kiện)."
+        },
+        "check": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/requirement_check"
+          }
+        },
+        "duration": {
+          "type": "number",
+          "description": "Thời lượng hiệu ứng (giây), dùng cho type=vfx."
+        },
+        "notify": {
+          "type": "boolean",
+          "description": "Có hiển thị toast khi effect này chạy hay không."
+        },
+        "space": {
+          "type": "string",
+          "enum": [
+            "router",
+            "character",
+            "action",
+            "chat",
+            "item"
+          ]
+        },
+        "in": {
+          "type": "string",
+          "description": "Danh sách con bị chỉnh sửa trong manage_effect, vd 'still' | 'enter' | 'leave' | 'pass' | 'fail'."
+        },
+        "content": {
+          "$ref": "#/definitions/runnable_wrapper",
+          "description": "Effect được thêm/xoá khỏi danh sách target (dùng bởi manage_effect)."
+        },
+        "id": {
+          "type": "string"
+        },
+        "flicker": {
+          "type": "number"
+        },
+        "loop": {
+          "type": "boolean"
+        },
+        "loopSecond": {
+          "type": "number"
+        },
+        "repeat": {
+          "type": "boolean"
+        },
+        "column": {
+          "type": "string"
+        },
+        "method": {
+          "type": "string"
+        },
+        "index": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          ]
         }
       },
-      "additionalProperties": true,
+      "additionalProperties": false,
       "allOf": [
         {
           "if": {
@@ -1309,9 +1501,30 @@
               }
             }
           ]
+        },
+        "format": {
+          "type": "string",
+          "enum": [
+            "photo",
+            "video",
+            "sound"
+          ]
+        },
+        "control": {
+          "type": "string",
+          "enum": [
+            "start",
+            "stop",
+            "repeat",
+            "play",
+            "pause"
+          ]
+        },
+        "dedupeKey": {
+          "type": "string"
         }
       },
-      "additionalProperties": true,
+      "additionalProperties": false,
       "allOf": [
         {
           "if": {
@@ -1375,9 +1588,23 @@
         "property": {
           "type": "string",
           "description": "Tên global state / chỉ số cần kiểm tra (bắt buộc khi type=state hoặc type=stat)."
+        },
+        "target": {
+          "type": "string",
+          "minLength": 1
+        },
+        "field": {
+          "type": "string",
+          "enum": [
+            "current",
+            "max"
+          ]
+        },
+        "broken": {
+          "type": "boolean"
         }
       },
-      "additionalProperties": true,
+      "additionalProperties": false,
       "allOf": [
         {
           "if": {
@@ -1961,7 +2188,8 @@
           },
           "required": [
             "title"
-          ]
+          ],
+          "additionalProperties": false
         },
         "set": {
           "type": "object",
@@ -1982,7 +2210,7 @@
                 "string",
                 "null"
               ],
-              "description": "ID đích tương ứng với 'type' (scene id / router id / item id / character id)."
+              "minLength": 1
             },
             "requirement": {
               "type": "boolean",
@@ -2041,7 +2269,8 @@
           },
           "required": [
             "display"
-          ]
+          ],
+          "additionalProperties": false
         },
         "requirement": {
           "$ref": "#/definitions/requirement_details"
@@ -2077,9 +2306,11 @@
               },
               "description": "Chạy khi nhập sai mật khẩu bảo vệ action."
             }
-          }
+          },
+          "additionalProperties": false
         }
-      }
+      },
+      "additionalProperties": false
     },
     "router": {
       "type": "object",
@@ -2117,7 +2348,8 @@
               ],
               "description": "Ảnh/video nền riêng cho router này (ghi đè scene.meta.cover). Hỗ trợ tiền tố 'video:' / 'photo:' hoặc media id."
             }
-          }
+          },
+          "additionalProperties": false
         },
         "set": {
           "type": "object",
@@ -2201,7 +2433,8 @@
             "blocked",
             "visited",
             "countVisited"
-          ]
+          ],
+          "additionalProperties": false
         },
         "loop": {
           "type": "object",
@@ -2228,7 +2461,8 @@
               },
               "description": "Chạy khi người chơi đứng yên tại router quá 'set.secondsStill' giây."
             }
-          }
+          },
+          "additionalProperties": false
         },
         "timer": {
           "type": "object",
@@ -2246,7 +2480,8 @@
                 "$ref": "#/definitions/runnable_wrapper"
               }
             }
-          }
+          },
+          "additionalProperties": false
         },
         "actions": {
           "description": "Danh sách action thuộc router. Model hiện tại: MẢNG gồm string (ID tham chiếu tới 'actions' toàn cục) hoặc object action inline. (Model cũ: object map {actionId: {...action}} vẫn được engine hỗ trợ ngược nhưng KHÔNG khuyến khích dùng cho kịch bản mới.)",
@@ -2285,10 +2520,12 @@
                 "type": "string",
                 "description": "ID router nguồn."
               }
-            }
+            },
+            "additionalProperties": false
           }
         }
-      }
+      },
+      "additionalProperties": false
     },
     "scene": {
       "type": "object",
@@ -2343,14 +2580,16 @@
           },
           "required": [
             "title"
-          ]
+          ],
+          "additionalProperties": false
         },
         "set": {
           "type": "object",
           "properties": {
             "activeRouterId": {
               "type": "string",
-              "description": "ID router đang active mặc định khi vào scene."
+              "minLength": 1,
+              "description": "Router ID activated when entering this scene."
             },
             "blocked": {
               "type": "boolean",
@@ -2366,7 +2605,8 @@
           },
           "required": [
             "activeRouterId"
-          ]
+          ],
+          "additionalProperties": false
         },
         "routers": {
           "type": "object",
@@ -2376,7 +2616,8 @@
           },
           "minProperties": 1
         }
-      }
+      },
+      "additionalProperties": false
     },
     "manage_effect_details": {
       "type": "object",
