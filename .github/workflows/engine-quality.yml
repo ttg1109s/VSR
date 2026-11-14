@@ -2,7 +2,7 @@ name: Engine quality
 
 on:
   push:
-    branches: [engine-only, feature/restore-password-domain]
+    branches: [engine-only, feature/restore-password-domain, feature/schema-as-source-of-truth]
   pull_request:
 
 jobs:
@@ -14,5 +14,6 @@ jobs:
         with:
           node-version: 20
       - run: npm install --ignore-scripts --no-audit --no-fund
+      - run: npm run schema:check
       - run: npm test
       - run: npm run audit:state:strict
