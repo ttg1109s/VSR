@@ -92,10 +92,6 @@ export const ActionSystem = {
         const actDef = effective.find(action => action.id === actionKey);
         if (!actDef) return;
 
-        // Enforce locks in the Engine, not only in presentation controls.
-        if (this.checkHardLock('scene', sId) || this.checkHardLock('router', rId)) {
-            return { success: false, reason: 'hard_locked' };
-        }
 
         console.log(`[Flow] >>> CLICK ACTION: ${actionKey}`);
 
