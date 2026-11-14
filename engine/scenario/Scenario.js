@@ -1,5 +1,6 @@
 import Ajv from 'ajv';
-import scenarioSchema from '../../scenario.schema.json' assert { type: 'json' };
+import { scenarioSchema } from './ScenarioSchema.js';
+import addFormats from 'ajv-formats';
 
 export const SCENARIO_FORMAT_VERSION = 1;
 
@@ -13,6 +14,7 @@ export class ScenarioValidationError extends Error {
 }
 
 const ajv = new Ajv({ allErrors: true, strict: false, allowUnionTypes: true });
+addFormats(ajv);
 const validateAgainstSchema = ajv.compile(scenarioSchema);
 
 function clone(input) {
