@@ -21,7 +21,7 @@ export const EntitySystem = {
         return !!(char && char.set.moving && char.set.move && char.moveList.some(item => !item.skip));
     },
 
-    scheduleCharacterMove(charId) {
+    scheduleCharacterMove(charId, delayOverride = null) {
         const currentIdentity = this.state.faker.active ? this.state.faker.targetId : (this.state.meta?.entryCharacter || 'player');
         if (charId === currentIdentity) return;
 
@@ -33,11 +33,11 @@ export const EntitySystem = {
 
         const minTime = this.getConfig ? this.getConfig('minCharacterMoving') : 30;
         let rawStep = (currentItem && currentItem.nextStep) ? resolveValue(currentItem.nextStep, this) : minTime;
-        const waitTime = Math.max(minTime, Number(rawStep) || minTime);
+        const waitTime = Math.max(minTime, Number(rawStep) || minTime);\n        const delay = Number.isFinite(delayOverride) && delayOverride >= 0 ? delayOverride : waitTime * 1000;
 
         this.taskManager.kill(`move_char_${charId}`);
         this.taskManager.addNew(`move_char_${charId}`, {
-            time: waitTime * 1000,
+            time: Math.max(1, delay),
             mode: 'timeout',
             count: 1,
             exe: () => this.executeCharacterMove(charId)
