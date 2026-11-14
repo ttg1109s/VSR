@@ -59,7 +59,7 @@ function verifyPath(config, input) {
 function verifyPuzzle(config, input) {
     const parsed = parseStructuredInput(input);
     const order = Array.isArray(parsed) ? parsed : parsed?.order;
-    const ratio = config.ratio;
+    const ratio = config.ratio ?? [3, 3];
     if (!Array.isArray(ratio) || ratio.length !== 2) return false;
     const [cols, rows] = ratio;
     if (!Number.isInteger(cols) || !Number.isInteger(rows) ||
