@@ -43,12 +43,12 @@ export class GameEngine {
   const sceneId=pending.sceneId,routerId=pending.routerId;
   const action=this.getEffectiveActions(sceneId,routerId).find(item=>item.id===pending.actionId);
   if(!action||!action.set?.password)throw new Error('Password action no longer exists.');
-  if(payload.cancel===true){this.pendingPasswordAction=null;return this.finishPasswordAction(action,pending.actionId,uniqueId,'cancel');}
+  if(payload.cancel===true){this.api.engine.state.set('session.passwordChallenge',null);return this.finishPasswordAction(action,pending.actionId,uniqueId,'cancel');}
   if(!Object.prototype.hasOwnProperty.call(payload,'input'))throw new TypeError('password.submit requires raw input.');
   const [type,id]=String(action.set.password).split(':');
   const config=this.src?.passwords?.[type]?.[id];
   if(!type||!id||!config)throw new Error('Password definition not found in loaded scenario.');
-  this.pendingPasswordAction=null;
+  this.api.engine.state.set('session.passwordChallenge',null);
   return this.finishPasswordAction(action,pending.actionId,uniqueId,verifyPassword(type,config,payload.input));
  }
  publishProtocolSnapshot(reason='state.changed'){return this.protocol?.publishSnapshot(this,reason)??null;}
