@@ -131,7 +131,7 @@ export const EffectHandlers = {
     },
 
     vfx(eff) {
-        if (API.render && API.render.vfx) {
+        if (API.presentation && API.presentation.vfx) {
             const resolvedTarget = resolveValue(eff.target, this);
             let resolvedValue = resolveValue(eff.value, this);
             const resolvedDuration = resolveValue(eff.duration, this);
@@ -169,7 +169,7 @@ export const EffectHandlers = {
                 }
             }
 
-            API.render.vfx.exec(eff.subtype, instanceId, {
+            API.presentation.vfx.exec(eff.subtype, instanceId, {
                 target: resolvedTarget,
                 property: eff.property,
                 value: resolvedValue,
