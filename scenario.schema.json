@@ -2256,6 +2256,11 @@
             }
           },
           "additionalProperties": false
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Stable inline action identifier; generated deterministically when omitted."
         }
       },
       "additionalProperties": false
@@ -2711,8 +2716,7 @@
             "NOT",
             "XOR",
             null
-          ],
-          "default": null
+          ]
         },
         "check": {
           "type": "array",
