@@ -12,9 +12,13 @@ export const safeMediaUrl = (value) => {
             if (url.protocol === 'http:' || url.protocol === 'https:' || url.protocol === 'blob:' || url.protocol === 'data:') return url.href;
         } catch (_) {}
     }
-    // Permit relative paths, but reject protocol-relative and script-like URLs.
-    if (!/^(?:\/\/|[a-z][a-z0-9+.-]*:)/i.test(raw) && !/[\u0000-\u001f\\]/.test(raw)) return raw;
-    return '';
+    // Resolve relative paths against the current origin; reject protocol-relative,
+    // script-like, control-character and backslash-based URL tricks.
+    if (/^(?:\\/\\/|[a-z][a-z0-9+.-]*:)/i.test(raw) || /[\\u0000-\\u001f\\\\]/.test(raw)) return '';
+    try {
+        const url = new URL(raw, window.location.href);
+        return url.protocol === 'http:' || url.protocol === 'https:' ? url.href : '';
+    } catch (_) { return ''; }
 };
 
 const COLOR_VALUE = /^(?:#[0-9a-f]{3,8}|(?:rgb|rgba|hsl|hsla)\([\d.% ,+-]+\)|[a-z]{1,20})$/i;
