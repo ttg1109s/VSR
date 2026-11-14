@@ -57,26 +57,14 @@ export const EntitySystem = {
     },
 
     isLocationBlocked(sceneId) {
-        // [FIXED] Use API to check blocked status (Standardized with Logic.checkHardLock)
+        const state = this.api.engine.state;
+        if (!state.has('scene.blocked', { id: sceneId })) return true;
+        if (state.get('scene.blocked', { id: sceneId })) return true;
 
-        // 1. Check Scene Blocked
-        const sceneBlocked = this.api.engine.state.get('scene.blocked', { id: sceneId });
-        if (sceneBlocked) return true;
-
-        // 2. Check Active Router Blocked
-        // Get active router ID via API or fallback to state
-        const activeRouterId = this.api.engine.state.get('scene.activeRouterId', { id: sceneId });
-
+        const activeRouterId = state.get('scene.activeRouterId', { id: sceneId });
         if (activeRouterId) {
-            const routerBlocked = this.api.engine.state.get('router.blocked', { sceneId: sceneId, routerId: activeRouterId });
-            return !!routerBlocked;
+            return !!state.get('router.blocked', { sceneId, routerId: activeRouterId });
         }
-
-        // Fallback checks (in case API returns undefined for missing keys)
-        const s = this.state.scenes[sceneId];
-        if (!s) return true; // Scene not found = Blocked
-        if (s.blocked) return true;
-
         return false;
     },
 
