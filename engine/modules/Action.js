@@ -230,7 +230,7 @@ export const ActionSystem = {
             }), { id: actStateKey });
             const actState = state.getRuntimeSnapshot('actions.[id]', { id: actStateKey });
 
-remove late cooldown check            // Normal Effect (Always run if present)
+            // Normal Effect (Always run if present)
             if (actDef.effect?.normal) {
                 console.log(`[Flow] Effect 'normal' start`);
                 await this.processRunnables(actDef.effect.normal, { sceneId: sId, routerId: rId, actionId: actionKey, hook: 'normal' });
