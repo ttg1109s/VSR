@@ -39,11 +39,7 @@ export class EngineAdapter {
       this.refresh('presentation.scene.render');
     }
 
-    if (typeof event.event === 'string' && event.event.startsWith('presentation.')) {
-      this.emit({ type: 'presentation', name: event.event.slice('presentation.'.length), payload: event.payload || {}, event });
-    } else {
-      this.emit({ type: 'protocol', event });
-    }
+    this.emit({ type: 'protocol', event });
   }
 
   refresh(reason = 'manual') {
