@@ -4,14 +4,13 @@ import { resolveValue } from '../../engine/modules/Resolver.js';
 // --- 1. Comparison Operations ---
 const Operations = {
     '==': (a, b) => a == b,
-    '=': (a, b) => a == b,
     '!=': (a, b) => a != b,
     '>': (a, b) => Number(a) > Number(b),
     '<': (a, b) => Number(a) < Number(b),
     '>=': (a, b) => Number(a) >= Number(b),
     '<=': (a, b) => Number(a) <= Number(b),
     'has': (a, b) => Array.isArray(a) ? a.includes(b) : false,
-    '!has': (a, b) => Array.isArray(a) ? !a.includes(b) : true
+    '!has': (a, b) => Array.isArray(a) ? !a.includes(b) : false
 };
 
 const LogicGates = {
@@ -143,22 +142,27 @@ const CheckTypeHandlers = {
 
 export const LogicSystem = {
     checkReq(req) {
-        if (req === null || req === undefined || req === false) return { pass: true };
-        let definition = req?.inline || req;
-        if (typeof req === 'string') {
-            definition = this.src?.templates?.requirement?.[req]
-                || this.src?.templates?.requirements?.[req]
-                || this.src?.templates?.req?.[req];
-        } else if (req && typeof req === 'object' && typeof req.ref === 'string') {
-            definition = this.src?.templates?.requirement?.[req.ref]
-                || this.src?.templates?.requirements?.[req.ref]
-                || this.src?.templates?.req?.[req.ref];
+        if (req === null || req === undefined) return { pass: true };
+
+        let definition = req;
+        if (req && typeof req === 'object' && typeof req.ref === 'string') {
+            definition = this.src?.templates?.requirements?.[req.ref];
         }
-        if (!definition || typeof definition !== 'object' || !Array.isArray(definition.check) || definition.check.length === 0) {
+        if (
+            !definition ||
+            typeof definition !== 'object' ||
+            Array.isArray(definition) ||
+            !Object.prototype.hasOwnProperty.call(definition, 'logic') ||
+            !Array.isArray(definition.check) ||
+            definition.check.length === 0
+        ) {
             return { pass: false, type: 'invalid_requirement' };
         }
+
         const results = definition.check.map(check => this.checkSingle(check));
-        if (!definition.logic && results.length === 1) return results[0];
+        if (definition.logic === null) {
+            return results.length === 1 ? results[0] : { pass: false, type: 'invalid_requirement' };
+        }
         const gate = LogicGates[definition.logic];
         if (!gate || (definition.logic === 'NOT' && results.length !== 1)) {
             return { pass: false, type: 'invalid_requirement' };
@@ -171,7 +175,7 @@ export const LogicSystem = {
     },
 
     checkSingle(c) {
-        if (!c) return { pass: true };
+        if (!c || typeof c !== 'object' || Array.isArray(c)) return { pass: false };
         try {
             const handler = CheckTypeHandlers[c.type];
             return { pass: handler ? handler(this, c) : false };
