@@ -5,7 +5,7 @@ import ScenarioCover from '../../components/scenario-preview/ScenarioCover.jsx';
 function ExperienceItem({ label, value }) {
   if (value === null || value === undefined || value === '') return null;
   return (
-    <div className="vsr-card vsr-experience-item">
+    <div className="vsr-card vsr-experience-item vsr-experience-item--center">
       <span className="vsr-text-secondary vsr-experience-item__label">{label}</span>
       <strong className="vsr-experience-item__value">{value}</strong>
     </div>
@@ -96,7 +96,10 @@ export default function ScenarioPreviewPage({ preview, onBack }) {
   const experienceItems = [
     { label: 'Độ tuổi', value: metadata.ageRating },
     { label: 'Độ khó', value: formatDifficulty(metadata.difficulty) },
-    { label: 'Thời lượng dự kiến', value: formatPlayTime(metadata.estimatedPlayTime) }
+    { label: 'Thời lượng dự kiến', value: formatPlayTime(metadata.estimatedPlayTime) },
+    { label: 'Số cảnh', value: Number.isFinite(summary.sceneCount) ? summary.sceneCount : null },
+    { label: 'Số nhân vật', value: Number.isFinite(summary.characterCount) ? summary.characterCount : null },
+    { label: 'Số vật phẩm', value: Number.isFinite(summary.itemCount) ? summary.itemCount : null }
   ].filter(item => item.value !== null && item.value !== undefined && item.value !== '');
 
   const publicationItems = [
@@ -113,7 +116,7 @@ export default function ScenarioPreviewPage({ preview, onBack }) {
   return (
     <main className="vsr-page-shell vsr-page-shell--start">
       <article className="vsr-content-width vsr-content-width--medium vsr-stack vsr-stack--gap-6">
-        <ScenarioCover url={metadata.cover?.url} title={metadata.title} />
+        <ScenarioCover url={metadata.cover?.url} ratio={metadata.cover?.ratio} title={metadata.title} />
 
         <header className="vsr-stack vsr-stack--gap-2">
           <h1 className="vsr-heading-display">{metadata.title || 'Kịch bản chưa có tiêu đề'}</h1>
@@ -123,25 +126,23 @@ export default function ScenarioPreviewPage({ preview, onBack }) {
           <ScenarioDescription description={metadata.description} />
         </header>
 
-        {experienceItems.length > 0 && (
+        {(experienceItems.length > 0 || (Array.isArray(metadata.tags) && metadata.tags.length > 0)) && (
           <section className="vsr-stack vsr-stack--gap-3" aria-labelledby="scenario-experience-title">
             <h2 id="scenario-experience-title">Thông tin trải nghiệm</h2>
-            <Grid columns="auto" gap="3">
-              {experienceItems.map(item => (
-                <ExperienceItem key={item.label} label={item.label} value={item.value} />
-              ))}
-            </Grid>
-          </section>
-        )}
-
-        {Array.isArray(metadata.tags) && metadata.tags.length > 0 && (
-          <section className="vsr-stack vsr-stack--gap-2" aria-labelledby="scenario-tags-title">
-            <h2 id="scenario-tags-title">Thẻ kịch bản</h2>
-            <ul className="vsr-tag-list">
-              {metadata.tags.map((tag, index) => (
-                <li className="vsr-tag" key={`${tag}-${index}`}>{tag}</li>
-              ))}
-            </ul>
+            {experienceItems.length > 0 && (
+              <Grid columns="3" gap="3">
+                {experienceItems.map(item => (
+                  <ExperienceItem key={item.label} label={item.label} value={item.value} />
+                ))}
+              </Grid>
+            )}
+            {Array.isArray(metadata.tags) && metadata.tags.length > 0 && (
+              <ul className="vsr-tag-list">
+                {metadata.tags.map((tag, index) => (
+                  <li className="vsr-tag" key={`${tag}-${index}`}>{tag}</li>
+                ))}
+              </ul>
+            )}
           </section>
         )}
 
@@ -163,13 +164,6 @@ export default function ScenarioPreviewPage({ preview, onBack }) {
               <DescriptionListItem label="Bản quyền" value={metadata.copyright} layout="inline" />
               <DescriptionListItem label="Giấy phép" value={metadata.license} layout="inline" />
             </DescriptionList>
-          </section>
-        )}
-
-        {metadata.notes && (
-          <section className="vsr-stack vsr-stack--gap-2" aria-labelledby="scenario-notes-title">
-            <h2 id="scenario-notes-title">Ghi chú</h2>
-            <p className="vsr-text-secondary">{metadata.notes}</p>
           </section>
         )}
 
