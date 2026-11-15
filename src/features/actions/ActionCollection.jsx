@@ -1,6 +1,7 @@
 import React,{useCallback,useEffect,useMemo,useRef,useState}from'react';
 import{Button}from'../../design-system/index.js';
 import ActionCard from'./ActionCard.jsx';
+import './action-carousel.css';
 
 const MESSAGES={
  action_hidden:'Hành động hiện không hiển thị.',locked:'Hành động đang bị khóa.',
@@ -25,27 +26,28 @@ function shuffled(items){
 
 export default function ActionCollection({actions=[],client,passwordChallenge=null,onError,sceneId=null}){
  const[pending,setPending]=useState(()=>new Set()),[feedback,setFeedback]=useState({}),cache=useRef(new Map());
- const orderRef=useRef({sceneId:undefined,keys:[]});
- const stable=useMemo(()=>{
-  const next=new Map(),items=(Array.isArray(actions)?actions:[]).map(a=>{
-   const k=a.key||a.id,old=cache.current.get(k),v=old&&JSON.stringify(old)===JSON.stringify(a)?old:a;
-   next.set(k,v);return v;
+ const [order,setOrder]=useState({sceneId:null,keys:[]});
+ const stable=useMemo(()=> (Array.isArray(actions)?actions:[]).map(a=>{
+  const k=a.key||a.id,old=cache.current.get(k);
+  return old&&JSON.stringify(old)===JSON.stringify(a)?old:a;
+ }),[actions]);
+ useEffect(()=>{
+  const next=new Map(stable.map(a=>[a.key||a.id,a]));
+  cache.current=next;
+ },[stable]);
+ useEffect(()=>{
+  const keys=stable.map(a=>a.key||a.id);
+  setOrder(previous=>{
+   if(previous.sceneId!==sceneId)return {sceneId,keys:shuffled(keys)};
+   const retained=previous.keys.filter(k=>keys.includes(k));
+   const known=new Set(retained);
+   return {sceneId,keys:[...retained,...shuffled(keys.filter(k=>!known.has(k)))]};
   });
-  cache.current=next;return items;
- },[actions]);
+ },[stable,sceneId]);
  const ordered=useMemo(()=>{
   const byKey=new Map(stable.map(a=>[a.key||a.id,a]));
-  const keys=[...byKey.keys()];
-  if(orderRef.current.sceneId!==sceneId){
-   orderRef.current={sceneId,keys:shuffled(keys)};
-  }else{
-   const retained=orderRef.current.keys.filter(k=>byKey.has(k));
-   const known=new Set(retained);
-   const added=shuffled(keys.filter(k=>!known.has(k)));
-   orderRef.current={sceneId,keys:[...retained,...added]};
-  }
-  return orderRef.current.keys.map(k=>byKey.get(k)).filter(Boolean);
- },[stable,sceneId]);
+  return order.keys.map(k=>byKey.get(k)).filter(Boolean);
+ },[stable,order]);
  const carouselRef=useRef(null),slideRefs=useRef([]);
  const[activeIndex,setActiveIndex]=useState(0);
  const scrollToIndex=useCallback((index,behavior='smooth')=>{
@@ -60,7 +62,6 @@ export default function ActionCollection({actions=[],client,passwordChallenge=nu
  const handleScroll=useCallback(()=>{
   const viewport=carouselRef.current;
   if(!viewport||!ordered.length)return;
-  const left=viewport.scrollLeft;
   let nearest=0,distance=Infinity;
   slideRefs.current.slice(0,ordered.length).forEach((node,index)=>{
    if(!node)return;
@@ -119,9 +120,9 @@ export default function ActionCollection({actions=[],client,passwordChallenge=nu
     <Button variant="secondary" size="sm" disabled={ordered.length<2} onClick={()=>scrollToIndex(activeIndex+1)} aria-label="Hành động tiếp theo">Tiếp</Button>
    </div>
   </header>
-  <div ref={carouselRef} className="vsr-action-carousel__viewport" onScroll={handleScroll} aria-label="Danh sách hành động, cuộn ngang để xem thêm">
+  <div ref={carouselRef} className="vsr-action-carousel__viewport" onScroll={handleScroll} role="region" aria-roledescription="băng chuyền" aria-label="Danh sách hành động, dùng phím mũi tên trái và phải để di chuyển" tabIndex={0} onKeyDown={event=>{if(event.key==='ArrowRight'){event.preventDefault();scrollToIndex(activeIndex+1);}else if(event.key==='ArrowLeft'){event.preventDefault();scrollToIndex(activeIndex-1);}}}>
    <div className="vsr-action-carousel__track">
-    {ordered.map((a,index)=><div ref={node=>{slideRefs.current[index]=node;}} key={a.key||a.id} className="vsr-action-carousel__slide" aria-label={`Hành động ${index+1} trên ${ordered.length}`}>
+    {ordered.map((a,index)=><div ref={node=>{slideRefs.current[index]=node;}} key={a.key||a.id} className="vsr-action-carousel__slide" role="group" aria-roledescription="trang chiếu" aria-label={`Hành động ${index+1} trên ${ordered.length}`}>
      <ActionCard action={a} pending={pending.has(a.key)} interactionBlocked={pending.size>0||Boolean(passwordChallenge)} passwordChallenge={passwordChallenge} onTrigger={trigger} onMarkRead={read} onSubmitPassword={submit} onCancelPassword={cancel} onRefreshSnapshot={refresh} feedback={feedback[a.key]||''}/>
     </div>)}
    </div>
