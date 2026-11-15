@@ -39,8 +39,8 @@ function ActionCard({ action, pending = false, passwordChallenge = null, feedbac
   const cooldown = seconds(availability.cooldownUntil, clock);
   const deadline = seconds(passwordChallenge?.deadlineAt, clock);
   const thumbnail = meta.thumbnail || meta.cover;
-  const statusLabel = pending ? 'Đang xử lý thao tác' : locked ? 'Đang khóa' : (REASONS[reason] || 'Sẵn sàng');
-  const statusTone = pending ? 'info' : locked ? 'danger' : (REASON_TONES[reason] || 'success');
+  const statusLabel = pending ? 'Đang xử lý thao tác' : locked ? 'Đang khóa' : (REASONS[reason] || (reason === 'available' ? 'Sẵn sàng' : 'Trạng thái chưa xác định'));
+  const statusTone = pending ? 'info' : locked ? 'danger' : (REASON_TONES[reason] || (reason === 'available' ? 'success' : 'neutral'));
 
   useEffect(() => {
     const deadlines = [availability.cooldownUntil, passwordChallenge?.deadlineAt].filter(Number.isFinite);
