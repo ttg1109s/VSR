@@ -67,6 +67,8 @@ export class JsonProtocol{
     const readRequired=!!((engine.getConfig?.('allDescRead')||action.set?.readDesc===true)&&(action.meta?.desc??action.meta?.description));
     const read=runtime.readDesc===true;
     const cooldownUntil=Number.isFinite(runtime.cooldownEnd)?runtime.cooldownEnd:null;
+    const cooldownDuration=Number.isFinite(runtime.cooldownDuration)&&runtime.cooldownDuration>0?runtime.cooldownDuration:(Number.isFinite(action.set?.cooldown)&&action.set.cooldown>0?action.set.cooldown:null);
+    const cooldownStartedAt=cooldownUntil!==null&&cooldownDuration!==null?cooldownUntil-cooldownDuration*1000:null;
     let reason='available';
     const set=action.set||{};
     const entryCharacter=engine.state.entryCharacter||'player';
@@ -101,7 +103,7 @@ export class JsonProtocol{
     const meta=safeMeta(action.meta||{});
     return{id:action.id,key,title,name:action.name,meta:{...meta,title,description:meta.desc??meta.description??''},
      presentation:{display:display==='locked'?'locked':'show',readRequired,read},
-     availability:{canTrigger:reason==='available'||reason==='password_required',reason,cooldownUntil,checks},
+     availability:{canTrigger:reason==='available'||reason==='password_required',reason,cooldownUntil,cooldownStartedAt,cooldownDuration,checks},
      runtimeState:{display,readDesc:read}};
    }).filter(action=>action.runtimeState.display!=='hide')
    :[];
