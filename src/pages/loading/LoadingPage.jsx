@@ -1,8 +1,7 @@
 import React from 'react';
 import { Button, ProgressBar } from '../../design-system/index.js';
 
-export default function LoadingPage({ preview, status = 'loading', error = '', onClose, onRetry }) {
-  const title = preview?.metadata?.title || 'Untitled scenario';
+export default function LoadingPage({ status = 'loading', error = '', onClose, onRetry }) {
   const complete = status === 'complete';
   const failed = status === 'error';
 
@@ -10,10 +9,7 @@ export default function LoadingPage({ preview, status = 'loading', error = '', o
     <main className="vsr-page-shell vsr-loader-page">
       <div className="vsr-content-width vsr-content-width--narrow vsr-stack vsr-stack--gap-8">
         <header className="vsr-loader-header">
-          <div className="vsr-stack vsr-stack--gap-2">
-            <span className="vsr-loader-eyebrow">VSR <span aria-hidden="true">/</span> SCENARIO LOADER</span>
-            <h1 className="vsr-loader-title">{title}</h1>
-          </div>
+          <span aria-hidden="true" />
           <Button
             variant="tertiary"
             size="md"
