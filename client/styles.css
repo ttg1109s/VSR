@@ -231,3 +231,8 @@ button{font-family:inherit}
  .loading-card{padding:27px 22px}
 }
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* The sample has no cover asset: keep its tile neutral instead of simulating artwork. */
+.featured-art{background:#2b3329}
+.featured-art:before,.featured-art:after{display:none}
+.featured-art-icon{filter:none;opacity:.72}
