@@ -35,11 +35,24 @@ export class PresentationAdapter {
     if (message.type !== 'protocol' || !message.event) return;
     const event = message.event;
     if (typeof event.event === 'string' && event.event.startsWith('presentation.')) {
+      const name = event.event.slice('presentation.'.length);
+      if (name === 'scene.render') {
+        const viewModel = this.engineAdapter.getViewModel();
+        this.emit({
+          type: 'presentation',
+          name,
+          payload: {
+            sceneId: viewModel.sceneId,
+            routerId: viewModel.routerId,
+            actionIds: viewModel.actions.map(action => action.id)
+          }
+        });
+        return;
+      }
       this.emit({
         type: 'presentation',
-        name: event.event.slice('presentation.'.length),
-        payload: event.payload || {},
-        event
+        name,
+        payload: event.payload || {}
       });
     } else {
       this.emit({ type: 'protocol', event });
