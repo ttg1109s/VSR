@@ -555,6 +555,7 @@ export const DEMO_SCRIPT = {
         "square_gate": {
           "meta": {
             "sceneID": "scene_garden",
+            "subTitleStatus": "Loa phát thanh đang hoạt động",
             "desc": "Cổng làng và bảng thông báo"
           },
           "set": {
@@ -575,6 +576,7 @@ export const DEMO_SCRIPT = {
         "square_well": {
           "meta": {
             "sceneID": "scene_garden",
+            "subTitleStatus": "Có tiếng gõ vọng từ đáy giếng",
             "desc": "Giếng đá phủ rêu, tiếng gõ vọng lên từ lòng giếng"
           },
           "set": {
@@ -610,6 +612,7 @@ export const DEMO_SCRIPT = {
         "inn_lobby": {
           "meta": {
             "sceneID": "scene_inn",
+            "subTitleStatus": "Sổ khách ghi tên người chưa rời đi",
             "desc": "Quầy lễ tân"
           },
           "set": {
@@ -636,6 +639,7 @@ export const DEMO_SCRIPT = {
         "inn_cellar": {
           "meta": {
             "sceneID": "scene_inn",
+            "subTitleStatus": "Lối xuống hầm đang bị khóa",
             "desc": "Hầm rượu bị khóa"
           },
           "set": {
@@ -662,6 +666,7 @@ export const DEMO_SCRIPT = {
         "chapel_nave": {
           "meta": {
             "sceneID": "scene_chapel",
+            "subTitleStatus": "Chuông nhà nguyện đã im lặng",
             "desc": "Gian cầu nguyện"
           },
           "set": {
@@ -680,6 +685,7 @@ export const DEMO_SCRIPT = {
         "chapel_tower": {
           "meta": {
             "sceneID": "scene_chapel",
+            "subTitleStatus": "Ba hồi chuông có thể khôi phục ký ức",
             "desc": "Tháp chuông"
           },
           "set": {
@@ -708,6 +714,7 @@ export const DEMO_SCRIPT = {
         "school_class": {
           "meta": {
             "sceneID": "scene_school",
+            "subTitleStatus": "Dấu vết của đứa trẻ chưa từng tồn tại",
             "desc": "Lớp học số 3"
           },
           "set": {
@@ -736,6 +743,7 @@ export const DEMO_SCRIPT = {
         "forest_path": {
           "meta": {
             "sceneID": "scene_forest",
+            "subTitleStatus": "Lối mòn thay đổi khi quay lưng",
             "desc": "Lối mòn dưới tán thông"
           },
           "set": {
@@ -754,6 +762,7 @@ export const DEMO_SCRIPT = {
         "forest_clearing": {
           "meta": {
             "sceneID": "scene_forest",
+            "subTitleStatus": "Những cọc gỗ đánh dấu khoảng đất trống",
             "desc": "Khoảng đất trống có những cọc gỗ"
           },
           "set": {
@@ -782,6 +791,7 @@ export const DEMO_SCRIPT = {
         "mill_floor": {
           "meta": {
             "sceneID": "scene_mill",
+            "subTitleStatus": "Bánh xe vẫn quay dù suối đã cạn",
             "desc": "Sàn máy và bảng điều khiển"
           },
           "set": {
@@ -809,6 +819,7 @@ export const DEMO_SCRIPT = {
         "tunnel_entry": {
           "meta": {
             "sceneID": "scene_tunnel",
+            "subTitleStatus": "Tên người mất tích phủ kín tường hầm",
             "desc": "Cửa hầm"
           },
           "set": {
@@ -837,6 +848,7 @@ export const DEMO_SCRIPT = {
         "station_platform": {
           "meta": {
             "sceneID": "scene_station",
+            "subTitleStatus": "Chuyến tàu cuối cùng dừng lúc 03:17",
             "desc": "Sân ga lúc 03:17"
           },
           "set": {
