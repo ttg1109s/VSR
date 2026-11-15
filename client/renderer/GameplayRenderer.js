@@ -41,7 +41,7 @@ export class GameplayRenderer {
           <div class="game-brand"><span class="brand-mark">V</span><span>VSR <small>PLAYING</small></span></div>
           <span class="live-indicator"><i></i> LIVE</span>
         </header>
-        ${this.sceneRenderer.render(viewModel.scene, viewModel.sceneId)}
+        ${this.sceneRenderer.render(viewModel.scene, viewModel.router, viewModel.sceneId, this.adapter.engine.src)}
         ${this.routerRenderer.render(viewModel.router, viewModel.routerId)}
         ${this.actionRenderer.render(viewModel.actions)}
         <footer class="game-footer"><span>${escapeHtml(scenarioTitle)}</span><span>REV ${viewModel.stateRevision}</span></footer>
