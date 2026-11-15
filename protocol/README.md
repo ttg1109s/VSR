@@ -54,4 +54,4 @@ Scenario JSON is separate from save data. Save data uses a versioned `vsr-save` 
 
 ## Trust boundary
 
-Do not send scenario source or password answer values to an untrusted client. A local browser host is a development transport, not an authoritative security boundary. For production, run the Engine and password verification on a trusted server and expose only the client-safe projection.
+Do not send scenario source or password answer values to an untrusted client. The local HTTP/SSE server binds to localhost for development and is not an authoritative production deployment. For production, run the Engine and password verification on a trusted server and expose only the client-safe projection.
