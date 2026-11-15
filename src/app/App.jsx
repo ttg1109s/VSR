@@ -205,7 +205,7 @@ export default function App() {
   const cover = typeof coverValue === 'string' ? coverValue : '';
 
   return <div className="app-frame">
-    {screen === 'library' && <header className="topba    {screen === 'library' && <HomePage
+    {screen === 'library' && <HomePage
       loading={loading}
       demoAvailable={library.length > 0}
       onStartDemo={() => {
@@ -216,9 +216,6 @@ export default function App() {
       }}
       onUploadJson={() => document.getElementById('scenario-import')?.click()}
     />}
-Y ENGINE</div>
-      </section>
-    </main>}
 
     {screen === 'detail' && <main className="detail-page">
       <div className="detail-toolbar"><button onClick={() => { setScreen('library'); history.pushState({}, '', '#home'); }}>← <span>Thư viện</span></button><span>SCENARIO / OVERVIEW</span><span className="detail-ready"><i/> READY TO PLAY</span></div>
