@@ -36,7 +36,7 @@ Import tokens or the theme where needed:
 import { lightTheme, spacing, colors } from './design-system/index.js';
 ```
 
-Use `.vsr-page` for a responsive content width and `.vsr-card` only when content needs a distinct surface. A generic layout container should remain an unstyled layout primitive rather than being presented as a card.
+Use `.vsr-page` for a responsive content width and `.vsr-card` only when content needs a distinct surface. Shared layout primitives are provided in `foundations/layout.css` (for example `.vsr-page-shell`, `.vsr-stack`, `.vsr-content-width`, and typography helpers). Pages compose these primitives; they do not create page stylesheets or local layout rules.
 
 ## Rules
 
@@ -46,6 +46,10 @@ Use `.vsr-page` for a responsive content width and `.vsr-card` only when content
 - Do not use hover as the only way to discover or operate an action.
 - Maintain visible keyboard focus and a minimum 48×48px interactive target where practical.
 - Do not hardcode new colors or spacing values in feature UI; extend tokens deliberately.
+- Pages must not import or create page-level CSS, CSS modules, CSS-in-JS, inline styles, or local media queries.
+- Pages compose public Design System components, layout primitives, and patterns only. If a capability is missing, add it to the Design System first.
+- Feature-specific CSS may live beside a genuinely independent feature component, not in the page; it must consume existing tokens.
+
 - Keep presentation concerns inside `src/`; do not couple the design system to the headless engine, protocol, or state runtime.
 
 ## Scope
