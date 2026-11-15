@@ -1,4 +1,5 @@
 export { GameEngine } from './GameEngine.js';
+export { LocalEngineHost } from './LocalEngineHost.js';
 export { NotificationSystem } from './modules/Notification.js';
 export { JsonProtocol, cloneJsonValue, API, createEngineAPI } from '../protocol/index.js';
 export { verifyPassword } from './modules/password/verify.js';
