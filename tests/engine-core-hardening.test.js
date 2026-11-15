@@ -7,6 +7,7 @@ import { LogicSystem } from '../engine/modules/Logic.js';
 import { EffectSystem } from '../engine/modules/Effect.js';
 import { EffectHandlers, CharacterStrategies, SetStrategies } from '../engine/modules/effect/Strategies.js';
 import { StatsHelpers } from '../engine/modules/effect/strategies/Stats.js';
+import { ItemStrategies } from '../engine/modules/effect/strategies/Item.js';
 import { LoaderSystem } from '../engine/modules/Loader.js';
 import { ActionSystem } from '../engine/modules/Action.js';
 import { SceneSystem } from '../engine/modules/Scene.js';
@@ -935,4 +936,98 @@ test('set dispatcher rejects unknown subtypes explicitly', () => {
     () => EffectHandlers.set.call({}, { type: 'set', subtype: 'not_supported' }),
     /Unsupported set subtype: not_supported/
   );
+});
+
+
+test('item hide only occurs after a successful item operation in action context', () => {
+  const action = { display: 'show' };
+  const inventory = [];
+  const hand = [];
+  const itemInfo = {
+    valid: { usage: { current: 1, max: 3 } },
+    no_usage: {}
+  };
+  const state = {
+    getRuntimeSnapshot(path, params = {}) {
+      if (path === 'actions.[id]') return params.id === 'scene_router_action' ? action : undefined;
+      if (path === 'characters.[id]') return { inventory, hand };
+      if (path === 'itemInfo.[id]') return itemInfo[params.id];
+      return undefined;
+    },
+    update(path, updater) {
+      if (path === 'characters.[id].inventory') inventory.splice(0, inventory.length, ...updater(inventory));
+      if (path === 'characters.[id].hand') hand.splice(0, hand.length, ...updater(hand));
+      if (path === 'actions.[id].display') action.display = updater(action.display);
+    },
+    set(path, value, params) {
+      if (path === 'itemInfo.[id]') itemInfo[params.id] = value;
+    },
+    getRuntime(path) {
+      if (path === 'meta.entryCharacter') return 'player';
+      return undefined;
+    }
+  };
+  const engine = {
+    api: {
+      engine: { state },
+      notifications: { add() {} },
+      presentation: { components: { explorer() {} } }
+    },
+    addItem(id) {
+      if (inventory.includes(id)) return false;
+      inventory.push(id);
+      return true;
+    },
+    getOwnerId: () => 'player',
+    getConfig: () => 1
+  };
+  const context = { sceneId: 'scene', routerId: 'router', actionId: 'action' };
+
+  ItemStrategies.add(engine, { target: 'valid', hide: true }, context);
+  assert.equal(action.display, 'hide');
+
+  action.display = 'show';
+  ItemStrategies.add(engine, { target: 'valid', hide: true }, context);
+  assert.equal(action.display, 'show');
+
+  ItemStrategies.hand_on(engine, { target: 'valid', hide: true }, context);
+  assert.equal(action.display, 'show'); // Inventory does not contain valid in this isolated setup.
+
+  inventory.push('valid');
+  ItemStrategies.hand_on(engine, { target: 'valid', hide: true }, context);
+  assert.equal(action.display, 'hide');
+
+  action.display = 'show';
+  ItemStrategies.usage(engine, { target: 'no_usage', value: 1, hide: true }, context);
+  assert.equal(action.display, 'show');
+
+  ItemStrategies.usage(engine, { target: 'valid', value: -1, hide: true }, context);
+  assert.equal(action.display, 'hide');
+});
+
+test('item hide is ignored outside action context', () => {
+  const action = { display: 'show' };
+  const inventory = [];
+  const state = {
+    getRuntimeSnapshot(path, params = {}) {
+      if (path === 'actions.[id]') return action;
+      if (path === 'characters.[id]') return { inventory, hand: [] };
+      return undefined;
+    },
+    update(path, updater) {
+      if (path === 'characters.[id].inventory') inventory.splice(0, inventory.length, ...updater(inventory));
+    }
+  };
+  const engine = {
+    api: {
+      engine: { state },
+      notifications: { add() {} },
+      presentation: { components: { explorer() {} } }
+    },
+    addItem(id) { inventory.push(id); return true; },
+    getOwnerId: () => 'player'
+  };
+
+  ItemStrategies.add(engine, { target: 'item', hide: true }, { itemId: 'item', hook: 'use' });
+  assert.equal(action.display, 'show');
 });
