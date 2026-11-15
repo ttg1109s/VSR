@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useState } from 'react';
-import { Badge, Button, Dialog, Grid, Input, MediaFrame, Textarea } from '../../design-system/index.js';
+import { Badge, Button, Dialog, Grid, Input, MediaFrame, Popover, Textarea } from '../../design-system/index.js';
 
 const REASONS = {
   locked: 'Đang khóa',
@@ -118,7 +118,18 @@ function ActionCard({ action, pending = false, passwordChallenge = null, feedbac
 
     <div className="vsr-action-card__section vsr-action-card__description-section">
       <div className="vsr-action-card__section-heading">
-        <Button className="vsr-action-card__info-button" variant="tertiary" size="sm" leadingIcon="info" aria-label="Thông tin mô tả" onClick={() => setDetailsOpen(true)} />
+        <Popover
+          align="start"
+          label="Thông tin mô tả"
+          trigger={<Button className="vsr-action-card__info-button" variant="tertiary" size="sm" aria-label="Thông tin mô tả"><span className="vsr-action-card__info-glyph" aria-hidden="true">info</span></Button>}
+        >
+          <div className="vsr-action-card__popover">
+            <h4>Mô tả</h4>
+            {description ? <p className="vsr-text-body">{description}</p> : <p className="vsr-text-secondary">Không có mô tả chi tiết.</p>}
+            {readRequired && !read && <Button size="md" onClick={markRead} disabled={pending}>Xác nhận đã đọc</Button>}
+            {readRequired && read && <p className="vsr-text-secondary" role="status">Bạn đã xác nhận đọc mô tả này.</p>}
+          </div>
+        </Popover>
         {readRequired
           ? <Badge tone={read ? 'success' : 'warning'}>{read ? 'Đã đọc' : 'Chưa đọc'}</Badge>
           : <Badge tone="neutral">Không yêu cầu đọc</Badge>}
@@ -143,13 +154,6 @@ function ActionCard({ action, pending = false, passwordChallenge = null, feedbac
       <Button size="lg" leadingIcon={meta.buttonIcon} disabled={pending || availability.canTrigger !== true || locked} loading={pending} onClick={() => onTrigger?.(action)} aria-label={meta.buttonLabel || `Thực hiện ${meta.title || action.id}`}>{meta.buttonLabel || (reason === 'password_required' ? 'Xác thực' : 'Thực hiện')}</Button>
     </div>
 
-    <Dialog open={detailsOpen} onClose={() => setDetailsOpen(false)} title={meta.title || action.title || action.id} description="Thông tin chi tiết của hành động">
-      <div className="vsr-stack vsr-stack--gap-3">
-        {description ? <p className="vsr-text-body">{description}</p> : <p className="vsr-text-secondary">Không có mô tả chi tiết.</p>}
-        {readRequired && !read && <Button onClick={markRead} disabled={pending}>Xác nhận đã đọc</Button>}
-        {readRequired && read && <p className="vsr-text-secondary" role="status">Bạn đã xác nhận đọc mô tả này.</p>}
-      </div>
-    </Dialog>
     <Dialog open={challengeOpen} onClose={cancel} title="Xác thực hành động" description={passwordChallenge?.description || 'Trả lời thử thách do Engine cung cấp.'}>
       <form className="vsr-stack vsr-stack--gap-3" onSubmit={submit}>
         {passwordChallenge?.type === 'puzzle' && passwordChallenge.puzzle?.url && <MediaFrame src={passwordChallenge.puzzle.url} ratio="1:1" alt="Hình thử thách xếp mảnh" />}
