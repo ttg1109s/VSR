@@ -2269,10 +2269,15 @@ export const DEMO_SCRIPT = {
         ]
       },
       "requirement": {
-        "type": "state",
-        "property": "found_guestbook",
-        "op": "==",
-        "value": true
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "found_guestbook",
+            "op": "==",
+            "value": true
+          }
+        ]
       }
     },
     "act_ending_echo": {
