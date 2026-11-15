@@ -16,5 +16,6 @@ jobs:
       - run: npm install --ignore-scripts --no-audit --no-fund
       - run: npm run schema:check
       - run: npm run build
+      - run: npm run check:server
       - run: npm test
       - run: npm run audit:state:strict
