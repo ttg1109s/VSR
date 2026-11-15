@@ -8,9 +8,9 @@ export class ActiveRouterRenderer {
     const meta = router.meta || {};
     return `
       <section class="active-router" aria-label="Router đang hoạt động">
-        <div class="router-heading"><span class="eyebrow">ACTIVE ROUTER</span><span class="router-pulse"></span></div>
-        <h2>${escapeHtml(meta.title || meta.name || router.title || routerId)}</h2>
-        ${meta.desc || meta.description ? `<p>${escapeHtml(meta.desc || meta.description)}</p>` : ''}
+        <div class="router-heading"><span class="eyebrow">ACTIVE ROUTER / ${escapeHtml(routerId)}</span><span class="router-pulse"></span></div>
+        <h2>${escapeHtml(meta.desc || meta.description || routerId)}</h2>
+        ${meta.subTitleStatus ? `<p>${escapeHtml(meta.subTitleStatus)}</p>` : ''}
       </section>`;
   }
 }
