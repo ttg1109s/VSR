@@ -1,5 +1,6 @@
 @import './foundations/base.css';
 @import './foundations/responsive.css';
+@import './foundations/layout.css';
 @import './components/index.css';
 
 :root {
