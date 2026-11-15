@@ -26,4 +26,3 @@ jobs:
       - run: npm test
       - run: npm run audit:state:strict
       - run: npm run check:server
-      - run: npm run build
