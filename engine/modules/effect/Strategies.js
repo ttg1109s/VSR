@@ -5,7 +5,7 @@ import { SetStrategies, GotoStrategies, resolveValue, getNestedValue } from './s
 import { CharacterStrategies } from './strategies/Character.js';
 import { ItemStrategies } from './strategies/Item.js';
 import { StatsCalculators, StatsModeHandlers } from './strategies/Stats.js';
-import { NotifyStrategies } from './strategies/UI.js';
+import { NotifyStrategies } from './strategies/Notifications.js';
 import { EffectKeyStrategies, EffectScopeResolvers, StaticListResolvers, ManageSubtypeHandlers } from './strategies/Management.js';
 import { CmsStrategies } from './strategies/Cms.js';
 
