@@ -30,7 +30,7 @@ export default function ScenarioPreviewPage({ preview, onBack }) {
     <main className="vsr-page-shell">
       <article className="vsr-content-width vsr-content-width--medium vsr-stack vsr-stack--gap-6">
         <header className="vsr-stack vsr-stack--gap-3">
-          <Button variant="ghost" size="md" onClick={onBack} leadingIcon={<span aria-hidden="true">arrow_back</span>}>
+          <Button variant="secondary" size="md" onClick={onBack} leadingIcon={<span aria-hidden="true">arrow_back</span>}>
             Quay lại
           </Button>
           <div className="vsr-stack vsr-stack--gap-2">
