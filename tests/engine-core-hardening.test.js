@@ -5,6 +5,7 @@ import { scenarioSchema } from '../engine/scenario/ScenarioSchema.js';
 import { validateScenario, normalizeScenario, migrateScenario, ScenarioValidationError } from '../engine/scenario/Scenario.js';
 import { LogicSystem } from '../engine/modules/Logic.js';
 import { EffectSystem } from '../engine/modules/Effect.js';
+import { EffectHandlers } from '../engine/modules/effect/Strategies.js';
 import { LoaderSystem } from '../engine/modules/Loader.js';
 import { ActionSystem } from '../engine/modules/Action.js';
 import { SceneSystem } from '../engine/modules/Scene.js';
@@ -315,4 +316,53 @@ test('scenario format migration rejects unsupported versions explicitly', () => 
   const futureFormat = validScenario();
   futureFormat.formatVersion = 2;
   assert.throws(() => migrateScenario(futureFormat), /newer than supported version/);
+});
+
+
+test('schema-defined notify.toast is dispatched to the toast notification API', () => {
+  const calls = [];
+  const engine = {
+    api: {
+      notifications: {
+        add: (...args) => calls.push({ kind: 'toast', args }),
+        alert: (...args) => calls.push({ kind: 'modal', args })
+      }
+    }
+  };
+
+  EffectHandlers.notify.call(engine, {
+    type: 'notify', subtype: 'toast', title: 'Toast', text: 'Message', level: 'success'
+  });
+
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].kind, 'toast');
+  assert.deepEqual(calls[0].args.slice(0, 3), ['Toast', 'Message', 'success']);
+});
+
+test('runtime rejects notify subtypes that are not declared by the schema', () => {
+  const engine = { api: { notifications: { add() {}, alert() {} } } };
+  assert.throws(
+    () => EffectHandlers.notify.call(engine, { type: 'notify', subtype: 'unknown', text: 'Message' }),
+    /Unsupported notify subtype/
+  );
+});
+
+test('runtime rejects characters.mng_stats operations outside the schema enum', () => {
+  assert.throws(
+    () => EffectHandlers.characters.call({}, {
+      type: 'characters', subtype: 'mng_stats', exec: 'add_stats', target: 'player', value: 'HP'
+    }),
+    /Unsupported characters.mng_stats operation/
+  );
+});
+
+test('scenario schema rejects characters.mng_stats operations outside its contract', () => {
+  const scenario = validScenario();
+  scenario.scenes.start.routers.main.actions[0].effect = {
+    normal: [{
+      type: 'characters', subtype: 'mng_stats', exec: 'add_stats',
+      target: 'player', value: 'HP'
+    }]
+  };
+  assert.ok(validateScenario(scenario).length > 0);
 });
