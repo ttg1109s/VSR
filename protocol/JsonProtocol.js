@@ -59,6 +59,7 @@ export class JsonProtocol{
     status:challenge.status,countTest:challenge.countTest,retryMax:challenge.retryMax,
     deadlineAt:challenge.deadlineAt
    }:null,
+   timer:engine.timerState?cloneJsonValue(engine.timerState):null,
    notifications:{
     pending:engine.notifications?.getPending?.()||[],
     history:engine.notifications?.getHistory?.({limit:50})||[]
