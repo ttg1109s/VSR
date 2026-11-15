@@ -96,7 +96,7 @@ export default function ScenarioPreviewPage({ preview, onBack }) {
   const experienceItems = [
     { label: 'Độ tuổi', value: metadata.ageRating },
     { label: 'Độ khó', value: formatDifficulty(metadata.difficulty) },
-    { label: 'Thời lượng dự kiến', value: formatPlayTime(metadata.estimatedPlayTime) }
+    { label: 'Thời lượng', value: formatPlayTime(metadata.estimatedPlayTime) }
   ].filter(item => item.value !== null && item.value !== undefined && item.value !== '');
 
   const publicationItems = [
