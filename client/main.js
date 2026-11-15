@@ -1,5 +1,7 @@
 import { GameEngine, DEMO_SCRIPT, normalizeScenario } from '../engine/index.js';
 import './styles.css';
+import { EngineAdapter } from './adapters/EngineAdapter.js';
+import { GameplayRenderer } from './renderer/GameplayRenderer.js';
 
 const $ = (selector) => document.querySelector(selector);
 const app = $('#app');
@@ -10,6 +12,8 @@ const state = {
   scenario: null,
   scenarioName: '',
   engine: null,
+  adapter: null,
+  gameplayRenderer: null,
   snapshot: null,
   loading: false
 };
@@ -117,27 +121,29 @@ async function startGame() {
   state.loading = true;
   renderLoading('Đang kiểm tra và nạp kịch bản…');
   let engine;
+  let adapter;
   try {
-    // Yield one frame so the loading screen is painted before CPU-bound validation.
+    // Paint the loading screen before validation and engine initialization.
     await new Promise(resolve => requestAnimationFrame(resolve));
-    // Normalize before constructing the runtime so invalid JSON never reaches gameplay.
     const normalized = normalizeScenario(state.scenario);
     $('#loading-message').textContent = 'Kịch bản hợp lệ. Đang khởi tạo Engine và entry scene…';
     await new Promise(resolve => requestAnimationFrame(resolve));
     engine = new GameEngine();
-    await engine.init(normalized);
-    const snapshot = engine.protocol.createSnapshot(engine);
-    if (!snapshot.game?.initialized || !snapshot.game?.sceneId || !snapshot.game?.routerId) {
+    adapter = new EngineAdapter(engine);
+    await adapter.initialize(normalized);
+    const viewModel = adapter.getViewModel();
+    if (!viewModel.sceneId || !viewModel.routerId || !viewModel.scene || !viewModel.router) {
       throw new Error('Engine chưa tạo được trạng thái Scene/Router khởi đầu hợp lệ.');
     }
     state.engine = engine;
-    state.snapshot = snapshot;
+    state.adapter = adapter;
     state.scenario = normalized;
+    state.snapshot = engine.protocol.createSnapshot(engine);
     state.loading = false;
     renderGameplay();
   } catch (error) {
+    adapter?.dispose?.();
     engine?.dispose?.();
-    engine?.taskManager?.killAll?.();
     state.loading = false;
     renderMetadataError(error);
   }
@@ -153,66 +159,21 @@ function renderMetadataError(error) {
 
 function renderGameplay() {
   state.screen = 'gameplay';
-  const engine = state.engine;
-  const snapshot = engine.protocol.createSnapshot(engine);
-  state.snapshot = snapshot;
-  const sceneId = snapshot.game.sceneId;
-  const routerId = snapshot.game.routerId;
-  const scene = engine.src.scenes[sceneId];
-  const router = scene?.routers?.[routerId];
-  const sceneTitle = scene?.meta?.title || scene?.title || sceneId;
-  const routerTitle = router?.meta?.title || router?.title || routerId;
-  const actions = engine.getEffectiveActions(sceneId, routerId);
-  const sceneDescription = scene?.meta?.desc || scene?.meta?.description || '';
-  app.innerHTML = `
-    <main class="game-shell">
-      <header class="game-topbar">
-        <button class="game-exit" id="exit-game" aria-label="Thoát gameplay">←</button>
-        <div class="game-brand"><span class="brand-mark">V</span><span>VSR <small>PLAYING</small></span></div>
-        <span class="live-indicator"><i></i> LIVE</span>
-      </header>
-      <section class="game-scene">
-        <div class="scene-art"><div class="scene-sun"></div><div class="scene-mountains"></div><div class="scene-fog"></div><span class="scene-coordinate">SCENE / ${escapeHtml(sceneId)}</span></div>
-        <div class="scene-copy"><p class="eyebrow">CURRENT SCENE</p><h1>${escapeHtml(sceneTitle)}</h1><p>${escapeHtml(sceneDescription)}</p></div>
-      </section>
-      <section class="active-router">
-        <div class="router-heading"><span class="eyebrow">ACTIVE ROUTER</span><span class="router-pulse"></span></div>
-        <h2>${escapeHtml(routerTitle)}</h2>
-        <p>${escapeHtml(router?.meta?.desc || router?.meta?.description || '')}</p>
-      </section>
-      <section class="action-section">
-        <div class="action-heading"><div><p class="eyebrow">AVAILABLE INTERACTIONS</p><h2>What will you do?</h2></div><span class="action-count">${actions.length.toString().padStart(2, '0')}</span></div>
-        <div class="action-list">${actions.length ? actions.map((action, index) => {
-          const label = action.meta?.title || action.title || action.name || action.id;
-          const detail = action.meta?.desc || action.meta?.description || '';
-          return `<button class="action-item" data-action-id="${escapeHtml(action.id)}"><span class="action-number">${String(index + 1).padStart(2, '0')}</span><span class="action-copy"><strong>${escapeHtml(label)}</strong><small>${escapeHtml(detail)}</small></span><span class="action-arrow">↗</span></button>`;
-        }).join('') : '<p class="empty-actions">Router này chưa có Action khả dụng.</p>'}</div>
-      </section>
-      <footer class="game-footer"><span>${escapeHtml(titleOf(engine.src.meta))}</span><span>REV ${snapshot.stateRevision}</span></footer>
-    </main>`;
-  $('#exit-game').addEventListener('click', exitGame);
-  app.querySelectorAll('[data-action-id]').forEach(button => button.addEventListener('click', () => triggerAction(button.dataset.actionId, button)));
-}
-
-async function triggerAction(actionId, button) {
-  if (!state.engine || button.disabled) return;
-  button.disabled = true;
-  button.classList.add('is-running');
-  try {
-    const command = state.engine.protocol.createCommand('action.trigger', { actionId });
-    const ack = await state.engine.dispatchProtocolCommand(command);
-    if (!ack.ok) throw new Error(ack.error?.message || ack.error?.code || 'Action failed');
-    renderGameplay();
-  } catch (error) {
-    button.disabled = false;
-    button.classList.remove('is-running');
-    button.querySelector('.action-copy').insertAdjacentHTML('beforeend', `<small class="inline-error">${escapeHtml(error.message)}</small>`);
-  }
+  state.gameplayRenderer?.dispose?.();
+  state.gameplayRenderer = new GameplayRenderer({
+    root: app,
+    adapter: state.adapter,
+    onExit: exitGame
+  });
+  state.gameplayRenderer.mount();
 }
 
 function exitGame() {
+  state.gameplayRenderer?.dispose?.();
+  state.adapter?.dispose?.();
   state.engine?.dispose?.();
-  state.engine?.taskManager?.killAll?.();
+  state.gameplayRenderer = null;
+  state.adapter = null;
   state.engine = null;
   state.snapshot = null;
   renderHome();
