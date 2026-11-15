@@ -116,10 +116,15 @@ export const DEMO_SCRIPT = {
         ]
       },
       "enough_truth": {
-        "type": "state",
-        "property": "truth_fragments",
-        "op": ">=",
-        "value": 3
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "truth_fragments",
+            "op": ">=",
+            "value": 3
+          }
+        ]
       },
       "has_lantern_clue": {
         "logic": "AND",
@@ -151,6 +156,46 @@ export const DEMO_SCRIPT = {
             "subtype": "inventory",
             "op": "has",
             "value": "archive_key"
+          }
+        ]
+      },
+      "station_ready": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "truth_fragments",
+            "op": ">=",
+            "value": 3
+          },
+          {
+            "type": "state",
+            "property": "archive_open",
+            "op": "==",
+            "value": true
+          }
+        ]
+      },
+      "release_ready": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "truth_fragments",
+            "op": ">=",
+            "value": 3
+          },
+          {
+            "type": "state",
+            "property": "heard_bell",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "archive_open",
+            "op": "==",
+            "value": true
           }
         ]
       }
@@ -516,19 +561,7 @@ export const DEMO_SCRIPT = {
             "act_travel_inn",
             "act_travel_chapel",
             "act_travel_school",
-            "act_travel_forest",
-            "act_return_square",
-            "act_return_inn",
-            "act_enter_tower",
-            "act_return_chapel",
-            "act_enter_clearing",
-            "act_return_forest",
-            "act_travel_mill",
-            "act_return_mill",
-            "act_reach_station",
-            "act_ending_bury",
-            "act_ending_echo",
-            "act_ending_depart"
+            "act_travel_forest"
           ]
         },
         "square_well": {
@@ -543,7 +576,8 @@ export const DEMO_SCRIPT = {
           },
           "actions": [
             "act_inspect_well",
-            "act_use_lantern"
+            "act_use_lantern",
+            "act_return_square"
           ],
           "loop": {
             "enter": [
@@ -577,7 +611,9 @@ export const DEMO_SCRIPT = {
           },
           "actions": [
             "act_question_hanh",
-            "act_open_guestbook"
+            "act_open_guestbook",
+            "act_return_square",
+            "act_travel_chapel"
           ],
           "loop": {
             "still": [
@@ -600,7 +636,8 @@ export const DEMO_SCRIPT = {
           },
           "actions": [
             "act_unlock_cellar",
-            "act_search_cellar"
+            "act_search_cellar",
+            "act_return_inn"
           ]
         }
       }
@@ -626,7 +663,10 @@ export const DEMO_SCRIPT = {
           },
           "actions": [
             "act_read_hymn",
-            "act_talk_keeper"
+            "act_talk_keeper",
+            "act_enter_tower",
+            "act_return_square",
+            "act_travel_school"
           ]
         },
         "chapel_tower": {
@@ -641,7 +681,8 @@ export const DEMO_SCRIPT = {
           },
           "actions": [
             "act_solve_bell",
-            "act_ring_bell"
+            "act_ring_bell",
+            "act_return_chapel"
           ],
           "loop": {}
         }
@@ -668,7 +709,9 @@ export const DEMO_SCRIPT = {
           },
           "actions": [
             "act_check_desk",
-            "act_decode_roster"
+            "act_decode_roster",
+            "act_return_square",
+            "act_travel_forest"
           ]
         }
       }
@@ -694,7 +737,9 @@ export const DEMO_SCRIPT = {
           },
           "actions": [
             "act_follow_marks",
-            "act_maze_path"
+            "act_maze_path",
+            "act_enter_clearing",
+            "act_return_square"
           ],
           "loop": {}
         },
@@ -710,7 +755,9 @@ export const DEMO_SCRIPT = {
           },
           "actions": [
             "act_inspect_stakes",
-            "act_find_hidden_box"
+            "act_find_hidden_box",
+            "act_return_forest",
+            "act_travel_mill"
           ]
         }
       }
@@ -736,7 +783,8 @@ export const DEMO_SCRIPT = {
           },
           "actions": [
             "act_repair_mill",
-            "act_set_switches"
+            "act_set_switches",
+            "act_return_forest"
           ]
         }
       }
@@ -762,7 +810,9 @@ export const DEMO_SCRIPT = {
           },
           "actions": [
             "act_enter_tunnel",
-            "act_open_archive"
+            "act_open_archive",
+            "act_return_mill",
+            "act_reach_station"
           ]
         }
       }
@@ -791,7 +841,10 @@ export const DEMO_SCRIPT = {
           },
           "actions": [
             "act_confront_voice",
-            "act_choose_fate"
+            "act_choose_fate",
+            "act_ending_bury",
+            "act_ending_echo",
+            "act_ending_depart"
           ],
           "timer": {
             "end": [
@@ -2157,24 +2210,7 @@ export const DEMO_SCRIPT = {
         ]
       },
       "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "ref": "enough_truth"
-          },
-          {
-            "type": "state",
-            "property": "heard_bell",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "state",
-            "property": "archive_open",
-            "op": "==",
-            "value": true
-          }
-        ]
+        "ref": "release_ready"
       }
     },
     "act_ending_bury": {
@@ -2816,18 +2852,7 @@ export const DEMO_SCRIPT = {
         ]
       },
       "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "ref": "enough_truth"
-          },
-          {
-            "type": "state",
-            "property": "archive_open",
-            "op": "==",
-            "value": true
-          }
-        ]
+        "ref": "station_ready"
       }
     }
   },
