@@ -327,3 +327,27 @@
     gap: 26px;
   }
 }
+
+
+/* Keep the close action independent from the centered loading content. */
+.vsr-loader-page {
+  position: relative;
+  isolation: isolate;
+}
+.vsr-loader-page > .vsr-loader-header {
+  position: absolute;
+  z-index: 2;
+  top: max(12px, env(safe-area-inset-top));
+  right: max(16px, env(safe-area-inset-right));
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: auto;
+  min-height: 44px;
+}
+.vsr-loader-page > .vsr-content-width {
+  grid-column: 1;
+  grid-row: 1;
+  align-self: center;
+  justify-self: center;
+}
