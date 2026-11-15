@@ -874,7 +874,7 @@ export const DEMO_SCRIPT = {
         "router_square_fogbound": {
           "meta": {
             "sceneID": "scene_village_square",
-            "subTitleStatus": "Quảng trường mù sương",
+            "subTitleStatus": "Mù sương",
             "desc": "Sương phủ kín quảng trường, làm nhòe những dãy nhà quanh cổng làng. Chiếc loa phát thanh vẫn đều đặn gọi tên những người đã mất tích; bảng thông báo bên đường lưu lại danh sách dân làng với một cái tên bị cạo đi."
           },
           "set": {
@@ -896,7 +896,7 @@ export const DEMO_SCRIPT = {
         "router_square_broadcast_decoded": {
           "meta": {
             "sceneID": "scene_village_square",
-            "subTitleStatus": "Tín hiệu đã giải mã",
+            "subTitleStatus": "Đã giải mã",
             "desc": "Sau khi tháo nắp hộp loa, bạn tìm thấy cuộn dây đồng và sơ đồ tần số. Tiếng gọi tên dân làng không phải phát thanh trực tiếp mà là bản ghi được phát lặp theo chu kỳ."
           },
           "set": {
@@ -930,7 +930,7 @@ export const DEMO_SCRIPT = {
         "router_well_echoes": {
           "meta": {
             "sceneID": "scene_village_well",
-            "subTitleStatus": "Tiếng vọng dưới giếng",
+            "subTitleStatus": "Có tiếng vọng",
             "desc": "Trong màn sương của quảng trường, tiếng gõ đều đặn vọng lên từ chiếc giếng đá phủ rêu. Trên thành giếng có bốn vạch khắc mới và một vết kim loại bị cào xước."
           },
           "set": {
@@ -977,7 +977,7 @@ export const DEMO_SCRIPT = {
         "router_inn_unsettled": {
           "meta": {
             "sceneID": "scene_inn",
-            "subTitleStatus": "Nhà trọ bất an",
+            "subTitleStatus": "Bất an",
             "desc": "Mùi trà nguội quẩn quanh quầy lễ tân. Cuốn sổ khách ghi tên những người được cho là đã rời làng, nhưng trang cuối lại mang tên bạn với ngày đến là ngày mai."
           },
           "set": {
@@ -1029,7 +1029,7 @@ export const DEMO_SCRIPT = {
         "router_cellar_open": {
           "meta": {
             "sceneID": "scene_inn_cellar",
-            "subTitleStatus": "Hầm rượu mở",
+            "subTitleStatus": "Đã mở khóa",
             "desc": "Ổ khóa đã bật mở, để lộ cầu thang dẫn xuống căn hầm rượu tối và lạnh. Một cuộn băng ghi âm đêm mất điện được giấu sau chiếc thùng rỗng."
           },
           "set": {
@@ -1074,7 +1074,7 @@ export const DEMO_SCRIPT = {
         "router_chapel_silent": {
           "meta": {
             "sceneID": "scene_chapel",
-            "subTitleStatus": "Nhà nguyện im lặng",
+            "subTitleStatus": "Im lặng",
             "desc": "Gian cầu nguyện chìm trong tĩnh lặng. Chuông đã ngừng ngân từ mười bảy năm trước, nhưng bản thánh ca còn lưu lại mật từ và chỉ dẫn về ba hồi chuông."
           },
           "set": {
@@ -1144,7 +1144,7 @@ export const DEMO_SCRIPT = {
         "router_bell_mechanism_repaired": {
           "meta": {
             "sceneID": "scene_chapel_tower",
-            "subTitleStatus": "Cơ cấu đã nối",
+            "subTitleStatus": "Đã nối cơ cấu",
             "desc": "Một đoạn dây đồng còn cuộn quanh trục bánh răng. Sau khi lắp lại, cơ cấu truyền lực hoạt động nhưng chuông vẫn chỉ được rung khi quả lắc được tìm thấy."
           },
           "set": {
@@ -1173,7 +1173,7 @@ export const DEMO_SCRIPT = {
         "router_classroom_erased": {
           "meta": {
             "sceneID": "scene_abandoned_school",
-            "subTitleStatus": "Học sinh bị xóa tên",
+            "subTitleStatus": "Bị xóa tên",
             "desc": "Trong lớp học số 3, danh sách chỉ còn những cái tên bị gạch bỏ và bức ảnh tập thể bị xé. Sơ đồ chỗ ngồi có dấu vết của vị trí thứ mười hai, nhưng vị trí ấy đã bị xóa khỏi mọi bản sao."
           },
           "set": {
@@ -1192,7 +1192,7 @@ export const DEMO_SCRIPT = {
         "router_classroom_archive_open": {
           "meta": {
             "sceneID": "scene_abandoned_school",
-            "subTitleStatus": "Hồ sơ được khôi phục",
+            "subTitleStatus": "Đã khôi phục hồ sơ",
             "desc": "Một ngăn bàn bị đóng đinh chứa bản sao sổ điểm danh. Tên học sinh thứ mười hai vẫn bị bôi đen, nhưng số thứ tự và ngày nghỉ học trùng với hồ sơ sơ tán."
           },
           "set": {
@@ -1222,7 +1222,7 @@ export const DEMO_SCRIPT = {
         "router_forest_path_shifting": {
           "meta": {
             "sceneID": "scene_north_forest",
-            "subTitleStatus": "Lối rừng biến đổi",
+            "subTitleStatus": "Đường đi biến đổi",
             "desc": "Con đường mòn dưới tán thông không giữ nguyên hình dạng khi bạn quay lưng. Những vệt sơn trên thân cây là dấu hiệu hiếm hoi giúp xác định hướng đi tới khoảng đất trống."
           },
           "set": {
@@ -1272,7 +1272,7 @@ export const DEMO_SCRIPT = {
         "router_forest_clearing": {
           "meta": {
             "sceneID": "scene_forest_clearing",
-            "subTitleStatus": "Vòng cọc bí ẩn",
+            "subTitleStatus": "Bóng bị khuyết",
             "desc": "Mười hai cọc gỗ tạo thành một vòng cung giữa khoảng đất trống, nhưng chỉ có mười một chiếc bóng. Một chiếc hộp được chôn gần vòng cọc chứa những mảnh ảnh gia đình."
           },
           "set": {
@@ -1291,7 +1291,7 @@ export const DEMO_SCRIPT = {
         "router_clearing_ritual_trace": {
           "meta": {
             "sceneID": "scene_forest_clearing",
-            "subTitleStatus": "Dấu tích được giải mã",
+            "subTitleStatus": "Đã giải nghĩa",
             "desc": "Dưới phiến đá giữa vòng cọc là một con dấu gỗ. Nó không phải vật tế lễ mà là dấu xác nhận của đội sơ tán, được dùng để niêm phong danh sách người đã rời làng."
           },
           "set": {
@@ -1321,7 +1321,7 @@ export const DEMO_SCRIPT = {
         "router_watermill_stalled": {
           "meta": {
             "sceneID": "scene_watermill",
-            "subTitleStatus": "Cối xay ngừng",
+            "subTitleStatus": "Ngừng hoạt động",
             "desc": "Dòng suối đã cạn, bánh xe mục kẹt cứng trên trục. Bảng điều khiển còn nguyên; cần mảnh sơ đồ lấy từ trường học để xác định cách lắp lại cơ cấu truyền động."
           },
           "set": {
@@ -1338,7 +1338,7 @@ export const DEMO_SCRIPT = {
         "router_watermill_running": {
           "meta": {
             "sceneID": "scene_watermill",
-            "subTitleStatus": "Cối xay hoạt động",
+            "subTitleStatus": "Đang vận hành",
             "desc": "Bánh xe đã ăn khớp với trục truyền động. Dưới sàn, cửa sập rung lên theo nhịp máy và để lộ lối xuống đường hầm dưới chân đê."
           },
           "set": {
@@ -1354,7 +1354,7 @@ export const DEMO_SCRIPT = {
         "router_watermill_gear_inspected": {
           "meta": {
             "sceneID": "scene_watermill",
-            "subTitleStatus": "Bộ truyền động lộ diện",
+            "subTitleStatus": "Lộ lỗi truyền động",
             "desc": "Khi tháo tấm che bánh răng, bạn tìm thấy chốt truyền động bị cong. Nó giải thích vì sao cối xay dừng lại; chốt phải được lắp đúng trước khi khởi động máy."
           },
           "set": {
@@ -1383,7 +1383,7 @@ export const DEMO_SCRIPT = {
         "router_tunnel_names": {
           "meta": {
             "sceneID": "scene_levee_tunnel",
-            "subTitleStatus": "Tên khắc vách hầm",
+            "subTitleStatus": "Tên bị khắc",
             "desc": "Những bức tường đường hầm ghi tên dân làng theo đúng thứ tự ngày họ biến mất. Danh sách có dấu hiệu bị sửa: số tên thực tế nhiều hơn những gì hồ sơ chính thức ghi nhận."
           },
           "set": {
@@ -1402,7 +1402,7 @@ export const DEMO_SCRIPT = {
         "router_tunnel_manifest_found": {
           "meta": {
             "sceneID": "scene_levee_tunnel",
-            "subTitleStatus": "Tìm thấy danh sách",
+            "subTitleStatus": "Đã tìm danh sách",
             "desc": "Sau lớp gạch rỗng là một ống đựng tài liệu chống ẩm. Danh sách ghi rõ những người được đưa qua đường hầm và xác nhận ga tàu là điểm tập kết cuối cùng."
           },
           "set": {
@@ -1433,7 +1433,7 @@ export const DEMO_SCRIPT = {
         "router_station_0317": {
           "meta": {
             "sceneID": "scene_ghost_station",
-            "subTitleStatus": "Ga tàu 03:17",
+            "subTitleStatus": "Chuyến 03:17",
             "desc": "Sân ga không xuất hiện trên bất kỳ tấm bản đồ nào. Một chuyến tàu dừng lại lúc 03:17; giọng nói vang lên từ đường ray buộc bạn phải lựa chọn điều gì sẽ được giữ lại và điều gì phải chấm dứt."
           },
           "set": {
