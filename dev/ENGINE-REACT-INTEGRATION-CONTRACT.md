@@ -158,7 +158,7 @@ Snapshot là dữ liệu đồng bộ trạng thái tại một thời điểm. 
 | `revision`, `stateRevision` | Revision trạng thái; `revision` là alias tương thích |
 | `eventSequence` | Vị trí event stream tại lúc snapshot được tạo |
 | `game` | `initialized`, `sceneId`, `routerId`; khi scenario đã load nhưng chưa vào scene, `initialized` là `true` còn `sceneId` và `routerId` là `null` |
-| `presentation` | Projection client-safe của scenario title, scene, router và action display metadata |
+| `presentation` | Projection client-safe của scenario title, scene, router, ancestor-to-current `scenePath`, resolved cover metadata và action display metadata |
 | `session` | Chat, password challenge đã sanitize, timer và notification |
 | `state` | Runtime state đã chuyển sang JSON-compatible form và loại bỏ một số runtime-only keys |
 
