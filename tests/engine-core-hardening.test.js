@@ -349,8 +349,8 @@ test('runtime rejects notify subtypes that are not declared by the schema', () =
   );
 });
 
-test('runtime rejects characters.mng_stats operations outside the schema enum', () => {
-  assert.throws(
+test('runtime rejects characters.mng_stats operations outside the schema enum', async () => {
+  await assert.rejects(
     () => EffectHandlers.characters.call({}, {
       type: 'characters', subtype: 'mng_stats', exec: 'add_stats', target: 'player', value: 'HP'
     }),
@@ -404,4 +404,34 @@ test('runtime rejects stat field and mode combinations excluded by the schema', 
   assert.equal(StatsHelpers.edit_value(target, {
     property: 'HP', field: 'current', mode: 'unknown', value: 3
   }, false, 'item', {}), false);
+});
+
+
+test('character and management effect dispatchers await asynchronous handlers', async () => {
+  let characterCompleted = false;
+  const original = EffectHandlers.characters;
+  const engine = {
+    async handleManageEffect() {
+      await Promise.resolve();
+      characterCompleted = true;
+    }
+  };
+
+  const manageResult = await EffectHandlers.manage_effect.call(engine, {
+    inline: { space: 'router', in: 'enter', subtype: 'locked', target: 'main', index: [0] }
+  });
+  assert.equal(manageResult, undefined);
+  assert.equal(characterCompleted, true);
+
+  EffectHandlers.characters = async () => {
+    await Promise.resolve();
+    characterCompleted = true;
+  };
+  try {
+    characterCompleted = false;
+    await EffectHandlers.characters.call({}, { subtype: 'mng_items' });
+    assert.equal(characterCompleted, true);
+  } finally {
+    EffectHandlers.characters = original;
+  }
 });
