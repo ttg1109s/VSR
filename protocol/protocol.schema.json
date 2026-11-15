@@ -122,6 +122,18 @@
                     "null"
                   ]
                 },
+                "scenePath": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": ["id", "title"],
+                    "properties": {
+                      "id": { "type": "string" },
+                      "title": { "type": "string" }
+                    },
+                    "additionalProperties": false
+                  }
+                },
                 "actions": {
                   "type": "array",
                   "items": {
