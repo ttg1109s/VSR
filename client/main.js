@@ -66,6 +66,9 @@ async function startGame({ fromHistory = false } = {}) {
   try {
     await new Promise(resolve=>requestAnimationFrame(resolve));
     const transport=new WorkerJsonTransport(); const client=new JsonClient(transport);
+    client.subscribe(message => {
+      if (message.type === 'transport.error') debug.record('error', message.error?.message || 'Engine Worker failed.');
+    });
     state.transport=transport; state.client=client;
     $('#loading-message').textContent='Kịch bản đang được Engine kiểm tra. Đang khởi tạo phiên chơi…';
     await client.initialize(state.scenario);
