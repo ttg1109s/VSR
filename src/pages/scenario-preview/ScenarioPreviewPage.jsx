@@ -1,16 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Button } from '../../design-system/index.js';
+import { Button, DescriptionList, DescriptionListItem } from '../../design-system/index.js';
 import ScenarioCover from '../../components/scenario-preview/ScenarioCover.jsx';
-
-function MetadataRow({ label, value }) {
-  if (value === null || value === undefined || value === '') return null;
-  return (
-    <div className="vsr-description-list__row">
-      <dt className="vsr-description-list__term">{label}</dt>
-      <dd className="vsr-description-list__detail">{value}</dd>
-    </div>
-  );
-}
 
 function ExperienceItem({ label, value }) {
   if (value === null || value === undefined || value === '') return null;
@@ -158,21 +148,21 @@ export default function ScenarioPreviewPage({ preview, onBack }) {
         {publicationItems.some(item => item.value !== null && item.value !== undefined && item.value !== '') && (
           <section className="vsr-stack vsr-stack--gap-3" aria-labelledby="scenario-publication-title">
             <h2 id="scenario-publication-title">Thông tin xuất bản</h2>
-            <dl className="vsr-description-list">
+            <DescriptionList layout="grid" columns="auto" gap="comfortable">
               {publicationItems.map(item => (
-                <MetadataRow key={item.label} label={item.label} value={item.value} />
+                <DescriptionListItem key={item.label} label={item.label} value={item.value} />
               ))}
-            </dl>
+            </DescriptionList>
           </section>
         )}
 
         {hasLegalInformation && (
           <section className="vsr-stack vsr-stack--gap-3" aria-labelledby="scenario-legal-title">
             <h2 id="scenario-legal-title">Bản quyền và giấy phép</h2>
-            <dl className="vsr-description-list">
-              <MetadataRow label="Bản quyền" value={metadata.copyright} />
-              <MetadataRow label="Giấy phép" value={metadata.license} />
-            </dl>
+            <DescriptionList layout="list" gap="comfortable" divided>
+              <DescriptionListItem label="Bản quyền" value={metadata.copyright} />
+              <DescriptionListItem label="Giấy phép" value={metadata.license} />
+            </DescriptionList>
           </section>
         )}
 
