@@ -1,79 +1,29 @@
-name: Deploy VSR to GitHub Pages
+name: VSR headless quality
 
 on:
   push:
     branches:
       - engine-only
-      - ui-rebuild
+      - chore/remove-ui-keep-react-engine
   pull_request:
     branches:
       - engine-only
-      - ui-rebuild
   workflow_dispatch:
 
 permissions:
   contents: read
 
-concurrency:
-  group: github-pages
-  cancel-in-progress: true
-
 jobs:
-  build:
+  engine:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
-          cache-dependency-path: package.json
-
-      # The repository intentionally does not track a package lockfile.
-      - name: Install dependencies
-        run: npm install --no-audit --no-fund
-
-      - name: Check generated schema
-        run: npm run schema:check
-
-      - name: Run tests
-        run: npm test
-
-      - name: Audit state access
-        run: npm run audit:state:strict
-
-      - name: Build Vite application
-        run: npm run build
-
-      - name: Verify Pages artifact
-        run: |
-          test -s dist/index.html
-          test -s dist/scenarios/the-silent-village.json
-          grep -q 'assets/' dist/index.html
-
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist
-
-  deploy:
-    if: github.event_name != 'pull_request'
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v5
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - run: npm run schema:check
+      - run: npm test
+      - run: npm run audit:state:strict
+      - run: npm run check:server
+      - run: npm run build
