@@ -92,10 +92,11 @@ function renderGameplay() {
   state.renderer=new RegionRenderer(app,state.client,exitGame);
   state.renderer.mount(state.client.getSnapshot());
 }
-function exitGame() {
+function disposeSession() {
   state.renderer?.dispose?.(); state.client?.dispose?.(); state.transport?.close?.();
-  state.renderer=null; state.client=null; state.transport=null; navigate('home'); renderHome();
+  state.renderer=null; state.client=null; state.transport=null;
 }
+function exitGame() { disposeSession(); navigate('home'); renderHome(); }
 function showToast(error) {
   const notice=document.createElement('div'); notice.className='toast-error'; notice.textContent=error?.message||String(error); app.appendChild(notice);
 }
@@ -107,8 +108,8 @@ fileInput.addEventListener('change',async event=>{
 });
 window.addEventListener('popstate', event => {
   const screen = event.state?.vsrScreen || 'home';
-  if (screen === 'home') { if (state.client) { state.renderer?.dispose?.(); state.client.dispose?.(); state.transport?.close?.(); state.client=null; state.transport=null; } renderHome(); }
-  else if (screen === 'metadata' && state.scenario) openMetadata(state.scenario,state.scenarioName,{updateHistory:false});
+  if (screen === 'home') { disposeSession(); renderHome(); }
+  else if (screen === 'metadata' && state.scenario) { disposeSession(); openMetadata(state.scenario,state.scenarioName,{updateHistory:false}); }
   else if (screen === 'gameplay' && state.client) renderGameplay();
   else { navigate('home',{replace:true}); renderHome(); }
 });
