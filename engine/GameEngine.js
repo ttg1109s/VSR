@@ -8,7 +8,7 @@ import {ItemSystem} from './modules/Item.js?v=2.1.0';
 import {ChatSystem} from './modules/Chat.js?v=3.1.6';
 import {AutomationSystem} from './modules/Automation.js';
 import {LoaderSystem} from './modules/Loader.js';
-import {createEngineAPI} from '../api/index.js';
+import {createEngineAPI} from '../protocol/index.js';
 import {NotificationSystem} from './modules/Notification.js';
 import {JsonProtocol,cloneJsonValue} from '../protocol/JsonProtocol.js';
 import {verifyPassword} from './modules/password/verify.js';
