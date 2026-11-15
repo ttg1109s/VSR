@@ -8,7 +8,10 @@ export const EffectKeyStrategies = {
         return `char_${cId}_${hook}`;
     },
     router: ({ sId, rId, hook }) => (sId && rId) ? `${sId}_${rId}_${hook}` : null,
-    chat: ({ chatId, blockId, choiceId }) => (chatId && blockId && choiceId) ? `chat_${chatId}_${blockId}_${choiceId}` : null,
+    chat: ({ chatId, blockId, choiceId }) =>
+        [chatId, blockId, choiceId].every(value => value !== undefined && value !== null)
+            ? `chat_${chatId}_${blockId}_${choiceId}`
+            : null,
     item: ({ itemId, hook }) => (itemId && hook) ? `item_${itemId}_${hook}` : null
 };
 
@@ -29,7 +32,7 @@ export const EffectScopeResolvers = {
     chat: (cfg, ctx, engine) => {
         const hook = String(cfg.in || '');
         const separator = hook.indexOf(':');
-        if (separator <= 0 || separator === hook.length - 1) return null;
+        if (separator < 0) return null;
         return {
             scope: 'chat',
             params: {
@@ -72,7 +75,7 @@ export const StaticListResolvers = {
         const chat = src.chat?.[chatId];
         const block = chat?.block?.[blockId];
         const choiceGroupId = block?.choice_id;
-        if (!choiceGroupId) return [];
+        if (choiceGroupId === undefined || choiceGroupId === null) return [];
 
         const choices = chat.choice?.[choiceGroupId];
         if (!Array.isArray(choices)) return [];
