@@ -1,88 +1,67 @@
-# VSR Client Rendering Architecture
+# VSR Client: JSON-driven rendering
 
-The browser client is a presentation layer over the existing VSR Engine and Hybrid JSON Protocol v2. It does not maintain a parallel game state.
+The browser client is a framework-free JavaScript presentation layer. It does not import, instantiate, or retain a reference to `GameEngine`. The only browser-side Engine integration is isolated in `host/LocalEngineHost.js`, which acts as a local transport host for development. A remote HTTP/WebSocket host can replace it without changing the Client.
 
-## Runtime flow
+## Runtime boundary
 
 ```text
-GameEngine
-  └─ JsonProtocol (snapshots + presentation events)
-       └─ EngineAdapter
-            ├─ authoritative state snapshot → constrained gameplay view model
-            └─ protocol event stream
-                 └─ PresentationAdapter
-                      └─ GameplayRenderer
-                           ├─ SceneRenderer
-                           │    └─ MediaRenderer
-                           ├─ ActiveRouterRenderer
-                           ├─ ActionRenderer
-                           └─ OverlayRenderer
+Engine Host (local development or remote server)
+  ├── GameEngine
+  └── JsonProtocol
+       ⇅ JSON command / snapshot / event
+Client
+  ├── JsonClient
+  ├── JsonStateStore
+  └── RegionRenderer
+       ├── Scene region
+       ├── Router region
+       ├── Actions region
+       ├── Footer region
+       └── Overlay region
 ```
 
-## State projection contract
+Only the host imports `GameEngine`. The Client sends serialized command envelopes and consumes serialized snapshots/events. No adapter exposes `engine`, `src`, engine methods, or mutable engine state.
 
-The renderer-facing gameplay hierarchy is strictly:
+## React-inspired, without React
 
-`currentScene → activeRouter → actions belonging to activeRouter`
+The implementation borrows the useful architectural ideas rather than the framework:
+- A single immutable JSON snapshot is the source of truth for rendered state.
+- `JsonStateStore` publishes updates and computes changed top-level paths.
+- The renderer is split into independently updated regions.
+- Each region compares only the JSON projection it consumes and updates its own DOM subtree when that projection changes.
+- Event listeners are attached to the affected region; unrelated regions are not rebuilt.
 
-- `EngineAdapter` reads the authoritative `JsonProtocol.createSnapshot()` result.
-- Current scene and active router IDs come from `snapshot.game.sceneId` and `snapshot.game.routerId`.
-- The scene view is a constrained projection containing only the current scene's `id`, `meta`, and `set`. It does not expose its `routers` collection.
-- The router view contains only the active router's `id`, `meta`, and `set`.
-- Action definitions are resolved only with `engine.getEffectiveActions(sceneId, routerId)`. No global action enumeration or sibling-router traversal is used.
-- Action runtime state is resolved using the Engine's `sceneId_routerId_actionId` key. `display: hide` is omitted; `display: locked` is rendered disabled.
-- A state snapshot causes the view model to be recomputed. Scene and router transitions therefore replace the current projection from Engine-confirmed state.
+There is no virtual DOM, JSX, hooks, reconciliation framework, or React dependency. This is a small explicit state-store and region-reconciliation layer written in native JavaScript.
 
-## Presentation event contract
+## Snapshot contract
 
-`PresentationAdapter` consumes the EngineAdapter's protocol stream and forwards normalized `presentation.*` events.
+The protocol snapshot contains:
+- `game`: initialized flag and current scene/router IDs.
+- `presentation`: client-safe current scene, active router, active-router actions, and scenario title.
+- `state`: JSON-compatible runtime state. Password challenge internals are excluded from `state.session`.
+- `session`: chat/session projection, a sanitized active password challenge, and notification projection.
 
-- `presentation.scene.render` is reduced to `sceneId`, `routerId`, and the active router's action IDs. The raw scene object and sibling routers are not forwarded to renderers.
-- Chat events currently handled: `chat.renderBubble`, `chat.renderChoices`, `chat.clearChoices`, `chat.inputVisible`, `chat.inputHidden`, and `chat.toggleOverlay`.
-- Notification events handled: `notification.add`, `notification.alert`, `notification.updated`, `notification.dismiss`, `notification.expired`, and `notification.cleared`.
-- Other handled events include password keyboard requests, scene transitions, timer updates, timer hiding, and navigation blocking.
-
-## Media contract
-
-The scenario schema defines:
-- `scene.meta.cover`: default scene photo/video cover, as a media reference or supported object.
-- `router.meta.cover`: router-specific cover; overrides the scene cover. String references support `video:` and `photo:` prefixes or a key in `scenario.media`.
-- `scenario.media[id]`: a media definition with `type` (`photo`, `video`, or `sound`) and `url`.
-
-`MediaRenderer` currently renders scene/router photo and video covers. Music and ambience playback are not implemented yet.
+The snapshot does not include `engine.src` or the full scenario. Action projections contain display metadata and runtime display/read flags, not executable effects, requirements, or password definitions. Password answers remain Engine-side.
 
 ## Commands
 
-UI interactions are sent through the existing protocol command allow-list:
-- `action.trigger`
-- `chat.next`
-- `chat.selectChoice`
-- `inventory.toggleHand`
+The Client currently sends JSON commands for:
+- `engine.init` (host initialization)
+- `action.trigger`, `action.markAsRead`
+- `chat.next`, `chat.selectChoice`
+- `inventory.toggleHand`, `item.use`
+- `scene.enter`
 - `password.submit`
+- `engine.pause`, `engine.resume`
+- `save.export`, `save.restore`
+- `notification.read`, `notification.dismiss`
 
-The adapter attaches `expectedStateRevision` to commands. Acknowledgements and subsequent snapshots remain authoritative; the UI does not mutate Engine state optimistically.
+Commands are serialized by the protocol, carry an idempotent command ID, and use `expectedStateRevision`. The Client does not optimistically mutate gameplay state; it waits for the Engine acknowledgement and the resulting JSON snapshot.
 
-## Current renderer coverage
+## Rendering lifecycle
 
-Implemented:
-- Current scene metadata and cover
-- Active router metadata
-- Active router action list and action display state
-- Dialogue bubbles, choices, continue interaction
-- Notification toast/modal presentation
-- Password challenge input
-- Scene transition cue and router timer display
-- Mobile-first layout and responsive desktop enhancement
+Scene, Router, Actions, Footer, and Overlays are separate DOM regions. Scene and Router only update when their own presentation projection changes. Actions update when the active router or action projection/runtime state changes. Overlays update for chat/password/notification/timer events or session projection changes. An unrelated state update does not replace the entire gameplay root, so scroll position and focus in unaffected regions remain intact.
 
-Not yet implemented:
-- Character/contact list and character detail UI
-- Inventory/explorer/item detail UI
-- Player card and item modal components
-- Full VFX strategy rendering and overlay flicker
-- Music and ambience playback
-- Full puzzle-specific visual input components (current password UI is a generic text input)
-- Save/load UI and session persistence
+## Deployment boundary
 
-## Trust boundary
-
-The current Demo Play / Load JSON flow runs the Engine locally in the browser. This is appropriate for local prototyping, not an authoritative multiplayer or untrusted-client deployment. The protocol documentation's security guidance still applies: for a network-authoritative deployment, keep scenario source and password verification on a trusted server, require command authorization, and expose only the client-safe projection.
+`LocalEngineHost` still runs the Engine in the same browser process and is intended for local prototyping. It is a transport boundary, not a security boundary. For production or multiplayer, run the Engine on a trusted server, authenticate transport requests, enable protocol authorization, and send only client-safe snapshots/events. The Client transport contract remains JSON-only in either deployment.
