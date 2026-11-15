@@ -551,3 +551,64 @@ test('inline character effects enforce the same subtype contract as runnable wra
   const errors = validateScenario(scenario);
   assert.ok(errors.length > 0);
 });
+
+
+test('CMS implements schema-defined collection set and met insert operations', async () => {
+  const store = {
+    characters: {
+      npc: {
+        set: { relationship: [['old', 'friend']] },
+        met: ['first:2', 'last:1']
+      }
+    },
+    routers: {
+      scene_main: { actions: ['old_action'] }
+    }
+  };
+  const state = {
+    async transaction(callback) {
+      return callback({
+        get(path, params = {}) {
+          if (path === 'characters.[id]') return store.characters[params.id];
+          if (path === 'routers.[routerKey]') return store.routers[params.routerKey];
+          if (path === 'sceneId') return 'scene';
+          return undefined;
+        },
+        set(path, value, params = {}) {
+          if (path === 'characters.[id]') store.characters[params.id] = value;
+          if (path === 'routers.[routerKey]') store.routers[params.routerKey] = value;
+        }
+      });
+    }
+  };
+  const engine = { api: { engine: { state } } };
+
+  await EffectHandlers.cms.call(engine, {
+    table: 'characters', id: 'npc', column: 'relationship',
+    method: 'set', value: [['new', 'ally']]
+  });
+  assert.deepEqual(store.characters.npc.set.relationship, [['new', 'ally']]);
+
+  await EffectHandlers.cms.call(engine, {
+    table: 'characters', id: 'npc', column: 'met',
+    method: 'insert', value: 'middle:3', index: 1
+  });
+  assert.deepEqual(store.characters.npc.met, ['first:2', 'middle:3', 'last:1']);
+
+  await EffectHandlers.cms.call(engine, {
+    table: 'routers', id: 'main', column: 'actions',
+    method: 'set', value: ['inspect', 'talk']
+  });
+  assert.deepEqual(store.routers.scene_main.actions, ['inspect', 'talk']);
+});
+
+test('CMS schema constrains met insert indexes to a single integer', () => {
+  const scenario = validScenario();
+  scenario.scenes.start.routers.main.actions[0].effect = {
+    normal: [{
+      type: 'cms', table: 'characters', id: 'npc', column: 'met',
+      method: 'insert', value: 'npc:1', index: [0, 1]
+    }]
+  };
+  assert.ok(validateScenario(scenario).length > 0);
+});
