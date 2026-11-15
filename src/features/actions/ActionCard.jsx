@@ -19,7 +19,6 @@ const REASON_TONES = {
 const seconds = (until, now) => Number.isFinite(until) ? Math.max(0, Math.ceil((until - now) / 1000)) : 0;
 
 function ActionCard({ action, pending = false, passwordChallenge = null, feedback = '', onTrigger, onMarkRead, onSubmitPassword, onCancelPassword }) {
-  const [detailsOpen, setDetailsOpen] = useState(false);
   const [input, setInput] = useState('');
   const [error, setError] = useState('');
   const [challengeFeedback, setChallengeFeedback] = useState('');
@@ -97,7 +96,6 @@ function ActionCard({ action, pending = false, passwordChallenge = null, feedbac
   const markRead = async () => {
     if (!onMarkRead || pending) return;
     await onMarkRead(action);
-    setDetailsOpen(false);
   };
 
   // The Engine's reason precedence lets the UI identify confirmed checks without re-evaluating requirements.
