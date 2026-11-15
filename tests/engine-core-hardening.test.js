@@ -895,3 +895,44 @@ test('mark-as-read only mutates actions in the active router', async () => {
     engine.dispose();
   }
 });
+
+
+test('set.action dispatches through the wired strategy and updates runtime action state', () => {
+  const action = { display: 'show' };
+  const writes = [];
+  const state = {
+    sceneId: 'start',
+    get(key) {
+      if (key === 'scene.activeRouterId') return 'main';
+      return undefined;
+    },
+    getRuntime(path, context) {
+      if (path === 'actions.[actionKey]') return context.actionKey === 'start_main_action_read_notice' ? action : undefined;
+      return undefined;
+    },
+    getSession() { return null; },
+    set(path, value, context) {
+      writes.push({ path, value, context });
+      if (path === 'actions.[actionKey].[property]' && context.actionKey === 'start_main_action_read_notice') {
+        action[context.property] = value;
+      }
+    }
+  };
+  const engine = { api: { engine: { state } } };
+
+  assert.doesNotThrow(() => EffectHandlers.set.call(engine, {
+    type: 'set', subtype: 'action', target: 'action_read_notice',
+    property: 'display', value: 'hide'
+  }));
+
+  assert.equal(action.display, 'hide');
+  assert.equal(writes.length, 1);
+  assert.equal(writes[0].path, 'actions.[actionKey].[property]');
+});
+
+test('set dispatcher rejects unknown subtypes explicitly', () => {
+  assert.throws(
+    () => EffectHandlers.set.call({}, { type: 'set', subtype: 'not_supported' }),
+    /Unsupported set subtype: not_supported/
+  );
+});
