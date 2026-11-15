@@ -159,7 +159,7 @@ function renderGameplay() {
   const router = scene?.routers?.[routerId];
   const sceneTitle = scene?.meta?.title || scene?.title || sceneId;
   const routerTitle = router?.meta?.title || router?.title || routerId;
-  const actions = engine.api.engine.getEffectiveActions(sceneId, routerId);
+  const actions = engine.getEffectiveActions(sceneId, routerId);
   const sceneDescription = scene?.meta?.desc || scene?.meta?.description || '';
   app.innerHTML = `
     <main class="game-shell">
