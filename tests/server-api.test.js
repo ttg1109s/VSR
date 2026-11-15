@@ -50,7 +50,9 @@ test('standalone Engine HTTP API accepts JSON commands and returns JSON snapshot
     assert.equal(snapshot.game.sceneId, 'scene_garden');
     assert.equal(Object.hasOwn(snapshot, 'source'), false);
   } finally {
-    child.kill('SIGTERM');
-    await new Promise(resolve => child.once('exit', resolve));
+    if (child.exitCode === null) {
+      child.kill('SIGTERM');
+      await new Promise(resolve => child.once('exit', resolve));
+    }
   }
 });
