@@ -3,6 +3,8 @@ import{Button}from'../../design-system/index.js';
 import ActionCard from'./ActionCard.jsx';
 import './action-carousel.css';
 
+const EMPTY_ACTIONS=[];
+
 const MESSAGES={
  action_hidden:'Hành động hiện không hiển thị.',locked:'Hành động đang bị khóa.',
  permission_denied:'Nhân vật hiện tại không có quyền thực hiện.',not_read:'Cần đọc mô tả trước khi thực hiện.',
@@ -24,7 +26,7 @@ function shuffled(items){
  return result;
 }
 
-export default function ActionCollection({actions=[],client,passwordChallenge=null,onError,sceneId=null}){
+export default function ActionCollection({actions=EMPTY_ACTIONS,client,passwordChallenge=null,onError,sceneId=null}){
  const[pending,setPending]=useState(()=>new Set()),[feedback,setFeedback]=useState({}),cache=useRef(new Map());
  const [order,setOrder]=useState({sceneId:null,keys:[]});
  const stable=useMemo(()=> (Array.isArray(actions)?actions:[]).map(a=>{
@@ -41,7 +43,9 @@ export default function ActionCollection({actions=[],client,passwordChallenge=nu
    if(previous.sceneId!==sceneId)return {sceneId,keys:shuffled(keys)};
    const retained=previous.keys.filter(k=>keys.includes(k));
    const known=new Set(retained);
-   return {sceneId,keys:[...retained,...shuffled(keys.filter(k=>!known.has(k)))]};
+   const nextKeys=[...retained,...shuffled(keys.filter(k=>!known.has(k)))];
+   if(nextKeys.length===previous.keys.length&&nextKeys.every((key,index)=>key===previous.keys[index]))return previous;
+   return {sceneId,keys:nextKeys};
   });
  },[stable,sceneId]);
  const ordered=useMemo(()=>{
