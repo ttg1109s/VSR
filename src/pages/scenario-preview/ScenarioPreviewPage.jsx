@@ -143,19 +143,19 @@ export default function ScenarioPreviewPage({ preview, onBack }) {
 
         <div className="vsr-grid vsr-grid--columns-2 vsr-grid--gap-3" aria-label="Scenario actions">
           <Button
-            variant="primary"
-            size="md"
-            leadingIcon={<span className="vsr-icon" aria-hidden="true">play_arrow</span>}
-          >
-            Play
-          </Button>
-          <Button
             variant="secondary"
             size="md"
             onClick={onBack}
             leadingIcon={<span className="vsr-icon" aria-hidden="true">arrow_back</span>}
           >
             Back
+          </Button>
+          <Button
+            variant="primary"
+            size="md"
+            leadingIcon={<span className="vsr-icon" aria-hidden="true">play_arrow</span>}
+          >
+            Play
           </Button>
         </div>
 
