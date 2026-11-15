@@ -246,14 +246,18 @@ export const CharacterStrategies = {
         };
         handler(engine, resolvedEff);
     },
-    mng_items: (engine, eff) => {
+    mng_items: async (engine, eff) => {
+        const handler = ItemTransferLogic[eff.exec];
+        if (typeof handler !== 'function') {
+            throw new TypeError(`Unsupported characters.mng_items operation: ${String(eff.exec)}`);
+        }
         const resolvedEff = {
             ...eff,
             target: resolveValue(eff.target, engine),
             source: resolveValue(eff.source, engine),
             value: resolveValue(eff.value, engine)
         };
-        ItemTransferLogic[eff.exec]?.(engine, resolvedEff);
+        await handler(engine, resolvedEff);
     },
     moving: (engine, eff) => {
         const rawTarget = resolveValue(eff.target, engine);
@@ -267,8 +271,12 @@ export const CharacterStrategies = {
             property: resolveValue(eff.property, engine),
             value: resolveValue(eff.value, engine)
         };
+        const handler = MovingLogic[eff.exec];
+        if (typeof handler !== 'function') {
+            throw new TypeError(`Unsupported characters.moving operation: ${String(eff.exec)}`);
+        }
         const indices = Array.isArray(eff.index) ? eff.index : (Number.isInteger(eff.index) ? [eff.index] : []);
-        const changed = MovingLogic[eff.exec]?.(char, resolvedEff, indices) === true;
+        const changed = handler(char, resolvedEff, indices) === true;
         if (!changed) return;
 
         engine.api.engine.state.set('characters.[id]', char, { id: charId });
