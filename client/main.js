@@ -22,12 +22,12 @@ function navigate(screen, { replace = false } = {}) {
 }
 function renderHome() {
   state.screen='home';
-  app.innerHTML = `<main class="home-shell"><header class="topbar"><a class="brand" href="/" data-home><span class="brand-mark">V</span><span>VSR<span class="brand-muted"> / PLAY</span></span></a><nav class="home-nav"><a href="#library">LIBRARY</a><a href="#about">ABOUT</a></nav><span class="engine-status"><i class="${state.health === 'online' ? 'is-online' : ''}"></i> ${state.health === 'ready' ? 'LOCAL ENGINE READY' : 'ENGINE UNAVAILABLE'}</span></header>
+  app.innerHTML = `<main class="home-shell"><header class="topbar"><a class="brand" href="/" data-home><span class="brand-mark">V</span><span>VSR<span class="brand-muted"> / PLAY</span></span></a><nav class="home-nav"><a href="#library">LIBRARY</a><a href="#about">ABOUT</a></nav><span class="engine-status"><i class="${state.health === 'ready' ? 'is-online' : ''}"></i> ${state.health === 'ready' ? 'LOCAL ENGINE READY' : 'ENGINE UNAVAILABLE'}</span></header>
   <section class="hero"><div class="eyebrow"><span class="eyebrow-line"></span> VISUAL STORY RUNTIME</div><h1>Stories begin<br><em>somewhere.</em></h1><p class="hero-copy">Một không gian để bước vào những thế giới được tạo nên từ kịch bản tương tác.</p></section>
   <section class="launch-panel" id="library"><div class="panel-heading"><span>SCENARIO LIBRARY</span><span class="panel-index">01 / FEATURED</span></div>
   <button class="demo-card" id="demo-play"><span class="demo-art" aria-hidden="true"><span class="moon"></span><span class="ridge ridge-back"></span><span class="ridge ridge-front"></span><span class="mist"></span></span><span class="demo-info"><span class="card-kicker">FEATURED DEMO</span><strong>THE SILENT VILLAGE</strong><span>Ngôi Làng Không Tiếng Động</span></span><span class="round-arrow">↗</span></button>
   <div class="or-divider"><span></span> IMPORT A SCENARIO <span></span></div><button class="load-card" id="load-json"><span class="upload-icon">↑</span><span><strong>Load JSON</strong><small>Nạp kịch bản VSR từ thiết bị</small></span><span class="load-chevron">＋</span></button><p class="file-hint">Hỗ trợ tệp kịch bản định dạng .json</p></section>
-  <footer class="home-footer" id="about"><span>VSR ENGINE</span><span>JSON-DRIVEN CLIENT · SPA</span></footer></main>`;
+  <footer class="home-footer" id="about"><span>VSR ENGINE</span><span>BROWSER-NATIVE ENGINE · WORKER</span></footer></main>`;
   $('#demo-play').addEventListener('click', async () => {
     try {
       const response = await fetch(`${import.meta.env.BASE_URL}scenarios/the-silent-village.json`);
