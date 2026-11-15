@@ -807,7 +807,7 @@ test('snapshot projection does not evaluate random requirement expressions', () 
   const projection = snapshot.presentation.actions[0];
 
   assert.equal(evaluations, 0);
-  assert.equal(projection.availability.reason, 'requirement_failed');
+  assert.equal(projection.availability.reason, 'requirement_unavailable');
   assert.equal(projection.availability.canTrigger, false);
   assert.equal(projection.availability.checks.requirement, 'not_evaluated');
 });
