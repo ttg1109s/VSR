@@ -140,6 +140,8 @@ export default function HomePage({
             </p>
           </section>
 
+          {error && <p className="vsr-text-error" role="alert">{error}</p>}
+
           <div className="vsr-stack vsr-stack--gap-2">
             <Button variant="primary" size="lg" onClick={onConfirmPreview} disabled={Boolean(busy)} loading={Boolean(busy)}>
               Chạy kịch bản
