@@ -118,9 +118,12 @@ async function startGame() {
   renderLoading('Đang kiểm tra và nạp kịch bản…');
   let engine;
   try {
+    // Yield one frame so the loading screen is painted before CPU-bound validation.
+    await new Promise(resolve => requestAnimationFrame(resolve));
     // Normalize before constructing the runtime so invalid JSON never reaches gameplay.
     const normalized = normalizeScenario(state.scenario);
     $('#loading-message').textContent = 'Kịch bản hợp lệ. Đang khởi tạo Engine và entry scene…';
+    await new Promise(resolve => requestAnimationFrame(resolve));
     engine = new GameEngine();
     await engine.init(normalized);
     const snapshot = engine.protocol.createSnapshot(engine);
