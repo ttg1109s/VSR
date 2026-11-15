@@ -34,7 +34,7 @@ function renderHome() {
     <section class="library-section" id="library">
       <div class="section-heading"><div><span class="section-overline">BẮT ĐẦU KHÁM PHÁ</span><h2>Kịch bản nổi bật</h2></div><span class="section-count">01</span></div>
       <button class="featured-scenario" id="demo-play" type="button">
-        <span class="featured-art" aria-hidden="true"><span class="featured-art-icon material-symbols-rounded">landscape</span><span class="featured-art-caption">VSR SAMPLE SCENARIO</span></span>
+        <span class="featured-art" id="featured-art" aria-hidden="true"><span class="featured-art-placeholder material-symbols-rounded">auto_stories</span><span class="featured-art-caption">VSR SAMPLE SCENARIO</span></span>
         <span class="featured-content"><span class="featured-label"><span class="status-dot"></span> KỊCH BẢN MẪU</span><strong>The Silent Village</strong><span class="featured-subtitle">Ngôi Làng Không Tiếng Động</span><span class="featured-description">Một bí ẩn dân gian về ký ức, sự mất tích và cái giá của việc nhớ lại.</span><span class="featured-meta"><span class="material-symbols-rounded">schedule</span> 55 phút <span class="meta-separator">·</span> <span class="material-symbols-rounded">sell</span> Mystery</span></span>
         <span class="featured-open material-symbols-rounded" aria-hidden="true">arrow_outward</span>
       </button>
@@ -46,6 +46,21 @@ function renderHome() {
     </section>
     <footer class="native-footer"><span>VSR <span class="footer-muted">· VISUAL STORY RUNTIME</span></span><span class="footer-version">LOCAL · WORKER ENGINE</span></footer>
   </main>`;
+  fetch(`${import.meta.env.BASE_URL}scenarios/the-silent-village.json`)
+    .then(response => response.ok ? response.json() : null)
+    .then(scenario => {
+      const value = scenario?.meta?.cover?.url || (typeof scenario?.meta?.cover === 'string' ? scenario.meta.cover : '');
+      const target = $('#featured-art');
+      if (typeof value !== 'string' || !value.trim() || !target) return;
+      const image = document.createElement('img');
+      image.src = value.trim();
+      image.alt = '';
+      image.loading = 'eager';
+      image.addEventListener('error', () => image.remove(), { once:true });
+      target.prepend(image);
+      target.classList.add('has-cover');
+    })
+    .catch(() => {});
   $('#demo-play').addEventListener('click', async () => {
     try {
       const response = await fetch(`${import.meta.env.BASE_URL}scenarios/the-silent-village.json`);
