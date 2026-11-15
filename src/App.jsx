@@ -1,9 +1,12 @@
-/**
- * Presentation layer entry point.
- *
- * Intentionally renders nothing: this commit establishes the React runtime
- * and deployment pipeline without introducing product UI.
- */
-export default function App() {
-  return null;
+import React,{useState} from 'react';
+import {Button,Checkbox,Dialog,Drawer,Input,Menu,Popover,RadioGroup,Select,Separator,Switch,Textarea,ToastProvider,Tooltip,useToast} from './design-system/index.js';
+function Showcase(){
+ const [dialog,setDialog]=useState(false),[drawer,setDrawer]=useState(false),[active,setActive]=useState('scene'),[enabled,setEnabled]=useState(true);const toast=useToast();
+ return <main className="vsr-page vsr-showcase"><header><div><small>VSR · DESIGN SYSTEM</small><h1>Component library</h1><p>Core primitives, overlays and feedback patterns for VSR Studio and Player.</p></div><span>Foundation 01–02</span></header>
+ <section><h2>Buttons</h2><div className="showcase-row"><Button>Primary action</Button><Button variant="secondary">Secondary</Button><Button variant="tertiary">Tertiary</Button><Button variant="danger">Delete</Button><Button loading>Saving</Button><Button size="sm">Small</Button></div></section><Separator/>
+ <section><h2>Form controls</h2><div className="showcase-grid"><Input label="Scenario name" placeholder="Enter a scenario name" hint="A descriptive name for this story."/><Select label="Default view" value={active} onChange={e=>setActive(e.target.value)} options={[{value:'scene',label:'Scene editor'},{value:'chat',label:'Chat preview'}]}/><Textarea label="Description" placeholder="Describe the scene..."/><div className="showcase-stack"><Checkbox defaultChecked label="Enable autosave" description="Save changes while editing."/><Switch checked={enabled} onChange={e=>setEnabled(e.target.checked)} label="Runtime enabled"/><RadioGroup label="Editor layout" value={active} onChange={setActive} options={[{value:'scene',label:'Scene editor'},{value:'chat',label:'Chat preview'}]}/></div></div></section><Separator/>
+ <section><h2>Overlays and feedback</h2><div className="showcase-row"><Button onClick={()=>setDialog(true)}>Open dialog</Button><Button variant="secondary" onClick={()=>setDrawer(true)}>Open drawer</Button><Menu trigger={<Button variant="secondary">Menu</Button>} items={[{label:'Duplicate scene',onSelect:()=>toast('Scene duplicated.',{tone:'success'})},{label:'Rename'},{separator:true},{label:'Delete scene',danger:true}]}/><Popover trigger={<Button variant="secondary">Popover</Button>}>Quick contextual settings.</Popover><Tooltip content="Keyboard-focusable tooltip"><Button variant="tertiary">Hover or focus</Button></Tooltip><Button onClick={()=>toast('Changes saved successfully.',{tone:'success'})}>Show toast</Button></div></section>
+ <Dialog open={dialog} onClose={()=>setDialog(false)} title="Delete scenario?" description="This action cannot be undone." size="sm"><p className="showcase-muted">Connect the confirm action to the corresponding application command.</p><div className="showcase-actions"><Button variant="secondary" onClick={()=>setDialog(false)}>Cancel</Button><Button variant="danger" onClick={()=>{setDialog(false);toast('Confirmation example completed.',{tone:'success'});}}>Confirm</Button></div></Dialog>
+ <Drawer open={drawer} onClose={()=>setDrawer(false)} title="Scene properties" description="A contextual inspector for the selected scene."><div className="showcase-stack"><Input label="Scene title" defaultValue="The beginning"/><Textarea label="Scene notes" defaultValue="Describe the purpose of this scene."/><Switch defaultChecked label="Visible to player"/><Button onClick={()=>setDrawer(false)}>Done</Button></div></Drawer><footer>VSR Design System · React primitives and interaction patterns</footer></main>;
 }
+export default function App(){return <ToastProvider><Showcase/></ToastProvider>;}
