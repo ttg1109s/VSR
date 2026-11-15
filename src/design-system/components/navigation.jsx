@@ -47,8 +47,8 @@ export function Combobox({ options=[], value, defaultValue, onChange, label, pla
   const uid=useId(),inputId=uid+'-input',listId=uid+'-list',controlled=value!==undefined;
   const [internal,setInternal]=useState(defaultValue??null),selected=controlled?value:internal;
   const selectedOption=options.find(o=>o.value===selected),[query,setQuery]=useState(selectedOption?.label??''),[open,setOpen]=useState(false),[active,setActive]=useState(-1),root=useRef(null);
-  useEffect(()=>{setQuery(selectedOption?.label??'');},[selectedOption?.label]);
-  useEffect(()=>{if(!open)return;const outside=e=>{if(!root.current?.contains(e.target)){setOpen(false);setQuery(selectedOption?.label??'');}};document.addEventListener('pointerdown',outside);return()=>document.removeEventListener('pointerdown',outside);},[open]);
+  useEffect(()=>{if(!open)setQuery(selectedOption?.label??'');},[selectedOption?.label,open]);
+  useEffect(()=>{if(!open)return;const outside=e=>{if(!root.current?.contains(e.target)){setOpen(false);setQuery(selectedOption?.label??'');}};document.addEventListener('pointerdown',outside);return()=>document.removeEventListener('pointerdown',outside);},[open,selectedOption?.label]);
   const filtered=useMemo(()=>{const q=query.trim().toLocaleLowerCase();return options.filter(o=>!o.disabled&&(!q||o.label.toLocaleLowerCase().includes(q)));},[options,query]);
   function commit(option){if(!option)return;if(!controlled)setInternal(option.value);onChange?.(option.value,option);setQuery(option.label);setOpen(false);setActive(-1);}
   function clear(){if(!controlled)setInternal(null);onChange?.(null,null);setQuery('');setOpen(false);}
