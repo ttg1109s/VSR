@@ -243,6 +243,7 @@ Với puzzle, client gửi arrangement theo quy ước original piece indices �
 - `getSnapshot()`
 - `initialize(scenario)`
 - `dispatch(name, payload)`
+- `refreshSnapshot()` — gọi command read-only `snapshot.get`, không gửi `expectedStateRevision`, cập nhật `JsonStateStore` từ projection mới
 - Các wrapper: `triggerAction`, `markActionRead`, `nextChat`, `selectChatChoice`, `toggleHand`, `useItem`, `enterScene`, `submitPassword`, `pause`, `resume`, `exportSave`, `restoreSave`
 - `dispose()`
 
