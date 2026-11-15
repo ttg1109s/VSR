@@ -23,7 +23,7 @@ export default function App() {
       const acknowledgement = await inspector.inspectScenario(scenario);
       setPreview({ scenario, kind, ...acknowledgement.result });
     } catch (cause) {
-      setError(cause?.message || 'Không thể kiểm tra kịch bản.');
+      setError(cause?.message || 'Unable to inspect the scenario.');
     } finally {
       inspector?.dispose();
       inspector?.transport?.close?.();
@@ -34,22 +34,22 @@ export default function App() {
 
   const handleImportFile = useCallback(async file => {
     if (!file.name.toLowerCase().endsWith('.json') && file.type !== 'application/json') {
-      setError('Vui lòng chọn tệp JSON.');
+      setError('Please select a JSON file.');
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
-      setError('Tệp JSON vượt quá giới hạn 5 MB.');
+      setError('The JSON file exceeds the 5 MB limit.');
       return;
     }
     try {
       const source = await file.text();
       const scenario = JSON.parse(source);
       if (!scenario || typeof scenario !== 'object' || Array.isArray(scenario)) {
-        throw new Error('Nội dung JSON phải là một object scenario.');
+        throw new Error('The JSON content must be a scenario object.');
       }
       await inspectScenario(scenario, 'import');
     } catch (cause) {
-      setError(cause?.message || 'Không thể đọc tệp JSON.');
+      setError(cause?.message || 'Unable to read the JSON file.');
     }
   }, [inspectScenario]);
 
