@@ -54,7 +54,8 @@ export const EffectSystem = {
 
             if (wrapper.type === 'skip_all') break;
 
-            await this.processRunnable(wrapper, context, listKey, sourceList, isAsync);
+            const shouldStop = await this.processRunnable(wrapper, context, listKey, sourceList, isAsync);
+            if (shouldStop === true) break;
         }
     },
 
@@ -63,23 +64,33 @@ export const EffectSystem = {
         if (wrapper.skip === true) return;
         if (wrapper.req && !this.checkReq(wrapper.req).pass) return;
 
-        if (wrapper.type === 'skip_all') return;
+        if (wrapper.type === 'skip_all') return true;
         if (wrapper.type === 'effect') {
             const templateContent = wrapper.ref ? this.src?.templates?.effects?.[wrapper.ref] : null;
             if (wrapper.ref && !templateContent) throw new Error(`Unknown effect template reference: ${wrapper.ref}`);
             if (!wrapper.ref && !wrapper.inline) throw new TypeError("An 'effect' wrapper requires ref or inline.");
-            const process = async (content) => Array.isArray(content)
-                ? await this.processRunnables(content, context, isAsync, true)
-                : await this.applyEffect(content, context, listKey, sourceList);
-            if (templateContent) await process(templateContent);
-            if (wrapper.inline) await process(wrapper.inline);
-            return;
+
+            const process = async (content) => {
+                if (Array.isArray(content)) {
+                    await this.processRunnables(content, context, isAsync, true);
+                    return false;
+                }
+                // effect_details permits skip_all as an inline payload type.
+                if (content?.type === 'skip_all') return true;
+                await this.applyEffect(content, context, listKey, sourceList);
+                return false;
+            };
+
+            if (templateContent && await process(templateContent)) return true;
+            if (wrapper.inline && await process(wrapper.inline)) return true;
+            return false;
         }
 
         if (!EffectHandlers[wrapper.type]) {
             throw new TypeError(`Unsupported runnable wrapper type: ${String(wrapper.type)}`);
         }
         await this.applyEffect(wrapper, context, listKey, sourceList);
+        return false;
     },
 
     getStaticList(scope, params) {
