@@ -33,3 +33,50 @@
   .vsr-heading-display { margin-top: var(--vsr-space-4); font-size: 30px; }
   .vsr-text-body { font-size: 15px; line-height: 22px; }
 }
+
+
+/* Reusable semantic description-list pattern. */
+.vsr-description-list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+}
+
+.vsr-description-list__row {
+  display: grid;
+  grid-template-columns: minmax(140px, 0.8fr) minmax(0, 1.6fr);
+  gap: var(--vsr-space-4);
+  padding-block: var(--vsr-space-3);
+  border-bottom: 1px solid var(--vsr-color-border-subtle);
+}
+
+.vsr-description-list__row:first-child {
+  padding-top: 0;
+}
+
+.vsr-description-list__row:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.vsr-description-list__term,
+.vsr-description-list__detail {
+  min-width: 0;
+  margin: 0;
+}
+
+.vsr-description-list__term {
+  color: var(--vsr-color-text-secondary);
+}
+
+.vsr-description-list__detail {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 599px) {
+  .vsr-description-list__row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--vsr-space-1);
+  }
+}
