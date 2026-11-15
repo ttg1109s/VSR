@@ -49,6 +49,8 @@ export class HttpJsonTransport {
 
   async request(commandJson) {
     if (this.closed) throw new Error('JSON transport is closed.');
+    const health = await fetch(`${this.baseUrl}/health`);
+    if (!health.ok) throw new Error(`Engine service unavailable (${health.status}).`);
     this.connect();
     await this.readyPromise;
     const response = await fetch(`${this.baseUrl}/command`, {
