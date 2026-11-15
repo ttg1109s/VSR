@@ -113,11 +113,6 @@
 /* Reusable content and metadata patterns. */
 .vsr-line-clamp { display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; }
 .vsr-line-clamp--5 { -webkit-line-clamp: 5; }
-.vsr-experience-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
-  gap: var(--vsr-space-3);
-}
 .vsr-experience-item {
   display: flex;
   flex-direction: column;
