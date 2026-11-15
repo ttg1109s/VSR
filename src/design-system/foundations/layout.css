@@ -390,7 +390,7 @@
 
 
 /* Shared reading-page layout primitives for full-width navigation and bounded content. */
-.vsr-page-shell--flush-top { padding-top: 0; }
+.vsr-page-shell--flush-top { padding: 0; }
 .vsr-page-shell__content--reading {
   display: flex;
   flex-direction: column;
