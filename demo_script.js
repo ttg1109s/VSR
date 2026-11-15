@@ -4649,7 +4649,8 @@ export const DEMO_SCRIPT = {
     },
     "action_return_view_ghost_station": {
       "meta": {
-        "title": "Trở lại góc nhìn ban đầu",
+        "title": "Ga tàu ma — góc nhìn tổng thể",
+        "buttonLabel": "Trở lại",
         "desc": "Quay lại trạng thái quan sát tổng thể của địa điểm."
       },
       "set": {
