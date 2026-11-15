@@ -42,7 +42,7 @@ export default function LoadingPage({ status = 'loading', error = '', onClose, o
               </h2>
               <p className="vsr-loader-copy">
                 {complete
-                  ? 'The game engine is initialized. The first scene has not been opened.'
+                  ? 'The game engine is initialized and the first scene is open. Your scenario is ready to play.'
                   : failed
                     ? 'Initialization stopped before the game engine became ready. Review the error below, then retry.'
                     : 'Loading scenario data and initializing the game engine.'}
