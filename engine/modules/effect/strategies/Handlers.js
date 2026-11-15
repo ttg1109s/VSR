@@ -16,7 +16,6 @@ export const ScenePropertyHandlers = {
     blocked: (engine, scene, val, sceneId) => {
         stateOf(engine).set('scenes.[id].blocked', val, { id: sceneId });
         if (val === false) engine.resumeNPCMovement();
-        engine.render();
     },
     activeRouterId: (engine, scene, val, sceneId) => {
         stateOf(engine).set('scenes.[id].activeRouterId', val, { id: sceneId });
@@ -25,7 +24,6 @@ export const ScenePropertyHandlers = {
     },
     __default__: (engine, scene, val, sceneId, prop) => {
         stateOf(engine).set('scenes.[id].[property]', val, { id: sceneId, property: prop });
-        engine.render();
     }
 };
 
@@ -34,7 +32,6 @@ export const RouterPropertyHandlers = {
         const sceneId = stateOf(engine).sceneId;
         stateOf(engine).set('routers.[routerKey].blocked', val, { routerKey: `${sceneId}_${routerId}` });
         if (val === false) engine.resumeNPCMovement();
-        engine.render();
     },
     __default__: (engine, router, val, routerId, prop) => {
         const sceneId = stateOf(engine).sceneId;
@@ -42,7 +39,6 @@ export const RouterPropertyHandlers = {
             routerKey: `${sceneId}_${routerId}`,
             property: prop
         });
-        engine.render();
     }
 };
 
@@ -54,7 +50,6 @@ export const ActionPropertyHandlers = {
         if (chatState?.active && chatState.triggerActionId === actKey) {
             state.set('chatState.actionModified', true, {}, { namespace: 'session' });
         }
-        engine.render();
     }
 };
 
