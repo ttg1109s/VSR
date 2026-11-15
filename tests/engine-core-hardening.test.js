@@ -62,6 +62,8 @@ test('invalid and unresolved requirements fail closed', () => {
   const engine = Object.assign({}, LogicSystem, { src: { templates: { requirements: {} } } });
   assert.equal(engine.checkReq({ logic: 'OR', check: [] }).pass, false);
   assert.equal(engine.checkReq({ ref: 'missing' }).pass, false);
+  assert.equal(engine.checkReq(null).pass, false);
+  assert.equal(engine.checkReq(false).pass, false);
   assert.equal(engine.checkReq({ check: [{ type: 'unknown', subtype: 'x', op: '==', value: 1 }] }).pass, false);
 });
 
@@ -434,4 +436,33 @@ test('character and management effect dispatchers await asynchronous handlers', 
   } finally {
     CharacterStrategies.mng_items = originalCharacterHandler;
   }
+});
+
+
+test('skip_all evaluates its requirement before stopping the runnable list', async () => {
+  const notices = [];
+  const engine = Object.assign({}, EffectSystem, {
+    checkReq: req => ({ pass: req.check[0].value === true }),
+    api: {
+      engine: { state: { getRuntimeSnapshot: () => ({}) } },
+      notifications: { add: (...args) => notices.push(args) }
+    }
+  });
+
+  const makeList = gate => [
+    {
+      type: 'skip_all',
+      req: { logic: null, check: [
+        { type: 'state', property: 'continue', op: '==', value: gate }
+      ] }
+    },
+    { type: 'notify', subtype: 'toast', text: 'Reached next step' }
+  ];
+
+  await engine.processRunnables(makeList(false), {}, false, true);
+  assert.equal(notices.length, 1);
+
+  notices.length = 0;
+  await engine.processRunnables(makeList(true), {}, false, true);
+  assert.equal(notices.length, 0);
 });
