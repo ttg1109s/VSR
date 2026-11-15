@@ -35,6 +35,18 @@ export const Switch=forwardRef(function Switch({label,description,className,...p
 export function RadioGroup({label,name,value,defaultValue,onChange,options=[],disabled=false,orientation='vertical',className}){
   const id=useId(); return <fieldset className={cx('vsr-radio-group',className)} disabled={disabled}><legend>{label}</legend><div className={'vsr-radio-options vsr-radio-options--'+orientation}>{options.map(o=><label key={o.value} className="vsr-radio-row"><input type="radio" name={name||id} value={o.value} checked={value!==undefined?value===o.value:undefined} defaultChecked={defaultValue===o.value} disabled={disabled||o.disabled} onChange={e=>onChange&&onChange(e.target.value)}/><span className="vsr-radio-dot"/><span className="vsr-check-copy"><span>{o.label}</span>{o.description&&<small>{o.description}</small>}</span></label>)}</div></fieldset>;
 }
+export function DescriptionList({layout='list',columns='auto',gap='comfortable',divided=false,className,children,...props}){
+  const layoutClass=layout==='grid'?'vsr-description-list--grid':'vsr-description-list--list';
+  const columnsClass=layout==='grid'?'vsr-description-list--columns-'+columns:'';
+  return <dl className={cx('vsr-description-list',layoutClass,columnsClass,'vsr-description-list--gap-'+gap,divided&&'vsr-description-list--divided',className)} {...props}>{children}</dl>;
+}
+export function DescriptionListItem({label,value,layout='stacked',span='auto',className}){
+  if(value===null||value===undefined||value==='')return null;
+  return <div className={cx('vsr-description-list__row',layout==='inline'&&'vsr-description-list__row--inline',span==='full'&&'vsr-description-list__row--span-full',className)}>
+    <dt className="vsr-description-list__term">{label}</dt>
+    <dd className="vsr-description-list__detail">{value}</dd>
+  </div>;
+}
 export function Separator({orientation='horizontal',decorative=true,className,...props}){
   return <div className={cx('vsr-separator','vsr-separator--'+orientation,className)} role={decorative?undefined:'separator'} aria-orientation={decorative?undefined:orientation} {...props}/>;
 }
