@@ -24,6 +24,7 @@
 .vsr-text-center { text-align: center; }
 .vsr-heading-display { margin: var(--vsr-space-5) 0 var(--vsr-space-2); font-size: clamp(30px, 4vw, 42px); line-height: 1.16; font-weight: 600; letter-spacing: -.035em; }
 .vsr-text-secondary { color: var(--vsr-color-text-secondary); }
+.vsr-text-error { color: var(--vsr-color-error); }
 .vsr-text-body { font-size: 16px; line-height: 24px; }
 .vsr-eyebrow { display: inline-flex; align-items: center; min-height: 30px; padding: var(--vsr-space-1) var(--vsr-space-4); border: 1px solid var(--vsr-color-primary); border-radius: var(--vsr-radius-full); color: var(--vsr-color-primary); font-size: 12px; line-height: 18px; font-weight: 600; letter-spacing: .055em; }
 .vsr-visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
