@@ -142,7 +142,9 @@ const CheckTypeHandlers = {
 
 export const LogicSystem = {
     checkReq(req) {
-        if (req === null || req === undefined) return { pass: true };
+        if (req === null || req === undefined) {
+            return { pass: false, type: 'invalid_requirement' };
+        }
 
         let definition = req;
         if (req && typeof req === 'object' && typeof req.ref === 'string') {
