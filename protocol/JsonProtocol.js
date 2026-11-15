@@ -14,7 +14,7 @@ const id=(p,n)=>`${p}_${Date.now().toString(36)}_${n.toString(36)}`;
 // Snapshot projections must be deterministic. Random resolver expressions are
 // intentionally left unevaluated here; they belong to action execution, not projection.
 const hasSnapshotUnsafeExpression=value=>{
- if(typeof value==='string')return /\\$rdnumber\\s*\\(/i.test(value);
+ if(typeof value==='string')return /\$rdnumber\s*\(/i.test(value);
  if(Array.isArray(value))return value.some(hasSnapshotUnsafeExpression);
  if(value&&typeof value==='object')return Object.values(value).some(hasSnapshotUnsafeExpression);
  return false;
