@@ -3,6 +3,8 @@
  * A host may be local, worker-backed, HTTP, or WebSocket as long as it
  * implements request(JSON) and subscribe(listener).
  */
+import { JsonStateStore } from '../state/JsonStateStore.js';
+
 export class JsonClient {
   constructor(transport) {
     if (!transport || typeof transport.request !== 'function' || typeof transport.subscribe !== 'function') {
@@ -10,6 +12,7 @@ export class JsonClient {
     }
     this.transport = transport;
     this.listeners = new Set();
+    this.store = new JsonStateStore();
     this.snapshot = null;
     this.commandSequence = 0;
     this.unsubscribeTransport = transport.subscribe(raw => this.receive(raw));
@@ -40,13 +43,15 @@ export class JsonClient {
   }
 
   setSnapshot(snapshot, reason) {
-    this.snapshot = snapshot;
-    this.emit({ type: 'state', reason, snapshot });
+    const previous = this.snapshot;
+    this.snapshot = structuredClone(snapshot);
+    this.store.update(snapshot, reason);
+    const changedKeys = [...new Set([...Object.keys(previous || {}), ...Object.keys(snapshot || {})])]
+      .filter(key => JSON.stringify(previous?.[key]) !== JSON.stringify(snapshot?.[key]));
+    this.emit({ type: 'state', reason, snapshot: this.getSnapshot(), changedKeys });
   }
 
-  getSnapshot() {
-    return this.snapshot ? structuredClone(this.snapshot) : null;
-  }
+  getSnapshot() { return this.store.getSnapshot(); }
 
   async initialize(scenario) {
     const raw = await this.transport.initialize(scenario);
