@@ -23,7 +23,7 @@ export default function HomeActionCard({
     >
       <span className="home-action-card__content">
         <span className="home-action-card__title">{title}</span>
-        <span className="home-action-card__description">{description}</span>
+        {description ? <span className="home-action-card__description">{description}</span> : null}
       </span>
     </Button>
   );
