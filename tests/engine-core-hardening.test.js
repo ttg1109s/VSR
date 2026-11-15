@@ -466,3 +466,64 @@ test('skip_all evaluates its requirement before stopping the runnable list', asy
   await engine.processRunnables(makeList(true), {}, false, true);
   assert.equal(notices.length, 0);
 });
+
+
+test('item stat requirements resolve IDs through safe state-path placeholders', () => {
+  let requested;
+  const engine = Object.assign({}, LogicSystem, {
+    src: {},
+    api: {
+      engine: {
+        state: {
+          get: (path, params) => {
+            requested = { path, params };
+            return 9;
+          }
+        }
+      }
+    }
+  });
+  const result = engine.checkReq({ logic: null, check: [{
+    type: 'stats', subtype: 'item', target: 'item.with.dot',
+    property: 'damage.value', field: 'max', op: '==', value: 9
+  }] });
+
+  assert.equal(result.pass, true);
+  assert.deepEqual(requested, {
+    path: 'itemInfo.[id].stats.[statId].max',
+    params: { id: 'item.with.dot', statId: 'damage.value' }
+  });
+});
+
+test('characters.moving.replace supports every schema-valid index in an index array', () => {
+  const character = {
+    moveList: [
+      { scene_id: 'old_a' },
+      { scene_id: 'old_b' }
+    ],
+    place: { scene_id: 'current', currentIndex: 0 }
+  };
+  const engine = {
+    redirectTarget: value => value,
+    api: {
+      engine: {
+        state: {
+          getRuntime: () => character,
+          set() {}
+        }
+      }
+    },
+    taskManager: { kill() {} },
+    validateMoveState: () => false
+  };
+
+  CharacterStrategies.moving(engine, {
+    target: 'npc', exec: 'replace', property: 'moveList',
+    value: { scene_id: 'new_route' }, index: [0, 1]
+  });
+
+  assert.deepEqual(character.moveList, [
+    { scene_id: 'new_route' },
+    { scene_id: 'new_route' }
+  ]);
+});
