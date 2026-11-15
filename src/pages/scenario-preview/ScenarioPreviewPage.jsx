@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Button } from '../../design-system/index.js';
 import ScenarioCover from '../../components/scenario-preview/ScenarioCover.jsx';
 
@@ -8,6 +8,66 @@ function MetadataRow({ label, value }) {
     <div className="vsr-description-list__row">
       <dt className="vsr-description-list__term">{label}</dt>
       <dd className="vsr-description-list__detail">{value}</dd>
+    </div>
+  );
+}
+
+function ExperienceItem({ label, value }) {
+  if (value === null || value === undefined || value === '') return null;
+  return (
+    <div className="vsr-card vsr-experience-item">
+      <span className="vsr-text-secondary vsr-experience-item__label">{label}</span>
+      <strong className="vsr-experience-item__value">{value}</strong>
+    </div>
+  );
+}
+
+function ScenarioDescription({ description }) {
+  const descriptionRef = useRef(null);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [canExpand, setCanExpand] = useState(false);
+
+  useEffect(() => {
+    const element = descriptionRef.current;
+    if (!element || isExpanded) return undefined;
+
+    const measureOverflow = () => {
+      setCanExpand(element.scrollHeight > element.clientHeight + 1);
+    };
+
+    measureOverflow();
+    if (typeof ResizeObserver === 'undefined') return undefined;
+
+    const observer = new ResizeObserver(measureOverflow);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [description, isExpanded]);
+
+  if (!description) return null;
+
+  return (
+    <div className="vsr-stack vsr-stack--gap-1">
+      <p
+        ref={descriptionRef}
+        className={isExpanded ? undefined : 'vsr-line-clamp vsr-line-clamp--5'}
+      >
+        {description}
+      </p>
+      {canExpand && (
+        <Button
+          variant="tertiary"
+          size="sm"
+          onClick={() => setIsExpanded(value => !value)}
+          trailingIcon={
+            <span className="vsr-icon" aria-hidden="true">
+              {isExpanded ? 'expand_less' : 'expand_more'}
+            </span>
+          }
+          aria-expanded={isExpanded}
+        >
+          {isExpanded ? 'Thu gọn' : 'Đọc toàn bộ mô tả'}
+        </Button>
+      )}
     </div>
   );
 }
@@ -43,50 +103,78 @@ function formatDifficulty(value) {
 
 export default function ScenarioPreviewPage({ preview, onBack }) {
   const metadata = preview?.metadata || {};
-  const summary = preview?.summary || {};
+  const experienceItems = [
+    { label: 'Độ tuổi', value: metadata.ageRating },
+    { label: 'Độ khó', value: formatDifficulty(metadata.difficulty) },
+    { label: 'Thời lượng dự kiến', value: formatPlayTime(metadata.estimatedPlayTime) }
+  ].filter(item => item.value !== null && item.value !== undefined && item.value !== '');
+
+  const publicationItems = [
+    { label: 'Tác giả', value: metadata.writer },
+    { label: 'Đơn vị phát triển', value: metadata.studio },
+    { label: 'Phiên bản kịch bản', value: metadata.version },
+    { label: 'Ngôn ngữ', value: formatLanguage(metadata.language) },
+    { label: 'Ngày tạo', value: formatDate(metadata.createdAt) },
+    { label: 'Cập nhật lần cuối', value: formatDate(metadata.updatedAt) }
+  ];
+
+  const hasLegalInformation = Boolean(metadata.copyright || metadata.license);
 
   return (
-    <main className="vsr-page-shell">
+    <main className="vsr-page-shell vsr-page-shell--start">
       <article className="vsr-content-width vsr-content-width--medium vsr-stack vsr-stack--gap-6">
-        <header className="vsr-stack vsr-stack--gap-3">
-          <Button variant="secondary" size="md" onClick={onBack} leadingIcon={<span className="vsr-icon" aria-hidden="true">arrow_back</span>}>
-            Quay lại
-          </Button>
-          <div className="vsr-stack vsr-stack--gap-2">
-            <span className="vsr-eyebrow">XEM TRƯỚC KỊCH BẢN</span>
-            <h1 className="vsr-heading-display">{metadata.title || 'Kịch bản chưa có tiêu đề'}</h1>
-            {metadata.subtitle && <p className="vsr-text-secondary vsr-text-body">{metadata.subtitle}</p>}
-            {metadata.description && <p>{metadata.description}</p>}
-          </div>
+        <ScenarioCover url={metadata.cover?.url} title={metadata.title} />
+
+        <header className="vsr-stack vsr-stack--gap-2">
+          <h1 className="vsr-heading-display">{metadata.title || 'Kịch bản chưa có tiêu đề'}</h1>
+          {metadata.subtitle && (
+            <p className="vsr-text-secondary vsr-text-body">{metadata.subtitle}</p>
+          )}
+          <ScenarioDescription description={metadata.description} />
         </header>
 
-        <ScenarioCover url={metadata.cover?.url} title={metadata.title} />
+        {experienceItems.length > 0 && (
+          <section className="vsr-stack vsr-stack--gap-3" aria-labelledby="scenario-experience-title">
+            <h2 id="scenario-experience-title">Thông tin trải nghiệm</h2>
+            <div className="vsr-experience-grid">
+              {experienceItems.map(item => (
+                <ExperienceItem key={item.label} label={item.label} value={item.value} />
+              ))}
+            </div>
+          </section>
+        )}
 
         {Array.isArray(metadata.tags) && metadata.tags.length > 0 && (
           <section className="vsr-stack vsr-stack--gap-2" aria-labelledby="scenario-tags-title">
             <h2 id="scenario-tags-title">Thẻ kịch bản</h2>
-            <p className="vsr-text-secondary">{metadata.tags.join(' · ')}</p>
+            <ul className="vsr-tag-list">
+              {metadata.tags.map((tag, index) => (
+                <li className="vsr-tag" key={`${tag}-${index}`}>{tag}</li>
+              ))}
+            </ul>
           </section>
         )}
 
-        <section className="vsr-stack vsr-stack--gap-3" aria-labelledby="scenario-metadata-title">
-          <h2 id="scenario-metadata-title">Thông tin kịch bản</h2>
-          <dl className="vsr-description-list">
-            <MetadataRow label="Tác giả" value={metadata.writer} />
-            <MetadataRow label="Đơn vị phát triển" value={metadata.studio} />
-            <MetadataRow label="Phiên bản kịch bản" value={metadata.version} />
-            <MetadataRow label="Phiên bản định dạng VSR" value={preview?.formatVersion} />
-            <MetadataRow label="Ngôn ngữ" value={formatLanguage(metadata.language)} />
-            <MetadataRow label="Phân loại độ tuổi" value={metadata.ageRating} />
-            <MetadataRow label="Độ khó" value={formatDifficulty(metadata.difficulty)} />
-            <MetadataRow label="Thời lượng dự kiến" value={formatPlayTime(metadata.estimatedPlayTime)} />
-            <MetadataRow label="Mã cảnh bắt đầu" value={metadata.entryScene} />
-            <MetadataRow label="Ngày tạo" value={formatDate(metadata.createdAt)} />
-            <MetadataRow label="Cập nhật lần cuối" value={formatDate(metadata.updatedAt)} />
-            <MetadataRow label="Bản quyền" value={metadata.copyright} />
-            <MetadataRow label="Giấy phép" value={metadata.license} />
-          </dl>
-        </section>
+        {publicationItems.some(item => item.value !== null && item.value !== undefined && item.value !== '') && (
+          <section className="vsr-stack vsr-stack--gap-3" aria-labelledby="scenario-publication-title">
+            <h2 id="scenario-publication-title">Thông tin xuất bản</h2>
+            <dl className="vsr-description-list">
+              {publicationItems.map(item => (
+                <MetadataRow key={item.label} label={item.label} value={item.value} />
+              ))}
+            </dl>
+          </section>
+        )}
+
+        {hasLegalInformation && (
+          <section className="vsr-stack vsr-stack--gap-3" aria-labelledby="scenario-legal-title">
+            <h2 id="scenario-legal-title">Bản quyền và giấy phép</h2>
+            <dl className="vsr-description-list">
+              <MetadataRow label="Bản quyền" value={metadata.copyright} />
+              <MetadataRow label="Giấy phép" value={metadata.license} />
+            </dl>
+          </section>
+        )}
 
         {metadata.notes && (
           <section className="vsr-stack vsr-stack--gap-2" aria-labelledby="scenario-notes-title">
@@ -95,16 +183,14 @@ export default function ScenarioPreviewPage({ preview, onBack }) {
           </section>
         )}
 
-        <section className="vsr-stack vsr-stack--gap-3" aria-labelledby="scenario-size-title">
-          <h2 id="scenario-size-title">Quy mô kịch bản</h2>
-          <p className="vsr-text-secondary">
-            {summary.sceneCount ?? 0} cảnh · {summary.characterCount ?? 0} nhân vật · {summary.actionCount ?? 0} hành động · {summary.itemCount ?? 0} vật phẩm · {summary.chatCount ?? 0} hội thoại
-          </p>
-        </section>
-
         <footer>
-          <Button variant="secondary" size="md" onClick={onBack} leadingIcon={<span className="vsr-icon" aria-hidden="true">arrow_back</span>}>
-            Quay lại trang chủ
+          <Button
+            variant="secondary"
+            size="md"
+            onClick={onBack}
+            leadingIcon={<span className="vsr-icon" aria-hidden="true">arrow_back</span>}
+          >
+            Quay lại
           </Button>
         </footer>
       </article>
