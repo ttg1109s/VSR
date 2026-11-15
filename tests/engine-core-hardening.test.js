@@ -813,32 +813,46 @@ test('snapshot projection does not evaluate random requirement expressions', () 
 });
 
 
-test('random requirements stay triggerable in snapshots and are evaluated by the Engine at execution', async () => {
-  const scenario = validScenario();
-  scenario.globalStates.roll = { type: 'number', value: 99 };
-  scenario.scenes.start.routers.main.actions = [{
+test('random requirements remain triggerable and are evaluated only at execution time', () => {
+  const requirement = {
+    logic: null,
+    check: [{ type: 'state', property: 'roll', op: '==', value: '$rdnumber(1, 6)' }]
+  };
+  const action = {
     id: 'random_requirement',
-    meta: { title: 'Random requirement' },
     set: { display: 'show', requirement: true },
-    requirement: {
-      logic: null,
-      check: [{ type: 'state', property: 'roll', op: '==', value: '$rdnumber(1, 6)' }]
-    }
-  }];
-  const engine = new GameEngine();
+    requirement,
+    meta: { title: 'Random requirement' }
+  };
+  let randomCalls = 0;
+  const originalRandom = Math.random;
+  const engine = Object.assign({}, LogicSystem, {
+    state: {
+      sceneId: 'start',
+      scenes: { start: { activeRouterId: 'main' } },
+      actions: {},
+      entryCharacter: 'player',
+      faker: { active: false },
+      session: {}
+    },
+    src: { scenes: { start: { routers: { main: {} } } } },
+    getEffectiveActions: () => [action],
+    getConfig: () => false,
+    api: { engine: { state: { get: () => 99 } } }
+  });
+  Math.random = () => { randomCalls++; return 0; };
   try {
-    await engine.init(scenario);
-    const key = 'start_main_random_requirement';
-    const projection = engine.protocol.createSnapshot(engine).presentation.actions[0];
+    const projection = new JsonProtocol().createSnapshot(engine).presentation.actions[0];
     assert.equal(projection.availability.reason, 'available');
     assert.equal(projection.availability.canTrigger, true);
     assert.equal(projection.availability.checks.requirement, 'not_evaluated');
+    assert.equal(randomCalls, 0);
 
-    const result = await engine.handleAction('random_requirement', key);
-    assert.equal(result.success, false);
-    assert.equal(result.reason, 'requirement_failed');
+    const evaluated = engine.checkReq(requirement);
+    assert.equal(evaluated.pass, false);
+    assert.equal(randomCalls, 1);
   } finally {
-    engine.dispose();
+    Math.random = originalRandom;
   }
 });
 
@@ -869,7 +883,7 @@ test('cooldown is enforced before action counters and normal effects are mutated
 
 test('mark-as-read only mutates actions in the active router', async () => {
   const scenario = validScenario();
-  scenario.scenes.start.routers.main.actions = [{ id: 'readable', meta: { desc: 'Read me' }, set: { display: 'show', readDesc: true } }];
+  scenario.scenes.start.routers.main.actions = [{ id: 'readable', meta: { title: 'Readable', desc: 'Read me' }, set: { display: 'show', readDesc: true } }];
   const engine = new GameEngine();
   try {
     await engine.init(scenario);
