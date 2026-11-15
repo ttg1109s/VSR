@@ -29,7 +29,6 @@ export default function HomePage({
             <HomeActionCard
               icon="play_circle"
               title="Run Demo Script"
-              description="Xem thông tin kịch bản demo."
               variant="primary"
               onClick={onRunDemo}
               disabled={Boolean(busy)}
@@ -38,7 +37,6 @@ export default function HomePage({
             <HomeActionCard
               icon="data_object"
               title="Import JSON"
-              description="Kiểm tra và xem metadata của kịch bản JSON."
               variant="secondary"
               onClick={() => fileInputRef.current?.click()}
               disabled={Boolean(busy)}
