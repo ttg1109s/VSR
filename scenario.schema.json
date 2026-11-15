@@ -2048,6 +2048,209 @@
                     }
                   }
                 }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "table": {
+                      "const": "characters"
+                    },
+                    "column": {
+                      "const": "relationship"
+                    },
+                    "method": {
+                      "enum": [
+                        "add",
+                        "insert"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "table",
+                    "column",
+                    "method"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "value": {
+                      "type": "array",
+                      "minItems": 2,
+                      "maxItems": 2,
+                      "items": [
+                        {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "table": {
+                      "const": "characters"
+                    },
+                    "column": {
+                      "const": "relationship"
+                    },
+                    "method": {
+                      "const": "remove"
+                    }
+                  },
+                  "required": [
+                    "table",
+                    "column",
+                    "method"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "value": {
+                      "oneOf": [
+                        {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        {
+                          "type": "array",
+                          "minItems": 2,
+                          "maxItems": 2,
+                          "items": [
+                            {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "table": {
+                      "const": "characters"
+                    },
+                    "column": {
+                      "const": "met"
+                    },
+                    "method": {
+                      "enum": [
+                        "add",
+                        "remove"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "table",
+                    "column",
+                    "method"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "value": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "table": {
+                      "const": "characters"
+                    },
+                    "column": {
+                      "const": "met"
+                    },
+                    "method": {
+                      "enum": [
+                        "set",
+                        "insert"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "table",
+                    "column",
+                    "method"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "value": {
+                      "oneOf": [
+                        {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        {
+                          "type": "object",
+                          "required": [
+                            "id"
+                          ],
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "count": {
+                              "type": "number"
+                            }
+                          },
+                          "additionalProperties": false
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "table": {
+                      "const": "routers"
+                    },
+                    "column": {
+                      "const": "actions"
+                    },
+                    "method": {
+                      "enum": [
+                        "add",
+                        "remove",
+                        "insert"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "table",
+                    "column",
+                    "method"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "value": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
               }
             ]
           }
@@ -3021,6 +3224,209 @@
                       "items": {
                         "type": "string"
                       }
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "table": {
+                      "const": "characters"
+                    },
+                    "column": {
+                      "const": "relationship"
+                    },
+                    "method": {
+                      "enum": [
+                        "add",
+                        "insert"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "table",
+                    "column",
+                    "method"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "value": {
+                      "type": "array",
+                      "minItems": 2,
+                      "maxItems": 2,
+                      "items": [
+                        {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "table": {
+                      "const": "characters"
+                    },
+                    "column": {
+                      "const": "relationship"
+                    },
+                    "method": {
+                      "const": "remove"
+                    }
+                  },
+                  "required": [
+                    "table",
+                    "column",
+                    "method"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "value": {
+                      "oneOf": [
+                        {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        {
+                          "type": "array",
+                          "minItems": 2,
+                          "maxItems": 2,
+                          "items": [
+                            {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "table": {
+                      "const": "characters"
+                    },
+                    "column": {
+                      "const": "met"
+                    },
+                    "method": {
+                      "enum": [
+                        "add",
+                        "remove"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "table",
+                    "column",
+                    "method"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "value": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "table": {
+                      "const": "characters"
+                    },
+                    "column": {
+                      "const": "met"
+                    },
+                    "method": {
+                      "enum": [
+                        "set",
+                        "insert"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "table",
+                    "column",
+                    "method"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "value": {
+                      "oneOf": [
+                        {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        {
+                          "type": "object",
+                          "required": [
+                            "id"
+                          ],
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "count": {
+                              "type": "number"
+                            }
+                          },
+                          "additionalProperties": false
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "table": {
+                      "const": "routers"
+                    },
+                    "column": {
+                      "const": "actions"
+                    },
+                    "method": {
+                      "enum": [
+                        "add",
+                        "remove",
+                        "insert"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "table",
+                    "column",
+                    "method"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "value": {
+                      "type": "string",
+                      "minLength": 1
                     }
                   }
                 }
