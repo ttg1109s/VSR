@@ -132,7 +132,7 @@ function ActionCard({ action, pending = false, passwordChallenge = null, feedbac
   return <article className="vsr-card vsr-action-card" data-action-key={action.key} aria-busy={pending || undefined}>
     <div className="vsr-action-card__heading">
       <h3 className="vsr-action-card__title">{meta.title || action.title || action.id}</h3>
-      <div className="vsr-action-card__status" aria-label="Trạng thái hành động">
+      <div className="vsr-action-card__status" aria-label="Action status">
         <Badge tone={statusTone}>{statusLabel}</Badge>
       </div>
     </div>
@@ -144,21 +144,21 @@ function ActionCard({ action, pending = false, passwordChallenge = null, feedbac
         <Popover
           align="start"
           onOpenChange={handleDescriptionOpen}
-          label="Thông tin mô tả"
-          trigger={<Button className="vsr-action-card__info-button" variant="tertiary" size="sm" aria-label="Thông tin mô tả"><span className="vsr-action-card__info-glyph" aria-hidden="true">info</span></Button>}
+          label="Description information"
+          trigger={<Button className="vsr-action-card__info-button" variant="tertiary" size="sm" aria-label="Description information"><span className="vsr-action-card__info-glyph" aria-hidden="true">info</span></Button>}
         >
           <div className="vsr-action-card__popover">
-            {description ? <p className="vsr-text-body">{description}</p> : <p className="vsr-text-secondary">Không có mô tả chi tiết.</p>}
+            {description ? <p className="vsr-text-body">{description}</p> : <p className="vsr-text-secondary">No detailed description available.</p>}
           </div>
         </Popover>
         {readRequired
           ? <Badge tone={read ? 'success' : 'warning'}>{read ? 'Read' : 'Unread'}</Badge>
-          : <Badge tone="neutral">Không yêu cầu đọc</Badge>}
+          : <Badge tone="neutral">Reading not required</Badge>}
       </div>
     </div>
 
     <div className="vsr-action-card__section vsr-action-card__requirements">
-      <h4>Điều kiện và quyền</h4>
+      <h4>Requirements and permissions</h4>
       <div className="vsr-action-card__requirement-state">
         <span className={'vsr-action-card__state-icon ' + (requirementPassed ? 'is-success' : requirementFailed ? 'is-error' : 'is-muted')} aria-hidden="true">{requirementPassed ? 'check_circle' : requirementFailed ? 'cancel' : 'info'}</span>
         <span>{conditionText}</span>
@@ -167,24 +167,24 @@ function ActionCard({ action, pending = false, passwordChallenge = null, feedbac
         <span className={'vsr-action-card__state-icon vsr-action-card__permission-icon ' + (permissionPassed ? 'is-success' : permissionFailed ? 'is-error' : 'is-muted')} aria-hidden="true">{permissionPassed ? 'verified_user' : 'shield'}</span>
         <span>{permissionText}</span>
       </div>
-      {reason === 'cooldown' && <div className="vsr-action-card__cooldown" role="timer">Thời gian còn lại: {cooldown} giây</div>}
+      {reason === 'cooldown' && <div className="vsr-action-card__cooldown" role="timer">Time remaining: {cooldown}s</div>}
     </div>
 
     {feedback && <p className="vsr-action-card__feedback" role="status">{feedback}</p>}
     <div className="vsr-action-card__actions">
-      <Button size="lg" leadingIcon={meta.buttonIcon} disabled={pending || availability.canTrigger !== true || locked} loading={pending} onClick={() => onTrigger?.(action)} aria-label={meta.buttonLabel || `Thực hiện ${meta.title || action.id}`}>{meta.buttonLabel || (reason === 'password_required' ? 'Xác thực' : 'Execute')}</Button>
+      <Button size="lg" leadingIcon={meta.buttonIcon} disabled={pending || availability.canTrigger !== true || locked} loading={pending} onClick={() => onTrigger?.(action)} aria-label={meta.buttonLabel || `Execute ${meta.title || action.id}`}>{meta.buttonLabel || ('Execute')}</Button>
     </div>
 
-    <Dialog open={challengeOpen} onClose={cancel} title="Xác thực hành động" description={passwordChallenge?.description || 'Complete the challenge provided by the Engine.'}>
+    <Dialog open={challengeOpen} onClose={cancel} title="Verify action" description={passwordChallenge?.description || 'Complete the challenge provided by the Engine.'}>
       <form className="vsr-stack vsr-stack--gap-3" onSubmit={submit}>
-        {passwordChallenge?.type === 'puzzle' && passwordChallenge.puzzle?.url && <MediaFrame src={passwordChallenge.puzzle.url} ratio="1:1" alt="Hình thử thách xếp mảnh" />}
-        {passwordChallenge?.type === 'find_way' && passwordChallenge.findWay && <div className="vsr-stack vsr-stack--gap-1"><p className="vsr-text-secondary">Lưới: {passwordChallenge.findWay.area?.join(' × ') || '—'}</p><p className="vsr-text-secondary">Bắt đầu: {passwordChallenge.findWay.start?.join(', ') || '—'}</p><p className="vsr-text-secondary">Đích: {passwordChallenge.findWay.target?.join(', ') || '—'}</p></div>}
-        {structured ? <Textarea label={passwordChallenge.type === 'puzzle' ? 'Piece order (JSON)' : 'Path (coordinate JSON)'} hint={passwordChallenge.type === 'puzzle' ? 'Enter the piece-index array in row order.' : 'Enter the coordinate array [x,y], from the start point to the destination.'} rows={4} value={input} onChange={event => setInput(event.target.value)} required /> : <Input label="Mật khẩu" type="password" autoComplete="current-password" value={input} onChange={event => setInput(event.target.value)} required />}
-        {Number.isFinite(passwordChallenge?.remainingAttempts) && <p className="vsr-text-secondary" role="status">Số lượt còn lại: {passwordChallenge.remainingAttempts}</p>}
-        {deadline > 0 && <p className="vsr-text-secondary" role="status">Thời gian còn lại: {deadline} giây</p>}
+        {passwordChallenge?.type === 'puzzle' && passwordChallenge.puzzle?.url && <MediaFrame src={passwordChallenge.puzzle.url} ratio="1:1" alt="Puzzle challenge" />}
+        {passwordChallenge?.type === 'find_way' && passwordChallenge.findWay && <div className="vsr-stack vsr-stack--gap-1"><p className="vsr-text-secondary">Grid: {passwordChallenge.findWay.area?.join(' × ') || '—'}</p><p className="vsr-text-secondary">Start: {passwordChallenge.findWay.start?.join(', ') || '—'}</p><p className="vsr-text-secondary">Target: {passwordChallenge.findWay.target?.join(', ') || '—'}</p></div>}
+        {structured ? <Textarea label={passwordChallenge.type === 'puzzle' ? 'Piece order (JSON)' : 'Path (coordinate JSON)'} hint={passwordChallenge.type === 'puzzle' ? 'Enter the piece-index array in row order.' : 'Enter the coordinate array [x,y], from the start point to the destination.'} rows={4} value={input} onChange={event => setInput(event.target.value)} required /> : <Input label="Password" type="password" autoComplete="current-password" value={input} onChange={event => setInput(event.target.value)} required />}
+        {Number.isFinite(passwordChallenge?.remainingAttempts) && <p className="vsr-text-secondary" role="status">Attempts remaining: {passwordChallenge.remainingAttempts}</p>}
+        {deadline > 0 && <p className="vsr-text-secondary" role="status">Time remaining: {deadline}s</p>}
         {challengeFeedback && <p role="status">{challengeFeedback}</p>}
         {error && <p className="vsr-text-error" role="alert">{error}</p>}
-        <Grid columns="auto" gap="2"><Button size="lg" type="button" variant="secondary" disabled={passwordPending} onClick={cancel}>Hủy thử thách</Button><Button size="lg" type="submit" disabled={!input.trim() || passwordPending} loading={passwordPending}>Gửi câu trả lời</Button></Grid>
+        <Grid columns="auto" gap="2"><Button size="lg" type="button" variant="secondary" disabled={passwordPending} onClick={cancel}>Cancel challenge</Button><Button size="lg" type="submit" disabled={!input.trim() || passwordPending} loading={passwordPending}>Submit response</Button></Grid>
       </form>
     </Dialog>
   </article>;
