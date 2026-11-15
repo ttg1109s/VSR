@@ -8,6 +8,7 @@ export class OverlayRenderer {
     this.adapter = adapter;
     this.messages = [];
     this.choices = [];
+    this.chatOpen = false;
     this.inputVisible = false;
     this.notification = null;
     this.password = null;
@@ -20,9 +21,11 @@ export class OverlayRenderer {
     if (name === 'chat.renderBubble') {
       const line = args[0];
       if (line) this.messages.push(line);
+      this.chatOpen = true;
       this.render();
     } else if (name === 'chat.renderChoices') {
       this.choices = Array.isArray(args[0]) ? args[0] : [];
+      this.chatOpen = true;
       this.inputVisible = false;
       this.render();
     } else if (name === 'chat.clearChoices') {
@@ -35,7 +38,9 @@ export class OverlayRenderer {
       this.inputVisible = false;
       this.render();
     } else if (name === 'chat.toggleOverlay') {
-      this.root.classList.toggle('has-chat-overlay', !!args[0]);
+      this.chatOpen = !!args[0];
+      this.root.classList.toggle('has-chat-overlay', this.chatOpen);
+      this.render();
     } else if (name === 'components.keyboard') {
       this.password = { action: args[0], actionId: args[1], uniqueId: args[2], config: args[3] || {} };
       this.render();
@@ -52,7 +57,8 @@ export class OverlayRenderer {
       this.root.classList.toggle('is-blocking', this.blocking);
     } else if (name.startsWith('notification.')) {
       if (name === 'notification.add' || name === 'notification.alert' || name === 'notification.updated') {
-        this.notification = payload.notification || null;
+        const args = Array.isArray(payload.args) ? payload.args : [];
+        this.notification = payload.notification || (args.length ? { title: args[0], message: args[1], level: args[2] || 'info' } : null);
         this.render();
       } else if (name === 'notification.dismiss' || name === 'notification.expired' || name === 'notification.cleared') {
         if (this.notification?.id === payload.notification?.id) this.notification = null;
@@ -64,7 +70,7 @@ export class OverlayRenderer {
   render() {
     const previous = this.root.querySelector('.game-overlay-layer');
     if (previous) previous.remove();
-    const hasChat = this.messages.length > 0 || this.choices.length > 0;
+    const hasChat = this.chatOpen && (this.messages.length > 0 || this.choices.length > 0);
     const chat = hasChat ? `
       <section class="chat-panel" aria-label="Hội thoại">
         <div class="chat-panel-head"><span class="eyebrow">DIALOGUE</span><button type="button" class="overlay-close" data-overlay-close>×</button></div>
@@ -86,7 +92,7 @@ export class OverlayRenderer {
     if (!chat && !password && !toast && !timer) return;
     this.root.insertAdjacentHTML('beforeend', `<div class="game-overlay-layer">${timer}${chat}${password}${toast}</div>`);
     this.root.querySelector('[data-overlay-close]')?.addEventListener('click', () => {
-      this.messages = []; this.choices = []; this.inputVisible = false; this.render();
+      this.messages = []; this.choices = []; this.inputVisible = false; this.chatOpen = false; this.render();
     });
     this.root.querySelector('[data-chat-next]')?.addEventListener('click', async event => {
       event.currentTarget.disabled = true;
@@ -127,7 +133,7 @@ export class OverlayRenderer {
   }
 
   reset() {
-    this.messages = []; this.choices = []; this.inputVisible = false;
+    this.messages = []; this.choices = []; this.inputVisible = false; this.chatOpen = false;
     this.notification = null; this.password = null; this.timer = '';
     this.render();
   }
