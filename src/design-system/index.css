@@ -69,6 +69,7 @@
 .vsr-action-card__requirement-state { display:flex; align-items:flex-start; gap:10px; font-size:14px; line-height:1.5; }
 .vsr-action-card__state-icon { flex:0 0 auto; font-family:var(--vsr-font-icon); font-size:21px; line-height:1.35; }
 .vsr-action-card__state-icon.is-success { color:var(--vsr-color-success); }
+.vsr-action-card__state-icon.is-error { color:var(--vsr-color-error); }
 .vsr-action-card__state-icon.is-muted { color:var(--vsr-color-text-secondary); }
 .vsr-action-card__cooldown { padding-left:31px; color:var(--vsr-color-text-secondary); font-size:13px; }
 .vsr-action-card__feedback { margin:0 0 12px; padding:10px 12px; border-left:3px solid var(--vsr-color-info); border-radius:var(--vsr-radius-sm); background:var(--vsr-color-surface-subtle); color:var(--vsr-color-text-secondary); font-size:13px; line-height:1.45; overflow-wrap:anywhere; }
