@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button } from '../../design-system/index.js';
+import './HomeActionCard.css';
 
 export default function HomeActionCard({
   icon,
