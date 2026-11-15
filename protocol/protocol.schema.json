@@ -437,7 +437,8 @@
           "required": [
             "canTrigger",
             "reason",
-            "cooldownUntil"
+            "cooldownUntil",
+            "checks"
           ],
           "properties": {
             "canTrigger": {
