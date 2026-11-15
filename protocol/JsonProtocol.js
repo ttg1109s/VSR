@@ -66,20 +66,29 @@ export class JsonProtocol{
     const fakerMode=engine.getConfig?.('fakerMode')||'soul';
     const actingIds=[entryCharacter];
     if(faker.active&&fakerMode==='mask'&&faker.targetId)actingIds.push(faker.targetId);
+    const permissionAllowed=!Array.isArray(set.charAllow)||set.charAllow.length===0||actingIds.some(id=>set.charAllow.includes(id));
+    let requirementPass=null;
+    if(set.requirement===true){
+     try{requirementPass=!!(action.requirement&&engine.checkReq?.(action.requirement)?.pass);}catch(_){requirementPass=null;}
+    }
+    const checks={
+     permission:permissionAllowed?'passed':'failed',
+     requirement:set.requirement===true?(requirementPass===null?'not_evaluated':requirementPass?'passed':'failed'):'not_required'
+    };
     if(display==='locked')reason='locked';
     else if(engine.isTransitioning||engine.isActionProcessing)reason='busy';
-    else if(Array.isArray(set.charAllow)&&set.charAllow.length&&!actingIds.some(id=>set.charAllow.includes(id)))reason='permission_denied';
+    else if(!permissionAllowed)reason='permission_denied';
     else if(readRequired&&!read)reason='not_read';
     else if(cooldownUntil!==null&&cooldownUntil>Date.now())reason='cooldown';
     else if(set.type==='to_scene'&&set.target&&engine.checkHardLock?.('scene',set.target))reason='target_locked';
     else if(set.type==='swap_router'&&set.target&&engine.checkHardLock?.('router',set.target))reason='target_locked';
-    else if(set.requirement===true){const result=action.requirement?engine.checkReq?.(action.requirement):{pass:false};if(!result?.pass)reason='requirement_failed';else if(set.password)reason='password_required';}
+    else if(set.requirement===true){if(requirementPass!==true)reason='requirement_failed';else if(set.password)reason='password_required';}
     else if(set.password)reason='password_required';
     const title=action.meta?.title??action.title??action.name??action.id;
     const meta=safeMeta(action.meta||{});
     return{id:action.id,key,title,name:action.name,meta:{...meta,title,description:meta.desc??meta.description??''},
      presentation:{display:display==='locked'?'locked':'show',readRequired,read},
-     availability:{canTrigger:reason==='available'||reason==='password_required',reason,cooldownUntil},
+     availability:{canTrigger:reason==='available'||reason==='password_required',reason,cooldownUntil,checks},
      runtimeState:{display,readDesc:read}};
    }).filter(action=>action.runtimeState.display!=='hide')
    :[];
