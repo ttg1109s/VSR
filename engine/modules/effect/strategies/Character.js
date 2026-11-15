@@ -218,46 +218,7 @@ const StatsLogic = {
             if (targetId === entryChar) engine.api.presentation.components.updatePlayerCard();
         }
     },
-    add_stats: (engine, eff) => {
-        const charId = engine.redirectTarget(eff.target);
-        const char = engine.api.engine.state.getRuntimeSnapshot('characters.[id]', { id: charId });
 
-        if (char) {
-            const valRaw = String(resolveValue(eff.value, engine) ?? '');
-            // Format expectation: "Key:Current:Max:Label:Color"
-            // We need to separate Key from the rest to map to StatsHelpers (property=Key, value=Rest)
-            const firstColon = valRaw.indexOf(':');
-
-            if (firstColon > -1) {
-                const prop = valRaw.substring(0, firstColon);
-                const config = valRaw.substring(firstColon + 1);
-
-                StatsHelpers.add_stats(char, {
-                    property: prop,
-                    value: config,
-                    notify: true
-                }, true, charId, engine);
-                engine.api.engine.state.set('characters.[id]', char, { id: charId });
-            } else {
-                // Fallback if no colon, maybe just Key? But add_stats needs config.
-                // Assuming defaults if just Key provided
-                StatsHelpers.add_stats(char, {
-                    property: valRaw,
-                    value: "0:0:" + valRaw,
-                    notify: true
-                }, true, charId, engine);
-                engine.api.engine.state.set('characters.[id]', char, { id: charId });
-            }
-        }
-    },
-    remove_stats: (engine, eff) => {
-        const charId = engine.redirectTarget(eff.target);
-        const char = engine.api.engine.state.getRuntimeSnapshot('characters.[id]', { id: charId });
-        if (char) {
-            StatsHelpers.remove_stats(char, { property: eff.value, notify: true }, true, charId, engine);
-            engine.api.engine.state.set('characters.[id]', char, { id: charId });
-        }
-    }
 };
 
 export const CharacterStrategies = {
@@ -273,13 +234,17 @@ export const CharacterStrategies = {
         engine.api.engine.state.set('characters.[id]', char, { id: charId });
     },
     mng_stats: (engine, eff) => {
+        const handler = StatsLogic[eff.exec];
+        if (typeof handler !== 'function') {
+            throw new TypeError(`Unsupported characters.mng_stats operation: ${String(eff.exec)}`);
+        }
         const resolvedEff = {
             ...eff,
             target: resolveValue(eff.target, engine),
             source: resolveValue(eff.source, engine),
             value: resolveValue(eff.value, engine)
         };
-        StatsLogic[eff.exec]?.(engine, resolvedEff);
+        handler(engine, resolvedEff);
     },
     mng_items: (engine, eff) => {
         const resolvedEff = {
