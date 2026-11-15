@@ -117,3 +117,8 @@
 .vsr-action-card__popover h4 { margin:0; font-size:15px; font-weight:650; }
 .vsr-action-card__popover p { margin:0; font-size:14px; line-height:1.5; overflow-wrap:anywhere; }
 .vsr-action-card__popover .vsr-button { align-self:flex-start; }
+
+/* Cooldown progress is anchored to the action card's bottom edge. */
+.vsr-action-card { position:relative; }
+.vsr-action-card__cooldown-progress { position:absolute; left:0; right:0; bottom:0; height:3px; overflow:hidden; background:var(--vsr-color-border-subtle); pointer-events:none; }
+.vsr-action-card__cooldown-progress > span { display:block; width:0; height:100%; background:var(--vsr-color-warning); transition:width 900ms linear; }
