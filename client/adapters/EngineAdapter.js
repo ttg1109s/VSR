@@ -61,9 +61,15 @@ export class EngineAdapter {
 
     // The active router is the only authority for the action list.
     // Never enumerate sibling routers or global actions for rendering.
-    const actions = scene && router
+    const actionDefinitions = scene && router
       ? this.engine.getEffectiveActions(sceneId, routerId)
       : [];
+    const actions = actionDefinitions.map(action => {
+      const key = `${sceneId}_${routerId}_${action.id}`;
+      const runtimeState = snapshot.state?.actions?.[key] || {};
+      const display = runtimeState.display ?? action.set?.display ?? 'show';
+      return { ...action, runtimeState: { ...runtimeState, display } };
+    }).filter(action => action.runtimeState.display !== 'hide');
 
     return {
       engineId: snapshot.engineId,
