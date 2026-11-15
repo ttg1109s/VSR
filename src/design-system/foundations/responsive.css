@@ -1,0 +1,25 @@
+:root {
+  --vsr-breakpoint-compact-max: 599px;
+  --vsr-breakpoint-medium-min: 600px;
+  --vsr-breakpoint-medium-max: 839px;
+  --vsr-breakpoint-expanded-min: 840px;
+}
+
+.vsr-page {
+  width: 100%;
+  max-width: var(--vsr-content-max-width);
+  margin-inline: auto;
+  padding-inline: var(--vsr-page-padding);
+}
+
+@media (max-width: 599px) {
+  :root { --vsr-page-padding: 16px; }
+}
+
+@media (min-width: 600px) and (max-width: 839px) {
+  :root { --vsr-page-padding: 20px; }
+}
+
+@media (min-width: 840px) {
+  :root { --vsr-page-padding: 24px; }
+}
