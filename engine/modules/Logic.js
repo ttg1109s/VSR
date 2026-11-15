@@ -101,21 +101,23 @@ const StatsStrategies = {
     characters: (engine, { target, property, field, op, value }) => {
         const charId = engine.redirectTarget(target);
         const statId = property;
-        // Schema keys: 'char.current' -> 'characters.[charId].stats.[statId].current'
-        const fieldKey = (field === 'max') ? 'char.max' : 'char.current';
+        const selectedField = field || 'current';
+        if (!['current', 'max'].includes(selectedField)) return false;
+        const fieldKey = selectedField === 'max' ? 'char.max' : 'char.current';
 
         const val = engine.api.engine.state.get(fieldKey, { charId, statId });
         return val !== undefined ? (Operations[op]?.(val, resolveValue(value, engine)) ?? false) : false;
     },
     item: (engine, { target, property, field, op, value }) => {
-        // Assuming similar structure for item stats if needed, otherwise fallback to raw path?
         const itemId = target;
         const statId = property;
-        const f = field || 'current';
+        const selectedField = field || 'current';
+        if (!['current', 'max'].includes(selectedField)) return false;
 
-        // Try direct path construction supported by API
-        const path = `itemInfo.${itemId}.stats.${statId}.${f}`;
-        const val = engine.api.engine.state.get(path);
+        const path = selectedField === 'max'
+            ? 'itemInfo.[id].stats.[statId].max'
+            : 'itemInfo.[id].stats.[statId].current';
+        const val = engine.api.engine.state.get(path, { id: itemId, statId });
 
         return val !== undefined ? (Operations[op]?.(val, resolveValue(value, engine)) ?? false) : false;
     }
