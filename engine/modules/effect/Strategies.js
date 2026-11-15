@@ -152,6 +152,7 @@ export const EffectHandlers = {
             const resolvedTarget = resolveValue(eff.target, this);
             let resolvedValue = resolveValue(eff.value, this);
             const resolvedDuration = resolveValue(eff.duration, this);
+            let resolvedFormat = eff.format;
             const instanceId = resolveValue(eff.id, this) || resolvedTarget;
 
             // Media Lookup Logic
@@ -176,11 +177,8 @@ export const EffectHandlers = {
                         // If eff.format is missing, maybe invoke exec with format from definition.
                         // But exec expects format in params.
                         // Let's modify params passed to exec.
-                        if (!eff.format && mediaDef.type) {
-                            // Map schema type (photo, video, sound) to params format?
-                            // Schema: photo, video, sound.
-                            // Params: photo, video, sound. Same.
-                            eff.format = mediaDef.type;
+                        if (!resolvedFormat && mediaDef.type) {
+                            resolvedFormat = mediaDef.type;
                         }
                     }
                 }
@@ -195,10 +193,7 @@ export const EffectHandlers = {
                 flicker: eff.flicker,
                 loop: eff.loop,
                 loopSecond: eff.loopSecond,
-                format: eff.format, // Might be updated above if passed by reference (not really here), need to pass explicit variable if I changed it locally.
-                // Wait, eff.format is from the object passed in. modifying eff.format directly is bad if eff is reused? 
-                // Strategies receiving `eff` usually receive the raw object from JSON.
-                // Best to pass the computed format.
+                format: resolvedFormat,
 
                 control: eff.control,
                 repeat: eff.repeat
