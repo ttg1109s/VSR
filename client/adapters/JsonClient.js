@@ -59,7 +59,7 @@ export class JsonClient {
     return this.dispatch('scenario.inspect', { scenario });
   }
 
-  async initialize(scenario, { enterScene = false } = {}) {
+  async initialize(scenario, { enterScene = true } = {}) {
     const acknowledgement = await this.dispatch('engine.init', { script: scenario, enterScene });
     const snapshot = this.getSnapshot();
     if (!snapshot?.game?.initialized) {

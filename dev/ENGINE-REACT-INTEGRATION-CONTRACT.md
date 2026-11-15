@@ -251,7 +251,7 @@ Lưu ý implementation hiện tại:
 
 - `dispatch` tự tạo `commandId` và thêm `expectedStateRevision` nếu đã có snapshot.
 - `dispatch` parse acknowledgement; nếu `ack.ok === false`, nó throw Error có gắn `code` và `acknowledgement`.
-- `initialize(scenario, { enterScene = false } = {})` gửi `engine.init`, mặc định chỉ nạp scenario và giữ `game.sceneId === null`; truyền `enterScene: true` nếu cần vào entry scene ngay. Sau đó yêu cầu snapshot có `game.initialized`; nếu chưa có, nó throw.
+- `initialize(scenario, { enterScene = true } = {})` gửi `engine.init`; mặc định giữ hành vi tương thích là vào entry scene. Luồng Loading có thể truyền `enterScene: false` để chỉ nạp scenario và giữ `game.sceneId === null`. Sau đó yêu cầu snapshot có `game.initialized`; nếu chưa có, nó throw.
 - `dispose()` hủy subscription transport và xóa listener của JsonClient. Vòng đời transport (ví dụ `close()`) vẫn do nơi tạo transport quản lý.
 
 Không gọi `JsonClient.receive` trực tiếp từ component như một cách cập nhật state; message đến từ transport subscription.
