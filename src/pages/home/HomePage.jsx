@@ -49,7 +49,7 @@ export default function HomePage({ onRunDemo, onImportFile, busy = false, error 
               tabIndex={-1}
             />
           </div>
-          {error && <p className="vsr-text-secondary" role="alert">{error}</p>}
+          {error && <p className="vsr-text-error" role="alert">{error}</p>}
         </div>
       </section>
     </main>
