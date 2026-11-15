@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState } from 'react';
+import React, { memo, useEffect, useRef, useState } from 'react';
 import { Badge, Button, Dialog, Grid, Input, MediaFrame, Popover, Textarea } from '../../design-system/index.js';
 
 const REASONS = {
@@ -24,6 +24,7 @@ function ActionCard({ action, pending = false, passwordChallenge = null, feedbac
   const [challengeFeedback, setChallengeFeedback] = useState('');
   const [passwordPending, setPasswordPending] = useState(false);
   const [clock, setClock] = useState(Date.now());
+  const readRequestRef = useRef(false);
   const meta = action.meta || {};
   const presentation = action.presentation || {};
   const availability = action.availability || { canTrigger: false, reason: 'unknown' };
@@ -93,10 +94,16 @@ function ActionCard({ action, pending = false, passwordChallenge = null, feedbac
     }
   };
 
-  const markRead = async () => {
-    if (!onMarkRead || pending) return;
-    await onMarkRead(action);
+  const handleDescriptionOpen = async open => {
+    if (!open || !readRequired || read || !onMarkRead || pending || readRequestRef.current) return;
+    readRequestRef.current = true;
+    const succeeded = await onMarkRead(action);
+    if (succeeded === false) readRequestRef.current = false;
   };
+
+  useEffect(() => {
+    if (read || !readRequired) readRequestRef.current = false;
+  }, [action.key, read, readRequired]);
 
   // The Engine's reason precedence lets the UI identify confirmed checks without re-evaluating requirements.
   const permissionPassed = ['available', 'cooldown', 'requirement_failed', 'target_locked', 'password_required'].includes(reason);
@@ -118,14 +125,13 @@ function ActionCard({ action, pending = false, passwordChallenge = null, feedbac
       <div className="vsr-action-card__section-heading">
         <Popover
           align="start"
+          onOpenChange={handleDescriptionOpen}
           label="Thông tin mô tả"
           trigger={<Button className="vsr-action-card__info-button" variant="tertiary" size="sm" aria-label="Thông tin mô tả"><span className="vsr-action-card__info-glyph" aria-hidden="true">info</span></Button>}
         >
           <div className="vsr-action-card__popover">
             <h4>Mô tả</h4>
             {description ? <p className="vsr-text-body">{description}</p> : <p className="vsr-text-secondary">Không có mô tả chi tiết.</p>}
-            {readRequired && !read && <Button size="md" onClick={markRead} disabled={pending}>Xác nhận đã đọc</Button>}
-            {readRequired && read && <p className="vsr-text-secondary" role="status">Bạn đã xác nhận đọc mô tả này.</p>}
           </div>
         </Popover>
         {readRequired
