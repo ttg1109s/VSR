@@ -13,13 +13,14 @@ export class ScenarioValidationError extends Error {
   }
 }
 
-const ajv = new Ajv({ allErrors: true, strict: false, allowUnionTypes: true });
+const ajv = new Ajv({
+  allErrors: true,
+  strict: false,
+  allowUnionTypes: true,
+  useDefaults: true
+});
 addFormats(ajv);
 const validateAgainstSchema = ajv.compile(scenarioSchema);
-
-const defaultsAjv = new Ajv({ allErrors: true, strict: false, allowUnionTypes: true, useDefaults: true });
-addFormats(defaultsAjv);
-const applySchemaDefaults = defaultsAjv.compile(scenarioSchema);
 
 function clone(input) {
   try {
@@ -516,7 +517,6 @@ export function validateScenario(scenario) {
     return error instanceof ScenarioValidationError ? error.errors : [error.message];
   }
 
-  applySchemaDefaults(candidate);
   const errors = [];
   validateAgainstSchema(candidate);
   for (const error of validateAgainstSchema.errors || []) {
@@ -533,7 +533,8 @@ export function normalizeScenario(input) {
   if (isObject(scenario.meta) && scenario.meta.entryCharacter == null) {
     scenario.meta.entryCharacter = 'player';
   }
-  applySchemaDefaults(scenario);
+  // The single compiled validator also applies schema defaults (useDefaults: true).
+  validateAgainstSchema(scenario);
 
   for (const [sceneId, scene] of Object.entries(isObject(scenario.scenes) ? scenario.scenes : {})) {
     for (const [routerId, router] of Object.entries(isObject(scene?.routers) ? scene.routers : {})) {
