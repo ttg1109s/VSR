@@ -5,6 +5,7 @@ import { WorkerJsonTransport } from '../client/adapters/WorkerJsonTransport.js';
 import HomePage from './pages/home/HomePage.jsx';
 import ScenarioPreviewPage from './pages/scenario-preview/ScenarioPreviewPage.jsx';
 import LoadingPage from './pages/loading/LoadingPage.jsx';
+import PlayingPage from './pages/playing/PlayingPage.jsx';
 
 export default function App() {
   const [preview, setPreview] = useState(null);
@@ -14,13 +15,17 @@ export default function App() {
   const [error, setError] = useState('');
   const [loadStatus, setLoadStatus] = useState('loading');
   const [loadError, setLoadError] = useState('');
+  const [gameSnapshot, setGameSnapshot] = useState(null);
+  const [gameError, setGameError] = useState('');
   const runtimeRef = useRef(null);
   const loadGenerationRef = useRef(0);
 
   const closeRuntime = useCallback(() => {
     const runtime = runtimeRef.current;
     runtimeRef.current = null;
+    runtime?.unsubscribe?.();
     runtime?.client?.dispose();
+    setGameSnapshot(null);
     runtime?.transport?.close?.();
   }, []);
 
@@ -82,18 +87,25 @@ export default function App() {
 
     const transport = new WorkerJsonTransport({ requestTimeoutMs: 30000 });
     const client = new JsonClient(transport);
-    runtimeRef.current = { transport, client, status: 'loading', generation };
+    const unsubscribe = client.subscribe(message => {
+      if (message.type === 'state' && generation === loadGenerationRef.current) {
+        setGameSnapshot(message.snapshot);
+      }
+    });
+    runtimeRef.current = { transport, client, unsubscribe, status: 'loading', generation };
 
     const isCurrentLoad = () =>
       generation === loadGenerationRef.current &&
       runtimeRef.current?.generation === generation;
 
     try {
-      const snapshot = await client.initialize(preview.scenario, { enterScene: false });
+      const snapshot = await client.initialize(preview.scenario, { enterScene: true });
       if (!isCurrentLoad()) return;
       runtimeRef.current.status = 'loaded';
       runtimeRef.current.snapshot = snapshot;
+      setGameSnapshot(snapshot);
       setLoadStatus('complete');
+      setPage('playing');
     } catch (cause) {
       if (!isCurrentLoad()) return;
       closeRuntime();
@@ -120,6 +132,22 @@ export default function App() {
 
   if (page === 'meta' && preview) {
     return <ScenarioPreviewPage preview={preview} onBack={backToHome} onPlay={handlePlay} />;
+  }
+  if (page === 'playing' && gameSnapshot) {
+    return (
+      <PlayingPage
+        snapshot={gameSnapshot}
+        error={gameError}
+        onNavigate={async sceneId => {
+          setGameError('');
+          try {
+            await runtimeRef.current?.client?.enterScene(sceneId, true);
+          } catch (cause) {
+            setGameError(cause?.message || 'Unable to enter the selected scene.');
+          }
+        }}
+      />
+    );
   }
   if (page === 'loading' && preview) {
     return <LoadingPage preview={preview} status={loadStatus} error={loadError} onClose={cancelLoading} onRetry={handlePlay} />;
