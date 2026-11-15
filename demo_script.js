@@ -2027,7 +2027,7 @@ export const DEMO_SCRIPT = {
     },
     "act_enter_tunnel": {
       "meta": {
-        "title": "Khám sát đường hầm",
+        "title": "Khám phá đường hầm",
         "desc": "Những bức tường ghi tên người dân theo thứ tự ngày họ biến mất."
       },
       "set": {
