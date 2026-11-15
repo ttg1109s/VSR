@@ -20,7 +20,6 @@ export default function HomePage({
       <section className="vsr-content-width vsr-content-width--medium vsr-stack vsr-stack--center" aria-labelledby="home-title">
         <div className="vsr-content-width vsr-content-width--narrow vsr-page-shell__content vsr-page-shell__content--center vsr-page-shell__content--padded vsr-stack vsr-stack--center vsr-stack--gap-8">
           <header className="vsr-stack vsr-stack--center vsr-stack--gap-2">
-            <span className="vsr-eyebrow">VISUAL STORY RUNTIME</span>
             <h1 id="home-title" className="vsr-heading-display">Visual Story Runtime</h1>
             <p className="vsr-text-secondary vsr-text-body">A runtime for interactive stories.</p>
           </header>
