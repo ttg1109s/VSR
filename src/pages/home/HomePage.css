@@ -3,7 +3,7 @@
   min-height: 100vh;
   min-height: 100dvh;
   place-items: center;
-  padding: 24px;
+  padding: var(--vsr-space-6);
   background: var(--vsr-color-background-subtle);
 }
 
@@ -14,7 +14,7 @@
   min-height: min(760px, calc(100dvh - 48px));
   overflow: hidden;
   border: 1px solid var(--vsr-color-border);
-  border-radius: 20px;
+  border-radius: var(--vsr-radius-xl);
   background: var(--vsr-color-surface);
   box-shadow: var(--vsr-elevation-1);
 }
@@ -26,7 +26,7 @@
   justify-content: center;
   width: min(100%, 620px);
   margin-inline: auto;
-  padding: 72px 32px 64px;
+  padding: var(--vsr-space-12) var(--vsr-space-8);
 }
 
 .home-intro {
@@ -40,7 +40,7 @@
   display: inline-flex;
   align-items: center;
   min-height: 34px;
-  padding: 4px 14px;
+  padding: var(--vsr-space-1) var(--vsr-space-4);
   border: 1px solid var(--vsr-color-primary);
   border-radius: var(--vsr-radius-full);
   color: var(--vsr-color-primary);
@@ -51,7 +51,7 @@
 }
 
 .home-intro h1 {
-  margin: 28px 0 12px;
+  margin: var(--vsr-space-8) 0 var(--vsr-space-3);
   color: var(--vsr-color-text);
   font-size: clamp(30px, 4vw, 42px);
   line-height: 1.16;
@@ -68,15 +68,70 @@
 
 .home-actions {
   display: grid;
-  gap: 16px;
-  margin-top: 72px;
+  gap: var(--vsr-space-4);
+  margin-top: var(--vsr-space-12);
+}
+
+.home-action-card.vsr-button {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: var(--vsr-space-4);
+  width: 100%;
+  min-height: 132px;
+  padding: var(--vsr-space-6);
+  border-radius: var(--vsr-radius-xl);
+  text-align: left;
+  white-space: normal;
+}
+
+.home-action-card.vsr-button > span:first-child {
+  display: inline-flex;
+  flex: 0 0 28px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+}
+
+.home-action-card .vsr-icon {
+  font-size: 28px;
+}
+
+.home-action-card__content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--vsr-space-3);
+  min-width: 0;
+}
+
+.home-action-card__title {
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 600;
+}
+
+.home-action-card__description {
+  font-size: 15px;
+  line-height: 23px;
+  font-weight: 400;
+}
+
+.home-action-card.vsr-button--primary .home-action-card__description {
+  color: rgb(255 255 255 / 86%);
+}
+
+.home-action-card.vsr-button--secondary .home-action-card__description {
+  color: var(--vsr-color-text-secondary);
 }
 
 .home-panel__footer {
   display: grid;
   min-height: 76px;
   place-items: center;
-  padding: 16px 24px;
+  padding: var(--vsr-space-4) var(--vsr-space-6);
   border-top: 1px solid var(--vsr-color-border-subtle);
   color: var(--vsr-color-text-secondary);
   font-size: 14px;
@@ -86,20 +141,20 @@
 
 @media (max-width: 599px) {
   .home-page {
-    padding: 12px;
+    padding: var(--vsr-space-3);
   }
 
   .home-panel {
     min-height: calc(100dvh - 24px);
-    border-radius: 16px;
+    border-radius: var(--vsr-radius-lg);
   }
 
   .home-panel__content {
-    padding: 48px 20px;
+    padding: var(--vsr-space-10) var(--vsr-space-5);
   }
 
   .home-intro h1 {
-    margin-top: 22px;
+    margin-top: var(--vsr-space-6);
     font-size: 30px;
   }
 
@@ -109,8 +164,24 @@
   }
 
   .home-actions {
-    gap: 12px;
-    margin-top: 52px;
+    gap: var(--vsr-space-3);
+    margin-top: var(--vsr-space-10);
+  }
+
+  .home-action-card.vsr-button {
+    min-height: 112px;
+    padding: var(--vsr-space-4);
+    border-radius: var(--vsr-radius-lg);
+  }
+
+  .home-action-card__title {
+    font-size: 17px;
+    line-height: 24px;
+  }
+
+  .home-action-card__description {
+    font-size: 14px;
+    line-height: 21px;
   }
 
   .home-panel__footer {
@@ -125,21 +196,21 @@
   }
 
   .home-panel__content {
-    padding-block: 28px;
+    padding-block: var(--vsr-space-7);
   }
 
   .home-intro h1 {
-    margin-top: 18px;
+    margin-top: var(--vsr-space-5);
     font-size: 34px;
   }
 
   .home-actions {
-    gap: 12px;
-    margin-top: 32px;
+    gap: var(--vsr-space-3);
+    margin-top: var(--vsr-space-8);
   }
 
-  .home-action-card {
+  .home-action-card.vsr-button {
     min-height: 104px;
-    padding-block: 16px;
+    padding-block: var(--vsr-space-4);
   }
 }
