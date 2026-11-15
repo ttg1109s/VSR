@@ -26,6 +26,7 @@ export class RegionRenderer {
           retryMax: challenge.retryMax, deadlineAt: challenge.deadlineAt } };
     }
     this.overlayState.notifications = (snapshot.session?.notifications?.pending || []).slice(0, 5);
+    this.overlayState.timer = snapshot.session?.timer?.displayText || '';
     const challenge = snapshot.session?.passwordChallenge;
     if (challenge) {
       const action = (snapshot.presentation?.actions || []).find(item => item.id === challenge.actionId);
@@ -62,6 +63,7 @@ export class RegionRenderer {
             retryMax: challenge.retryMax, deadlineAt: challenge.deadlineAt } };
       }
       this.overlayState.notifications = (snapshot.session?.notifications?.pending || []).slice(0, 5);
+      this.overlayState.timer = snapshot.session?.timer?.displayText || '';
       this.renderOverlays();
     }
   }
