@@ -37,10 +37,14 @@ function ActionCard({ action, pending = false, passwordChallenge = null, feedbac
   const challengeOpen = !!passwordChallenge && passwordChallenge.uniqueId === action.key;
   const structured = ['puzzle', 'find_way'].includes(passwordChallenge?.type);
   const cooldown = seconds(availability.cooldownUntil, clock);
+  const coolingDown = reason === 'cooldown';
+  const cooldownDurationMs = Number.isFinite(availability.cooldownDuration) && availability.cooldownDuration > 0 ? availability.cooldownDuration * 1000 : null;
+  const cooldownStartedAt = Number.isFinite(availability.cooldownStartedAt) ? availability.cooldownStartedAt : (cooldownDurationMs !== null && Number.isFinite(availability.cooldownUntil) ? availability.cooldownUntil - cooldownDurationMs : null);
+  const cooldownProgress = coolingDown && cooldownDurationMs !== null && cooldownStartedAt !== null ? Math.min(1, Math.max(0, (clock - cooldownStartedAt) / cooldownDurationMs)) : 0;
   const deadline = seconds(passwordChallenge?.deadlineAt, clock);
   const thumbnail = meta.thumbnail || meta.cover;
-  const ready = (reason === 'available' || reason === 'password_required') && availability.canTrigger === true && !locked;
-  const statusLabel = pending ? 'Processing' : locked ? 'Locked' : (ready ? 'Ready' : (REASONS[reason] || 'Unknown'));
+  const ready = !coolingDown && (reason === 'available' || reason === 'password_required') && availability.canTrigger === true && !locked;
+  const statusLabel = pending ? 'Processing' : locked ? 'Locked' : coolingDown ? 'On cooldown' : (ready ? 'Ready' : (REASONS[reason] || 'Unknown'));
   const statusTone = pending ? 'info' : locked ? 'danger' : (ready ? 'success' : (REASON_TONES[reason] || 'neutral'));
 
   useEffect(() => {
@@ -168,12 +172,12 @@ function ActionCard({ action, pending = false, passwordChallenge = null, feedbac
         <span className={'vsr-action-card__state-icon vsr-action-card__permission-icon ' + (permissionPassed ? 'is-success' : permissionFailed ? 'is-error' : 'is-muted')} aria-hidden="true">{permissionPassed ? 'verified_user' : 'shield'}</span>
         <span>{permissionText}</span>
       </div>
-      {reason === 'cooldown' && <div className="vsr-action-card__cooldown" role="timer">Time remaining: {cooldown}s</div>}
+      {coolingDown && <div className="vsr-action-card__cooldown" role="timer">Time remaining: {cooldown}s</div>}
     </div>
 
     {feedback && <p className="vsr-action-card__feedback" role="status">{feedback}</p>}
     <div className="vsr-action-card__actions">
-      <Button size="lg" leadingIcon={meta.buttonIcon} disabled={pending || availability.canTrigger !== true || locked} loading={pending} onClick={() => onTrigger?.(action)} aria-label={meta.buttonLabel || `Execute ${meta.title || action.id}`}>{meta.buttonLabel || 'Execute'}</Button>
+      <Button size="lg" leadingIcon={meta.buttonIcon} disabled={pending || coolingDown || !ready || availability.canTrigger !== true || locked} loading={pending} onClick={() => onTrigger?.(action)} aria-label={meta.buttonLabel || `Execute ${meta.title || action.id}`}>{meta.buttonLabel || 'Execute'}</Button>
     </div>
 
     <Dialog open={challengeOpen} onClose={cancel} title="Verify action" description={passwordChallenge?.description || 'Complete the challenge provided by the Engine.'}>
@@ -188,6 +192,7 @@ function ActionCard({ action, pending = false, passwordChallenge = null, feedbac
         <Grid columns="auto" gap="2"><Button size="lg" type="button" variant="secondary" disabled={passwordPending} onClick={cancel}>Cancel challenge</Button><Button size="lg" type="submit" disabled={!input.trim() || passwordPending} loading={passwordPending}>Submit response</Button></Grid>
       </form>
     </Dialog>
+    {coolingDown && <div className="vsr-action-card__cooldown-progress" role="progressbar" aria-label="Cooldown progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(cooldownProgress * 100)}><span style={{ width: `${cooldownProgress * 100}%` }} /></div>}
   </article>;
 }
 
