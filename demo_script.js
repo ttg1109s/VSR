@@ -1520,14 +1520,6 @@ export const DEMO_SCRIPT = {
             "property": "display",
             "value": "hide"
           }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
-          }
         ]
       }
     },
@@ -1548,14 +1540,6 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "chat",
             "target": "chat_mai"
-          }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
           }
         ]
       }
@@ -1597,14 +1581,6 @@ export const DEMO_SCRIPT = {
             "target": "action_inspect_well",
             "property": "display",
             "value": "hide"
-          }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
           }
         ]
       }
@@ -1682,14 +1658,6 @@ export const DEMO_SCRIPT = {
             "subtype": "chat",
             "target": "chat_hanh"
           }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
-          }
         ]
       }
     },
@@ -1735,14 +1703,6 @@ export const DEMO_SCRIPT = {
             "target": "action_open_guestbook",
             "property": "display",
             "value": "hide"
-          }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
           }
         ]
       }
@@ -1856,14 +1816,6 @@ export const DEMO_SCRIPT = {
             "property": "display",
             "value": "hide"
           }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
-          }
         ]
       }
     },
@@ -1905,14 +1857,6 @@ export const DEMO_SCRIPT = {
             "property": "display",
             "value": "hide"
           }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
-          }
         ]
       }
     },
@@ -1933,14 +1877,6 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "chat",
             "target": "chat_keeper"
-          }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
           }
         ]
       }
@@ -1988,14 +1924,6 @@ export const DEMO_SCRIPT = {
             "target": "action_solve_bell",
             "property": "display",
             "value": "hide"
-          }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
           }
         ]
       }
@@ -2127,14 +2055,6 @@ export const DEMO_SCRIPT = {
             "property": "display",
             "value": "hide"
           }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
-          }
         ]
       }
     },
@@ -2248,14 +2168,6 @@ export const DEMO_SCRIPT = {
             "property": "display",
             "value": "hide"
           }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
-          }
         ]
       }
     },
@@ -2357,14 +2269,6 @@ export const DEMO_SCRIPT = {
             "target": "action_inspect_stakes",
             "property": "display",
             "value": "hide"
-          }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
           }
         ]
       }
@@ -2545,14 +2449,6 @@ export const DEMO_SCRIPT = {
             "target": "action_enter_tunnel",
             "property": "display",
             "value": "hide"
-          }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
           }
         ]
       }
@@ -2875,14 +2771,6 @@ export const DEMO_SCRIPT = {
             "subtype": "scene",
             "target": "scene_village_well"
           }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
-          }
         ]
       }
     },
@@ -2903,14 +2791,6 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "scene",
             "target": "scene_village_square"
-          }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
           }
         ]
       }
@@ -2933,14 +2813,6 @@ export const DEMO_SCRIPT = {
             "subtype": "scene",
             "target": "scene_inn"
           }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
-          }
         ]
       }
     },
@@ -2961,14 +2833,6 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "scene",
             "target": "scene_chapel_tower"
-          }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
           }
         ]
       }
@@ -2991,14 +2855,6 @@ export const DEMO_SCRIPT = {
             "subtype": "scene",
             "target": "scene_chapel"
           }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
-          }
         ]
       }
     },
@@ -3019,14 +2875,6 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "scene",
             "target": "scene_forest_clearing"
-          }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
           }
         ]
       }
@@ -3049,14 +2897,6 @@ export const DEMO_SCRIPT = {
             "subtype": "scene",
             "target": "scene_north_forest"
           }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
-          }
         ]
       }
     },
@@ -3077,14 +2917,6 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "scene",
             "target": "scene_inn"
-          }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
           }
         ]
       }
@@ -3107,14 +2939,6 @@ export const DEMO_SCRIPT = {
             "subtype": "scene",
             "target": "scene_chapel"
           }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
-          }
         ]
       }
     },
@@ -3135,14 +2959,6 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "scene",
             "target": "scene_abandoned_school"
-          }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
           }
         ]
       }
@@ -3165,14 +2981,6 @@ export const DEMO_SCRIPT = {
             "subtype": "scene",
             "target": "scene_north_forest"
           }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
-          }
         ]
       }
     },
@@ -3194,14 +3002,6 @@ export const DEMO_SCRIPT = {
             "subtype": "scene",
             "target": "scene_watermill"
           }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
-          }
         ]
       }
     },
@@ -3222,14 +3022,6 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "scene",
             "target": "scene_watermill"
-          }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
           }
         ]
       }
@@ -3350,14 +3142,6 @@ export const DEMO_SCRIPT = {
             "subtype": "router",
             "target": "router_square_broadcast_decoded"
           }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Bạn chưa thể kiểm tra manh mối này."
-          }
         ]
       }
     },
@@ -3385,14 +3169,6 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "router",
             "target": "router_square_fogbound"
-          }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Không thể đổi góc nhìn lúc này."
           }
         ]
       }
@@ -3439,14 +3215,6 @@ export const DEMO_SCRIPT = {
             "subtype": "router",
             "target": "router_well_bottom_revealed"
           }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Bạn chưa thể kiểm tra manh mối này."
-          }
         ]
       }
     },
@@ -3474,14 +3242,6 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "router",
             "target": "router_well_echoes"
-          }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Không thể đổi góc nhìn lúc này."
           }
         ]
       }
@@ -3528,14 +3288,6 @@ export const DEMO_SCRIPT = {
             "subtype": "router",
             "target": "router_inn_hidden_room"
           }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Bạn chưa thể kiểm tra manh mối này."
-          }
         ]
       }
     },
@@ -3563,14 +3315,6 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "router",
             "target": "router_inn_unsettled"
-          }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Không thể đổi góc nhìn lúc này."
           }
         ]
       }
@@ -3617,14 +3361,6 @@ export const DEMO_SCRIPT = {
             "subtype": "router",
             "target": "router_cellar_recording_found"
           }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Bạn chưa thể kiểm tra manh mối này."
-          }
         ]
       }
     },
@@ -3652,14 +3388,6 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "router",
             "target": "router_cellar_open"
-          }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Không thể đổi góc nhìn lúc này."
           }
         ]
       }
@@ -3706,14 +3434,6 @@ export const DEMO_SCRIPT = {
             "subtype": "router",
             "target": "router_chapel_cryptic_note"
           }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Bạn chưa thể kiểm tra manh mối này."
-          }
         ]
       }
     },
@@ -3741,14 +3461,6 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "router",
             "target": "router_chapel_silent"
-          }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Không thể đổi góc nhìn lúc này."
           }
         ]
       }
@@ -3795,14 +3507,6 @@ export const DEMO_SCRIPT = {
             "subtype": "router",
             "target": "router_bell_mechanism_repaired"
           }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Bạn chưa thể kiểm tra manh mối này."
-          }
         ]
       }
     },
@@ -3830,14 +3534,6 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "router",
             "target": "router_bell_chamber"
-          }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Không thể đổi góc nhìn lúc này."
           }
         ]
       }
@@ -3884,14 +3580,6 @@ export const DEMO_SCRIPT = {
             "subtype": "router",
             "target": "router_classroom_archive_open"
           }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Bạn chưa thể kiểm tra manh mối này."
-          }
         ]
       }
     },
@@ -3919,14 +3607,6 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "router",
             "target": "router_classroom_erased"
-          }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Không thể đổi góc nhìn lúc này."
           }
         ]
       }
@@ -3973,14 +3653,6 @@ export const DEMO_SCRIPT = {
             "subtype": "router",
             "target": "router_forest_markers_aligned"
           }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Bạn chưa thể kiểm tra manh mối này."
-          }
         ]
       }
     },
@@ -4008,14 +3680,6 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "router",
             "target": "router_forest_path_shifting"
-          }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Không thể đổi góc nhìn lúc này."
           }
         ]
       }
@@ -4062,14 +3726,6 @@ export const DEMO_SCRIPT = {
             "subtype": "router",
             "target": "router_clearing_ritual_trace"
           }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Bạn chưa thể kiểm tra manh mối này."
-          }
         ]
       }
     },
@@ -4097,14 +3753,6 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "router",
             "target": "router_forest_clearing"
-          }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Không thể đổi góc nhìn lúc này."
           }
         ]
       }
@@ -4151,14 +3799,6 @@ export const DEMO_SCRIPT = {
             "subtype": "router",
             "target": "router_watermill_gear_inspected"
           }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Bạn chưa thể kiểm tra manh mối này."
-          }
         ]
       }
     },
@@ -4186,14 +3826,6 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "router",
             "target": "router_watermill_stalled"
-          }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Không thể đổi góc nhìn lúc này."
           }
         ]
       }
@@ -4240,14 +3872,6 @@ export const DEMO_SCRIPT = {
             "subtype": "router",
             "target": "router_tunnel_manifest_found"
           }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Bạn chưa thể kiểm tra manh mối này."
-          }
         ]
       }
     },
@@ -4275,14 +3899,6 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "router",
             "target": "router_tunnel_names"
-          }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Không thể đổi góc nhìn lúc này."
           }
         ]
       }
@@ -4329,14 +3945,6 @@ export const DEMO_SCRIPT = {
             "subtype": "router",
             "target": "router_station_departure_records"
           }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Bạn chưa thể kiểm tra manh mối này."
-          }
         ]
       }
     },
@@ -4364,14 +3972,6 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "router",
             "target": "router_station_0317"
-          }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Không thể đổi góc nhìn lúc này."
           }
         ]
       }
