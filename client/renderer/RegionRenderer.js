@@ -18,6 +18,14 @@ export class RegionRenderer {
       <footer class="game-footer" data-region="footer"></footer><div data-region="overlays"></div></main>`;
     this.root.querySelector('[data-exit]').addEventListener('click', () => this.onExit?.());
     this.regions = Object.fromEntries(['scene','router','actions','footer','overlays'].map(key => [key, this.root.querySelector(`[data-region="${key}"]`)]));
+    const challenge = snapshot.session?.passwordChallenge;
+    if (challenge) {
+      const action = (snapshot.presentation?.actions || []).find(item => item.id === challenge.actionId);
+      this.overlayState.password = { action, actionId: challenge.actionId, uniqueId: challenge.uniqueId,
+        config: { challengeId: challenge.challengeId, type: challenge.type, countTest: challenge.countTest,
+          retryMax: challenge.retryMax, deadlineAt: challenge.deadlineAt } };
+    }
+    this.overlayState.notifications = (snapshot.session?.notifications?.pending || []).slice(0, 5);
     this.renderAll(snapshot);
   }
 
@@ -86,18 +94,38 @@ export class RegionRenderer {
       this.overlayState.password = { action: args[0], actionId: args[1], uniqueId: args[2], config: args[3] || {} };
       this.renderOverlays();
     }
-    if (name.startsWith('chat.')) this.syncChatFromSnapshot();
+    if (name === 'chat.renderBubble') {
+      const line = payload.args?.[0];
+      if (line) this.overlayState.messages.push(line);
+      this.overlayState.chatOpen = true;
+      this.renderOverlays();
+    }
+    if (name === 'chat.renderChoices') {
+      this.overlayState.choices = Array.isArray(payload.args?.[0]) ? payload.args[0] : [];
+      this.overlayState.chatOpen = true;
+      this.overlayState.inputVisible = false;
+      this.renderOverlays();
+    }
+    if (name === 'chat.clearChoices') { this.overlayState.choices = []; this.renderOverlays(); }
+    if (name === 'chat.inputVisible') { this.overlayState.inputVisible = true; this.renderOverlays(); }
+    if (name === 'chat.inputHidden') { this.overlayState.inputVisible = false; this.renderOverlays(); }
+    if (name === 'chat.toggleOverlay') { this.overlayState.chatOpen = !!payload.args?.[0]; this.renderOverlays(); }
     if (name === 'scene.updateTimer') { this.overlayState.timer = String(payload.args?.[0] || ''); this.renderOverlays(); }
     if (name === 'scene.hideTimer') { this.overlayState.timer = ''; this.renderOverlays(); }
+    if (name === 'password.retry' && this.overlayState.password) {
+      this.overlayState.password.config.countTest = payload.countTest;
+      this.overlayState.password.config.remainingAttempts = payload.remainingAttempts;
+      this.renderOverlays();
+    }
+    if (name === 'password.expired' || name === 'password.exhausted') {
+      this.overlayState.password = null; this.renderOverlays();
+    }
   }
 
   syncChatFromSnapshot() {
     const chat = this.snapshot?.session?.chat;
     if (!chat) return;
     this.overlayState.chatOpen = !!chat.active;
-    this.overlayState.messages = Array.isArray(chat.messages) ? chat.messages : this.overlayState.messages;
-    this.overlayState.choices = Array.isArray(chat.choices) ? chat.choices : [];
-    this.overlayState.inputVisible = !!chat.inputVisible;
     this.renderOverlays();
   }
 
