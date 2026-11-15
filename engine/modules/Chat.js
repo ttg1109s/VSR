@@ -364,7 +364,13 @@ export const ChatSystem = {
 
         // --- 3. Run Effect ---
         if (choice.effect) {
-            this.processRunnables(choice.effect, { sceneId: this.api.engine.state.get('sceneId') }).catch(e => {
+            const choiceId = choice.id || String(idx);
+            this.processRunnables(choice.effect, {
+                sceneId: this.api.engine.state.get('sceneId'),
+                chatId,
+                blockId,
+                choiceId
+            }).catch(e => {
                 console.warn("Effect Error:", e);
             });
         }
