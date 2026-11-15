@@ -5,7 +5,7 @@ import { scenarioSchema } from '../engine/scenario/ScenarioSchema.js';
 import { validateScenario, normalizeScenario, migrateScenario, ScenarioValidationError } from '../engine/scenario/Scenario.js';
 import { LogicSystem } from '../engine/modules/Logic.js';
 import { EffectSystem } from '../engine/modules/Effect.js';
-import { EffectHandlers } from '../engine/modules/effect/Strategies.js';
+import { EffectHandlers, CharacterStrategies } from '../engine/modules/effect/Strategies.js';
 import { StatsHelpers } from '../engine/modules/effect/strategies/Stats.js';
 import { LoaderSystem } from '../engine/modules/Loader.js';
 import { ActionSystem } from '../engine/modules/Action.js';
@@ -409,7 +409,6 @@ test('runtime rejects stat field and mode combinations excluded by the schema', 
 
 test('character and management effect dispatchers await asynchronous handlers', async () => {
   let characterCompleted = false;
-  const original = EffectHandlers.characters;
   const engine = {
     async handleManageEffect() {
       await Promise.resolve();
@@ -423,7 +422,8 @@ test('character and management effect dispatchers await asynchronous handlers', 
   assert.equal(manageResult, undefined);
   assert.equal(characterCompleted, true);
 
-  EffectHandlers.characters = async () => {
+  const originalCharacterHandler = CharacterStrategies.mng_items;
+  CharacterStrategies.mng_items = async () => {
     await Promise.resolve();
     characterCompleted = true;
   };
@@ -432,6 +432,6 @@ test('character and management effect dispatchers await asynchronous handlers', 
     await EffectHandlers.characters.call({}, { subtype: 'mng_items' });
     assert.equal(characterCompleted, true);
   } finally {
-    EffectHandlers.characters = original;
+    CharacterStrategies.mng_items = originalCharacterHandler;
   }
 });
