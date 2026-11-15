@@ -1,141 +1,114 @@
 # VSR Engine
 
-VSR is a headless game engine. The legacy browser UI, DOM renderer, visual-effects layer, and UI component templates are not part of this package. A separate client can consume the Engine through its versioned JSON protocol.
+VSR is a headless interactive-story runtime. The repository retains React 19 as an optional host integration/runtime dependency, but ships no application UI, DOM renderer, component library, design system, or presentation stylesheet. A host may consume the Engine directly or use the JSON client adapters.
 
 ## Requirements
 
 - Node.js 20 or newer.
-- No runtime UI framework or browser DOM is required.
+- React 19 and React DOM 19 remain installed for React-based host integration.
+- The Engine itself does not require React or a browser DOM.
 
-## Browser-native runtime
-
-The VSR web client runs `GameEngine` inside a dedicated module Web Worker. The main thread uses `WorkerJsonTransport` and `JsonClient`; it receives only JSON acknowledgements, snapshots, and protocol events. The Worker keeps gameplay computation off the UI thread. The demo scenario is served as a static JSON asset, so GitHub Pages can host the complete single-player experience without a Node.js API process.
-
-Run the client locally with `npm run dev`. Node.js 20+ remains required for Vite, schema-generation scripts, and the Node.js test suite; it is not required as a deployed gameplay server. The optional `server/index.js` remains available for future trusted/server-authoritative deployments.
-
-**Security boundary:** Browser-native execution exposes the shipped scenario, password definitions, answers, and game logic to the player. A Web Worker isolates execution from the UI thread but does not provide secrecy or tamper resistance. Use a trusted backend for authoritative multiplayer, competitive scoring, protected unlocks, or puzzles whose answers must remain secret.
-
-## Package entry points
-
-The package is private and exposes these entry points:
+## Engine package entry points
 
 - `vsr-engine` — Engine exports from `engine/index.js`.
 - `vsr-engine/protocol` — JSON protocol implementation.
-- `vsr-engine/scenario-schema` — scenario JSON schema.
+- `vsr-engine/scenario-schema` — canonical scenario schema.
 - `vsr-engine/scenario` — scenario loader and model utilities.
-- `vsr-engine/save-schema` — save-envelope JSON schema.
+- `vsr-engine/save-schema` — save-envelope schema.
 - `vsr-engine/state` — StateAccess implementation.
 - `vsr-engine/utils` — reusable utility facade.
+- `vsr-engine/host` — local in-process host.
+- `vsr-engine/client` — JSON client adapter.
+- `vsr-engine/transport` — Worker JSON transport adapter.
 
-## Basic usage
+## Run quality checks
+
+```sh
+npm install
+npm test
+npm run schema:check
+npm run audit:state:strict
+npm run check:server
+```
+
+`npm run build` validates the minimal React host entry through Vite. The entry intentionally renders no visible interface.
+
+## Basic Engine usage
 
 ```js
-import { GameEngine, DEMO_SCRIPT } from './engine/index.js';
+import { GameEngine } from './engine/index.js';
 
 const engine = new GameEngine();
-await engine.init(structuredClone(DEMO_SCRIPT));
+await engine.init(structuredClone(scenario));
 
 const snapshot = engine.protocol.createSnapshot(engine);
-console.log(snapshot);
-
 const unsubscribe = engine.protocol.subscribe(event => {
-  // Forward JSON events to a renderer, client, or transport.
+  // Forward JSON events to the consuming host.
   console.log(event);
 });
 
-const command = engine.protocol.createCommand('scene.enter', {
-  sceneId: 'scene_gallery',
-  skipTransition: true
-});
+const acknowledgement = await engine.dispatchProtocolCommand(
+  engine.protocol.createCommand('scene.enter', {
+    sceneId: 'scene_gallery',
+    skipTransition: true
+  })
+);
 
-const acknowledgement = await engine.dispatchProtocolCommand(command);
-console.log(acknowledgement);
-
-// Dispose runtime timers when the Engine instance is no longer used.
 unsubscribe();
-engine.taskManager.killAll();
+engine.dispose();
 ```
 
-## Production deployment and command authorization
+## React host integration
 
-For a network-facing deployment, keep the authoritative Engine on a trusted server. Do not send scenario source or password answer values to an untrusted client. Authenticate callers in the transport adapter and enable required command authorization:
+React is retained as an optional host runtime, not as a bundled product interface. A consuming application can mount its own components and communicate with the Engine through the JSON boundary:
 
 ```js
-const engine = new GameEngine({
-  requireAuthorization: true,
-  authorizeCommand: async ({ command, payload, context }) => {
-    // context.principal must be populated by trusted server middleware.
-    const principalId = context?.principal?.id;
-    if (!principalId) return false;
+import { JsonClient } from './client/adapters/JsonClient.js';
+import { WorkerJsonTransport } from './client/adapters/WorkerJsonTransport.js';
 
-    // Apply your application's session, ownership and command policy here.
-    return await authorizeGameCommand({ principalId, command, payload });
+const transport = new WorkerJsonTransport();
+const client = new JsonClient(transport);
+
+await client.initialize(scenario);
+const snapshot = client.getSnapshot();
+
+client.subscribe(message => {
+  if (message.type === 'state') {
+    // Feed the immutable JSON snapshot into the host's own state layer.
   }
 });
+
+await client.triggerAction('action-id', 'unique-action-id');
+
+// On host teardown:
+client.dispose();
+transport.close();
 ```
 
-The adapter must set `context.principal.id` from the authenticated session, not from client-supplied payload data. Authorization is not authentication; the Engine cannot secure a deployment whose transport trusts client-provided identity. Local/in-process use may retain the default optional authorization mode.
-
-Password verification supports number, string, switch, validated grid paths, and jigsaw piece arrangements. For jigsaw challenges, clients submit the final row-major piece order as `input`; the Engine validates the full arrangement and the configured piece count.
-
-## Hybrid JSON protocol v2
-
-The protocol uses four envelope types:
-
-- **Snapshot** — a JSON-safe projection of Engine state. Runtime callbacks, promises, scheduler objects, and circular references are excluded.
-- **Event** — an ordered domain or presentation notification with an event ID, sequence, timestamp, and state revision.
-- **Command** — allow-listed input with an idempotency key and an optional expected state revision.
-- **Ack** — the command result or a structured error.
-
-See `protocol/README.md` and `protocol/protocol.schema.json` for the transport contract.
-
-## Notifications API
-
-Notifications are exposed only through `engine.api.notifications`. Engine modules and scenario effect strategies must use this API; the generic presentation command proxy does not expose a notification facade.
-
-```js
-engine.api.notifications.add('Thông báo', 'Nội dung', 'success', {
-  source: 'engine',
-  category: 'engine.example'
-});
-
-engine.api.notifications.alert('Cảnh báo', 'Nội dung', 'warning');
-engine.api.notifications.markRead(notificationId);
-engine.api.notifications.dismiss(notificationId);
-engine.api.notifications.getHistory();
-engine.api.notifications.getPending();
-```
-
-Notification events use the canonical `presentation.notification.*` event namespace and carry a single `notification` object in the payload. The former positional `args` payload is not emitted.
+The Worker owns the `GameEngine`; the main thread receives only JSON acknowledgements, snapshots, and protocol events. The adapters do not define or render UI.
 
 ## Presentation boundary
 
-Engine modules do not render UI or access browser DOM APIs. Notifications, chat updates, transitions, visual-effect requests, and input requests are emitted as presentation events. A client may ignore, log, persist, or render those events using its own technology.
+Engine modules do not render UI or access browser DOM APIs. Notifications, chat updates, transitions, visual-effect requests, and input requests are emitted as presentation events. Consumers may ignore, log, persist, or interpret these events using their own host technology.
+
+## Security boundary
+
+Browser-native execution exposes shipped scenario data, password definitions, answers, and client-side game logic to the player. A Web Worker isolates execution from the host thread but does not provide secrecy or tamper resistance. Use a trusted backend for authoritative multiplayer, competitive scoring, protected unlocks, or puzzles whose answers must remain secret.
 
 ## Scenario schema is the source of truth
 
-`scenario.schema.json` is the canonical Draft-07 contract for authored scenarios. The Engine runtime schema module at `engine/scenario/ScenarioSchema.js` is generated from that file; it must never be edited independently. Run `npm run schema:sync` to regenerate it and `npm run schema:check` to verify that the committed runtime module is synchronized.
+`scenario.schema.json` is the canonical Draft-07 contract. `engine/scenario/ScenarioSchema.js` is generated from it and must not be edited independently. Run `npm run schema:sync` to regenerate it and `npm run schema:check` to verify parity.
 
-Scenario loading follows one pipeline: clone JSON-compatible input, apply declared schema defaults, assign deterministic IDs to inline actions, validate the JSON Schema, validate cross-object references and domain invariants, and only then build runtime indexes and state. `validateScenario()` returns diagnostics without mutating the caller's object; `normalizeScenario()` returns the normalized scenario or throws `ScenarioValidationError`. `meta.entryScene` is mandatory and must resolve. `meta.entryCharacter` defaults to `player`. `formatVersion` is the data-format version (currently 1), separate from the content release `meta.version`.
-
-Fixed structures reject undeclared properties. Dynamic dictionaries remain open only where the contract explicitly declares dictionary values, such as scenes, routers, characters, items, templates, endings, and global states. Semantic validation covers cross-references that JSON Schema cannot express, including globally unique router IDs, action and effect targets, chat entries/choices/jumps, password references, character/item references, scene-parent cycles, and find-way path geometry.
-
-The runtime dispatch table is the implementation of the schema's runnable types. Unsupported wrapper/effect types and unresolved effect-template or chat references fail explicitly; they are not silently ignored. Effect templates contain runnable wrappers and may reference other templates. Save data remains a separate versioned `vsr-save` envelope. On restore, the embedded scenario is passed through the same Loader/schema pipeline, and the normalized scenario—not runtime-only indexes—is retained for subsequent saves.
-
-The current scenario format is version 1. A future format change must add an explicit migration before changing the version constant; unsupported future or legacy versions are rejected rather than interpreted heuristically.
+Scenario loading clones JSON-compatible input, applies declared defaults, assigns deterministic IDs to inline actions, validates the JSON Schema and cross-object domain invariants, and then builds runtime indexes. Unsupported future or legacy scenario versions are rejected rather than interpreted heuristically.
 
 ## Runtime ownership
 
-Each `GameEngine` instance owns its API facade, protocol, gameplay state, session state, Engine-internal orchestration state, and `TaskManager`. Effect queues and queue-running flags live under `engine.runtime`, separate from serializable gameplay state. Create one Engine per game session. Call `engine.dispose()` when disposing the instance to stop scheduled background work and timers.
+Each `GameEngine` instance owns its API facade, protocol, gameplay state, session state, orchestration state, and `TaskManager`. Create one Engine per game session. Call `engine.dispose()` when disposing the instance to stop scheduled work and timers.
 
 ## State access
 
-The StateAccess facade provides explicit reads, writes, deletes, snapshots, and serialized transactions across source, runtime, and session namespaces. Scenario source is read-only through this interface. Legacy getters retain reference semantics; prefer snapshot methods for read-only consumers.
+The StateAccess facade provides explicit reads, writes, deletes, snapshots, and serialized transactions across source, runtime, and session namespaces. Scenario source is read-only through this interface. Prefer snapshot methods for read-only consumers.
 
-## Shared utilities
+## Verification
 
-Reusable helpers live in `utils/` and are available through `createUtils()` or the `vsr-engine/utils` package subpath. The utility facade exposes `check`, `random`, `number`, and `array`. It does not access Engine state or register runtime plugins. Each Engine API facade exposes the same capability as `engine.api.utils`.
-
-## Verification status
-
-Run `npm run schema:check` to verify generated schema parity and `npm test` for the checked-in Node.js regression tests, `npm run audit:state` for the AST candidate report, and `npm run audit:state:strict` to enforce the reviewed allowlist. The Acorn-based audit is syntax- and member-expression-aware, but it is not a complete interprocedural data-flow proof. CI runs tests and strict audit on pushes to this branch and pull requests. Runtime behavior and integrations still require validation in the target host/client environment.
+Run `npm test`, `npm run schema:check`, `npm run audit:state:strict`, and `npm run check:server`. CI validates these checks against the headless runtime and adapter boundary.
