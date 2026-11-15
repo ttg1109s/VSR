@@ -99,7 +99,6 @@ function ActionCard({ action, pending = false, passwordChallenge = null, onTrigg
 
       <Dialog
         open={passwordOpen}
-        open={passwordOpen}
         onClose={() => { setPassword(''); setPasswordError(''); }}
         title="Xác thực hành động"
         description="Nhập thông tin xác thực theo yêu cầu của kịch bản."
@@ -122,3 +121,5 @@ function ActionCard({ action, pending = false, passwordChallenge = null, onTrigg
     </article>
   );
 }
+
+export default memo(ActionCard);
