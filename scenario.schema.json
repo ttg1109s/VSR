@@ -2350,6 +2350,29 @@
               }
             }
           }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "set"
+              },
+              "subtype": {
+                "const": "state"
+              }
+            },
+            "required": [
+              "type",
+              "subtype"
+            ]
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "description": "For a numeric global state, value is a finite numeric delta added to the current value. For boolean and string global states, value replaces the current value and must match the declared type."
+              }
+            }
+          }
         }
       ]
     },
@@ -3526,6 +3549,29 @@
                   "add",
                   "set"
                 ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "set"
+              },
+              "subtype": {
+                "const": "state"
+              }
+            },
+            "required": [
+              "type",
+              "subtype"
+            ]
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "description": "For a numeric global state, value is a finite numeric delta added to the current value. For boolean and string global states, value replaces the current value and must match the declared type."
               }
             }
           }
