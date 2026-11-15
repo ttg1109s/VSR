@@ -172,7 +172,7 @@ function ActionCard({ action, pending = false, passwordChallenge = null, feedbac
 
     {feedback && <p className="vsr-action-card__feedback" role="status">{feedback}</p>}
     <div className="vsr-action-card__actions">
-      <Button size="lg" leadingIcon={meta.buttonIcon} disabled={pending || availability.canTrigger !== true || locked} loading={pending} onClick={() => onTrigger?.(action)} aria-label={meta.buttonLabel || `Execute ${meta.title || action.id}`}>{meta.buttonLabel || ('Execute')}</Button>
+      <Button size="lg" leadingIcon={meta.buttonIcon} disabled={pending || availability.canTrigger !== true || locked} loading={pending} onClick={() => onTrigger?.(action)} aria-label={meta.buttonLabel || `Execute ${meta.title || action.id}`}>{meta.buttonLabel || 'Execute'}</Button>
     </div>
 
     <Dialog open={challengeOpen} onClose={cancel} title="Verify action" description={passwordChallenge?.description || 'Complete the challenge provided by the Engine.'}>
