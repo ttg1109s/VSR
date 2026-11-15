@@ -223,6 +223,13 @@ const StatsLogic = {
 
 export const CharacterStrategies = {
     edit_stats: (engine, eff) => {
+        const field = eff.field || 'current';
+        const mode = eff.mode || 'add';
+        if (!['current', 'max'].includes(field) ||
+            !['set', 'add', 'full'].includes(mode) ||
+            (field === 'max' && mode === 'full')) {
+            throw new TypeError(`Unsupported characters.edit_stats mode: ${String(mode)} for field ${String(field)}`);
+        }
         const charId = engine.redirectTarget(eff.target);
         const char = engine.api.engine.state.getRuntime('characters.[id]', { id: charId });
         if (!char) return;
