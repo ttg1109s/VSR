@@ -23,7 +23,7 @@ export const StatsCalculators = {
 
 export const StatsHelpers = {
     remove_stats: (targetObj, eff, isChar, effectiveTarget, engine) => {
-        const prop = resolveValue(eff.property);
+        const prop = resolveValue(eff.property, engine);
         if (!targetObj?.stats || !Object.prototype.hasOwnProperty.call(targetObj.stats, prop)) return;
 
         delete targetObj.stats[prop];
@@ -38,7 +38,8 @@ export const StatsHelpers = {
         const prop = resolveValue(eff.property);
         if (!prop || !targetObj) return false;
 
-        const parts = String(eff.value ?? '').split(':');
+        const resolvedValue = resolveValue(eff.value, engine);
+        const parts = String(resolvedValue ?? '').split(':');
         const parsedCurrent = toFiniteNumber(parts[0] === '' ? 0 : parts[0]);
         if (parsedCurrent === null) return false;
 
@@ -83,7 +84,7 @@ export const StatsHelpers = {
         const oldValue = toFiniteNumber(stat[field]);
         if (oldValue === null) return false;
 
-        const rawValue = resolveValue(eff.value);
+        const rawValue = resolveValue(eff.value, engine);
         const value = mode === 'full' && field === 'current'
             ? toFiniteNumber(stat.max)
             : toFiniteNumber(rawValue);
