@@ -4676,6 +4676,73 @@
               "index"
             ]
           }
+        },
+        {
+          "if": {
+            "properties": {
+              "space": {
+                "const": "router"
+              }
+            },
+            "required": [
+              "space"
+            ]
+          },
+          "then": {
+            "properties": {
+              "in": {
+                "enum": [
+                  "enter",
+                  "leave",
+                  "still",
+                  "t_start",
+                  "t_end"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "space": {
+                "const": "item"
+              }
+            },
+            "required": [
+              "space"
+            ]
+          },
+          "then": {
+            "properties": {
+              "in": {
+                "enum": [
+                  "use",
+                  "equip",
+                  "unequip"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "space": {
+                "const": "chat"
+              }
+            },
+            "required": [
+              "space"
+            ]
+          },
+          "then": {
+            "properties": {
+              "in": {
+                "pattern": "^.*:.*$"
+              }
+            }
+          }
         }
       ]
     },
