@@ -1479,7 +1479,8 @@ export const DEMO_SCRIPT = {
   "actions": {
     "action_read_notice": {
       "meta": {
-        "title": "Đọc bảng thông báo",
+        "title": "Bảng thông báo",
+        "buttonLabel": "Đọc",
         "desc": "Danh sách dân làng có một cái tên bị cạo đi. Một chiếc đèn bão bị bỏ lại dưới chân bảng."
       },
       "set": {
@@ -1539,7 +1540,7 @@ export const DEMO_SCRIPT = {
     },
     "action_talk_mai": {
       "meta": {
-        "title": "Hỏi Mai về đêm mất điện",
+        "title": "Mai",
         "desc": "Mai tránh nhìn về phía giếng. Hãy nghe lời kể của cô ấy."
       },
       "set": {
@@ -1574,7 +1575,7 @@ export const DEMO_SCRIPT = {
     },
     "action_inspect_well": {
       "meta": {
-        "title": "Quan sát giếng",
+        "title": "Giếng đá",
         "desc": "Trên thành giếng có bốn vạch khắc mới và một vết kim loại bị cào xước."
       },
       "set": {
@@ -1629,7 +1630,8 @@ export const DEMO_SCRIPT = {
     },
     "action_use_lantern": {
       "meta": {
-        "title": "Chiếu đèn xuống giếng",
+        "title": "Đáy giếng",
+        "buttonLabel": "Soi đèn",
         "desc": "Chỉ có thể đọc ký hiệu dưới đáy giếng khi manh mối ánh sáng đã được kích hoạt."
       },
       "set": {
@@ -1690,7 +1692,7 @@ export const DEMO_SCRIPT = {
     },
     "action_question_hanh": {
       "meta": {
-        "title": "Hỏi bà Hạnh",
+        "title": "Bà Hạnh",
         "desc": "Bà Hạnh khẳng định nhà trọ chỉ có sáu phòng, dù hành lang có bảy cửa."
       },
       "set": {
@@ -1725,7 +1727,7 @@ export const DEMO_SCRIPT = {
     },
     "action_open_guestbook": {
       "meta": {
-        "title": "Mở sổ khách",
+        "title": "Sổ khách",
         "desc": "Trang cuối ghi tên người chơi với ngày đến là ngày mai."
       },
       "set": {
@@ -1785,7 +1787,7 @@ export const DEMO_SCRIPT = {
     },
     "action_unlock_cellar": {
       "meta": {
-        "title": "Mở khóa hầm",
+        "title": "Cửa hầm rượu",
         "desc": "Cần sổ khách, chìa khóa phòng thứ bảy và mật từ trong thánh ca để mở ổ khóa phụ dẫn xuống hầm."
       },
       "set": {
@@ -1857,7 +1859,7 @@ export const DEMO_SCRIPT = {
     },
     "action_search_cellar": {
       "meta": {
-        "title": "Lục tìm trong hầm",
+        "title": "Hầm rượu",
         "desc": "Một cuộn băng được giấu sau thùng rỗng. Trên nhãn có ghi ngày sơ tán."
       },
       "set": {
@@ -1917,7 +1919,7 @@ export const DEMO_SCRIPT = {
     },
     "action_read_hymn": {
       "meta": {
-        "title": "Đọc bản thánh ca",
+        "title": "Bản thánh ca",
         "desc": "Các chữ đầu dòng ghép thành từ 'IM LANG'. Một dòng bị gạch dưới nhắc đến ba hồi chuông."
       },
       "set": {
@@ -1972,7 +1974,7 @@ export const DEMO_SCRIPT = {
     },
     "action_talk_keeper": {
       "meta": {
-        "title": "Nói chuyện với người giữ nhà nguyện",
+        "title": "Người giữ nhà nguyện",
         "desc": "Ông ta nói chuông chỉ được rung khi người giữ chuông chấp nhận sự thật."
       },
       "set": {
@@ -2007,7 +2009,7 @@ export const DEMO_SCRIPT = {
     },
     "action_solve_bell": {
       "meta": {
-        "title": "Giải mã mặt đồng hồ",
+        "title": "Mặt đồng hồ",
         "desc": "Mã bốn chữ số khắc dưới mặt đồng hồ là thời điểm mất tích."
       },
       "set": {
@@ -2068,7 +2070,8 @@ export const DEMO_SCRIPT = {
     },
     "action_ring_bell": {
       "meta": {
-        "title": "Rung chuông",
+        "title": "Chuông nhà nguyện",
+        "buttonLabel": "Rung ba hồi",
         "desc": "Lắp dây đồng nối lại cơ cấu, đặt quả lắc vào chuông và chỉ rung ba hồi theo ghi chú."
       },
       "set": {
@@ -2158,7 +2161,7 @@ export const DEMO_SCRIPT = {
     },
     "action_check_desk": {
       "meta": {
-        "title": "Kiểm tra ngăn bàn",
+        "title": "Ngăn bàn giáo viên",
         "desc": "Có danh sách lớp với bốn học sinh bị gạch tên và một bức ảnh bị xé."
       },
       "set": {
@@ -2218,7 +2221,7 @@ export const DEMO_SCRIPT = {
     },
     "action_decode_roster": {
       "meta": {
-        "title": "Đối chiếu sơ đồ chỗ ngồi",
+        "title": "Sơ đồ chỗ ngồi",
         "desc": "Dùng bản sao sổ điểm danh để đối chiếu vị trí thứ mười hai đã bị xóa khỏi sơ đồ chỗ ngồi."
       },
       "set": {
@@ -2296,7 +2299,7 @@ export const DEMO_SCRIPT = {
     },
     "action_follow_marks": {
       "meta": {
-        "title": "Lần theo dấu sơn",
+        "title": "Dấu sơn trong rừng",
         "desc": "Những vệt sơn dẫn tới khoảng đất trống, nơi các cọc gỗ tạo thành hình vòng cung."
       },
       "set": {
@@ -2351,7 +2354,7 @@ export const DEMO_SCRIPT = {
     },
     "action_maze_path": {
       "meta": {
-        "title": "Tìm đường qua rừng",
+        "title": "Mê cung trong rừng",
         "desc": "La bàn của người dẫn đường giúp xác định hướng thật khi lối mòn thay đổi."
       },
       "set": {
@@ -2418,7 +2421,7 @@ export const DEMO_SCRIPT = {
     },
     "action_inspect_stakes": {
       "meta": {
-        "title": "Đếm cọc gỗ",
+        "title": "Vòng cọc gỗ",
         "desc": "Có mười hai cọc, nhưng chỉ mười một cái đổ bóng."
       },
       "set": {
@@ -2473,7 +2476,7 @@ export const DEMO_SCRIPT = {
     },
     "action_find_hidden_box": {
       "meta": {
-        "title": "Mở hộp chôn dưới đất",
+        "title": "Hộp chôn dưới đất",
         "desc": "Phù hiệu đội sơ tán có cùng ký hiệu với con dấu trên hộp chôn dưới đất; dùng nó để xác định đúng hộp."
       },
       "set": {
@@ -2546,7 +2549,7 @@ export const DEMO_SCRIPT = {
     },
     "action_repair_mill": {
       "meta": {
-        "title": "Khởi động cối xay",
+        "title": "Cối xay nước",
         "desc": "Lắp chốt truyền động tìm thấy trong hộp bánh răng, rồi dùng mảnh bản đồ để xoay bánh xe đúng chiều."
       },
       "set": {
@@ -2624,7 +2627,7 @@ export const DEMO_SCRIPT = {
     },
     "action_enter_tunnel": {
       "meta": {
-        "title": "Khám phá đường hầm",
+        "title": "Đường hầm dưới đê",
         "desc": "Những bức tường ghi tên người dân theo thứ tự ngày họ biến mất."
       },
       "set": {
@@ -2679,7 +2682,7 @@ export const DEMO_SCRIPT = {
     },
     "action_open_archive": {
       "meta": {
-        "title": "Mở kho hồ sơ",
+        "title": "Tủ hồ sơ dưới đê",
         "desc": "Đối chiếu danh sách vận chuyển với cuộn phim sơ tán trước khi mở đúng ngăn hồ sơ."
       },
       "set": {
@@ -2758,7 +2761,7 @@ export const DEMO_SCRIPT = {
     },
     "action_confront_voice": {
       "meta": {
-        "title": "Đối diện giọng nói",
+        "title": "Tín hiệu dưới ga",
         "desc": "Dò đúng tần số từ cuộn tinh thể thu sóng trước khi đối thoại với tín hiệu dưới ga."
       },
       "set": {
@@ -2805,7 +2808,7 @@ export const DEMO_SCRIPT = {
     },
     "action_choose_fate": {
       "meta": {
-        "title": "Kết thúc: Giải thoát",
+        "title": "Sự giải thoát",
         "desc": "Chỉ có thể chọn giải thoát khi đã khôi phục đủ ký ức, rung chuông, mở hồ sơ và xác nhận danh sách bằng con dấu đội sơ tán."
       },
       "set": {
@@ -2850,7 +2853,7 @@ export const DEMO_SCRIPT = {
     },
     "action_ending_bury": {
       "meta": {
-        "title": "Kết thúc: Chôn giấu",
+        "title": "Hồ sơ sơ tán",
         "desc": "Bạn có thể phá hủy hồ sơ và rời đi, giữ cho ngôi làng tiếp tục ngủ yên."
       },
       "set": {
@@ -2903,7 +2906,8 @@ export const DEMO_SCRIPT = {
     },
     "action_ending_echo": {
       "meta": {
-        "title": "Kết thúc: Tiếng vọng thứ mười hai",
+        "title": "Tiếng vọng thứ mười hai",
+        "buttonLabel": "Ở lại",
         "desc": "Chỉ có thể chọn ở lại khi đã biết danh tính người thứ mười hai và nghe được sự thật từ tín hiệu."
       },
       "set": {
@@ -2962,7 +2966,7 @@ export const DEMO_SCRIPT = {
     },
     "action_ending_depart": {
       "meta": {
-        "title": "Kết thúc: Lên chuyến tàu",
+        "title": "Chuyến tàu 03:17",
         "desc": "Bạn chỉ có thể chọn rời đi khi tìm được vé chưa xé của chuyến tàu 03:17."
       },
       "set": {
@@ -3015,7 +3019,7 @@ export const DEMO_SCRIPT = {
     },
     "action_enter_well": {
       "meta": {
-        "title": "Đi tới giếng đá",
+        "title": "Giếng đá",
         "desc": "Rời quảng trường và tiếp cận giếng phủ rêu."
       },
       "set": {
@@ -3050,7 +3054,7 @@ export const DEMO_SCRIPT = {
     },
     "action_return_square": {
       "meta": {
-        "title": "Trở lại quảng trường",
+        "title": "Quảng trường làng",
         "desc": "Quay về quảng trường trung tâm."
       },
       "set": {
@@ -3085,7 +3089,7 @@ export const DEMO_SCRIPT = {
     },
     "action_return_inn": {
       "meta": {
-        "title": "Trở lại sảnh nhà trọ",
+        "title": "Sảnh nhà trọ",
         "desc": "Rời hầm và quay về quầy lễ tân."
       },
       "set": {
@@ -3120,7 +3124,8 @@ export const DEMO_SCRIPT = {
     },
     "action_enter_tower": {
       "meta": {
-        "title": "Lên tháp chuông",
+        "title": "Tháp chuông",
+        "buttonLabel": "Đi lên",
         "desc": "Cầu thang hẹp dẫn lên nơi treo quả chuông câm."
       },
       "set": {
@@ -3155,7 +3160,7 @@ export const DEMO_SCRIPT = {
     },
     "action_return_chapel": {
       "meta": {
-        "title": "Trở lại gian nhà nguyện",
+        "title": "Gian nhà nguyện",
         "desc": "Quay về gian cầu nguyện."
       },
       "set": {
@@ -3190,7 +3195,7 @@ export const DEMO_SCRIPT = {
     },
     "action_enter_clearing": {
       "meta": {
-        "title": "Đi tới khoảng đất trống",
+        "title": "Khoảng đất trống",
         "desc": "Theo dấu sơn đến vòng cọc gỗ giữa rừng."
       },
       "set": {
@@ -3225,7 +3230,7 @@ export const DEMO_SCRIPT = {
     },
     "action_return_forest": {
       "meta": {
-        "title": "Trở lại lối mòn",
+        "title": "Lối mòn trong rừng",
         "desc": "Quay về con đường dưới tán thông."
       },
       "set": {
@@ -3260,7 +3265,7 @@ export const DEMO_SCRIPT = {
     },
     "action_travel_inn": {
       "meta": {
-        "title": "Đi tới nhà trọ",
+        "title": "Nhà trọ Bà Hạnh",
         "desc": "Theo con đường lát đá đến nhà trọ Bà Hạnh."
       },
       "set": {
@@ -3295,7 +3300,7 @@ export const DEMO_SCRIPT = {
     },
     "action_travel_chapel": {
       "meta": {
-        "title": "Đi tới nhà nguyện",
+        "title": "Nhà nguyện",
         "desc": "Tiếng chuông im lặng dẫn bạn về phía nhà nguyện."
       },
       "set": {
@@ -3330,7 +3335,7 @@ export const DEMO_SCRIPT = {
     },
     "action_travel_school": {
       "meta": {
-        "title": "Đi tới trường học",
+        "title": "Trường học bỏ hoang",
         "desc": "Dấu chân nhỏ dẫn tới ngôi trường bỏ hoang."
       },
       "set": {
@@ -3365,7 +3370,7 @@ export const DEMO_SCRIPT = {
     },
     "action_travel_forest": {
       "meta": {
-        "title": "Đi tới rừng thông",
+        "title": "Rừng thông phía Bắc",
         "desc": "Con đường phía Bắc mở ra dưới màn sương."
       },
       "set": {
@@ -3400,7 +3405,7 @@ export const DEMO_SCRIPT = {
     },
     "action_travel_mill": {
       "meta": {
-        "title": "Đi tới cối xay nước",
+        "title": "Cối xay nước",
         "desc": "Theo con suối cạn tới cối xay cũ."
       },
       "set": {
@@ -3435,7 +3440,7 @@ export const DEMO_SCRIPT = {
     },
     "action_return_mill": {
       "meta": {
-        "title": "Trở lại cối xay",
+        "title": "Phòng máy cối xay",
         "desc": "Quay lại căn phòng máy dưới chân đê."
       },
       "set": {
@@ -3470,7 +3475,7 @@ export const DEMO_SCRIPT = {
     },
     "action_reach_station": {
       "meta": {
-        "title": "Đi tới ga tàu",
+        "title": "Ga tàu 03:17",
         "desc": "Chỉ những người đã ghép đủ manh mối mới tìm thấy sân ga."
       },
       "set": {
@@ -3509,7 +3514,7 @@ export const DEMO_SCRIPT = {
     },
     "action_descend_tunnel": {
       "meta": {
-        "title": "Mở cửa sập xuống đường hầm",
+        "title": "Cửa sập cối xay",
         "desc": "Bánh xe đã chạy, cơ cấu đối trọng nâng cửa sập dưới sàn cối xay."
       },
       "set": {
@@ -3556,7 +3561,7 @@ export const DEMO_SCRIPT = {
     },
     "action_decode_broadcast": {
       "meta": {
-        "title": "Tháo hộp loa phát thanh",
+        "title": "Hộp loa phát thanh",
         "desc": "Kiểm tra nguồn tín hiệu phía sau bảng thông báo."
       },
       "set": {
@@ -3615,7 +3620,8 @@ export const DEMO_SCRIPT = {
     },
     "action_return_view_village_square": {
       "meta": {
-        "title": "Trở lại góc nhìn ban đầu",
+        "title": "Quảng trường — góc nhìn tổng thể",
+        "buttonLabel": "Trở lại",
         "desc": "Quay lại trạng thái quan sát tổng thể của địa điểm."
       },
       "set": {
@@ -3650,7 +3656,7 @@ export const DEMO_SCRIPT = {
     },
     "action_retrieve_well_badge": {
       "meta": {
-        "title": "Lấy phù hiệu dưới giếng",
+        "title": "Phù hiệu dưới giếng",
         "desc": "Dùng móc sắt kéo vật kim loại mắc trong hốc đá."
       },
       "set": {
@@ -3709,7 +3715,7 @@ export const DEMO_SCRIPT = {
     },
     "action_return_view_village_well": {
       "meta": {
-        "title": "Trở lại góc nhìn ban đầu",
+        "title": "Giếng đá — góc nhìn tổng thể",
         "desc": "Quay lại trạng thái quan sát tổng thể của địa điểm."
       },
       "set": {
@@ -3744,7 +3750,7 @@ export const DEMO_SCRIPT = {
     },
     "action_find_spare_key": {
       "meta": {
-        "title": "Tìm chìa khóa phòng thứ bảy",
+        "title": "Ngăn kéo sau quầy lễ tân",
         "desc": "Kiểm tra ngăn kéo bị khóa sau quầy lễ tân."
       },
       "set": {
@@ -3803,7 +3809,7 @@ export const DEMO_SCRIPT = {
     },
     "action_return_view_inn": {
       "meta": {
-        "title": "Trở lại góc nhìn ban đầu",
+        "title": "Nhà trọ — góc nhìn tổng thể",
         "desc": "Quay lại trạng thái quan sát tổng thể của địa điểm."
       },
       "set": {
@@ -3838,7 +3844,7 @@ export const DEMO_SCRIPT = {
     },
     "action_find_evacuation_film": {
       "meta": {
-        "title": "Lấy cuộn phim sơ tán",
+        "title": "Hộp thiếc trong hầm rượu",
         "desc": "Mở hộp thiếc sau kệ rượu và kiểm tra cuộn phim."
       },
       "set": {
@@ -3897,7 +3903,7 @@ export const DEMO_SCRIPT = {
     },
     "action_return_view_inn_cellar": {
       "meta": {
-        "title": "Trở lại góc nhìn ban đầu",
+        "title": "Hầm rượu — góc nhìn tổng thể",
         "desc": "Quay lại trạng thái quan sát tổng thể của địa điểm."
       },
       "set": {
@@ -3991,7 +3997,7 @@ export const DEMO_SCRIPT = {
     },
     "action_return_view_chapel": {
       "meta": {
-        "title": "Trở lại góc nhìn ban đầu",
+        "title": "Nhà nguyện — góc nhìn tổng thể",
         "desc": "Quay lại trạng thái quan sát tổng thể của địa điểm."
       },
       "set": {
@@ -4085,7 +4091,7 @@ export const DEMO_SCRIPT = {
     },
     "action_return_view_chapel_tower": {
       "meta": {
-        "title": "Trở lại góc nhìn ban đầu",
+        "title": "Tháp chuông — góc nhìn tổng thể",
         "desc": "Quay lại trạng thái quan sát tổng thể của địa điểm."
       },
       "set": {
