@@ -112,13 +112,22 @@
   -webkit-font-smoothing: antialiased;
 }
 
+/* Override the shared popover shell sizing within ActionCard.
+   The shared shell adds padding, so constrain its outer box to the viewport. */
+.vsr-action-card .vsr-popover-content {
+  box-sizing: border-box;
+  width: min(480px, calc(100vw - 48px));
+  min-width: 0;
+  max-width: calc(100vw - 48px);
+}
+
 .vsr-action-card__popover {
   display: flex;
   flex-direction: column;
   gap: 10px;
   box-sizing: border-box;
-  width: min(480px, calc(100vw - 24px));
-  max-width: calc(100vw - 24px);
+  width: 100%;
+  max-width: 100%;
   max-height: min(65vh, 480px);
   overflow: auto;
 }
