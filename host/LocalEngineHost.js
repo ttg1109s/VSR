@@ -1,5 +1,4 @@
 import { GameEngine, DEMO_SCRIPT, normalizeScenario } from '../engine/index.js';
-import { JsonProtocol } from '../protocol/JsonProtocol.js';
 
 /**
  * Local transport host. This is the only browser-side module allowed to import
