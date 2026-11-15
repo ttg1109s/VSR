@@ -27,9 +27,17 @@ export const EffectScopeResolvers = {
         return rId ? { scope: 'action', params: { sId, rId, aId: cfg.target, hook: cfg.in } } : null;
     },
     chat: (cfg, ctx, engine) => {
-        const parts = (cfg.in || "").split(':');
-        if (parts.length < 2) return null;
-        return { scope: 'chat', params: { chatId: cfg.target, blockId: parts[0], choiceId: parts[1] } };
+        const hook = String(cfg.in || '');
+        const separator = hook.indexOf(':');
+        if (separator <= 0 || separator === hook.length - 1) return null;
+        return {
+            scope: 'chat',
+            params: {
+                chatId: cfg.target,
+                blockId: hook.slice(0, separator),
+                choiceId: hook.slice(separator + 1)
+            }
+        };
     },
     item: (cfg, ctx, engine) => ({
         scope: 'item',
@@ -60,12 +68,21 @@ export const StaticListResolvers = {
         return hookMap[hook]?.(r) || [];
     },
     chat: (src, { chatId, blockId, choiceId }) => {
+        // Canonical schema shape: chat[chatId].block[blockId].choice[choiceGroupId][].
         const chat = src.chat?.[chatId];
-        if (!chat) return [];
-        const block = chat.blocks?.[blockId];
-        if (!block) return [];
-        const choice = block.choices?.find(c => c.id === choiceId);
-        return choice?.apply || [];
+        const block = chat?.block?.[blockId];
+        const choiceGroupId = block?.choice_id;
+        if (!choiceGroupId) return [];
+
+        const choices = chat.choice?.[choiceGroupId];
+        if (!Array.isArray(choices)) return [];
+
+        // Choice IDs are optional in the schema. When absent, accept the
+        // stable positional fallback used by ChatSystem (String(index)).
+        const choiceIndex = choices.findIndex((choice, index) =>
+            choice?.id === String(choiceId) || String(index) === String(choiceId)
+        );
+        return choiceIndex >= 0 ? (choices[choiceIndex]?.effect || []) : [];
     },
     item: (src, { itemId, hook }) => src.itemInfo?.[itemId]?.effect?.[hook] || []
 };
@@ -99,8 +116,21 @@ export const ManageSubtypeHandlers = {
     add_effect: (engine, key, cfg, defaultList) => {
         if (!cfg.content || !cfg.content.type) return;
         const list = getEditableList(engine, key, defaultList);
-        const idx = (cfg.index !== undefined && cfg.index !== null) ? cfg.index : list.length;
-        list.splice(idx, 0, cfg.content);
+
+        if (cfg.index === undefined || cfg.index === null) {
+            list.push(cfg.content);
+        } else {
+            const indexes = Array.isArray(cfg.index)
+                ? [...new Set(cfg.index)].sort((a, b) => b - a)
+                : [cfg.index];
+
+            // Insert from right to left so each index refers to the original
+            // list position, as it does for locked/unlocked/remove_effect.
+            for (const rawIndex of indexes) {
+                if (!Number.isInteger(rawIndex) || rawIndex < 0) continue;
+                list.splice(Math.min(rawIndex, list.length), 0, structuredClone(cfg.content));
+            }
+        }
         saveList(engine, key, list);
     },
 
@@ -110,10 +140,12 @@ export const ManageSubtypeHandlers = {
         if (Array.isArray(cfg.index)) indexesToRemove = [...cfg.index];
         else if (cfg.index !== undefined) indexesToRemove = [cfg.index];
 
-        indexesToRemove.sort((a, b) => b - a);
-        indexesToRemove.forEach(idx => {
-            if (idx >= 0 && idx < list.length) list.splice(idx, 1);
-        });
+        [...new Set(indexesToRemove)]
+            .filter(idx => Number.isInteger(idx) && idx >= 0)
+            .sort((a, b) => b - a)
+            .forEach(idx => {
+                if (idx < list.length) list.splice(idx, 1);
+            });
         saveList(engine, key, list);
     },
 
