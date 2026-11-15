@@ -50,12 +50,12 @@ export const EffectSystem = {
 
         for (let i = 0; i < effectiveList.length; i++) {
             const wrapper = effectiveList[i];
+            if (!wrapper || typeof wrapper !== 'object' || Array.isArray(wrapper)) {
+                throw new TypeError('Runnable wrapper must be an object.');
+            }
 
-            // [REFACTOR] Unified Skip Logic (Replaces _disabled)
-            if (wrapper.skip === true) continue;
-
-            if (wrapper.type === 'skip_all') break;
-
+            // All wrapper types, including skip_all, pass through the same
+            // skip and requirement gate before their control-flow semantics run.
             const shouldStop = await this.processRunnable(wrapper, context, listKey, sourceList, isAsync);
             if (shouldStop === true) break;
         }
@@ -64,7 +64,7 @@ export const EffectSystem = {
     async processRunnable(wrapper, context = {}, listKey = null, sourceList = [], isAsync = false) {
         if (!wrapper || typeof wrapper !== 'object') throw new TypeError('Runnable wrapper must be an object.');
         if (wrapper.skip === true) return;
-        if (wrapper.req && !this.checkReq(wrapper.req).pass) return;
+        if (Object.prototype.hasOwnProperty.call(wrapper, 'req') && !this.checkReq(wrapper.req).pass) return;
 
         if (wrapper.type === 'skip_all') return true;
         if (wrapper.type === 'effect') {
