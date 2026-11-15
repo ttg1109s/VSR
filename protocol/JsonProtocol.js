@@ -45,19 +45,47 @@ export class JsonProtocol{
    return null;
   };
   const safeMeta=meta=>({
-   title:meta?.title,desc:meta?.desc,description:meta?.description,
+   title:meta?.title,desc:meta?.desc??meta?.description,description:meta?.desc??meta?.description,
    subTitleStatus:meta?.subTitleStatus,thumb:meta?.thumb,
-   cover:resolveCover(meta?.cover)
+   cover:resolveCover(meta?.cover),thumbnail:resolveCover(meta?.thumb)||(typeof meta?.thumb==='string'?{url:meta.thumb,type:'photo'}:null),
+   buttonLabel:typeof meta?.buttonLabel==='string'?meta.buttonLabel:undefined,
+   buttonIcon:typeof meta?.buttonIcon==='string'?meta.buttonIcon:undefined
   });
   const actions=sourceScene&&sourceRouter&&typeof engine.getEffectiveActions==='function'
    ?engine.getEffectiveActions(sceneId,routerId).map(action=>{
     const key=`${sceneId}_${routerId}_${action.id}`;
     const runtime=engine.state.actions?.[key]||{};
-    return{id:action.id,title:action.title,name:action.name,meta:safeMeta(action.meta||{}),
-     runtimeState:{display:runtime.display??action.set?.display??'show',readDesc:runtime.readDesc===true}};
+    const display=runtime.display??action.set?.display??'show';
+    const readRequired=!!((engine.getConfig?.('allDescRead')||action.set?.readDesc===true)&&(action.meta?.desc??action.meta?.description));
+    const read=runtime.readDesc===true;
+    const cooldownUntil=Number.isFinite(runtime.cooldownEnd)?runtime.cooldownEnd:null;
+    let reason='available';
+    const set=action.set||{};
+    const entryCharacter=engine.state.entryCharacter||'player';
+    const faker=engine.state.faker||{};
+    const fakerMode=engine.getConfig?.('fakerMode')||'soul';
+    const actingIds=[entryCharacter];
+    if(faker.active&&fakerMode==='mask'&&faker.targetId)actingIds.push(faker.targetId);
+    if(display==='locked')reason='locked';
+    else if(engine.isTransitioning||engine.isActionProcessing)reason='busy';
+    else if(Array.isArray(set.charAllow)&&set.charAllow.length&&!actingIds.some(id=>set.charAllow.includes(id)))reason='permission_denied';
+    else if(readRequired&&!read)reason='not_read';
+    else if(cooldownUntil!==null&&cooldownUntil>Date.now())reason='cooldown';
+    else if(set.type==='to_scene'&&set.target&&engine.checkHardLock?.('scene',set.target))reason='target_locked';
+    else if(set.type==='swap_router'&&set.target&&engine.checkHardLock?.('router',set.target))reason='target_locked';
+    else if(set.requirement===true){const result=action.requirement?engine.checkReq?.(action.requirement):{pass:false};if(!result?.pass)reason='requirement_failed';else if(set.password)reason='password_required';}
+    else if(set.password)reason='password_required';
+    const title=action.meta?.title??action.title??action.name??action.id;
+    const meta=safeMeta(action.meta||{});
+    return{id:action.id,key,title,name:action.name,meta:{...meta,title,description:meta.desc??meta.description??''},
+     presentation:{display:display==='locked'?'locked':'show',readRequired,read},
+     availability:{canTrigger:reason==='available'||reason==='password_required',reason,cooldownUntil},
+     runtimeState:{display,readDesc:read}};
    }).filter(action=>action.runtimeState.display!=='hide')
    :[];
   const challenge=engine.pendingPasswordAction;
+  const passwordConfig=challenge?engine.src?.passwords?.[challenge.type]?.[challenge.passwordId]||null:null;
+  const puzzleMedia=challenge?.type==='puzzle'?resolveCover(passwordConfig?.url):null;
   const session={
    chat:{
     active:!!engine.chatState?.active,blocking:!!engine.chatState?.blocking,
@@ -69,7 +97,10 @@ export class JsonProtocol{
     challengeId:challenge.challengeId,type:challenge.type,actionId:challenge.actionId,
     uniqueId:challenge.uniqueId,sceneId:challenge.sceneId,routerId:challenge.routerId,
     status:challenge.status,countTest:challenge.countTest,retryMax:challenge.retryMax,
-    deadlineAt:challenge.deadlineAt
+    remainingAttempts:challenge.retryMax===0?null:Math.max(0,challenge.retryMax-challenge.countTest),
+    deadlineAt:challenge.deadlineAt,description:typeof passwordConfig?.desc==='string'?passwordConfig.desc:'',
+    ...(challenge.type==='puzzle'?{puzzle:{url:puzzleMedia?.url||(typeof passwordConfig?.url==='string'?passwordConfig.url:null),ratio:passwordConfig?.ratio??[3,3],level:passwordConfig?.level??null}}:{}),
+    ...(challenge.type==='find_way'?{findWay:{area:passwordConfig?.area??null,start:passwordConfig?.start??null,target:passwordConfig?.target??null}}:{})
    }:null,
    timer:engine.timerState?cloneJsonValue(engine.timerState):null,
    notifications:{

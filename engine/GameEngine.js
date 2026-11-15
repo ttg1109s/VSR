@@ -21,7 +21,7 @@ export class GameEngine {
  constructor({taskManager,engineId,authorizeCommand,requireAuthorization=false,clock}={}) {
   this.taskManager=taskManager||new TaskManager({},120,{clock});
   this.protocol=new JsonProtocol({engineId,protocolVersion:2,authorizeCommand,requireAuthorization,onCommandSuccess:({command,revisionBefore})=>{
-   if(!['engine.init','scenario.inspect'].includes(command)&&this.protocol.stateRevision===revisionBefore)this.commitState(`command:${command}`);
+   if(!['engine.init','scenario.inspect','snapshot.get'].includes(command)&&this.protocol.stateRevision===revisionBefore)this.commitState(`command:${command}`);
   }});
   this.notifications=new NotificationSystem({protocol:this.protocol,engineId:this.protocol.engineId,clock:clock||(()=>Date.now())});
   this.api=createEngineAPI(this);
@@ -69,6 +69,7 @@ export class GameEngine {
     formatVersion:scenario.formatVersion
    };
   });
+  this.protocol.registerCommand('snapshot.get',()=>this.protocol.createSnapshot(this));
   this.protocol.registerCommand('action.trigger',payload=>{if(typeof payload.actionId!=='string'||!payload.actionId)throw new TypeError('action.trigger requires actionId.');return this.handleAction(payload.actionId,payload.uniqueId||payload.actionId);});
   this.protocol.registerCommand('chat.next',()=>this.nextChat());
   this.protocol.registerCommand('chat.selectChoice',payload=>{if(!Number.isInteger(payload.index))throw new TypeError('chat.selectChoice requires index.');return this.selectChatChoice(payload.index);});

@@ -27,7 +27,7 @@ function validScenario() {
         set: { activeRouterId: 'main' },
         routers: {
           main: {
-            meta: {},
+            meta: { subTitleStatus: 'Main' },
             set: { blocked: false, visited: false, countVisited: 0 },
             actions: [{ meta: { title: 'Inline' }, set: { display: 'show' } }]
           }
@@ -205,7 +205,7 @@ test('the canonical demo scenario satisfies the schema and semantic contract', (
   assert.deepEqual(validateScenario(DEMO_SCRIPT), []);
   const normalized = normalizeScenario(DEMO_SCRIPT);
   assert.equal(normalized.formatVersion, 1);
-  assert.equal(normalized.meta.entryScene, 'scene_garden');
+  assert.equal(normalized.meta.entryScene, 'scene_village_square');
 });
 
 test('global state declarations require values that match their declared type', () => {
@@ -734,4 +734,40 @@ test('CharacterStrategies.mng_stats adds a stat through the shared stat helper',
   });
   assert.equal(persisted.path, 'characters.[id]');
   assert.equal(persisted.params.id, 'npc');
+});
+
+test('action snapshot projection exposes stable identity and engine-evaluated availability', async () => {
+  const scenario = validScenario();
+  scenario.scenes.start.routers.main.actions = [
+    { id: 'readable', meta: { title: 'Read first', desc: 'Details' }, set: { display: 'show', readDesc: true } },
+    { id: 'locked', meta: { title: 'Locked' }, set: { display: 'show' } },
+    { id: 'hidden', meta: { title: 'Hidden' }, set: { display: 'hide' } }
+  ];
+  const engine = new GameEngine();
+  try {
+    await engine.init(scenario);
+    engine.api.engine.state.update('actions.[id]', current => ({ ...(current || {}), display: 'locked' }), { id: 'start_main_locked' });
+    engine.api.engine.state.update('actions.[id]', current => ({ ...(current || {}), readDesc: false }), { id: 'start_main_readable' });
+    let snapshot = engine.protocol.createSnapshot(engine);
+    const actions = snapshot.presentation.actions;
+    assert.deepEqual(actions.map(action => action.id), ['readable', 'locked']);
+    assert.equal(actions[0].key, 'start_main_readable');
+    assert.equal(actions[0].presentation.readRequired, true);
+    assert.equal(actions[0].presentation.read, false);
+    assert.equal(actions[0].availability.reason, 'not_read');
+    assert.equal(actions[0].availability.canTrigger, false);
+    assert.equal(actions[1].presentation.display, 'locked');
+    assert.equal(actions[1].availability.reason, 'locked');
+
+    engine.markAsRead('start_main_readable');
+    snapshot = engine.protocol.createSnapshot(engine);
+    assert.equal(snapshot.presentation.actions[0].presentation.read, true);
+    assert.equal(snapshot.presentation.actions[0].availability.reason, 'available');
+
+    assert.deepEqual(await engine.handleAction('locked', 'start_main_locked'), {
+      success: false, reason: 'locked'
+    });
+  } finally {
+    engine.dispose();
+  }
 });

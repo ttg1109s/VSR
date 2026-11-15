@@ -158,7 +158,7 @@ Snapshot là dữ liệu đồng bộ trạng thái tại một thời điểm. 
 | `revision`, `stateRevision` | Revision trạng thái; `revision` là alias tương thích |
 | `eventSequence` | Vị trí event stream tại lúc snapshot được tạo |
 | `game` | `initialized`, `sceneId`, `routerId`; khi scenario đã load nhưng chưa vào scene, `initialized` là `true` còn `sceneId` và `routerId` là `null` |
-| `presentation` | Projection client-safe của scenario title, scene, router, ancestor-to-current `scenePath`, resolved cover metadata và action display metadata |
+| `presentation` | Projection client-safe của scenario title, scene, router, ancestor-to-current `scenePath`, resolved cover metadata và action projection có `key`, `meta`, `presentation`, `availability`, `runtimeState` |
 | `session` | Chat, password challenge đã sanitize, timer và notification |
 | `state` | Runtime state đã chuyển sang JSON-compatible form và loại bỏ một số runtime-only keys |
 
@@ -200,6 +200,7 @@ Các command sau được liệt kê trong `protocol/README.md`. Payload dưới
 | Command | Payload | Ý nghĩa |
 |---|---|---|
 | `scenario.inspect` | `{ scenario }` | Chuẩn hóa/validate scenario và trả metadata an toàn, không khởi chạy gameplay |
+| `snapshot.get` | `{}` | Lấy snapshot client-safe mới nhất, không thay đổi state/revision |
 | `engine.init` | `{ script, enterScene? }` | Nạp scenario; `enterScene: false` giữ runtime đã load nhưng chưa vào scene (mặc định `true` để tương thích) |
 | `action.trigger` | `{ actionId, uniqueId? }` | Thực thi action trên router đang active |
 | `action.markAsRead` | `{ uniqueId }` | Đánh dấu mô tả action đã đọc |
@@ -229,7 +230,7 @@ Client tuyệt đối không gửi:
 - Password definition hoặc answer authority.
 - Challenge ID tự chế thay cho ID đang active.
 
-Với puzzle, client gửi arrangement theo quy ước original piece indices ở vị trí cuối theo row-major; Engine xác minh dimensions và arrangement.
+Với puzzle, client gửi arrangement theo quy ước original piece indices ở vị trí cuối theo row-major; Engine xác minh dimensions và arrangement. Với `find_way`, client gửi mảng tọa độ `[x,y]`; Engine kiểm tra bounds, adjacency, điểm đầu/cuối, không lặp ô và đối chiếu đường đi đúng. Snapshot chỉ được cung cấp hint công khai như lưới, start, target và puzzle media; không gửi đáp án hoặc đường đi chuẩn.
 
 ## 5. Client Adapter API hiện có
 
@@ -242,6 +243,7 @@ Với puzzle, client gửi arrangement theo quy ước original piece indices �
 - `getSnapshot()`
 - `initialize(scenario)`
 - `dispatch(name, payload)`
+- `refreshSnapshot()` — gọi command read-only `snapshot.get`, không gửi `expectedStateRevision`, cập nhật `JsonStateStore` từ projection mới
 - Các wrapper: `triggerAction`, `markActionRead`, `nextChat`, `selectChatChoice`, `toggleHand`, `useItem`, `enterScene`, `submitPassword`, `pause`, `resume`, `exportSave`, `restoreSave`
 - `dispose()`
 
@@ -419,8 +421,9 @@ Scenario JSON là input để Engine nạp. Nó không phải save data.
 2. Người dùng chọn action.
 3. Integration layer gọi `client.triggerAction(actionId, uniqueId)`.
 4. UI hiển thị pending và khóa thao tác trùng nếu cần.
-5. Xử lý acknowledgement; nếu lỗi revision conflict, đồng bộ snapshot mới trước khi quyết định có cho người dùng thử lại.
-6. Render state mới khi nhận snapshot/event.
+5. Xử lý acknowledgement; nếu lỗi `REVISION_CONFLICT`, gọi `client.refreshSnapshot()` (command read-only `snapshot.get`) để cập nhật snapshot mới.
+6. Không tự retry command có side effect sau revision conflict; hiển thị trạng thái mới và yêu cầu người dùng xác nhận thao tác lại.
+7. Render state mới khi nhận snapshot/event.
 
 Không lấy danh sách action từ scenario source tự parse trong component nếu snapshot đã cung cấp projection phù hợp.
 

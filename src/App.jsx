@@ -138,6 +138,7 @@ export default function App() {
     return (
       <PlayingPage
         snapshot={gameSnapshot}
+        client={runtimeRef.current?.client}
         error={gameError}
         onNavigate={async sceneId => {
           setGameError('');

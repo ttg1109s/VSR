@@ -1,7 +1,8 @@
 import React, { useMemo } from 'react';
 import { Badge, Breadcrumb, MediaFrame } from '../../design-system/index.js';
+import ActionCollection from '../../features/actions/ActionCollection.jsx';
 
-export default function PlayingPage({ snapshot, error = '', onNavigate }) {
+export default function PlayingPage({ snapshot, client, error = '', onNavigate }) {
   const scene = snapshot?.presentation?.scene ?? null;
   const router = snapshot?.presentation?.router ?? null;
   const activeSceneId = snapshot?.game?.sceneId ?? null;
@@ -48,6 +49,12 @@ export default function PlayingPage({ snapshot, error = '', onNavigate }) {
         {router?.meta?.desc && (
           <div className="vsr-text-body">{router.meta.desc}</div>
         )}
+        <ActionCollection
+          actions={snapshot?.presentation?.actions || []}
+          client={client}
+          passwordChallenge={snapshot?.session?.passwordChallenge || null}
+          onError={() => {}}
+        />
         {error && <p className="vsr-text-error" role="alert">{error}</p>}
       </article>
     </main>

@@ -45,6 +45,13 @@
 .vsr-grid--columns-auto {
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
 }
+.vsr-grid--columns-responsive-cards { grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 600px) and (max-width: 839px) {
+  .vsr-grid--columns-responsive-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 840px) {
+  .vsr-grid--columns-responsive-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
 .vsr-grid--columns-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .vsr-grid--columns-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .vsr-grid--gap-1 { gap: var(--vsr-space-1); }

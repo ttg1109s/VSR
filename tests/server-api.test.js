@@ -47,7 +47,7 @@ test('standalone Engine HTTP API accepts JSON commands and returns JSON snapshot
     const snapshot = await snapshotResponse.json();
     assert.equal(snapshot.type, 'snapshot');
     assert.equal(snapshot.game.initialized, true);
-    assert.equal(snapshot.game.sceneId, 'scene_garden');
+    assert.equal(snapshot.game.sceneId, 'scene_village_square');
     assert.equal(Object.hasOwn(snapshot, 'source'), false);
   } finally {
     if (child.exitCode === null) {

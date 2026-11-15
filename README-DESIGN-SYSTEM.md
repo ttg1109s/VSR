@@ -42,7 +42,7 @@ Use `.vsr-page` for a responsive content width and `.vsr-card` only when content
 
 Layout primitives describe reusable behavior rather than a single screen arrangement:
 
-- `Grid` provides responsive columns and token-based gaps. Prefer content-driven `auto` columns when items have variable content; use fixed column variants only when the content relationship requires them.
+- `Grid` provides responsive columns and token-based gaps. Prefer content-driven `auto` columns when items have variable content; use fixed column variants only when the content relationship requires them. `columns="responsive-cards"` provides one column at Compact, two at Medium, and three at Expanded.
 - `DescriptionList` keeps semantic definition-list structure independent from its layout. It supports a vertical list or responsive grid; individual `DescriptionListItem` instances can be stacked, inline, or span the full grid width.
 - Use the same primitives across pages. A page selects composition and variants; it does not define grid tracks, breakpoint rules, item spacing, or typography itself.
 

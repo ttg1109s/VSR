@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { LocalEngineHost } from '../engine/LocalEngineHost.js';
 import { JsonClient } from '../client/adapters/JsonClient.js';
+import { JsonProtocol } from '../protocol/JsonProtocol.js';
 
 test('scenario inspection returns validated metadata without initializing or mutating the Engine', async () => {
   const host = new LocalEngineHost();
@@ -38,19 +39,19 @@ test('browser client consumes JSON snapshots and only the active router projecti
   const client = new JsonClient(host);
   try {
     const snapshot = await client.initialize(JSON.parse(host.getDemoScenario()));
-    assert.equal(snapshot.game.sceneId, 'scene_garden');
-    assert.equal(snapshot.game.routerId, 'square_gate');
+    assert.equal(snapshot.game.sceneId, 'scene_village_square');
+    assert.equal(snapshot.game.routerId, 'router_square_fogbound');
     assert.deepEqual(snapshot.presentation.actions.map(action => action.id), [
-      'act_read_notice', 'act_talk_mai', 'act_enter_well', 'act_travel_inn',
-      'act_travel_chapel', 'act_travel_school', 'act_travel_forest'
+      'action_read_notice', 'action_talk_mai', 'action_enter_well', 'action_travel_inn',
+      'action_travel_chapel', 'action_travel_school', 'action_travel_forest', 'action_decode_broadcast'
     ]);
-    assert.equal(snapshot.presentation.actions.some(action => action.id === 'act_inspect_well'), false);
+    assert.equal(snapshot.presentation.actions.some(action => action.id === 'action_inspect_well'), false);
     assert.equal(Object.hasOwn(snapshot, 'source'), false);
     assert.equal(Object.hasOwn(snapshot.state.session || {}, 'passwordChallenge'), false);
 
     const events = [];
     client.subscribe(message => events.push(message));
-    await client.markActionRead('scene_garden_square_gate_act_read_notice');
+    await client.markActionRead('scene_village_square_router_square_fogbound_action_read_notice');
     assert.ok(events.some(message => message.type === 'state' && message.changedKeys.includes('stateRevision')));
   } finally {
     client.dispose();
@@ -63,7 +64,7 @@ test('all engine-side protocol operations are exposed as JSON commands', async (
   const client = new JsonClient(host);
   try {
     await client.initialize(JSON.parse(host.getDemoScenario()));
-    await client.markActionRead('scene_garden_square_gate_act_read_notice');
+    await client.markActionRead('scene_village_square_router_square_fogbound_action_read_notice');
     await client.useItem('item_not_present'); // no-op domain result, but command is registered
     await client.pause();
     await client.resume();
@@ -81,4 +82,68 @@ test('all engine-side protocol operations are exposed as JSON commands', async (
     client.dispose();
     host.close();
   }
+});
+
+
+test('snapshot.get refreshes the client projection without changing Engine state revision', async () => {
+  const host = new LocalEngineHost();
+  const client = new JsonClient(host);
+  try {
+    await client.initialize(JSON.parse(host.getDemoScenario()));
+    const revisionBefore = host.engine.protocol.stateRevision;
+    const refreshed = await client.refreshSnapshot();
+    assert.equal(refreshed.type, 'snapshot');
+    assert.equal(refreshed.stateRevision, revisionBefore);
+    assert.equal(host.engine.protocol.stateRevision, revisionBefore);
+    assert.equal(refreshed.presentation.actions[0].key, 'scene_village_square_router_square_fogbound_action_read_notice');
+  } finally {
+    client.dispose();
+    host.close();
+  }
+});
+
+
+test('password challenge projection exposes safe hints but never password answers or maze solution', () => {
+  const engine = {
+    state: {
+      sceneId: 'scene-a',
+      scenes: { 'scene-a': { activeRouterId: 'router-a' } },
+      session: { passwordChallenge: { answer: 'must-not-leak' } },
+      sceneTree: {}
+    },
+    src: {
+      meta: { title: 'Test' },
+      scenes: { 'scene-a': { routers: { 'router-a': {} } } },
+      passwords: {
+        find_way: {
+          maze: {
+            desc: 'Find the exit',
+            area: [2, 2],
+            start: [0, 0],
+            target: [1, 1],
+            street: [[0, 0], [1, 0], [1, 1]],
+            value: 'private-answer'
+          }
+        }
+      }
+    },
+    pendingPasswordAction: {
+      challengeId: 'challenge-a', type: 'find_way', passwordId: 'maze',
+      actionId: 'open', uniqueId: 'scene-a_router-a_open',
+      sceneId: 'scene-a', routerId: 'router-a', status: 'active',
+      countTest: 1, retryMax: 3, deadlineAt: null
+    },
+    chatState: {},
+    getEffectiveActions: () => []
+  };
+  const snapshot = new JsonProtocol().createSnapshot(engine);
+  assert.deepEqual(snapshot.session.passwordChallenge.findWay, {
+    area: [2, 2], start: [0, 0], target: [1, 1]
+  });
+  assert.equal(snapshot.session.passwordChallenge.remainingAttempts, 2);
+  assert.equal(snapshot.session.passwordChallenge.description, 'Find the exit');
+  const serialized = JSON.stringify(snapshot);
+  assert.equal(serialized.includes('must-not-leak'), false);
+  assert.equal(serialized.includes('private-answer'), false);
+  assert.equal(serialized.includes('street'), false);
 });
