@@ -105,15 +105,16 @@ export {
 };
 
 export const EffectHandlers = {
-    manage_effect(eff, context, key, list) {
-        const resolvedEff = { ...eff };
-        if (eff.inline) {
-            resolvedEff.inline = {
+    async manage_effect(eff, context, key, list) {
+        if (!eff.inline) throw new TypeError('manage_effect requires an inline configuration.');
+        const resolvedEff = {
+            ...eff,
+            inline: {
                 ...eff.inline,
                 target: resolveValue(eff.inline.target, this)
-            };
-            this.handleManageEffect(resolvedEff.inline, context, key, list);
-        }
+            }
+        };
+        await this.handleManageEffect(resolvedEff.inline, context, key, list);
     },
 
     async cms(eff) {
@@ -124,12 +125,12 @@ export const EffectHandlers = {
         return await handler(this, eff);
     },
 
-    characters(eff) {
+    async characters(eff) {
         const handler = CharacterStrategies[eff.subtype];
         if (typeof handler !== 'function') {
             throw new TypeError(`Unsupported characters subtype: ${String(eff.subtype)}`);
         }
-        handler(this, eff);
+        return await handler(this, eff);
     },
 
     notify(eff) {
