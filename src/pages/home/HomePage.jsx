@@ -27,7 +27,7 @@ export default function HomePage({
           <div className="vsr-grid vsr-grid--columns-2 vsr-grid--gap-3" aria-label="Start an experience">
             <HomeActionCard
               icon="play_circle"
-              title="Run Demo Script"
+              title="Demo Script"
               variant="primary"
               onClick={onRunDemo}
               disabled={Boolean(busy)}
