@@ -64,9 +64,9 @@ function openMetadata(scenario, sourceName, { updateHistory = true } = {}) {
   const meta=scenario.meta||{}, scenes=Object.keys(scenario.scenes||{}).length, characters=Object.keys(scenario.characters||{}).length, items=Object.keys(scenario.itemInfo||{}).length;
   const tags=Array.isArray(meta.tags)?meta.tags:[];
   const coverValue=meta.cover?.url || (typeof meta.cover === 'string' ? meta.cover : '');
-  const coverUrl=typeof coverValue==='string' && /^(https?:|\/|\.\/)/i.test(coverValue) ? coverValue : '';
+  const coverUrl=typeof coverValue==='string' && coverValue.trim() ? coverValue.trim() : '';
   const cover=coverUrl
-    ? `<div class="metadata-cover has-cover" style="--cover-ratio:${escapeHtml(meta.cover?.ratio || '16:9')}"><img src="${escapeHtml(coverUrl)}" alt="" onerror="this.parentElement.classList.remove('has-cover');this.remove()"><span class="cover-scrim"></span><span class="cover-caption"><span class="material-symbols-rounded">image</span> SCENARIO COVER</span></div>`
+    ? `<div class="metadata-cover has-cover" style="--cover-ratio:${escapeHtml(String(meta.cover?.ratio || '16:9').replace(':',' / '))}"><img src="${escapeHtml(coverUrl)}" alt=""><span class="cover-scrim"></span><span class="cover-caption"><span class="material-symbols-rounded">image</span> SCENARIO COVER</span></div>`
     : `<div class="metadata-cover cover-placeholder"><span class="material-symbols-rounded">auto_stories</span><span>SCENARIO</span></div>`;
   const facts=[['person', 'Tác giả',meta.writer],['apartment', 'Studio',meta.studio],['translate','Ngôn ngữ',meta.language],['signal_cellular_alt','Độ khó',meta.difficulty],['verified_user','Độ tuổi',meta.ageRating],['sell','Phiên bản',meta.version]].filter(([, ,value])=>value);
   app.innerHTML = `<main class="detail-shell native-shell">
@@ -92,6 +92,7 @@ function openMetadata(scenario, sourceName, { updateHistory = true } = {}) {
       </div>
     </section>
   </main>`;
+  $('.metadata-cover img')?.addEventListener('error', () => { const el=$('.metadata-cover'); if(el){ el.classList.remove('has-cover'); el.classList.add('cover-placeholder'); el.innerHTML='<span class="material-symbols-rounded">broken_image</span><span>KHÔNG CÓ ẢNH BÌA</span>'; } });
   $('.brand[data-home]')?.addEventListener('click', e => { e.preventDefault(); navigate('home'); renderHome(); });
   $('#back-home').addEventListener('click', () => { navigate('home'); renderHome(); });
   $('#detail-library').addEventListener('click', () => { navigate('home'); renderHome(); });
