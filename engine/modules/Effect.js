@@ -15,7 +15,9 @@ export const EffectSystem = {
 
         // Resolve the active source list for every schema-defined effect scope.
         // Chat and item effects do not necessarily have a scene/router context.
-        if (context.chatId && context.blockId && context.choiceId !== undefined && context.choiceId !== null) {
+        if (context.chatId !== undefined && context.chatId !== null &&
+            context.blockId !== undefined && context.blockId !== null &&
+            context.choiceId !== undefined && context.choiceId !== null) {
             listKey = this.generateBanKey('chat', {
                 chatId: context.chatId,
                 blockId: context.blockId,
