@@ -6,7 +6,9 @@ export default function HomeActionCard({
   title,
   description,
   variant = 'primary',
-  onClick
+  onClick,
+  disabled = false,
+  loading = false
 }) {
   return (
     <Button
@@ -15,6 +17,8 @@ export default function HomeActionCard({
       size="lg"
       leadingIcon={<span className="vsr-icon" aria-hidden="true">{icon}</span>}
       onClick={onClick}
+      disabled={disabled}
+      loading={loading}
     >
       <span className="home-action-card__content">
         <span className="home-action-card__title">{title}</span>
