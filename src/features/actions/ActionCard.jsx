@@ -45,8 +45,9 @@ function ActionCard({ action, pending = false, interactionBlocked = false, passw
   const deadline = seconds(passwordChallenge?.deadlineAt, clock);
   const thumbnail = meta.thumbnail || meta.cover;
   const ready = !coolingDown && (reason === 'available' || reason === 'password_required') && availability.canTrigger === true && !locked;
-  const statusLabel = pending ? 'Processing' : locked ? 'Locked' : coolingDown ? 'Wait' : (ready ? 'Ready' : (REASONS[reason] || 'Unknown'));
-  const statusTone = pending ? 'info' : locked ? 'danger' : (ready ? 'success' : (REASON_TONES[reason] || 'neutral'));
+  const processing = pending || (interactionBlocked && reason !== 'challenge_active');
+  const statusLabel = processing ? 'Processing' : locked ? 'Locked' : coolingDown ? 'Wait' : (ready ? 'Ready' : (REASONS[reason] || 'Unknown'));
+  const statusTone = processing ? 'info' : locked ? 'danger' : (ready ? 'success' : (REASON_TONES[reason] || 'neutral'));
 
   useEffect(() => {
     const deadlines = [availability.cooldownUntil, passwordChallenge?.deadlineAt].filter(Number.isFinite);
