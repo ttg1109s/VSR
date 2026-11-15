@@ -27,8 +27,7 @@
     "dev": "vite --host 0.0.0.0",
     "build": "vite build --base=./",
     "preview": "vite preview --host 0.0.0.0",
-    "server": "node server/index.js",
-    "dev:full": "npm run server & npm run dev"
+    "server": "node server/index.js"
   },
   "devDependencies": {
     "acorn": "^8.15.0",
