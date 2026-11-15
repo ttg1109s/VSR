@@ -99,9 +99,10 @@ export class RegionRenderer {
   }
 
   handleEvent(event) {
-    const name = event?.event || '';
+    const rawName = event?.event || '';
+    const name = rawName.startsWith('presentation.') ? rawName.slice('presentation.'.length) : rawName;
     const payload = event?.payload || {};
-    if (name.startsWith('presentation.notification.')) {
+    if (name.startsWith('notification.')) {
       const n = payload.notification;
       if (name.endsWith('.add') || name.endsWith('.alert') || name.endsWith('.updated')) {
         if (n) this.overlayState.notifications = [n, ...this.overlayState.notifications.filter(item => item.id !== n.id)].slice(0,5);
