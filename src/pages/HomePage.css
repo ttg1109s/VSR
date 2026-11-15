@@ -1,0 +1,19 @@
+/* Homepage: minimal, pure-white entry point */
+:root{background:#fff;--paper:#fff}
+html,body,#app,.app-frame{background:#fff}
+.home-topbar{background:#fff;border-bottom:1px solid #ededed}
+.home-page{min-height:calc(100vh - 76px);display:grid;place-items:center;padding:48px 24px;background:#fff}
+.home-content{width:min(100%,560px);display:flex;flex-direction:column;align-items:center;text-align:center}
+.home-eyebrow{font:10px var(--mono);letter-spacing:.22em;color:#999;margin-bottom:30px}
+.home-emblem{width:66px;height:66px;display:grid;place-items:center;border:1px solid #e6e6e6;border-radius:18px;color:#171717;font:800 38px var(--display);letter-spacing:-.1em;background:#fff}
+.home-content h1{font:800 clamp(52px,9vw,76px)/1 var(--display);letter-spacing:-.09em;color:#111;margin:24px 0 10px}
+.home-content h1 span{font:400 .35em var(--mono);letter-spacing:0;color:#b8b8b8;margin-left:8px;vertical-align:middle}
+.home-description{font-size:14px;line-height:1.8;color:#777;margin:0;max-width:360px}
+.home-actions{width:min(100%,360px);display:grid;grid-template-columns:1fr;gap:11px;margin-top:34px}
+.home-actions .button{min-height:50px;width:100%;justify-content:center;border:1px solid #dedede;border-radius:7px;background:#fff;color:#222;font-size:13px}
+.home-actions .button:hover{border-color:#999;background:#fafafa;transform:translateY(-1px)}
+.home-actions .button-primary{background:#111;color:#fff;border-color:#111}
+.home-actions .button-primary:hover{background:#303030;border-color:#303030}
+.home-actions .button-primary .icon{color:#fff}
+.home-footnote{margin-top:42px;font:9px var(--mono);letter-spacing:.14em;color:#b0b0b0}
+@media(max-width:600px){.home-page{min-height:calc(100vh - 64px);padding:32px 22px}.home-topbar{height:64px;padding:0 20px}.home-topbar .status{font-size:8px}.home-emblem{width:58px;height:58px;border-radius:15px}.home-description{font-size:13px}}
