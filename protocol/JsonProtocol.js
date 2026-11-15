@@ -20,11 +20,64 @@ export class JsonProtocol{
  }
  subscribe(fn){if(typeof fn!=='function')throw new TypeError('Protocol listener must be a function.');this.listeners.add(fn);return()=>this.listeners.delete(fn);}
  registerCommand(name,fn){if(typeof name!=='string'||!name.trim()||typeof fn!=='function')throw new TypeError('Invalid command registration.');this.commandHandlers.set(name,fn);return()=>this.commandHandlers.delete(name);}
- createSnapshot(engine,{includeSource=false}={}){
+ createSnapshot(engine){
   if(!engine?.state)throw new Error('Engine state is not initialized.');
-  const state={};for(const k of Object.keys(engine.state)){if(RUNTIME_ONLY_STATE_KEYS.has(k))continue;const v=cloneJsonValue(engine.state[k]);if(v!==undefined)state[k]=v;}
-  const snapshot={protocol:'vsr',protocolVersion:this.protocolVersion,type:'snapshot',engineId:this.engineId,revision:this.stateRevision,stateRevision:this.stateRevision,eventSequence:this.eventSequence,createdAt:new Date().toISOString(),game:{initialized:!!engine.src,sceneId:engine.state.sceneId||null,routerId:engine.state.sceneId?(engine.state.scenes?.[engine.state.sceneId]?.activeRouterId||null):null},state};
-  if(includeSource&&engine.src)snapshot.source=cloneJsonValue(engine.src);return snapshot;
+  const state={};
+  for(const k of Object.keys(engine.state)){
+   if(RUNTIME_ONLY_STATE_KEYS.has(k))continue;
+   const v=cloneJsonValue(engine.state[k]);if(v!==undefined)state[k]=v;
+  }
+  // Session secrets and engine-only internals never cross the client boundary.
+  if(state.session)delete state.session.passwordChallenge;
+  const sceneId=engine.state.sceneId||null;
+  const routerId=sceneId?(engine.state.scenes?.[sceneId]?.activeRouterId||null):null;
+  const sourceScene=sceneId?engine.src?.scenes?.[sceneId]||null:null;
+  const sourceRouter=sourceScene&&routerId?sourceScene.routers?.[routerId]||null:null;
+  const safeMeta=meta=>({
+   title:meta?.title,desc:meta?.desc,description:meta?.description,
+   subTitleStatus:meta?.subTitleStatus,thumb:meta?.thumb
+  });
+  const actions=sourceScene&&sourceRouter&&typeof engine.getEffectiveActions==='function'
+   ?engine.getEffectiveActions(sceneId,routerId).map(action=>{
+    const key=`${sceneId}_${routerId}_${action.id}`;
+    const runtime=engine.state.actions?.[key]||{};
+    return{id:action.id,title:action.title,name:action.name,meta:safeMeta(action.meta||{}),
+     runtimeState:{display:runtime.display??action.set?.display??'show',readDesc:runtime.readDesc===true}};
+   }).filter(action=>action.runtimeState.display!=='hide')
+   :[];
+  const challenge=engine.pendingPasswordAction;
+  const session={
+   chat:{
+    active:!!engine.chatState?.active,blocking:!!engine.chatState?.blocking,
+    id:engine.chatState?.id??null,blockId:engine.chatState?.blockId??null,
+    index:Number(engine.chatState?.index)||0,
+    history:cloneJsonValue(engine.state.chatHistory||{})
+   },
+   passwordChallenge:challenge?{
+    challengeId:challenge.challengeId,type:challenge.type,actionId:challenge.actionId,
+    uniqueId:challenge.uniqueId,sceneId:challenge.sceneId,routerId:challenge.routerId,
+    status:challenge.status,countTest:challenge.countTest,retryMax:challenge.retryMax,
+    deadlineAt:challenge.deadlineAt
+   }:null,
+   notifications:{
+    pending:engine.notifications?.getPending?.()||[],
+    history:engine.notifications?.getHistory?.({limit:50})||[]
+   }
+  };
+  const snapshot={
+   protocol:'vsr',protocolVersion:this.protocolVersion,type:'snapshot',engineId:this.engineId,
+   revision:this.stateRevision,stateRevision:this.stateRevision,eventSequence:this.eventSequence,
+   createdAt:new Date().toISOString(),
+   game:{initialized:!!engine.src,sceneId,routerId},
+   presentation:{
+    scenarioTitle:engine.src?.meta?.title||'VSR',
+    scene:sourceScene?{id:sceneId,meta:safeMeta(sourceScene.meta||{}),title:sourceScene.title||null}:null,
+    router:sourceRouter?{id:routerId,meta:safeMeta(sourceRouter.meta||{})}:null,
+    actions
+   },
+   session,state
+  };
+  return snapshot;
  }
  publish(type,payload={}){
   if(typeof type!=='string'||!type.trim()||!payload||typeof payload!=='object'||Array.isArray(payload))throw new TypeError('Invalid event envelope.');
