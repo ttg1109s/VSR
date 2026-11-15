@@ -1,6 +1,7 @@
 import { GameEngine, DEMO_SCRIPT, normalizeScenario } from '../engine/index.js';
 import './styles.css';
 import { EngineAdapter } from './adapters/EngineAdapter.js';
+import { PresentationAdapter } from './adapters/PresentationAdapter.js';
 import { GameplayRenderer } from './renderer/GameplayRenderer.js';
 
 const $ = (selector) => document.querySelector(selector);
@@ -12,6 +13,7 @@ const state = {
   scenario: null,
   scenarioName: '',
   engine: null,
+  engineAdapter: null,
   adapter: null,
   gameplayRenderer: null,
   snapshot: null,
@@ -122,6 +124,7 @@ async function startGame() {
   renderLoading('Đang kiểm tra và nạp kịch bản…');
   let engine;
   let adapter;
+  let engineAdapter;
   try {
     // Paint the loading screen before validation and engine initialization.
     await new Promise(resolve => requestAnimationFrame(resolve));
@@ -129,13 +132,15 @@ async function startGame() {
     $('#loading-message').textContent = 'Kịch bản hợp lệ. Đang khởi tạo Engine và entry scene…';
     await new Promise(resolve => requestAnimationFrame(resolve));
     engine = new GameEngine();
-    adapter = new EngineAdapter(engine);
-    await adapter.initialize(normalized);
+    engineAdapter = new EngineAdapter(engine);
+    adapter = new PresentationAdapter(engineAdapter);
+    await engineAdapter.initialize(normalized);
     const viewModel = adapter.getViewModel();
     if (!viewModel.sceneId || !viewModel.routerId || !viewModel.scene || !viewModel.router) {
       throw new Error('Engine chưa tạo được trạng thái Scene/Router khởi đầu hợp lệ.');
     }
     state.engine = engine;
+    state.engineAdapter = engineAdapter;
     state.adapter = adapter;
     state.scenario = normalized;
     state.snapshot = engine.protocol.createSnapshot(engine);
@@ -143,6 +148,7 @@ async function startGame() {
     renderGameplay();
   } catch (error) {
     adapter?.dispose?.();
+    engineAdapter?.dispose?.();
     engine?.dispose?.();
     state.loading = false;
     renderMetadataError(error);
@@ -171,9 +177,11 @@ function renderGameplay() {
 function exitGame() {
   state.gameplayRenderer?.dispose?.();
   state.adapter?.dispose?.();
+  state.engineAdapter?.dispose?.();
   state.engine?.dispose?.();
   state.gameplayRenderer = null;
   state.adapter = null;
+  state.engineAdapter = null;
   state.engine = null;
   state.snapshot = null;
   renderHome();
