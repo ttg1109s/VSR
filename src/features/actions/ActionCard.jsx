@@ -18,7 +18,7 @@ const REASON_TONES = {
 };
 const seconds = (until, now) => Number.isFinite(until) ? Math.max(0, Math.ceil((until - now) / 1000)) : 0;
 
-function ActionCard({ action, pending = false, passwordChallenge = null, feedback = '', onTrigger, onMarkRead, onSubmitPassword, onCancelPassword }) {
+function ActionCard({ action, pending = false, passwordChallenge = null, feedback = '', onTrigger, onMarkRead, onSubmitPassword, onCancelPassword, onRefreshSnapshot }) {
   const [input, setInput] = useState('');
   const [error, setError] = useState('');
   const [challengeFeedback, setChallengeFeedback] = useState('');
@@ -54,6 +54,15 @@ function ActionCard({ action, pending = false, passwordChallenge = null, feedbac
   }, [availability.cooldownUntil, passwordChallenge?.deadlineAt]);
 
   useEffect(() => {
+    if (reason !== 'cooldown' || !Number.isFinite(availability.cooldownUntil)) return undefined;
+    const timer = setTimeout(() => {
+      setClock(Date.now());
+      Promise.resolve(onRefreshSnapshot?.()).catch(() => {});
+    }, Math.max(0, availability.cooldownUntil - Date.now()) + 50);
+    return () => clearTimeout(timer);
+  }, [reason, availability.cooldownUntil, onRefreshSnapshot]);
+
+  useEffect(() => {
     setInput('');
     setError('');
     setChallengeFeedback('');
@@ -72,7 +81,10 @@ function ActionCard({ action, pending = false, passwordChallenge = null, feedbac
         setInput('');
       } else if (result?.reason === 'expired') setError('Thử thách đã hết thời gian.');
       else if (result?.reason === 'exhausted') setError('Đã hết số lượt thử.');
-      else if (result?.reason === 'revision_conflict') setError('Trạng thái vừa thay đổi. Hãy kiểm tra lại thử thách.');
+      else if (result?.reason === 'revision_conflict') setError(result.message || 'Trạng thái vừa thay đổi. Hãy kiểm tra lại thử thách.');
+      else if (result?.error || result?.message) setError(result.message || 'Không thể xác thực thử thách.');
+      else if (result?.success === false && !result?.retry) setError('Engine không chấp nhận câu trả lời. Hãy kiểm tra lại thử thách.');
+      else if (!result) setError('Không nhận được phản hồi xác thực từ Engine.');
     } catch (cause) {
       setError(cause?.message || 'Không thể gửi câu trả lời.');
     } finally {
@@ -105,11 +117,17 @@ function ActionCard({ action, pending = false, passwordChallenge = null, feedbac
     if (read || !readRequired) readRequestRef.current = false;
   }, [action.key, read, readRequired]);
 
-  // The Engine's reason precedence lets the UI identify confirmed checks without re-evaluating requirements.
-  const permissionPassed = ['available', 'cooldown', 'requirement_failed', 'target_locked', 'password_required'].includes(reason);
-  const requirementPassed = ['available', 'cooldown', 'target_locked', 'password_required'].includes(reason);
-  const conditionText = requirementPassed ? 'Điều kiện thực hiện đã đáp ứng' : reason === 'requirement_failed' ? 'Điều kiện thực hiện chưa đáp ứng' : 'Chưa xác định điều kiện thực hiện';
-  const permissionText = permissionPassed ? 'Nhân vật có quyền thực hiện' : reason === 'permission_denied' ? 'Nhân vật không có quyền thực hiện' : 'Chưa xác định quyền thực hiện';
+  const checks = availability.checks || {};
+  const permissionPassed = checks.permission === 'passed';
+  const permissionFailed = checks.permission === 'failed';
+  const requirementPassed = checks.requirement === 'passed' || checks.requirement === 'not_required';
+  const requirementFailed = checks.requirement === 'failed';
+  const conditionText = requirementPassed
+    ? 'Điều kiện thực hiện đã đáp ứng'
+    : requirementFailed ? 'Điều kiện thực hiện chưa đáp ứng' : 'Chưa xác định điều kiện thực hiện';
+  const permissionText = permissionPassed
+    ? 'Nhân vật có quyền thực hiện'
+    : permissionFailed ? 'Nhân vật không có quyền thực hiện' : 'Chưa xác định quyền thực hiện';
 
   return <article className="vsr-card vsr-action-card" data-action-key={action.key} aria-busy={pending || undefined}>
     <div className="vsr-action-card__heading">
@@ -142,11 +160,11 @@ function ActionCard({ action, pending = false, passwordChallenge = null, feedbac
     <div className="vsr-action-card__section vsr-action-card__requirements">
       <h4>Điều kiện và quyền</h4>
       <div className="vsr-action-card__requirement-state">
-        <span className={'vsr-action-card__state-icon ' + (requirementPassed ? 'is-success' : 'is-muted')} aria-hidden="true">{requirementPassed ? 'check_circle' : 'info'}</span>
+        <span className={'vsr-action-card__state-icon ' + (requirementPassed ? 'is-success' : requirementFailed ? 'is-error' : 'is-muted')} aria-hidden="true">{requirementPassed ? 'check_circle' : 'info'}</span>
         <span>{conditionText}</span>
       </div>
       <div className="vsr-action-card__requirement-state">
-        <span className={'vsr-action-card__state-icon vsr-action-card__permission-icon ' + (permissionPassed ? 'is-success' : 'is-muted')} aria-hidden="true">{permissionPassed ? 'verified_user' : 'shield'}</span>
+        <span className={'vsr-action-card__state-icon vsr-action-card__permission-icon ' + (permissionPassed ? 'is-success' : permissionFailed ? 'is-error' : 'is-muted')} aria-hidden="true">{permissionPassed ? 'verified_user' : 'shield'}</span>
         <span>{permissionText}</span>
       </div>
       {reason === 'cooldown' && <div className="vsr-action-card__cooldown" role="timer">Thời gian còn lại: {cooldown} giây</div>}
