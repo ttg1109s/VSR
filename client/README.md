@@ -1,79 +1,51 @@
-# VSR Client: JSON-driven rendering
+# VSR Client: Browser-native JSON runtime
 
-The browser Client is a standalone JavaScript presentation layer. It does not import, instantiate, or retain a reference to `GameEngine`. It communicates with the separate Node.js Engine service through JSON over HTTP and Server-Sent Events (SSE).
+The VSR browser application runs the gameplay Engine in a dedicated Web Worker. The UI thread communicates with that Worker exclusively through the existing JSON Protocol; it does not import, instantiate, or retain a reference to `GameEngine`.
 
 ## Runtime architecture
 
 ```text
-Browser
-  ├── HttpJsonTransport
+Browser Main Thread
+  ├── Homescreen / Scenario Info / Loading
+  ├── WorkerJsonTransport
   ├── JsonClient
   ├── JsonStateStore
   └── RegionRenderer
-       ├── Scene region
-       ├── Router region
-       ├── Actions region
-       ├── Footer region
-       └── Overlay region
-             ⇅ JSON commands / snapshots / events
-Node.js Engine Service
-  ├── HTTP + SSE server
+          ⇅ JSON commands / snapshots / events
+Dedicated Web Worker
+  ├── GameEngine
   ├── JsonProtocol
-  └── GameEngine
+  └── Domain systems / timers / save state
 ```
 
-Only `server/index.js` and the test-only `host/LocalEngineHost.js` import `GameEngine`. The browser build imports neither. The local Vite proxy forwards `/api` to the Engine service on port 3001.
+The demo scenario is a static JSON asset under `public/scenarios`. GitHub Pages serves the UI, scenario asset, and generated Worker bundle as static files; no Node.js API server is required at runtime.
 
 ## Run locally
 
-Start the Engine API and Vite Client in separate terminals:
-
 ```sh
-npm run server
+npm install
 npm run dev
 ```
 
-The Engine API binds to `127.0.0.1` by default; configure `VSR_HOST` and `VSR_PORT` to change that.
+The Node.js requirement applies to the development toolchain, schema generation, and test runner. It is not a runtime server requirement for the deployed game.
 
-## React-inspired, without React
+## JSON boundary and rendering
 
-The implementation borrows the architectural ideas, not the framework:
 - A JSON snapshot is the source of truth for rendered state.
 - `JsonStateStore` publishes immutable snapshot updates and detects changed top-level paths.
-- The renderer is split into independently updated regions.
-- Each region compares only the JSON projection it consumes and updates its own DOM subtree when that projection changes.
-- Event listeners are scoped to the affected region; unrelated regions are not rebuilt.
+- Scene, Router, Actions, Footer, and Overlay are independently updated DOM regions.
+- Commands carry an idempotent command ID and expected state revision.
+- The Client waits for Engine acknowledgements and resulting JSON snapshots; it does not optimistically mutate gameplay state.
+- The Engine runs off the UI thread, so synchronous gameplay computation does not block DOM interaction.
 
-There is no virtual DOM, JSX, hooks, React dependency, or framework reconciliation runtime. This is a small explicit state-store and region reconciliation layer in native JavaScript.
+There is no React dependency, virtual DOM, JSX, or framework reconciliation runtime.
 
-## Snapshot contract
+## Trust and security boundary
 
-The protocol snapshot contains:
-- `game`: initialized flag and current scene/router IDs.
-- `presentation`: client-safe current scene, active router, active-router actions, and scenario title.
-- `state`: JSON-compatible runtime state. Password challenge internals are excluded from `state.session`.
-- `session`: chat state/history, sanitized active password challenge, timer state, and notification projection.
+Browser-native execution means scenario data, password definitions, answers, and executable game logic must be treated as public to the player. A dedicated Worker provides execution isolation from the UI thread, not confidentiality or tamper resistance. It is suitable for single-player scenarios whose content is intentionally shipped to the client.
 
-The snapshot does not include `engine.src` or the full scenario. Action projections contain display metadata and runtime display/read flags, not executable effects, requirements, or password definitions. Password answers remain Engine-side.
+Do not use this runtime for authoritative multiplayer, competitive scoring, paid unlock verification, or puzzles whose answers must remain secret. Those features require a trusted backend that validates commands and keeps protected scenario logic server-side.
 
-## Commands
+## Optional Node.js API
 
-The Client sends JSON commands for:
-- `action.trigger`, `action.markAsRead`
-- `chat.next`, `chat.selectChoice`
-- `inventory.toggleHand`, `item.use`
-- `scene.enter`
-- `password.submit`
-- `engine.pause`, `engine.resume`
-- `save.export`, `save.restore`
-- `notification.read`, `notification.dismiss`
-
-Initialization is also sent as `engine.init` with the scenario JSON. Commands carry an idempotent command ID and `expectedStateRevision`. The Client does not optimistically mutate gameplay state; it waits for the Engine acknowledgement and resulting JSON snapshot.
-
-## Rendering lifecycle
-
-Scene, Router, Actions, Footer, and Overlays are separate DOM regions. Scene and Router update only when their presentation projection changes. Actions update when the active router or action projection/runtime state changes. Overlays update for chat/password/notification/timer events or session projection changes. An unrelated state update does not replace the gameplay root, preserving focus and scroll in unaffected regions.
-
-## Trust boundary
-
-The browser sends scenario JSON to the local Engine API during demo/file initialization, but it never receives the Engine instance or scenario source back in a snapshot. The default API binds to localhost for development and does not provide production authentication. Do not expose it publicly as-is. A production deployment must add authenticated transport context, enable protocol command authorization, apply request limits/rate limits, and keep scenario/password verification on the trusted server.
+`server/index.js` remains available as a separate server-side host for future authoritative deployments and API tests. It is not used by the Browser-native client or required by GitHub Pages.

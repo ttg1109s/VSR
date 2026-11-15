@@ -1,4 +1,4 @@
-import { HttpJsonTransport } from './adapters/HttpJsonTransport.js';
+import { WorkerJsonTransport } from './adapters/WorkerJsonTransport.js';
 import { JsonClient } from './adapters/JsonClient.js';
 import { RegionRenderer } from './renderer/RegionRenderer.js';
 import { DebugConsole } from './debug/DebugConsole.js';
@@ -6,7 +6,7 @@ import { DebugConsole } from './debug/DebugConsole.js';
 const $ = selector => document.querySelector(selector);
 const app = $('#app');
 const fileInput = $('#scenario-file');
-const state = { screen:'home', scenario:null, scenarioName:'', transport:null, client:null, renderer:null, loading:false, health:'checking' };
+const state = { screen:'home', scenario:null, scenarioName:'', transport:null, client:null, renderer:null, loading:false, health:'ready' };
 window.__VSR_APP_STATE__ = state;
 const debug = new DebugConsole($('#debug-root'));
 const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -22,25 +22,21 @@ function navigate(screen, { replace = false } = {}) {
 }
 function renderHome() {
   state.screen='home';
-  app.innerHTML = `<main class="home-shell"><header class="topbar"><a class="brand" href="/" data-home><span class="brand-mark">V</span><span>VSR<span class="brand-muted"> / PLAY</span></span></a><nav class="home-nav"><a href="#library">LIBRARY</a><a href="#about">ABOUT</a></nav><span class="engine-status"><i class="${state.health === 'online' ? 'is-online' : ''}"></i> ${state.health === 'online' ? 'ENGINE ONLINE' : state.health === 'offline' ? 'ENGINE OFFLINE' : 'CHECKING ENGINE'}</span></header>
+  app.innerHTML = `<main class="home-shell"><header class="topbar"><a class="brand" href="/" data-home><span class="brand-mark">V</span><span>VSR<span class="brand-muted"> / PLAY</span></span></a><nav class="home-nav"><a href="#library">LIBRARY</a><a href="#about">ABOUT</a></nav><span class="engine-status"><i class="${state.health === 'ready' ? 'is-online' : ''}"></i> ${state.health === 'ready' ? 'LOCAL ENGINE READY' : 'ENGINE UNAVAILABLE'}</span></header>
   <section class="hero"><div class="eyebrow"><span class="eyebrow-line"></span> VISUAL STORY RUNTIME</div><h1>Stories begin<br><em>somewhere.</em></h1><p class="hero-copy">Một không gian để bước vào những thế giới được tạo nên từ kịch bản tương tác.</p></section>
   <section class="launch-panel" id="library"><div class="panel-heading"><span>SCENARIO LIBRARY</span><span class="panel-index">01 / FEATURED</span></div>
   <button class="demo-card" id="demo-play"><span class="demo-art" aria-hidden="true"><span class="moon"></span><span class="ridge ridge-back"></span><span class="ridge ridge-front"></span><span class="mist"></span></span><span class="demo-info"><span class="card-kicker">FEATURED DEMO</span><strong>THE SILENT VILLAGE</strong><span>Ngôi Làng Không Tiếng Động</span></span><span class="round-arrow">↗</span></button>
   <div class="or-divider"><span></span> IMPORT A SCENARIO <span></span></div><button class="load-card" id="load-json"><span class="upload-icon">↑</span><span><strong>Load JSON</strong><small>Nạp kịch bản VSR từ thiết bị</small></span><span class="load-chevron">＋</span></button><p class="file-hint">Hỗ trợ tệp kịch bản định dạng .json</p></section>
-  <footer class="home-footer" id="about"><span>VSR ENGINE</span><span>JSON-DRIVEN CLIENT · SPA</span></footer></main>`;
+  <footer class="home-footer" id="about"><span>VSR ENGINE</span><span>BROWSER-NATIVE ENGINE · WORKER</span></footer></main>`;
   $('#demo-play').addEventListener('click', async () => {
-    const transport = new HttpJsonTransport();
-    try { openMetadata(await transport.getDemoScenario(), 'Demo · THE SILENT VILLAGE'); }
-    catch(error) { debug.record('error', error.message, error.stack); showToast(error); }
-    finally { transport.close(); }
+    try {
+      const response = await fetch(`${import.meta.env.BASE_URL}scenarios/the-silent-village.json`);
+      if (!response.ok) throw new Error(`Không thể tải demo scenario (${response.status}).`);
+      openMetadata(await response.json(), 'Demo · THE SILENT VILLAGE');
+    } catch(error) { debug.record('error', error.message, error.stack); showToast(error); }
   });
   $('#load-json').addEventListener('click', () => fileInput.click());
   $('[data-home]')?.addEventListener('click', e => { e.preventDefault(); navigate('home'); renderHome(); });
-}
-async function checkHealth() {
-  try { const response = await fetch('/api/health'); state.health = response.ok ? 'online' : 'offline'; }
-  catch { state.health = 'offline'; }
-  if (state.screen === 'home') renderHome();
 }
 function openMetadata(scenario, sourceName, { updateHistory = true } = {}) {
   if (!scenario || typeof scenario !== 'object' || !scenario.scenes || typeof scenario.scenes !== 'object') {
@@ -69,7 +65,10 @@ async function startGame({ fromHistory = false } = {}) {
   state.loading=true; navigate('loading',{replace:fromHistory}); renderLoading('Đang kiểm tra và nạp kịch bản…');
   try {
     await new Promise(resolve=>requestAnimationFrame(resolve));
-    const transport=new HttpJsonTransport(); const client=new JsonClient(transport);
+    const transport=new WorkerJsonTransport(); const client=new JsonClient(transport);
+    client.subscribe(message => {
+      if (message.type === 'transport.error') debug.record('error', message.error?.message || 'Engine Worker failed.');
+    });
     state.transport=transport; state.client=client;
     $('#loading-message').textContent='Kịch bản đang được Engine kiểm tra. Đang khởi tạo phiên chơi…';
     await client.initialize(state.scenario);
@@ -116,4 +115,3 @@ window.addEventListener('popstate', event => {
   else { navigate('home',{replace:true}); renderHome(); }
 });
 renderHome();
-checkHealth();

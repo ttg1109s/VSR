@@ -7,6 +7,14 @@ VSR is a headless game engine. The legacy browser UI, DOM renderer, visual-effec
 - Node.js 20 or newer.
 - No runtime UI framework or browser DOM is required.
 
+## Browser-native runtime
+
+The VSR web client runs `GameEngine` inside a dedicated module Web Worker. The main thread uses `WorkerJsonTransport` and `JsonClient`; it receives only JSON acknowledgements, snapshots, and protocol events. The Worker keeps gameplay computation off the UI thread. The demo scenario is served as a static JSON asset, so GitHub Pages can host the complete single-player experience without a Node.js API process.
+
+Run the client locally with `npm run dev`. Node.js 20+ remains required for Vite, schema-generation scripts, and the Node.js test suite; it is not required as a deployed gameplay server. The optional `server/index.js` remains available for future trusted/server-authoritative deployments.
+
+**Security boundary:** Browser-native execution exposes the shipped scenario, password definitions, answers, and game logic to the player. A Web Worker isolates execution from the UI thread but does not provide secrecy or tamper resistance. Use a trusted backend for authoritative multiplayer, competitive scoring, protected unlocks, or puzzles whose answers must remain secret.
+
 ## Package entry points
 
 The package is private and exposes these entry points:
