@@ -96,6 +96,9 @@
   align-items: baseline;
   gap: var(--vsr-space-3);
 }
+.vsr-description-list__row--inline .vsr-description-list__detail {
+  text-align: end;
+}
 .vsr-description-list__row--span-full { grid-column: 1 / -1; }
 .vsr-description-list__term,
 .vsr-description-list__detail { min-width: 0; margin: 0; }
