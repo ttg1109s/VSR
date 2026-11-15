@@ -28,6 +28,12 @@
     .item,.choice{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line)}.item:last-child,.choice:last-child{border:0}
     .log{height:310px;overflow:auto;display:flex;flex-direction:column;gap:7px}.event{padding:8px;background:#0e1520;border:1px solid var(--line);border-radius:8px;overflow-wrap:anywhere}.event time{display:block;color:var(--muted);font-size:11px}.event pre{white-space:pre-wrap;margin:5px 0 0;font:11px/1.4 ui-monospace,monospace;color:#b9c7d8}
     .chatbox{background:#0e1520;border:1px solid var(--line);border-radius:9px;padding:12px;min-height:72px;margin-bottom:8px;white-space:pre-wrap}.empty{color:var(--muted);padding:12px 0}.toolbar{display:flex;gap:7px;flex-wrap:wrap}.toolbar button{font-size:12px}
+    .toast-stack{position:fixed;top:76px;right:18px;z-index:8;width:min(380px,calc(100vw - 36px));display:grid;gap:8px;pointer-events:none}
+    .toast{pointer-events:auto;background:#172232;border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:10px;padding:11px 12px;box-shadow:0 10px 30px #0008;animation:toast-in .16s ease-out}
+    .toast.success{border-left-color:var(--good)}.toast.warning{border-left-color:var(--warn)}.toast.danger{border-left-color:var(--bad)}.toast.special{border-left-color:#c49bff}
+    .toast strong{display:block;margin-bottom:3px}.toast p{margin:0;color:#c1ccda;white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px}
+    .toast .toast-close{float:right;padding:1px 6px;margin-left:8px}
+    @keyframes toast-in{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
     .runtime-console-btn{position:fixed;right:18px;bottom:18px;z-index:7;background:#7d2830;border-color:#b95b65;color:#fff;box-shadow:0 8px 28px #0008}
     .runtime-console-btn.has-errors{background:#a52d38;border-color:#ff8791}
     .runtime-console-btn .count{display:inline-flex;min-width:19px;height:19px;align-items:center;justify-content:center;margin-left:6px;padding:0 5px;border-radius:10px;background:#fff;color:#8b202b;font-size:11px;font-weight:700}
@@ -99,6 +105,8 @@
     </section>
   </aside>
 </main>
+
+<div id="toastStack" class="toast-stack" aria-live="polite" aria-atomic="false"></div>
 
 <button id="runtimeConsoleButton" class="runtime-console-btn" type="button">Console <span id="runtimeErrorCount" class="count">0</span></button>
 <div id="runtimeConsoleModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="runtimeConsoleTitle">
@@ -270,7 +278,14 @@
     const node = document.createElement('div');
     node.className = 'event';
     const time = document.createElement('time');
-    time.textContent = new Date(event.timestamp || Date.now()).toLocaleTimeString('vi-VN') + ' · ' + (event.type || event.name || 'event');
+    const eventName = event.event || event.type || event.name || 'event';
+    time.textContent = new Date(event.timestamp || Date.now()).toLocaleTimeString('vi-VN') + ' · ' + eventName;
+    if (String(eventName).startsWith('presentation.notification.')) {
+      const notification = event.payload?.notification;
+      if (notification && ['add','alert','updated'].some(kind => String(eventName).endsWith('.' + kind))) {
+        showToast(notification.title, notification.message, notification.severity || notification.level || 'info');
+      }
+    }
     const body = document.createElement('pre');
     body.textContent = JSON.stringify(event, null, 2);
     node.append(time, body);
@@ -278,6 +293,42 @@
     while (log.children.length > 100) log.lastElementChild.remove();
     lastEvents++;
     if (/password|input\.request|keyboard/i.test(event.type || '')) inspectChallenge();
+  }
+
+  function showToast(title, message, severity = 'info', duration = 5000) {
+    const stack = $('toastStack');
+    if (!stack) return;
+    const toast = document.createElement('section');
+    const level = ({warning:'warning',warn:'warning',danger:'danger',error:'danger',success:'success',special:'special'}[String(severity).toLowerCase()] || 'info');
+    toast.className = 'toast ' + level;
+    const close = document.createElement('button');
+    close.className = 'toast-close'; close.type = 'button'; close.textContent = '×';
+    close.setAttribute('aria-label', 'Đóng thông báo');
+    close.addEventListener('click', () => toast.remove());
+    const heading = document.createElement('strong'); heading.textContent = title || 'Thông báo';
+    const body = document.createElement('p'); body.textContent = message || '';
+    toast.append(close, heading, body); stack.prepend(toast);
+    while (stack.children.length > 5) stack.lastElementChild.remove();
+    if (duration > 0) window.setTimeout(() => toast.remove(), duration);
+  }
+
+  function describeActionResult(result) {
+    const messages = {
+      busy: 'Engine đang xử lý một hành động khác. Hãy thử lại sau.',
+      transitioning: 'Đang chuyển cảnh; hành động chưa được thực thi.',
+      invalid_context: 'Không có scene/router hợp lệ để thực hiện hành động.',
+      action_not_found: 'Action không còn thuộc router đang hoạt động.',
+      target_locked: 'Đích đến đang bị khóa.',
+      permission_denied: 'Danh tính hiện tại không có quyền thực hiện hành động.',
+      not_read: 'Bạn cần đọc mô tả hành động trước.',
+      cooldown: 'Action đang trong thời gian hồi chiêu.',
+      requirement_failed: 'Chưa đáp ứng điều kiện để thực hiện hành động.',
+      cancelled: 'Thử thách đã bị hủy.',
+      expired: 'Thử thách đã hết thời gian.',
+      exhausted: 'Đã hết số lần thử.'
+    };
+    const reason = result?.reason || 'unknown';
+    return messages[reason] || ('Action không thành công: ' + reason);
   }
 
   function setStatus(text, ready = false) {
@@ -329,8 +380,14 @@
       b.className = id === routerId ? 'active' : '';
       b.disabled = id === routerId;
       b.addEventListener('click', async () => {
-        try { await engine.enterRouter(id, true, false, true); refresh(); }
-        catch (error) { reportError(error); }
+        if (b.disabled) return;
+        b.disabled = true;
+        try {
+          await engine.enterRouter(id, true, false, true);
+          refresh();
+          logEvent({type:'console.router.entered', sceneId, routerId:id});
+        } catch (error) { reportError(error); }
+        finally { if (b.isConnected) b.disabled = false; }
       });
       $('routerList').append(b);
     }
@@ -344,7 +401,13 @@
       const name = document.createElement('strong'); name.textContent=action.meta?.title || action.id;
       const desc = document.createElement('span'); desc.textContent=action.meta?.desc || action.id;
       b.append(name, desc);
-      b.addEventListener('click', () => runCommand('action.trigger', {actionId:action.id, uniqueId:action.id}));
+      b.addEventListener('click', async () => {
+        if (b.disabled) return;
+        const originalLabel = name.textContent;
+        b.disabled = true; name.textContent = 'Đang thực thi…';
+        try { await runCommand('action.trigger', {actionId:action.id, uniqueId:action.id}); }
+        finally { if (b.isConnected) { b.disabled = false; name.textContent = originalLabel; } }
+      });
       $('actions').append(b);
     }
 
@@ -399,18 +462,37 @@
   }
 
   async function runCommand(name, payload={}) {
-    if (!engine) return;
+    if (!engine) { showToast('Engine chưa sẵn sàng', 'Hãy nạp demo trước khi gửi lệnh.', 'warning'); return null; }
+    const previousStatus = $('statusText').textContent;
+    $('statusText').textContent = 'Đang thực thi: ' + name;
     try {
       const ack = await engine.api.protocol.command(name, payload);
       logEvent({type:'console.command.ack', command:name, payload, acknowledgement:ack});
       if (!ack?.ok) throw new Error(ack?.error?.message || ack?.error?.code || `Command ${name} failed.`);
+      const result = ack.result;
+      if (result && result.success === false) {
+        showToast('Hành động không thành công', describeActionResult(result), 'warning');
+        logEvent({type:'console.action.result', command:name, payload, result});
+      } else if (name === 'action.trigger') {
+        showToast('Đã thực thi hành động', 'Engine đã chấp nhận Action: ' + payload.actionId, 'success', 2600);
+        logEvent({type:'console.action.result', command:name, payload, result:result ?? null});
+      }
       refresh();
       inspectChallenge();
-    } catch (error) { reportError(error); }
+      return result;
+    } catch (error) {
+      reportError(error);
+      return null;
+    } finally {
+      if (engine?.src) $('statusText').textContent = 'Đã nạp demo';
+      else $('statusText').textContent = previousStatus;
+    }
   }
 
   function reportError(error) {
-    logEvent({type:'console.error', message:error?.message || String(error), stack:error?.stack});
+    const message = error?.message || String(error);
+    logEvent({type:'console.error', message, stack:error?.stack});
+    showToast('Lỗi thực thi', message, 'danger', 8000);
     console.error(error);
   }
 
