@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { LocalEngineHost } from '../host/LocalEngineHost.js';
+import { LocalEngineHost } from '../engine/LocalEngineHost.js';
 import { JsonClient } from '../client/adapters/JsonClient.js';
 
 test('browser client consumes JSON snapshots and only the active router projection', async () => {
