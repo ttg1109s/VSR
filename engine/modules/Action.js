@@ -76,21 +76,24 @@ export const ActionSystem = {
 
     async handleAction(actionKey, uniqueId = actionKey) {
         if (this.isActionProcessing || this.isTransitioning) {
+            const reason = this.isTransitioning ? 'transitioning' : 'busy';
             console.warn(`[Flow] Action ignored. Busy: Processing=${this.isActionProcessing}, Trans=${this.isTransitioning}`);
-            return;
+            return { success: false, reason };
         }
 
         const state = this.api.engine.state;
         const sId = state.get('sceneId');
         const rId = state.get('scene.activeRouterId', { id: sId });
 
-        if (!rId || !this.src?.scenes?.[sId]?.routers?.[rId]) return;
+        if (!rId || !this.src?.scenes?.[sId]?.routers?.[rId]) {
+            return { success: false, reason: 'invalid_context' };
+        }
 
         // The active router is the authority for action membership. A global
         // action definition is not executable unless this router references it.
         const effective = this.getEffectiveActions(sId, rId);
         const actDef = effective.find(action => action.id === actionKey);
-        if (!actDef) return;
+        if (!actDef) return { success: false, reason: 'action_not_found' };
 
 
         console.log(`[Flow] >>> CLICK ACTION: ${actionKey}`);
@@ -209,7 +212,7 @@ export const ActionSystem = {
                 const rem = Math.ceil((actState.cooldownEnd - Date.now()) / 1000);
                 this.api.notifications.add("Thao tác thất bại", `Vui lòng đợi ${rem}s`, "warn");
                 this.isActionProcessing = false;
-                return;
+                return { success: false, reason: 'cooldown', remainingSeconds: rem };
             }
 
             // Normal Effect (Always run if present)
@@ -258,7 +261,7 @@ export const ActionSystem = {
                 }
 
                 this.commitState('action.changed');
-                return;
+                return { success: false, reason: 'requirement_failed', failType };
             }
 
             // Password Check — fail closed: a malformed or missing definition
@@ -316,6 +319,7 @@ export const ActionSystem = {
 
         } catch (err) {
             console.error("[Flow] Action execution error:", err);
+            throw err;
         } finally {
             // Only release lock if NOT a password action (password UI handles its own flow)
             if (!this.pendingPasswordAction || this.pendingPasswordAction.actionId !== actionKey) {
