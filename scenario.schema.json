@@ -1542,8 +1542,7 @@
                 },
                 "then": {
                   "required": [
-                    "exec",
-                    "value"
+                    "exec"
                   ],
                   "properties": {
                     "exec": {
@@ -1551,10 +1550,53 @@
                         "swap",
                         "copy_to",
                         "cut_to",
-                        "delete"
+                        "delete",
+                        "add"
                       ]
                     }
-                  }
+                  },
+                  "allOf": [
+                    {
+                      "if": {
+                        "properties": {
+                          "exec": {
+                            "const": "add"
+                          }
+                        },
+                        "required": [
+                          "exec"
+                        ]
+                      },
+                      "then": {
+                        "required": [
+                          "property",
+                          "value"
+                        ]
+                      }
+                    },
+                    {
+                      "if": {
+                        "properties": {
+                          "exec": {
+                            "enum": [
+                              "swap",
+                              "copy_to",
+                              "cut_to",
+                              "delete"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "exec"
+                        ]
+                      },
+                      "then": {
+                        "required": [
+                          "value"
+                        ]
+                      }
+                    }
+                  ]
                 }
               },
               {
@@ -2744,8 +2786,7 @@
                 },
                 "then": {
                   "required": [
-                    "exec",
-                    "value"
+                    "exec"
                   ],
                   "properties": {
                     "exec": {
@@ -2753,10 +2794,53 @@
                         "swap",
                         "copy_to",
                         "cut_to",
-                        "delete"
+                        "delete",
+                        "add"
                       ]
                     }
-                  }
+                  },
+                  "allOf": [
+                    {
+                      "if": {
+                        "properties": {
+                          "exec": {
+                            "const": "add"
+                          }
+                        },
+                        "required": [
+                          "exec"
+                        ]
+                      },
+                      "then": {
+                        "required": [
+                          "property",
+                          "value"
+                        ]
+                      }
+                    },
+                    {
+                      "if": {
+                        "properties": {
+                          "exec": {
+                            "enum": [
+                              "swap",
+                              "copy_to",
+                              "cut_to",
+                              "delete"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "exec"
+                        ]
+                      },
+                      "then": {
+                        "required": [
+                          "value"
+                        ]
+                      }
+                    }
+                  ]
                 }
               },
               {
