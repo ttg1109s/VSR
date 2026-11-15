@@ -100,25 +100,11 @@ function ActionCard({ action, pending = false, passwordChallenge = null, feedbac
     setDetailsOpen(false);
   };
 
-  const availabilityMessage = reason === 'available'
-    ? 'Engine xác nhận hành động hiện có thể thực hiện.'
-    : reason === 'cooldown'
-      ? (cooldown > 0 ? `Còn ${cooldown} giây hồi chiêu.` : 'Đang chờ Engine xác nhận hết hồi chiêu.')
-      : reason === 'not_read'
-        ? 'Cần đọc và xác nhận mô tả trước khi thực hiện.'
-        : reason === 'permission_denied'
-          ? 'Nhân vật hiện tại không có quyền thực hiện hành động này.'
-          : reason === 'requirement_failed'
-            ? 'Engine chưa xác nhận đủ điều kiện thực hiện.'
-            : reason === 'target_locked'
-              ? 'Đích đến hoặc đối tượng của hành động đang bị khóa.'
-              : reason === 'busy'
-                ? 'Một thao tác khác đang được Engine xử lý.'
-                : reason === 'password_required'
-                  ? 'Engine yêu cầu xác thực trước khi tiếp tục.'
-                  : reason === 'locked'
-                    ? 'Hành động đang bị khóa theo trạng thái Engine.'
-                    : 'Chưa có đủ dữ liệu trạng thái để xác định khả năng thực hiện.';
+  // The Engine's reason precedence lets the UI identify confirmed checks without re-evaluating requirements.
+  const permissionPassed = ['available', 'cooldown', 'requirement_failed', 'target_locked', 'password_required'].includes(reason);
+  const requirementPassed = ['available', 'cooldown', 'target_locked', 'password_required'].includes(reason);
+  const conditionText = requirementPassed ? 'Điều kiện thực hiện đã đáp ứng' : reason === 'requirement_failed' ? 'Điều kiện thực hiện chưa đáp ứng' : 'Chưa xác định điều kiện thực hiện';
+  const permissionText = permissionPassed ? 'Nhân vật có quyền thực hiện' : reason === 'permission_denied' ? 'Nhân vật không có quyền thực hiện' : 'Chưa xác định quyền thực hiện';
 
   return <article className="vsr-card vsr-action-card" data-action-key={action.key} aria-busy={pending || undefined}>
     <div className="vsr-action-card__heading">
@@ -130,24 +116,25 @@ function ActionCard({ action, pending = false, passwordChallenge = null, feedbac
 
     <MediaFrame className="vsr-action-card__media" src={thumbnail?.url} type={thumbnail?.type || 'photo'} ratio={thumbnail?.ratio || '16:9'} alt={meta.title || action.title || 'Hình minh họa hành động'} />
 
-    {description && <p className="vsr-action-card__summary">{description}</p>}
-
     <div className="vsr-action-card__section vsr-action-card__description-section">
       <div className="vsr-action-card__section-heading">
-        <h4>Mô tả</h4>
+        <Button className="vsr-action-card__info-button" variant="ghost" size="sm" leadingIcon="info" aria-label="Thông tin mô tả" onClick={() => setDetailsOpen(true)} />
+        <Button className="vsr-action-card__read-button" variant="secondary" size="md" onClick={() => setDetailsOpen(true)}>Xem lại mô tả</Button>
         {readRequired
           ? <Badge tone={read ? 'success' : 'warning'}>{read ? 'Đã đọc' : 'Chưa đọc'}</Badge>
           : <Badge tone="neutral">Không yêu cầu đọc</Badge>}
       </div>
-      <p className="vsr-action-card__helper">{read ? 'Bạn có thể xem lại mô tả trước khi thực hiện.' : readRequired ? 'Cần đọc mô tả trước khi thực hiện hành động.' : 'Thông tin mô tả của hành động.'}</p>
-      <Button variant="secondary" size="md" onClick={() => setDetailsOpen(true)}>Xem {readRequired && !read ? 'và đọc' : 'lại'} mô tả</Button>
     </div>
 
     <div className="vsr-action-card__section vsr-action-card__requirements">
       <h4>Điều kiện và quyền</h4>
       <div className="vsr-action-card__requirement-state">
-        <span className={'vsr-action-card__state-icon ' + (ready ? 'is-success' : 'is-muted')} aria-hidden="true">{ready ? 'check_circle' : 'info'}</span>
-        <span>{availabilityMessage}</span>
+        <span className={'vsr-action-card__state-icon ' + (requirementPassed ? 'is-success' : 'is-muted')} aria-hidden="true">{requirementPassed ? 'check_circle' : 'info'}</span>
+        <span>{conditionText}</span>
+      </div>
+      <div className="vsr-action-card__requirement-state">
+        <span className={'vsr-action-card__state-icon vsr-action-card__permission-icon ' + (permissionPassed ? 'is-success' : 'is-muted')} aria-hidden="true">{permissionPassed ? 'verified_user' : 'shield'}</span>
+        <span>{permissionText}</span>
       </div>
       {reason === 'cooldown' && <div className="vsr-action-card__cooldown" role="timer">Thời gian còn lại: {cooldown} giây</div>}
     </div>
