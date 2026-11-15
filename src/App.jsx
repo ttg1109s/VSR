@@ -3,6 +3,7 @@ import { DEMO_SCRIPT } from '../demo_script.js';
 import { JsonClient } from '../client/adapters/JsonClient.js';
 import { WorkerJsonTransport } from '../client/adapters/WorkerJsonTransport.js';
 import HomePage from './pages/home/HomePage.jsx';
+import ScenarioPreviewPage from './pages/scenario-preview/ScenarioPreviewPage.jsx';
 
 export default function App() {
   const [preview, setPreview] = useState(null);
@@ -52,12 +53,14 @@ export default function App() {
     }
   }, [inspectScenario]);
 
+  if (preview) {
+    return <ScenarioPreviewPage preview={preview} onBack={() => setPreview(null)} />;
+  }
+
   return (
     <HomePage
       onRunDemo={() => inspectScenario(DEMO_SCRIPT, 'demo')}
       onImportFile={handleImportFile}
-      preview={preview}
-      onCancelPreview={() => { if (!busy) setPreview(null); }}
       busy={busy ? busyKind || true : false}
       error={error}
     />
