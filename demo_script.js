@@ -2806,7 +2806,8 @@ export const DEMO_SCRIPT = {
       },
       "set": {
         "type": "none",
-        "display": "show"
+        "display": "show",
+        "requirement": true
       },
       "effect": {
         "normal": [
