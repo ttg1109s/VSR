@@ -1,0 +1,25 @@
+/* ActionCollection snap carousel. All colors and motion use Design System tokens. */
+.vsr-action-carousel{min-width:0;overflow:hidden}
+.vsr-action-carousel__header{display:flex;align-items:center;justify-content:space-between;gap:var(--vsr-space-3)}
+.vsr-action-carousel__heading,.vsr-action-carousel__controls{display:flex;align-items:center;gap:var(--vsr-space-2)}
+.vsr-action-carousel__heading h2{margin:0}
+.vsr-action-carousel__count,.vsr-action-carousel__position{color:var(--vsr-color-text-secondary);font-size:13px;font-variant-numeric:tabular-nums}
+.vsr-action-carousel__count{display:inline-flex;min-width:24px;height:24px;align-items:center;justify-content:center;padding-inline:6px;border-radius:var(--vsr-radius-full);background:var(--vsr-color-surface-muted)}
+.vsr-action-carousel__viewport{width:100%;overflow-x:auto;overflow-y:hidden;overscroll-behavior-inline:contain;scroll-snap-type:x mandatory;scroll-behavior:smooth;scrollbar-width:thin;scrollbar-color:var(--vsr-color-border) transparent;padding:2px 2px 12px}
+.vsr-action-carousel__track{display:flex;align-items:stretch;gap:var(--vsr-space-4);width:max-content;min-width:100%}
+.vsr-action-carousel__slide{flex:0 0 clamp(320px,42vw,480px);min-width:0;scroll-snap-align:start;scroll-snap-stop:always}
+.vsr-action-carousel__slide>.vsr-action-card{height:100%;box-sizing:border-box}
+.vsr-action-carousel__pagination{display:flex;justify-content:center;align-items:center;gap:8px;min-height:12px}
+.vsr-action-carousel__dot{width:7px;height:7px;padding:0;border:0;border-radius:var(--vsr-radius-full);background:var(--vsr-color-border);cursor:pointer;transition:width var(--vsr-motion-short) var(--vsr-motion-easing),background var(--vsr-motion-short) var(--vsr-motion-easing)}
+.vsr-action-carousel__dot.is-active{width:22px;background:var(--vsr-color-primary)}
+.vsr-action-carousel__dot:focus-visible{outline:2px solid var(--vsr-color-primary);outline-offset:3px}
+@media(max-width:599px){
+ .vsr-action-carousel__header{align-items:flex-start;flex-wrap:wrap}
+ .vsr-action-carousel__controls{margin-left:auto}
+ .vsr-action-carousel__slide{flex-basis:86vw;max-width:420px}
+ .vsr-action-carousel__viewport{margin-right:-14px;padding-right:14vw}
+}
+@media(prefers-reduced-motion:reduce){
+ .vsr-action-carousel__viewport{scroll-behavior:auto}
+ .vsr-action-carousel__dot{transition:none}
+}
