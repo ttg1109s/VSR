@@ -3,7 +3,6 @@ import { StatsHelpers } from './Stats.js'; // [NEW]
 
 export const ItemStrategies = {
     stats: (engine, eff, context) => {
-        ItemStrategies._tryHideAction(engine, eff, context);
         // Item stats usually on itemInfo, but wait, itemInfo is global template.
         // If we modify item stats, are we modifying the global template or a specific instance?
         // The effect system usually modifies the global state or specific character state.
@@ -15,6 +14,7 @@ export const ItemStrategies = {
         const state = engine.api.engine.state;
         const item = state.getRuntimeSnapshot('itemInfo.[id]', { id: itemId });
 
+        let succeeded = false;
         if (item) {
             if (!item.stats) item.stats = {};
 
@@ -28,17 +28,20 @@ export const ItemStrategies = {
             }
 
             if (execMode === 'add_stats') {
-                StatsHelpers.add_stats(item, eff, false, itemId, engine);
+                succeeded = StatsHelpers.add_stats(item, eff, false, itemId, engine) === true;
             } else if (execMode === 'remove_stats') {
-                StatsHelpers.remove_stats(item, eff, false, itemId, engine);
+                const property = resolveValue(eff.property, engine);
+                succeeded = Boolean(item.stats && Object.prototype.hasOwnProperty.call(item.stats, property));
+                if (succeeded) StatsHelpers.remove_stats(item, eff, false, itemId, engine);
             } else {
                 // For value editing (add/set values), StatsHelpers expects 'mode'. 
                 // We map 'exec' to 'mode' here.
                 const mappedEff = { ...eff, mode: execMode };
-                StatsHelpers.edit_value(item, mappedEff, false, itemId, engine);
+                succeeded = StatsHelpers.edit_value(item, mappedEff, false, itemId, engine) === true;
             }
-            state.set('itemInfo.[id]', item, { id: itemId });
+            if (succeeded) state.set('itemInfo.[id]', item, { id: itemId });
         }
+        ItemStrategies._tryHideAction(engine, eff, context, succeeded);
     },
     // Helper để lấy Inventory của nhân vật đang nhập vai
     _getOwnerId: (engine) => engine.getOwnerId?.() || engine.api.engine.state.getRuntimeSnapshot('meta.entryCharacter') || 'player',
@@ -46,8 +49,8 @@ export const ItemStrategies = {
     _getChar: (engine) => engine.api.engine.state.getRuntimeSnapshot('characters.[id]', { id: ItemStrategies._getOwnerId(engine) }),
 
     // Helper: Hide Action if requested
-    _tryHideAction: (engine, eff, context) => {
-        if (eff.hide === true && context && context.actionId && context.sceneId && context.routerId) {
+    _tryHideAction: (engine, eff, context, succeeded) => {
+        if (succeeded === true && eff.hide === true && context && context.actionId && context.sceneId && context.routerId) {
             const actStateKey = `${context.sceneId}_${context.routerId}_${context.actionId}`;
             const state = engine.api.engine.state;
             if (state.getRuntimeSnapshot('actions.[id]', { id: actStateKey })) {
@@ -57,11 +60,12 @@ export const ItemStrategies = {
     },
 
     add: (engine, eff, context) => {
-        ItemStrategies._tryHideAction(engine, eff, context);
+        let succeeded = false;
         // [REFACTORED] Sử dụng engine.addItem (Logic Character)
         if (engine.addItem) {
             const added = engine.addItem(eff.target);
             if (added) {
+                succeeded = true;
                 engine.api.notifications.add("Nhận vật phẩm", engine.api.engine.state.getRuntimeSnapshot('itemInfo.[id].name', { id: eff.target }) || eff.target, "success", { source: 'scenario', category: 'scenario.inventory.added' });
                 engine.api.presentation.components.explorer();
             }
@@ -72,19 +76,22 @@ export const ItemStrategies = {
                 engine.api.engine.state.update('characters.[id].inventory', inventory => [...(inventory || []), eff.target], {
                     id: ItemStrategies._getOwnerId(engine)
                 });
+                succeeded = true;
                 engine.api.notifications.add("Nhận vật phẩm", engine.api.engine.state.getRuntimeSnapshot('itemInfo.[id].name', { id: eff.target }) || eff.target, "success");
                 engine.api.presentation.components.explorer();
             }
         }
+        ItemStrategies._tryHideAction(engine, eff, context, succeeded);
     },
 
     remove: (engine, eff, context) => {
-        ItemStrategies._tryHideAction(engine, eff, context);
         // [REFACTORED] Xóa khỏi Character Inventory
         const char = ItemStrategies._getChar(engine);
         if (!char || !char.inventory) return;
 
         const idx = (char.inventory || []).indexOf(eff.target);
+        let succeeded = false;
+        let succeeded = false;
         if (idx > -1) {
             const ownerId = ItemStrategies._getOwnerId(engine);
             engine.api.engine.state.update('characters.[id]', current => ({
@@ -93,11 +100,12 @@ export const ItemStrategies = {
                 hand: (current.hand || []).filter(itemId => itemId !== eff.target)
             }), { id: ownerId });
             engine.api.presentation.components.explorer();
+            succeeded = true;
         }
+        ItemStrategies._tryHideAction(engine, eff, context, succeeded);
     },
 
     hand_off: (engine, eff, context) => {
-        ItemStrategies._tryHideAction(engine, eff, context);
         // [REFACTORED] Bỏ khỏi tay Character
         const char = ItemStrategies._getChar(engine);
         if (!char || !char.hand) return;
@@ -107,15 +115,17 @@ export const ItemStrategies = {
             const ownerId = ItemStrategies._getOwnerId(engine);
             engine.api.engine.state.update('characters.[id].hand', hand => (hand || []).filter(itemId => itemId !== eff.target), { id: ownerId });
             engine.api.presentation.components.explorer();
+            succeeded = true;
         }
+        ItemStrategies._tryHideAction(engine, eff, context, succeeded);
     },
 
     hand_on: (engine, eff, context) => {
-        ItemStrategies._tryHideAction(engine, eff, context);
         // [REFACTORED] Cầm lên tay Character
         const char = ItemStrategies._getChar(engine);
         if (!char) return;
         if (!char.hand) char.hand = [];
+        let succeeded = false;
 
         // Check max hand config
         const maxHand = (engine.getConfig && engine.getConfig('maxHandOn')) || 10;
@@ -130,11 +140,14 @@ export const ItemStrategies = {
             const ownerId = ItemStrategies._getOwnerId(engine);
             engine.api.engine.state.update('characters.[id].hand', current => [...(current || []), eff.target], { id: ownerId });
             engine.api.presentation.components.explorer();
+            succeeded = true;
+        } else if (hand.includes(eff.target)) {
+            succeeded = true;
         }
+        ItemStrategies._tryHideAction(engine, eff, context, succeeded);
     },
 
     usage: (engine, eff, context) => {
-        ItemStrategies._tryHideAction(engine, eff, context);
         const state = engine.api.engine.state;
         const item = state.getRuntimeSnapshot('itemInfo.[id]', { id: eff.target });
         if (!item?.usage) return;
@@ -147,5 +160,6 @@ export const ItemStrategies = {
         item.usage.current = Math.max(0, Math.min(Math.max(0, max), current + increment));
         state.set('itemInfo.[id]', item, { id: eff.target });
         engine.api.presentation.components.explorer();
+        ItemStrategies._tryHideAction(engine, eff, context, true);
     }
 };
