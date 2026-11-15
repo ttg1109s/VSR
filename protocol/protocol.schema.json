@@ -1,13 +1,296 @@
 {
- "$schema":"https://json-schema.org/draft/2020-12/schema",
- "$id":"https://vsr.engine/protocol/v2/schema.json",
- "title":"VSR Hybrid JSON Protocol v2",
- "oneOf":[{"$ref":"#/$defs/snapshot"},{"$ref":"#/$defs/event"},{"$ref":"#/$defs/command"},{"$ref":"#/$defs/ack"}],
- "$defs":{
-  "base":{"type":"object","required":["protocol","protocolVersion","type"],"properties":{"protocol":{"const":"vsr"},"protocolVersion":{"const":2}}},
-  "snapshot":{"allOf":[{"$ref":"#/$defs/base"},{"type":"object","required":["type","engineId","revision","stateRevision","eventSequence","createdAt","game","state"],"properties":{"type":{"const":"snapshot"},"engineId":{"type":"string"},"revision":{"type":"integer","minimum":0},"stateRevision":{"type":"integer","minimum":0},"eventSequence":{"type":"integer","minimum":0},"createdAt":{"type":"string","format":"date-time"},"game":{"type":"object","required":["initialized","sceneId","routerId"],"properties":{"initialized":{"type":"boolean"},"sceneId":{"type":["string","null"]},"routerId":{"type":["string","null"]}}},"state":{"type":"object"},"source":{"type":"object"}}}]},
-  "event":{"allOf":[{"$ref":"#/$defs/base"},{"type":"object","required":["type","engineId","eventId","sequence","revision","stateRevision","timestamp","event","payload"],"properties":{"type":{"const":"event"},"engineId":{"type":"string"},"eventId":{"type":"string"},"sequence":{"type":"integer","minimum":1},"revision":{"type":"integer","minimum":0},"stateRevision":{"type":"integer","minimum":0},"timestamp":{"type":"string","format":"date-time"},"event":{"type":"string"},"payload":{"type":"object"}}}]},
-  "command":{"allOf":[{"$ref":"#/$defs/base"},{"type":"object","required":["type","commandId","command","payload"],"properties":{"type":{"const":"command"},"commandId":{"type":"string","minLength":1},"command":{"type":"string","minLength":1},"expectedRevision":{"type":"integer","minimum":0},"expectedStateRevision":{"type":"integer","minimum":0},"payload":{"type":"object"}},"additionalProperties":false}]},
-  "ack":{"allOf":[{"$ref":"#/$defs/base"},{"type":"object","required":["type","commandId","ok"],"properties":{"type":{"const":"ack"},"commandId":{"type":"string"},"ok":{"type":"boolean"},"revision":{"type":"integer","minimum":0},"stateRevision":{"type":"integer","minimum":0},"result":{},"error":{"type":"object"}}}]}
- }
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vsr.engine/protocol/v2/schema.json",
+  "title": "VSR Hybrid JSON Protocol v2",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/snapshot"
+    },
+    {
+      "$ref": "#/$defs/event"
+    },
+    {
+      "$ref": "#/$defs/command"
+    },
+    {
+      "$ref": "#/$defs/ack"
+    }
+  ],
+  "$defs": {
+    "base": {
+      "type": "object",
+      "required": [
+        "protocol",
+        "protocolVersion",
+        "type"
+      ],
+      "properties": {
+        "protocol": {
+          "const": "vsr"
+        },
+        "protocolVersion": {
+          "const": 2
+        }
+      }
+    },
+    "snapshot": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/base"
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "engineId",
+            "revision",
+            "stateRevision",
+            "eventSequence",
+            "createdAt",
+            "game",
+            "state"
+          ],
+          "properties": {
+            "type": {
+              "const": "snapshot"
+            },
+            "engineId": {
+              "type": "string"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "stateRevision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "eventSequence": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "game": {
+              "type": "object",
+              "required": [
+                "initialized",
+                "sceneId",
+                "routerId"
+              ],
+              "properties": {
+                "initialized": {
+                  "type": "boolean"
+                },
+                "sceneId": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "routerId": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "state": {
+              "type": "object"
+            },
+            "source": {
+              "type": "object"
+            },
+            "presentation": {
+              "type": "object",
+              "properties": {
+                "scenarioTitle": {
+                  "type": "string"
+                },
+                "scene": {
+                  "type": [
+                    "object",
+                    "null"
+                  ]
+                },
+                "router": {
+                  "type": [
+                    "object",
+                    "null"
+                  ]
+                },
+                "actions": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "session": {
+              "type": "object",
+              "properties": {
+                "chat": {
+                  "type": "object"
+                },
+                "passwordChallenge": {
+                  "type": [
+                    "object",
+                    "null"
+                  ]
+                },
+                "notifications": {
+                  "type": "object",
+                  "properties": {
+                    "pending": {
+                      "type": "array"
+                    },
+                    "history": {
+                      "type": "array"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "event": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/base"
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "engineId",
+            "eventId",
+            "sequence",
+            "revision",
+            "stateRevision",
+            "timestamp",
+            "event",
+            "payload"
+          ],
+          "properties": {
+            "type": {
+              "const": "event"
+            },
+            "engineId": {
+              "type": "string"
+            },
+            "eventId": {
+              "type": "string"
+            },
+            "sequence": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "stateRevision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "timestamp": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "event": {
+              "type": "string"
+            },
+            "payload": {
+              "type": "object"
+            }
+          }
+        }
+      ]
+    },
+    "command": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/base"
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "commandId",
+            "command",
+            "payload"
+          ],
+          "properties": {
+            "type": {
+              "const": "command"
+            },
+            "commandId": {
+              "type": "string",
+              "minLength": 1
+            },
+            "command": {
+              "type": "string",
+              "minLength": 1
+            },
+            "expectedRevision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "expectedStateRevision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "payload": {
+              "type": "object"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "ack": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/base"
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "commandId",
+            "ok"
+          ],
+          "properties": {
+            "type": {
+              "const": "ack"
+            },
+            "commandId": {
+              "type": "string"
+            },
+            "ok": {
+              "type": "boolean"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "stateRevision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "result": {},
+            "error": {
+              "type": "object"
+            }
+          }
+        }
+      ]
+    }
+  }
 }
