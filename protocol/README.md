@@ -14,7 +14,7 @@ Each `GameEngine` instance owns its API facade, state resolver, protocol, and ta
 
 Snapshots expose three separate concerns:
 - `game`: current scene/router identity and initialization state.
-- `presentation`: a client-safe projection of the current scene, active router, and active-router action display metadata. It excludes executable effects, requirements, sibling routers, scenario source, and password definitions.
+- `presentation`: a client-safe projection of the current scene, active router, the ancestor-to-current `scenePath` used by breadcrumb navigation, resolved display cover metadata, and active-router action display metadata. It excludes executable effects, requirements, sibling routers, scenario source, and password definitions.
 - `session`: chat state/history, a sanitized active challenge descriptor, and pending/recent notifications.
 
 The snapshot's `state` remains JSON-compatible runtime state. `session.passwordChallenge` is removed from that state copy; the sanitized descriptor is available under top-level `session.passwordChallenge`. Never add password answers or secret scenario data to the presentation/session projection.
