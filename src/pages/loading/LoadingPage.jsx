@@ -7,12 +7,12 @@ export default function LoadingPage({ preview, status = 'loading', error = '', o
   const failed = status === 'error';
 
   return (
-    <main className="vsr-page-shell vsr-page-shell--start">
+    <main className="vsr-page-shell vsr-loader-page">
       <div className="vsr-content-width vsr-content-width--narrow vsr-stack vsr-stack--gap-8">
-        <header className="vsr-page-header">
-          <div className="vsr-stack vsr-stack--gap-1">
-            <span className="vsr-eyebrow">VSR · SCENARIO LOADER</span>
-            <h1 className="vsr-heading-display">{title}</h1>
+        <header className="vsr-loader-header">
+          <div className="vsr-stack vsr-stack--gap-2">
+            <span className="vsr-loader-eyebrow">VSR <span aria-hidden="true">/</span> SCENARIO LOADER</span>
+            <h1 className="vsr-loader-title">{title}</h1>
           </div>
           <Button
             variant="tertiary"
@@ -23,33 +23,44 @@ export default function LoadingPage({ preview, status = 'loading', error = '', o
           />
         </header>
 
-        <section className="vsr-stack vsr-stack--center vsr-stack--gap-4" aria-live="polite">
-          <div className="vsr-stack vsr-stack--center vsr-stack--gap-2">
-            <h2>
-              {complete ? 'Scenario loaded' : failed ? 'Unable to load scenario' : 'Loading scenario'}
-            </h2>
-            <p className="vsr-text-secondary vsr-text-center">
-              {complete
-                ? 'The scenario has been loaded into the game engine. The first scene has not been opened.'
-                : failed
-                  ? 'The engine could not finish loading this scenario.'
-                  : 'Preparing scenario data and initializing the game engine…'}
-            </p>
+        <section className="vsr-loader-panel" aria-live="polite">
+          <div className="vsr-loader-status">
+            <span className={'vsr-loader-mark' + (complete ? ' vsr-loader-mark--complete' : failed ? ' vsr-loader-mark--error' : '')} aria-hidden="true">
+              {complete ? 'check' : failed ? 'priority_high' : <span className="vsr-spinner" />}
+            </span>
+            <div className="vsr-stack vsr-stack--gap-1">
+              <h2 className="vsr-loader-status-title">
+                {complete ? 'Scenario ready' : failed ? 'Unable to load scenario' : 'Preparing your scenario'}
+              </h2>
+              <p className="vsr-loader-copy">
+                {complete
+                  ? 'The game engine is initialized. The first scene has not been opened.'
+                  : failed
+                    ? 'The game engine could not finish initializing this scenario.'
+                    : 'Loading scenario data and initializing the game engine.'}
+              </p>
+            </div>
           </div>
 
-          {!failed && <ProgressBar status={complete ? 'complete' : 'indeterminate'} label="Scenario loading progress" />}
+          {!failed && (
+            <div className="vsr-loader-progress">
+              <div className="vsr-loader-progress-meta">
+                <span>{complete ? 'READY' : 'INITIALIZING'}</span>
+                <span>{complete ? '100%' : 'IN PROGRESS'}</span>
+              </div>
+              <ProgressBar status={complete ? 'complete' : 'indeterminate'} label="Scenario loading progress" />
+            </div>
+          )}
 
           {failed && (
-            <div className="vsr-stack vsr-stack--center vsr-stack--gap-3" role="alert">
+            <div className="vsr-stack vsr-stack--gap-3" role="alert">
               <p className="vsr-text-error">{error || 'An unexpected loading error occurred.'}</p>
               <Button variant="primary" onClick={onRetry}>Try again</Button>
             </div>
           )}
 
           {complete && (
-            <p className="vsr-text-secondary vsr-text-center">
-              Loading is complete. You can close this page to return to the scenario details.
-            </p>
+            <p className="vsr-loader-footnote">You can close this page to return to the scenario details.</p>
           )}
         </section>
       </div>
