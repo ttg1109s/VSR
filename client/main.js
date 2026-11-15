@@ -15,7 +15,7 @@ const descriptionOf = meta => meta?.desc || meta?.description || meta?.subtitle 
 
 function navigate(screen, { replace = false } = {}) {
   state.screen = screen;
-  const route = { home:'/', metadata:'/scenario', loading:'/loading', gameplay:'/play' }[screen] || '/';
+  const route = { home:'#home', metadata:'#scenario', loading:'#loading', gameplay:'#play' }[screen] || '#home';
   const method = replace ? 'replaceState' : 'pushState';
   history[method]({ vsrScreen:screen }, '', route);
   window.__VSR_APP_STATE__ = state;
@@ -42,11 +42,11 @@ async function checkHealth() {
   catch { state.health = 'offline'; }
   if (state.screen === 'home') renderHome();
 }
-function openMetadata(scenario, sourceName) {
+function openMetadata(scenario, sourceName, { updateHistory = true } = {}) {
   if (!scenario || typeof scenario !== 'object' || !scenario.scenes || typeof scenario.scenes !== 'object') {
     throw new Error('JSON không có cấu trúc scenario hợp lệ hoặc thiếu scenes.');
   }
-  state.scenario=scenario; state.scenarioName=sourceName; navigate('metadata');
+  state.scenario=scenario; state.scenarioName=sourceName; if (updateHistory) navigate('metadata'); else state.screen='metadata';
   const meta=scenario.meta||{}, scenes=Object.keys(scenario.scenes||{}).length, characters=Object.keys(scenario.characters||{}).length, items=Object.keys(scenario.itemInfo||{}).length;
   const tags=Array.isArray(meta.tags)?meta.tags:[];
   app.innerHTML = `<main class="detail-shell"><header class="topbar"><button class="back-button" id="back-home" aria-label="Quay lại">←</button><a class="brand" href="/"><span class="brand-mark">V</span><span>VSR<span class="brand-muted"> / PLAY</span></span></a><button class="text-nav" id="detail-library">LIBRARY</button></header>
@@ -82,7 +82,7 @@ async function startGame() {
   }
 }
 function renderMetadataError(error) {
-  openMetadata(state.scenario,state.scenarioName);
+  openMetadata(state.scenario,state.scenarioName,{updateHistory:false});
   const note=document.createElement('div'); note.className='error-note'; note.textContent='Không thể khởi chạy: '+(error?.message||String(error));
   $('.metadata-body').insertBefore(note,$('#start-game'));
 }
@@ -108,7 +108,7 @@ fileInput.addEventListener('change',async event=>{
 window.addEventListener('popstate', event => {
   const screen = event.state?.vsrScreen || 'home';
   if (screen === 'home') { if (state.client) { state.renderer?.dispose?.(); state.client.dispose?.(); state.transport?.close?.(); state.client=null; state.transport=null; } renderHome(); }
-  else if (screen === 'metadata' && state.scenario) openMetadata(state.scenario,state.scenarioName);
+  else if (screen === 'metadata' && state.scenario) openMetadata(state.scenario,state.scenarioName,{updateHistory:false});
   else if (screen === 'gameplay' && state.client) renderGameplay();
   else { navigate('home',{replace:true}); renderHome(); }
 });
