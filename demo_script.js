@@ -104,6 +104,10 @@ export const DEMO_SCRIPT = {
     "clue_well": {
       "type": "boolean",
       "value": false
+    },
+    "bell_rung": {
+      "type": "boolean",
+      "value": false
     }
   },
   "templates": {
@@ -191,7 +195,7 @@ export const DEMO_SCRIPT = {
           },
           {
             "type": "state",
-            "property": "heard_bell",
+            "property": "bell_rung",
             "op": "==",
             "value": true
           },
@@ -1491,7 +1495,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "set",
             "subtype": "state",
-            "target": "heard_bell",
+            "target": "bell_rung",
             "value": true
           },
           {
@@ -2602,8 +2606,8 @@ export const DEMO_SCRIPT = {
         "pass": [
           {
             "type": "goto",
-            "subtype": "router",
-            "target": "forest_path"
+            "subtype": "scene",
+            "target": "scene_forest"
           }
         ],
         "fail": [
