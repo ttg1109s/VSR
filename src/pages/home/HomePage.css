@@ -4,7 +4,6 @@
   min-height: 100dvh;
   place-items: center;
   padding: var(--vsr-space-6);
-  background: var(--vsr-color-background-subtle);
 }
 
 .home-panel {
@@ -47,7 +46,6 @@
 
 .home-intro h1 {
   margin: var(--vsr-space-5) 0 var(--vsr-space-2);
-  color: var(--vsr-color-text);
   font-size: clamp(30px, 4vw, 42px);
   line-height: 1.16;
   font-weight: 600;
