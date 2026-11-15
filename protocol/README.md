@@ -25,7 +25,7 @@ Commands are allow-listed and serialized per Engine. Command idempotency is keye
 
 | Command | Payload | Purpose |
 |---|---|---|
-| `engine.init` | `{ script }` | Initialize a scenario |
+| `scenario.inspect` | `{ scenario }` | Validate a scenario and return safe metadata without starting gameplay or changing Engine state |\n| `engine.init` | `{ script }` | Initialize a scenario |
 | `action.trigger` | `{ actionId, uniqueId? }` | Execute an active-router action |
 | `action.markAsRead` | `{ uniqueId }` | Mark an action description as read |
 | `chat.next` | `{}` | Advance the active dialogue |
