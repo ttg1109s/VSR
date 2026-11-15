@@ -121,27 +121,27 @@ export default function ScenarioPreviewPage({ preview, onBack }) {
             <p className="vsr-text-secondary vsr-text-body">{metadata.subtitle}</p>
           )}
           <ScenarioDescription description={metadata.description} />
+          {(experienceItems.length > 0 || (Array.isArray(metadata.tags) && metadata.tags.length > 0)) && (
+            <div className="vsr-stack vsr-stack--gap-3">
+              {experienceItems.length > 0 && (
+                <Grid columns="3" gap="3">
+                  {experienceItems.map(item => (
+                    <ExperienceItem key={item.label} label={item.label} value={item.value} />
+                  ))}
+                </Grid>
+              )}
+              {Array.isArray(metadata.tags) && metadata.tags.length > 0 && (
+                <ul className="vsr-tag-list">
+                  {metadata.tags.map((tag, index) => (
+                    <li className="vsr-tag" key={`${tag}-${index}`}>{tag}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
         </header>
 
-        {(experienceItems.length > 0 || (Array.isArray(metadata.tags) && metadata.tags.length > 0)) && (
-          <section className="vsr-stack vsr-stack--gap-3" aria-labelledby="scenario-experience-title">
-            <h2 id="scenario-experience-title">Experience</h2>
-            {experienceItems.length > 0 && (
-              <Grid columns="3" gap="3">
-                {experienceItems.map(item => (
-                  <ExperienceItem key={item.label} label={item.label} value={item.value} />
-                ))}
-              </Grid>
-            )}
-            {Array.isArray(metadata.tags) && metadata.tags.length > 0 && (
-              <ul className="vsr-tag-list">
-                {metadata.tags.map((tag, index) => (
-                  <li className="vsr-tag" key={`${tag}-${index}`}>{tag}</li>
-                ))}
-              </ul>
-            )}
-          </section>
-        )}
+
 
         {publicationItems.some(item => item.value !== null && item.value !== undefined && item.value !== '') && (
           <section className="vsr-stack vsr-stack--gap-3" aria-labelledby="scenario-publication-title">
