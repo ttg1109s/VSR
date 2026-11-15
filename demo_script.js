@@ -1544,12 +1544,6 @@ export const DEMO_SCRIPT = {
       },
       "effect": {
         "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Mai tránh nhìn về phía giếng. Hãy nghe lời kể của cô ấy."
-          }
         ],
         "pass": [
           {
@@ -1580,12 +1574,6 @@ export const DEMO_SCRIPT = {
       },
       "effect": {
         "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Trên thành giếng có bốn vạch khắc mới và một vết kim loại bị cào xước."
-          }
         ],
         "pass": [
           {
@@ -1637,12 +1625,6 @@ export const DEMO_SCRIPT = {
       },
       "effect": {
         "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Chỉ có thể đọc ký hiệu dưới đáy giếng khi manh mối ánh sáng đã được kích hoạt."
-          }
         ],
         "pass": [
           {
@@ -1698,12 +1680,6 @@ export const DEMO_SCRIPT = {
       },
       "effect": {
         "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Bà Hạnh khẳng định nhà trọ chỉ có sáu phòng, dù hành lang có bảy cửa."
-          }
         ],
         "pass": [
           {
@@ -1734,12 +1710,6 @@ export const DEMO_SCRIPT = {
       },
       "effect": {
         "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Trang cuối ghi tên người chơi với ngày đến là ngày mai."
-          }
         ],
         "pass": [
           {
@@ -1868,12 +1838,6 @@ export const DEMO_SCRIPT = {
       },
       "effect": {
         "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Một cuộn băng được giấu sau thùng rỗng. Trên nhãn có ghi ngày sơ tán."
-          }
         ],
         "pass": [
           {
@@ -1929,12 +1893,6 @@ export const DEMO_SCRIPT = {
       },
       "effect": {
         "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Các chữ đầu dòng ghép thành từ 'IM LANG'. Một dòng bị gạch dưới nhắc đến ba hồi chuông."
-          }
         ],
         "pass": [
           {
@@ -1985,12 +1943,6 @@ export const DEMO_SCRIPT = {
       },
       "effect": {
         "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Ông ta nói chuông chỉ được rung khi người giữ chuông chấp nhận sự thật."
-          }
         ],
         "pass": [
           {
@@ -2022,12 +1974,6 @@ export const DEMO_SCRIPT = {
       },
       "effect": {
         "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Mã bốn chữ số khắc dưới mặt đồng hồ là thời điểm mất tích."
-          }
         ],
         "pass": [
           {
@@ -2174,12 +2120,6 @@ export const DEMO_SCRIPT = {
       },
       "effect": {
         "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Có danh sách lớp với bốn học sinh bị gạch tên và một bức ảnh bị xé."
-          }
         ],
         "pass": [
           {
@@ -2314,12 +2254,6 @@ export const DEMO_SCRIPT = {
       },
       "effect": {
         "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Những vệt sơn dẫn tới khoảng đất trống, nơi các cọc gỗ tạo thành hình vòng cung."
-          }
         ],
         "pass": [
           {
@@ -2438,12 +2372,6 @@ export const DEMO_SCRIPT = {
       },
       "effect": {
         "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Có mười hai cọc, nhưng chỉ mười một cái đổ bóng."
-          }
         ],
         "pass": [
           {
@@ -2647,12 +2575,6 @@ export const DEMO_SCRIPT = {
       },
       "effect": {
         "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Những bức tường ghi tên người dân theo thứ tự ngày họ biến mất."
-          }
         ],
         "pass": [
           {
@@ -2878,12 +2800,6 @@ export const DEMO_SCRIPT = {
       },
       "effect": {
         "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Bạn có thể phá hủy hồ sơ và rời đi, giữ cho ngôi làng tiếp tục ngủ yên."
-          }
         ],
         "pass": [
           {
@@ -2932,12 +2848,6 @@ export const DEMO_SCRIPT = {
       },
       "effect": {
         "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Chỉ có thể chọn ở lại khi đã biết danh tính người thứ mười hai và nghe được sự thật từ tín hiệu."
-          }
         ],
         "pass": [
           {
@@ -3045,12 +2955,6 @@ export const DEMO_SCRIPT = {
       },
       "effect": {
         "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Rời quảng trường và tiếp cận giếng phủ rêu."
-          }
         ],
         "pass": [
           {
@@ -3081,12 +2985,6 @@ export const DEMO_SCRIPT = {
       },
       "effect": {
         "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Quay về quảng trường trung tâm."
-          }
         ],
         "pass": [
           {
@@ -3117,12 +3015,6 @@ export const DEMO_SCRIPT = {
       },
       "effect": {
         "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Rời hầm và quay về quầy lễ tân."
-          }
         ],
         "pass": [
           {
@@ -3153,12 +3045,6 @@ export const DEMO_SCRIPT = {
       },
       "effect": {
         "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Cầu thang hẹp dẫn lên nơi treo quả chuông câm."
-          }
         ],
         "pass": [
           {
@@ -3189,12 +3075,6 @@ export const DEMO_SCRIPT = {
       },
       "effect": {
         "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Quay về gian cầu nguyện."
-          }
         ],
         "pass": [
           {
@@ -3225,12 +3105,6 @@ export const DEMO_SCRIPT = {
       },
       "effect": {
         "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Theo dấu sơn đến vòng cọc gỗ giữa rừng."
-          }
         ],
         "pass": [
           {
@@ -3261,12 +3135,6 @@ export const DEMO_SCRIPT = {
       },
       "effect": {
         "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Quay về con đường dưới tán thông."
-          }
         ],
         "pass": [
           {
@@ -3297,12 +3165,6 @@ export const DEMO_SCRIPT = {
       },
       "effect": {
         "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Theo con đường lát đá đến nhà trọ Bà Hạnh."
-          }
         ],
         "pass": [
           {
@@ -3333,12 +3195,6 @@ export const DEMO_SCRIPT = {
       },
       "effect": {
         "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Tiếng chuông im lặng dẫn bạn về phía nhà nguyện."
-          }
         ],
         "pass": [
           {
@@ -3369,12 +3225,6 @@ export const DEMO_SCRIPT = {
       },
       "effect": {
         "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Dấu chân nhỏ dẫn tới ngôi trường bỏ hoang."
-          }
         ],
         "pass": [
           {
@@ -3405,12 +3255,6 @@ export const DEMO_SCRIPT = {
       },
       "effect": {
         "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Con đường phía Bắc mở ra dưới màn sương."
-          }
         ],
         "pass": [
           {
@@ -3441,12 +3285,6 @@ export const DEMO_SCRIPT = {
       },
       "effect": {
         "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Theo con suối cạn tới cối xay cũ."
-          }
         ],
         "pass": [
           {
@@ -3477,12 +3315,6 @@ export const DEMO_SCRIPT = {
       },
       "effect": {
         "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Quay lại căn phòng máy dưới chân đê."
-          }
         ],
         "pass": [
           {
@@ -3514,12 +3346,6 @@ export const DEMO_SCRIPT = {
       },
       "effect": {
         "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Chỉ những người đã ghép đủ manh mối mới tìm thấy sân ga."
-          }
         ],
         "pass": [
           {
@@ -3601,12 +3427,6 @@ export const DEMO_SCRIPT = {
       },
       "effect": {
         "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Kiểm tra nguồn tín hiệu phía sau bảng thông báo."
-          }
         ],
         "pass": [
           {
@@ -3697,12 +3517,6 @@ export const DEMO_SCRIPT = {
       },
       "effect": {
         "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Dùng móc sắt kéo vật kim loại mắc trong hốc đá."
-          }
         ],
         "pass": [
           {
@@ -3793,12 +3607,6 @@ export const DEMO_SCRIPT = {
       },
       "effect": {
         "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Kiểm tra ngăn kéo bị khóa sau quầy lễ tân."
-          }
         ],
         "pass": [
           {
@@ -3889,12 +3697,6 @@ export const DEMO_SCRIPT = {
       },
       "effect": {
         "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Mở hộp thiếc sau kệ rượu và kiểm tra cuộn phim."
-          }
         ],
         "pass": [
           {
@@ -3985,12 +3787,6 @@ export const DEMO_SCRIPT = {
       },
       "effect": {
         "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Kiểm tra phần gáy sách đã bị khâu lại."
-          }
         ],
         "pass": [
           {
@@ -4081,12 +3877,6 @@ export const DEMO_SCRIPT = {
       },
       "effect": {
         "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Gỡ đoạn dây đồng mắc trong bánh răng."
-          }
         ],
         "pass": [
           {
@@ -4177,12 +3967,6 @@ export const DEMO_SCRIPT = {
       },
       "effect": {
         "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Cạy ngăn bàn bị đóng đinh ở cuối lớp."
-          }
         ],
         "pass": [
           {
@@ -4273,12 +4057,6 @@ export const DEMO_SCRIPT = {
       },
       "effect": {
         "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Tìm vật dụng mắc dưới gốc cây có vết sơn kép."
-          }
         ],
         "pass": [
           {
@@ -4369,12 +4147,6 @@ export const DEMO_SCRIPT = {
       },
       "effect": {
         "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Nhấc phiến đá ở tâm vòng cọc và kiểm tra hốc bên dưới."
-          }
         ],
         "pass": [
           {
@@ -4465,12 +4237,6 @@ export const DEMO_SCRIPT = {
       },
       "effect": {
         "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Kiểm tra hộp bánh răng dưới sàn cối xay."
-          }
         ],
         "pass": [
           {
@@ -4561,12 +4327,6 @@ export const DEMO_SCRIPT = {
       },
       "effect": {
         "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Mở ống tài liệu giấu sau lớp gạch rỗng."
-          }
         ],
         "pass": [
           {
@@ -4657,12 +4417,6 @@ export const DEMO_SCRIPT = {
       },
       "effect": {
         "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Kiểm tra khe dưới hàng ghế chờ."
-          }
         ],
         "pass": [
           {
