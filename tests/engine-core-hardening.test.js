@@ -527,3 +527,27 @@ test('characters.moving.replace supports every schema-valid index in an index ar
     { scene_id: 'new_route' }
   ]);
 });
+
+
+test('inline character effects enforce the same subtype contract as runnable wrappers', () => {
+  const scenario = validScenario();
+  scenario.scenes.start.routers.main.actions[0].effect = {
+    normal: [
+      {
+        type: 'effect',
+        inline: {
+          type: 'characters', subtype: 'mng_items', target: 'npc'
+        }
+      },
+      {
+        type: 'effect',
+        inline: {
+          type: 'characters', subtype: 'moving', target: 'npc',
+          exec: 'teleport', property: 'moveList', value: {}
+        }
+      }
+    ]
+  };
+  const errors = validateScenario(scenario);
+  assert.ok(errors.length > 0);
+});
