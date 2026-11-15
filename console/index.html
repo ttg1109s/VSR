@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VSR · Console Player</title>
+  <script type="importmap">
+    {
+      "imports": {
+        "ajv": "https://esm.sh/ajv@8.17.1",
+        "ajv-formats": "https://esm.sh/ajv-formats@3.0.1?external=ajv"
+      }
+    }
+  </script>
+  <style>
+    :root{color-scheme:dark;--bg:#0c1017;--panel:#141b26;--panel2:#1a2432;--line:#293648;--text:#e8edf4;--muted:#91a0b4;--accent:#8fb8ff;--good:#77d6ad;--warn:#f0c477;--bad:#f18c8c}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+    button,input,textarea{font:inherit}button{border:1px solid var(--line);background:var(--panel2);color:var(--text);padding:8px 11px;border-radius:8px;cursor:pointer}button:hover{border-color:var(--accent)}button:disabled{opacity:.45;cursor:not-allowed}
+    input,textarea{width:100%;background:#0e1520;color:var(--text);border:1px solid var(--line);border-radius:8px;padding:9px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 20px;border-bottom:1px solid var(--line);background:#101722;position:sticky;top:0;z-index:2}
+    h1{font-size:16px;margin:0;font-weight:650}h2{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 12px}
+    .status{display:flex;gap:8px;align-items:center;color:var(--muted);font-size:12px}.dot{width:8px;height:8px;border-radius:50%;background:var(--warn)}.dot.ready{background:var(--good)}
+    main{max-width:1500px;margin:auto;padding:16px;display:grid;grid-template-columns:240px minmax(300px,1fr) 340px;gap:14px}
+    .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;min-width:0}.stack{display:grid;gap:14px;align-content:start}
+    .scene-list{display:grid;gap:6px;max-height:62vh;overflow:auto}.scene-btn{text-align:left;display:flex;justify-content:space-between;gap:8px}.scene-btn.active{border-color:var(--accent);background:#1b2b42}.muted{color:var(--muted)}.small{font-size:12px}.scene-title{font-size:22px;font-weight:650;margin:0 0 5px}.scene-desc{color:#b6c2d1;margin:0 0 16px}
+    .row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.split{display:flex;justify-content:space-between;gap:10px;align-items:center}.actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px}.action{text-align:left;min-height:78px}.action strong{display:block;margin-bottom:4px}.action span{display:block;color:var(--muted);font-size:12px}
+    .item,.choice{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line)}.item:last-child,.choice:last-child{border:0}
+    .log{height:310px;overflow:auto;display:flex;flex-direction:column;gap:7px}.event{padding:8px;background:#0e1520;border:1px solid var(--line);border-radius:8px;overflow-wrap:anywhere}.event time{display:block;color:var(--muted);font-size:11px}.event pre{white-space:pre-wrap;margin:5px 0 0;font:11px/1.4 ui-monospace,monospace;color:#b9c7d8}
+    .chatbox{background:#0e1520;border:1px solid var(--line);border-radius:9px;padding:12px;min-height:72px;margin-bottom:8px;white-space:pre-wrap}.empty{color:var(--muted);padding:12px 0}.toolbar{display:flex;gap:7px;flex-wrap:wrap}.toolbar button{font-size:12px}
+    .modal{display:none;position:fixed;inset:0;background:#0009;z-index:5;align-items:center;justify-content:center;padding:16px}.modal.open{display:flex}.dialog{width:min(560px,100%);background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}.dialog h3{margin:0 0 6px}.dialog p{color:var(--muted)}.dialog form{display:grid;gap:10px}
+    @media(max-width:1050px){main{grid-template-columns:210px minmax(280px,1fr)}main>.right{grid-column:1/-1;grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:680px){header{align-items:flex-start;flex-direction:column}main{grid-template-columns:1fr;padding:10px}main>.right{grid-column:auto;grid-template-columns:1fr}.scene-list{max-height:230px}.log{height:240px}}
+  </style>
+</head>
+<body>
+<header>
+  <div><h1>VSR / CONSOLE PLAYER</h1><div class="small muted">Trình khách kiểm thử cục bộ · THE SILENT VILLAGE</div></div>
+  <div class="status"><span id="statusDot" class="dot"></span><span id="statusText">Chưa khởi tạo</span><span>·</span><span id="revision">revision —</span></div>
+</header>
+<main>
+  <aside class="stack">
+    <section class="panel">
+      <div class="split"><h2>Địa điểm</h2><span class="small muted" id="sceneCount">—</span></div>
+      <div id="sceneList" class="scene-list"><div class="empty">Nạp demo để hiển thị địa điểm.</div></div>
+    </section>
+    <section class="panel">
+      <h2>Kiểm thử phiên</h2>
+      <div class="toolbar">
+        <button id="loadBtn">Nạp demo</button><button id="saveBtn" disabled>Lưu JSON</button><button id="restoreBtn">Nạp save</button><button id="resetBtn">Khởi tạo lại</button>
+      </div>
+      <p class="small muted">Save được xuất từ Engine. Nạp save yêu cầu một phiên đã khởi tạo.</p>
+      <input id="saveFile" type="file" accept="application/json" hidden>
+    </section>
+  </aside>
+
+  <section class="stack">
+    <section class="panel">
+      <div class="split"><span class="small muted" id="routerLabel">SCENE / ROUTER</span><span class="small muted" id="sceneId">—</span></div>
+      <h2 style="margin-top:10px">Không gian hiện tại</h2>
+      <h3 class="scene-title" id="sceneTitle">Chưa có phiên chơi</h3>
+      <p class="scene-desc" id="sceneDesc">Chọn “Nạp demo” để khởi chạy THE SILENT VILLAGE.</p>
+      <div id="routerList" class="row"></div>
+    </section>
+    <section class="panel">
+      <div class="split"><h2>Hành động khả dụng</h2><span class="small muted" id="actionCount">0 hành động</span></div>
+      <div id="actions" class="actions"><div class="empty">Chưa có hành động.</div></div>
+    </section>
+    <section class="panel">
+      <div class="split"><h2>Hội thoại</h2><span id="chatStatus" class="small muted">Không hoạt động</span></div>
+      <div id="chatContent" class="chatbox">Chưa có hội thoại đang mở.</div>
+      <div id="chatChoices"></div>
+      <div class="toolbar"><button id="nextChat" disabled>Tiếp tục hội thoại</button></div>
+    </section>
+  </section>
+
+  <aside class="right stack">
+    <section class="panel">
+      <div class="split"><h2>Vật phẩm</h2><span class="small muted" id="handCount">Tay: 0</span></div>
+      <div id="inventory"><div class="empty">Chưa có vật phẩm.</div></div>
+    </section>
+    <section class="panel">
+      <div class="split"><h2>Trạng thái</h2><button id="refreshBtn" class="small" disabled>Làm mới</button></div>
+      <pre id="stateView" class="small" style="white-space:pre-wrap;overflow-wrap:anywhere;color:#b9c7d8;margin:0">Chưa có snapshot.</pre>
+    </section>
+    <section class="panel">
+      <div class="split"><h2>Event stream</h2><button id="clearLog" class="small">Xóa log</button></div>
+      <div id="eventLog" class="log"><div class="empty">Event từ Engine sẽ xuất hiện tại đây.</div></div>
+    </section>
+  </aside>
+</main>
+
+<div id="passwordModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="passwordTitle">
+  <div class="dialog">
+    <h3 id="passwordTitle">Thử thách mật mã</h3>
+    <p id="passwordDesc"></p>
+    <form id="passwordForm">
+      <label for="passwordInput" class="small muted">Dữ liệu đầu vào</label>
+      <textarea id="passwordInput" rows="3" placeholder="Nhập câu trả lời; với puzzle/find_way có thể nhập JSON array"></textarea>
+      <div class="toolbar"><button type="submit">Gửi câu trả lời</button><button type="button" id="cancelPassword">Hủy</button></div>
+    </form>
+    <p class="small">Engine xác minh câu trả lời ở phía runtime. Console không đọc đáp án từ scenario.</p>
+  </div>
+</div>
+
+<script type="module">
+  import { GameEngine, DEMO_SCRIPT } from '../engine/index.js';
+
+  const $ = id => document.getElementById(id);
+  let engine = null;
+  let unsubscribe = null;
+  let passwordChallenge = null;
+  let lastEvents = 0;
+
+  function logEvent(event) {
+    const log = $('eventLog');
+    if (log.querySelector('.empty')) log.innerHTML = '';
+    const node = document.createElement('div');
+    node.className = 'event';
+    const time = document.createElement('time');
+    time.textContent = new Date(event.timestamp || Date.now()).toLocaleTimeString('vi-VN') + ' · ' + (event.type || event.name || 'event');
+    const body = document.createElement('pre');
+    body.textContent = JSON.stringify(event, null, 2);
+    node.append(time, body);
+    log.prepend(node);
+    while (log.children.length > 100) log.lastElementChild.remove();
+    lastEvents++;
+    if (/password|input\.request|keyboard/i.test(event.type || '')) inspectChallenge();
+  }
+
+  function setStatus(text, ready = false) {
+    $('statusText').textContent = text;
+    $('statusDot').classList.toggle('ready', ready);
+    $('saveBtn').disabled = !ready;
+    $('refreshBtn').disabled = !ready;
+    $('nextChat').disabled = !ready;
+  }
+
+  function safeSnapshot() {
+    if (!engine) return null;
+    try { return engine.protocol.createSnapshot(engine); }
+    catch (error) { logEvent({type:'console.snapshot_error', message:error.message}); return null; }
+  }
+
+  function refresh() {
+    if (!engine?.src) return;
+    const state = engine.api.engine.state;
+    const sceneId = state.get('sceneId');
+    const scene = engine.src.scenes?.[sceneId] || {};
+    const routerId = state.get('scene.activeRouterId', {id:sceneId});
+    const router = scene.routers?.[routerId] || {};
+    const title = scene.meta?.title || sceneId || 'Không rõ địa điểm';
+    $('sceneTitle').textContent = title;
+    $('sceneDesc').textContent = scene.meta?.desc || '';
+    $('sceneId').textContent = sceneId || '—';
+    $('routerLabel').textContent = 'ROUTER · ' + (router.meta?.desc || routerId || '—');
+    $('revision').textContent = 'revision ' + (engine.protocol.stateRevision ?? '—');
+
+    const sceneIds = Object.keys(engine.src.scenes || {});
+    $('sceneCount').textContent = sceneIds.length + ' địa điểm';
+    $('sceneList').replaceChildren();
+    for (const id of sceneIds) {
+      const def = engine.src.scenes[id];
+      const b = document.createElement('button');
+      b.className = 'scene-btn' + (id === sceneId ? ' active' : '');
+      const label = document.createElement('span'); label.textContent = def.meta?.title || id;
+      const marker = document.createElement('span'); marker.className='small muted'; marker.textContent = id === sceneId ? '●' : '›';
+      b.append(label, marker);
+      b.addEventListener('click', () => runCommand('scene.enter', {sceneId:id, skipTransition:true}));
+      $('sceneList').append(b);
+    }
+
+    $('routerList').replaceChildren();
+    for (const [id, def] of Object.entries(scene.routers || {})) {
+      const b = document.createElement('button');
+      b.textContent = def.meta?.desc || id;
+      b.className = id === routerId ? 'active' : '';
+      b.disabled = id === routerId;
+      b.addEventListener('click', async () => {
+        try { await engine.enterRouter(id, true, false, true); refresh(); }
+        catch (error) { reportError(error); }
+      });
+      $('routerList').append(b);
+    }
+
+    const actions = engine.getEffectiveActions(sceneId, routerId) || [];
+    $('actionCount').textContent = actions.length + ' hành động';
+    $('actions').replaceChildren();
+    if (!actions.length) $('actions').innerHTML = '<div class="empty">Router này không khai báo hành động.</div>';
+    for (const action of actions) {
+      const b = document.createElement('button'); b.className='action';
+      const name = document.createElement('strong'); name.textContent=action.meta?.title || action.id;
+      const desc = document.createElement('span'); desc.textContent=action.meta?.desc || action.id;
+      b.append(name, desc);
+      b.addEventListener('click', () => runCommand('action.trigger', {actionId:action.id, uniqueId:action.id}));
+      $('actions').append(b);
+    }
+
+    const items = engine.api.engine.state.getSourceSnapshot('itemInfo') || {};
+    const inventory = engine.getInventory?.() || [];
+    const hand = engine.getHand?.() || [];
+    $('handCount').textContent = 'Tay: ' + (Array.isArray(hand) ? hand.length : Object.keys(hand || {}).length);
+    $('inventory').replaceChildren();
+    const ids = Array.isArray(inventory) ? inventory : Object.keys(items);
+    for (const id of ids) {
+      const def = items[id] || engine.api.engine.state.getItem(id) || {};
+      const line = document.createElement('div'); line.className='item';
+      const label = document.createElement('span'); label.textContent=def.name || id;
+      const b = document.createElement('button'); b.textContent='Cầm / bỏ';
+      b.addEventListener('click', () => runCommand('inventory.toggleHand', {itemId:id}));
+      line.append(label,b); $('inventory').append(line);
+    }
+    if (!$('inventory').children.length) $('inventory').innerHTML='<div class="empty">Không có vật phẩm trong túi.</div>';
+
+    renderChat();
+    const snapshot = safeSnapshot();
+    $('stateView').textContent = JSON.stringify({
+      sceneId,
+      activeRouterId: routerId,
+      global: state.getRuntimeSnapshot('global') || state.getRuntimeSnapshot('globalStates') || {},
+      hand,
+      chat: engine.chatState,
+      passwordChallenge: state.getSessionSnapshot('passwordChallenge') || null,
+      snapshotRevision: snapshot?.stateRevision
+    }, null, 2);
+  }
+
+  function renderChat() {
+    const active = !!engine.chatState?.active;
+    $('chatStatus').textContent = active ? 'Đang hoạt động' : 'Không hoạt động';
+    $('nextChat').disabled = !active;
+    if (!active) {
+      $('chatContent').textContent='Chưa có hội thoại đang mở.';
+      $('chatChoices').replaceChildren();
+      return;
+    }
+    const id=engine.chatState.id;
+    const data=engine.api.engine.state.getChatData(id) || {};
+    $('chatContent').textContent = JSON.stringify({chatId:id, blockId:engine.chatState.blockId, index:engine.chatState.index, data}, null, 2);
+    $('chatChoices').replaceChildren();
+    const choices = data.choices || data.choice || [];
+    if (Array.isArray(choices)) choices.forEach((choice,index)=>{
+      const b=document.createElement('button'); b.className='choice'; b.textContent=choice.title || choice.text || choice.label || ('Lựa chọn '+(index+1));
+      b.addEventListener('click',()=>runCommand('chat.selectChoice',{index}));
+      $('chatChoices').append(b);
+    });
+  }
+
+  async function runCommand(name, payload={}) {
+    if (!engine) return;
+    try {
+      const ack = await engine.api.protocol.command(name, payload);
+      logEvent({type:'console.command.ack', command:name, payload, acknowledgement:ack});
+      refresh();
+      inspectChallenge();
+    } catch (error) { reportError(error); }
+  }
+
+  function reportError(error) {
+    logEvent({type:'console.error', message:error?.message || String(error), stack:error?.stack});
+    console.error(error);
+  }
+
+  function inspectChallenge() {
+    if (!engine) return;
+    const challenge = engine.pendingPasswordAction || engine.api.engine.state.getSessionSnapshot('passwordChallenge');
+    if (!challenge || !challenge.challengeId) return;
+    passwordChallenge = challenge;
+    $('passwordTitle').textContent = 'Thử thách: ' + (challenge.type || 'password');
+    const config = engine.src?.passwords?.[challenge.type]?.[challenge.passwordId] || {};
+    $('passwordDesc').textContent = config.desc || 'Nhập câu trả lời cho thử thách hiện tại.';
+    $('passwordInput').value = '';
+    $('passwordModal').classList.add('open');
+  }
+
+  $('passwordForm').addEventListener('submit', async event => {
+    event.preventDefault();
+    if (!passwordChallenge) return;
+    let input = $('passwordInput').value;
+    if (['puzzle','find_way'].includes(passwordChallenge.type)) {
+      try { input = JSON.parse(input); } catch { /* raw text remains available for custom input */ }
+    }
+    await runCommand('password.submit', {challengeId:passwordChallenge.challengeId, input});
+    const stillActive = engine?.pendingPasswordAction?.challengeId === passwordChallenge.challengeId;
+    if (!stillActive) { passwordChallenge=null; $('passwordModal').classList.remove('open'); }
+  });
+  $('cancelPassword').addEventListener('click', async () => {
+    if (!passwordChallenge) return;
+    const id=passwordChallenge.challengeId;
+    await runCommand('password.submit',{challengeId:id,cancel:true});
+    passwordChallenge=null; $('passwordModal').classList.remove('open');
+  });
+
+  async function loadDemo() {
+    try {
+      if (unsubscribe) unsubscribe();
+      if (engine) engine.dispose?.();
+      engine = new GameEngine();
+      unsubscribe = engine.protocol.subscribe(logEvent);
+      setStatus('Đang nạp kịch bản…');
+      await engine.init(structuredClone(DEMO_SCRIPT));
+      logEvent({type:'console.ready', title:DEMO_SCRIPT.meta.title, entryScene:DEMO_SCRIPT.meta.entryScene});
+      setStatus('Đã nạp demo', true);
+      refresh();
+    } catch (error) { setStatus('Nạp demo thất bại'); reportError(error); }
+  }
+
+  $('loadBtn').addEventListener('click',loadDemo);
+  $('resetBtn').addEventListener('click',loadDemo);
+  $('refreshBtn').addEventListener('click',refresh);
+  $('nextChat').addEventListener('click',()=>runCommand('chat.next'));
+  $('clearLog').addEventListener('click',()=>{$('eventLog').innerHTML='<div class="empty">Log đã được xóa.</div>';lastEvents=0;});
+  $('saveBtn').addEventListener('click',async()=>{
+    try {
+      const save=await engine.exportSave();
+      const blob=new Blob([JSON.stringify(save,null,2)],{type:'application/json'});
+      const url=URL.createObjectURL(blob); const a=document.createElement('a');
+      a.href=url;a.download='vsr-demo-save.json';a.click();URL.revokeObjectURL(url);
+    } catch(error){reportError(error);}
+  });
+  $('restoreBtn').addEventListener('click',()=>$('saveFile').click());
+  $('saveFile').addEventListener('change',async event=>{
+    const file=event.target.files?.[0];if(!file||!engine)return;
+    try{await engine.restoreSave(JSON.parse(await file.text()));refresh();logEvent({type:'console.save.restored',file:file.name});}
+    catch(error){reportError(error);}finally{event.target.value='';}
+  });
+
+  window.addEventListener('error',event=>reportError(event.error || event.message));
+  window.addEventListener('unhandledrejection',event=>reportError(event.reason));
+  loadDemo();
+</script>
+</body>
+</html>
