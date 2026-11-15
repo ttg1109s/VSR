@@ -19,7 +19,13 @@ export const ItemStrategies = {
             if (!item.stats) item.stats = {};
 
             // [REFACTOR] Use 'exec' for ALL item stats operations
-            const execMode = eff.exec || 'add'; // Default to add if missing/legacy? Or strictly exec.
+            const execMode = eff.exec || 'add';
+            const field = eff.field || 'current';
+            if (!['current', 'max'].includes(field) ||
+                !['add_stats', 'remove_stats', 'add', 'set', 'full'].includes(execMode) ||
+                (field === 'max' && execMode === 'full')) {
+                throw new TypeError(`Unsupported item.stats operation: ${String(execMode)} for field ${String(field)}`);
+            }
 
             if (execMode === 'add_stats') {
                 StatsHelpers.add_stats(item, eff, false, itemId, engine);
