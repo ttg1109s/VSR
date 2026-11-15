@@ -109,3 +109,7 @@ The StateAccess facade provides explicit reads, writes, deletes, snapshots, and 
 ## Verification
 
 Run `npm test`, `npm run schema:check`, `npm run audit:state:strict`, and `npm run check:server`. CI validates these checks against the headless runtime and adapter boundary.
+
+## React application and deployment
+
+A separate React/Vite application scaffold is available at the repository root. It intentionally renders no UI; the VSR engine remains framework-agnostic. Run `npm run dev` for local development and `npm run build` for a production build. GitHub Pages deployment is configured in `.github/workflows/deploy-react-pages.yml`; see [README-REACT.md](./README-REACT.md) for setup details.
