@@ -15,5 +15,6 @@ jobs:
           node-version: 20
       - run: npm install --ignore-scripts --no-audit --no-fund
       - run: npm run schema:check
+      - run: npm run build
       - run: npm test
       - run: npm run audit:state:strict
