@@ -38,13 +38,13 @@ test('browser client consumes JSON snapshots and only the active router projecti
   const client = new JsonClient(host);
   try {
     const snapshot = await client.initialize(JSON.parse(host.getDemoScenario()));
-    assert.equal(snapshot.game.sceneId, 'scene_garden');
-    assert.equal(snapshot.game.routerId, 'square_gate');
+    assert.equal(snapshot.game.sceneId, 'scene_village_square');
+    assert.equal(snapshot.game.routerId, 'router_square_fogbound');
     assert.deepEqual(snapshot.presentation.actions.map(action => action.id), [
-      'act_read_notice', 'act_talk_mai', 'act_enter_well', 'act_travel_inn',
-      'act_travel_chapel', 'act_travel_school', 'act_travel_forest'
+      'action_read_notice', 'action_talk_mai', 'action_enter_well', 'action_travel_inn',
+      'action_travel_chapel', 'action_travel_school', 'action_travel_forest', 'action_decode_broadcast'
     ]);
-    assert.equal(snapshot.presentation.actions.some(action => action.id === 'act_inspect_well'), false);
+    assert.equal(snapshot.presentation.actions.some(action => action.id === 'action_inspect_well'), false);
     assert.equal(Object.hasOwn(snapshot, 'source'), false);
     assert.equal(Object.hasOwn(snapshot.state.session || {}, 'passwordChallenge'), false);
 
