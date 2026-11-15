@@ -199,6 +199,7 @@ Các command sau được liệt kê trong `protocol/README.md`. Payload dưới
 
 | Command | Payload | Ý nghĩa |
 |---|---|---|
+| `scenario.inspect` | `{ scenario }` | Chuẩn hóa/validate scenario và trả metadata an toàn, không khởi chạy gameplay |
 | `engine.init` | `{ script }` | Khởi tạo scenario |
 | `action.trigger` | `{ actionId, uniqueId? }` | Thực thi action trên router đang active |
 | `action.markAsRead` | `{ uniqueId }` | Đánh dấu mô tả action đã đọc |
@@ -462,7 +463,7 @@ Các điểm sau cần được kiểm tra trước khi thiết kế feature:
 - Không giả định event stream không bao giờ mất event.
 - Không giả định `ack.ok` thay thế snapshot mới; acknowledgement và state synchronization là hai phần khác nhau.
 
-Tại thời điểm viết tài liệu, `src/App.jsx` chỉ render HomePage và hai nút Home chưa truyền `onClick` handler. Chưa có bằng chứng trong source đã tích hợp JsonClient vào React app. Vì vậy, các luồng React ở phần 6–7 là hợp đồng/định hướng triển khai, không mô tả tính năng UI đã hoạt động.
+Trong triển khai hiện tại, hai nút Home gọi `scenario.inspect` qua Worker-backed `JsonClient`. Metadata chỉ được hiển thị sau khi Engine xác thực scenario; `engine.init` chỉ được gọi khi người dùng chọn “Chạy kịch bản”.
 
 ## 10. Checklist khi xây dựng một feature React dùng Engine
 
