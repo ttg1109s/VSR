@@ -52,7 +52,18 @@ export class RegionRenderer {
     if (sceneIdChanged || routerChanged || !previous || !sameJson(previous.presentation?.router, snapshot.presentation?.router)) this.renderRouter(snapshot);
     if (sceneIdChanged || routerChanged || !previous || !sameJson(previous.presentation?.actions, snapshot.presentation?.actions) || !sameJson(previous.state?.actions, snapshot.state?.actions)) this.renderActions(snapshot);
     if (!previous || previous.stateRevision !== snapshot.stateRevision) this.renderFooter(snapshot);
-    this.renderOverlays();
+    if (!previous || !sameJson(previous.session, snapshot.session)) {
+      const challenge = snapshot.session?.passwordChallenge;
+      if (!challenge) this.overlayState.password = null;
+      else if (this.overlayState.password?.config?.challengeId !== challenge.challengeId) {
+        const action = (snapshot.presentation?.actions || []).find(item => item.id === challenge.actionId);
+        this.overlayState.password = { action, actionId: challenge.actionId, uniqueId: challenge.uniqueId,
+          config: { challengeId: challenge.challengeId, type: challenge.type, countTest: challenge.countTest,
+            retryMax: challenge.retryMax, deadlineAt: challenge.deadlineAt } };
+      }
+      this.overlayState.notifications = (snapshot.session?.notifications?.pending || []).slice(0, 5);
+      this.renderOverlays();
+    }
   }
 
   renderAll(snapshot) {
