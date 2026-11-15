@@ -1,11 +1,11 @@
 # VSR Client Adapters
 
-This directory contains protocol and transport adapters only. The React application UI, DOM renderer, debug drawer, and presentation styles have been removed.
+This directory contains framework-agnostic protocol and transport adapters only. No application UI, DOM renderer, debug drawer, or presentation styles are included.
 
 ## Runtime boundary
 
 ```text
-Host application (React or another technology)
+Host application (any presentation technology)
   └── JsonClient
         └── WorkerJsonTransport
               ⇅ JSON commands / acknowledgements / snapshots / events
