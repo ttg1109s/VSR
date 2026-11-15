@@ -176,6 +176,7 @@ export const SceneSystem = {
         this.activeTimerTasks.forEach(taskId => this.taskManager.kill(taskId));
         this.activeTimerTasks = [];
 
+        this.timerState = null;
         this.api.presentation.scene.hideTimer();
 
         const oldRouterId = state.getRuntimeSnapshot('scenes.[id]', { id: sId })?.activeRouterId;
@@ -291,6 +292,7 @@ export const SceneSystem = {
                     this.taskManager.kill(uiTaskId);
                     this.taskManager.kill(endTaskId);
 
+                    this.timerState = null;
                     this.api.presentation.scene.hideTimer();
 
                     const endMode = rConfigSet.timerEnd || 'out';
@@ -343,6 +345,13 @@ export const SceneSystem = {
         const m = Math.floor(displayVal / 60).toString().padStart(2, '0');
         const s = (displayVal % 60).toString().padStart(2, '0');
 
+        this.timerState = {
+            active: true,
+            sceneId: this.api.engine.state.get('sceneId'),
+            routerId: this.api.engine.state.get('scene.activeRouterId', { id: this.api.engine.state.get('sceneId') }),
+            mode, maxSeconds: maxVal, remainingSeconds: currentVal,
+            displayText: `${m}:${s}`, updatedAt: Date.now()
+        };
         this.api.presentation.scene.updateTimer(`${m}:${s}`);
     },
 
