@@ -1,6 +1,6 @@
 // demo_script.js
 // THE SILENT VILLAGE — Ngôi Làng Không Tiếng Động
-// Scenario format v1; spatial model: Scene = physical space, Router = state of that space, Action = interaction/change.
+// Scenario format v1; Scene = physical space, Router = spatial state, Action = interaction/change.
 export const DEMO_SCRIPT = {
   "formatVersion": 1,
   "meta": {
@@ -102,6 +102,10 @@ export const DEMO_SCRIPT = {
       "value": false
     },
     "clue_hymn": {
+      "type": "boolean",
+      "value": false
+    },
+    "clue_stakes": {
       "type": "boolean",
       "value": false
     }
@@ -764,8 +768,8 @@ export const DEMO_SCRIPT = {
         "router_watermill_stalled": {
           "meta": {
             "sceneID": "scene_watermill",
-            "subTitleStatus": "Bánh xe quay giữa dòng suối cạn",
-            "desc": "Sàn máy rung lên theo chuyển động của bánh xe dù dòng suối đã cạn từ lâu. Bảng điều khiển vẫn hoạt động; cơ cấu bánh xe có thể được xoay ngược để mở cửa sập dưới sàn."
+            "subTitleStatus": "Bánh xe đứng im giữa dòng suối cạn",
+            "desc": "Dòng suối đã cạn, bánh xe mục kẹt cứng trên trục. Bảng điều khiển còn nguyên; cần mảnh sơ đồ lấy từ trường học để xác định cách lắp lại cơ cấu truyền động."
           },
           "set": {
             "blocked": false,
@@ -774,6 +778,22 @@ export const DEMO_SCRIPT = {
           },
           "actions": [
             "action_repair_mill",
+            "action_return_forest"
+          ]
+        },
+        "router_watermill_running": {
+          "meta": {
+            "sceneID": "scene_watermill",
+            "subTitleStatus": "Bánh xe đã khởi động, lối xuống đê mở ra",
+            "desc": "Bánh xe đã ăn khớp với trục truyền động. Dưới sàn, cửa sập rung lên theo nhịp máy và để lộ lối xuống đường hầm dưới chân đê."
+          },
+          "set": {
+            "blocked": false,
+            "visited": false,
+            "countVisited": 0
+          },
+          "actions": [
+            "action_descend_tunnel",
             "action_return_forest"
           ]
         }
@@ -1905,8 +1925,8 @@ export const DEMO_SCRIPT = {
           },
           {
             "type": "goto",
-            "subtype": "scene",
-            "target": "scene_levee_tunnel"
+            "subtype": "router",
+            "target": "router_watermill_running"
           }
         ],
         "fail": [
@@ -2777,6 +2797,52 @@ export const DEMO_SCRIPT = {
       },
       "requirement": {
         "ref": "station_ready"
+      }
+    },
+    "action_descend_tunnel": {
+      "meta": {
+        "title": "Mở cửa sập xuống đường hầm",
+        "desc": "Bánh xe đã chạy, cơ cấu đối trọng nâng cửa sập dưới sàn cối xay."
+      },
+      "set": {
+        "type": "none",
+        "display": "show"
+      },
+      "effect": {
+        "normal": [
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "info",
+            "text": "Cửa sập chỉ có thể mở khi bánh xe đã hoạt động."
+          }
+        ],
+        "pass": [
+          {
+            "type": "goto",
+            "subtype": "scene",
+            "target": "scene_levee_tunnel"
+          }
+        ],
+        "fail": [
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "warn",
+            "text": "Cơ cấu truyền động chưa hoạt động."
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "mill_powered",
+            "op": "==",
+            "value": true
+          }
+        ]
       }
     }
   },
