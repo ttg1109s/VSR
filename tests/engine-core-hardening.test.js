@@ -119,7 +119,7 @@ test('a global action cannot be triggered unless the active router references it
     },
     getEffectiveActions: ActionSystem.getEffectiveActions
   };
-  assert.equal(await ActionSystem.handleAction.call(engine, 'hidden'), undefined);
+  assert.deepEqual(await ActionSystem.handleAction.call(engine, 'hidden'), { success: false, reason: 'action_not_found' });
 });
 
 test('entering a locked scene is rejected by the engine', async () => {
