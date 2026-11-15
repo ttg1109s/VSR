@@ -7,6 +7,7 @@ const REASONS = {
   not_read: 'Read description',
   cooldown: 'On cooldown',
   requirement_failed: 'Requirements not met',
+  requirement_unavailable: 'Requirement evaluation unavailable',
   target_locked: 'Target is locked',
   busy: 'Engine is busy',
   password_required: 'Ready',
@@ -14,7 +15,7 @@ const REASONS = {
 const REASON_TONES = {
   locked: 'danger', permission_denied: 'danger', target_locked: 'danger',
   requirement_failed: 'warning', not_read: 'warning', cooldown: 'warning',
-  busy: 'info', password_required: 'info', available: 'success',
+  busy: 'info', password_required: 'info', requirement_unavailable: 'info', available: 'success',
 };
 const seconds = (until, now) => Number.isFinite(until) ? Math.max(0, Math.ceil((until - now) / 1000)) : 0;
 
