@@ -49,7 +49,11 @@ The `password.submit` command requires an active Engine-owned challenge. Its pay
 
 For `puzzle`, the client submits the piece arrangement as an array (or JSON-encoded array) of original piece indices in final row-major positions. The Engine validates dimensions and arrangement.
 
-## Scenario and saves
+## Scenario inspection and saves
+
+`scenario.inspect` runs the same scenario normalization, schema validation, and reference validation used by initialization. It returns a client-safe metadata projection (`metadata`), structural counts (`summary`), and the normalized format version. It does not call `GameEngine.init`, enter the entry scene, start gameplay tasks, publish a state snapshot, or increment `stateRevision`. The command still produces normal command-lifecycle events and an acknowledgement. The metadata projection is an explicit whitelist; it does not return the scenario source, executable effects, password definitions, or runtime state.
+
+The UI should call `scenario.inspect` after selecting a demo or parsing an imported JSON file, show the returned metadata, and call `engine.init` only after the user confirms.
 
 Scenario JSON is separate from save data. Save data uses a versioned `vsr-save` envelope. Runtime queues and timer handles are excluded; supported domain tasks are rehydrated from saved state. Save export contains scenario and runtime data and should be treated as sensitive: do not expose it to an untrusted caller without an explicit product decision and authorization.
 
