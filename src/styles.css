@@ -13,24 +13,3 @@
 @media(max-width:700px){.topbar{height:64px;padding:0 18px}.top-nav{gap:12px}.top-nav button{font-size:10px}.top-actions .status{display:none}.hero{grid-template-columns:1fr;padding:55px 0 35px;min-height:unset}.hero h1{font-size:58px}.hero-art{height:260px;max-width:340px;margin-top:20px}.library-heading{align-items:flex-start;gap:15px;flex-direction:column}.story-grid{grid-template-columns:1fr}.story-visual{height:210px}.add-story-card{min-height:220px}.page-footer{gap:10px;flex-wrap:wrap}.page-footer>span:last-child{display:none}.detail-layout{grid-template-columns:1fr;padding-top:25px}.detail-cover{min-height:330px}.detail-copy h1{font-size:40px}.loading-orbit{left:-70px;opacity:.5}.loading-copy{margin:0 24px 0 20%;}.loading-copy h1{font-size:43px}.game-header{padding:0 12px}.game-header-left,.game-header-right{gap:9px}.game-title{display:none}.game-live{font-size:8px;margin-right:0}.game-layout{display:flex;flex-direction:column;padding:16px 12px 40px}.game-sidebar{min-height:300px}.scene-panel{grid-template-columns:1fr}.scene-artwork{min-height:190px}.action-grid{grid-template-columns:1fr}.game-footer{padding:12px;gap:8px;flex-wrap:wrap}.game-footer span:last-child{display:none}.dialogue-dock{right:12px;bottom:12px;width:calc(100vw - 24px)}.notification-stack{top:72px;right:12px}.game-header-right button,.game-restore{width:28px;height:28px}.game-header-left .brand-word{font-size:11px}.game-header-left .brand-muted{display:none}}
 @media(max-width:420px){.top-nav button:nth-child(2){display:none}.hero h1{font-size:49px}.hero-caption{display:none}.hero-actions{gap:14px}.detail-stats b{font-size:18px}.detail-stats span{font-size:7px}.detail-toolbar>span:nth-child(2){display:none}.game-header-right .game-live{display:none}.scene-text h1{font-size:27px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
-
-
-/* Homepage: minimal, pure-white entry point */
-:root{background:#fff;--paper:#fff}
-html,body,#app,.app-frame{background:#fff}
-.home-topbar{background:#fff;border-bottom:1px solid #ededed}
-.home-page{min-height:calc(100vh - 76px);display:grid;place-items:center;padding:48px 24px;background:#fff}
-.home-content{width:min(100%,560px);display:flex;flex-direction:column;align-items:center;text-align:center}
-.home-eyebrow{font:10px var(--mono);letter-spacing:.22em;color:#999;margin-bottom:30px}
-.home-emblem{width:66px;height:66px;display:grid;place-items:center;border:1px solid #e6e6e6;border-radius:18px;color:#171717;font:800 38px var(--display);letter-spacing:-.1em;background:#fff}
-.home-content h1{font:800 clamp(52px,9vw,76px)/1 var(--display);letter-spacing:-.09em;color:#111;margin:24px 0 10px}
-.home-content h1 span{font:400 .35em var(--mono);letter-spacing:0;color:#b8b8b8;margin-left:8px;vertical-align:middle}
-.home-description{font-size:14px;line-height:1.8;color:#777;margin:0;max-width:360px}
-.home-actions{width:min(100%,360px);display:grid;grid-template-columns:1fr;gap:11px;margin-top:34px}
-.home-actions .button{min-height:50px;width:100%;justify-content:center;border:1px solid #dedede;border-radius:7px;background:#fff;color:#222;font-size:13px}
-.home-actions .button:hover{border-color:#999;background:#fafafa;transform:translateY(-1px)}
-.home-actions .button-primary{background:#111;color:#fff;border-color:#111}
-.home-actions .button-primary:hover{background:#303030;border-color:#303030}
-.home-actions .button-primary .icon{color:#fff}
-.home-footnote{margin-top:42px;font:9px var(--mono);letter-spacing:.14em;color:#b0b0b0}
-@media(max-width:600px){.home-page{min-height:calc(100vh - 64px);padding:32px 22px}.home-topbar{height:64px;padding:0 20px}.home-topbar .status{font-size:8px}.home-emblem{width:58px;height:58px;border-radius:15px}.home-description{font-size:13px}}
