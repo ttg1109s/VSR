@@ -133,6 +133,7 @@ export class GameEngine {
   this.runtime={effectQueue:{sync:[],async:[]},isSyncQueueRunning:false,isAsyncQueueRunning:false};
   this.src=null;this.scenario=null;this.pendingPasswordAction=null;
   this.chatState={active:false,blocking:false,id:null,blockId:null,index:0,triggerActionId:null,actionModified:false};
+  this.timerState=null;
   this.taskSequence=0;this.currentStillTask=null;this.activeTimerTasks=[];this.isActionProcessing=false;this.isTransitioning=false;this.disposed=false;this.restoredTaskTimers={};this.restoredPausedTasks=[];
  }
  async init(script){
