@@ -85,37 +85,37 @@ export const ItemStrategies = {
     },
 
     remove: (engine, eff, context) => {
-        // [REFACTORED] Xóa khỏi Character Inventory
+        // Remove the item from the active character inventory.
         const char = ItemStrategies._getChar(engine);
-        if (!char || !char.inventory) return;
-
-        const idx = (char.inventory || []).indexOf(eff.target);
         let succeeded = false;
-        let succeeded = false;
-        if (idx > -1) {
-            const ownerId = ItemStrategies._getOwnerId(engine);
-            engine.api.engine.state.update('characters.[id]', current => ({
-                ...current,
-                inventory: (current.inventory || []).filter(itemId => itemId !== eff.target),
-                hand: (current.hand || []).filter(itemId => itemId !== eff.target)
-            }), { id: ownerId });
-            engine.api.presentation.components.explorer();
-            succeeded = true;
+        if (char?.inventory) {
+            const idx = char.inventory.indexOf(eff.target);
+            if (idx > -1) {
+                const ownerId = ItemStrategies._getOwnerId(engine);
+                engine.api.engine.state.update('characters.[id]', current => ({
+                    ...current,
+                    inventory: (current.inventory || []).filter(itemId => itemId !== eff.target),
+                    hand: (current.hand || []).filter(itemId => itemId !== eff.target)
+                }), { id: ownerId });
+                engine.api.presentation.components.explorer();
+                succeeded = true;
+            }
         }
         ItemStrategies._tryHideAction(engine, eff, context, succeeded);
     },
 
     hand_off: (engine, eff, context) => {
-        // [REFACTORED] Bỏ khỏi tay Character
+        // Remove the item from the active character's hand.
         const char = ItemStrategies._getChar(engine);
-        if (!char || !char.hand) return;
-
-        const idx = (char.hand || []).indexOf(eff.target);
-        if (idx > -1) {
-            const ownerId = ItemStrategies._getOwnerId(engine);
-            engine.api.engine.state.update('characters.[id].hand', hand => (hand || []).filter(itemId => itemId !== eff.target), { id: ownerId });
-            engine.api.presentation.components.explorer();
-            succeeded = true;
+        let succeeded = false;
+        if (char?.hand) {
+            const idx = char.hand.indexOf(eff.target);
+            if (idx > -1) {
+                const ownerId = ItemStrategies._getOwnerId(engine);
+                engine.api.engine.state.update('characters.[id].hand', hand => (hand || []).filter(itemId => itemId !== eff.target), { id: ownerId });
+                engine.api.presentation.components.explorer();
+                succeeded = true;
+            }
         }
         ItemStrategies._tryHideAction(engine, eff, context, succeeded);
     },
