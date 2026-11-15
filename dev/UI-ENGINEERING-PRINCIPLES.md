@@ -167,29 +167,38 @@ Không tách component chỉ vì một đoạn JSX ngắn. Không tạo abstract
 
 ## 6. Cấu trúc thư mục React
 
-Cấu trúc đề xuất cho quá trình phát triển tiếp theo:
+**Nguyên tắc:** Tổ chức thư mục theo độ phức tạp và trách nhiệm thực tế, không theo một bộ khung cố định. Không tạo trước thư mục rỗng hoặc các tầng `components/`, `hooks/`, `services/`, `utils/` cho mọi feature.
+
+Cấu trúc nền tối thiểu:
 
 ~~~text
 src/
-├── app/                    # App shell, providers, route composition (khi cần)
-├── pages/
-│   ├── home/
-│   │   ├── HomePage.jsx
-│   │   └── HomePage.css
+├── design-system/          # UI primitives, components, patterns và tokens dùng chung
+├── pages/                  # Page composition và route-level entry
+│   └── <page>/
+│       └── <Page>.jsx
+├── components/             # Component đặc thù, chỉ dùng trong một page/feature
 │   └── <feature>/
-│       ├── <Feature>Page.jsx
-│       └── <Feature>Page.css
-├── components/
-│   └── <feature>/          # Component chỉ thuộc feature hoặc page
-├── services/               # Điều phối application/use-case, tích hợp runtime
-├── hooks/                  # React hooks dùng chung ở presentation layer
-├── design-system/          # Nguồn chuẩn UI dùng chung
+│       └── <Component>.jsx
 ├── App.jsx
-├── App.css
 └── main.jsx
 ~~~
 
-Đây là cấu trúc định hướng, không yêu cầu tạo trước các thư mục rỗng. Chỉ thêm tầng khi có nhu cầu thực tế. App.jsx nên làm nhiệm vụ composition/route entry, không chứa toàn bộ page và feature implementation.
+Các thư mục `app/`, `services/`, `hooks/`, `utils/`, `assets/` hoặc `features/` chỉ được thêm khi có trách nhiệm và nội dung thực tế cần đặt ở đó. Không tạo chúng chỉ để cấu trúc trông đầy đủ.
+
+**Quy tắc tổ chức feature/page:**
+
+1. Bắt đầu bằng cấu trúc phẳng. Một feature nhỏ có thể chỉ gồm page và một vài component liên quan; không cần thêm thư mục con.
+2. Chỉ tạo `components/`, `hooks/`, `services/`, `utils/` bên trong feature khi đã có nhiều module cùng loại và việc nhóm chúng giúp định vị, ownership hoặc bảo trì rõ ràng hơn.
+3. Không tạo file barrel `index.js` chỉ để re-export nếu chưa có nhu cầu public API hoặc ranh giới module cụ thể.
+4. Không tạo abstraction, thư mục hoặc file chỉ để dự phòng một khả năng mở rộng chưa có yêu cầu thực tế.
+5. Khi feature lớn lên, tái cấu trúc dựa trên cohesion, dependency và ownership thực tế; không cần di chuyển chỉ để tuân theo một sơ đồ lý thuyết.
+6. Page chỉ chứa composition và điều phối ở cấp page. Theo mục 5.2, page không có stylesheet riêng; layout/presentation phải đến từ Design System.
+7. Component đặc thù đặt gần phạm vi sử dụng của nó. Chỉ chuyển thành component/pattern dùng chung khi có nhu cầu tái sử dụng ổn định hoặc một API/hành vi độc lập có giá trị dùng chung.
+
+Không bắt buộc áp dụng đồng loạt Feature-based Architecture cho toàn bộ repository. Có thể giữ `pages/` và `components/` ở cấp `src/` khi quy mô hiện tại phù hợp; chỉ chuyển sang `features/` khi việc gom page, component và logic theo domain thực sự làm ranh giới rõ hơn. Không duy trì đồng thời hai cách tổ chức cho cùng một feature nếu không có lý do kiến trúc cụ thể.
+
+**Tiêu chí quyết định:** Mỗi thư mục phải có trách nhiệm rõ ràng và chứa đủ nội dung để việc phân nhóm có ích. Nếu một thư mục chỉ có một file và không tạo ra ranh giới ownership cần thiết, ưu tiên đặt file ở cấp gần nhất hợp lý. Kiến trúc tốt tối thiểu hóa độ sâu và sự phân mảnh mà vẫn giữ được ranh giới phụ thuộc rõ ràng.
 
 ## 7. Accessibility và interaction
 
