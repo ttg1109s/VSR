@@ -46,7 +46,7 @@ function openEventStream(request, response) {
   });
   response.flushHeaders?.();
   clients.add(response);
-  request.on('close', () => clients.delete(response));
+  response.on('close', () => clients.delete(response));
 
   const lastId = Number(request.headers['last-event-id'] || 0);
   const replay = engine.protocol.getEventsAfter(Number.isInteger(lastId) && lastId >= 0 ? lastId : 0);
