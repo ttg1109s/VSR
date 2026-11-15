@@ -93,14 +93,10 @@ function formatDifficulty(value) {
 
 export default function ScenarioPreviewPage({ preview, onBack }) {
   const metadata = preview?.metadata || {};
-  const summary = preview?.summary || {};
   const experienceItems = [
     { label: 'Độ tuổi', value: metadata.ageRating },
     { label: 'Độ khó', value: formatDifficulty(metadata.difficulty) },
-    { label: 'Thời lượng dự kiến', value: formatPlayTime(metadata.estimatedPlayTime) },
-    { label: 'Số cảnh', value: Number.isFinite(summary.sceneCount) ? summary.sceneCount : null },
-    { label: 'Số nhân vật', value: Number.isFinite(summary.characterCount) ? summary.characterCount : null },
-    { label: 'Số vật phẩm', value: Number.isFinite(summary.itemCount) ? summary.itemCount : null }
+    { label: 'Thời lượng dự kiến', value: formatPlayTime(metadata.estimatedPlayTime) }
   ].filter(item => item.value !== null && item.value !== undefined && item.value !== '');
 
   const publicationItems = [
