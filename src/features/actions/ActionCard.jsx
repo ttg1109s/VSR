@@ -19,7 +19,7 @@ const REASON_TONES = {
 };
 const seconds = (until, now) => Number.isFinite(until) ? Math.max(0, Math.ceil((until - now) / 1000)) : 0;
 
-function ActionCard({ action, pending = false, passwordChallenge = null, feedback = '', onTrigger, onMarkRead, onSubmitPassword, onCancelPassword, onRefreshSnapshot }) {
+function ActionCard({ action, pending = false, interactionBlocked = false, passwordChallenge = null, feedback = '', onTrigger, onMarkRead, onSubmitPassword, onCancelPassword, onRefreshSnapshot }) {
   const [input, setInput] = useState('');
   const [error, setError] = useState('');
   const [challengeFeedback, setChallengeFeedback] = useState('');
@@ -114,8 +114,12 @@ function ActionCard({ action, pending = false, passwordChallenge = null, feedbac
   const handleDescriptionOpen = async open => {
     if (!open || !readRequired || read || !onMarkRead || pending || readRequestRef.current) return;
     readRequestRef.current = true;
-    const succeeded = await onMarkRead(action);
-    if (succeeded === false) readRequestRef.current = false;
+    try {
+      const succeeded = await onMarkRead(action);
+      if (succeeded === false) readRequestRef.current = false;
+    } catch (_) {
+      readRequestRef.current = false;
+    }
   };
 
   useEffect(() => {
@@ -177,7 +181,7 @@ function ActionCard({ action, pending = false, passwordChallenge = null, feedbac
 
     {feedback && <p className="vsr-action-card__feedback" role="status">{feedback}</p>}
     <div className="vsr-action-card__actions">
-      <Button size="lg" leadingIcon={meta.buttonIcon} disabled={pending || coolingDown || !ready || availability.canTrigger !== true || locked} loading={pending} onClick={() => onTrigger?.(action)} aria-label={meta.buttonLabel || `Execute ${meta.title || action.id}`}>{meta.buttonLabel || 'Execute'}</Button>
+      <Button size="lg" leadingIcon={meta.buttonIcon} disabled={pending || interactionBlocked || coolingDown || !ready || availability.canTrigger !== true || locked} loading={pending} onClick={() => onTrigger?.(action)} aria-label={meta.buttonLabel || `Execute ${meta.title || action.id}`}>{meta.buttonLabel || 'Execute'}</Button>
     </div>
 
     <Dialog open={challengeOpen} onClose={cancel} title="Verify action" description={passwordChallenge?.description || 'Complete the challenge provided by the Engine.'}>

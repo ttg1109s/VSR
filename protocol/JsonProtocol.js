@@ -92,13 +92,16 @@ export class JsonProtocol{
     };
     if(display==='locked')reason='locked';
     else if(engine.isTransitioning||engine.isActionProcessing)reason='busy';
+    else if(engine.pendingPasswordAction)reason='challenge_active';
+    else if(set.type==='to_scene'&&set.target&&engine.checkHardLock?.('scene',set.target))reason='target_locked';
+    else if(set.type==='swap_router'&&set.target&&engine.checkHardLock?.('router',set.target))reason='target_locked';
     else if(!permissionAllowed)reason='permission_denied';
     else if(readRequired&&!read)reason='not_read';
     else if(cooldownUntil!==null&&cooldownUntil>Date.now())reason='cooldown';
-    else if(set.type==='to_scene'&&set.target&&engine.checkHardLock?.('scene',set.target))reason='target_locked';
-    else if(set.type==='swap_router'&&set.target&&engine.checkHardLock?.('router',set.target))reason='target_locked';
-    else if(set.requirement===true){if(requirementPass===false)reason='requirement_failed';else if(requirementPass===null)reason='requirement_unavailable';else if(set.password)reason='password_required';}
+    else if(set.requirement===true&&requirementPass===false)reason='requirement_failed';
     else if(set.password)reason='password_required';
+    // An unevaluated random expression is not a denial. Let the Engine evaluate
+    // it exactly once at execution time; the projection must remain deterministic.
     const title=action.meta?.title??action.title??action.name??action.id;
     const meta=safeMeta(action.meta||{});
     return{id:action.id,key,title,name:action.name,meta:{...meta,title,description:meta.desc??meta.description??''},

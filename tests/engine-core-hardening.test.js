@@ -807,7 +807,76 @@ test('snapshot projection does not evaluate random requirement expressions', () 
   const projection = snapshot.presentation.actions[0];
 
   assert.equal(evaluations, 0);
-  assert.equal(projection.availability.reason, 'requirement_unavailable');
-  assert.equal(projection.availability.canTrigger, false);
+  assert.equal(projection.availability.reason, 'available');
+  assert.equal(projection.availability.canTrigger, true);
   assert.equal(projection.availability.checks.requirement, 'not_evaluated');
+});
+
+
+test('random requirements stay triggerable in snapshots and are evaluated by the Engine at execution', async () => {
+  const scenario = validScenario();
+  scenario.globalStates.roll = { type: 'number', value: 99 };
+  scenario.scenes.start.routers.main.actions = [{
+    id: 'random_requirement',
+    meta: { title: 'Random requirement' },
+    set: { display: 'show', requirement: true },
+    requirement: {
+      logic: null,
+      check: [{ type: 'state', property: 'roll', op: '==', value: '$rdnumber(1, 6)' }]
+    }
+  }];
+  const engine = new GameEngine();
+  try {
+    await engine.init(scenario);
+    const key = 'start_main_random_requirement';
+    const projection = engine.protocol.createSnapshot(engine).presentation.actions[0];
+    assert.equal(projection.availability.reason, 'available');
+    assert.equal(projection.availability.canTrigger, true);
+    assert.equal(projection.availability.checks.requirement, 'not_evaluated');
+
+    const result = await engine.handleAction('random_requirement', key);
+    assert.equal(result.success, false);
+    assert.equal(result.reason, 'requirement_failed');
+  } finally {
+    engine.dispose();
+  }
+});
+
+test('cooldown is enforced before action counters and normal effects are mutated', async () => {
+  const scenario = validScenario();
+  scenario.scenes.start.routers.main.actions = [{
+    id: 'cooldown_action',
+    meta: { title: 'Cooldown action' },
+    set: { display: 'show', cooldown: 60 },
+    effect: { normal: [{ type: 'notify', text: 'must-not-run' }] }
+  }];
+  const engine = new GameEngine();
+  try {
+    await engine.init(scenario);
+    const key = 'start_main_cooldown_action';
+    engine.api.engine.state.update('actions.[id]', current => ({
+      ...(current || {}), countClicks: 4, cooldownEnd: Date.now() + 60000
+    }), { id: key });
+    const result = await engine.handleAction('cooldown_action', key);
+    const runtime = engine.api.engine.state.getRuntimeSnapshot('actions.[id]', { id: key });
+    assert.equal(result.reason, 'cooldown');
+    assert.equal(runtime.countClicks, 4);
+    assert.equal(engine.notifications.getPending().some(item => item.message === 'must-not-run'), false);
+  } finally {
+    engine.dispose();
+  }
+});
+
+test('mark-as-read only mutates actions in the active router', async () => {
+  const scenario = validScenario();
+  scenario.scenes.start.routers.main.actions = [{ id: 'readable', meta: { desc: 'Read me' }, set: { display: 'show', readDesc: true } }];
+  const engine = new GameEngine();
+  try {
+    await engine.init(scenario);
+    assert.deepEqual(engine.markAsRead('forged_action_key'), { success: false, reason: 'action_not_found' });
+    assert.deepEqual(engine.markAsRead('start_main_readable'), { success: true });
+    assert.equal(engine.api.engine.state.getRuntimeSnapshot('actions.[id]', { id: 'start_main_readable' }).readDesc, true);
+  } finally {
+    engine.dispose();
+  }
 });

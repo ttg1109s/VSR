@@ -62,8 +62,17 @@ export const ActionSystem = {
 
     markAsRead(uniqueId) {
         const state = this.api.engine.state;
+        const sceneId = state.get('sceneId');
+        const routerId = sceneId ? state.get('scene.activeRouterId', { id: sceneId }) : null;
+        if (!sceneId || !routerId) return { success: false, reason: 'invalid_context' };
+
+        // Only the active router may mutate an action's read state.
+        const action = this.getEffectiveActions(sceneId, routerId)
+            .find(item => `${sceneId}_${routerId}_${item.id}` === uniqueId);
+        if (!action) return { success: false, reason: 'action_not_found' };
+
         const current = state.getRuntimeSnapshot('actions.[id]', { id: uniqueId });
-        if (current?.readDesc === true) return;
+        if (current?.readDesc === true) return { success: true, alreadyRead: true };
         state.update('actions.[id]', value => ({
             countClicks: 0,
             countFails: 0,
@@ -71,7 +80,7 @@ export const ActionSystem = {
             ...(value || {}),
             readDesc: true
         }), { id: uniqueId });
-        console.log(`[Action] Marked as read: ${uniqueId}`);
+        return { success: true };
     },
 
     async handleAction(actionKey, uniqueId = actionKey) {
@@ -80,6 +89,8 @@ export const ActionSystem = {
             console.warn(`[Flow] Action ignored. Busy: Processing=${this.isActionProcessing}, Trans=${this.isTransitioning}`);
             return { success: false, reason };
         }
+        // A password challenge owns the action flow until it is submitted or cancelled.
+        if (this.pendingPasswordAction) return { success: false, reason: 'challenge_active' };
 
         const state = this.api.engine.state;
         const sId = state.get('sceneId');
@@ -176,7 +187,7 @@ export const ActionSystem = {
         const currentState = this.api.engine.state.getRuntimeSnapshot('actions.[id]', { id: actStateKey }) || {};
 
         // Does this action effectively require reading?
-        const requiresRead = (allDescRead || set.readDesc === true) && !!actDef.meta?.desc;
+        const requiresRead = (allDescRead || set.readDesc === true) && !!(actDef.meta?.desc ?? actDef.meta?.description);
         const hasBeenRead = currentState.readDesc === true;
 
         if (requiresRead && !hasBeenRead) {
@@ -187,6 +198,15 @@ export const ActionSystem = {
                 { source: 'action', category: 'action.not_read', dedupeKey: `action.not_read:${actStateKey}`, duration: 4000 }
             );
             return { success: false, reason: 'not_read' };
+        }
+
+        // Enforce cooldown before counters, normal effects, or any other side effect.
+        const cooldownUntil = currentState.cooldownEnd;
+        if (set.cooldown > 0 && Number.isFinite(cooldownUntil) && cooldownUntil > Date.now()) {
+            const remainingSeconds = Math.ceil((cooldownUntil - Date.now()) / 1000);
+            this.api.presentation.effects.shake(uniqueId);
+            this.api.notifications.add('Thao tác thất bại', `Vui lòng đợi ${remainingSeconds}s`, 'warn');
+            return { success: false, reason: 'cooldown', remainingSeconds };
         }
 
         // --- Execution ---
@@ -210,17 +230,7 @@ export const ActionSystem = {
             }), { id: actStateKey });
             const actState = state.getRuntimeSnapshot('actions.[id]', { id: actStateKey });
 
-            // Check Cooldown
-            // [FIXED] Use internal logic for Cooldown timestamps as they are runtime only (not mapped in Schema for 'End Time')
-            if (set.cooldown && set.cooldown > 0 && actState.cooldownEnd && actState.cooldownEnd > Date.now()) {
-                this.api.presentation.effects.shake(uniqueId);
-                const rem = Math.ceil((actState.cooldownEnd - Date.now()) / 1000);
-                this.api.notifications.add("Thao tác thất bại", `Vui lòng đợi ${rem}s`, "warn");
-                this.isActionProcessing = false;
-                return { success: false, reason: 'cooldown', remainingSeconds: rem };
-            }
-
-            // Normal Effect (Always run if present)
+remove late cooldown check            // Normal Effect (Always run if present)
             if (actDef.effect?.normal) {
                 console.log(`[Flow] Effect 'normal' start`);
                 await this.processRunnables(actDef.effect.normal, { sceneId: sId, routerId: rId, actionId: actionKey, hook: 'normal' });
