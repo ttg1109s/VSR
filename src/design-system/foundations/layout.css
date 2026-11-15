@@ -53,8 +53,8 @@
 .vsr-grid--gap-4 { gap: var(--vsr-space-4); }
 .vsr-grid--gap-6 { gap: var(--vsr-space-6); }
 @media (max-width: 599px) {
-  .vsr-grid--columns-2,
-  .vsr-grid--columns-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .vsr-grid--columns-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .vsr-grid--columns-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 @media (min-width: 600px) {
   .vsr-grid--columns-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
