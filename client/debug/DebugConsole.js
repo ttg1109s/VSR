@@ -29,6 +29,6 @@ export class DebugConsole {
     this.root.querySelector('[data-close]')?.addEventListener('click', () => this.toggle());
     this.root.querySelector('[data-filter]')?.addEventListener('change', e => { this.filter = e.target.value; this.render(); });
     this.root.querySelector('[data-clear]')?.addEventListener('click', () => { this.entries = []; this.render(); });
-    this.root.querySelector('[data-copy]')?.addEventListener('click', () => navigator.clipboard.writeText(this.entries.map(x => '['+x.time+'] ['+x.level+'] '+x.message+'\n'+x.stack).join('\n\n')));
+    this.root.querySelector('[data-copy]')?.addEventListener('click', async () => { try { await navigator.clipboard.writeText(this.entries.map(x => '['+x.time+'] ['+x.level+'] '+x.message+'\\n'+x.stack).join('\\n\\n')); } catch (error) { this.record('warn', 'Clipboard unavailable: '+error.message); } });
   }
 }
