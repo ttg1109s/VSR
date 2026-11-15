@@ -269,3 +269,61 @@
 @media (prefers-reduced-motion: reduce) {
   .vsr-loader-mark .vsr-spinner { animation: none; }
 }
+
+
+/* Compact mobile loading layout: keep only the close control and runtime status. */
+.vsr-loader-page {
+  display: grid;
+  place-items: center;
+  min-height: 100svh;
+  padding: max(20px, env(safe-area-inset-top)) var(--vsr-page-padding) max(20px, env(safe-area-inset-bottom));
+}
+.vsr-loader-page > .vsr-content-width {
+  width: 100%;
+  max-width: 640px;
+  gap: 20px;
+}
+.vsr-loader-header {
+  min-height: 36px;
+}
+.vsr-loader-panel {
+  gap: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+.vsr-loader-status {
+  gap: 14px;
+}
+.vsr-loader-status-title {
+  font-size: clamp(21px, 5vw, 24px);
+  line-height: 1.25;
+}
+.vsr-loader-copy {
+  font-size: 15px;
+  line-height: 1.5;
+}
+.vsr-loader-progress {
+  gap: 9px;
+}
+.vsr-loader-progress-meta {
+  font-size: 11px;
+  letter-spacing: .06em;
+}
+.vsr-loader-footnote {
+  margin: -8px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+}
+@media (max-width: 599px) {
+  .vsr-loader-page {
+    padding: max(20px, env(safe-area-inset-top)) 24px max(20px, env(safe-area-inset-bottom));
+  }
+  .vsr-loader-page > .vsr-content-width {
+    gap: 16px;
+  }
+  .vsr-loader-panel {
+    gap: 26px;
+  }
+}
