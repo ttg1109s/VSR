@@ -141,10 +141,10 @@ export default function HomePage({
           </section>
 
           <div className="vsr-stack vsr-stack--gap-2">
-            <Button variant="primary" size="lg" block onClick={onConfirmPreview} disabled={Boolean(busy)} loading={Boolean(busy)}>
+            <Button variant="primary" size="lg" onClick={onConfirmPreview} disabled={Boolean(busy)} loading={Boolean(busy)}>
               Chạy kịch bản
             </Button>
-            <Button variant="secondary" size="md" block onClick={onCancelPreview} disabled={Boolean(busy)}>
+            <Button variant="secondary" size="md" onClick={onCancelPreview} disabled={Boolean(busy)}>
               Quay lại
             </Button>
           </div>
