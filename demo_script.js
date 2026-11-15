@@ -1481,15 +1481,14 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Bảng thông báo",
         "buttonLabel": "Đọc",
-        "desc": "Danh sách dân làng có một cái tên bị cạo đi. Một chiếc đèn bão bị bỏ lại dưới chân bảng."
+        "desc": "Bảng thông báo dựng cạnh lối vào quảng trường, nơi dân làng từng xem tin và lịch sơ tán. Danh sách vẫn còn nguyên các dòng chữ, chỉ riêng một cái tên bị cạo sâu đến rách mặt giấy. Dưới chân bảng là chiếc đèn bão phủ bụi, như thể người cuối cùng đọc thông báo đã vội bỏ nó lại giữa chừng."
       },
       "set": {
         "type": "none",
         "display": "show"
       },
       "effect": {
-        "normal": [
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "set",
@@ -1536,15 +1535,14 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Mai",
         "buttonLabel": "Hỏi chuyện",
-        "desc": "Mai tránh nhìn về phía giếng. Hãy nghe lời kể của cô ấy."
+        "desc": "Mai đứng gần quảng trường nhưng luôn giữ khoảng cách với giếng đá. Mỗi lần loa phát thanh gọi tên một người mất tích, cô lại ngừng nói và nhìn về phía mặt nước. Cô dường như biết nhiều hơn những gì đang kể, nhưng cần được hỏi đúng cách để chịu nhắc lại đêm hôm ấy."
       },
       "set": {
         "type": "none",
         "display": "show"
       },
       "effect": {
-        "normal": [
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "goto",
@@ -1566,15 +1564,14 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Giếng đá",
         "buttonLabel": "Quan sát",
-        "desc": "Trên thành giếng có bốn vạch khắc mới và một vết kim loại bị cào xước."
+        "desc": "Giếng đá nằm ở rìa quảng trường, phủ rêu nhưng phần thành phía đông có dấu mới bị cạo sạch. Bốn vạch khắc thẳng hàng giống ký hiệu đo đạc hơn là vết xước ngẫu nhiên; bên cạnh là một rãnh kim loại mảnh, như thể có vật gì từng được móc khỏi hốc đá."
       },
       "set": {
         "type": "none",
         "display": "show"
       },
       "effect": {
-        "normal": [
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "set",
@@ -1616,7 +1613,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Đáy giếng",
         "buttonLabel": "Soi đèn",
-        "desc": "Chỉ có thể đọc ký hiệu dưới đáy giếng khi manh mối ánh sáng đã được kích hoạt."
+        "desc": "Đáy giếng chìm trong lớp nước cũ và bóng tối, nơi mắt thường không thể phân biệt ký hiệu trên thành đá. Những dấu khắc chỉ hiện rõ khi ánh sáng được chiếu đúng góc; chiếc đèn bão nhặt ở quảng trường có thể giúp soi ra phần chữ bị che khuất."
       },
       "set": {
         "type": "none",
@@ -1624,8 +1621,7 @@ export const DEMO_SCRIPT = {
         "requirement": true
       },
       "effect": {
-        "normal": [
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "set",
@@ -1652,7 +1648,7 @@ export const DEMO_SCRIPT = {
             "type": "notify",
             "subtype": "toast",
             "level": "warn",
-            "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
+            "text": "Ánh sáng chưa được kích hoạt; hãy tìm và khôi phục manh mối liên quan đến chiếc đèn trước khi soi đáy giếng."
           }
         ]
       },
@@ -1672,15 +1668,14 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Bà Hạnh",
         "buttonLabel": "Chất vấn",
-        "desc": "Bà Hạnh khẳng định nhà trọ chỉ có sáu phòng, dù hành lang có bảy cửa."
+        "desc": "Bà Hạnh quản lý nhà trọ và nắm giữ cuốn sổ ghi khách đến, khách đi. Bà khẳng định nơi này chỉ có sáu phòng, nhưng hành lang phía sau quầy lại có bảy cánh cửa. Sự chênh lệch ấy không giống một nhầm lẫn trong cách đếm; nó giống một căn phòng đã bị cố tình xóa khỏi lời kể."
       },
       "set": {
         "type": "none",
         "display": "show"
       },
       "effect": {
-        "normal": [
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "goto",
@@ -1702,15 +1697,14 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Sổ khách",
         "buttonLabel": "Mở sổ",
-        "desc": "Trang cuối ghi tên người chơi với ngày đến là ngày mai."
+        "desc": "Cuốn sổ khách nằm sau quầy lễ tân, giấy đã ngả vàng và nhiều trang bị nhòe bởi hơi ẩm. Những dòng ghi chép cũ cho thấy khách thường rời đi ngay sau đêm mất điện. Ở trang cuối, tên bạn xuất hiện cạnh ngày đến là ngày mai, nét mực vẫn còn mới dù cuốn sổ đã bị bỏ quên."
       },
       "set": {
         "type": "none",
         "display": "show"
       },
       "effect": {
-        "normal": [
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "set",
@@ -1757,7 +1751,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Cửa hầm rượu",
         "buttonLabel": "Mở khóa",
-        "desc": "Cần sổ khách, chìa khóa phòng thứ bảy và mật từ trong thánh ca để mở ổ khóa phụ dẫn xuống hầm."
+        "desc": "Ổ khóa phụ dưới quầy không dẫn ra cửa chính mà mở lối xuống hầm rượu, nơi nhà trọ cất những thứ không muốn khách nhìn thấy. Trên thân khóa có vết khắc của căn phòng thứ bảy; cơ cấu chỉ nhận đúng mật từ trong thánh ca và cần đối chiếu với sổ khách cùng chìa khóa dự phòng."
       },
       "set": {
         "type": "none",
@@ -1766,14 +1760,7 @@ export const DEMO_SCRIPT = {
         "requirement": true
       },
       "effect": {
-        "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Ổ khóa cần chuỗi ký tự ẩn trong bản thánh ca và lời khai ở sổ khách."
-          }
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "set",
@@ -1798,7 +1785,7 @@ export const DEMO_SCRIPT = {
             "type": "notify",
             "subtype": "toast",
             "level": "warn",
-            "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
+            "text": "Chưa đủ căn cứ mở ổ khóa: cần sổ khách cùng chìa khóa phòng thứ bảy. Mật từ thánh ca sẽ được kiểm tra riêng sau khi các vật chứng này có mặt."
           }
         ]
       },
@@ -1830,15 +1817,14 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Hầm rượu",
         "buttonLabel": "Tìm kiếm",
-        "desc": "Một cuộn băng được giấu sau thùng rỗng. Trên nhãn có ghi ngày sơ tán."
+        "desc": "Hầm rượu lạnh và gần như trống rỗng, ngoại trừ những thùng gỗ xếp sát tường. Một thùng rỗng có vết kéo lê mới trên nền bụi, phía sau nó là cuộn băng được bọc trong giấy dầu. Ngày ghi trên nhãn trùng với đêm mất điện mà các nhân chứng đều né tránh nhắc đến."
       },
       "set": {
         "type": "none",
         "display": "show"
       },
       "effect": {
-        "normal": [
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "set",
@@ -1885,15 +1871,14 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Bản thánh ca",
         "buttonLabel": "Giải mã",
-        "desc": "Các chữ đầu dòng ghép thành từ 'IM LANG'. Một dòng bị gạch dưới nhắc đến ba hồi chuông."
+        "desc": "Bản thánh ca nằm trên giá gỗ trong gian cầu nguyện. Mực ở vài dòng đã nhạt, nhưng chữ cái đầu mỗi dòng vẫn được viết đậm bất thường; ghép chúng lại thành cụm “IM LANG”. Một dòng khác bị gạch dưới nhiều lần, nhắc đến ba hồi chuông và sự im lặng sau đó."
       },
       "set": {
         "type": "none",
         "display": "show"
       },
       "effect": {
-        "normal": [
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "set",
@@ -1935,15 +1920,14 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Người giữ nhà nguyện",
         "buttonLabel": "Trò chuyện",
-        "desc": "Ông ta nói chuông chỉ được rung khi người giữ chuông chấp nhận sự thật."
+        "desc": "Người giữ nhà nguyện đã ở đây từ trước khi chuông ngừng ngân. Ông không phủ nhận việc cơ cấu chuông bị tháo rời, nhưng luôn nói rằng tiếng chuông không chỉ để báo giờ. Theo ông, người giữ chuông phải chấp nhận điều đã xảy ra trước khi có thể đánh thức những ký ức bị chôn vùi."
       },
       "set": {
         "type": "none",
         "display": "show"
       },
       "effect": {
-        "normal": [
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "goto",
@@ -1965,7 +1949,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Mặt đồng hồ",
         "buttonLabel": "Giải mã",
-        "desc": "Mã bốn chữ số khắc dưới mặt đồng hồ là thời điểm mất tích."
+        "desc": "Mặt đồng hồ trên tháp đã dừng ở một thời điểm không khớp với bất kỳ chiếc đồng hồ nào trong làng. Dưới lớp bụi có mã bốn chữ số được khắc sâu, ngay cạnh dấu vít cho thấy quả lắc từng bị tháo khỏi cơ cấu. Con số này liên hệ trực tiếp đến thời khắc dân làng biến mất."
       },
       "set": {
         "type": "none",
@@ -1973,8 +1957,7 @@ export const DEMO_SCRIPT = {
         "password": "number:pw_bell"
       },
       "effect": {
-        "normal": [
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "set",
@@ -2021,7 +2004,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Chuông nhà nguyện",
         "buttonLabel": "Rung ba hồi",
-        "desc": "Lắp dây đồng nối lại cơ cấu, đặt quả lắc vào chuông và chỉ rung ba hồi theo ghi chú."
+        "desc": "Quả chuông lớn vẫn treo trên tháp, nhưng cơ cấu truyền lực đã bị tháo rời và để lại những đầu dây đồng trơ ra. Quả lắc được cất riêng, còn trang ghi chú trong thánh ca mô tả thứ tự tín hiệu: ba hồi để báo kết thúc sơ tán, tuyệt đối không có hồi thứ tư. Chỉ khi các bộ phận được lắp đúng, chuông mới có thể vang trở lại."
       },
       "set": {
         "type": "none",
@@ -2029,14 +2012,7 @@ export const DEMO_SCRIPT = {
         "requirement": true
       },
       "effect": {
-        "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Lắp quả lắc vào chuông và chỉ rung ba hồi."
-          }
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "item",
@@ -2074,7 +2050,7 @@ export const DEMO_SCRIPT = {
             "type": "notify",
             "subtype": "toast",
             "level": "warn",
-            "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
+            "text": "Cơ cấu chuông chưa đủ bộ phận. Cần quả lắc, dây đồng, trang ghi chú trong thánh ca và xác nhận mã thời điểm trước khi rung."
           }
         ]
       },
@@ -2112,15 +2088,14 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Ngăn bàn giáo viên",
         "buttonLabel": "Kiểm tra",
-        "desc": "Có danh sách lớp với bốn học sinh bị gạch tên và một bức ảnh bị xé."
+        "desc": "Ngăn bàn giáo viên chứa một danh sách lớp đã bị sửa bằng mực đen. Bốn cái tên bị gạch bỏ, còn bức ảnh tập thể bên cạnh bị xé khỏi phần giữa. Những dấu ghim và mép giấy cho thấy ảnh từng được giữ cùng một ghi chú về học sinh thứ mười hai."
       },
       "set": {
         "type": "none",
         "display": "show"
       },
       "effect": {
-        "normal": [
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "set",
@@ -2167,7 +2142,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Sơ đồ chỗ ngồi",
         "buttonLabel": "Đối chiếu",
-        "desc": "Dùng bản sao sổ điểm danh để đối chiếu vị trí thứ mười hai đã bị xóa khỏi sơ đồ chỗ ngồi."
+        "desc": "Sơ đồ chỗ ngồi của lớp số 3 có một khoảng trống bất thường giữa các dãy bàn. Bản gốc và những bản sao còn lại đều xóa cùng một vị trí, như thể mọi hồ sơ đã được sửa theo một chỉ thị thống nhất. Bản sao sổ điểm danh là đối chứng duy nhất còn ghi đủ sĩ số của ngày sơ tán."
       },
       "set": {
         "type": "none",
@@ -2175,14 +2150,7 @@ export const DEMO_SCRIPT = {
         "requirement": true
       },
       "effect": {
-        "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Sơ đồ cho thấy một chỗ ngồi thứ mười hai đã bị xóa khỏi mọi bản sao."
-          }
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "set",
@@ -2226,7 +2194,7 @@ export const DEMO_SCRIPT = {
             "type": "notify",
             "subtype": "toast",
             "level": "warn",
-            "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
+            "text": "Bạn chưa có bản sao sổ điểm danh để đối chiếu với sơ đồ chỗ ngồi đã bị sửa."
           }
         ]
       },
@@ -2246,15 +2214,14 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Dấu sơn trong rừng",
         "buttonLabel": "Lần theo",
-        "desc": "Những vệt sơn dẫn tới khoảng đất trống, nơi các cọc gỗ tạo thành hình vòng cung."
+        "desc": "Các vệt sơn trên thân thông xuất hiện theo cặp, có chỗ bị rêu che gần hết. Chúng không phải dấu đánh dấu đường đi thông thường: khoảng cách giữa các vệt thay đổi theo hướng rẽ và dẫn đến một khoảng đất trống khuất sau sườn dốc. Từ đó có thể nhìn thấy vòng cọc gỗ giữa rừng."
       },
       "set": {
         "type": "none",
         "display": "show"
       },
       "effect": {
-        "normal": [
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "set",
@@ -2296,7 +2263,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Mê cung trong rừng",
         "buttonLabel": "Tìm đường",
-        "desc": "La bàn của người dẫn đường giúp xác định hướng thật khi lối mòn thay đổi."
+        "desc": "Lối mòn trong rừng thay đổi vị trí mỗi khi bạn quay đi, khiến các dấu cây quen thuộc không còn đáng tin. La bàn của người dẫn đường có khắc một tuyến ô vuông cố định; đường đúng phải nối các ô liền kề từ cổng rừng đến khoảng đất trống, không được tự ý cắt qua những ô không có dấu."
       },
       "set": {
         "type": "none",
@@ -2305,14 +2272,7 @@ export const DEMO_SCRIPT = {
         "requirement": true
       },
       "effect": {
-        "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Đi theo các ô liền kề từ cổng rừng tới khoảng đất trống."
-          }
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "set",
@@ -2344,7 +2304,7 @@ export const DEMO_SCRIPT = {
             "type": "notify",
             "subtype": "toast",
             "level": "warn",
-            "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
+            "text": "Bạn chưa có la bàn của người dẫn đường; các lối mòn thay đổi khiến việc lần đường bằng dấu sơn đơn thuần không đáng tin."
           }
         ]
       },
@@ -2364,15 +2324,14 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Vòng cọc gỗ",
         "buttonLabel": "Đếm cọc",
-        "desc": "Có mười hai cọc, nhưng chỉ mười một cái đổ bóng."
+        "desc": "Mười hai cọc gỗ cắm thành một vòng cung trên nền đất cứng. Ánh sáng chỉ tạo ra mười một chiếc bóng, dù không có cọc nào bị gãy hay nghiêng khỏi mặt đất. Khoảng trống không bóng nằm đúng vị trí trung tâm của vòng cung, như thể nơi đó dành cho một người mà ngôi làng không còn nhớ."
       },
       "set": {
         "type": "none",
         "display": "show"
       },
       "effect": {
-        "normal": [
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "set",
@@ -2414,7 +2373,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Hộp chôn dưới đất",
         "buttonLabel": "Mở hộp",
-        "desc": "Phù hiệu đội sơ tán có cùng ký hiệu với con dấu trên hộp chôn dưới đất; dùng nó để xác định đúng hộp."
+        "desc": "Một hộp gỗ được chôn gần vòng cọc, nắp đóng kín và trên mặt có dấu niêm phong của đội sơ tán. Phù hiệu kim loại tìm thấy dưới giếng mang cùng ký hiệu, cho biết đây là vật chứng được chôn có chủ ý chứ không phải đồ thất lạc. Bên trong hộp là những mảnh ảnh gia đình bị xé rời, cần ghép lại để nhận diện đứa trẻ."
       },
       "set": {
         "type": "none",
@@ -2423,14 +2382,7 @@ export const DEMO_SCRIPT = {
         "requirement": true
       },
       "effect": {
-        "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Bức ảnh gia đình bị xé thành nhiều mảnh. Hãy ghép ảnh để nhận diện đứa trẻ."
-          }
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "set",
@@ -2468,7 +2420,7 @@ export const DEMO_SCRIPT = {
             "type": "notify",
             "subtype": "toast",
             "level": "warn",
-            "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
+            "text": "Phù hiệu đội sơ tán chưa được tìm thấy. Dấu niêm phong trên hộp cần được đối chiếu trước khi mở."
           }
         ]
       },
@@ -2488,7 +2440,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Cối xay nước",
         "buttonLabel": "Khởi động",
-        "desc": "Lắp chốt truyền động tìm thấy trong hộp bánh răng, rồi dùng mảnh bản đồ để xoay bánh xe đúng chiều."
+        "desc": "Cối xay nước đã ngừng hoạt động từ lâu; bánh xe mục kẹt trên trục và cơ cấu truyền động thiếu một chốt kim loại. Hộp bánh răng dưới sàn còn giữ đúng bộ phận thay thế, trong khi mảnh bản đồ ở trường học ghi chú chiều xoay ngược để nhả chốt cửa sập. Đây là lối cơ giới duy nhất nối cối xay với đường hầm dưới đê."
       },
       "set": {
         "type": "none",
@@ -2496,14 +2448,7 @@ export const DEMO_SCRIPT = {
         "requirement": true
       },
       "effect": {
-        "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Mảnh bản đồ cho thấy bánh xe cần được xoay ngược để mở cửa sập."
-          }
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "set",
@@ -2541,7 +2486,7 @@ export const DEMO_SCRIPT = {
             "type": "notify",
             "subtype": "toast",
             "level": "warn",
-            "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
+            "text": "Cối xay chưa thể khởi động: cần cả mảnh bản đồ chỉ chiều xoay và chốt truyền động thay thế."
           }
         ]
       },
@@ -2567,15 +2512,14 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Đường hầm dưới đê",
         "buttonLabel": "Khám phá",
-        "desc": "Những bức tường ghi tên người dân theo thứ tự ngày họ biến mất."
+        "desc": "Đường hầm chạy dưới chân đê, hai bên tường phủ đầy tên người và ngày tháng. Các dòng chữ được sắp theo thứ tự biến mất chứ không theo họ tên, cho thấy nơi này từng được dùng để ghi nhận một cuộc di chuyển có tổ chức. Một số đoạn đã bị cạo sửa, đặc biệt ở phần cuối danh sách."
       },
       "set": {
         "type": "none",
         "display": "show"
       },
       "effect": {
-        "normal": [
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "set",
@@ -2617,7 +2561,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Tủ hồ sơ dưới đê",
         "buttonLabel": "Mở khóa",
-        "desc": "Đối chiếu danh sách vận chuyển với cuộn phim sơ tán trước khi mở đúng ngăn hồ sơ."
+        "desc": "Tủ hồ sơ được đặt trong hốc bê tông dưới đê, khóa bằng loại ổ chỉ có thể mở bằng chìa chuyên dụng. Bên trong là hồ sơ vận chuyển, danh sách người qua đường hầm và cuộn phim ghi lại đêm sơ tán. Ba nguồn tư liệu phải được đặt cạnh nhau để xác định bản ghi nào đã bị sửa và điều gì thực sự xảy ra mười bảy năm trước."
       },
       "set": {
         "type": "none",
@@ -2625,14 +2569,7 @@ export const DEMO_SCRIPT = {
         "requirement": true
       },
       "effect": {
-        "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Chìa khóa tìm thấy trong rừng khớp với ổ khóa tủ hồ sơ dưới đê."
-          }
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "set",
@@ -2665,7 +2602,7 @@ export const DEMO_SCRIPT = {
             "type": "notify",
             "subtype": "toast",
             "level": "warn",
-            "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
+            "text": "Chưa thể mở tủ hồ sơ. Cần chìa khóa kho, danh sách vận chuyển lấy từ đường hầm và cuộn phim sơ tán để đối chiếu."
           }
         ]
       },
@@ -2697,7 +2634,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Tín hiệu dưới ga",
         "buttonLabel": "Đối thoại",
-        "desc": "Dò đúng tần số từ cuộn tinh thể thu sóng trước khi đối thoại với tín hiệu dưới ga."
+        "desc": "Từ đường ray vang lên một tín hiệu méo tiếng, lặp lại nhịp phát thanh từng phát ở quảng trường. Cuộn tinh thể thu sóng lấy từ hộp loa có thể dò lại đúng tần số để tách giọng nói khỏi nhiễu. Đằng sau tín hiệu là một câu hỏi không chỉ về việc ai được cứu, mà còn về ký ức nào sẽ được giữ lại."
       },
       "set": {
         "type": "none",
@@ -2705,14 +2642,7 @@ export const DEMO_SCRIPT = {
         "requirement": true
       },
       "effect": {
-        "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Giọng nói hỏi bạn muốn cứu người sống hay giữ lại ký ức."
-          }
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "goto",
@@ -2725,7 +2655,7 @@ export const DEMO_SCRIPT = {
             "type": "notify",
             "subtype": "toast",
             "level": "warn",
-            "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
+            "text": "Chưa có cuộn tinh thể thu sóng để dò đúng tần số của tín hiệu dưới ga."
           }
         ]
       },
@@ -2745,7 +2675,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Sự giải thoát",
         "buttonLabel": "Chọn kết cục",
-        "desc": "Chỉ có thể chọn giải thoát khi đã khôi phục đủ ký ức, rung chuông, mở hồ sơ và xác nhận danh sách bằng con dấu đội sơ tán."
+        "desc": "Sân ga 03:17 là điểm cuối của tuyến sơ tán và cũng là nơi những lời kể rời rạc hội tụ. Những gì được tìm thấy trong giếng, nhà nguyện, trường học và kho hồ sơ cho thấy ký ức của làng đã bị thay đổi có chủ đích. Quyết định ở đây không đơn thuần là chọn một lối ra; nó xác định liệu sự thật được trả lại, bị chôn vùi hay tiếp tục tồn tại như một tiếng vọng."
       },
       "set": {
         "type": "none",
@@ -2753,14 +2683,7 @@ export const DEMO_SCRIPT = {
         "requirement": true
       },
       "effect": {
-        "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Chỉ khi đã khôi phục đủ ký ức, nghe chuông và mở kho hồ sơ, bạn mới có thể trả sự thật về cho người sống."
-          }
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "set",
@@ -2779,7 +2702,7 @@ export const DEMO_SCRIPT = {
             "type": "notify",
             "subtype": "toast",
             "level": "warn",
-            "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
+            "text": "Các điều kiện giải thoát chưa hội đủ: cần khôi phục ít nhất ba mảnh ký ức, rung chuông, mở kho hồ sơ và có con dấu đội sơ tán."
           }
         ]
       },
@@ -2791,7 +2714,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Hồ sơ sơ tán",
         "buttonLabel": "Phá hủy",
-        "desc": "Bạn có thể phá hủy hồ sơ và rời đi, giữ cho ngôi làng tiếp tục ngủ yên."
+        "desc": "Hồ sơ sơ tán nằm trước mặt bạn, ghi lại những cái tên mà ngôi làng đã cố quên. Đốt hoặc phá hủy chúng sẽ giữ nguyên sự yên ổn giả tạo hiện tại, nhưng cũng xóa đi cơ hội để những người bị loại khỏi ký ức được thừa nhận. Đây là lựa chọn khép lại sự việc bằng cách chôn sự thật thêm một lần nữa."
       },
       "set": {
         "type": "none",
@@ -2799,8 +2722,7 @@ export const DEMO_SCRIPT = {
         "requirement": true
       },
       "effect": {
-        "normal": [
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "set",
@@ -2819,7 +2741,7 @@ export const DEMO_SCRIPT = {
             "type": "notify",
             "subtype": "toast",
             "level": "warn",
-            "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
+            "text": "Bạn chưa tìm thấy sổ khách; chưa thể xác định hồ sơ nào đang bị che giấu để đưa ra lựa chọn này."
           }
         ]
       },
@@ -2839,7 +2761,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Tiếng vọng thứ mười hai",
         "buttonLabel": "Ở lại",
-        "desc": "Chỉ có thể chọn ở lại khi đã biết danh tính người thứ mười hai và nghe được sự thật từ tín hiệu."
+        "desc": "Tiếng vọng thứ mười hai không thuộc về bản ghi phát thanh thông thường. Nó gắn với người đã bị xóa khỏi danh sách và vẫn còn hiện diện trong ký ức của một số nhân chứng. Ở lại đồng nghĩa với việc chấp nhận nghe hết câu chuyện, kể cả khi ranh giới giữa người sống và ký ức không còn rõ ràng."
       },
       "set": {
         "type": "none",
@@ -2847,8 +2769,7 @@ export const DEMO_SCRIPT = {
         "requirement": true
       },
       "effect": {
-        "normal": [
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "set",
@@ -2867,7 +2788,7 @@ export const DEMO_SCRIPT = {
             "type": "notify",
             "subtype": "toast",
             "level": "warn",
-            "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
+            "text": "Chưa đủ bằng chứng về người thứ mười hai: cần xác định danh tính của họ và nghe được sự thật từ tín hiệu dưới ga."
           }
         ]
       },
@@ -2893,7 +2814,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Chuyến tàu 03:17",
         "buttonLabel": "Lên tàu",
-        "desc": "Bạn chỉ có thể chọn rời đi khi tìm được vé chưa xé của chuyến tàu 03:17."
+        "desc": "Chuyến tàu 03:17 dừng ở sân ga không có trên bản đồ. Tấm vé chưa bị xé là bằng chứng duy nhất cho phép bạn bước lên, nhưng nó không nói rõ chuyến tàu sẽ đưa ai đi và bỏ ai lại. Rời khỏi làng có thể chấm dứt hành trình của bạn mà không giải quyết những điều đã xảy ra."
       },
       "set": {
         "type": "none",
@@ -2901,14 +2822,7 @@ export const DEMO_SCRIPT = {
         "requirement": true
       },
       "effect": {
-        "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Bạn có thể rời đi mà không giải quyết bí ẩn, nhưng sự thật sẽ tiếp tục bị bỏ lại."
-          }
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "set",
@@ -2927,7 +2841,7 @@ export const DEMO_SCRIPT = {
             "type": "notify",
             "subtype": "toast",
             "level": "warn",
-            "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
+            "text": "Bạn chưa có vé tàu 03:17 còn nguyên phần kiểm soát để lên chuyến tàu."
           }
         ]
       },
@@ -2947,15 +2861,14 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Giếng đá",
         "buttonLabel": "Đi tới",
-        "desc": "Rời quảng trường và tiếp cận giếng phủ rêu."
+        "desc": "Giếng đá nằm sát quảng trường, phủ rêu và có những vết khắc mới trên thành. Từ mặt nước vọng lên tiếng gõ đều đặn, dù không thấy ai ở dưới. Con đường ngắn từ bảng thông báo dẫn thẳng đến nơi dấu vết của người thứ mười hai bị che giấu."
       },
       "set": {
         "type": "none",
         "display": "show"
       },
       "effect": {
-        "normal": [
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "goto",
@@ -2977,15 +2890,14 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Quảng trường làng",
         "buttonLabel": "Quay lại",
-        "desc": "Quay về quảng trường trung tâm."
+        "desc": "Quảng trường là trung tâm của ngôi làng và là nơi các con đường tỏa về nhà trọ, nhà nguyện, trường học cùng khu rừng phía Bắc. Bảng thông báo và hộp loa nằm gần cổng, giữ lại những dấu vết đầu tiên về danh sách dân làng đã bị sửa."
       },
       "set": {
         "type": "none",
         "display": "show"
       },
       "effect": {
-        "normal": [
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "goto",
@@ -3007,15 +2919,14 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Sảnh nhà trọ",
         "buttonLabel": "Quay lại",
-        "desc": "Rời hầm và quay về quầy lễ tân."
+        "desc": "Sảnh nhà trọ nằm phía trên căn hầm rượu và quầy lễ tân vẫn là nơi lưu cuốn sổ khách. Những lời khai của Bà Hạnh cùng căn phòng thứ bảy có thể giúp nối các vật chứng dưới hầm với đêm mất điện."
       },
       "set": {
         "type": "none",
         "display": "show"
       },
       "effect": {
-        "normal": [
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "goto",
@@ -3037,15 +2948,14 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Tháp chuông",
         "buttonLabel": "Đi lên",
-        "desc": "Cầu thang hẹp dẫn lên nơi treo quả chuông câm."
+        "desc": "Cầu thang hẹp dẫn từ gian cầu nguyện lên tháp chuông. Trên đó treo quả chuông đã câm lặng suốt mười bảy năm, bên cạnh là mặt đồng hồ dừng ở thời điểm liên quan đến vụ mất tích. Cơ cấu bên trong vẫn còn dấu vết của lần tháo dỡ có chủ ý."
       },
       "set": {
         "type": "none",
         "display": "show"
       },
       "effect": {
-        "normal": [
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "goto",
@@ -3067,15 +2977,14 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Gian nhà nguyện",
         "buttonLabel": "Quay lại",
-        "desc": "Quay về gian cầu nguyện."
+        "desc": "Gian nhà nguyện lưu bản thánh ca và những lời giải thích về ba hồi chuông. Trở xuống đây giúp đối chiếu ghi chú tìm được trong gáy sách với cơ cấu chuông trên tháp."
       },
       "set": {
         "type": "none",
         "display": "show"
       },
       "effect": {
-        "normal": [
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "goto",
@@ -3097,15 +3006,14 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Khoảng đất trống",
         "buttonLabel": "Đi tới",
-        "desc": "Theo dấu sơn đến vòng cọc gỗ giữa rừng."
+        "desc": "Khoảng đất trống nằm sâu trong rừng, nơi các vệt sơn hội tụ thành một vòng cọc gỗ. Mười hai cọc được dựng thành hình cung, cạnh đó là dấu đất mới xới cho thấy có vật chứng bị chôn xuống."
       },
       "set": {
         "type": "none",
         "display": "show"
       },
       "effect": {
-        "normal": [
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "goto",
@@ -3127,15 +3035,14 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Lối mòn trong rừng",
         "buttonLabel": "Quay lại",
-        "desc": "Quay về con đường dưới tán thông."
+        "desc": "Lối mòn dưới tán thông là tuyến quay lại khu rừng phía Bắc. Các dấu sơn trên thân cây giúp nhận ra đường đi dù địa hình thường thay đổi, đồng thời hé lộ tuyến vận chuyển từng dẫn xuống bờ đê."
       },
       "set": {
         "type": "none",
         "display": "show"
       },
       "effect": {
-        "normal": [
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "goto",
@@ -3157,15 +3064,14 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Nhà trọ Bà Hạnh",
         "buttonLabel": "Di chuyển tới",
-        "desc": "Theo con đường lát đá đến nhà trọ Bà Hạnh."
+        "desc": "Nhà trọ Bà Hạnh nằm trên con đường lát đá rời quảng trường. Đây là nơi lưu cuốn sổ khách, lời khai về căn phòng thứ bảy và lối xuống hầm rượu bị giấu sau quầy lễ tân."
       },
       "set": {
         "type": "none",
         "display": "show"
       },
       "effect": {
-        "normal": [
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "goto",
@@ -3187,15 +3093,14 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Nhà nguyện",
         "buttonLabel": "Di chuyển tới",
-        "desc": "Tiếng chuông im lặng dẫn bạn về phía nhà nguyện."
+        "desc": "Nhà nguyện nằm cuối con đường nơi tiếng chuông đã im bặt từ mười bảy năm trước. Bản thánh ca trong gian cầu nguyện giữ mật từ và quy tắc ba hồi chuông cần thiết để hiểu chuyện gì đã xảy ra."
       },
       "set": {
         "type": "none",
         "display": "show"
       },
       "effect": {
-        "normal": [
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "goto",
@@ -3217,15 +3122,14 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Trường học bỏ hoang",
         "buttonLabel": "Di chuyển tới",
-        "desc": "Dấu chân nhỏ dẫn tới ngôi trường bỏ hoang."
+        "desc": "Trường tiểu học bỏ hoang nằm bên con đường có những dấu chân nhỏ dẫn vào lớp số 3. Hồ sơ lớp học và bức ảnh bị xé là những bằng chứng quan trọng về người thứ mười hai."
       },
       "set": {
         "type": "none",
         "display": "show"
       },
       "effect": {
-        "normal": [
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "goto",
@@ -3247,15 +3151,14 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Rừng thông phía Bắc",
         "buttonLabel": "Di chuyển tới",
-        "desc": "Con đường phía Bắc mở ra dưới màn sương."
+        "desc": "Rừng thông phía Bắc bắt đầu ở rìa làng, nơi những vệt sơn lặp lại trên thân cây. Con đường ở đây không ổn định, nhưng các dấu mốc dẫn đến khoảng đất nghi lễ và tuyến xuống chân đê."
       },
       "set": {
         "type": "none",
         "display": "show"
       },
       "effect": {
-        "normal": [
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "goto",
@@ -3277,15 +3180,14 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Cối xay nước",
         "buttonLabel": "Di chuyển tới",
-        "desc": "Theo con suối cạn tới cối xay cũ."
+        "desc": "Cối xay nước nằm cạnh dòng suối đã cạn ở phía Bắc. Bánh xe dừng hoạt động che giấu một cửa sập dưới sàn, nối công trình cũ với đường hầm chạy dưới chân đê."
       },
       "set": {
         "type": "none",
         "display": "show"
       },
       "effect": {
-        "normal": [
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "goto",
@@ -3307,15 +3209,14 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Phòng máy cối xay",
         "buttonLabel": "Quay lại",
-        "desc": "Quay lại căn phòng máy dưới chân đê."
+        "desc": "Phòng máy dưới chân đê chứa hộp bánh răng và trục truyền động của cối xay. Chốt kim loại bị cong là nguyên nhân khiến bánh xe ngừng quay; khi sửa đúng cơ cấu, cửa sập dẫn xuống đường hầm sẽ hoạt động."
       },
       "set": {
         "type": "none",
         "display": "show"
       },
       "effect": {
-        "normal": [
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "goto",
@@ -3337,7 +3238,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Ga tàu 03:17",
         "buttonLabel": "Tìm đường tới",
-        "desc": "Chỉ những người đã ghép đủ manh mối mới tìm thấy sân ga."
+        "desc": "Ga tàu 03:17 không xuất hiện trên bản đồ làng và chỉ hiện ra ở cuối tuyến đường hầm. Những manh mối về cuộc sơ tán, danh sách vận chuyển và kho hồ sơ phải được ghép lại trước khi có thể tìm thấy sân ga."
       },
       "set": {
         "type": "none",
@@ -3345,8 +3246,7 @@ export const DEMO_SCRIPT = {
         "requirement": true
       },
       "effect": {
-        "normal": [
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "goto",
@@ -3359,7 +3259,7 @@ export const DEMO_SCRIPT = {
             "type": "notify",
             "subtype": "toast",
             "level": "warn",
-            "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
+            "text": "Lối tới sân ga chưa hiện ra: cần ít nhất ba mảnh ký ức, mở kho hồ sơ và thu được danh sách vận chuyển."
           }
         ]
       },
@@ -3371,7 +3271,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Cửa sập cối xay",
         "buttonLabel": "Mở",
-        "desc": "Bánh xe đã chạy, cơ cấu đối trọng nâng cửa sập dưới sàn cối xay."
+        "desc": "Cửa sập nằm dưới sàn cối xay, nối phòng máy với đường hầm dưới chân đê. Một hệ đối trọng giữ cánh cửa khóa chặt khi bánh xe đứng yên; khi trục truyền động hoạt động, sức kéo mới đủ nâng cửa và để lộ bậc thang đi xuống."
       },
       "set": {
         "type": "none",
@@ -3379,14 +3279,7 @@ export const DEMO_SCRIPT = {
         "requirement": true
       },
       "effect": {
-        "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Cửa sập chỉ có thể mở khi bánh xe đã hoạt động."
-          }
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "goto",
@@ -3399,7 +3292,7 @@ export const DEMO_SCRIPT = {
             "type": "notify",
             "subtype": "toast",
             "level": "warn",
-            "text": "Cơ cấu truyền động chưa hoạt động."
+            "text": "Cơ cấu truyền động chưa hoạt động; bánh xe cối xay phải được sửa và khởi động trước khi cửa sập có thể nâng lên."
           }
         ]
       },
@@ -3419,15 +3312,14 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Hộp loa phát thanh",
         "buttonLabel": "Tháo",
-        "desc": "Kiểm tra nguồn tín hiệu phía sau bảng thông báo."
+        "desc": "Hộp loa phát thanh được gắn sau bảng thông báo ở quảng trường. Tiếng gọi tên dân làng phát ra đều đặn nhưng không có dấu hiệu của người điều khiển trực tiếp; phía sau bảng mạch là một cuộn tinh thể có thể lưu và dò lại tần số của bản ghi."
       },
       "set": {
         "type": "none",
         "display": "show"
       },
       "effect": {
-        "normal": [
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "item",
@@ -3473,7 +3365,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Quảng trường — góc nhìn tổng thể",
         "buttonLabel": "Trở lại",
-        "desc": "Quay lại trạng thái quan sát tổng thể của địa điểm."
+        "desc": "Từ góc nhìn tổng thể, quảng trường hiện ra cùng bảng thông báo, hộp loa và những con đường tỏa về các khu vực khác. Lùi lại giúp quan sát cách các dấu vết nằm trong cùng một không gian, thay vì chỉ tập trung vào một vật thể riêng lẻ."
       },
       "set": {
         "type": "none",
@@ -3509,15 +3401,14 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Phù hiệu dưới giếng",
         "buttonLabel": "Thu hồi",
-        "desc": "Dùng móc sắt kéo vật kim loại mắc trong hốc đá."
+        "desc": "Một vật kim loại mắc trong hốc đá dưới mực nước cũ, chỉ lộ ra khi ánh sáng chiếu đúng góc. Mép phù hiệu bị bám cặn nhưng ký hiệu đội sơ tán vẫn còn nguyên, trùng với dấu niêm phong trên chiếc hộp chôn trong rừng."
       },
       "set": {
         "type": "none",
         "display": "show"
       },
       "effect": {
-        "normal": [
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "item",
@@ -3563,7 +3454,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Giếng đá — góc nhìn tổng thể",
         "buttonLabel": "Trở lại",
-        "desc": "Quay lại trạng thái quan sát tổng thể của địa điểm."
+        "desc": "Từ góc nhìn tổng thể, giếng đá nằm sát quảng trường và phần thành có bốn vạch khắc mới. Vết cào kim loại, hốc đá dưới mực nước cũ và mặt giếng tạo thành một chuỗi dấu vết liên quan đến vật bị giấu bên dưới."
       },
       "set": {
         "type": "none",
@@ -3599,15 +3490,14 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Ngăn kéo sau quầy lễ tân",
         "buttonLabel": "Tìm chìa khóa",
-        "desc": "Kiểm tra ngăn kéo bị khóa sau quầy lễ tân."
+        "desc": "Ngăn kéo sau quầy lễ tân bị khóa riêng, khác với các ngăn chứa sổ sách thông thường. Bên trong có một chìa khóa đồng mang số bảy; nó mở cánh cửa không xuất hiện trên sơ đồ nhà trọ và giải thích vì sao Bà Hạnh luôn khẳng định chỉ có sáu phòng."
       },
       "set": {
         "type": "none",
         "display": "show"
       },
       "effect": {
-        "normal": [
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "item",
@@ -3653,7 +3543,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Nhà trọ — góc nhìn tổng thể",
         "buttonLabel": "Trở lại",
-        "desc": "Quay lại trạng thái quan sát tổng thể của địa điểm."
+        "desc": "Từ góc nhìn tổng thể, quầy lễ tân, hành lang và những cánh cửa phòng hiện rõ trong cùng một bố cục. Có bảy cửa dọc hành lang dù lời Bà Hạnh chỉ thừa nhận sáu phòng; ngăn kéo sau quầy là nơi giữ chìa khóa cho phần bị bỏ sót."
       },
       "set": {
         "type": "none",
@@ -3689,15 +3579,14 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Hộp thiếc trong hầm rượu",
         "buttonLabel": "Lấy cuộn phim",
-        "desc": "Mở hộp thiếc sau kệ rượu và kiểm tra cuộn phim."
+        "desc": "Hộp thiếc nằm khuất sau kệ rượu, được bọc để tránh ẩm và bụi. Cuộn phim bên trong ghi lại đám đông tập trung ở bờ đê trước đêm mất điện, cung cấp hình ảnh đối chứng cho danh sách vận chuyển và lời kể trong cuộn băng."
       },
       "set": {
         "type": "none",
         "display": "show"
       },
       "effect": {
-        "normal": [
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "item",
@@ -3743,7 +3632,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Hầm rượu — góc nhìn tổng thể",
         "buttonLabel": "Trở lại",
-        "desc": "Quay lại trạng thái quan sát tổng thể của địa điểm."
+        "desc": "Từ góc nhìn tổng thể, căn hầm hiện ra với các thùng rượu, kệ gỗ và lối cầu thang dẫn lên nhà trọ. Những vật được giấu ở đây không phải đồ dự trữ thông thường: cuộn băng và hộp thiếc chứa phim đều liên quan đến đêm sơ tán."
       },
       "set": {
         "type": "none",
@@ -3779,15 +3668,14 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Trang ghi chú trong thánh ca",
         "buttonLabel": "Tìm",
-        "desc": "Kiểm tra phần gáy sách đã bị khâu lại."
+        "desc": "Phần gáy bản thánh ca dày hơn các trang còn lại và có đường chỉ khâu không đồng màu. Bên trong là một trang ghi chú được gấp nhỏ, giải thích ý nghĩa của ba hồi chuông và vì sao hồi thứ tư không được vang lên."
       },
       "set": {
         "type": "none",
         "display": "show"
       },
       "effect": {
-        "normal": [
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "item",
@@ -3833,7 +3721,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Nhà nguyện — góc nhìn tổng thể",
         "buttonLabel": "Trở lại",
-        "desc": "Quay lại trạng thái quan sát tổng thể của địa điểm."
+        "desc": "Từ góc nhìn tổng thể, gian cầu nguyện vẫn giữ nguyên những hàng ghế và giá sách phủ bụi. Bản thánh ca nằm ở vị trí dễ thấy, nhưng phần ghi chú quan trọng lại bị giấu trong gáy sách, cạnh những dòng nhắc đến ba hồi chuông."
       },
       "set": {
         "type": "none",
@@ -3869,15 +3757,14 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Dây đồng chuông",
         "buttonLabel": "Thu hồi",
-        "desc": "Gỡ đoạn dây đồng mắc trong bánh răng."
+        "desc": "Đoạn dây đồng còn mắc quanh bánh răng của cơ cấu chuông, một đầu bị tuột khỏi trục truyền lực. Dấu xoắn trên dây cho thấy nó từng được tháo ra chứ không tự đứt; đoạn dây này có thể nối lại bộ phận truyền động trên tháp."
       },
       "set": {
         "type": "none",
         "display": "show"
       },
       "effect": {
-        "normal": [
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "item",
@@ -3923,7 +3810,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Tháp chuông — góc nhìn tổng thể",
         "buttonLabel": "Trở lại",
-        "desc": "Quay lại trạng thái quan sát tổng thể của địa điểm."
+        "desc": "Từ góc nhìn tổng thể, quả chuông treo trên xà gỗ phía trên mặt đồng hồ đã dừng. Trục bánh răng, dây đồng bị tháo và vị trí trống của quả lắc cho thấy cơ cấu bị vô hiệu hóa theo từng bộ phận."
       },
       "set": {
         "type": "none",
@@ -3959,15 +3846,14 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Ngăn bàn cuối lớp",
         "buttonLabel": "Lấy sổ điểm danh",
-        "desc": "Cạy ngăn bàn bị đóng đinh ở cuối lớp."
+        "desc": "Ngăn bàn cuối lớp bị đóng đinh, khác với những ngăn còn lại đã bị lục soát. Bản sao sổ điểm danh bên trong vẫn giữ sĩ số mười hai học sinh vào ngày sơ tán, dù tên của một em đã bị bôi đen ở các hồ sơ khác."
       },
       "set": {
         "type": "none",
         "display": "show"
       },
       "effect": {
-        "normal": [
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "item",
@@ -4013,7 +3899,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Trường học — góc nhìn tổng thể",
         "buttonLabel": "Trở lại",
-        "desc": "Quay lại trạng thái quan sát tổng thể của địa điểm."
+        "desc": "Từ góc nhìn tổng thể, lớp học số 3 hiện ra với dãy bàn, bảng đen và ngăn bàn giáo viên bị bỏ ngỏ. Sơ đồ chỗ ngồi không khớp với số học sinh trong bản sao sổ điểm danh; bức ảnh tập thể bị xé nằm ngay cạnh khoảng trống ấy."
       },
       "set": {
         "type": "none",
@@ -4049,15 +3935,14 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "La bàn người dẫn đường",
         "buttonLabel": "Nhặt",
-        "desc": "Tìm vật dụng mắc dưới gốc cây có vết sơn kép."
+        "desc": "La bàn cũ mắc dưới gốc cây có hai vệt sơn song song. Mặt sau khắc tuyến đường từ rừng xuống chân đê, cho thấy người dẫn đường từng dùng nó để đưa người qua địa hình thay đổi mà không phụ thuộc vào lối mòn."
       },
       "set": {
         "type": "none",
         "display": "show"
       },
       "effect": {
-        "normal": [
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "item",
@@ -4103,7 +3988,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Rừng thông — góc nhìn tổng thể",
         "buttonLabel": "Trở lại",
-        "desc": "Quay lại trạng thái quan sát tổng thể của địa điểm."
+        "desc": "Từ góc nhìn tổng thể, lối mòn xuyên rừng và các dấu sơn trên thân thông tạo thành một tuyến không liên tục. Những dấu mốc này vừa giúp định hướng qua mê cung, vừa đánh dấu con đường vận chuyển về phía bờ đê."
       },
       "set": {
         "type": "none",
@@ -4139,15 +4024,14 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Con dấu đội sơ tán",
         "buttonLabel": "Tìm",
-        "desc": "Nhấc phiến đá ở tâm vòng cọc và kiểm tra hốc bên dưới."
+        "desc": "Phiến đá nằm giữa vòng cọc có mép bị xê dịch, để lộ một hốc đất nhỏ bên dưới. Trong hốc là con dấu gỗ của đội sơ tán, vật từng dùng để xác nhận danh sách chính thức trước khi niêm phong hồ sơ."
       },
       "set": {
         "type": "none",
         "display": "show"
       },
       "effect": {
-        "normal": [
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "item",
@@ -4193,7 +4077,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Khoảng đất trống — góc nhìn tổng thể",
         "buttonLabel": "Trở lại",
-        "desc": "Quay lại trạng thái quan sát tổng thể của địa điểm."
+        "desc": "Từ góc nhìn tổng thể, mười hai cọc gỗ tạo thành vòng cung quanh khoảng đất giữa rừng. Hộp chôn nằm lệch khỏi tâm vòng, còn phiến đá có con dấu ở vị trí trung tâm; hai nơi cất giữ vật chứng của cùng một cuộc sơ tán."
       },
       "set": {
         "type": "none",
@@ -4229,15 +4113,14 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Hộp bánh răng cối xay",
         "buttonLabel": "Tìm chốt",
-        "desc": "Kiểm tra hộp bánh răng dưới sàn cối xay."
+        "desc": "Hộp bánh răng dưới sàn cối xay có nắp bị kẹt và dấu dầu khô quanh bản lề. Bên trong là chốt truyền động bị cong, đúng bộ phận còn thiếu trên trục máy; nếu không thay chốt, bánh xe không thể truyền lực để nâng cửa sập."
       },
       "set": {
         "type": "none",
         "display": "show"
       },
       "effect": {
-        "normal": [
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "item",
@@ -4283,7 +4166,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Cối xay nước — góc nhìn tổng thể",
         "buttonLabel": "Trở lại",
-        "desc": "Quay lại trạng thái quan sát tổng thể của địa điểm."
+        "desc": "Từ góc nhìn tổng thể, bánh xe, trục truyền động và tấm che hộp số cho thấy cối xay đã ngừng hoạt động từ lâu. Dấu nước cạn dưới chân máy và chốt bị cong trong hộp bánh răng giải thích vì sao cơ cấu không còn đủ lực vận hành cửa sập."
       },
       "set": {
         "type": "none",
@@ -4319,15 +4202,14 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Ống tài liệu trong đường hầm",
         "buttonLabel": "Lấy danh sách",
-        "desc": "Mở ống tài liệu giấu sau lớp gạch rỗng."
+        "desc": "Ống tài liệu được giấu sau một viên gạch rỗng trong đường hầm và có lớp bọc chống ẩm. Danh sách bên trong ghi tên những người được vận chuyển qua đây theo từng lượt, cung cấp bằng chứng trực tiếp về tuyến sơ tán mà hồ sơ làng đã phủ nhận."
       },
       "set": {
         "type": "none",
         "display": "show"
       },
       "effect": {
-        "normal": [
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "item",
@@ -4373,7 +4255,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Đường hầm dưới đê — góc nhìn tổng thể",
         "buttonLabel": "Trở lại",
-        "desc": "Quay lại trạng thái quan sát tổng thể của địa điểm."
+        "desc": "Từ góc nhìn tổng thể, đường hầm kéo dài dưới chân đê với những cái tên và ngày tháng khắc dọc hai bên tường. Một đoạn tường mới được trám vữa che vị trí ống tài liệu, còn lối sâu hơn dẫn về phía sân ga 03:17."
       },
       "set": {
         "type": "none",
@@ -4409,15 +4291,14 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Khe dưới hàng ghế chờ",
         "buttonLabel": "Tìm vé",
-        "desc": "Kiểm tra khe dưới hàng ghế chờ."
+        "desc": "Dưới hàng ghế chờ có một khe gỗ bị bung khỏi khung, đủ rộng để giấu một tấm vé. Vé tàu bên trong vẫn còn nguyên phần kiểm soát, mang giờ khởi hành 03:17 và là bằng chứng rằng sân ga từng phục vụ một chuyến tàu thực sự."
       },
       "set": {
         "type": "none",
         "display": "show"
       },
       "effect": {
-        "normal": [
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "item",
@@ -4463,7 +4344,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Ga tàu ma — góc nhìn tổng thể",
         "buttonLabel": "Trở lại",
-        "desc": "Quay lại trạng thái quan sát tổng thể của địa điểm."
+        "desc": "Từ góc nhìn tổng thể, sân ga vắng người nằm dưới bảng giờ dừng ở 03:17. Hàng ghế chờ, đường ray và lối vào đường hầm đều hướng về cùng một điểm; nơi này giống một ga tập kết bị xóa khỏi bản đồ hơn là một nhà ga đang hoạt động."
       },
       "set": {
         "type": "none",
