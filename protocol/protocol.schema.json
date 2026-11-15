@@ -464,6 +464,19 @@
                 "null"
               ]
             },
+            "cooldownStartedAt": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "cooldownDuration": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "exclusiveMinimum": 0
+            },
             "checks": {
               "type": "object",
               "required": [
