@@ -59,6 +59,7 @@ export class GameplayRenderer {
         this.overlayRenderer.showError(error);
       }
     }));
+    this.overlayRenderer.render();
   }
 
   dispose() {
