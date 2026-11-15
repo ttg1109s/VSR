@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { memo, useMemo, useState } from 'react';
 import { Badge, Button, Dialog, Input, MediaFrame } from '../../design-system/index.js';
 
 const REASON_LABELS = {
@@ -19,9 +19,8 @@ function formatRemaining(until) {
   return seconds > 0 ? `Còn ${seconds} giây` : '';
 }
 
-export default function ActionCard({ action, pending = false, onTrigger, onMarkRead }) {
+function ActionCard({ action, pending = false, passwordChallenge = null, onTrigger, onMarkRead, onSubmitPassword }) {
   const [detailsOpen, setDetailsOpen] = useState(false);
-  const [passwordOpen, setPasswordOpen] = useState(false);
   const [password, setPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const meta = action.meta || {};
@@ -34,6 +33,7 @@ export default function ActionCard({ action, pending = false, onTrigger, onMarkR
   const statusLabel = locked ? 'Đang khóa' : canRead ? 'Chưa đọc' : REASON_LABELS[availability.reason];
   const cooldown = useMemo(() => formatRemaining(availability.cooldownUntil), [availability.cooldownUntil]);
   const triggerDisabled = pending || !availability.canTrigger || locked;
+  const passwordOpen = !!passwordChallenge && passwordChallenge.uniqueId === action.key;
 
   const handleTrigger = async () => {
     if (triggerDisabled) return;
@@ -99,7 +99,8 @@ export default function ActionCard({ action, pending = false, onTrigger, onMarkR
 
       <Dialog
         open={passwordOpen}
-        onClose={() => { setPasswordOpen(false); setPassword(''); setPasswordError(''); }}
+        open={passwordOpen}
+        onClose={() => { setPassword(''); setPasswordError(''); }}
         title="Xác thực hành động"
         description="Nhập thông tin xác thực theo yêu cầu của kịch bản."
       >
@@ -107,8 +108,7 @@ export default function ActionCard({ action, pending = false, onTrigger, onMarkR
           event.preventDefault();
           setPasswordError('');
           try {
-            await onTrigger?.(action, { password });
-            setPasswordOpen(false);
+            await onSubmitPassword?.(passwordChallenge, password);
             setPassword('');
           } catch (error) {
             setPasswordError(error?.message || 'Không thể xác thực.');
