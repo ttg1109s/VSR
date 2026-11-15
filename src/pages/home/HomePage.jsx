@@ -47,7 +47,7 @@ export default function HomePage({
               type="file"
               accept=".json,application/json"
               onChange={handleFileChange}
-              aria-label="Chọn tệp kịch bản JSON"
+              aria-label="Choose a scenario JSON file"
               tabIndex={-1}
             />
           </div>
