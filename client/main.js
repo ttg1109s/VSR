@@ -110,7 +110,8 @@ window.addEventListener('popstate', event => {
   const screen = event.state?.vsrScreen || 'home';
   if (screen === 'home') { disposeSession(); renderHome(); }
   else if (screen === 'metadata' && state.scenario) { disposeSession(); openMetadata(state.scenario,state.scenarioName,{updateHistory:false}); }
-  else if (screen === 'gameplay' && state.client) renderGameplay();\n  else if (screen === 'gameplay' && state.scenario) startGame({fromHistory:true});
+  else if (screen === 'gameplay' && state.client) renderGameplay();
+  else if (screen === 'gameplay' && state.scenario) startGame({fromHistory:true});
   else { navigate('home',{replace:true}); renderHome(); }
 });
 renderHome();
