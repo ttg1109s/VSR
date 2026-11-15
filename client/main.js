@@ -1,4 +1,5 @@
 import { GameEngine, DEMO_SCRIPT, normalizeScenario } from '../engine/index.js';
+import './styles.css';
 
 const $ = (selector) => document.querySelector(selector);
 const app = $('#app');
