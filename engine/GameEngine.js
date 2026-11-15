@@ -35,6 +35,20 @@ export class GameEngine {
    if(!payload.scenario||typeof payload.scenario!=='object'||Array.isArray(payload.scenario))throw new TypeError('scenario.inspect requires payload.scenario.');
    const scenario=normalizeScenario(payload.scenario);
    const meta=scenario.meta||{};
+   const actionIds=new Set(Object.keys(scenario.actions||{}));
+   for(const scene of Object.values(scenario.scenes||{})){
+    for(const router of Object.values(scene?.routers||{})){
+     const actions=router?.actions;
+     if(Array.isArray(actions)){
+      for(const action of actions){
+       if(typeof action==='string')actionIds.add(action);
+       else if(action&&typeof action==='object'&&action.id)actionIds.add(action.id);
+      }
+     }else if(actions&&typeof actions==='object'){
+      for(const actionId of Object.keys(actions))actionIds.add(actionId);
+     }
+    }
+   }
    return{
     metadata:{
      title:meta.title,subtitle:meta.subtitle??null,description:meta.desc,
@@ -48,7 +62,7 @@ export class GameEngine {
     summary:{
      sceneCount:Object.keys(scenario.scenes||{}).length,
      characterCount:Object.keys(scenario.characters||{}).length,
-     actionCount:Object.keys(scenario.actions||{}).length,
+     actionCount:actionIds.size,
      itemCount:Object.keys(scenario.itemInfo||{}).length,
      chatCount:Object.keys(scenario.chat||{}).length
     },
