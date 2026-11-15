@@ -20,7 +20,7 @@ export const ScenePropertyHandlers = {
     activeRouterId: (engine, scene, val, sceneId) => {
         stateOf(engine).set('scenes.[id].activeRouterId', val, { id: sceneId });
         if (sceneId === stateOf(engine).sceneId) engine.enterRouter(val);
-        else engine.render();
+        // StateAccess.set publishes the committed snapshot; no imperative render API is required.
     },
     __default__: (engine, scene, val, sceneId, prop) => {
         stateOf(engine).set('scenes.[id].[property]', val, { id: sceneId, property: prop });
