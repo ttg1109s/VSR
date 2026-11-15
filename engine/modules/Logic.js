@@ -82,7 +82,7 @@ const ItemStrategies = {
 
         // [UPDATED] Strict Check for Hand (Order & Exact Items)
         // If op is equality, verify strict array match
-        if (op === '==' || op === '=') {
+        if (op === '==') {
             const compareVal = Array.isArray(val) ? val : [val];
             // Convert to string to ensure exact items and order
             return JSON.stringify(validHand) === JSON.stringify(compareVal);
