@@ -7,7 +7,7 @@
   justify-items: center;
   padding: var(--vsr-page-padding);
 }
-.vsr-page-shell--start { align-items: start; }
+.vsr-page-shell--start { align-items: start; align-content: start; }
 .vsr-stack { display: flex; flex-direction: column; }
 .vsr-stack--center { align-items: center; text-align: center; }
 .vsr-stack--gap-1 { gap: var(--vsr-space-1); }
