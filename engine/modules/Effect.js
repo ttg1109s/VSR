@@ -13,10 +13,29 @@ export const EffectSystem = {
         let effectiveList = sourceList;
         let listKey = null;
 
-        if (context.sceneId && context.hook) {
+        // Resolve the active source list for every schema-defined effect scope.
+        // Chat and item effects do not necessarily have a scene/router context.
+        if (context.chatId && context.blockId && context.choiceId !== undefined && context.choiceId !== null) {
+            listKey = this.generateBanKey('chat', {
+                chatId: context.chatId,
+                blockId: context.blockId,
+                choiceId: context.choiceId
+            });
+        } else if (context.itemId && context.hook) {
+            listKey = this.generateBanKey('item', {
+                itemId: context.itemId,
+                hook: context.hook
+            });
+        } else if (context.sceneId && context.hook) {
             const scope = context.actionId ? 'action' : (context.charId ? 'character' : (context.routerId ? 'router' : null));
             if (scope) {
-                listKey = this.generateBanKey(scope, { sId: context.sceneId, rId: context.routerId, aId: context.actionId, cId: context.charId, hook: context.hook });
+                listKey = this.generateBanKey(scope, {
+                    sId: context.sceneId,
+                    rId: context.routerId,
+                    aId: context.actionId,
+                    cId: context.charId,
+                    hook: context.hook
+                });
             }
         }
 
