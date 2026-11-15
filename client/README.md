@@ -33,7 +33,7 @@ npm run server
 npm run dev
 ```
 
-Or use `npm run dev:full` for a combined local development process. The Engine API binds to `127.0.0.1` by default; configure `VSR_HOST` and `VSR_PORT` to change that.
+The Engine API binds to `127.0.0.1` by default; configure `VSR_HOST` and `VSR_PORT` to change that.
 
 ## React-inspired, without React
 
