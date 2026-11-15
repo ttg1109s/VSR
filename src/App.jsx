@@ -84,16 +84,21 @@ export default function App() {
     const client = new JsonClient(transport);
     runtimeRef.current = { transport, client, status: 'loading', generation };
 
+    const isCurrentLoad = () =>
+      generation === loadGenerationRef.current &&
+      runtimeRef.current?.generation === generation;
+
     try {
       const snapshot = await client.initialize(preview.scenario, { enterScene: false });
-      if (generation !== loadGenerationRef.current) return;
+      if (!isCurrentLoad()) return;
       runtimeRef.current.status = 'loaded';
       runtimeRef.current.snapshot = snapshot;
       setLoadStatus('complete');
     } catch (cause) {
-      if (generation !== loadGenerationRef.current) return;
+      if (!isCurrentLoad()) return;
       closeRuntime();
-      setLoadError(cause?.message || 'Unable to load this scenario.');
+      const detail = typeof cause?.message === 'string' ? cause.message.trim() : '';
+      setLoadError(detail || 'Initialization failed. The runtime did not provide an error message.');
       setLoadStatus('error');
     }
   }, [preview, closeRuntime]);
