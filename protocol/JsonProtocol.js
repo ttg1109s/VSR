@@ -90,9 +90,9 @@ export class JsonProtocol{
      permission:permissionAllowed?'passed':'failed',
      requirement:set.requirement===true?(requirementPass===null?'not_evaluated':requirementPass?'passed':'failed'):'not_required'
     };
-    if(display==='locked')reason='locked';
-    else if(engine.isTransitioning||engine.isActionProcessing)reason='busy';
+    if(engine.isTransitioning||engine.isActionProcessing)reason='busy';
     else if(engine.pendingPasswordAction)reason='challenge_active';
+    else if(display==='locked')reason='locked';
     else if(set.type==='to_scene'&&set.target&&engine.checkHardLock?.('scene',set.target))reason='target_locked';
     else if(set.type==='swap_router'&&set.target&&engine.checkHardLock?.('router',set.target))reason='target_locked';
     else if(!permissionAllowed)reason='permission_denied';
