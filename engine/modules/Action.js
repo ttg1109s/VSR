@@ -172,7 +172,6 @@ export const ActionSystem = {
 
         // --- Desc Read Validation ---
         const allDescRead = this.getConfig('allDescRead');
-        const actStateKey = `${sId}_${rId}_${actionKey}`;
         // Ensure state checking
         const currentState = this.api.engine.state.getRuntimeSnapshot('actions.[id]', { id: actStateKey }) || {};
 
