@@ -106,24 +106,32 @@ export const EffectSystem = {
     },
 
     async handleManageEffect(cfg, context, currentKey, sourceList) {
-        const result = EffectScopeResolvers[cfg.space]?.(cfg, context, this);
-        if (!result) return;
+        const resolveScope = EffectScopeResolvers[cfg.space];
+        if (typeof resolveScope !== 'function') {
+            throw new TypeError(`Unsupported manage_effect space: ${String(cfg.space)}`);
+        }
+        const result = resolveScope(cfg, context, this);
+        if (!result) {
+            throw new Error(`Unable to resolve manage_effect target for space '${cfg.space}'.`);
+        }
 
         const targetKey = this.generateBanKey(result.scope, result.params);
-        if (!targetKey) return;
+        if (!targetKey) {
+            throw new Error(`Unable to generate manage_effect key for space '${cfg.space}'.`);
+        }
 
         const handler = ManageSubtypeHandlers[cfg.subtype];
-        if (handler) {
-            let defaultList = [];
-            if (targetKey === currentKey) {
-                defaultList = sourceList;
-            } else {
-                defaultList = this.getStaticList(result.scope, result.params);
-            }
-            handler(this, targetKey, cfg, defaultList);
-        } else {
-            console.warn(`Manage Effect: Unknown subtype '${cfg.subtype}'`);
+        if (typeof handler !== 'function') {
+            throw new TypeError(`Unsupported manage_effect subtype: ${String(cfg.subtype)}`);
         }
+
+        let defaultList = [];
+        if (targetKey === currentKey) {
+            defaultList = sourceList;
+        } else {
+            defaultList = this.getStaticList(result.scope, result.params);
+        }
+        await handler(this, targetKey, cfg, defaultList);
     },
 
     async applyEffect(eff, context, listKey = null, sourceList = []) {
