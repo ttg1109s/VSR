@@ -208,6 +208,25 @@ export const resolveValue = (val, engine) => {
             return resolveValue(c, engine);
         }
 
+        // 12.5 $rdnumber(min, max)
+        // Integer bounds produce an inclusive random integer; decimal bounds produce a float.
+        if (val.startsWith('$rdnumber(') && val.endsWith(')')) {
+            const parts = splitArgs(val.substring(10, val.length - 1));
+            if (parts.length !== 2) return val;
+
+            const a = Number(resolveValue(parts[0], engine));
+            const b = Number(resolveValue(parts[1], engine));
+            if (!Number.isFinite(a) || !Number.isFinite(b)) return 0;
+
+            const min = Math.min(a, b);
+            const max = Math.max(a, b);
+
+            if (Number.isInteger(min) && Number.isInteger(max)) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+            return Math.random() * (max - min) + min;
+        }
+
         // 12. $if(cond, t, f)
         if (val.startsWith('$if(') && val.endsWith(')')) {
             const p = splitArgs(val.substring(4, val.length - 1));
