@@ -55,6 +55,10 @@ export class JsonClient {
 
   getSnapshot() { return this.store.getSnapshot(); }
 
+  inspectScenario(scenario) {
+    return this.dispatch('scenario.inspect', { scenario });
+  }
+
   async initialize(scenario) {
     const acknowledgement = await this.dispatch('engine.init', { script: scenario });
     const snapshot = this.getSnapshot();
