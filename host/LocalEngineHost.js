@@ -32,7 +32,8 @@ export class LocalEngineHost {
     return JSON.stringify(acknowledgement);
   }
 
-  getDemoScenario() { return JSON.stringify(DEMO_SCRIPT); }
+  static getDemoScenario() { return JSON.stringify(DEMO_SCRIPT); }
+  getDemoScenario() { return LocalEngineHost.getDemoScenario(); }
 
   async initialize(scenario) {
     scenario = normalizeScenario(scenario);
