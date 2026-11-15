@@ -9,7 +9,7 @@ const same = (a, b) => {
 };
 
 /**
- * Small React-inspired external store: immutable JSON snapshots, selectors,
+ * Small framework-agnostic external store: immutable JSON snapshots, selectors,
  * subscriptions, and change detection. No virtual DOM and no framework.
  */
 export class JsonStateStore {
