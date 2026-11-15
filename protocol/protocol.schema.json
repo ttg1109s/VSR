@@ -455,7 +455,8 @@
                 "target_locked",
                 "requirement_failed",
                 "requirement_unavailable",
-                "password_required"
+                "password_required",
+                "challenge_active"
               ]
             },
             "cooldownUntil": {
