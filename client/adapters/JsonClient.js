@@ -29,6 +29,8 @@ export class JsonClient {
       this.emit({ type: 'event', event: message });
     } else if (message?.type === 'snapshot') {
       this.setSnapshot(message, 'snapshot');
+    } else if (message?.type === 'transport.error') {
+      this.emit({ type: 'transport.error', error: new Error(message.message || 'JSON transport failed.') });
     }
   }
 
