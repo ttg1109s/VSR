@@ -8,6 +8,7 @@ import {ItemSystem} from './modules/Item.js?v=2.1.0';
 import {ChatSystem} from './modules/Chat.js?v=3.1.6';
 import {AutomationSystem} from './modules/Automation.js';
 import {LoaderSystem} from './modules/Loader.js';
+import {normalizeScenario} from './scenario/Scenario.js';
 import {createEngineAPI} from '../protocol/index.js';
 import {NotificationSystem} from './modules/Notification.js';
 import {JsonProtocol,cloneJsonValue} from '../protocol/JsonProtocol.js';
@@ -20,7 +21,7 @@ export class GameEngine {
  constructor({taskManager,engineId,authorizeCommand,requireAuthorization=false,clock}={}) {
   this.taskManager=taskManager||new TaskManager({},120,{clock});
   this.protocol=new JsonProtocol({engineId,protocolVersion:2,authorizeCommand,requireAuthorization,onCommandSuccess:({command,revisionBefore})=>{
-   if(command!=='engine.init'&&this.protocol.stateRevision===revisionBefore)this.commitState(`command:${command}`);
+   if(!['engine.init','scenario.inspect'].includes(command)&&this.protocol.stateRevision===revisionBefore)this.commitState(`command:${command}`);
   }});
   this.notifications=new NotificationSystem({protocol:this.protocol,engineId:this.protocol.engineId,clock:clock||(()=>Date.now())});
   this.api=createEngineAPI(this);
@@ -30,6 +31,30 @@ export class GameEngine {
  }
  registerProtocolCommands(){
   this.protocol.registerCommand('engine.init',async payload=>{if(!payload.script||typeof payload.script!=='object')throw new TypeError('engine.init requires payload.script.');await this.init(payload.script);return{initialized:!!this.src};});
+  this.protocol.registerCommand('scenario.inspect',payload=>{
+   if(!payload.scenario||typeof payload.scenario!=='object'||Array.isArray(payload.scenario))throw new TypeError('scenario.inspect requires payload.scenario.');
+   const scenario=normalizeScenario(payload.scenario);
+   const meta=scenario.meta||{};
+   return{
+    metadata:{
+     title:meta.title,subtitle:meta.subtitle??null,description:meta.desc,
+     writer:meta.writer??null,studio:meta.studio??null,version:meta.version,
+     language:meta.language,cover:meta.cover?{url:meta.cover.url,ratio:meta.cover.ratio??null}:null,
+     tags:Array.isArray(meta.tags)?meta.tags:[],ageRating:meta.ageRating,
+     difficulty:meta.difficulty??null,estimatedPlayTime:meta.estimatedPlayTime??null,
+     entryScene:meta.entryScene,createdAt:meta.createdAt??null,updatedAt:meta.updatedAt??null,
+     copyright:meta.copyright??null,license:meta.license??null,notes:meta.notes??null
+    },
+    summary:{
+     sceneCount:Object.keys(scenario.scenes||{}).length,
+     characterCount:Object.keys(scenario.characters||{}).length,
+     actionCount:Object.keys(scenario.actions||{}).length,
+     itemCount:Object.keys(scenario.itemInfo||{}).length,
+     chatCount:Object.keys(scenario.chat||{}).length
+    },
+    formatVersion:scenario.formatVersion
+   };
+  });
   this.protocol.registerCommand('action.trigger',payload=>{if(typeof payload.actionId!=='string'||!payload.actionId)throw new TypeError('action.trigger requires actionId.');return this.handleAction(payload.actionId,payload.uniqueId||payload.actionId);});
   this.protocol.registerCommand('chat.next',()=>this.nextChat());
   this.protocol.registerCommand('chat.selectChoice',payload=>{if(!Number.isInteger(payload.index))throw new TypeError('chat.selectChoice requires index.');return this.selectChatChoice(payload.index);});
