@@ -22,12 +22,30 @@ function navigate(screen, { replace = false } = {}) {
 }
 function renderHome() {
   state.screen='home';
-  app.innerHTML = `<main class="home-shell"><header class="topbar"><a class="brand" href="/" data-home><span class="brand-mark">V</span><span>VSR<span class="brand-muted"> / PLAY</span></span></a><nav class="home-nav"><a href="#library">LIBRARY</a><a href="#about">ABOUT</a></nav><span class="engine-status"><i class="${state.health === 'ready' ? 'is-online' : ''}"></i> ${state.health === 'ready' ? 'LOCAL ENGINE READY' : 'ENGINE UNAVAILABLE'}</span></header>
-  <section class="hero"><div class="eyebrow"><span class="eyebrow-line"></span> VISUAL STORY RUNTIME</div><h1>Stories begin<br><em>somewhere.</em></h1><p class="hero-copy">Một không gian để bước vào những thế giới được tạo nên từ kịch bản tương tác.</p></section>
-  <section class="launch-panel" id="library"><div class="panel-heading"><span>SCENARIO LIBRARY</span><span class="panel-index">01 / FEATURED</span></div>
-  <button class="demo-card" id="demo-play"><span class="demo-art" aria-hidden="true"><span class="moon"></span><span class="ridge ridge-back"></span><span class="ridge ridge-front"></span><span class="mist"></span></span><span class="demo-info"><span class="card-kicker">FEATURED DEMO</span><strong>THE SILENT VILLAGE</strong><span>Ngôi Làng Không Tiếng Động</span></span><span class="round-arrow">↗</span></button>
-  <div class="or-divider"><span></span> IMPORT A SCENARIO <span></span></div><button class="load-card" id="load-json"><span class="upload-icon">↑</span><span><strong>Load JSON</strong><small>Nạp kịch bản VSR từ thiết bị</small></span><span class="load-chevron">＋</span></button><p class="file-hint">Hỗ trợ tệp kịch bản định dạng .json</p></section>
-  <footer class="home-footer" id="about"><span>VSR ENGINE</span><span>BROWSER-NATIVE ENGINE · WORKER</span></footer></main>`;
+  app.innerHTML = `<main class="home-shell native-shell">
+    <header class="native-topbar">
+      <a class="brand native-brand" href="#home" data-home><span class="brand-mark">V</span><span>VSR <span class="brand-muted">PLAY</span></span></a>
+      <div class="engine-status native-engine"><i class="${state.health === 'ready' ? 'is-online' : ''}"></i><span>${state.health === 'ready' ? 'Engine sẵn sàng' : 'Engine không khả dụng'}</span></div>
+    </header>
+    <section class="home-welcome">
+      <div class="home-welcome-copy"><span class="section-overline">VISUAL STORY RUNTIME</span><h1>Thư viện<br><span>kịch bản</span></h1><p>Khám phá những câu chuyện tương tác và tiếp tục từ nơi bạn muốn.</p></div>
+      <div class="welcome-mark" aria-hidden="true"><span class="material-symbols-rounded">auto_stories</span></div>
+    </section>
+    <section class="library-section" id="library">
+      <div class="section-heading"><div><span class="section-overline">BẮT ĐẦU KHÁM PHÁ</span><h2>Kịch bản nổi bật</h2></div><span class="section-count">01</span></div>
+      <button class="featured-scenario" id="demo-play" type="button">
+        <span class="featured-art" aria-hidden="true"><span class="featured-art-icon material-symbols-rounded">landscape</span><span class="featured-art-caption">VSR SAMPLE SCENARIO</span></span>
+        <span class="featured-content"><span class="featured-label"><span class="status-dot"></span> KỊCH BẢN MẪU</span><strong>The Silent Village</strong><span class="featured-subtitle">Ngôi Làng Không Tiếng Động</span><span class="featured-description">Một bí ẩn dân gian về ký ức, sự mất tích và cái giá của việc nhớ lại.</span><span class="featured-meta"><span class="material-symbols-rounded">schedule</span> 55 phút <span class="meta-separator">·</span> <span class="material-symbols-rounded">sell</span> Mystery</span></span>
+        <span class="featured-open material-symbols-rounded" aria-hidden="true">arrow_outward</span>
+      </button>
+    </section>
+    <section class="import-section">
+      <div class="section-heading"><div><span class="section-overline">NỘI DUNG CỦA BẠN</span><h2>Thêm kịch bản</h2></div></div>
+      <button class="import-card" id="load-json" type="button"><span class="import-icon material-symbols-rounded">file_upload</span><span class="import-copy"><strong>Nhập tệp JSON</strong><small>Mở kịch bản VSR từ thiết bị của bạn</small></span><span class="material-symbols-rounded import-chevron">chevron_right</span></button>
+      <p class="import-hint">Hỗ trợ tệp .json theo cấu trúc Scenario của VSR.</p>
+    </section>
+    <footer class="native-footer"><span>VSR <span class="footer-muted">· VISUAL STORY RUNTIME</span></span><span class="footer-version">LOCAL · WORKER ENGINE</span></footer>
+  </main>`;
   $('#demo-play').addEventListener('click', async () => {
     try {
       const response = await fetch(`${import.meta.env.BASE_URL}scenarios/the-silent-village.json`);
@@ -45,12 +63,35 @@ function openMetadata(scenario, sourceName, { updateHistory = true } = {}) {
   state.scenario=scenario; state.scenarioName=sourceName; if (updateHistory) navigate('metadata'); else state.screen='metadata';
   const meta=scenario.meta||{}, scenes=Object.keys(scenario.scenes||{}).length, characters=Object.keys(scenario.characters||{}).length, items=Object.keys(scenario.itemInfo||{}).length;
   const tags=Array.isArray(meta.tags)?meta.tags:[];
-  app.innerHTML = `<main class="detail-shell"><header class="topbar"><button class="back-button" id="back-home" aria-label="Quay lại">←</button><a class="brand" href="#home" data-home><span class="brand-mark">V</span><span>VSR<span class="brand-muted"> / PLAY</span></span></a><button class="text-nav" id="detail-library">LIBRARY</button></header>
-  <section class="metadata-hero"><div class="metadata-art"><div class="art-orb"></div><div class="art-horizon"></div><span>SCENARIO PREVIEW</span></div><div class="metadata-body"><div class="eyebrow"><span class="eyebrow-line"></span> READY TO EXPLORE</div><h1>${escapeHtml(titleOf(meta))}</h1>${meta.subtitle?`<p class="subtitle">${escapeHtml(meta.subtitle)}</p>`:''}<p class="description">${escapeHtml(descriptionOf(meta))}</p>
-  <div class="tag-row">${tags.map(tag=>`<span class="tag">${escapeHtml(String(tag).replaceAll('-',' '))}</span>`).join('')}</div>
-  <div class="metadata-stats"><div><strong>${scenes}</strong><span>SCENES</span></div><div><strong>${characters}</strong><span>CHARACTERS</span></div><div><strong>${items}</strong><span>ITEMS</span></div></div>
-  <div class="metadata-facts">${[['STUDIO',meta.studio],['WRITER',meta.writer],['VERSION',meta.version],['LANGUAGE',meta.language],['DIFFICULTY',meta.difficulty],['AGE RATING',meta.ageRating]].map(([label,value])=>`<div><span>${label}</span><strong>${escapeHtml(value||'Chưa cung cấp')}</strong></div>`).join('')}</div>
-  <div class="entry-note"><span class="entry-dot"></span><span>ENTRY SCENE</span><strong>${escapeHtml(meta.entryScene||'Not defined')}</strong></div><button class="primary-button" id="start-game"><span>PLAY SCENARIO</span><span>→</span></button><p class="source-note">SOURCE · ${escapeHtml(sourceName)}</p></div></section></main>`;
+  const coverValue=meta.cover?.url || (typeof meta.cover === 'string' ? meta.cover : '');
+  const coverUrl=typeof coverValue==='string' && /^(https?:|\/|\.\/)/i.test(coverValue) ? coverValue : '';
+  const cover=coverUrl
+    ? `<div class="metadata-cover has-cover" style="--cover-ratio:${escapeHtml(meta.cover?.ratio || '16:9')}"><img src="${escapeHtml(coverUrl)}" alt="" onerror="this.parentElement.classList.remove('has-cover');this.remove()"><span class="cover-scrim"></span><span class="cover-caption"><span class="material-symbols-rounded">image</span> SCENARIO COVER</span></div>`
+    : `<div class="metadata-cover cover-placeholder"><span class="material-symbols-rounded">auto_stories</span><span>SCENARIO</span></div>`;
+  const facts=[['person', 'Tác giả',meta.writer],['apartment', 'Studio',meta.studio],['translate','Ngôn ngữ',meta.language],['signal_cellular_alt','Độ khó',meta.difficulty],['verified_user','Độ tuổi',meta.ageRating],['sell','Phiên bản',meta.version]].filter(([, ,value])=>value);
+  app.innerHTML = `<main class="detail-shell native-shell">
+    <header class="native-topbar detail-topbar"><button class="icon-button" id="back-home" type="button" aria-label="Quay lại"><span class="material-symbols-rounded">arrow_back</span></button><a class="brand native-brand" href="#home" data-home><span class="brand-mark">V</span><span>VSR <span class="brand-muted">PLAY</span></span></a><button class="text-nav" id="detail-library" type="button"><span class="material-symbols-rounded">library_books</span><span>Thư viện</span></button></header>
+    <section class="metadata-layout">
+      ${cover}
+      <div class="metadata-body">
+        <div class="metadata-overline"><span class="status-dot"></span> KỊCH BẢN SẴN SÀNG</div>
+        <h1>${escapeHtml(titleOf(meta))}</h1>
+        ${meta.subtitle? `<p class="subtitle">${escapeHtml(meta.subtitle)}</p>`:''}
+        <p class="description">${escapeHtml(descriptionOf(meta))}</p>
+        ${tags.length?`<div class="tag-row">${tags.map(tag=>`<span class="tag">${escapeHtml(String(tag).replaceAll('-',' '))}</span>`).join('')}</div>`:''}
+        <div class="metadata-stats">
+          <div><span class="material-symbols-rounded">layers</span><strong>${scenes}</strong><small>Scene</small></div>
+          <div><span class="material-symbols-rounded">groups</span><strong>${characters}</strong><small>Nhân vật</small></div>
+          <div><span class="material-symbols-rounded">inventory_2</span><strong>${items}</strong><small>Vật phẩm</small></div>
+          ${meta.estimatedPlayTime?`<div><span class="material-symbols-rounded">schedule</span><strong>${escapeHtml(meta.estimatedPlayTime)}</strong><small>Phút</small></div>`:''}
+        </div>
+        ${facts.length?`<section class="metadata-facts"><h2>Thông tin kịch bản</h2><div class="facts-grid">${facts.map(([icon,label,value])=>`<div class="fact-row"><span class="material-symbols-rounded">${icon}</span><span><small>${label}</small><strong>${escapeHtml(value)}</strong></span></div>`).join('')}</div></section>`:''}
+        <div class="entry-note"><span class="material-symbols-rounded">door_front</span><span><small>Điểm bắt đầu</small><strong>${escapeHtml(meta.entryScene||'Chưa xác định')}</strong></span></div>
+        <button class="primary-button" id="start-game" type="button"><span>Bắt đầu kịch bản</span><span class="material-symbols-rounded">arrow_forward</span></button>
+        <p class="source-note"><span class="material-symbols-rounded">description</span> ${escapeHtml(sourceName)}</p>
+      </div>
+    </section>
+  </main>`;
   $('.brand[data-home]')?.addEventListener('click', e => { e.preventDefault(); navigate('home'); renderHome(); });
   $('#back-home').addEventListener('click', () => { navigate('home'); renderHome(); });
   $('#detail-library').addEventListener('click', () => { navigate('home'); renderHome(); });
@@ -58,7 +99,18 @@ function openMetadata(scenario, sourceName, { updateHistory = true } = {}) {
 }
 function renderLoading(message='Đang khởi tạo phiên chơi…') {
   state.screen='loading';
-  app.innerHTML = `<main class="loading-screen"><div class="loading-mark">V</div><div class="loading-orbit"><span></span></div><p class="eyebrow">VSR ENGINE / JSON TRANSPORT</p><h1>Preparing<br><em>your world.</em></h1><p class="loading-message" id="loading-message">${escapeHtml(message)}</p><div class="loading-track"><span></span></div><p class="loading-foot">PLEASE WAIT · DO NOT CLOSE THIS WINDOW</p></main>`;
+  app.innerHTML = `<main class="loading-screen native-loading">
+    <div class="loading-brand"><span class="brand-mark">V</span><span>VSR <small>VISUAL STORY RUNTIME</small></span></div>
+    <section class="loading-card" role="status" aria-live="polite">
+      <div class="loading-icon"><span class="material-symbols-rounded">auto_stories</span><span class="loading-spinner"></span></div>
+      <p class="section-overline">ĐANG CHUẨN BỊ PHIÊN CHƠI</p>
+      <h1>Đang tải kịch bản</h1>
+      <p class="loading-message" id="loading-message">${escapeHtml(message)}</p>
+      <div class="loading-track"><span></span></div>
+      <div class="loading-foot"><span class="material-symbols-rounded">memory</span> Engine chạy cục bộ trong trình duyệt</div>
+    </section>
+    <p class="loading-bottom">VSR <span>·</span> INTERACTIVE STORY RUNTIME</p>
+  </main>`;
 }
 async function startGame({ fromHistory = false } = {}) {
   if(state.loading||!state.scenario)return;
