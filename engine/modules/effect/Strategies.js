@@ -117,20 +117,33 @@ export const EffectHandlers = {
     },
 
     async cms(eff) {
-        return await CmsStrategies[eff.table]?.(this, eff);
+        const handler = CmsStrategies[eff.table];
+        if (typeof handler !== 'function') {
+            throw new TypeError(`Unsupported CMS table: ${String(eff.table)}`);
+        }
+        return await handler(this, eff);
     },
 
     characters(eff) {
-        CharacterStrategies[eff.subtype]?.(this, eff);
+        const handler = CharacterStrategies[eff.subtype];
+        if (typeof handler !== 'function') {
+            throw new TypeError(`Unsupported characters subtype: ${String(eff.subtype)}`);
+        }
+        handler(this, eff);
     },
 
     notify(eff) {
+        const subtype = eff.subtype || 'toast';
+        const handler = NotifyStrategies[subtype];
+        if (typeof handler !== 'function') {
+            throw new TypeError(`Unsupported notify subtype: ${String(subtype)}`);
+        }
         const resolvedEff = {
             ...eff,
             title: resolveValue(eff.title, this),
             text: resolveValue(eff.text, this)
         };
-        (NotifyStrategies[eff.subtype] || NotifyStrategies.default)(this, resolvedEff);
+        handler(this, resolvedEff);
     },
 
     vfx(eff) {
@@ -198,11 +211,19 @@ export const EffectHandlers = {
             target: resolveValue(eff.target, this),
             value: resolveValue(eff.value, this)
         };
-        ItemStrategies[eff.subtype]?.(this, resolvedEff, context);
+        const handler = ItemStrategies[eff.subtype];
+        if (typeof handler !== 'function') {
+            throw new TypeError(`Unsupported item subtype: ${String(eff.subtype)}`);
+        }
+        handler(this, resolvedEff, context);
     },
 
     set(eff) {
-        SetStrategies[eff.subtype]?.(this, eff);
+        const handler = SetStrategies[eff.subtype];
+        if (typeof handler !== 'function') {
+            throw new TypeError(`Unsupported set subtype: ${String(eff.subtype)}`);
+        }
+        handler(this, eff);
     },
 
     async goto(eff) {
@@ -211,8 +232,12 @@ export const EffectHandlers = {
             target: resolveValue(eff.target, this)
         };
 
+        const handler = GotoStrategies[eff.subtype];
+        if (typeof handler !== 'function') {
+            throw new TypeError(`Unsupported goto subtype: ${String(eff.subtype)}`);
+        }
         if (!this.checkHardLock || !this.checkHardLock(eff.subtype, resolvedEff.target)) {
-            await GotoStrategies[eff.subtype]?.(this, resolvedEff);
+            await handler(this, resolvedEff);
         }
     }
 };
