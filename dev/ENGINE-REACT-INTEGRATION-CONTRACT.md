@@ -400,14 +400,16 @@ Implementation JsonClient hiện xử lý event `state.snapshot` và message sna
 
 ## 7. Luồng tích hợp chuẩn
 
-### 7.1. Khởi tạo scenario
+### 7.1. Inspect, confirm và khởi tạo scenario
 
 1. Application layer tạo transport và JsonClient.
-2. Đăng ký subscription trước hoặc theo thứ tự bảo đảm không bỏ lỡ snapshot khởi tạo.
-3. Gọi `client.initialize(scenario)`.
-4. Chờ acknowledgement và snapshot initialized theo semantics của `JsonClient.initialize`.
-5. React render từ snapshot.
-6. Nếu lỗi, hiển thị trạng thái lỗi có thể phục hồi; không tự tạo snapshot giả.
+2. Gọi `client.inspectScenario(scenario)` để Engine chuẩn hóa, kiểm tra schema/tham chiếu và trả metadata an toàn.
+3. Command inspection không gọi `GameEngine.init`, không vào entry scene, không khởi tạo gameplay và không tăng `stateRevision`.
+4. React hiển thị metadata; người dùng có thể hủy hoặc xác nhận.
+5. Chỉ sau khi xác nhận mới gọi `client.initialize(scenario)`.
+6. Chờ acknowledgement và snapshot initialized theo semantics của `JsonClient.initialize`.
+7. React render từ snapshot.
+8. Nếu inspect hoặc init lỗi, hiển thị lỗi có thể phục hồi; không tự tạo snapshot giả.
 
 Scenario JSON là input để Engine nạp. Nó không phải save data.
 
@@ -427,7 +429,7 @@ Không lấy danh sách action từ scenario source tự parse trong component n
 UI có thể chịu trách nhiệm chọn file, đọc text và parse JSON ở presentation/application layer. Tuy nhiên:
 
 - Parse thành công ở browser không có nghĩa scenario hợp lệ theo Engine.
-- Engine vẫn là nơi chuẩn hóa/validate scenario khi initialize.
+- Engine là nơi chuẩn hóa/validate scenario trong bước `scenario.inspect`; bước `engine.init` vẫn kiểm tra lại khi thực sự khởi chạy.
 - Không tự bỏ field hoặc sửa cấu trúc scenario âm thầm để “làm cho chạy”.
 - Phân biệt lỗi đọc file, lỗi JSON syntax, lỗi scenario validation và lỗi khởi tạo runtime.
 - Không gửi file lớn hoặc dữ liệu không tin cậy mà không áp dụng giới hạn phù hợp ở host/transport.
