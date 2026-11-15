@@ -50,7 +50,7 @@ test('browser client consumes JSON snapshots and only the active router projecti
 
     const events = [];
     client.subscribe(message => events.push(message));
-    await client.markActionRead('scene_garden_square_gate_act_read_notice');
+    await client.markActionRead('scene_village_square_router_square_fogbound_action_read_notice');
     assert.ok(events.some(message => message.type === 'state' && message.changedKeys.includes('stateRevision')));
   } finally {
     client.dispose();
@@ -63,7 +63,7 @@ test('all engine-side protocol operations are exposed as JSON commands', async (
   const client = new JsonClient(host);
   try {
     await client.initialize(JSON.parse(host.getDemoScenario()));
-    await client.markActionRead('scene_garden_square_gate_act_read_notice');
+    await client.markActionRead('scene_village_square_router_square_fogbound_action_read_notice');
     await client.useItem('item_not_present'); // no-op domain result, but command is registered
     await client.pause();
     await client.resume();
