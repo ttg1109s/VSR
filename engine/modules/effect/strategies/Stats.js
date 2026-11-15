@@ -12,7 +12,6 @@ export const StatsCalculators = {
     max: {
         set: (_old, _max, value) => Number(value),
         add: (old, _max, value) => old + Number(value),
-        full: (_old, _max, value) => Number(value)
     },
     current: {
         set: (_old, _max, value) => Number(value),
@@ -78,9 +77,12 @@ export const StatsHelpers = {
         const stat = targetObj?.stats?.[prop];
         if (!stat || typeof stat !== 'object') return false;
 
-        const field = eff.field === 'max' ? 'max' : 'current';
+        const field = eff.field || 'current';
         const mode = eff.mode || 'add';
-        const calculator = StatsCalculators[field][mode] || StatsCalculators[field].add;
+        if (!['current', 'max'].includes(field) || !['set', 'add', 'full'].includes(mode)) return false;
+        if (field === 'max' && mode === 'full') return false;
+        const calculator = StatsCalculators[field]?.[mode];
+        if (typeof calculator !== 'function') return false;
         const oldValue = toFiniteNumber(stat[field]);
         if (oldValue === null) return false;
 
