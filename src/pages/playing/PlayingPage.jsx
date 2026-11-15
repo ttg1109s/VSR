@@ -52,6 +52,7 @@ export default function PlayingPage({ snapshot, client, error = '', onNavigate }
         <ActionCollection
           actions={snapshot?.presentation?.actions || []}
           client={client}
+          sceneId={activeSceneId}
           passwordChallenge={snapshot?.session?.passwordChallenge || null}
           onError={() => {}}
         />
