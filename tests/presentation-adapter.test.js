@@ -28,7 +28,9 @@ test('EngineAdapter projects only the active router action list', async () => {
     assert.equal(initial.actions.some(action => action.id === 'act_inspect_well'), false);
     const sceneRender = presentationEvents.find(message => message.name === 'scene.render');
     assert.ok(sceneRender, 'SceneSystem.render() should reach the presentation adapter');
-    assert.equal(sceneRender.payload.args.length, 3);
+    assert.equal(sceneRender.payload.sceneId, 'scene_garden');
+    assert.equal(sceneRender.payload.routerId, 'square_gate');
+    assert.deepEqual(sceneRender.payload.actionIds, initial.actions.map(action => action.id));
 
     await engine.enterRouter('square_well', true, false, true);
     const next = adapter.getViewModel();
