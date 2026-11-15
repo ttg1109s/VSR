@@ -35,6 +35,9 @@ export const Switch=forwardRef(function Switch({label,description,className,...p
 export function RadioGroup({label,name,value,defaultValue,onChange,options=[],disabled=false,orientation='vertical',className}){
   const id=useId(); return <fieldset className={cx('vsr-radio-group',className)} disabled={disabled}><legend>{label}</legend><div className={'vsr-radio-options vsr-radio-options--'+orientation}>{options.map(o=><label key={o.value} className="vsr-radio-row"><input type="radio" name={name||id} value={o.value} checked={value!==undefined?value===o.value:undefined} defaultChecked={defaultValue===o.value} disabled={disabled||o.disabled} onChange={e=>onChange&&onChange(e.target.value)}/><span className="vsr-radio-dot"/><span className="vsr-check-copy"><span>{o.label}</span>{o.description&&<small>{o.description}</small>}</span></label>)}</div></fieldset>;
 }
+export function Grid({columns='auto',gap='3',className,children,...props}){
+  return <div className={cx('vsr-grid','vsr-grid--columns-'+columns,'vsr-grid--gap-'+gap,className)} {...props}>{children}</div>;
+}
 export function DescriptionList({layout='list',columns='auto',gap='comfortable',divided=false,className,children,...props}){
   const layoutClass=layout==='grid'?'vsr-description-list--grid':'vsr-description-list--list';
   const columnsClass=layout==='grid'?'vsr-description-list--columns-'+columns:'';
