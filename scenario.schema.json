@@ -1247,7 +1247,8 @@
           "type": "string"
         },
         "method": {
-          "type": "string"
+          "type": "string",
+          "description": "CMS operation: add appends (or increments met count); remove removes a matching entry; insert inserts at index (defaults to end); empty clears the collection; set replaces relationship/actions collections, or upserts a met record by ID."
         },
         "index": {
           "oneOf": [
@@ -1925,6 +1926,128 @@
                     "value"
                   ]
                 }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "table": {
+                      "const": "characters"
+                    },
+                    "column": {
+                      "const": "met"
+                    },
+                    "method": {
+                      "const": "insert"
+                    }
+                  },
+                  "required": [
+                    "table",
+                    "column",
+                    "method"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "index": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "value": {
+                      "oneOf": [
+                        {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        {
+                          "type": "object",
+                          "required": [
+                            "id"
+                          ],
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "count": {
+                              "type": "number"
+                            }
+                          },
+                          "additionalProperties": false
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "table": {
+                      "const": "characters"
+                    },
+                    "column": {
+                      "const": "relationship"
+                    },
+                    "method": {
+                      "const": "set"
+                    }
+                  },
+                  "required": [
+                    "table",
+                    "column",
+                    "method"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "value": {
+                      "type": "array",
+                      "items": {
+                        "type": "array",
+                        "minItems": 2,
+                        "maxItems": 2,
+                        "items": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "table": {
+                      "const": "routers"
+                    },
+                    "column": {
+                      "const": "actions"
+                    },
+                    "method": {
+                      "const": "set"
+                    }
+                  },
+                  "required": [
+                    "table",
+                    "column",
+                    "method"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "value": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
               }
             ]
           }
@@ -2175,7 +2298,8 @@
           "type": "string"
         },
         "method": {
-          "type": "string"
+          "type": "string",
+          "description": "CMS operation: add appends (or increments met count); remove removes a matching entry; insert inserts at index (defaults to end); empty clears the collection; set replaces relationship/actions collections, or upserts a met record by ID."
         },
         "index": {
           "oneOf": [
@@ -2777,6 +2901,128 @@
                   "required": [
                     "value"
                   ]
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "table": {
+                      "const": "characters"
+                    },
+                    "column": {
+                      "const": "met"
+                    },
+                    "method": {
+                      "const": "insert"
+                    }
+                  },
+                  "required": [
+                    "table",
+                    "column",
+                    "method"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "index": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "value": {
+                      "oneOf": [
+                        {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        {
+                          "type": "object",
+                          "required": [
+                            "id"
+                          ],
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "count": {
+                              "type": "number"
+                            }
+                          },
+                          "additionalProperties": false
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "table": {
+                      "const": "characters"
+                    },
+                    "column": {
+                      "const": "relationship"
+                    },
+                    "method": {
+                      "const": "set"
+                    }
+                  },
+                  "required": [
+                    "table",
+                    "column",
+                    "method"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "value": {
+                      "type": "array",
+                      "items": {
+                        "type": "array",
+                        "minItems": 2,
+                        "maxItems": 2,
+                        "items": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "table": {
+                      "const": "routers"
+                    },
+                    "column": {
+                      "const": "actions"
+                    },
+                    "method": {
+                      "const": "set"
+                    }
+                  },
+                  "required": [
+                    "table",
+                    "column",
+                    "method"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "value": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
                 }
               }
             ]
