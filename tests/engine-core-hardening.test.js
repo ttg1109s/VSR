@@ -676,3 +676,37 @@ test('set.state preserves the declared global-state type and numeric delta seman
   );
   assert.equal(declarations.coins.value, 12);
 });
+
+
+test('CharacterStrategies.mng_stats adds a stat through the shared stat helper', () => {
+  const character = { set: { name: 'NPC' }, stats: {} };
+  let persisted;
+  const state = {
+    getRuntime(path) {
+      if (path === 'meta.entryCharacter') return 'player';
+      if (path === 'characters.[id]') return character;
+      return undefined;
+    },
+    set(path, value, params) {
+      persisted = { path, value, params };
+    }
+  };
+  const engine = {
+    redirectTarget: value => value,
+    api: {
+      engine: { state },
+      notifications: { add() {} },
+      presentation: { components: { updatePlayerCard() {} }, updateContactDetails() {} }
+    }
+  };
+
+  CharacterStrategies.mng_stats(engine, {
+    exec: 'add', target: 'npc', property: 'strength', value: '25:50:Strength:#ff5555'
+  });
+
+  assert.deepEqual(character.stats.strength, {
+    current: 25, max: 50, label: 'Strength', color: '#ff5555'
+  });
+  assert.equal(persisted.path, 'characters.[id]');
+  assert.equal(persisted.params.id, 'npc');
+});
