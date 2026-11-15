@@ -36,6 +36,29 @@ export class GameEngine {
   this.protocol.registerCommand('inventory.toggleHand',payload=>{if(typeof payload.itemId!=='string'||!payload.itemId)throw new TypeError('inventory.toggleHand requires itemId.');return this.toggleHand(payload.itemId);});
   this.protocol.registerCommand('scene.enter',payload=>{if(typeof payload.sceneId!=='string'||!payload.sceneId)throw new TypeError('scene.enter requires sceneId.');return this.enterScene(payload.sceneId,payload.skipTransition===true);});
   this.protocol.registerCommand('password.submit',payload=>this.submitPassword(payload));
+  this.protocol.registerCommand('action.markAsRead',payload=>{
+   if(typeof payload.uniqueId!=='string'||!payload.uniqueId)throw new TypeError('action.markAsRead requires uniqueId.');
+   return this.markAsRead(payload.uniqueId);
+  });
+  this.protocol.registerCommand('item.use',async payload=>{
+   if(typeof payload.itemId!=='string'||!payload.itemId)throw new TypeError('item.use requires itemId.');
+   return this.use(payload.itemId);
+  });
+  this.protocol.registerCommand('engine.pause',()=>{this.pauseBackgroundTasks();return{paused:true};});
+  this.protocol.registerCommand('engine.resume',()=>{this.resumeBackgroundTasks();return{paused:false};});
+  this.protocol.registerCommand('save.export',()=>({save:this.exportSave()}));
+  this.protocol.registerCommand('save.restore',async payload=>{
+   if(!payload.save||typeof payload.save!=='object'||Array.isArray(payload.save))throw new TypeError('save.restore requires payload.save.');
+   return this.restoreSave(payload.save);
+  });
+  this.protocol.registerCommand('notification.read',payload=>{
+   if(typeof payload.notificationId!=='string'||!payload.notificationId)throw new TypeError('notification.read requires notificationId.');
+   return{updated:this.notifications.markRead(payload.notificationId)};
+  });
+  this.protocol.registerCommand('notification.dismiss',payload=>{
+   if(typeof payload.notificationId!=='string'||!payload.notificationId)throw new TypeError('notification.dismiss requires notificationId.');
+   return{updated:this.notifications.dismiss(payload.notificationId)};
+  });
  }
  async submitPassword(payload={}) {
   if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
