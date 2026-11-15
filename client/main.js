@@ -49,13 +49,13 @@ function openMetadata(scenario, sourceName, { updateHistory = true } = {}) {
   state.scenario=scenario; state.scenarioName=sourceName; if (updateHistory) navigate('metadata'); else state.screen='metadata';
   const meta=scenario.meta||{}, scenes=Object.keys(scenario.scenes||{}).length, characters=Object.keys(scenario.characters||{}).length, items=Object.keys(scenario.itemInfo||{}).length;
   const tags=Array.isArray(meta.tags)?meta.tags:[];
-  app.innerHTML = `<main class="detail-shell"><header class="topbar"><button class="back-button" id="back-home" aria-label="Quay lại">←</button><a class="brand" href="/"><span class="brand-mark">V</span><span>VSR<span class="brand-muted"> / PLAY</span></span></a><button class="text-nav" id="detail-library">LIBRARY</button></header>
+  app.innerHTML = `<main class="detail-shell"><header class="topbar"><button class="back-button" id="back-home" aria-label="Quay lại">←</button><a class="brand" href="#home" data-home><span class="brand-mark">V</span><span>VSR<span class="brand-muted"> / PLAY</span></span></a><button class="text-nav" id="detail-library">LIBRARY</button></header>
   <section class="metadata-hero"><div class="metadata-art"><div class="art-orb"></div><div class="art-horizon"></div><span>SCENARIO PREVIEW</span></div><div class="metadata-body"><div class="eyebrow"><span class="eyebrow-line"></span> READY TO EXPLORE</div><h1>${escapeHtml(titleOf(meta))}</h1>${meta.subtitle?`<p class="subtitle">${escapeHtml(meta.subtitle)}</p>`:''}<p class="description">${escapeHtml(descriptionOf(meta))}</p>
   <div class="tag-row">${tags.map(tag=>`<span class="tag">${escapeHtml(String(tag).replaceAll('-',' '))}</span>`).join('')}</div>
   <div class="metadata-stats"><div><strong>${scenes}</strong><span>SCENES</span></div><div><strong>${characters}</strong><span>CHARACTERS</span></div><div><strong>${items}</strong><span>ITEMS</span></div></div>
   <div class="metadata-facts">${[['STUDIO',meta.studio],['WRITER',meta.writer],['VERSION',meta.version],['LANGUAGE',meta.language],['DIFFICULTY',meta.difficulty],['AGE RATING',meta.ageRating]].map(([label,value])=>`<div><span>${label}</span><strong>${escapeHtml(value||'Chưa cung cấp')}</strong></div>`).join('')}</div>
   <div class="entry-note"><span class="entry-dot"></span><span>ENTRY SCENE</span><strong>${escapeHtml(meta.entryScene||'Not defined')}</strong></div><button class="primary-button" id="start-game"><span>PLAY SCENARIO</span><span>→</span></button><p class="source-note">SOURCE · ${escapeHtml(sourceName)}</p></div></section></main>`;
-  $('#back-home').addEventListener('click', () => { navigate('home'); renderHome(); });
+  $('.brand[data-home]')?.addEventListener('click', e => { e.preventDefault(); navigate('home'); renderHome(); });\n  $('#back-home').addEventListener('click', () => { navigate('home'); renderHome(); });
   $('#detail-library').addEventListener('click', () => { navigate('home'); renderHome(); });
   $('#start-game').addEventListener('click', startGame);
 }
