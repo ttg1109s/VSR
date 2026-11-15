@@ -152,7 +152,4 @@ export const ManageSubtypeHandlers = {
         saveList(engine, key, list);
     },
 
-    cms: (engine, key, cfg, defaultList) => {
-        // [PENDING] CMS Implementation
-    }
 };
