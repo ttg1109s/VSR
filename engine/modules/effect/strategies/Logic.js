@@ -6,18 +6,33 @@ export { resolveValue, getNestedValue };
 export const SetStrategies = {
     state: (engine, eff) => {
         const target = resolveValue(eff.target, engine);
-        const val = resolveValue(eff.value, engine);
+        const value = resolveValue(eff.value, engine);
         const state = engine.api.engine.state;
+        const stateType = state.get('globalState.type', { id: target });
         const current = state.get('globalState.value', { id: target });
-        if (current === undefined) return;
-        if (typeof current === 'number') {
-            const increment = Number(val);
-            if (Number.isFinite(increment)) {
-                state.set('globalState.value', current + increment, { id: target });
-                return;
-            }
+
+        if (stateType === undefined || current === undefined) {
+            throw new Error(`Unknown global state: ${String(target)}`);
         }
-        state.set('globalState.value', val, { id: target });
+
+        if (stateType === 'number') {
+            if (typeof current !== 'number' || !Number.isFinite(current) ||
+                typeof value !== 'number' || !Number.isFinite(value)) {
+                throw new TypeError(`Global state '${String(target)}' requires a finite numeric delta.`);
+            }
+            state.set('globalState.value', current + value, { id: target });
+            return;
+        }
+
+        if (stateType === 'boolean' || stateType === 'string') {
+            if (typeof value !== stateType) {
+                throw new TypeError(`Global state '${String(target)}' requires a ${stateType} value.`);
+            }
+            state.set('globalState.value', value, { id: target });
+            return;
+        }
+
+        throw new TypeError(`Unsupported global state type: ${String(stateType)}`);
     },
     scene: (engine, eff) => {
         const target = resolveValue(eff.target, engine);
