@@ -1,0 +1,104 @@
+.home-action-card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  width: 100%;
+  min-height: 132px;
+  padding: 22px 24px;
+  border: 1px solid var(--vsr-color-border);
+  border-radius: 16px;
+  background: var(--vsr-color-surface);
+  color: var(--vsr-color-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background var(--vsr-motion-short) var(--vsr-motion-easing),
+    border-color var(--vsr-motion-short) var(--vsr-motion-easing),
+    box-shadow var(--vsr-motion-short) var(--vsr-motion-easing),
+    transform var(--vsr-motion-short) var(--vsr-motion-easing);
+}
+
+.home-action-card:hover {
+  border-color: var(--vsr-color-primary);
+  box-shadow: var(--vsr-elevation-1);
+}
+
+.home-action-card:active {
+  transform: translateY(1px);
+}
+
+.home-action-card:focus-visible {
+  outline: 2px solid var(--vsr-color-primary);
+  outline-offset: 3px;
+}
+
+.home-action-card__heading {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.home-action-card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 28px;
+  font-size: 28px;
+  line-height: 1;
+}
+
+.home-action-card__title {
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 600;
+}
+
+.home-action-card__description {
+  color: inherit;
+  font-size: 15px;
+  line-height: 23px;
+}
+
+.home-action-card--primary {
+  border-color: var(--vsr-color-primary);
+  background: var(--vsr-color-primary);
+  color: #FFFFFF;
+}
+
+.home-action-card--primary:hover {
+  border-color: #1558B0;
+  background: #1558B0;
+  box-shadow: var(--vsr-elevation-2);
+}
+
+.home-action-card--primary .home-action-card__description {
+  color: rgb(255 255 255 / 86%);
+}
+
+.home-action-card--secondary {
+  background: var(--vsr-color-surface);
+}
+
+.home-action-card--secondary .home-action-card__icon {
+  color: var(--vsr-color-text-secondary);
+}
+
+@media (max-width: 599px) {
+  .home-action-card {
+    min-height: 112px;
+    padding: 18px;
+    border-radius: 12px;
+  }
+
+  .home-action-card__title {
+    font-size: 17px;
+    line-height: 24px;
+  }
+
+  .home-action-card__description {
+    font-size: 14px;
+    line-height: 21px;
+  }
+}
