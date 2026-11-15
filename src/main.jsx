@@ -1,8 +1,16 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import App from './app/App.jsx';
-import './styles.css';
+import { JsonClient } from '../client/adapters/JsonClient.js';
+import { WorkerJsonTransport } from '../client/adapters/WorkerJsonTransport.js';
+
+export { JsonClient, WorkerJsonTransport };
+
+function RuntimeBootstrap() {
+  return null;
+}
 
 createRoot(document.getElementById('app')).render(
-  <React.StrictMode><App /></React.StrictMode>
+  <React.StrictMode>
+    <RuntimeBootstrap />
+  </React.StrictMode>
 );
