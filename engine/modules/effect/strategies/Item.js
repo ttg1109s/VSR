@@ -131,13 +131,15 @@ export const ItemStrategies = {
         ItemStrategies._tryHideAction(engine, eff, context);
         const state = engine.api.engine.state;
         const item = state.getRuntimeSnapshot('itemInfo.[id]', { id: eff.target });
-        if (item?.usage) {
-            const u = item.usage;
-            const valToAdd = Number(resolveValue(eff.value));
-            const oldVal = Number(u.current);
-            u.current = Math.max(0, Math.min(u.max, oldVal + valToAdd));
-            state.set('itemInfo.[id]', item, { id: eff.target });
-            engine.api.presentation.components.explorer();
-        }
+        if (!item?.usage) return;
+
+        const current = Number(item.usage.current);
+        const max = Number(item.usage.max);
+        const increment = Number(resolveValue(eff.value, engine));
+        if (![current, max, increment].every(Number.isFinite)) return;
+
+        item.usage.current = Math.max(0, Math.min(Math.max(0, max), current + increment));
+        state.set('itemInfo.[id]', item, { id: eff.target });
+        engine.api.presentation.components.explorer();
     }
 };
