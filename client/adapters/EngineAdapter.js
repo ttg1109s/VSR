@@ -30,12 +30,11 @@ export class EngineAdapter {
     if (this.disposed || !event) return;
     if (event.event === 'state.snapshot' && event.payload?.snapshot) {
       this.snapshot = event.payload.snapshot;
-      this.emit({ type: 'state', reason: event.payload.reason || 'state.changed', viewModel: this.getViewModel(), event });
+      this.emit({ type: 'state', reason: event.payload.reason || 'state.changed', viewModel: this.getViewModel() });
       return;
     }
 
     if (event.event === 'presentation.scene.render') {
-      this.lastScenePresentation = Array.isArray(event.payload?.args) ? event.payload.args : [];
       this.refresh('presentation.scene.render');
     }
 
@@ -54,8 +53,11 @@ export class EngineAdapter {
     const snapshot = this.snapshot || this.engine.protocol.createSnapshot(this.engine);
     const sceneId = snapshot.game?.sceneId || null;
     const routerId = snapshot.game?.routerId || null;
-    const scene = sceneId ? this.engine.src?.scenes?.[sceneId] || null : null;
-    const router = scene && routerId ? scene.routers?.[routerId] || null : null;
+    const sourceScene = sceneId ? this.engine.src?.scenes?.[sceneId] || null : null;
+    const sourceRouter = sourceScene && routerId ? sourceScene.routers?.[routerId] || null : null;
+    // Keep sibling routers out of the renderer-facing view model entirely.
+    const scene = sourceScene ? { id: sceneId, meta: sourceScene.meta || {}, set: sourceScene.set || {} } : null;
+    const router = sourceRouter ? { id: routerId, meta: sourceRouter.meta || {}, set: sourceRouter.set || {} } : null;
 
     // The active router is the only authority for the action list.
     // Never enumerate sibling routers or global actions for rendering.
@@ -72,9 +74,14 @@ export class EngineAdapter {
       scene,
       router,
       actions,
-      state: snapshot.state || {},
-      game: snapshot.game || {},
-      scenePresentation: this.lastScenePresentation
+      state: {
+        scene: snapshot.state?.scenes?.[sceneId] || {},
+        actions: Object.fromEntries(actions.map(action => {
+          const key = `${sceneId}_${routerId}_${action.id}`;
+          return [action.id, snapshot.state?.actions?.[key] || {}];
+        }))
+      },
+      game: { initialized: !!snapshot.game?.initialized, sceneId, routerId }
     };
   }
 
