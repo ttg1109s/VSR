@@ -220,6 +220,17 @@ const StatsLogic = {
             if (targetId === entryChar) engine.api.presentation.components.updatePlayerCard();
         }
     },
+    add: (engine, eff) => {
+        const targetId = engine.redirectTarget(eff.target);
+        const char = engine.api.engine.state.getRuntime('characters.[id]', { id: targetId });
+        if (!char) return;
+
+        // Reuse the shared stat parser/normalizer so character and item stats
+        // have identical current/max/label/color semantics.
+        if (StatsHelpers.add_stats(char, eff, true, targetId, engine)) {
+            engine.api.engine.state.set('characters.[id]', char, { id: targetId });
+        }
+    },
 
 };
 
