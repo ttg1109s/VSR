@@ -229,6 +229,12 @@ export const DEMO_SCRIPT = {
             "property": "archive_open",
             "op": "==",
             "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "tunnel_manifest"
           }
         ]
       },
@@ -1774,7 +1780,7 @@ export const DEMO_SCRIPT = {
     "action_unlock_cellar": {
       "meta": {
         "title": "Mở khóa hầm",
-        "desc": "Ổ khóa cần chuỗi ký tự ẩn trong bản thánh ca và lời khai ở sổ khách."
+        "desc": "Cần sổ khách, chìa khóa phòng thứ bảy và mật từ trong thánh ca để mở ổ khóa phụ dẫn xuống hầm."
       },
       "set": {
         "type": "none",
@@ -1833,6 +1839,12 @@ export const DEMO_SCRIPT = {
             "subtype": "inventory",
             "op": "has",
             "value": "guestbook"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "spare_room_key"
           }
         ]
       }
@@ -2051,7 +2063,7 @@ export const DEMO_SCRIPT = {
     "action_ring_bell": {
       "meta": {
         "title": "Rung chuông",
-        "desc": "Lắp quả lắc vào chuông và chỉ rung ba hồi."
+        "desc": "Cần quả lắc chuông và trang ghi chú xác nhận quy tắc ba hồi; không được rung hồi thứ tư."
       },
       "set": {
         "type": "none",
@@ -2122,6 +2134,12 @@ export const DEMO_SCRIPT = {
             "property": "heard_bell",
             "op": "==",
             "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "hymn_note"
           }
         ]
       }
@@ -2189,11 +2207,12 @@ export const DEMO_SCRIPT = {
     "action_decode_roster": {
       "meta": {
         "title": "Đối chiếu sơ đồ chỗ ngồi",
-        "desc": "Sơ đồ cho thấy một chỗ ngồi thứ mười hai đã bị xóa khỏi mọi bản sao."
+        "desc": "Dùng bản sao sổ điểm danh để đối chiếu vị trí thứ mười hai đã bị xóa khỏi sơ đồ chỗ ngồi."
       },
       "set": {
         "type": "none",
-        "display": "show"
+        "display": "show",
+        "requirement": true
       },
       "effect": {
         "normal": [
@@ -2248,6 +2267,17 @@ export const DEMO_SCRIPT = {
             "subtype": "toast",
             "level": "warn",
             "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "class_register_copy"
           }
         ]
       }
@@ -2310,12 +2340,13 @@ export const DEMO_SCRIPT = {
     "action_maze_path": {
       "meta": {
         "title": "Tìm đường qua rừng",
-        "desc": "Đi theo các ô liền kề từ cổng rừng tới khoảng đất trống."
+        "desc": "La bàn của người dẫn đường giúp xác định hướng thật khi lối mòn thay đổi."
       },
       "set": {
         "type": "none",
         "display": "show",
-        "password": "find_way:pw_forest"
+        "password": "find_way:pw_forest",
+        "requirement": true
       },
       "effect": {
         "normal": [
@@ -2358,6 +2389,17 @@ export const DEMO_SCRIPT = {
             "subtype": "toast",
             "level": "warn",
             "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "guide_compass"
           }
         ]
       }
@@ -2481,7 +2523,7 @@ export const DEMO_SCRIPT = {
     "action_repair_mill": {
       "meta": {
         "title": "Khởi động cối xay",
-        "desc": "Mảnh bản đồ cho thấy bánh xe cần được xoay ngược để mở cửa sập."
+        "desc": "Lắp chốt truyền động tìm thấy trong hộp bánh răng, rồi dùng mảnh bản đồ để xoay bánh xe đúng chiều."
       },
       "set": {
         "type": "none",
@@ -2546,6 +2588,12 @@ export const DEMO_SCRIPT = {
             "subtype": "inventory",
             "op": "has",
             "value": "map_fragment"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "mill_gear_pin"
           }
         ]
       }
@@ -2608,7 +2656,7 @@ export const DEMO_SCRIPT = {
     "action_open_archive": {
       "meta": {
         "title": "Mở kho hồ sơ",
-        "desc": "Chìa khóa tìm thấy trong rừng khớp với ổ khóa tủ hồ sơ dưới đê."
+        "desc": "Chìa khóa mở tủ hồ sơ, còn danh sách vận chuyển xác nhận đúng ngăn tài liệu cần lấy."
       },
       "set": {
         "type": "none",
@@ -2668,6 +2716,12 @@ export const DEMO_SCRIPT = {
             "subtype": "inventory",
             "op": "has",
             "value": "archive_key"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "tunnel_manifest"
           }
         ]
       }
@@ -2675,11 +2729,12 @@ export const DEMO_SCRIPT = {
     "action_confront_voice": {
       "meta": {
         "title": "Đối diện giọng nói",
-        "desc": "Giọng nói hỏi bạn muốn cứu người sống hay giữ lại ký ức."
+        "desc": "Dò đúng tần số từ cuộn tinh thể thu sóng trước khi đối thoại với tín hiệu dưới ga."
       },
       "set": {
         "type": "none",
-        "display": "show"
+        "display": "show",
+        "requirement": true
       },
       "effect": {
         "normal": [
@@ -2703,6 +2758,17 @@ export const DEMO_SCRIPT = {
             "subtype": "toast",
             "level": "warn",
             "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "radio_crystal"
           }
         ]
       }
@@ -2867,11 +2933,12 @@ export const DEMO_SCRIPT = {
     "action_ending_depart": {
       "meta": {
         "title": "Kết thúc: Lên chuyến tàu",
-        "desc": "Bạn có thể rời đi mà không giải quyết bí ẩn, nhưng sự thật sẽ tiếp tục bị bỏ lại."
+        "desc": "Bạn chỉ có thể chọn rời đi khi tìm được vé chưa xé của chuyến tàu 03:17."
       },
       "set": {
         "type": "none",
-        "display": "show"
+        "display": "show",
+        "requirement": true
       },
       "effect": {
         "normal": [
@@ -2901,6 +2968,17 @@ export const DEMO_SCRIPT = {
             "subtype": "toast",
             "level": "warn",
             "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "unpunched_ticket"
           }
         ]
       }
