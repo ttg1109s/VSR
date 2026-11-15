@@ -612,3 +612,29 @@ test('CMS schema constrains met insert indexes to a single integer', () => {
   };
   assert.ok(validateScenario(scenario).length > 0);
 });
+
+
+test('manage_effect schema limits router, item, and chat hooks to runtime-supported forms', () => {
+  const makeScenario = inline => {
+    const scenario = validScenario();
+    scenario.scenes.start.routers.main.actions[0].effect = {
+      normal: [{ type: 'manage_effect', inline }]
+    };
+    return scenario;
+  };
+
+  assert.ok(validateScenario(makeScenario({
+    space: 'router', in: 'unknown_hook', subtype: 'locked',
+    target: 'main', index: [0]
+  })).length > 0);
+
+  assert.ok(validateScenario(makeScenario({
+    space: 'item', in: 'craft', subtype: 'locked',
+    target: 'unknown_item', index: [0]
+  })).length > 0);
+
+  assert.ok(validateScenario(makeScenario({
+    space: 'chat', in: 'block_without_choice', subtype: 'locked',
+    target: 'unknown_chat', index: [0]
+  })).length > 0);
+});
