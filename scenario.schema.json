@@ -4372,17 +4372,18 @@
       "properties": {
         "meta": {
           "type": "object",
+          "required": [
+            "subTitleStatus"
+          ],
           "properties": {
             "sceneID": {
               "type": "string",
               "description": "ID scene cha (để tiện tra cứu ngược)."
             },
             "subTitleStatus": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "description": "Nhãn trạng thái ngắn hiển thị cạnh mô tả (vd 'Sấm chớp ngoài cửa sổ')."
+              "type": "string",
+              "minLength": 1,
+              "description": "Trạng thái ngắn, bắt buộc của router; hiển thị trên cover cạnh mô tả."
             },
             "desc": {
               "type": [
