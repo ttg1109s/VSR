@@ -118,7 +118,7 @@ function ActionCard({ action, pending = false, passwordChallenge = null, feedbac
 
     <div className="vsr-action-card__section vsr-action-card__description-section">
       <div className="vsr-action-card__section-heading">
-        <Button className="vsr-action-card__info-button" variant="ghost" size="sm" leadingIcon="info" aria-label="Thông tin mô tả" onClick={() => setDetailsOpen(true)} />
+        <Button className="vsr-action-card__info-button" variant="tertiary" size="sm" leadingIcon="info" aria-label="Thông tin mô tả" onClick={() => setDetailsOpen(true)} />
         <Button className="vsr-action-card__read-button" variant="secondary" size="md" onClick={() => setDetailsOpen(true)}>Xem lại mô tả</Button>
         {readRequired
           ? <Badge tone={read ? 'success' : 'warning'}>{read ? 'Đã đọc' : 'Chưa đọc'}</Badge>
