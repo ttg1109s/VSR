@@ -166,10 +166,10 @@
 }
 .vsr-loader-page > .vsr-content-width { max-width: 640px; }
 .vsr-loader-header {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 40px;
-  align-items: start;
-  gap: var(--vsr-space-4);
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  min-height: 40px;
 }
 .vsr-loader-eyebrow {
   display: inline-flex;
