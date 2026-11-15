@@ -1,8 +1,8 @@
 export { GameEngine } from './GameEngine.js';
 export { NotificationSystem } from './modules/Notification.js';
-export { JsonProtocol, cloneJsonValue } from '../protocol/JsonProtocol.js';
+export { JsonProtocol, cloneJsonValue, API, createEngineAPI } from '../protocol/index.js';
 export { verifyPassword } from './modules/password/verify.js';
-export { API, createEngineAPI } from '../api/index.js';
+
 export { TaskManager, Loop } from './runtime/TaskManager.js';
 export { LoaderSystem } from './modules/Loader.js';
 export { DEMO_SCRIPT } from '../demo_script.js';
