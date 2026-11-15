@@ -1,15 +1,15 @@
 // demo_script.js
 // THE SILENT VILLAGE — Ngôi Làng Không Tiếng Động
-// Scenario format v1; gameplay progression and branching routes.
+// Scenario format v1; spatial model: Scene = physical space, Router = state of that space, Action = interaction/change.
 export const DEMO_SCRIPT = {
   "formatVersion": 1,
   "meta": {
     "title": "THE SILENT VILLAGE — Ngôi Làng Không Tiếng Động",
     "subtitle": "Một bí ẩn dân gian về ký ức, sự mất tích và cái giá của việc nhớ lại",
-    "desc": "Bạn tỉnh dậy tại một ngôi làng phủ sương, nơi loa phát thanh gọi tên những người đã biến mất. Khám phá tám địa điểm, đối chiếu lời khai và quyết định liệu sự thật có nên được đánh thức.",
+    "desc": "Bạn tỉnh dậy ở quảng trường của một ngôi làng bị mắc kẹt trong ký ức. Lần theo dấu vết qua giếng đá, nhà trọ, nhà nguyện, trường học, khu rừng, cối xay và đường hầm để tìm sân ga xuất hiện lúc 03:17; sự thật được ghép lại sẽ quyết định ai được giải thoát.",
     "writer": "VSR Demo Team",
     "studio": "VSR",
-    "version": "1.1.0",
+    "version": "2.0.0",
     "language": "vi",
     "ageRating": "16+",
     "tags": [
@@ -20,13 +20,13 @@ export const DEMO_SCRIPT = {
     ],
     "difficulty": "normal",
     "estimatedPlayTime": 55,
-    "entryScene": "scene_garden",
+    "entryScene": "scene_village_square",
     "entryCharacter": "player",
     "createdAt": "2026-11-15T00:00:00.000Z",
-    "updatedAt": "2026-11-15T00:00:00.000Z",
+    "updatedAt": "2026-11-16T00:00:00.000Z",
     "copyright": "Original demo scenario for VSR Engine",
     "license": "UNLICENSED",
-    "notes": "Demo gameplay pass: interconnected scenes, branching dialogue, item progression, puzzle gates, clue economy and four conditional endings."
+    "notes": "Structural rewrite: every distinct physical location is a Scene; each Router represents a state/presentation of that space; Actions encode interaction, state changes and navigation."
   },
   "globalStates": {
     "clue_lantern": {
@@ -53,10 +53,6 @@ export const DEMO_SCRIPT = {
       "type": "number",
       "value": 0
     },
-    "village_timer": {
-      "type": "number",
-      "value": 0
-    },
     "final_choice": {
       "type": "string",
       "value": "undecided"
@@ -74,10 +70,6 @@ export const DEMO_SCRIPT = {
       "value": false
     },
     "clue_roster": {
-      "type": "boolean",
-      "value": false
-    },
-    "clue_stakes": {
       "type": "boolean",
       "value": false
     },
@@ -106,6 +98,10 @@ export const DEMO_SCRIPT = {
       "value": false
     },
     "bell_rung": {
+      "type": "boolean",
+      "value": false
+    },
+    "clue_hymn": {
       "type": "boolean",
       "value": false
     }
@@ -226,53 +222,7 @@ export const DEMO_SCRIPT = {
         }
       ]
     },
-    "automation": {
-      "fog_cycle": {
-        "set": {
-          "move": "step_by_step",
-          "moveDirection": "first",
-          "numberCycleAllow": 3,
-          "countCurrent": 0,
-          "runInfinity": false,
-          "banClick": false
-        },
-        "plan": [
-          {
-            "seconds": 20,
-            "effect": [
-              {
-                "type": "notify",
-                "subtype": "toast",
-                "level": "warn",
-                "text": "Sương phủ kín con đường phía Bắc."
-              }
-            ]
-          },
-          {
-            "seconds": 20,
-            "effect": [
-              {
-                "type": "set",
-                "subtype": "state",
-                "target": "village_timer",
-                "value": 1
-              }
-            ]
-          },
-          {
-            "seconds": 20,
-            "effect": [
-              {
-                "type": "notify",
-                "subtype": "toast",
-                "level": "danger",
-                "text": "Loa phát thanh rè lên: 'Đừng trả lời khi nghe gọi tên'."
-              }
-            ]
-          }
-        ]
-      }
-    }
+    "automation": {}
   },
   "itemInfo": {
     "lantern": {
@@ -457,7 +407,7 @@ export const DEMO_SCRIPT = {
   "passwords": {
     "number": {
       "pw_bell": {
-        "desc": "Mã thời điểm chuông ngừng ngân: bốn chữ số khắc dưới mặt đồng hồ.",
+        "desc": "Nhập thời điểm khắc trên mặt đồng hồ của tháp chuông.",
         "display": "keyboard",
         "value": "0417",
         "retryMax": 5
@@ -465,7 +415,7 @@ export const DEMO_SCRIPT = {
     },
     "string": {
       "pw_guest": {
-        "desc": "Từ khóa được tạo bởi chữ đầu của bốn dòng thánh ca.",
+        "desc": "Mật từ ghép từ chữ cái đầu của bốn dòng trong bản thánh ca.",
         "value": "IMLANG",
         "hint": [
           0,
@@ -476,7 +426,7 @@ export const DEMO_SCRIPT = {
     },
     "find_way": {
       "pw_forest": {
-        "desc": "Tìm đường từ cổng rừng tới khoảng đất trống, chỉ đi theo các ô liền kề.",
+        "desc": "Lần theo dãy ô liền kề được đánh dấu từ cổng rừng đến khoảng đất nghi lễ.",
         "area": [
           4,
           4
@@ -533,28 +483,21 @@ export const DEMO_SCRIPT = {
         "level": "normal",
         "retryMax": 3
       }
-    },
-    "switch": {
-      "pw_switch": {
-        "desc": "Đặt bốn công tắc theo thứ tự đèn trên sơ đồ lớp học.",
-        "value": "1010",
-        "retryMax": 4
-      }
     }
   },
   "scenes": {
-    "scene_garden": {
+    "scene_village_square": {
       "meta": {
-        "title": "Quảng trường",
-        "desc": "Trái tim của ngôi làng, nơi chiếc loa phát thanh vẫn gọi tên những người đã mất."
+        "title": "Quảng trường làng",
+        "desc": "Không gian công cộng ở trung tâm làng; bảng thông báo và loa phát thanh là hai nguồn manh mối đầu tiên."
       },
       "set": {
-        "activeRouterId": "square_gate"
+        "activeRouterId": "router_square_fogbound"
       },
       "routers": {
-        "square_gate": {
+        "router_square_fogbound": {
           "meta": {
-            "sceneID": "scene_garden",
+            "sceneID": "scene_village_square",
             "subTitleStatus": "Mù sương và loa phát thanh vang vọng",
             "desc": "Sương phủ kín quảng trường, làm nhòe những dãy nhà quanh cổng làng. Chiếc loa phát thanh vẫn đều đặn gọi tên những người đã mất tích; bảng thông báo bên đường lưu lại danh sách dân làng với một cái tên bị cạo đi."
           },
@@ -564,18 +507,30 @@ export const DEMO_SCRIPT = {
             "countVisited": 0
           },
           "actions": [
-            "act_read_notice",
-            "act_talk_mai",
-            "act_enter_well",
-            "act_travel_inn",
-            "act_travel_chapel",
-            "act_travel_school",
-            "act_travel_forest"
+            "action_read_notice",
+            "action_talk_mai",
+            "action_enter_well",
+            "action_travel_inn",
+            "action_travel_chapel",
+            "action_travel_school",
+            "action_travel_forest"
           ]
-        },
-        "square_well": {
+        }
+      }
+    },
+    "scene_village_well": {
+      "meta": {
+        "title": "Giếng đá",
+        "desc": "Giếng nằm ngay rìa quảng trường, nơi dấu vết của người thứ mười hai bị che giấu.",
+        "parentScene": "scene_village_square"
+      },
+      "set": {
+        "activeRouterId": "router_well_echoes"
+      },
+      "routers": {
+        "router_well_echoes": {
           "meta": {
-            "sceneID": "scene_garden",
+            "sceneID": "scene_village_well",
             "subTitleStatus": "Tiếng gõ vọng lên từ đáy giếng",
             "desc": "Trong màn sương của quảng trường, tiếng gõ đều đặn vọng lên từ chiếc giếng đá phủ rêu. Trên thành giếng có bốn vạch khắc mới và một vết kim loại bị cào xước."
           },
@@ -585,31 +540,23 @@ export const DEMO_SCRIPT = {
             "countVisited": 0
           },
           "actions": [
-            "act_inspect_well",
-            "act_use_lantern",
-            "act_return_square"
-          ],
-          "loop": {
-            "enter": [
-              {
-                "type": "effect",
-                "ref": "reveal_clue"
-              }
-            ]
-          }
+            "action_inspect_well",
+            "action_use_lantern",
+            "action_return_square"
+          ]
         }
       }
     },
     "scene_inn": {
       "meta": {
         "title": "Nhà trọ Bà Hạnh",
-        "desc": "Mùi trà nguội và những căn phòng luôn được dọn sẵn cho khách chưa từng đến."
+        "desc": "Nhà trọ là nơi lưu giữ sổ khách và lời khai về những người chưa thể rời làng."
       },
       "set": {
-        "activeRouterId": "inn_lobby"
+        "activeRouterId": "router_inn_unsettled"
       },
       "routers": {
-        "inn_lobby": {
+        "router_inn_unsettled": {
           "meta": {
             "sceneID": "scene_inn",
             "subTitleStatus": "Những vị khách chưa từng rời đi",
@@ -621,24 +568,28 @@ export const DEMO_SCRIPT = {
             "countVisited": 0
           },
           "actions": [
-            "act_question_hanh",
-            "act_open_guestbook",
-            "act_return_square",
-            "act_travel_chapel",
-            "act_unlock_cellar"
-          ],
-          "loop": {
-            "still": [
-              {
-                "type": "effect",
-                "ref": "warning"
-              }
-            ]
-          }
-        },
-        "inn_cellar": {
+            "action_question_hanh",
+            "action_open_guestbook",
+            "action_return_square",
+            "action_travel_chapel",
+            "action_unlock_cellar"
+          ]
+        }
+      }
+    },
+    "scene_inn_cellar": {
+      "meta": {
+        "title": "Hầm rượu nhà trọ",
+        "desc": "Căn hầm nằm dưới nhà trọ; cửa chỉ mở khi tìm được sổ khách và giải đúng mật từ trong thánh ca.",
+        "parentScene": "scene_inn"
+      },
+      "set": {
+        "activeRouterId": "router_cellar_open"
+      },
+      "routers": {
+        "router_cellar_open": {
           "meta": {
-            "sceneID": "scene_inn",
+            "sceneID": "scene_inn_cellar",
             "subTitleStatus": "Hầm rượu vừa được mở khóa",
             "desc": "Ổ khóa đã bật mở, để lộ cầu thang dẫn xuống căn hầm rượu tối và lạnh. Một cuộn băng ghi âm đêm mất điện được giấu sau chiếc thùng rỗng."
           },
@@ -648,8 +599,8 @@ export const DEMO_SCRIPT = {
             "countVisited": 0
           },
           "actions": [
-            "act_search_cellar",
-            "act_return_inn"
+            "action_search_cellar",
+            "action_return_inn"
           ]
         }
       }
@@ -657,13 +608,13 @@ export const DEMO_SCRIPT = {
     "scene_chapel": {
       "meta": {
         "title": "Nhà nguyện",
-        "desc": "Chuông đã ngừng ngân từ mười bảy năm trước, nhưng mỗi đêm vẫn có người nghe thấy."
+        "desc": "Gian cầu nguyện lưu bản thánh ca chứa mật từ và lời giải về hồi chuông cuối."
       },
       "set": {
-        "activeRouterId": "chapel_nave"
+        "activeRouterId": "router_chapel_silent"
       },
       "routers": {
-        "chapel_nave": {
+        "router_chapel_silent": {
           "meta": {
             "sceneID": "scene_chapel",
             "subTitleStatus": "Sự im lặng bao trùm nhà nguyện",
@@ -675,16 +626,28 @@ export const DEMO_SCRIPT = {
             "countVisited": 0
           },
           "actions": [
-            "act_read_hymn",
-            "act_talk_keeper",
-            "act_enter_tower",
-            "act_return_square",
-            "act_travel_school"
+            "action_read_hymn",
+            "action_talk_keeper",
+            "action_enter_tower",
+            "action_return_square",
+            "action_travel_school"
           ]
-        },
-        "chapel_tower": {
+        }
+      }
+    },
+    "scene_chapel_tower": {
+      "meta": {
+        "title": "Tháp chuông",
+        "desc": "Tháp nằm phía trên nhà nguyện; mặt đồng hồ ghi thời điểm sự kiện và cơ cấu chuông bị tháo rời.",
+        "parentScene": "scene_chapel"
+      },
+      "set": {
+        "activeRouterId": "router_bell_chamber"
+      },
+      "routers": {
+        "router_bell_chamber": {
           "meta": {
-            "sceneID": "scene_chapel",
+            "sceneID": "scene_chapel_tower",
             "subTitleStatus": "Ba hồi chuông chờ được đánh thức",
             "desc": "Trên tháp, quả chuông câm lặng treo phía trên mặt đồng hồ. Quả lắc đã bị tháo rời; mã khắc dưới mặt đồng hồ liên quan đến thời điểm những người dân biến mất."
           },
@@ -694,26 +657,25 @@ export const DEMO_SCRIPT = {
             "countVisited": 0
           },
           "actions": [
-            "act_solve_bell",
-            "act_ring_bell",
-            "act_return_chapel"
-          ],
-          "loop": {}
+            "action_solve_bell",
+            "action_ring_bell",
+            "action_return_chapel"
+          ]
         }
       }
     },
-    "scene_school": {
+    "scene_abandoned_school": {
       "meta": {
         "title": "Trường tiểu học bỏ hoang",
-        "desc": "Bài tập trên bảng được viết bằng nét chữ của những đứa trẻ chưa từng tồn tại."
+        "desc": "Trường học lưu sơ đồ lớp và dấu vết về học sinh thứ mười hai bị xóa khỏi hồ sơ."
       },
       "set": {
-        "activeRouterId": "school_class"
+        "activeRouterId": "router_classroom_erased"
       },
       "routers": {
-        "school_class": {
+        "router_classroom_erased": {
           "meta": {
-            "sceneID": "scene_school",
+            "sceneID": "scene_abandoned_school",
             "subTitleStatus": "Một học sinh bị xóa khỏi ký ức",
             "desc": "Trong lớp học số 3, danh sách chỉ còn những cái tên bị gạch bỏ và bức ảnh tập thể bị xé. Sơ đồ chỗ ngồi có dấu vết của vị trí thứ mười hai, nhưng vị trí ấy đã bị xóa khỏi mọi bản sao."
           },
@@ -723,26 +685,26 @@ export const DEMO_SCRIPT = {
             "countVisited": 0
           },
           "actions": [
-            "act_check_desk",
-            "act_decode_roster",
-            "act_return_square",
-            "act_travel_forest"
+            "action_check_desk",
+            "action_decode_roster",
+            "action_return_square",
+            "action_travel_forest"
           ]
         }
       }
     },
-    "scene_forest": {
+    "scene_north_forest": {
       "meta": {
-        "title": "Rừng thông phía Bắc",
-        "desc": "Con đường mòn thay đổi mỗi khi người chơi quay lưng."
+        "title": "Lối rừng phía Bắc",
+        "desc": "Con đường xuyên rừng biến đổi, nhưng các dấu sơn giúp lần tới khu đất nghi lễ."
       },
       "set": {
-        "activeRouterId": "forest_path"
+        "activeRouterId": "router_forest_path_shifting"
       },
       "routers": {
-        "forest_path": {
+        "router_forest_path_shifting": {
           "meta": {
-            "sceneID": "scene_forest",
+            "sceneID": "scene_north_forest",
             "subTitleStatus": "Lối đi liên tục biến đổi",
             "desc": "Con đường mòn dưới tán thông không giữ nguyên hình dạng khi bạn quay lưng. Những vệt sơn trên thân cây là dấu hiệu hiếm hoi giúp xác định hướng đi tới khoảng đất trống."
           },
@@ -752,16 +714,27 @@ export const DEMO_SCRIPT = {
             "countVisited": 0
           },
           "actions": [
-            "act_follow_marks",
-            "act_maze_path",
-            "act_enter_clearing",
-            "act_return_square"
-          ],
-          "loop": {}
-        },
-        "forest_clearing": {
+            "action_follow_marks",
+            "action_maze_path",
+            "action_enter_clearing",
+            "action_return_square"
+          ]
+        }
+      }
+    },
+    "scene_forest_clearing": {
+      "meta": {
+        "title": "Khoảng đất nghi lễ",
+        "desc": "Khoảng đất trống giữa rừng có vòng cọc và chiếc hộp chôn chứa vật chứng.",
+        "parentScene": "scene_north_forest"
+      },
+      "set": {
+        "activeRouterId": "router_forest_clearing"
+      },
+      "routers": {
+        "router_forest_clearing": {
           "meta": {
-            "sceneID": "scene_forest",
+            "sceneID": "scene_forest_clearing",
             "subTitleStatus": "Vòng cọc có một chiếc bóng bị khuyết",
             "desc": "Mười hai cọc gỗ tạo thành một vòng cung giữa khoảng đất trống, nhưng chỉ có mười một chiếc bóng. Một chiếc hộp được chôn gần vòng cọc chứa những mảnh ảnh gia đình."
           },
@@ -771,26 +744,26 @@ export const DEMO_SCRIPT = {
             "countVisited": 0
           },
           "actions": [
-            "act_inspect_stakes",
-            "act_find_hidden_box",
-            "act_return_forest",
-            "act_travel_mill"
+            "action_inspect_stakes",
+            "action_find_hidden_box",
+            "action_return_forest",
+            "action_travel_mill"
           ]
         }
       }
     },
-    "scene_mill": {
+    "scene_watermill": {
       "meta": {
         "title": "Cối xay nước",
-        "desc": "Bánh xe vẫn quay dù dòng suối đã cạn từ lâu."
+        "desc": "Cối xay cũ là nút cơ giới dẫn xuống đường hầm dưới chân đê."
       },
       "set": {
-        "activeRouterId": "mill_floor"
+        "activeRouterId": "router_watermill_stalled"
       },
       "routers": {
-        "mill_floor": {
+        "router_watermill_stalled": {
           "meta": {
-            "sceneID": "scene_mill",
+            "sceneID": "scene_watermill",
             "subTitleStatus": "Bánh xe quay giữa dòng suối cạn",
             "desc": "Sàn máy rung lên theo chuyển động của bánh xe dù dòng suối đã cạn từ lâu. Bảng điều khiển vẫn hoạt động; cơ cấu bánh xe có thể được xoay ngược để mở cửa sập dưới sàn."
           },
@@ -800,25 +773,25 @@ export const DEMO_SCRIPT = {
             "countVisited": 0
           },
           "actions": [
-            "act_repair_mill",
-            "act_set_switches",
-            "act_return_forest"
+            "action_repair_mill",
+            "action_return_forest"
           ]
         }
       }
     },
-    "scene_tunnel": {
+    "scene_levee_tunnel": {
       "meta": {
         "title": "Đường hầm dưới chân đê",
-        "desc": "Những bức tường ghi lại tên người dân theo thứ tự ngày họ biến mất."
+        "desc": "Đường hầm ghi tên người mất tích và dẫn tới kho hồ sơ cùng sân ga bí mật.",
+        "parentScene": "scene_watermill"
       },
       "set": {
-        "activeRouterId": "tunnel_entry"
+        "activeRouterId": "router_tunnel_names"
       },
       "routers": {
-        "tunnel_entry": {
+        "router_tunnel_names": {
           "meta": {
-            "sceneID": "scene_tunnel",
+            "sceneID": "scene_levee_tunnel",
             "subTitleStatus": "Tên người mất tích phủ kín vách hầm",
             "desc": "Những bức tường đường hầm ghi tên dân làng theo đúng thứ tự ngày họ biến mất. Danh sách có dấu hiệu bị sửa: số tên thực tế nhiều hơn những gì hồ sơ chính thức ghi nhận."
           },
@@ -828,26 +801,27 @@ export const DEMO_SCRIPT = {
             "countVisited": 0
           },
           "actions": [
-            "act_enter_tunnel",
-            "act_open_archive",
-            "act_return_mill",
-            "act_reach_station"
+            "action_enter_tunnel",
+            "action_open_archive",
+            "action_return_mill",
+            "action_reach_station"
           ]
         }
       }
     },
-    "scene_station": {
+    "scene_ghost_station": {
       "meta": {
         "title": "Ga tàu không có trên bản đồ",
-        "desc": "Chuyến tàu cuối cùng chỉ dừng lại khi tất cả sự thật được gọi đúng tên."
+        "desc": "Sân ga xuất hiện lúc 03:17; tại đây người chơi đối diện giọng nói và quyết định kết cục.",
+        "parentScene": "scene_levee_tunnel"
       },
       "set": {
-        "activeRouterId": "station_platform"
+        "activeRouterId": "router_station_0317"
       },
       "routers": {
-        "station_platform": {
+        "router_station_0317": {
           "meta": {
-            "sceneID": "scene_station",
+            "sceneID": "scene_ghost_station",
             "subTitleStatus": "Chuyến tàu cuối dừng lúc 03:17",
             "desc": "Sân ga không xuất hiện trên bất kỳ tấm bản đồ nào. Một chuyến tàu dừng lại lúc 03:17; giọng nói vang lên từ đường ray buộc bạn phải lựa chọn điều gì sẽ được giữ lại và điều gì phải chấm dứt."
           },
@@ -860,43 +834,18 @@ export const DEMO_SCRIPT = {
             "timerEnd": "still"
           },
           "actions": [
-            "act_confront_voice",
-            "act_choose_fate",
-            "act_ending_bury",
-            "act_ending_echo",
-            "act_ending_depart"
-          ],
-          "timer": {
-            "end": [
-              {
-                "type": "notify",
-                "subtype": "toast",
-                "level": "warn",
-                "text": "Tiếng còi tàu vang lên. Bạn đã bỏ lỡ cơ hội lựa chọn; chuyến tàu đưa bạn rời khỏi ngôi làng."
-              },
-              {
-                "type": "goto",
-                "subtype": "end",
-                "target": "ending_depart"
-              }
-            ]
-          },
-          "loop": {
-            "enter": [
-              {
-                "type": "set",
-                "subtype": "state",
-                "target": "final_choice",
-                "value": "undecided"
-              }
-            ]
-          }
+            "action_confront_voice",
+            "action_choose_fate",
+            "action_ending_bury",
+            "action_ending_echo",
+            "action_ending_depart"
+          ]
         }
       }
     }
   },
   "actions": {
-    "act_read_notice": {
+    "action_read_notice": {
       "meta": {
         "title": "Đọc bảng thông báo",
         "desc": "Danh sách dân làng có một cái tên bị cạo đi. Một chiếc đèn bão bị bỏ lại dưới chân bảng."
@@ -941,7 +890,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "set",
             "subtype": "action",
-            "target": "act_read_notice",
+            "target": "action_read_notice",
             "property": "display",
             "value": "hide"
           }
@@ -956,7 +905,7 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "act_talk_mai": {
+    "action_talk_mai": {
       "meta": {
         "title": "Hỏi Mai về đêm mất điện",
         "desc": "Mai tránh nhìn về phía giếng. Hãy nghe lời kể của cô ấy."
@@ -991,7 +940,7 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "act_inspect_well": {
+    "action_inspect_well": {
       "meta": {
         "title": "Quan sát giếng",
         "desc": "Trên thành giếng có bốn vạch khắc mới và một vết kim loại bị cào xước."
@@ -1031,7 +980,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "set",
             "subtype": "action",
-            "target": "act_inspect_well",
+            "target": "action_inspect_well",
             "property": "display",
             "value": "hide"
           }
@@ -1046,7 +995,7 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "act_use_lantern": {
+    "action_use_lantern": {
       "meta": {
         "title": "Chiếu đèn xuống giếng",
         "desc": "Chỉ có thể đọc ký hiệu dưới đáy giếng khi manh mối ánh sáng đã được kích hoạt."
@@ -1081,7 +1030,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "set",
             "subtype": "action",
-            "target": "act_use_lantern",
+            "target": "action_use_lantern",
             "property": "display",
             "value": "hide"
           }
@@ -1107,7 +1056,7 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "act_question_hanh": {
+    "action_question_hanh": {
       "meta": {
         "title": "Hỏi bà Hạnh",
         "desc": "Bà Hạnh khẳng định nhà trọ chỉ có sáu phòng, dù hành lang có bảy cửa."
@@ -1142,7 +1091,7 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "act_open_guestbook": {
+    "action_open_guestbook": {
       "meta": {
         "title": "Mở sổ khách",
         "desc": "Trang cuối ghi tên người chơi với ngày đến là ngày mai."
@@ -1187,7 +1136,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "set",
             "subtype": "action",
-            "target": "act_open_guestbook",
+            "target": "action_open_guestbook",
             "property": "display",
             "value": "hide"
           }
@@ -1202,7 +1151,7 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "act_unlock_cellar": {
+    "action_unlock_cellar": {
       "meta": {
         "title": "Mở khóa hầm",
         "desc": "Ổ khóa cần chuỗi ký tự ẩn trong bản thánh ca và lời khai ở sổ khách."
@@ -1237,8 +1186,8 @@ export const DEMO_SCRIPT = {
           },
           {
             "type": "goto",
-            "subtype": "router",
-            "target": "inn_cellar"
+            "subtype": "scene",
+            "target": "scene_inn_cellar"
           }
         ],
         "fail": [
@@ -1268,7 +1217,7 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "act_search_cellar": {
+    "action_search_cellar": {
       "meta": {
         "title": "Lục tìm trong hầm",
         "desc": "Một cuộn băng được giấu sau thùng rỗng. Trên nhãn có ghi ngày sơ tán."
@@ -1313,7 +1262,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "set",
             "subtype": "action",
-            "target": "act_search_cellar",
+            "target": "action_search_cellar",
             "property": "display",
             "value": "hide"
           }
@@ -1328,7 +1277,7 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "act_read_hymn": {
+    "action_read_hymn": {
       "meta": {
         "title": "Đọc bản thánh ca",
         "desc": "Các chữ đầu dòng ghép thành từ 'IM LANG'. Một dòng bị gạch dưới nhắc đến ba hồi chuông."
@@ -1356,7 +1305,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "set",
             "subtype": "state",
-            "target": "clue_roster",
+            "target": "clue_hymn",
             "value": true
           },
           {
@@ -1368,7 +1317,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "set",
             "subtype": "action",
-            "target": "act_read_hymn",
+            "target": "action_read_hymn",
             "property": "display",
             "value": "hide"
           }
@@ -1383,7 +1332,7 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "act_talk_keeper": {
+    "action_talk_keeper": {
       "meta": {
         "title": "Nói chuyện với người giữ nhà nguyện",
         "desc": "Ông ta nói chuông chỉ được rung khi người giữ chuông chấp nhận sự thật."
@@ -1418,7 +1367,7 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "act_solve_bell": {
+    "action_solve_bell": {
       "meta": {
         "title": "Giải mã mặt đồng hồ",
         "desc": "Mã bốn chữ số khắc dưới mặt đồng hồ là thời điểm mất tích."
@@ -1464,7 +1413,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "set",
             "subtype": "action",
-            "target": "act_solve_bell",
+            "target": "action_solve_bell",
             "property": "display",
             "value": "hide"
           }
@@ -1479,7 +1428,7 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "act_ring_bell": {
+    "action_ring_bell": {
       "meta": {
         "title": "Rung chuông",
         "desc": "Lắp quả lắc vào chuông và chỉ rung ba hồi."
@@ -1525,7 +1474,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "set",
             "subtype": "action",
-            "target": "act_ring_bell",
+            "target": "action_ring_bell",
             "property": "display",
             "value": "hide"
           }
@@ -1557,7 +1506,7 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "act_check_desk": {
+    "action_check_desk": {
       "meta": {
         "title": "Kiểm tra ngăn bàn",
         "desc": "Có danh sách lớp với bốn học sinh bị gạch tên và một bức ảnh bị xé."
@@ -1602,7 +1551,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "set",
             "subtype": "action",
-            "target": "act_check_desk",
+            "target": "action_check_desk",
             "property": "display",
             "value": "hide"
           }
@@ -1617,7 +1566,7 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "act_decode_roster": {
+    "action_decode_roster": {
       "meta": {
         "title": "Đối chiếu sơ đồ chỗ ngồi",
         "desc": "Sơ đồ cho thấy một chỗ ngồi thứ mười hai đã bị xóa khỏi mọi bản sao."
@@ -1668,7 +1617,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "set",
             "subtype": "action",
-            "target": "act_decode_roster",
+            "target": "action_decode_roster",
             "property": "display",
             "value": "hide"
           }
@@ -1683,7 +1632,7 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "act_follow_marks": {
+    "action_follow_marks": {
       "meta": {
         "title": "Lần theo dấu sơn",
         "desc": "Những vệt sơn dẫn tới khoảng đất trống, nơi các cọc gỗ tạo thành hình vòng cung."
@@ -1723,7 +1672,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "set",
             "subtype": "action",
-            "target": "act_follow_marks",
+            "target": "action_follow_marks",
             "property": "display",
             "value": "hide"
           }
@@ -1738,7 +1687,7 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "act_maze_path": {
+    "action_maze_path": {
       "meta": {
         "title": "Tìm đường qua rừng",
         "desc": "Đi theo các ô liền kề từ cổng rừng tới khoảng đất trống."
@@ -1778,7 +1727,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "set",
             "subtype": "action",
-            "target": "act_maze_path",
+            "target": "action_maze_path",
             "property": "display",
             "value": "hide"
           }
@@ -1793,7 +1742,7 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "act_inspect_stakes": {
+    "action_inspect_stakes": {
       "meta": {
         "title": "Đếm cọc gỗ",
         "desc": "Có mười hai cọc, nhưng chỉ mười một cái đổ bóng."
@@ -1833,7 +1782,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "set",
             "subtype": "action",
-            "target": "act_inspect_stakes",
+            "target": "action_inspect_stakes",
             "property": "display",
             "value": "hide"
           }
@@ -1848,7 +1797,7 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "act_find_hidden_box": {
+    "action_find_hidden_box": {
       "meta": {
         "title": "Mở hộp chôn dưới đất",
         "desc": "Bức ảnh gia đình bị xé thành nhiều mảnh. Hãy ghép ảnh để nhận diện đứa trẻ."
@@ -1894,7 +1843,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "set",
             "subtype": "action",
-            "target": "act_find_hidden_box",
+            "target": "action_find_hidden_box",
             "property": "display",
             "value": "hide"
           }
@@ -1909,7 +1858,7 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "act_repair_mill": {
+    "action_repair_mill": {
       "meta": {
         "title": "Khởi động cối xay",
         "desc": "Mảnh bản đồ cho thấy bánh xe cần được xoay ngược để mở cửa sập."
@@ -1950,14 +1899,14 @@ export const DEMO_SCRIPT = {
           {
             "type": "set",
             "subtype": "action",
-            "target": "act_repair_mill",
+            "target": "action_repair_mill",
             "property": "display",
             "value": "hide"
           },
           {
             "type": "goto",
             "subtype": "scene",
-            "target": "scene_tunnel"
+            "target": "scene_levee_tunnel"
           }
         ],
         "fail": [
@@ -1981,63 +1930,7 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "act_set_switches": {
-      "meta": {
-        "title": "Gạt bảng công tắc",
-        "desc": "Đặt bốn công tắc theo thứ tự đèn trên sơ đồ lớp học."
-      },
-      "set": {
-        "type": "none",
-        "display": "show",
-        "password": "switch:pw_switch"
-      },
-      "effect": {
-        "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Đặt bốn công tắc theo thứ tự đèn trên sơ đồ lớp học."
-          }
-        ],
-        "pass": [
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "archive_open",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "truth_fragments",
-            "value": 1
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Các đèn chuyển sang màu trắng. Hệ thống khóa kho hồ sơ đã được ngắt."
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "act_set_switches",
-            "property": "display",
-            "value": "hide"
-          }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warn",
-            "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
-          }
-        ]
-      }
-    },
-    "act_enter_tunnel": {
+    "action_enter_tunnel": {
       "meta": {
         "title": "Khám phá đường hầm",
         "desc": "Những bức tường ghi tên người dân theo thứ tự ngày họ biến mất."
@@ -2077,7 +1970,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "set",
             "subtype": "action",
-            "target": "act_enter_tunnel",
+            "target": "action_enter_tunnel",
             "property": "display",
             "value": "hide"
           }
@@ -2092,7 +1985,7 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "act_open_archive": {
+    "action_open_archive": {
       "meta": {
         "title": "Mở kho hồ sơ",
         "desc": "Chìa khóa tìm thấy trong rừng khớp với ổ khóa tủ hồ sơ dưới đê."
@@ -2133,7 +2026,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "set",
             "subtype": "action",
-            "target": "act_open_archive",
+            "target": "action_open_archive",
             "property": "display",
             "value": "hide"
           }
@@ -2159,7 +2052,7 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "act_confront_voice": {
+    "action_confront_voice": {
       "meta": {
         "title": "Đối diện giọng nói",
         "desc": "Giọng nói hỏi bạn muốn cứu người sống hay giữ lại ký ức."
@@ -2194,7 +2087,7 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "act_choose_fate": {
+    "action_choose_fate": {
       "meta": {
         "title": "Kết thúc: Giải thoát",
         "desc": "Chỉ khi đã khôi phục đủ ký ức, nghe chuông và mở kho hồ sơ, bạn mới có thể trả sự thật về cho người sống."
@@ -2239,7 +2132,7 @@ export const DEMO_SCRIPT = {
         "ref": "release_ready"
       }
     },
-    "act_ending_bury": {
+    "action_ending_bury": {
       "meta": {
         "title": "Kết thúc: Chôn giấu",
         "desc": "Bạn có thể phá hủy hồ sơ và rời đi, giữ cho ngôi làng tiếp tục ngủ yên."
@@ -2292,7 +2185,7 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "act_ending_echo": {
+    "action_ending_echo": {
       "meta": {
         "title": "Kết thúc: Tiếng vọng thứ mười hai",
         "desc": "Chỉ có thể chọn ở lại khi đã biết danh tính người thứ mười hai và nghe được sự thật từ tín hiệu."
@@ -2351,7 +2244,7 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "act_ending_depart": {
+    "action_ending_depart": {
       "meta": {
         "title": "Kết thúc: Lên chuyến tàu",
         "desc": "Bạn có thể rời đi mà không giải quyết bí ẩn, nhưng sự thật sẽ tiếp tục bị bỏ lại."
@@ -2392,7 +2285,7 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "act_enter_well": {
+    "action_enter_well": {
       "meta": {
         "title": "Đi tới giếng đá",
         "desc": "Rời quảng trường và tiếp cận giếng phủ rêu."
@@ -2413,8 +2306,8 @@ export const DEMO_SCRIPT = {
         "pass": [
           {
             "type": "goto",
-            "subtype": "router",
-            "target": "square_well"
+            "subtype": "scene",
+            "target": "scene_village_well"
           }
         ],
         "fail": [
@@ -2427,7 +2320,7 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "act_return_square": {
+    "action_return_square": {
       "meta": {
         "title": "Trở lại quảng trường",
         "desc": "Quay về quảng trường trung tâm."
@@ -2449,7 +2342,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "goto",
             "subtype": "scene",
-            "target": "scene_garden"
+            "target": "scene_village_square"
           }
         ],
         "fail": [
@@ -2462,7 +2355,7 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "act_return_inn": {
+    "action_return_inn": {
       "meta": {
         "title": "Trở lại sảnh nhà trọ",
         "desc": "Rời hầm và quay về quầy lễ tân."
@@ -2483,8 +2376,8 @@ export const DEMO_SCRIPT = {
         "pass": [
           {
             "type": "goto",
-            "subtype": "router",
-            "target": "inn_lobby"
+            "subtype": "scene",
+            "target": "scene_inn"
           }
         ],
         "fail": [
@@ -2497,7 +2390,7 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "act_enter_tower": {
+    "action_enter_tower": {
       "meta": {
         "title": "Lên tháp chuông",
         "desc": "Cầu thang hẹp dẫn lên nơi treo quả chuông câm."
@@ -2518,8 +2411,8 @@ export const DEMO_SCRIPT = {
         "pass": [
           {
             "type": "goto",
-            "subtype": "router",
-            "target": "chapel_tower"
+            "subtype": "scene",
+            "target": "scene_chapel_tower"
           }
         ],
         "fail": [
@@ -2532,7 +2425,7 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "act_return_chapel": {
+    "action_return_chapel": {
       "meta": {
         "title": "Trở lại gian nhà nguyện",
         "desc": "Quay về gian cầu nguyện."
@@ -2553,8 +2446,8 @@ export const DEMO_SCRIPT = {
         "pass": [
           {
             "type": "goto",
-            "subtype": "router",
-            "target": "chapel_nave"
+            "subtype": "scene",
+            "target": "scene_chapel"
           }
         ],
         "fail": [
@@ -2567,7 +2460,7 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "act_enter_clearing": {
+    "action_enter_clearing": {
       "meta": {
         "title": "Đi tới khoảng đất trống",
         "desc": "Theo dấu sơn đến vòng cọc gỗ giữa rừng."
@@ -2588,8 +2481,8 @@ export const DEMO_SCRIPT = {
         "pass": [
           {
             "type": "goto",
-            "subtype": "router",
-            "target": "forest_clearing"
+            "subtype": "scene",
+            "target": "scene_forest_clearing"
           }
         ],
         "fail": [
@@ -2602,7 +2495,7 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "act_return_forest": {
+    "action_return_forest": {
       "meta": {
         "title": "Trở lại lối mòn",
         "desc": "Quay về con đường dưới tán thông."
@@ -2624,7 +2517,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "goto",
             "subtype": "scene",
-            "target": "scene_forest"
+            "target": "scene_north_forest"
           }
         ],
         "fail": [
@@ -2637,7 +2530,7 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "act_travel_inn": {
+    "action_travel_inn": {
       "meta": {
         "title": "Đi tới nhà trọ",
         "desc": "Theo con đường lát đá đến nhà trọ Bà Hạnh."
@@ -2672,7 +2565,7 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "act_travel_chapel": {
+    "action_travel_chapel": {
       "meta": {
         "title": "Đi tới nhà nguyện",
         "desc": "Tiếng chuông im lặng dẫn bạn về phía nhà nguyện."
@@ -2707,7 +2600,7 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "act_travel_school": {
+    "action_travel_school": {
       "meta": {
         "title": "Đi tới trường học",
         "desc": "Dấu chân nhỏ dẫn tới ngôi trường bỏ hoang."
@@ -2729,7 +2622,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "goto",
             "subtype": "scene",
-            "target": "scene_school"
+            "target": "scene_abandoned_school"
           }
         ],
         "fail": [
@@ -2742,7 +2635,7 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "act_travel_forest": {
+    "action_travel_forest": {
       "meta": {
         "title": "Đi tới rừng thông",
         "desc": "Con đường phía Bắc mở ra dưới màn sương."
@@ -2764,7 +2657,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "goto",
             "subtype": "scene",
-            "target": "scene_forest"
+            "target": "scene_north_forest"
           }
         ],
         "fail": [
@@ -2777,7 +2670,7 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "act_travel_mill": {
+    "action_travel_mill": {
       "meta": {
         "title": "Đi tới cối xay nước",
         "desc": "Theo con suối cạn tới cối xay cũ."
@@ -2799,7 +2692,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "goto",
             "subtype": "scene",
-            "target": "scene_mill"
+            "target": "scene_watermill"
           }
         ],
         "fail": [
@@ -2812,7 +2705,7 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "act_return_mill": {
+    "action_return_mill": {
       "meta": {
         "title": "Trở lại cối xay",
         "desc": "Quay lại căn phòng máy dưới chân đê."
@@ -2834,7 +2727,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "goto",
             "subtype": "scene",
-            "target": "scene_mill"
+            "target": "scene_watermill"
           }
         ],
         "fail": [
@@ -2847,7 +2740,7 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "act_reach_station": {
+    "action_reach_station": {
       "meta": {
         "title": "Đi tới ga tàu",
         "desc": "Chỉ những người đã ghép đủ manh mối mới tìm thấy sân ga."
@@ -2870,7 +2763,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "goto",
             "subtype": "scene",
-            "target": "scene_station"
+            "target": "scene_ghost_station"
           }
         ],
         "fail": [
@@ -3194,12 +3087,12 @@ export const DEMO_SCRIPT = {
       },
       "inventory": [],
       "place": {
-        "scene_id": "scene_garden",
+        "scene_id": "scene_village_square",
         "currentIndex": 0
       },
       "moveList": [
         {
-          "scene_id": "scene_garden",
+          "scene_id": "scene_village_square",
           "nextStep": 30
         }
       ]
@@ -3284,12 +3177,12 @@ export const DEMO_SCRIPT = {
       },
       "inventory": [],
       "place": {
-        "scene_id": "scene_school",
+        "scene_id": "scene_abandoned_school",
         "currentIndex": 0
       },
       "moveList": [
         {
-          "scene_id": "scene_school",
+          "scene_id": "scene_abandoned_school",
           "nextStep": 35
         }
       ]
@@ -3314,12 +3207,12 @@ export const DEMO_SCRIPT = {
       },
       "inventory": [],
       "place": {
-        "scene_id": "scene_station",
+        "scene_id": "scene_ghost_station",
         "currentIndex": 0
       },
       "moveList": [
         {
-          "scene_id": "scene_station",
+          "scene_id": "scene_ghost_station",
           "nextStep": 50
         }
       ]
