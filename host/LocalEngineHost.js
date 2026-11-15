@@ -1,4 +1,4 @@
-import { GameEngine } from '../engine/index.js';
+import { GameEngine, DEMO_SCRIPT, normalizeScenario } from '../engine/index.js';
 import { JsonProtocol } from '../protocol/JsonProtocol.js';
 
 /**
@@ -32,7 +32,10 @@ export class LocalEngineHost {
     return JSON.stringify(acknowledgement);
   }
 
+  getDemoScenario() { return JSON.stringify(DEMO_SCRIPT); }
+
   async initialize(scenario) {
+    scenario = normalizeScenario(scenario);
     const command = this.engine.protocol.createCommand('engine.init', { script: scenario });
     const ack = JSON.parse(await this.request(JSON.stringify(command)));
     if (!ack.ok) throw new Error(ack.error?.message || ack.error?.code || 'Engine initialization failed.');
