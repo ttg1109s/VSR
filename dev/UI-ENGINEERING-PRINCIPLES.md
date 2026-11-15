@@ -125,6 +125,11 @@ Trước khi viết component hoặc CSS mới, kiểm tra public API hiện t�
 - Overlay/feedback: Dialog, Drawer, Menu, Popover, Tooltip, ToastProvider, useToast.
 - Navigation/data: Tabs, TreeView, DataTable, Combobox, Badge, Breadcrumb, MediaFrame.
 
+Public navigation/media APIs:
+- `Breadcrumb` accepts `activeKey`, `scrollable`, and `sticky`; use `activeKey` when the current item is not guaranteed to be the last item.
+- `MediaFrame` renders an image or muted looping inline video, supports the `16:9`, `1:1`, and `4:5` ratios, and accepts an overlay slot for shared components such as `Badge`.
+
+
 Tái sử dụng component chung trước khi tự tạo phiên bản tương tự. Nếu component hiện có thiếu khả năng, mở rộng API theo hướng tương thích ngược và cập nhật tài liệu/component tests; không âm thầm tạo một hệ thống song song.
 
 ### 5.2. Phân chia CSS — Design System First, Audit Before Custom CSS
