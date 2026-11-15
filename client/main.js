@@ -55,7 +55,8 @@ function openMetadata(scenario, sourceName, { updateHistory = true } = {}) {
   <div class="metadata-stats"><div><strong>${scenes}</strong><span>SCENES</span></div><div><strong>${characters}</strong><span>CHARACTERS</span></div><div><strong>${items}</strong><span>ITEMS</span></div></div>
   <div class="metadata-facts">${[['STUDIO',meta.studio],['WRITER',meta.writer],['VERSION',meta.version],['LANGUAGE',meta.language],['DIFFICULTY',meta.difficulty],['AGE RATING',meta.ageRating]].map(([label,value])=>`<div><span>${label}</span><strong>${escapeHtml(value||'Chưa cung cấp')}</strong></div>`).join('')}</div>
   <div class="entry-note"><span class="entry-dot"></span><span>ENTRY SCENE</span><strong>${escapeHtml(meta.entryScene||'Not defined')}</strong></div><button class="primary-button" id="start-game"><span>PLAY SCENARIO</span><span>→</span></button><p class="source-note">SOURCE · ${escapeHtml(sourceName)}</p></div></section></main>`;
-  $('.brand[data-home]')?.addEventListener('click', e => { e.preventDefault(); navigate('home'); renderHome(); });\n  $('#back-home').addEventListener('click', () => { navigate('home'); renderHome(); });
+  $('.brand[data-home]')?.addEventListener('click', e => { e.preventDefault(); navigate('home'); renderHome(); });
+  $('#back-home').addEventListener('click', () => { navigate('home'); renderHome(); });
   $('#detail-library').addEventListener('click', () => { navigate('home'); renderHome(); });
   $('#start-game').addEventListener('click', startGame);
 }
