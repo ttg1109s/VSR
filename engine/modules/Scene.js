@@ -124,6 +124,7 @@ export const SceneSystem = {
         if (this.api.presentation && this.api.presentation.components && this.api.presentation.components.updateCharacterList) {
             this.api.presentation.components.updateCharacterList();
         }
+        if (!currentS) this.initCharactersMoving?.();
         this.commitState('scene.entered');
     },
 

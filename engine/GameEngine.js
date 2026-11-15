@@ -181,7 +181,6 @@ export class GameEngine {
   const sourceCopy=cloneJsonValue(loaded.scenario);
   this.reset();
   this.scenario=sourceCopy;this.src=loaded.src;this.state=loaded.state;
-  this.initCharactersMoving();
   const entry=this.src.meta.entryScene;
   if(!this.api.engine.state.getRuntimeSnapshot('scenes.[id]', { id: entry }))throw new Error(`Entry scene '${entry}' does not exist.`);
   if(enterScene){
