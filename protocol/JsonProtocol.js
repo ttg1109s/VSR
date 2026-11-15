@@ -81,7 +81,7 @@ export class JsonProtocol{
      presentation:{display:display==='locked'?'locked':'show',readRequired,read},
      availability:{canTrigger:reason==='available'||reason==='password_required',reason,cooldownUntil},
      runtimeState:{display,readDesc:read}};
-   }).filter(action=>action.presentation.display!=='hide')
+   }).filter(action=>action.runtimeState.display!=='hide')
    :[];
   const challenge=engine.pendingPasswordAction;
   const session={
