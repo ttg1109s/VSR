@@ -5,7 +5,7 @@
 export class WorkerJsonTransport {
   constructor({ worker } = {}) {
     this.worker = worker || new Worker(
-      new URL('../../workers/engine.worker.js', import.meta.url),
+      new URL('../../engine/engine.worker.js', import.meta.url),
       { type: 'module', name: 'vsr-engine' }
     );
     this.listeners = new Set();
