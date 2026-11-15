@@ -1,12 +1,11 @@
 # VSR Engine
 
-VSR is a headless interactive-story runtime. The repository retains React 19 as an optional host integration/runtime dependency, but ships no application UI, DOM renderer, component library, design system, or presentation stylesheet. A host may consume the Engine directly or use the JSON client adapters.
+VSR is a headless, framework-agnostic interactive-story runtime. This repository contains the game engine, JSON protocol, client/transport adapters, and optional server integration. It does not ship a product UI, UI framework, DOM renderer, component library, design system, or presentation stylesheet.
 
 ## Requirements
 
 - Node.js 20 or newer.
-- React 19 and React DOM 19 remain installed for React-based host integration.
-- The Engine itself does not require React or a browser DOM.
+- The Engine core does not require React, a browser DOM, or a presentation framework.
 
 ## Engine package entry points
 
@@ -30,8 +29,6 @@ npm run schema:check
 npm run audit:state:strict
 npm run check:server
 ```
-
-`npm run build` validates the minimal React host entry through Vite. The entry intentionally renders no visible interface.
 
 ## Basic Engine usage
 
@@ -58,9 +55,9 @@ unsubscribe();
 engine.dispose();
 ```
 
-## React host integration
+## Host integration
 
-React is retained as an optional host runtime, not as a bundled product interface. A consuming application can mount its own components and communicate with the Engine through the JSON boundary:
+A consuming application can use the JSON client and transport adapters with any presentation technology, or consume the Engine directly:
 
 ```js
 import { JsonClient } from './client/adapters/JsonClient.js';
