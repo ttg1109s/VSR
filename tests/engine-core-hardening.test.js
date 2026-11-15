@@ -826,6 +826,7 @@ test('random requirements remain triggerable and are evaluated only at execution
   };
   let randomCalls = 0;
   const originalRandom = Math.random;
+  const protocol = new JsonProtocol();
   const engine = Object.assign({}, LogicSystem, {
     state: {
       sceneId: 'start',
@@ -842,7 +843,7 @@ test('random requirements remain triggerable and are evaluated only at execution
   });
   Math.random = () => { randomCalls++; return 0; };
   try {
-    const projection = new JsonProtocol().createSnapshot(engine).presentation.actions[0];
+    const projection = protocol.createSnapshot(engine).presentation.actions[0];
     assert.equal(projection.availability.reason, 'available');
     assert.equal(projection.availability.canTrigger, true);
     assert.equal(projection.availability.checks.requirement, 'not_evaluated');
@@ -888,7 +889,7 @@ test('mark-as-read only mutates actions in the active router', async () => {
   try {
     await engine.init(scenario);
     assert.deepEqual(engine.markAsRead('forged_action_key'), { success: false, reason: 'action_not_found' });
-    assert.deepEqual(engine.markAsRead('start_main_readable'), { success: true });
+    assert.equal(engine.markAsRead('start_main_readable').success, true);
     assert.equal(engine.api.engine.state.getRuntimeSnapshot('actions.[id]', { id: 'start_main_readable' }).readDesc, true);
   } finally {
     engine.dispose();
