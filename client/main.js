@@ -19,7 +19,7 @@ function renderHome() {
   <button class="demo-card" id="demo-play"><span class="demo-art" aria-hidden="true"><span class="moon"></span><span class="ridge ridge-back"></span><span class="ridge ridge-front"></span><span class="mist"></span></span><span class="demo-info"><span class="card-kicker">FEATURED DEMO</span><strong>THE SILENT VILLAGE</strong><span>Ngôi Làng Không Tiếng Động</span></span><span class="round-arrow">↗</span></button>
   <div class="or-divider"><span></span> OR LOAD YOUR OWN STORY <span></span></div><button class="load-card" id="load-json"><span class="upload-icon">↑</span><span><strong>Load JSON</strong><small>Nạp kịch bản VSR từ thiết bị</small></span><span class="load-chevron">＋</span></button><p class="file-hint">Hỗ trợ tệp kịch bản định dạng .json</p></section><footer class="home-footer"><span>VSR ENGINE</span><span>JSON-DRIVEN CLIENT</span></footer></main>`;
   $('#demo-play').addEventListener('click', () => {
-    try { openMetadata(JSON.parse(new LocalEngineHost().getDemoScenario()), 'Demo · THE SILENT VILLAGE'); }
+    try { openMetadata(JSON.parse(LocalEngineHost.getDemoScenario()), 'Demo · THE SILENT VILLAGE'); }
     catch(error) { showToast(error); }
   });
   $('#load-json').addEventListener('click', () => fileInput.click());
