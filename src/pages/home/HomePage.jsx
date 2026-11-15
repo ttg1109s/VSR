@@ -24,7 +24,7 @@ export default function HomePage({
             <p className="vsr-text-secondary vsr-text-body">A runtime for interactive stories.</p>
           </header>
 
-          <div className="vsr-stack vsr-stack--gap-3" aria-label="Start an experience">
+          <div className="vsr-grid vsr-grid--columns-2 vsr-grid--gap-3" aria-label="Start an experience">
             <HomeActionCard
               icon="play_circle"
               title="Run Demo Script"
