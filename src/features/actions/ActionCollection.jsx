@@ -55,7 +55,7 @@ export default function ActionCollection({actions=[],client,passwordChallenge=nu
   const node=slideRefs.current[next],viewport=carouselRef.current;
   if(!node||!viewport)return;
   setActiveIndex(next);
-  viewport.scrollTo({left:node.offsetLeft-viewport.offsetLeft,behavior});
+  const left=node.getBoundingClientRect().left-viewport.getBoundingClientRect().left+viewport.scrollLeft;\n  viewport.scrollTo({left,behavior});
  },[ordered.length]);
  const handleScroll=useCallback(()=>{
   const viewport=carouselRef.current;
@@ -64,7 +64,7 @@ export default function ActionCollection({actions=[],client,passwordChallenge=nu
   let nearest=0,distance=Infinity;
   slideRefs.current.slice(0,ordered.length).forEach((node,index)=>{
    if(!node)return;
-   const delta=Math.abs(node.offsetLeft-viewport.offsetLeft-left);
+   const delta=Math.abs(node.getBoundingClientRect().left-viewport.getBoundingClientRect().left);
    if(delta<distance){distance=delta;nearest=index;}
   });
   setActiveIndex(nearest);
