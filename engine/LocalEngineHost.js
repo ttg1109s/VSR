@@ -3,9 +3,8 @@ import { DEMO_SCRIPT } from '../demo_script.js';
 import { normalizeScenario } from './scenario/Scenario.js';
 
 /**
- * Local transport host. This is the only browser-side module allowed to import
- * GameEngine. Replace this host with an HTTP/WebSocket transport without
- * changing the client.
+ * In-process host for clients that communicate with a local GameEngine instance.
+ * Worker and HTTP transports provide process-isolated alternatives.
  */
 export class LocalEngineHost {
   constructor(options = {}) {
