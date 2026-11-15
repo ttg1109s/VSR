@@ -123,7 +123,7 @@ Trước khi viết component hoặc CSS mới, kiểm tra public API hiện t�
 
 - Core/form: Button, Input, Textarea, Select, Checkbox, Switch, RadioGroup, Label, Separator.
 - Overlay/feedback: Dialog, Drawer, Menu, Popover, Tooltip, ToastProvider, useToast.
-- Navigation/data: Tabs, TreeView, DataTable, Combobox, Badge, Breadcrumb.
+- Navigation/data: Tabs, TreeView, DataTable, Combobox, Badge, Breadcrumb, MediaFrame.
 
 Tái sử dụng component chung trước khi tự tạo phiên bản tương tự. Nếu component hiện có thiếu khả năng, mở rộng API theo hướng tương thích ngược và cập nhật tài liệu/component tests; không âm thầm tạo một hệ thống song song.
 
