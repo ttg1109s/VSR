@@ -148,9 +148,9 @@ export default function ScenarioPreviewPage({ preview, onBack }) {
         {publicationItems.some(item => item.value !== null && item.value !== undefined && item.value !== '') && (
           <section className="vsr-stack vsr-stack--gap-3" aria-labelledby="scenario-publication-title">
             <h2 id="scenario-publication-title">Thông tin xuất bản</h2>
-            <DescriptionList layout="grid" columns="auto" gap="comfortable">
+            <DescriptionList layout="list" gap="comfortable" divided>
               {publicationItems.map(item => (
-                <DescriptionListItem key={item.label} label={item.label} value={item.value} />
+                <DescriptionListItem key={item.label} label={item.label} value={item.value} layout="inline" />
               ))}
             </DescriptionList>
           </section>
@@ -160,8 +160,8 @@ export default function ScenarioPreviewPage({ preview, onBack }) {
           <section className="vsr-stack vsr-stack--gap-3" aria-labelledby="scenario-legal-title">
             <h2 id="scenario-legal-title">Bản quyền và giấy phép</h2>
             <DescriptionList layout="list" gap="comfortable" divided>
-              <DescriptionListItem label="Bản quyền" value={metadata.copyright} />
-              <DescriptionListItem label="Giấy phép" value={metadata.license} />
+              <DescriptionListItem label="Bản quyền" value={metadata.copyright} layout="inline" />
+              <DescriptionListItem label="Giấy phép" value={metadata.license} layout="inline" />
             </DescriptionList>
           </section>
         )}
