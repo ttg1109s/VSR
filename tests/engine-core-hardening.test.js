@@ -740,12 +740,13 @@ test('action snapshot projection exposes stable identity and engine-evaluated av
   const scenario = validScenario();
   scenario.scenes.start.routers.main.actions = [
     { id: 'readable', meta: { title: 'Read first', desc: 'Details' }, set: { display: 'show', readDesc: true } },
-    { id: 'locked', meta: { title: 'Locked' }, set: { display: 'locked' } },
+    { id: 'locked', meta: { title: 'Locked' }, set: { display: 'show' } },
     { id: 'hidden', meta: { title: 'Hidden' }, set: { display: 'hide' } }
   ];
   const engine = new GameEngine();
   try {
     await engine.init(scenario);
+    engine.api.engine.state.update('actions.[id]', current => ({ ...(current || {}), display: 'locked' }), { id: 'start_main_locked' });
     let snapshot = engine.protocol.createSnapshot(engine);
     const actions = snapshot.presentation.actions;
     assert.deepEqual(actions.map(action => action.id), ['readable', 'locked']);
