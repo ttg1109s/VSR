@@ -1,5 +1,4 @@
 import { GameEngine, DEMO_SCRIPT, normalizeScenario } from '../engine/index.js';
-import './styles.css';
 import { EngineAdapter } from './adapters/EngineAdapter.js';
 import { PresentationAdapter } from './adapters/PresentationAdapter.js';
 import { GameplayRenderer } from './renderer/GameplayRenderer.js';
