@@ -89,3 +89,19 @@
   .vsr-action-card__section h4 { font-size:15px; }
   .vsr-action-card__actions .vsr-button { min-height:48px; }
 }
+
+
+/* ActionCard description controls and separate condition/permission indicators. */
+.vsr-action-card__description-section { padding-block:12px; }
+.vsr-action-card__description-section .vsr-action-card__section-heading { justify-content:flex-start; gap:8px; }
+.vsr-action-card__description-section .vsr-action-card__read-button { align-self:center; }
+.vsr-action-card__description-section .vsr-action-card__info-button { width:36px; min-width:36px; min-height:36px; padding:0; color:var(--vsr-color-text-secondary); }
+.vsr-action-card__description-section .vsr-action-card__info-button .vsr-button__label { display:none; }
+.vsr-action-card__description-section .vsr-action-card__section-heading > .vsr-badge { margin-left:auto; }
+.vsr-action-card__requirements { gap:12px; }
+.vsr-action-card__requirement-state { align-items:center; }
+.vsr-action-card__permission-icon { font-size:22px; }
+@media(max-width:599px) {
+  .vsr-action-card__description-section { padding-block:12px; }
+  .vsr-action-card__description-section .vsr-action-card__section-heading { gap:6px; }
+}
