@@ -1,115 +1,16 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { Grid } from '../../design-system/index.js';
-import ActionCard from './ActionCard.jsx';
-
-const RESULT_MESSAGES = {
-  action_hidden: 'Hành động hiện không hiển thị.',
-  locked: 'Hành động đang bị khóa.',
-  permission_denied: 'Nhân vật hiện tại không có quyền thực hiện.',
-  not_read: 'Cần đọc mô tả trước khi thực hiện.',
-  cooldown: 'Hành động đang trong thời gian hồi chiêu.',
-  requirement_failed: 'Chưa đáp ứng điều kiện thực hiện.',
-  target_locked: 'Đích đang bị khóa.',
-  busy: 'Engine đang xử lý một thao tác khác.'
-};
-
-export default function ActionCollection({ actions = [], client, passwordChallenge = null, onError }) {
-  const [pendingKeys, setPendingKeys] = useState(() => new Set());
-  const [feedback, setFeedback] = useState({});
-  const cacheRef = useRef(new Map());
-  const orderedActions = useMemo(() => {
-    const next = new Map();
-    const stable = (Array.isArray(actions) ? actions : []).map(action => {
-      const key = action.key || action.id;
-      const previous = cacheRef.current.get(key);
-      const value = previous && JSON.stringify(previous) === JSON.stringify(action) ? previous : action;
-      next.set(key, value);
-      return value;
-    });
-    cacheRef.current = next;
-    return stable;
-  }, [actions]);
-
-  const markPending = useCallback((key, pending) => {
-    setPendingKeys(current => {
-      const next = new Set(current);
-      pending ? next.add(key) : next.delete(key);
-      return next;
-    });
-  }, []);
-
-  const handleTrigger = useCallback(async (action, options = {}) => {
-    if (!client) return;
-    const key = action.key;
-    markPending(key, true);
-    setFeedback(current => ({ ...current, [key]: '' }));
-    try {
-      const ack = await client.triggerAction(action.id, action.key);
-      const result = ack?.result;
-      if (result?.reason === 'password_required' || result?.challengeId) return result;
-      if (result?.success === false) {
-        const message = RESULT_MESSAGES[result.reason] || 'Hành động chưa được thực hiện.';
-        setFeedback(current => ({ ...current, [key]: message }));
-        return result;
-      }
-      return result;
-    } catch (error) {
-      const message = error?.message || 'Không thể gửi lệnh đến Engine.';
-      setFeedback(current => ({ ...current, [key]: message }));
-      onError?.(message);
-      throw error;
-    } finally {
-      markPending(key, false);
-    }
-  }, [client, markPending, onError]);
-
-  const handleSubmitPassword = useCallback(async (challenge, input) => {
-    if (!client || !challenge?.challengeId) return;
-    await client.submitPassword(challenge.challengeId, input);
-  }, [client]);
-
-  const handleRead = useCallback(async action => {
-    if (!client) return;
-    markPending(action.key, true);
-    try {
-      await client.markActionRead(action.key);
-    } catch (error) {
-      const message = error?.message || 'Không thể cập nhật trạng thái đọc.';
-      setFeedback(current => ({ ...current, [action.key]: message }));
-      onError?.(message);
-      throw error;
-    } finally {
-      markPending(action.key, false);
-    }
-  }, [client, markPending, onError]);
-
-  if (!orderedActions.length) {
-    return <section className="vsr-action-collection vsr-action-collection--empty" aria-label="Hành động">
-      <p>Không có hành động khả dụng trong ngữ cảnh hiện tại.</p>
-    </section>;
-  }
-
-  return (
-    <section className="vsr-action-collection" aria-label="Hành động">
-      <header className="vsr-action-collection__header">
-        <h2>Hành động</h2>
-        <span>{orderedActions.length}</span>
-      </header>
-      <Grid columns="auto" gap="4" className="vsr-action-collection__grid">
-        {orderedActions.map(action => (
-          <div key={action.key || action.id} className="vsr-action-collection__item">
-            <ActionCard
-              action={action}
-              pending={pendingKeys.has(action.key)}
-              passwordChallenge={passwordChallenge}
-              onTrigger={handleTrigger}
-              onMarkRead={handleRead}
-              onSubmitPassword={handleSubmitPassword}
-            />
-            {feedback[action.key] && <p className="vsr-action-collection__feedback" role="status">{feedback[action.key]}</p>}
-          </div>
-        ))}
-      </Grid>
-    </section>
-  );
+import React,{useCallback,useMemo,useRef,useState}from'react';
+import{Grid}from'../../design-system/index.js';
+import ActionCard from'./ActionCard.jsx';
+const MESSAGES={action_hidden:'Hành động hiện không hiển thị.',locked:'Hành động đang bị khóa.',permission_denied:'Nhân vật hiện tại không có quyền thực hiện.',not_read:'Cần đọc mô tả trước khi thực hiện.',cooldown:'Hành động đang trong thời gian hồi chiêu.',requirement_failed:'Chưa đáp ứng điều kiện thực hiện.',target_locked:'Đích đang bị khóa.',busy:'Engine đang xử lý một thao tác khác.'};
+export default function ActionCollection({actions=[],client,passwordChallenge=null,onError}){
+ const[pending,setPending]=useState(()=>new Set()),[feedback,setFeedback]=useState({}),cache=useRef(new Map());
+ const stable=useMemo(()=>{const next=new Map(),items=(Array.isArray(actions)?actions:[]).map(a=>{const k=a.key||a.id,old=cache.current.get(k),v=old&&JSON.stringify(old)===JSON.stringify(a)?old:a;next.set(k,v);return v;});cache.current=next;return items;},[actions]);
+ const mark=useCallback((k,on)=>setPending(s=>{const n=new Set(s);on?n.add(k):n.delete(k);return n;}),[]);
+ const report=useCallback(async(k,e)=>{if(e?.code==='REVISION_CONFLICT'){try{await client.refreshSnapshot();setFeedback(s=>({...s,[k]:'Trạng thái vừa thay đổi. Đã đồng bộ snapshot; hãy kiểm tra trước khi thử lại.'}));return true;}catch(x){e=x;}}const m=e?.message||'Không thể hoàn tất thao tác.';setFeedback(s=>({...s,[k]:m}));onError?.(m);return false;},[client,onError]);
+ const trigger=useCallback(async a=>{if(!client)return;const k=a.key;mark(k,true);setFeedback(s=>({...s,[k]:''}));try{const r=(await client.triggerAction(a.id,a.key))?.result;if(r?.success===false)setFeedback(s=>({...s,[k]:MESSAGES[r.reason]||'Hành động chưa được thực hiện.'}));return r;}catch(e){await report(k,e);return null;}finally{mark(k,false);}},[client,mark,report]);
+ const submit=useCallback(async(c,input)=>{if(!client||!c?.challengeId)return null;mark(c.uniqueId,true);try{return(await client.submitPassword(c.challengeId,input))?.result||null;}catch(e){const refreshed=await report(c.uniqueId,e);return refreshed?{reason:'revision_conflict'}:null;}finally{mark(c.uniqueId,false);}},[client,mark,report]);
+ const cancel=useCallback(async c=>{if(!client||!c?.challengeId)return;mark(c.uniqueId,true);try{return await client.submitPassword(c.challengeId,null,true);}catch(e){await report(c.uniqueId,e);throw e;}finally{mark(c.uniqueId,false);}},[client,mark,report]);
+ const read=useCallback(async a=>{if(!client)return;mark(a.key,true);try{await client.markActionRead(a.key);}catch(e){await report(a.key,e);}finally{mark(a.key,false);}},[client,mark,report]);
+ if(!stable.length)return <section className="vsr-card" aria-label="Hành động"><p>Không có hành động trong ngữ cảnh hiện tại.</p></section>;
+ return <section className="vsr-stack vsr-stack--gap-4" aria-label="Hành động"><header className="vsr-page-header"><h2>Hành động</h2><span>{stable.length}</span></header><Grid columns="responsive-cards" gap="4">{stable.map(a=><div key={a.key||a.id} className="vsr-stack vsr-stack--gap-2"><ActionCard action={a} pending={pending.has(a.key)} passwordChallenge={passwordChallenge} onTrigger={trigger} onMarkRead={read} onSubmitPassword={submit} onCancelPassword={cancel}/>{feedback[a.key]&&<p className="vsr-text-secondary" role="status">{feedback[a.key]}</p>}</div>)}</Grid></section>;
 }

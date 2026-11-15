@@ -17,7 +17,7 @@ Overlay and feedback: Dialog and Drawer are controlled by open/onClose. Drawer s
 
 ## Layout primitives and data patterns
 
-- `Grid` is a responsive layout primitive. Use `columns="auto"` for content-driven columns, or `columns="2"` / `columns="3"` for an explicit maximum column count. Two- and three-column layouts collapse to one column at Compact; three columns become two at Medium. `gap` accepts the published spacing steps `1`, `2`, `3`, `4`, or `6`.
+- `Grid` is a responsive layout primitive. Use `columns="auto"` for content-driven columns, `columns="2"` / `columns="3"` for explicit layouts, or `columns="responsive-cards"` for one column at Compact, two at Medium, and three at Expanded. `gap` accepts the published spacing steps `1`, `2`, `3`, `4`, or `6`.
 - `DescriptionList` preserves native `dl` semantics while separating list structure from item layout. Use `layout="list"` for a single list or `layout="grid"` with `columns="auto"`, `"2"`, or `"3"` to arrange items responsively. `gap` accepts `compact` or `comfortable`; `divided` enables separators in list mode.
 - `DescriptionListItem` renders a semantic `dt` / `dd` pair. Each item can choose `layout="stacked"` (label above value) or `layout="inline"` (label beside value), and `span="full"` to occupy the full grid row. Empty values are omitted.
 

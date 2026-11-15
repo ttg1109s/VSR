@@ -68,7 +68,7 @@ export class JsonClient {
     return snapshot;
   }
 
-  async dispatch(name, payload = {}) {
+  async dispatch(name, payload = {}, { includeRevision = true } = {}) {
     const command = {
       protocol: 'vsr',
       protocolVersion: this.snapshot?.protocolVersion || 2,
@@ -77,10 +77,17 @@ export class JsonClient {
       command: name,
       payload: structuredClone(payload)
     };
-    if (Number.isInteger(this.snapshot?.stateRevision)) command.expectedStateRevision = this.snapshot.stateRevision;
+    if (includeRevision && Number.isInteger(this.snapshot?.stateRevision)) command.expectedStateRevision = this.snapshot.stateRevision;
     const ack = JSON.parse(await this.transport.request(JSON.stringify(command)));
     if (!ack.ok) throw Object.assign(new Error(ack.error?.message || ack.error?.code || 'Command failed.'), { code: ack.error?.code, acknowledgement: ack });
     return ack;
+  }
+
+  async refreshSnapshot() {
+    const acknowledgement = await this.dispatch('snapshot.get', {}, { includeRevision: false });
+    if (acknowledgement.result?.type !== 'snapshot') throw new Error('Engine did not return a valid snapshot.');
+    this.setSnapshot(acknowledgement.result, 'snapshot.refresh');
+    return this.getSnapshot();
   }
 
   triggerAction(actionId, uniqueId) { return this.dispatch('action.trigger', { actionId, uniqueId }); }

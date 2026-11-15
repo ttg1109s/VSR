@@ -84,6 +84,8 @@ export class JsonProtocol{
    }).filter(action=>action.runtimeState.display!=='hide')
    :[];
   const challenge=engine.pendingPasswordAction;
+  const passwordConfig=challenge?engine.src?.passwords?.[challenge.type]?.[challenge.passwordId]||null:null;
+  const puzzleMedia=challenge?.type==='puzzle'?resolveCover(passwordConfig?.url):null;
   const session={
    chat:{
     active:!!engine.chatState?.active,blocking:!!engine.chatState?.blocking,
@@ -95,7 +97,10 @@ export class JsonProtocol{
     challengeId:challenge.challengeId,type:challenge.type,actionId:challenge.actionId,
     uniqueId:challenge.uniqueId,sceneId:challenge.sceneId,routerId:challenge.routerId,
     status:challenge.status,countTest:challenge.countTest,retryMax:challenge.retryMax,
-    deadlineAt:challenge.deadlineAt
+    remainingAttempts:challenge.retryMax===0?null:Math.max(0,challenge.retryMax-challenge.countTest),
+    deadlineAt:challenge.deadlineAt,description:typeof passwordConfig?.desc==='string'?passwordConfig.desc:'',
+    ...(challenge.type==='puzzle'?{puzzle:{url:puzzleMedia?.url||(typeof passwordConfig?.url==='string'?passwordConfig.url:null),ratio:passwordConfig?.ratio??[3,3],level:passwordConfig?.level??null}}:{}),
+    ...(challenge.type==='find_way'?{findWay:{area:passwordConfig?.area??null,start:passwordConfig?.start??null,target:passwordConfig?.target??null}}:{})
    }:null,
    timer:engine.timerState?cloneJsonValue(engine.timerState):null,
    notifications:{

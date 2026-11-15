@@ -126,10 +126,17 @@
                   "type": "array",
                   "items": {
                     "type": "object",
-                    "required": ["id", "title"],
+                    "required": [
+                      "id",
+                      "title"
+                    ],
                     "properties": {
-                      "id": { "type": "string" },
-                      "title": { "type": "string" }
+                      "id": {
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string"
+                      }
                     },
                     "additionalProperties": false
                   }
@@ -137,7 +144,7 @@
                 "actions": {
                   "type": "array",
                   "items": {
-                    "type": "object"
+                    "$ref": "#/$defs/actionProjection"
                   }
                 }
               }
@@ -149,9 +156,13 @@
                   "type": "object"
                 },
                 "passwordChallenge": {
-                  "type": [
-                    "object",
-                    "null"
+                  "oneOf": [
+                    {
+                      "$ref": "#/$defs/passwordChallenge"
+                    },
+                    {
+                      "type": "null"
+                    }
                   ]
                 },
                 "notifications": {
@@ -335,6 +346,246 @@
           }
         }
       ]
+    },
+    "actionProjection": {
+      "type": "object",
+      "required": [
+        "id",
+        "key",
+        "title",
+        "meta",
+        "presentation",
+        "availability",
+        "runtimeState"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "meta": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "desc": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "subTitleStatus": {
+              "type": "string"
+            },
+            "thumb": {},
+            "cover": {
+              "type": [
+                "object",
+                "null"
+              ]
+            },
+            "thumbnail": {
+              "type": [
+                "object",
+                "null"
+              ]
+            },
+            "buttonLabel": {
+              "type": "string"
+            },
+            "buttonIcon": {
+              "type": "string"
+            }
+          }
+        },
+        "presentation": {
+          "type": "object",
+          "required": [
+            "display",
+            "readRequired",
+            "read"
+          ],
+          "properties": {
+            "display": {
+              "enum": [
+                "show",
+                "locked"
+              ]
+            },
+            "readRequired": {
+              "type": "boolean"
+            },
+            "read": {
+              "type": "boolean"
+            }
+          }
+        },
+        "availability": {
+          "type": "object",
+          "required": [
+            "canTrigger",
+            "reason",
+            "cooldownUntil"
+          ],
+          "properties": {
+            "canTrigger": {
+              "type": "boolean"
+            },
+            "reason": {
+              "enum": [
+                "available",
+                "locked",
+                "busy",
+                "permission_denied",
+                "not_read",
+                "cooldown",
+                "target_locked",
+                "requirement_failed",
+                "password_required"
+              ]
+            },
+            "cooldownUntil": {
+              "type": [
+                "number",
+                "null"
+              ]
+            }
+          }
+        },
+        "runtimeState": {
+          "type": "object",
+          "required": [
+            "display",
+            "readDesc"
+          ],
+          "properties": {
+            "display": {
+              "type": "string"
+            },
+            "readDesc": {
+              "type": "boolean"
+            }
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "passwordChallenge": {
+      "type": "object",
+      "required": [
+        "challengeId",
+        "type",
+        "actionId",
+        "uniqueId",
+        "sceneId",
+        "routerId",
+        "status",
+        "countTest",
+        "retryMax",
+        "remainingAttempts",
+        "deadlineAt"
+      ],
+      "properties": {
+        "challengeId": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "actionId": {
+          "type": "string"
+        },
+        "uniqueId": {
+          "type": "string"
+        },
+        "sceneId": {
+          "type": "string"
+        },
+        "routerId": {
+          "type": "string"
+        },
+        "status": {
+          "const": "active"
+        },
+        "countTest": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "retryMax": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "remainingAttempts": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "deadlineAt": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "description": {
+          "type": "string"
+        },
+        "puzzle": {
+          "type": "object",
+          "properties": {
+            "url": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "ratio": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            },
+            "level": {}
+          }
+        },
+        "findWay": {
+          "type": "object",
+          "properties": {
+            "area": {
+              "type": [
+                "array",
+                "null"
+              ]
+            },
+            "start": {
+              "type": [
+                "array",
+                "null"
+              ]
+            },
+            "target": {
+              "type": [
+                "array",
+                "null"
+              ]
+            }
+          }
+        }
+      },
+      "additionalProperties": false
     }
   }
 }

@@ -82,3 +82,21 @@ test('all engine-side protocol operations are exposed as JSON commands', async (
     host.close();
   }
 });
+
+
+test('snapshot.get refreshes the client projection without changing Engine state revision', async () => {
+  const host = new LocalEngineHost();
+  const client = new JsonClient(host);
+  try {
+    await client.initialize(JSON.parse(host.getDemoScenario()));
+    const revisionBefore = host.engine.protocol.stateRevision;
+    const refreshed = await client.refreshSnapshot();
+    assert.equal(refreshed.type, 'snapshot');
+    assert.equal(refreshed.stateRevision, revisionBefore);
+    assert.equal(host.engine.protocol.stateRevision, revisionBefore);
+    assert.equal(refreshed.presentation.actions[0].key, 'scene_village_square_router_square_fogbound_action_read_notice');
+  } finally {
+    client.dispose();
+    host.close();
+  }
+});

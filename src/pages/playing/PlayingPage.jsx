@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
 import { Badge, Breadcrumb, MediaFrame } from '../../design-system/index.js';
 import ActionCollection from '../../features/actions/ActionCollection.jsx';
-import '../../features/actions/action-card.css';
 
 export default function PlayingPage({ snapshot, client, error = '', onNavigate }) {
   const scene = snapshot?.presentation?.scene ?? null;

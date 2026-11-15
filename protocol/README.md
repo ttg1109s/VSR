@@ -14,10 +14,10 @@ Each `GameEngine` instance owns its API facade, state resolver, protocol, and ta
 
 Snapshots expose three separate concerns:
 - `game`: current scene/router identity and initialization state.
-- `presentation`: a client-safe projection of the current scene, active router, the ancestor-to-current `scenePath` used by breadcrumb navigation, resolved display cover metadata, and active-router action display metadata. It excludes executable effects, requirements, sibling routers, scenario source, and password definitions.
+- `presentation`: a client-safe projection of the current scene, active router, `scenePath`, resolved cover metadata, and active-router action projections. Each action has a stable `key` (`sceneId_routerId_actionId`), normalized `meta`, `presentation` read/display state, `availability` (`canTrigger`, `reason`, `cooldownUntil`) and `runtimeState`. It excludes executable effects, requirements, sibling routers, scenario source, and password answers/definitions.
 - `session`: chat state/history, a sanitized active challenge descriptor, and pending/recent notifications.
 
-The snapshot's `state` remains JSON-compatible runtime state. `session.passwordChallenge` is removed from that state copy; the sanitized descriptor is available under top-level `session.passwordChallenge`. Never add password answers or secret scenario data to the presentation/session projection.
+The snapshot's `state` remains JSON-compatible runtime state. `session.passwordChallenge` is removed from that state copy; the sanitized descriptor is available under top-level `session.passwordChallenge`. It may include challenge type, public description, retry/deadline counters, puzzle media/ratio/level, or find-way grid/start/target. It must never include the password definition, expected answer, or find-way solution path.
 
 ## Commands
 
@@ -26,6 +26,7 @@ Commands are allow-listed and serialized per Engine. Command idempotency is keye
 | Command | Payload | Purpose |
 |---|---|---|
 | `scenario.inspect` | `{ scenario }` | Validate a scenario and return safe metadata without starting gameplay or changing Engine state |
+| `snapshot.get` | `{}` | Return the current client-safe snapshot without mutating state or incrementing `stateRevision` |
 | `engine.init` | `{ script, enterScene? }` | Load and initialize a scenario; `enterScene: false` defers entry to the configured first scene (default `true` for compatibility) |
 | `action.trigger` | `{ actionId, uniqueId? }` | Execute an active-router action |
 | `action.markAsRead` | `{ uniqueId }` | Mark an action description as read |
@@ -47,7 +48,7 @@ An `authorizeCommand` hook can enforce authorization using trusted transport con
 
 The `password.submit` command requires an active Engine-owned challenge. Its payload includes the issued `challengeId`, raw `input` (unless cancelling), and optionally `cancel: true`. The Engine validates challenge ownership, active scene/router, retry policy, deadline, password definition, and answer. The Client never submits a success flag, retry counter, password configuration, or answer authority.
 
-For `puzzle`, the client submits the piece arrangement as an array (or JSON-encoded array) of original piece indices in final row-major positions. The Engine validates dimensions and arrangement.
+For `puzzle`, the client submits the piece arrangement as an array (or JSON-encoded array) of original piece indices in final row-major positions. The Engine validates dimensions and arrangement. For `find_way`, the client submits a JSON array of `[x, y]` coordinates from start to target; Engine validates bounds, adjacency, uniqueness and the authoritative path. The snapshot may expose only public challenge hints (`area`, `start`, `target`) and never the expected path. Text challenges submit raw string/number input.
 
 ## Scenario inspection and saves
 
@@ -56,6 +57,10 @@ For `puzzle`, the client submits the piece arrangement as an array (or JSON-enco
 The UI should call `scenario.inspect` after selecting a demo or parsing an imported JSON file, show the returned metadata, and call `engine.init` only after the user confirms.
 
 Scenario JSON is separate from save data. Save data uses a versioned `vsr-save` envelope. Runtime queues and timer handles are excluded; supported domain tasks are rehydrated from saved state. Save export contains scenario and runtime data and should be treated as sensitive: do not expose it to an untrusted caller without an explicit product decision and authorization.
+
+## Snapshot refresh
+
+`client.refreshSnapshot()` sends the read-only `snapshot.get` command without `expectedStateRevision`, then replaces the client snapshot from the returned projection. Use it after `REVISION_CONFLICT`; refresh and ask the user to review the current state. Do not automatically replay a side-effecting command after a conflict.
 
 ## Trust boundary
 

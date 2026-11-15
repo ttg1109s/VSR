@@ -111,6 +111,7 @@ Padding ngang của page tương ứng là 16px, 20px và 24px. Đây là breakp
 
 - Ưu tiên .vsr-page cho vùng nội dung cần giới hạn chiều rộng và padding thích ứng.
 - Dùng CSS Grid/Flexbox; tránh fixed width gây tràn ở viewport hẹp.
+- Với collection dạng thẻ, ưu tiên `Grid columns="responsive-cards"`: một cột ở Compact, hai cột ở Medium và ba cột ở Expanded. Breakpoint thuộc Design System; feature không tự định nghĩa media query.
 - Xem xét viewport thấp, zoom và nội dung dài; không chỉ kiểm tra một kích thước desktop.
 - Chỉ áp dụng overflow hidden hoặc khóa cuộn khi trải nghiệm thực sự yêu cầu; không che nội dung bị tràn.
 - Với trang được định nghĩa là one-screen, kiểm tra cả chiều cao viewport thấp và mobile landscape. Không hy sinh khả năng truy cập nội dung để ép vừa màn hình.
