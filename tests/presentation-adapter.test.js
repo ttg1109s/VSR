@@ -2,12 +2,16 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { GameEngine, DEMO_SCRIPT } from '../engine/index.js';
 import { EngineAdapter } from '../client/adapters/EngineAdapter.js';
+import { PresentationAdapter } from '../client/adapters/PresentationAdapter.js';
 
 test('EngineAdapter projects only the active router action list', async () => {
   const engine = new GameEngine();
-  const adapter = new EngineAdapter(engine);
+  const engineAdapter = new EngineAdapter(engine);
+  const adapter = new PresentationAdapter(engineAdapter);
+  const presentationEvents = [];
+  adapter.subscribe(message => { if (message.type === 'presentation') presentationEvents.push(message); });
   try {
-    await adapter.initialize(DEMO_SCRIPT);
+    await engineAdapter.initialize(DEMO_SCRIPT);
     const initial = adapter.getViewModel();
 
     assert.equal(initial.sceneId, 'scene_garden');
@@ -22,6 +26,9 @@ test('EngineAdapter projects only the active router action list', async () => {
       'act_travel_forest'
     ]);
     assert.equal(initial.actions.some(action => action.id === 'act_inspect_well'), false);
+    const sceneRender = presentationEvents.find(message => message.name === 'scene.render');
+    assert.ok(sceneRender, 'SceneSystem.render() should reach the presentation adapter');
+    assert.equal(sceneRender.payload.args.length, 3);
 
     await engine.enterRouter('square_well', true, false, true);
     const next = adapter.getViewModel();
@@ -36,6 +43,7 @@ test('EngineAdapter projects only the active router action list', async () => {
     assert.equal(next.actions.some(action => action.id === 'act_read_notice'), false);
   } finally {
     adapter.dispose();
+    engineAdapter.dispose();
     engine.dispose();
   }
 });
