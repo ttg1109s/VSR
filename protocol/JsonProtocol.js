@@ -79,7 +79,7 @@ export class JsonProtocol{
     const meta=safeMeta(action.meta||{});
     return{id:action.id,key,title,name:action.name,meta:{...meta,title,description:meta.desc??meta.description??''},
      presentation:{display:display==='locked'?'locked':'show',readRequired,read},
-     availability:{canTrigger:reason==='available',reason,cooldownUntil},
+     availability:{canTrigger:reason==='available'||reason==='password_required',reason,cooldownUntil},
      runtimeState:{display,readDesc:read}};
    }).filter(action=>action.presentation.display!=='hide')
    :[];
