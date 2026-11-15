@@ -35,7 +35,7 @@ export const StatsHelpers = {
     },
 
     add_stats: (targetObj, eff, isChar, effectiveTarget, engine) => {
-        const prop = resolveValue(eff.property);
+        const prop = resolveValue(eff.property, engine);
         if (!prop || !targetObj) return false;
 
         const resolvedValue = resolveValue(eff.value, engine);
@@ -74,7 +74,7 @@ export const StatsHelpers = {
     },
 
     edit_value: (targetObj, eff, isChar, effectiveTarget, engine) => {
-        const prop = resolveValue(eff.property);
+        const prop = resolveValue(eff.property, engine);
         const stat = targetObj?.stats?.[prop];
         if (!stat || typeof stat !== 'object') return false;
 
