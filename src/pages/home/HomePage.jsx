@@ -28,7 +28,6 @@ export default function HomePage({
   onImportFile,
   preview = null,
   onCancelPreview,
-  onConfirmPreview,
   busy = false,
   error = ''
 }) {
@@ -57,7 +56,7 @@ export default function HomePage({
               <HomeActionCard
                 icon="play_circle"
                 title="Run Demo Script"
-                description="Xem thông tin kịch bản demo trước khi chạy."
+                description="Xem thông tin kịch bản demo."
                 variant="primary"
                 onClick={onRunDemo}
                 disabled={Boolean(busy)}
@@ -91,7 +90,7 @@ export default function HomePage({
         open={Boolean(preview)}
         onClose={onCancelPreview}
         title="Thông tin kịch bản"
-        description="Metadata được Engine chuẩn hóa và xác thực trước khi khởi chạy."
+        description="Metadata được Engine chuẩn hóa và xác thực."
         size="lg"
       >
         <div className="vsr-stack vsr-stack--gap-4">
@@ -142,14 +141,9 @@ export default function HomePage({
 
           {error && <p className="vsr-text-error" role="alert">{error}</p>}
 
-          <div className="vsr-stack vsr-stack--gap-2">
-            <Button variant="primary" size="lg" onClick={onConfirmPreview} disabled={Boolean(busy)} loading={Boolean(busy)}>
-              Chạy kịch bản
-            </Button>
-            <Button variant="secondary" size="md" onClick={onCancelPreview} disabled={Boolean(busy)}>
-              Quay lại
-            </Button>
-          </div>
+          <Button variant="secondary" size="md" onClick={onCancelPreview} disabled={Boolean(busy)}>
+            Đóng
+          </Button>
         </div>
       </Dialog>
     </>
