@@ -7,3 +7,5 @@
   --vsr-space-1:4px;--vsr-space-2:8px;--vsr-space-3:12px;--vsr-space-4:16px;--vsr-space-5:20px;--vsr-space-6:24px;--vsr-space-8:32px;--vsr-space-10:40px;--vsr-space-12:48px;--vsr-radius-xs:4px;--vsr-radius-sm:6px;--vsr-radius-md:8px;--vsr-radius-lg:12px;--vsr-radius-xl:16px;--vsr-radius-full:9999px;--vsr-elevation-1:0 1px 2px rgb(32 33 36 / 8%);--vsr-elevation-2:0 2px 6px rgb(32 33 36 / 10%);--vsr-elevation-3:0 4px 12px rgb(32 33 36 / 12%);--vsr-motion-short:120ms;--vsr-motion-medium:200ms;--vsr-motion-long:300ms;--vsr-motion-easing:cubic-bezier(.2,0,0,1);
 }
 .vsr-card{padding:16px;border:1px solid var(--vsr-color-border-subtle);border-radius:var(--vsr-radius-md);background:var(--vsr-color-surface)}
+
+@import './components/navigation.css';
