@@ -26,7 +26,9 @@
     "schema:check": "node tools/generate-scenario-schema.js && git diff --exit-code -- engine/scenario/ScenarioSchema.js",
     "dev": "vite --host 0.0.0.0",
     "build": "vite build --base=./",
-    "preview": "vite preview --host 0.0.0.0"
+    "preview": "vite preview --host 0.0.0.0",
+    "server": "node server/index.js",
+    "dev:full": "npm run server & npm run dev"
   },
   "devDependencies": {
     "acorn": "^8.15.0",
