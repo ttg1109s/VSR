@@ -74,7 +74,10 @@ export default function ActionCollection({ actions = [], client, passwordChallen
     try {
       await client.markActionRead(action.key);
     } catch (error) {
-      onError?.(error?.message || 'Không thể cập nhật trạng thái đọc.');
+      const message = error?.message || 'Không thể cập nhật trạng thái đọc.';
+      setFeedback(current => ({ ...current, [action.key]: message }));
+      onError?.(message);
+      throw error;
     } finally {
       markPending(action.key, false);
     }
