@@ -1,0 +1,38 @@
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0&family=Roboto:wght@400;500;700&display=swap');
+
+:root {
+  color-scheme: light;
+  font-family: var(--vsr-font-sans);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { min-width: 320px; min-height: 100%; background: var(--vsr-color-background); }
+body { min-width: 320px; min-height: 100vh; margin: 0; color: var(--vsr-color-text); background: var(--vsr-color-background); font-family: var(--vsr-font-sans); font-size: 14px; line-height: 20px; }
+button, input, textarea, select { font: inherit; }
+button { color: inherit; }
+img, svg { display: block; max-width: 100%; }
+:focus-visible { outline: 2px solid var(--vsr-color-primary); outline-offset: 2px; }
+::selection { color: var(--vsr-color-primary-on-container); background: var(--vsr-color-primary-container); }
+
+.vsr-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--vsr-font-icon);
+  font-weight: 400;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  white-space: nowrap;
+  direction: ltr;
+  font-feature-settings: 'liga';
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
