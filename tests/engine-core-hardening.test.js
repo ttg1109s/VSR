@@ -735,3 +735,37 @@ test('CharacterStrategies.mng_stats adds a stat through the shared stat helper',
   assert.equal(persisted.path, 'characters.[id]');
   assert.equal(persisted.params.id, 'npc');
 });
+
+test('action snapshot projection exposes stable identity and engine-evaluated availability', async () => {
+  const scenario = validScenario();
+  scenario.scenes.start.routers.main.actions = [
+    { id: 'readable', meta: { title: 'Read first', desc: 'Details' }, set: { display: 'show', readDesc: true } },
+    { id: 'locked', meta: { title: 'Locked' }, set: { display: 'locked' } },
+    { id: 'hidden', meta: { title: 'Hidden' }, set: { display: 'hide' } }
+  ];
+  const engine = new GameEngine();
+  try {
+    await engine.init(scenario);
+    let snapshot = engine.protocol.createSnapshot(engine);
+    const actions = snapshot.presentation.actions;
+    assert.deepEqual(actions.map(action => action.id), ['readable', 'locked']);
+    assert.equal(actions[0].key, 'start_main_readable');
+    assert.equal(actions[0].presentation.readRequired, true);
+    assert.equal(actions[0].presentation.read, false);
+    assert.equal(actions[0].availability.reason, 'not_read');
+    assert.equal(actions[0].availability.canTrigger, false);
+    assert.equal(actions[1].presentation.display, 'locked');
+    assert.equal(actions[1].availability.reason, 'locked');
+
+    engine.markAsRead('start_main_readable');
+    snapshot = engine.protocol.createSnapshot(engine);
+    assert.equal(snapshot.presentation.actions[0].presentation.read, true);
+    assert.equal(snapshot.presentation.actions[0].availability.reason, 'available');
+
+    assert.deepEqual(await engine.handleAction('locked', 'start_main_locked'), {
+      success: false, reason: 'locked'
+    });
+  } finally {
+    engine.dispose();
+  }
+});
