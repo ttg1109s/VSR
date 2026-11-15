@@ -93,6 +93,7 @@ function formatDifficulty(value) {
 
 export default function ScenarioPreviewPage({ preview, onBack }) {
   const metadata = preview?.metadata || {};
+  const summary = preview?.summary || {};
   const experienceItems = [
     { label: 'Độ tuổi', value: metadata.ageRating },
     { label: 'Độ khó', value: formatDifficulty(metadata.difficulty) },
@@ -167,7 +168,7 @@ export default function ScenarioPreviewPage({ preview, onBack }) {
           </section>
         )}
 
-        <footer>
+        <footer className="vsr-stack vsr-stack--center">
           <Button
             variant="secondary"
             size="md"
