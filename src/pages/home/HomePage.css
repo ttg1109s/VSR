@@ -1,0 +1,145 @@
+.home-page {
+  display: grid;
+  min-height: 100vh;
+  min-height: 100dvh;
+  place-items: center;
+  padding: 24px;
+  background: var(--vsr-color-background-subtle);
+}
+
+.home-panel {
+  display: flex;
+  flex-direction: column;
+  width: min(100%, 760px);
+  min-height: min(760px, calc(100dvh - 48px));
+  overflow: hidden;
+  border: 1px solid var(--vsr-color-border);
+  border-radius: 20px;
+  background: var(--vsr-color-surface);
+  box-shadow: var(--vsr-elevation-1);
+}
+
+.home-panel__content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  width: min(100%, 620px);
+  margin-inline: auto;
+  padding: 72px 32px 64px;
+}
+
+.home-intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.home-intro__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 4px 14px;
+  border: 1px solid var(--vsr-color-primary);
+  border-radius: var(--vsr-radius-full);
+  color: var(--vsr-color-primary);
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 600;
+  letter-spacing: .055em;
+}
+
+.home-intro h1 {
+  margin: 28px 0 12px;
+  color: var(--vsr-color-text);
+  font-size: clamp(30px, 4vw, 42px);
+  line-height: 1.16;
+  font-weight: 600;
+  letter-spacing: -.035em;
+}
+
+.home-intro p {
+  margin: 0;
+  color: var(--vsr-color-text-secondary);
+  font-size: 18px;
+  line-height: 28px;
+}
+
+.home-actions {
+  display: grid;
+  gap: 16px;
+  margin-top: 72px;
+}
+
+.home-panel__footer {
+  display: grid;
+  min-height: 76px;
+  place-items: center;
+  padding: 16px 24px;
+  border-top: 1px solid var(--vsr-color-border-subtle);
+  color: var(--vsr-color-text-secondary);
+  font-size: 14px;
+  line-height: 20px;
+  text-align: center;
+}
+
+@media (max-width: 599px) {
+  .home-page {
+    padding: 12px;
+  }
+
+  .home-panel {
+    min-height: calc(100dvh - 24px);
+    border-radius: 16px;
+  }
+
+  .home-panel__content {
+    padding: 48px 20px;
+  }
+
+  .home-intro h1 {
+    margin-top: 22px;
+    font-size: 30px;
+  }
+
+  .home-intro p {
+    font-size: 16px;
+    line-height: 24px;
+  }
+
+  .home-actions {
+    gap: 12px;
+    margin-top: 52px;
+  }
+
+  .home-panel__footer {
+    min-height: 64px;
+    font-size: 13px;
+  }
+}
+
+@media (max-height: 620px) and (min-width: 600px) {
+  .home-panel {
+    min-height: calc(100dvh - 48px);
+  }
+
+  .home-panel__content {
+    padding-block: 28px;
+  }
+
+  .home-intro h1 {
+    margin-top: 18px;
+    font-size: 34px;
+  }
+
+  .home-actions {
+    gap: 12px;
+    margin-top: 32px;
+  }
+
+  .home-action-card {
+    min-height: 104px;
+    padding-block: 16px;
+  }
+}
