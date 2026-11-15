@@ -21,7 +21,9 @@ export default function PlayingPage({ snapshot, error = '', onNavigate }) {
   const routerCover = router?.meta?.cover;
   const sceneCover = scene?.meta?.cover;
   const cover = routerCover?.url ? routerCover : sceneCover;
-  const status = router?.meta?.subTitleStatus;
+  const status = typeof router?.meta?.subTitleStatus === 'string' && router.meta.subTitleStatus.trim()
+    ? router.meta.subTitleStatus.trim()
+    : 'Chưa thiết lập trạng thái';
 
   return (
     <main className="vsr-page-shell vsr-page-shell--start vsr-page-shell--flush-top">
@@ -41,7 +43,7 @@ export default function PlayingPage({ snapshot, error = '', onNavigate }) {
           src={cover?.url}
           type={cover?.type || 'photo'}
           ratio={cover?.ratio || '16:9'}
-          overlay={status ? <Badge tone="neutral">{status}</Badge> : null}
+          overlay={<Badge tone="neutral">{status}</Badge>}
         />
         {router?.meta?.desc && (
           <div className="vsr-text-body">{router.meta.desc}</div>
