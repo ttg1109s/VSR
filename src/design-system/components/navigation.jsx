@@ -6,10 +6,12 @@ export function Badge({ tone='neutral', size='md', dot=false, className, childre
   return <span className={cx('vsr-badge','vsr-badge--'+tone,'vsr-badge--'+size,className)} {...props}>{dot && <i aria-hidden="true"/>}{children}</span>;
 }
 
-export function Breadcrumb({ items=[], separator='/', className, 'aria-label': ariaLabel='Breadcrumb' }) {
-  return <nav className={cx('vsr-breadcrumb',className)} aria-label={ariaLabel}><ol>{items.map((item,index) => {
-    const current=index===items.length-1;
-    return <li key={item.key??item.href??item.label}><span className="vsr-breadcrumb-separator" aria-hidden="true">{index>0?separator:null}</span>{current?<span aria-current="page">{item.label}</span>:item.href?<a href={item.href} onClick={item.onClick}>{item.label}</a>:<button type="button" onClick={item.onClick} disabled={!item.onClick}>{item.label}</button>}</li>;
+export function Breadcrumb({ items=[], separator='/', activeKey, scrollable=false, sticky=false, className, 'aria-label': ariaLabel='Breadcrumb' }) {
+  const currentKey = activeKey ?? items[items.length-1]?.key ?? items[items.length-1]?.href ?? items[items.length-1]?.label;
+  return <nav className={cx('vsr-breadcrumb',scrollable&&'vsr-breadcrumb--scrollable',sticky&&'vsr-breadcrumb--sticky',className)} aria-label={ariaLabel}><ol>{items.map((item,index) => {
+    const key=item.key??item.href??item.label;
+    const current=key===currentKey;
+    return <li key={key}><span className="vsr-breadcrumb-separator" aria-hidden="true">{index>0?separator:null}</span>{current?<span aria-current="page">{item.label}</span>:item.href?<a href={item.href} onClick={item.onClick}>{item.label}</a>:<button type="button" onClick={item.onClick} disabled={!item.onClick}>{item.label}</button>}</li>;
   })}</ol></nav>;
 }
 
