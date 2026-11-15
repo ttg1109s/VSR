@@ -27,7 +27,7 @@ function validScenario() {
         set: { activeRouterId: 'main' },
         routers: {
           main: {
-            meta: {},
+            meta: { subTitleStatus: 'Main' },
             set: { blocked: false, visited: false, countVisited: 0 },
             actions: [{ meta: { title: 'Inline' }, set: { display: 'show' } }]
           }
@@ -205,7 +205,7 @@ test('the canonical demo scenario satisfies the schema and semantic contract', (
   assert.deepEqual(validateScenario(DEMO_SCRIPT), []);
   const normalized = normalizeScenario(DEMO_SCRIPT);
   assert.equal(normalized.formatVersion, 1);
-  assert.equal(normalized.meta.entryScene, 'scene_garden');
+  assert.equal(normalized.meta.entryScene, 'scene_village_square');
 });
 
 test('global state declarations require values that match their declared type', () => {
