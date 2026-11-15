@@ -63,9 +63,9 @@ function renderLoading(message='Đang khởi tạo phiên chơi…') {
   state.screen='loading';
   app.innerHTML = `<main class="loading-screen"><div class="loading-mark">V</div><div class="loading-orbit"><span></span></div><p class="eyebrow">VSR ENGINE / JSON TRANSPORT</p><h1>Preparing<br><em>your world.</em></h1><p class="loading-message" id="loading-message">${escapeHtml(message)}</p><div class="loading-track"><span></span></div><p class="loading-foot">PLEASE WAIT · DO NOT CLOSE THIS WINDOW</p></main>`;
 }
-async function startGame() {
+async function startGame({ fromHistory = false } = {}) {
   if(state.loading||!state.scenario)return;
-  state.loading=true; navigate('loading'); renderLoading('Đang kiểm tra và nạp kịch bản…');
+  state.loading=true; navigate('loading',{replace:fromHistory}); renderLoading('Đang kiểm tra và nạp kịch bản…');
   try {
     await new Promise(resolve=>requestAnimationFrame(resolve));
     const transport=new HttpJsonTransport(); const client=new JsonClient(transport);
@@ -110,7 +110,7 @@ window.addEventListener('popstate', event => {
   const screen = event.state?.vsrScreen || 'home';
   if (screen === 'home') { disposeSession(); renderHome(); }
   else if (screen === 'metadata' && state.scenario) { disposeSession(); openMetadata(state.scenario,state.scenarioName,{updateHistory:false}); }
-  else if (screen === 'gameplay' && state.client) renderGameplay();
+  else if (screen === 'gameplay' && state.client) renderGameplay();\n  else if (screen === 'gameplay' && state.scenario) startGame({fromHistory:true});
   else { navigate('home',{replace:true}); renderHome(); }
 });
 renderHome();
