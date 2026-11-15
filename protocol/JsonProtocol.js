@@ -33,9 +33,21 @@ export class JsonProtocol{
   const routerId=sceneId?(engine.state.scenes?.[sceneId]?.activeRouterId||null):null;
   const sourceScene=sceneId?engine.src?.scenes?.[sceneId]||null:null;
   const sourceRouter=sourceScene&&routerId?sourceScene.routers?.[routerId]||null:null;
+  const resolveCover=value=>{
+   if(!value)return null;
+   if(typeof value==='object')return cloneJsonValue(value);
+   if(typeof value!=='string')return null;
+   const match=value.match(/^(photo|video):(.*)$/i);
+   const mediaId=match?match[2]:value;
+   const media=engine.src?.media?.[mediaId];
+   if(media?.url)return{url:media.url,type:match?match[1].toLowerCase():media.type||'photo'};
+   if(/^(https?:|\/)/i.test(mediaId))return{url:mediaId,type:match?match[1].toLowerCase():'photo'};
+   return null;
+  };
   const safeMeta=meta=>({
    title:meta?.title,desc:meta?.desc,description:meta?.description,
-   subTitleStatus:meta?.subTitleStatus,thumb:meta?.thumb
+   subTitleStatus:meta?.subTitleStatus,thumb:meta?.thumb,
+   cover:resolveCover(meta?.cover)
   });
   const actions=sourceScene&&sourceRouter&&typeof engine.getEffectiveActions==='function'
    ?engine.getEffectiveActions(sceneId,routerId).map(action=>{
@@ -74,6 +86,7 @@ export class JsonProtocol{
     scenarioTitle:engine.src?.meta?.title||'VSR',
     scene:sourceScene?{id:sceneId,meta:safeMeta(sourceScene.meta||{}),title:sourceScene.title||null}:null,
     router:sourceRouter?{id:routerId,meta:safeMeta(sourceRouter.meta||{})}:null,
+    scenePath:sceneId?(state.sceneTree?.[sceneId]||[]).map(node=>({id:node.id,title:node.title})):[],
     actions
    },
    session,state
