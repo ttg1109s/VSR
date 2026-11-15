@@ -122,15 +122,16 @@ export default function App() {
       openScenario(entry);
     } catch (error) { notify(error instanceof SyntaxError ? 'Tệp không phải JSON hợp lệ.' : error.message); }
   }
-  async function startGame() {
-    if (!scenario || loading) return;
+  async function startGame(scenarioToStart = scenario) {
+    if (!scenarioToStart || loading) return;
+    setScenario(scenarioToStart);
     setLoading(true); setScreen('loading'); history.pushState({ vsr:'loading' }, '', '#loading');
     let nextTransport;
     try {
       await new Promise(resolve => requestAnimationFrame(resolve));
       nextTransport = new WorkerJsonTransport();
       const nextClient = new JsonClient(nextTransport);
-      await nextClient.initialize(scenario);
+      await nextClient.initialize(scenarioToStart);
       const nextSnapshot = nextClient.getSnapshot();
       if (!nextSnapshot?.game?.initialized || !nextSnapshot?.presentation?.scene) throw new Error('Engine không trả về snapshot khởi tạo hợp lệ.');
       setTransport(nextTransport); setClient(nextClient); setSnapshot(nextSnapshot);
@@ -203,25 +204,25 @@ export default function App() {
   const cover = typeof coverValue === 'string' ? coverValue : '';
 
   return <div className="app-frame">
-    {screen !== 'gameplay' && <header className="topbar"><Brand /><nav className="top-nav"><button className={screen === 'library' ? 'active' : ''} onClick={() => { setScreen('library'); history.pushState({}, '', '#home'); }}>Thư viện</button><button onClick={() => document.getElementById('scenario-import')?.click()}>Nhập kịch bản</button></nav><div className="top-actions"><Status /><button className="avatar-button" aria-label="Tài khoản">VS</button></div></header>}
+    {screen === 'library' && <header className="topbar home-topbar"><Brand /><Status /></header>}
 
-    {screen === 'library' && <main className="library-page">
-      <section className="hero">
-        <div className="hero-copy"><div className="eyebrow"><span className="eyebrow-line" /> VISUAL STORY RUNTIME</div><h1>Stories worth<br/><em>stepping into.</em></h1><p>Khám phá những thế giới tương tác. Mỗi lựa chọn mở ra một nhánh chuyện khác.</p><div className="hero-actions"><Button variant="primary" onClick={() => library[0] && openScenario(library[0])}>Khám phá kịch bản <Icon>↗</Icon></Button><span className="hero-caption">YOUR NEXT STORY STARTS HERE</span></div></div>
-        <div className="hero-art"><div className="art-orbit orbit-one"/><div className="art-orbit orbit-two"/><div className="art-core"><span>V</span></div><div className="art-tag tag-top">STORY ENGINE <b>02.0</b></div><div className="art-tag tag-bottom"><i/> LIVE INTERACTIVE WORLDS</div><div className="art-index">01 — 08</div></div>
+    {screen === 'library' && <main className="home-page">
+      <section className="home-content">
+        <div className="home-eyebrow">VISUAL STORY RUNTIME</div>
+        <div className="home-emblem" aria-hidden="true">V</div>
+        <h1>VSR<span>/</span></h1>
+        <p className="home-description">Một không gian dành cho những câu chuyện tương tác.</p>
+        <div className="home-actions">
+          <Button variant="primary" onClick={() => {
+            const demo = library.find(entry => entry.featured) || library[0];
+            if (!demo) { notify('Chưa tải được kịch bản demo.'); return; }
+            setScenarioName('KỊCH BẢN MẪU');
+            startGame(demo.data);
+          }} disabled={loading || library.length === 0}>Chạy demo <Icon>↗</Icon></Button>
+          <Button onClick={() => document.getElementById('scenario-import')?.click()}><Icon>↑</Icon> Tải JSON lên</Button>
+        </div>
+        <div className="home-footnote">BROWSER-BASED INTERACTIVE STORY ENGINE</div>
       </section>
-      <section className="library-heading"><div><div className="eyebrow">CURATED EXPERIENCES</div><h2>Thư viện kịch bản</h2><p>Chọn một câu chuyện để xem thông tin và bắt đầu trải nghiệm.</p></div><div className="library-tools"><span>{String(library.length).padStart(2,'0')} STORIES</span><Button onClick={() => document.getElementById('scenario-import')?.click()}><Icon>＋</Icon> Nhập JSON</Button></div></section>
-      <section className="story-grid">
-        {library.map((entry, index) => {
-          const m = entry.data.meta || {}; const c = m.cover?.url || (typeof m.cover === 'string' ? m.cover : '');
-          return <button className={`story-card ${entry.featured ? 'story-featured' : ''}`} key={entry.id} onClick={() => openScenario(entry)}>
-            <div className="story-visual" style={c ? { backgroundImage:`linear-gradient(180deg, transparent 40%, rgba(10,15,22,.55)),url("${c}")` } : undefined}><span className="story-number">{String(index+1).padStart(2,'0')}</span><span className="story-symbol">{entry.featured ? '◈' : '✳'}</span><span className="story-category">{(m.tags || ['INTERACTIVE STORY']).slice(0,2).map(pretty).join(' / ')}</span></div>
-            <div className="story-info"><div className="story-source">{entry.source || 'IMPORTED SCENARIO'} <span>↗</span></div><h3>{titleOf(m)}</h3><p>{descOf(m)}</p><div className="story-meta"><span>{Object.keys(entry.data.scenes || {}).length} SCENES</span><span>{m.estimatedPlayTime ? `${m.estimatedPlayTime} MIN` : 'OPEN STORY'}</span><span className="story-open">OPEN <b>↗</b></span></div></div>
-          </button>;
-        })}
-        <button className="add-story-card" onClick={() => document.getElementById('scenario-import')?.click()}><span className="add-icon">＋</span><strong>Thêm câu chuyện</strong><span>Nhập tệp JSON từ thiết bị</span><small>IMPORT SCENARIO <b>↗</b></small></button>
-      </section>
-      <footer className="page-footer"><Brand compact/><span>DESIGNED FOR STORIES THAT MOVE.</span><span>VSR ENGINE · BROWSER RUNTIME</span></footer>
     </main>}
 
     {screen === 'detail' && <main className="detail-page">
