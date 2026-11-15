@@ -48,10 +48,12 @@ const MovingLogic = {
         return true;
     },
     replace: (char, eff, indices) => {
-        if (eff.property !== 'moveList' || !Array.isArray(char.moveList) || indices.length !== 1 || !isMoveEntry(eff.value)) return false;
-        const index = indices[0];
-        if (!Number.isInteger(index) || index < 0 || index >= char.moveList.length) return false;
-        char.moveList[index] = cloneValue(eff.value);
+        if (eff.property !== 'moveList' || !Array.isArray(char.moveList) || !indices.length || !isMoveEntry(eff.value)) return false;
+        const valid = [...new Set(indices)];
+        if (valid.some(index => !Number.isInteger(index) || index < 0 || index >= char.moveList.length)) return false;
+        valid.forEach(index => {
+            char.moveList[index] = cloneValue(eff.value);
+        });
         return true;
     }
 };
