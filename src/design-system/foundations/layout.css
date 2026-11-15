@@ -7,6 +7,7 @@
   justify-items: center;
   padding: var(--vsr-page-padding);
 }
+.vsr-page-shell--start { align-items: start; }
 .vsr-stack { display: flex; flex-direction: column; }
 .vsr-stack--center { align-items: center; text-align: center; }
 .vsr-stack--gap-1 { gap: var(--vsr-space-1); }
@@ -28,12 +29,12 @@
 .vsr-text-body { font-size: 16px; line-height: 24px; }
 .vsr-eyebrow { display: inline-flex; align-items: center; min-height: 30px; padding: var(--vsr-space-1) var(--vsr-space-4); border: 1px solid var(--vsr-color-primary); border-radius: var(--vsr-radius-full); color: var(--vsr-color-primary); font-size: 12px; line-height: 18px; font-weight: 600; letter-spacing: .055em; }
 .vsr-visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+
 @media (max-width: 599px) {
   .vsr-page-shell__content--padded { padding: var(--vsr-space-5) var(--vsr-space-2); }
   .vsr-heading-display { margin-top: var(--vsr-space-4); font-size: 30px; }
   .vsr-text-body { font-size: 15px; line-height: 22px; }
 }
-
 
 /* Reusable semantic description-list pattern. */
 .vsr-description-list {
@@ -51,32 +52,66 @@
   border-bottom: 1px solid var(--vsr-color-border-subtle);
 }
 
-.vsr-description-list__row:first-child {
-  padding-top: 0;
-}
-
+.vsr-description-list__row:first-child { padding-top: 0; }
 .vsr-description-list__row:last-child {
   padding-bottom: 0;
   border-bottom: 0;
 }
-
 .vsr-description-list__term,
 .vsr-description-list__detail {
   min-width: 0;
   margin: 0;
 }
-
-.vsr-description-list__term {
-  color: var(--vsr-color-text-secondary);
-}
-
-.vsr-description-list__detail {
-  overflow-wrap: anywhere;
-}
+.vsr-description-list__term { color: var(--vsr-color-text-secondary); }
+.vsr-description-list__detail { overflow-wrap: anywhere; }
 
 @media (max-width: 599px) {
   .vsr-description-list__row {
     grid-template-columns: minmax(0, 1fr);
     gap: var(--vsr-space-1);
   }
+}
+
+/* Reusable content and metadata patterns. */
+.vsr-line-clamp {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.vsr-line-clamp--5 { -webkit-line-clamp: 5; }
+
+.vsr-experience-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+  gap: var(--vsr-space-3);
+}
+.vsr-experience-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--vsr-space-1);
+  min-width: 0;
+}
+.vsr-experience-item__label { font-size: 12px; line-height: 18px; }
+.vsr-experience-item__value { font-size: 16px; line-height: 24px; overflow-wrap: anywhere; }
+
+.vsr-tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--vsr-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.vsr-tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: var(--vsr-space-1) var(--vsr-space-3);
+  border: 1px solid var(--vsr-color-border-subtle);
+  border-radius: var(--vsr-radius-full);
+  background: var(--vsr-color-surface-subtle);
+  color: var(--vsr-color-text-secondary);
+  font-size: 12px;
+  line-height: 18px;
 }
