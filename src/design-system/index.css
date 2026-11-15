@@ -105,3 +105,13 @@
   .vsr-action-card__description-section { padding-block:12px; }
   .vsr-action-card__description-section .vsr-action-card__section-heading { gap:6px; }
 }
+
+
+/* Action description info glyph: render Material Symbols ligature, not raw text. */
+.vsr-action-card__description-section .vsr-action-card__info-button { width:36px; min-width:36px; min-height:36px; padding:0; }
+.vsr-action-card__description-section .vsr-action-card__info-button .vsr-button__label { display:inline-flex; }
+.vsr-action-card__info-glyph { display:inline-block; font-family:var(--vsr-font-icon); font-size:22px; font-weight:normal; font-style:normal; line-height:1; letter-spacing:normal; text-transform:none; white-space:nowrap; direction:ltr; font-feature-settings:'liga'; -webkit-font-feature-settings:'liga'; -webkit-font-smoothing:antialiased; }
+.vsr-action-card__popover { display:flex; flex-direction:column; gap:10px; width:min( min( min(360px, calc(100vw - 48px)), 100%)); max-height:min(60vh, 420px); overflow:auto; }
+.vsr-action-card__popover h4 { margin:0; font-size:15px; font-weight:650; }
+.vsr-action-card__popover p { margin:0; font-size:14px; line-height:1.5; overflow-wrap:anywhere; }
+.vsr-action-card__popover .vsr-button { align-self:flex-start; }
