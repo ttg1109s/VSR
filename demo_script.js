@@ -1489,12 +1489,6 @@ export const DEMO_SCRIPT = {
       },
       "effect": {
         "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Danh sách dân làng có một cái tên bị cạo đi. Một chiếc đèn bão bị bỏ lại dưới chân bảng."
-          }
         ],
         "pass": [
           {
