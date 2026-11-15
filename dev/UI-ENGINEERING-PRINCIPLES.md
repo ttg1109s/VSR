@@ -127,14 +127,26 @@ Trước khi viết component hoặc CSS mới, kiểm tra public API hiện t�
 
 Tái sử dụng component chung trước khi tự tạo phiên bản tương tự. Nếu component hiện có thiếu khả năng, mở rộng API theo hướng tương thích ngược và cập nhật tài liệu/component tests; không âm thầm tạo một hệ thống song song.
 
-### 5.2. Phân chia CSS
+### 5.2. Phân chia CSS — Design System First, No Page-Level CSS
 
-- **Design System CSS**: token, reset, typography, responsive primitives và visual styling dùng chung của component.
-- **Page CSS**: bố cục đặc thù của page như grid, alignment, max-width, page-level spacing và composition.
-- **Component-specific CSS**: chỉ dành cho component mới có tính tái sử dụng hoặc cấu trúc nội bộ thật sự riêng; ưu tiên đặt cạnh component.
-- Không khai báo lại màu, font, radius, elevation, spacing scale trong CSS của page nếu đã có token tương ứng.
-- Không dùng selector toàn cục từ page stylesheet để sửa component dùng chung.
-- Hạn chế !important, selector phụ thuộc sâu vào DOM nội bộ và override class của Design System. Nếu cần override thường xuyên, API component hoặc token đang thiếu và cần được xử lý ở đúng lớp.
+**Quy tắc bắt buộc:** Page chỉ được composition các public component, layout primitive và pattern đã được Design System cung cấp. Page không được tạo stylesheet riêng, CSS module, styled-components, CSS-in-JS, inline style hoặc bất kỳ cơ chế nào khác để tự định nghĩa presentation/layout.
+
+Page được phép chứa:
+- JSX/TSX composition và semantic HTML phù hợp.
+- Binding dữ liệu, state trình bày cục bộ, callback và điều phối ở mức page theo ranh giới kiến trúc.
+- Chọn variant/size/props đã được public API của component hỗ trợ.
+- ClassName chỉ khi API component cho phép hook vào một class đã được Design System định nghĩa/document; không được dùng className để tự thêm style tại page.
+
+Page không được tự định nghĩa:
+- Grid/Flex, width/max-width, alignment, padding/margin/gap, positioning, overflow hoặc responsive breakpoint.
+- Font, cỡ chữ, line-height, màu, border, radius, shadow, surface, animation hay trạng thái tương tác.
+- CSS selector nhắm vào DOM nội bộ của component dùng chung; inline style hoặc style prop để né quy tắc.
+
+**Nếu thiếu khả năng:** Không viết workaround tại page. Bổ sung hoặc mở rộng token, layout primitive, pattern hoặc component trong `src/design-system/`, cập nhật public export/tài liệu/tests, sau đó page chỉ sử dụng API mới. Ví dụ layout primitives cần được cung cấp tập trung gồm PageShell/PageContainer, Stack, Cluster, Grid, Center, Surface và các pattern như PageHeader, EmptyState, LoadingState, ErrorState. Đây là danh mục năng lực cần triển khai theo nhu cầu, không mặc nhiên khẳng định tất cả đã tồn tại.
+
+**Ngoại lệ hẹp:** CSS chỉ được đặt cạnh một feature component độc lập khi component đó có cấu trúc/hành vi riêng, được dùng như một đơn vị UI, và không thể biểu đạt hợp lý bằng API Design System hiện có. CSS đó thuộc component, không thuộc page; phải dùng token, không tạo hệ thống style song song. Third-party widget styles phải được cô lập và ghi rõ lý do.
+
+Không dùng selector toàn cục từ feature/page để sửa component dùng chung. Hạn chế !important, selector phụ thuộc sâu vào DOM nội bộ và override class của Design System. Nếu cần override thường xuyên, API component hoặc token đang thiếu và cần được xử lý ở đúng lớp.
 
 ### 5.3. Khi nào tạo component mới?
 
@@ -219,7 +231,7 @@ Component README ghi nhận đây là implementation ban đầu, chưa thay th�
 - [ ] Design System không import engine/protocol/state/transport.
 - [ ] Side effects nằm ở application/service layer hoặc hook phù hợp.
 - [ ] Không tạo state trùng lặp cho runtime state.
-- [ ] File được chia theo page/component với ownership rõ ràng.
+- [ ] Page không có stylesheet, inline style, CSS module hoặc CSS-in-JS.\n- [ ] Page chỉ dùng public Design System components/layout primitives/patterns.\n- [ ] CSS đặc thù (nếu có) thuộc component độc lập, không thuộc page.
 
 ### Accessibility and responsive
 - [ ] Có keyboard operation và focus-visible.
