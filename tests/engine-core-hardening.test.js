@@ -5,7 +5,7 @@ import { scenarioSchema } from '../engine/scenario/ScenarioSchema.js';
 import { validateScenario, normalizeScenario, migrateScenario, ScenarioValidationError } from '../engine/scenario/Scenario.js';
 import { LogicSystem } from '../engine/modules/Logic.js';
 import { EffectSystem } from '../engine/modules/Effect.js';
-import { EffectHandlers, CharacterStrategies } from '../engine/modules/effect/Strategies.js';
+import { EffectHandlers, CharacterStrategies, SetStrategies } from '../engine/modules/effect/Strategies.js';
 import { StatsHelpers } from '../engine/modules/effect/strategies/Stats.js';
 import { LoaderSystem } from '../engine/modules/Loader.js';
 import { ActionSystem } from '../engine/modules/Action.js';
@@ -637,4 +637,42 @@ test('manage_effect schema limits router, item, and chat hooks to runtime-suppor
     space: 'chat', in: 'block_without_choice', subtype: 'locked',
     target: 'unknown_chat', index: [0]
   })).length > 0);
+});
+
+
+test('set.state preserves the declared global-state type and numeric delta semantics', () => {
+  const writes = [];
+  const declarations = {
+    coins: { type: 'number', value: 10 },
+    alarm: { type: 'boolean', value: false },
+    note: { type: 'string', value: 'old' }
+  };
+  const engine = {
+    api: {
+      engine: {
+        state: {
+          get(path, { id }) {
+            if (path === 'globalState.type') return declarations[id]?.type;
+            if (path === 'globalState.value') return declarations[id]?.value;
+            return undefined;
+          },
+          set(path, value, { id }) {
+            writes.push({ path, id, value });
+            declarations[id].value = value;
+          }
+        }
+      }
+    }
+  };
+
+  SetStrategies.state(engine, { target: 'coins', value: 2 });
+  SetStrategies.state(engine, { target: 'alarm', value: true });
+  SetStrategies.state(engine, { target: 'note', value: 'new' });
+  assert.deepEqual(writes.map(item => item.value), [12, true, 'new']);
+
+  assert.throws(
+    () => SetStrategies.state(engine, { target: 'coins', value: 'not-a-number' }),
+    /finite numeric delta/
+  );
+  assert.equal(declarations.coins.value, 12);
 });
