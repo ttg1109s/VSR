@@ -747,6 +747,7 @@ test('action snapshot projection exposes stable identity and engine-evaluated av
   try {
     await engine.init(scenario);
     engine.api.engine.state.update('actions.[id]', current => ({ ...(current || {}), display: 'locked' }), { id: 'start_main_locked' });
+    engine.api.engine.state.update('actions.[id]', current => ({ ...(current || {}), readDesc: false }), { id: 'start_main_readable' });
     let snapshot = engine.protocol.createSnapshot(engine);
     const actions = snapshot.presentation.actions;
     assert.deepEqual(actions.map(action => action.id), ['readable', 'locked']);
