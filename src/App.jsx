@@ -83,6 +83,7 @@ export default function App() {
     closeRuntime();
     setLoadStatus('loading');
     setLoadError('');
+    setGameError('');
     setPage('loading');
 
     const transport = new WorkerJsonTransport({ requestTimeoutMs: 30000 });
