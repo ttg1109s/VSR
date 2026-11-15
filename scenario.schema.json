@@ -1563,32 +1563,28 @@
                       "const": "mng_items"
                     }
                   },
-                  "required": ["subtype"]
+                  "required": [
+                    "subtype"
+                  ]
                 },
                 "then": {
-                  "required": ["exec", "source", "value"],
+                  "required": [
+                    "exec",
+                    "source",
+                    "value"
+                  ],
                   "properties": {
-                    "exec": { "const": "transfer" },
-                    "source": { "type": "string", "minLength": 1 },
-                    "value": { "type": "string", "minLength": 1 }
-                  }
-                }
-              },
-              {
-                "if": {
-                  "properties": {
-                    "subtype": {
-                      "const": "mng_items"
+                    "exec": {
+                      "const": "transfer"
+                    },
+                    "source": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "value": {
+                      "type": "string",
+                      "minLength": 1
                     }
-                  },
-                  "required": ["subtype"]
-                },
-                "then": {
-                  "required": ["exec", "source", "value"],
-                  "properties": {
-                    "exec": { "const": "transfer" },
-                    "source": { "type": "string", "minLength": 1 },
-                    "value": { "type": "string", "minLength": 1 }
                   }
                 }
               },
@@ -1630,25 +1626,44 @@
                     {
                       "if": {
                         "properties": {
-                          "exec": { "enum": ["add", "remove", "replace"] }
+                          "exec": {
+                            "enum": [
+                              "add",
+                              "remove",
+                              "replace"
+                            ]
+                          }
                         },
-                        "required": ["exec"]
+                        "required": [
+                          "exec"
+                        ]
                       },
                       "then": {
                         "properties": {
-                          "property": { "const": "moveList" }
+                          "property": {
+                            "const": "moveList"
+                          }
                         }
                       }
                     },
                     {
                       "if": {
                         "properties": {
-                          "exec": { "enum": ["remove", "replace"] }
+                          "exec": {
+                            "enum": [
+                              "remove",
+                              "replace"
+                            ]
+                          }
                         },
-                        "required": ["exec"]
+                        "required": [
+                          "exec"
+                        ]
                       },
                       "then": {
-                        "required": ["index"]
+                        "required": [
+                          "index"
+                        ]
                       }
                     }
                   ]
@@ -2390,6 +2405,38 @@
                         "cut_to",
                         "delete"
                       ]
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "const": "mng_items"
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "exec",
+                    "source",
+                    "value"
+                  ],
+                  "properties": {
+                    "exec": {
+                      "const": "transfer"
+                    },
+                    "source": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "value": {
+                      "type": "string",
+                      "minLength": 1
                     }
                   }
                 }
