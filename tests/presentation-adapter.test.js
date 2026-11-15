@@ -3,6 +3,36 @@ import assert from 'node:assert/strict';
 import { LocalEngineHost } from '../engine/LocalEngineHost.js';
 import { JsonClient } from '../client/adapters/JsonClient.js';
 
+test('scenario inspection returns validated metadata without initializing or mutating the Engine', async () => {
+  const host = new LocalEngineHost();
+  const client = new JsonClient(host);
+  try {
+    const scenario = JSON.parse(host.getDemoScenario());
+    const revisionBefore = host.engine.protocol.stateRevision;
+    const acknowledgement = await client.inspectScenario(scenario);
+
+    assert.equal(acknowledgement.ok, true);
+    assert.equal(acknowledgement.result.metadata.title, scenario.meta.title);
+    assert.equal(acknowledgement.result.metadata.writer, scenario.meta.writer);
+    assert.equal(acknowledgement.result.metadata.ageRating, scenario.meta.ageRating);
+    assert.equal(acknowledgement.result.summary.sceneCount, Object.keys(scenario.scenes).length);
+    assert.equal(host.engine.src, null);
+    assert.equal(host.engine.state.sceneId, '');
+    assert.equal(host.engine.protocol.stateRevision, revisionBefore);
+    assert.equal(client.getSnapshot(), null);
+
+    await assert.rejects(
+      client.inspectScenario({ meta: {} }),
+      error => error.code === 'INVALID_SCENARIO'
+    );
+    assert.equal(host.engine.src, null);
+    assert.equal(host.engine.protocol.stateRevision, revisionBefore);
+  } finally {
+    client.dispose();
+    host.close();
+  }
+});
+
 test('browser client consumes JSON snapshots and only the active router projection', async () => {
   const host = new LocalEngineHost();
   const client = new JsonClient(host);
