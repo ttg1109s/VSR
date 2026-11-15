@@ -461,6 +461,15 @@
                 "number",
                 "null"
               ]
+            },
+            "checks": {
+              "type": "object",
+              "required": ["permission", "requirement"],
+              "properties": {
+                "permission": { "enum": ["passed", "failed"] },
+                "requirement": { "enum": ["passed", "failed", "not_required", "not_evaluated"] }
+              },
+              "additionalProperties": false
             }
           }
         },
