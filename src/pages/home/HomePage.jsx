@@ -1,6 +1,5 @@
 import React, { useRef } from 'react';
 import HomeActionCard from '../../components/home/HomeActionCard.jsx';
-import './HomePage.css';
 
 export default function HomePage({ onRunDemo, onImportFile, busy = false, error = '' }) {
   const fileInputRef = useRef(null);
@@ -12,16 +11,16 @@ export default function HomePage({ onRunDemo, onImportFile, busy = false, error 
   }
 
   return (
-    <main className="home-page">
-      <section className="home-panel" aria-labelledby="home-title">
-        <div className="home-panel__content">
-          <header className="home-intro">
-            <span className="home-intro__eyebrow">VISUAL STORY RUNTIME</span>
-            <h1 id="home-title">Visual Story Runtime</h1>
-            <p>A runtime for interactive stories.</p>
+    <main className="vsr-page-shell">
+      <section className="vsr-content-width vsr-content-width--medium vsr-stack vsr-stack--center" aria-labelledby="home-title">
+        <div className="vsr-content-width vsr-content-width--narrow vsr-page-shell__content vsr-page-shell__content--center vsr-page-shell__content--padded vsr-stack vsr-stack--center vsr-stack--gap-8">
+          <header className="vsr-stack vsr-stack--center vsr-stack--gap-2">
+            <span className="vsr-eyebrow">VISUAL STORY RUNTIME</span>
+            <h1 id="home-title" className="vsr-heading-display">Visual Story Runtime</h1>
+            <p className="vsr-text-secondary vsr-text-body">A runtime for interactive stories.</p>
           </header>
 
-          <div className="home-actions" aria-label="Start an experience">
+          <div className="vsr-stack vsr-stack--gap-3" aria-label="Start an experience">
             <HomeActionCard
               icon="play_circle"
               title="Run Demo Script"
@@ -42,14 +41,15 @@ export default function HomePage({ onRunDemo, onImportFile, busy = false, error 
             />
             <input
               ref={fileInputRef}
-              className="home-file-input"
+              className="vsr-visually-hidden"
               type="file"
               accept=".json,application/json"
               onChange={handleFileChange}
               aria-label="Chọn tệp kịch bản JSON"
+              tabIndex={-1}
             />
           </div>
-          {error && <p className="home-error" role="alert">{error}</p>}
+          {error && <p className="vsr-text-secondary" role="alert">{error}</p>}
         </div>
       </section>
     </main>
