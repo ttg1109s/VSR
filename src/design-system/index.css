@@ -1,7 +1,9 @@
 @import './foundations/base.css';
 @import './foundations/responsive.css';
 @import './foundations/layout.css';
-@import './components/index.css';@import './components/media.css';
+@import './components/index.css';
+@import './components/navigation.css';
+@import './components/media.css';
 
 :root {
   --vsr-color-background:#fff;--vsr-color-background-subtle:#F8F9FA;--vsr-color-surface:#fff;--vsr-color-surface-subtle:#F8F9FA;--vsr-color-surface-muted:#F1F3F4;--vsr-color-text:#202124;--vsr-color-text-secondary:#5F6368;--vsr-color-text-disabled:#9AA0A6;--vsr-color-border:#DADCE0;--vsr-color-border-subtle:#E8EAED;--vsr-color-primary:#1967D2;--vsr-color-primary-container:#E8F0FE;--vsr-color-primary-on-container:#174EA6;--vsr-color-success:#188038;--vsr-color-warning:#F9AB00;--vsr-color-error:#D93025;--vsr-color-info:#1A73E8;--vsr-font-sans:'Roboto',Arial,sans-serif;--vsr-font-icon:'Material Symbols Rounded';--vsr-content-max-width:1200px;
@@ -9,4 +11,3 @@
 }
 .vsr-card{padding:16px;border:1px solid var(--vsr-color-border-subtle);border-radius:var(--vsr-radius-md);background:var(--vsr-color-surface)}
 
-@import './components/navigation.css';
