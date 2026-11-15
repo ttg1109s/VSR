@@ -7,8 +7,8 @@ export const Label = forwardRef(function Label({ required, className, children, 
 });
 export const Button = forwardRef(function Button({ variant='primary', size='md', loading=false, disabled=false, leadingIcon, trailingIcon, className, children, type='button', ...props }, ref) {
   return <button ref={ref} type={type} className={cx('vsr-button','vsr-button--'+variant,'vsr-button--'+size,className)} disabled={disabled||loading} aria-busy={loading||undefined} {...props}>
-    {loading ? <span className="vsr-spinner" aria-hidden="true"/> : leadingIcon && <span aria-hidden="true">{leadingIcon}</span>}
-    <span>{children}</span>{!loading&&trailingIcon&&<span aria-hidden="true">{trailingIcon}</span>}
+    {loading ? <span className="vsr-spinner" aria-hidden="true"/> : leadingIcon && <span className="vsr-button__icon" aria-hidden="true">{leadingIcon}</span>}
+    <span className="vsr-button__label">{children}</span>{!loading&&trailingIcon&&<span className="vsr-button__icon" aria-hidden="true">{trailingIcon}</span>}
   </button>;
 });
 function Field({ id,label,hint,error,required,className,children }) {
