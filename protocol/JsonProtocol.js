@@ -47,7 +47,7 @@ export class JsonProtocol{
   const safeMeta=meta=>({
    title:meta?.title,desc:meta?.desc??meta?.description,description:meta?.desc??meta?.description,
    subTitleStatus:meta?.subTitleStatus,thumb:meta?.thumb,
-   cover:resolveCover(meta?.cover),thumbnail:resolveCover(meta?.thumb),
+   cover:resolveCover(meta?.cover),thumbnail:resolveCover(meta?.thumb)||(typeof meta?.thumb==='string'?{url:meta.thumb,type:'photo'}:null),
    buttonLabel:typeof meta?.buttonLabel==='string'?meta.buttonLabel:undefined,
    buttonIcon:typeof meta?.buttonIcon==='string'?meta.buttonIcon:undefined
   });
