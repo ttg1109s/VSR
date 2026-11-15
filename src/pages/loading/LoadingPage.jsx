@@ -7,7 +7,7 @@ export default function LoadingPage({ status = 'loading', error = '', onClose, o
 
   return (
     <main className="vsr-page-shell vsr-loader-page">
-      <div className="vsr-content-width vsr-content-width--narrow vsr-stack vsr-stack--gap-8">
+      <div className="vsr-content-width vsr-content-width--narrow vsr-stack vsr-stack--gap-5">
         <header className="vsr-loader-header">
           <span aria-hidden="true" />
           <Button
