@@ -351,3 +351,39 @@
   align-self: center;
   justify-self: center;
 }
+
+
+/* Loading status icons and compact viewport behavior. */
+.vsr-loader-mark { font-family: var(--vsr-font-sans); }
+.vsr-loader-mark svg { width: 22px; height: 22px; flex: none; }
+.vsr-spinner--large { width: 22px; height: 22px; border-width: 2.5px; }
+.vsr-loader-error { min-width: 0; }
+.vsr-loader-error .vsr-text-error { margin: 0; overflow-wrap: anywhere; }
+.vsr-loader-error .vsr-button { align-self: flex-start; }
+.vsr-loader-page {
+  min-height: 100svh;
+  min-height: 100dvh;
+  align-content: center;
+  padding-top: max(76px, calc(env(safe-area-inset-top) + 60px));
+  padding-bottom: max(28px, env(safe-area-inset-bottom));
+}
+.vsr-loader-page > .vsr-content-width { min-width: 0; }
+.vsr-loader-status { min-width: 0; }
+.vsr-loader-status > * { min-width: 0; }
+@media (max-width: 599px) {
+  .vsr-loader-page {
+    padding-right: max(20px, env(safe-area-inset-right));
+    padding-left: max(20px, env(safe-area-inset-left));
+    padding-top: max(76px, calc(env(safe-area-inset-top) + 60px));
+    padding-bottom: max(28px, env(safe-area-inset-bottom));
+  }
+  .vsr-loader-panel { gap: 24px; }
+  .vsr-loader-status { gap: 12px; }
+  .vsr-loader-mark { flex-basis: 36px; width: 36px; height: 36px; }
+}
+@media (max-height: 560px) {
+  .vsr-loader-page {
+    align-content: start;
+    padding-top: max(68px, calc(env(safe-area-inset-top) + 52px));
+  }
+}
