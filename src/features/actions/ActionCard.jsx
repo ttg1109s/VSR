@@ -12,20 +12,22 @@ function ActionCard({action,pending=false,passwordChallenge=null,onTrigger,onMar
  useEffect(()=>{setInput('');setError('');setFeedback('');},[passwordChallenge?.challengeId]);
  const submit=async e=>{e.preventDefault();if(!input.trim()||passwordPending)return;setPasswordPending(true);setError('');setFeedback('');try{const r=await onSubmitPassword?.(passwordChallenge,input);if(r?.retry){setFeedback(r.remainingAttempts===null?'Sai thông tin. Có thể thử lại.':`Sai thông tin. Còn ${r.remainingAttempts} lượt.`);setInput('');}else if(r?.reason==='expired')setError('Thử thách đã hết thời gian.');else if(r?.reason==='exhausted')setError('Đã hết số lượt thử.');else if(r?.reason==='revision_conflict')setError('Trạng thái vừa thay đổi. Hãy kiểm tra lại thử thách.');}catch(x){setError(x?.message||'Không thể gửi câu trả lời.');}finally{setPasswordPending(false);}};
  const cancel=async()=>{if(passwordPending||!passwordChallenge?.challengeId)return;setPasswordPending(true);setError('');try{await onCancelPassword?.(passwordChallenge);setInput('');}catch(x){setError(x?.message||'Không thể hủy thử thách.');}finally{setPasswordPending(false);}};
- return <article className="vsr-card" data-action-key={action.key}>
+ return <article className="vsr-card vsr-action-card" data-action-key={action.key}>
   <div className="vsr-stack vsr-stack--gap-4">
    {meta.thumbnail?.url||meta.cover?.url?<MediaFrame src={(meta.thumbnail||meta.cover).url} type={(meta.thumbnail||meta.cover).type||'photo'} ratio={(meta.thumbnail||meta.cover).ratio||'16:9'} alt={meta.title||action.title||'Hình minh họa hành động'}/>:null}
-   <div className="vsr-stack vsr-stack--gap-2">
+   <div className="vsr-stack vsr-stack--gap-2 vsr-action-card__content">
     {(locked||canRead||REASONS[availability.reason])&&<Badge tone={locked?'danger':canRead?'warning':'neutral'}>{locked?'Đang khóa':canRead?'Chưa đọc':REASONS[availability.reason]}</Badge>}
     <h3 className="vsr-text-body">{meta.title||action.title||action.id}</h3>
     {meta.subTitleStatus&&<p className="vsr-text-secondary">{meta.subTitleStatus}</p>}
     {description&&<p className="vsr-text-body">{description}</p>}
     {availability.reason!=='available'&&availability.reason!=='password_required'&&<p className="vsr-text-secondary" role="status">{availability.reason==='cooldown'?(cooldown?`Còn ${cooldown} giây`:'Đang chờ Engine xác nhận hết hồi chiêu'):(REASONS[availability.reason]||'')}</p>}
    </div>
+   <div className="vsr-action-card__actions">
    <Grid columns="auto" gap="2">
     {canRead&&<Button variant="secondary" disabled={pending} onClick={()=>setDetailsOpen(true)}>Đọc mô tả</Button>}
     <Button size="lg" leadingIcon={meta.buttonIcon} disabled={pending||!availability.canTrigger||locked} loading={pending} onClick={()=>onTrigger?.(action)} aria-label={meta.buttonLabel||`Thực hiện ${meta.title||action.id}`}>{meta.buttonLabel||(availability.reason==='password_required'?'Xác thực':'Thực hiện')}</Button>
    </Grid>
+   </div>
   </div>
   <Dialog open={detailsOpen} onClose={()=>setDetailsOpen(false)} title={meta.title||action.title||action.id} description="Thông tin chi tiết của hành động">
    <p className="vsr-text-body">{description||'Không có mô tả chi tiết.'}</p>
