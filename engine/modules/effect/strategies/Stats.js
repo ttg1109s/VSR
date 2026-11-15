@@ -7,7 +7,13 @@ const toFiniteNumber = (value) => {
 };
 
 export const StatsCalculators = {
-    max: { set: (_old, _max, value) => Number(value), add: (old, _max, value) => old + Number(value) },
+    // The schema permits mode=full for either field. For max, full is
+    // equivalent to setting the maximum to the supplied value.
+    max: {
+        set: (_old, _max, value) => Number(value),
+        add: (old, _max, value) => old + Number(value),
+        full: (_old, _max, value) => Number(value)
+    },
     current: {
         set: (_old, _max, value) => Number(value),
         full: (_old, max) => Number(max),
