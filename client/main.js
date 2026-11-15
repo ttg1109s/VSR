@@ -1,11 +1,11 @@
-import { LocalEngineHost } from '../host/LocalEngineHost.js';
+import { HttpJsonTransport } from './adapters/HttpJsonTransport.js';
 import { JsonClient } from './adapters/JsonClient.js';
 import { RegionRenderer } from './renderer/RegionRenderer.js';
 
 const $ = selector => document.querySelector(selector);
 const app = $('#app');
 const fileInput = $('#scenario-file');
-const state = { screen:'home', scenario:null, scenarioName:'', host:null, client:null, renderer:null, loading:false };
+const state = { screen:'home', scenario:null, scenarioName:'', transport:null, client:null, renderer:null, loading:false };
 
 const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const titleOf = meta => meta?.title || 'Untitled scenario';
@@ -18,9 +18,11 @@ function renderHome() {
   <section class="launch-panel"><div class="panel-heading"><span>START PLAYING</span><span class="panel-index">01 / 02</span></div>
   <button class="demo-card" id="demo-play"><span class="demo-art" aria-hidden="true"><span class="moon"></span><span class="ridge ridge-back"></span><span class="ridge ridge-front"></span><span class="mist"></span></span><span class="demo-info"><span class="card-kicker">FEATURED DEMO</span><strong>THE SILENT VILLAGE</strong><span>Ngôi Làng Không Tiếng Động</span></span><span class="round-arrow">↗</span></button>
   <div class="or-divider"><span></span> OR LOAD YOUR OWN STORY <span></span></div><button class="load-card" id="load-json"><span class="upload-icon">↑</span><span><strong>Load JSON</strong><small>Nạp kịch bản VSR từ thiết bị</small></span><span class="load-chevron">＋</span></button><p class="file-hint">Hỗ trợ tệp kịch bản định dạng .json</p></section><footer class="home-footer"><span>VSR ENGINE</span><span>JSON-DRIVEN CLIENT</span></footer></main>`;
-  $('#demo-play').addEventListener('click', () => {
-    try { openMetadata(JSON.parse(LocalEngineHost.getDemoScenario()), 'Demo · THE SILENT VILLAGE'); }
+  $('#demo-play').addEventListener('click', async () => {
+    const transport = new HttpJsonTransport();
+    try { openMetadata(await transport.getDemoScenario(), 'Demo · THE SILENT VILLAGE'); }
     catch(error) { showToast(error); }
+    finally { transport.close(); }
   });
   $('#load-json').addEventListener('click', () => fileInput.click());
 }
@@ -48,16 +50,16 @@ async function startGame() {
   state.loading=true; renderLoading('Đang kiểm tra và nạp kịch bản…');
   try {
     await new Promise(resolve=>requestAnimationFrame(resolve));
-    const host=new LocalEngineHost();
-    const client=new JsonClient(host);
-    state.host=host; state.client=client;
+    const transport=new HttpJsonTransport();
+    const client=new JsonClient(transport);
+    state.transport=transport; state.client=client;
     $('#loading-message').textContent='Kịch bản đang được Engine kiểm tra. Đang khởi tạo phiên chơi…';
     await client.initialize(state.scenario);
     const snapshot=client.getSnapshot();
     if(!snapshot?.game?.sceneId||!snapshot?.game?.routerId||!snapshot.presentation?.scene||!snapshot.presentation?.router) throw new Error('Engine không trả về snapshot Scene/Router hợp lệ.');
     state.loading=false; renderGameplay();
   } catch(error) {
-    state.client?.dispose?.(); state.host?.close?.(); state.client=null; state.host=null; state.loading=false;
+    state.client?.dispose?.(); state.transport?.close?.(); state.client=null; state.transport=null; state.loading=false;
     renderMetadataError(error);
   }
 }
@@ -76,8 +78,8 @@ function renderGameplay() {
 }
 
 function exitGame() {
-  state.renderer?.dispose?.(); state.client?.dispose?.(); state.host?.close?.();
-  state.renderer=null; state.client=null; state.host=null; renderHome();
+  state.renderer?.dispose?.(); state.client?.dispose?.(); state.transport?.close?.();
+  state.renderer=null; state.client=null; state.transport=null; renderHome();
 }
 
 function showToast(error) {
