@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - engine-only
+      - ui-rebuild
   pull_request:
     branches:
       - engine-only
+      - ui-rebuild
   workflow_dispatch:
 
 permissions:
@@ -30,7 +32,7 @@ jobs:
           cache: npm
           cache-dependency-path: package.json
 
-      # This repository currently does not track package-lock.json.
+      # The repository intentionally does not track a package lockfile.
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 

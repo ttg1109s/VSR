@@ -2,7 +2,7 @@ name: Engine quality
 
 on:
   push:
-    branches: [engine-only, feature/restore-password-domain, feature/schema-as-source-of-truth]
+    branches: [engine-only, ui-rebuild, feature/restore-password-domain, feature/schema-as-source-of-truth]
   pull_request:
 
 jobs:

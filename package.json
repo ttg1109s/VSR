@@ -3,9 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "engines": {
-    "node": ">=20"
-  },
+  "engines": { "node": ">=20" },
   "main": "./engine/index.js",
   "exports": {
     ".": "./engine/index.js",
@@ -30,12 +28,14 @@
     "server": "node server/index.js",
     "check:server": "node --check server/index.js"
   },
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
   "devDependencies": {
     "acorn": "^8.15.0",
     "vite": "^6.4.1"
-  },
-  "dependencies": {
-    "ajv": "^8.17.1",
-    "ajv-formats": "^3.0.1"
   }
 }
