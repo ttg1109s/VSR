@@ -756,6 +756,10 @@ test('action snapshot projection exposes stable identity and engine-evaluated av
     assert.equal(actions[0].presentation.read, false);
     assert.equal(actions[0].availability.reason, 'not_read');
     assert.equal(actions[0].availability.canTrigger, false);
+    assert.deepEqual(actions[0].availability.checks, {
+      permission: 'passed',
+      requirement: 'not_required'
+    });
     assert.equal(actions[1].presentation.display, 'locked');
     assert.equal(actions[1].availability.reason, 'locked');
 
