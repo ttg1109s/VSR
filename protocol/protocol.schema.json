@@ -152,6 +152,38 @@
                       "type": "array"
                     }
                   }
+                },
+                "timer": {
+                  "type": [
+                    "object",
+                    "null"
+                  ],
+                  "properties": {
+                    "active": {
+                      "type": "boolean"
+                    },
+                    "sceneId": {
+                      "type": "string"
+                    },
+                    "routerId": {
+                      "type": "string"
+                    },
+                    "mode": {
+                      "type": "string"
+                    },
+                    "maxSeconds": {
+                      "type": "number"
+                    },
+                    "remainingSeconds": {
+                      "type": "number"
+                    },
+                    "displayText": {
+                      "type": "string"
+                    },
+                    "updatedAt": {
+                      "type": "number"
+                    }
+                  }
                 }
               }
             }
