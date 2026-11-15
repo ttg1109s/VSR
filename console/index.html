@@ -27,6 +27,16 @@
     .item,.choice{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line)}.item:last-child,.choice:last-child{border:0}
     .log{height:310px;overflow:auto;display:flex;flex-direction:column;gap:7px}.event{padding:8px;background:#0e1520;border:1px solid var(--line);border-radius:8px;overflow-wrap:anywhere}.event time{display:block;color:var(--muted);font-size:11px}.event pre{white-space:pre-wrap;margin:5px 0 0;font:11px/1.4 ui-monospace,monospace;color:#b9c7d8}
     .chatbox{background:#0e1520;border:1px solid var(--line);border-radius:9px;padding:12px;min-height:72px;margin-bottom:8px;white-space:pre-wrap}.empty{color:var(--muted);padding:12px 0}.toolbar{display:flex;gap:7px;flex-wrap:wrap}.toolbar button{font-size:12px}
+    .runtime-console-btn{position:fixed;right:18px;bottom:18px;z-index:7;background:#7d2830;border-color:#b95b65;color:#fff;box-shadow:0 8px 28px #0008}
+    .runtime-console-btn.has-errors{background:#a52d38;border-color:#ff8791}
+    .runtime-console-btn .count{display:inline-flex;min-width:19px;height:19px;align-items:center;justify-content:center;margin-left:6px;padding:0 5px;border-radius:10px;background:#fff;color:#8b202b;font-size:11px;font-weight:700}
+    .runtime-dialog{width:min(900px,100%);max-height:min(80vh,760px);display:flex;flex-direction:column;gap:12px}
+    .runtime-list{overflow:auto;display:flex;flex-direction:column;gap:8px;min-height:100px}
+    .runtime-entry{border:1px solid #57313a;background:#1b1218;border-radius:8px;padding:10px}
+    .runtime-entry .meta{font-size:11px;color:var(--muted);margin-bottom:5px}
+    .runtime-entry .message{color:#ffb4b8;white-space:pre-wrap;overflow-wrap:anywhere}
+    .runtime-entry pre{white-space:pre-wrap;overflow-wrap:anywhere;max-height:180px;overflow:auto;color:#c2cbd7;font:11px/1.45 ui-monospace,monospace;margin:7px 0 0}
+    .runtime-empty{padding:28px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:8px}
     .modal{display:none;position:fixed;inset:0;background:#0009;z-index:5;align-items:center;justify-content:center;padding:16px}.modal.open{display:flex}.dialog{width:min(560px,100%);background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}.dialog h3{margin:0 0 6px}.dialog p{color:var(--muted)}.dialog form{display:grid;gap:10px}
     @media(max-width:1050px){main{grid-template-columns:210px minmax(280px,1fr)}main>.right{grid-column:1/-1;grid-template-columns:repeat(2,minmax(0,1fr))}}
     @media(max-width:680px){header{align-items:flex-start;flex-direction:column}main{grid-template-columns:1fr;padding:10px}main>.right{grid-column:auto;grid-template-columns:1fr}.scene-list{max-height:230px}.log{height:240px}}
@@ -35,7 +45,7 @@
 <body>
 <header>
   <div><h1>VSR / CONSOLE PLAYER</h1><div class="small muted">Trình khách kiểm thử cục bộ · THE SILENT VILLAGE</div></div>
-  <div class="status"><span id="statusDot" class="dot"></span><span id="statusText">Chưa khởi tạo</span><span>·</span><span id="revision">revision —</span></div>
+  <div class="row"><div class="status"><span id="statusDot" class="dot"></span><span id="statusText">Chưa khởi tạo</span><span>·</span><span id="revision">revision —</span></div></div>
 </header>
 <main>
   <aside class="stack">
@@ -89,6 +99,14 @@
   </aside>
 </main>
 
+<button id="runtimeConsoleButton" class="runtime-console-btn" type="button">Console <span id="runtimeErrorCount" class="count">0</span></button>
+<div id="runtimeConsoleModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="runtimeConsoleTitle">
+  <div class="dialog runtime-dialog">
+    <div class="split"><div><h3 id="runtimeConsoleTitle">JavaScript Runtime Console</h3><p class="small">Bắt lỗi JavaScript runtime, promise bị từ chối và console.error của trang này.</p></div><span id="runtimeConsoleSummary" class="small muted">0 lỗi</span></div>
+    <div class="toolbar"><button id="runtimeClear" type="button">Xóa lỗi</button><button id="runtimeCopy" type="button">Sao chép</button><button id="runtimeClose" type="button">Đóng</button></div>
+    <div id="runtimeErrorList" class="runtime-list"><div class="runtime-empty">Chưa ghi nhận lỗi runtime.</div></div>
+  </div>
+</div>
 <div id="passwordModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="passwordTitle">
   <div class="dialog">
     <h3 id="passwordTitle">Thử thách mật mã</h3>
@@ -110,6 +128,62 @@
   let unsubscribe = null;
   let passwordChallenge = null;
   let lastEvents = 0;
+  const runtimeErrors = [];
+  const nativeConsoleError = console.error.bind(console);
+
+  function recordRuntimeError(kind, message, detail = {}) {
+    const entry = {
+      kind,
+      message: String(message || 'Unknown runtime error'),
+      time: new Date().toISOString(),
+      source: detail.source || '',
+      line: detail.line || '',
+      column: detail.column || '',
+      stack: detail.stack || ''
+    };
+    runtimeErrors.unshift(entry);
+    if (runtimeErrors.length > 200) runtimeErrors.length = 200;
+    renderRuntimeErrors();
+    logEvent({type:'js.runtime.' + kind, message:entry.message, source:entry.source, line:entry.line, column:entry.column, stack:entry.stack});
+  }
+
+  function renderRuntimeErrors() {
+    $('runtimeErrorCount').textContent = runtimeErrors.length > 99 ? '99+' : String(runtimeErrors.length);
+    $('runtimeConsoleButton').classList.toggle('has-errors', runtimeErrors.length > 0);
+    $('runtimeConsoleSummary').textContent = runtimeErrors.length + ' lỗi được ghi nhận';
+    const list = $('runtimeErrorList');
+    list.replaceChildren();
+    if (!runtimeErrors.length) {
+      const empty = document.createElement('div'); empty.className='runtime-empty'; empty.textContent='Chưa ghi nhận lỗi runtime.';
+      list.append(empty); return;
+    }
+    for (const error of runtimeErrors) {
+      const item=document.createElement('article'); item.className='runtime-entry';
+      const meta=document.createElement('div'); meta.className='meta';
+      meta.textContent=error.time + ' · ' + error.kind + (error.source ? ' · ' + error.source : '') + (error.line ? ':' + error.line + ':' + error.column : '');
+      const message=document.createElement('div'); message.className='message'; message.textContent=error.message;
+      item.append(meta,message);
+      if(error.stack){const stack=document.createElement('pre');stack.textContent=error.stack;item.append(stack);}
+      list.append(item);
+    }
+  }
+
+  window.addEventListener('error', event => {
+    recordRuntimeError('error', event.message || event.error?.message, {
+      source:event.filename, line:event.lineno, column:event.colno, stack:event.error?.stack
+    });
+  });
+  window.addEventListener('unhandledrejection', event => {
+    const reason=event.reason;
+    recordRuntimeError('unhandledrejection', reason?.message || String(reason), {stack:reason?.stack});
+  });
+  console.error = (...args) => {
+    nativeConsoleError(...args);
+    const message=args.map(value => value instanceof Error ? value.message : typeof value === 'string' ? value : (()=>{try{return JSON.stringify(value)}catch{return String(value)}})()).join(' ');
+    const error=args.find(value => value instanceof Error);
+    recordRuntimeError('console.error', message, {stack:error?.stack});
+  };
+
 
   function logEvent(event) {
     const log = $('eventLog');
@@ -324,8 +398,16 @@
     catch(error){reportError(error);}finally{event.target.value='';}
   });
 
-  window.addEventListener('error',event=>reportError(event.error || event.message));
-  window.addEventListener('unhandledrejection',event=>reportError(event.reason));
+  $('runtimeConsoleButton').addEventListener('click',()=>$('runtimeConsoleModal').classList.add('open'));
+  $('runtimeClose').addEventListener('click',()=>$('runtimeConsoleModal').classList.remove('open'));
+  $('runtimeConsoleModal').addEventListener('click',event=>{if(event.target===$('runtimeConsoleModal'))$('runtimeConsoleModal').classList.remove('open');});
+  $('runtimeClear').addEventListener('click',()=>{runtimeErrors.length=0;renderRuntimeErrors();});
+  $('runtimeCopy').addEventListener('click',async()=>{
+    const report=runtimeErrors.map(error=>[`[${error.time}] ${error.kind}: ${error.message}`,error.source ? `Source: ${error.source}:${error.line}:${error.column}` : '',error.stack].filter(Boolean).join('\\n')).join('\\n\\n');
+    try{await navigator.clipboard.writeText(report);$('runtimeCopy').textContent='Đã sao chép';}
+    catch(error){recordRuntimeError('clipboard',error.message);}
+  });
+  renderRuntimeErrors();
   loadDemo();
 </script>
 </body>
