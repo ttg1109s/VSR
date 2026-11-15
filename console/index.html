@@ -120,7 +120,85 @@
   </div>
 </div>
 
+<script>
+  // Independent bootstrap diagnostics: this runs even when the ES module fails to load.
+  (() => {
+    const errors = [];
+    const button = document.getElementById('runtimeConsoleButton');
+    const modal = document.getElementById('runtimeConsoleModal');
+    const list = document.getElementById('runtimeErrorList');
+    const count = document.getElementById('runtimeErrorCount');
+    const summary = document.getElementById('runtimeConsoleSummary');
+    const status = document.getElementById('statusText');
+    const dot = document.getElementById('statusDot');
+    const render = () => {
+      if (count) count.textContent = errors.length > 99 ? '99+' : String(errors.length);
+      if (button) button.classList.toggle('has-errors', errors.length > 0);
+      if (summary) summary.textContent = errors.length + ' lỗi được ghi nhận';
+      if (!list) return;
+      list.replaceChildren();
+      if (!errors.length) {
+        const empty = document.createElement('div');
+        empty.className = 'runtime-empty';
+        empty.textContent = 'Chưa ghi nhận lỗi runtime.';
+        list.append(empty);
+        return;
+      }
+      for (const entry of errors) {
+        const card = document.createElement('article');
+        card.className = 'runtime-entry';
+        const meta = document.createElement('div');
+        meta.className = 'meta';
+        meta.textContent = entry.kind + ' · ' + entry.time;
+        const message = document.createElement('div');
+        message.className = 'message';
+        message.textContent = entry.message;
+        card.append(meta, message);
+        if (entry.stack) {
+          const stack = document.createElement('pre');
+          stack.textContent = entry.stack;
+          card.append(stack);
+        }
+        list.append(card);
+      }
+    };
+    const record = (kind, message, stack = '') => {
+      errors.unshift({kind, message: String(message || 'Lỗi không có thông tin chi tiết'), stack, time: new Date().toLocaleTimeString('vi-VN')});
+      if (errors.length > 50) errors.length = 50;
+      window.__VSR_BOOT_ERRORS = errors;
+      render();
+      if (status) status.textContent = 'Lỗi khởi động JavaScript — mở Console để xem';
+      if (dot) dot.classList.remove('ready');
+    };
+    window.__VSR_CONSOLE_BOOTED = false;
+    window.addEventListener('error', event => {
+      if (window.__VSR_CONSOLE_BOOTED) return;
+      const target = event.target;
+      const source = target && (target.src || target.href);
+      record('module/resource load error', event.message || ('Không tải được tài nguyên: ' + (source || target?.tagName || 'JavaScript module')), event.error?.stack || '');
+    }, true);
+    window.addEventListener('unhandledrejection', event => {
+      if (window.__VSR_CONSOLE_BOOTED) return;
+      record('unhandled rejection during boot', event.reason?.message || String(event.reason), event.reason?.stack || '');
+    });
+    button?.addEventListener('click', () => modal?.classList.add('open'));
+    document.getElementById('runtimeClose')?.addEventListener('click', () => modal?.classList.remove('open'));
+    modal?.addEventListener('click', event => { if (event.target === modal) modal.classList.remove('open'); });
+    document.getElementById('runtimeClear')?.addEventListener('click', () => { errors.length = 0; render(); });
+    document.getElementById('runtimeCopy')?.addEventListener('click', async () => {
+      const report = errors.map(e => e.kind + ': ' + e.message + (e.stack ? '\n' + e.stack : '')).join('\n\n');
+      try { await navigator.clipboard.writeText(report); } catch (_) {}
+    });
+    setTimeout(() => {
+      if (!window.__VSR_CONSOLE_BOOTED && errors.length === 0) {
+        record('module bootstrap timeout', 'JavaScript module chưa khởi chạy sau 4 giây. Hãy kiểm tra tab Network/Console của DevTools; thường là lỗi tải engine/index.js, dependency hoặc sai đường dẫn triển khai.');
+      }
+    }, 4000);
+    render();
+  })();
+</script>
 <script type="module">
+  window.__VSR_CONSOLE_BOOTED = true;
   import { GameEngine, DEMO_SCRIPT } from '../engine/index.js';
 
   const $ = id => document.getElementById(id);
@@ -270,8 +348,8 @@
     }
 
     const items = engine.api.engine.state.getSourceSnapshot('itemInfo') || {};
-    const inventory = engine.getInventory?.() || [];
-    const hand = engine.getHand?.() || [];
+    const inventory = engine.api.engine.state.getInventory?.() || [];
+    const hand = engine.api.engine.state.getHand?.() || [];
     $('handCount').textContent = 'Tay: ' + (Array.isArray(hand) ? hand.length : Object.keys(hand || {}).length);
     $('inventory').replaceChildren();
     const ids = Array.isArray(inventory) ? inventory : Object.keys(items);
@@ -324,6 +402,7 @@
     try {
       const ack = await engine.api.protocol.command(name, payload);
       logEvent({type:'console.command.ack', command:name, payload, acknowledgement:ack});
+      if (!ack?.ok) throw new Error(ack?.error?.message || ack?.error?.code || `Command ${name} failed.`);
       refresh();
       inspectChallenge();
     } catch (error) { reportError(error); }
