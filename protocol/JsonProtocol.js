@@ -73,7 +73,7 @@ export class JsonProtocol{
     else if(cooldownUntil!==null&&cooldownUntil>Date.now())reason='cooldown';
     else if(set.type==='to_scene'&&set.target&&engine.checkHardLock?.('scene',set.target))reason='target_locked';
     else if(set.type==='swap_router'&&set.target&&engine.checkHardLock?.('router',set.target))reason='target_locked';
-    else if(set.requirement===true){const result=action.requirement?engine.checkReq?.(action.requirement):{pass:false};if(!result?.pass)reason='requirement_failed';}
+    else if(set.requirement===true){const result=action.requirement?engine.checkReq?.(action.requirement):{pass:false};if(!result?.pass)reason='requirement_failed';else if(set.password)reason='password_required';}
     else if(set.password)reason='password_required';
     const title=action.meta?.title??action.title??action.name??action.id;
     const meta=safeMeta(action.meta||{});
