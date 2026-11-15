@@ -132,6 +132,8 @@ export class RegionRenderer {
     if (name === 'chat.toggleOverlay') { this.overlayState.chatOpen = !!payload.args?.[0]; this.renderOverlays(); }
     if (name === 'scene.updateTimer') { this.overlayState.timer = String(payload.args?.[0] || ''); this.renderOverlays(); }
     if (name === 'scene.hideTimer') { this.overlayState.timer = ''; this.renderOverlays(); }
+    if (name === 'scene.transition') this.root.classList.toggle('is-transitioning', payload.args?.[0] === 'start');
+    if (name === 'navigation.setBlocking') this.root.classList.toggle('is-blocking', !!payload.args?.[0]);
     if (name === 'password.retry' && this.overlayState.password) {
       this.overlayState.password.config.countTest = payload.countTest;
       this.overlayState.password.config.remainingAttempts = payload.remainingAttempts;
