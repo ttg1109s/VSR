@@ -364,7 +364,7 @@ export const ChatSystem = {
 
         // --- 3. Run Effect ---
         if (choice.effect) {
-            const choiceId = choice.id || String(idx);
+            const choiceId = choice.id !== undefined && choice.id !== null ? choice.id : String(idx);
             this.processRunnables(choice.effect, {
                 sceneId: this.api.engine.state.get('sceneId'),
                 chatId,
