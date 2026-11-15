@@ -141,7 +141,23 @@ export default function ScenarioPreviewPage({ preview, onBack }) {
           )}
         </header>
 
-
+        <div className="vsr-grid vsr-grid--columns-2 vsr-grid--gap-3" aria-label="Scenario actions">
+          <Button
+            variant="primary"
+            size="md"
+            leadingIcon={<span className="vsr-icon" aria-hidden="true">play_arrow</span>}
+          >
+            Play
+          </Button>
+          <Button
+            variant="secondary"
+            size="md"
+            onClick={onBack}
+            leadingIcon={<span className="vsr-icon" aria-hidden="true">arrow_back</span>}
+          >
+            Back
+          </Button>
+        </div>
 
         {publicationItems.some(item => item.value !== null && item.value !== undefined && item.value !== '') && (
           <section className="vsr-stack vsr-stack--gap-3" aria-labelledby="scenario-publication-title">
@@ -164,16 +180,6 @@ export default function ScenarioPreviewPage({ preview, onBack }) {
           </section>
         )}
 
-        <footer className="vsr-stack vsr-stack--center">
-          <Button
-            variant="secondary"
-            size="md"
-            onClick={onBack}
-            leadingIcon={<span className="vsr-icon" aria-hidden="true">arrow_back</span>}
-          >
-            Back
-          </Button>
-        </footer>
       </article>
     </main>
   );
