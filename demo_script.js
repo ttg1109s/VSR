@@ -258,6 +258,12 @@ export const DEMO_SCRIPT = {
             "property": "archive_open",
             "op": "==",
             "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "evacuation_seal"
           }
         ]
       }
@@ -2063,7 +2069,7 @@ export const DEMO_SCRIPT = {
     "action_ring_bell": {
       "meta": {
         "title": "Rung chuông",
-        "desc": "Cần quả lắc chuông và trang ghi chú xác nhận quy tắc ba hồi; không được rung hồi thứ tư."
+        "desc": "Lắp dây đồng nối lại cơ cấu, đặt quả lắc vào chuông và chỉ rung ba hồi theo ghi chú."
       },
       "set": {
         "type": "none",
@@ -2140,6 +2146,12 @@ export const DEMO_SCRIPT = {
             "subtype": "inventory",
             "op": "has",
             "value": "hymn_note"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "bell_copper_wire"
           }
         ]
       }
@@ -2462,12 +2474,13 @@ export const DEMO_SCRIPT = {
     "action_find_hidden_box": {
       "meta": {
         "title": "Mở hộp chôn dưới đất",
-        "desc": "Bức ảnh gia đình bị xé thành nhiều mảnh. Hãy ghép ảnh để nhận diện đứa trẻ."
+        "desc": "Phù hiệu đội sơ tán có cùng ký hiệu với con dấu trên hộp chôn dưới đất; dùng nó để xác định đúng hộp."
       },
       "set": {
         "type": "none",
         "display": "show",
-        "password": "puzzle:pw_photo"
+        "password": "puzzle:pw_photo",
+        "requirement": true
       },
       "effect": {
         "normal": [
@@ -2516,6 +2529,17 @@ export const DEMO_SCRIPT = {
             "subtype": "toast",
             "level": "warn",
             "text": "Bạn chưa đáp ứng điều kiện để thực hiện việc này."
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "well_badge"
           }
         ]
       }
@@ -2656,7 +2680,7 @@ export const DEMO_SCRIPT = {
     "action_open_archive": {
       "meta": {
         "title": "Mở kho hồ sơ",
-        "desc": "Chìa khóa mở tủ hồ sơ, còn danh sách vận chuyển xác nhận đúng ngăn tài liệu cần lấy."
+        "desc": "Đối chiếu danh sách vận chuyển với cuộn phim sơ tán trước khi mở đúng ngăn hồ sơ."
       },
       "set": {
         "type": "none",
@@ -2722,6 +2746,12 @@ export const DEMO_SCRIPT = {
             "subtype": "inventory",
             "op": "has",
             "value": "tunnel_manifest"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "evacuation_film"
           }
         ]
       }
@@ -2776,7 +2806,7 @@ export const DEMO_SCRIPT = {
     "action_choose_fate": {
       "meta": {
         "title": "Kết thúc: Giải thoát",
-        "desc": "Chỉ khi đã khôi phục đủ ký ức, nghe chuông và mở kho hồ sơ, bạn mới có thể trả sự thật về cho người sống."
+        "desc": "Chỉ có thể chọn giải thoát khi đã khôi phục đủ ký ức, rung chuông, mở hồ sơ và xác nhận danh sách bằng con dấu đội sơ tán."
       },
       "set": {
         "type": "none",
