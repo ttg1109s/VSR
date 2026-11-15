@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "main": "./engine/index.js",
   "exports": {
     ".": "./engine/index.js",
@@ -16,7 +18,8 @@
     "./utils": "./utils/index.js",
     "./host": "./host/LocalEngineHost.js",
     "./client": "./client/adapters/JsonClient.js",
-    "./transport": "./client/adapters/WorkerJsonTransport.js"
+    "./transport": "./client/adapters/WorkerJsonTransport.js",
+    "./react": "./src/runtime/index.js"
   },
   "scripts": {
     "test": "node --test",
