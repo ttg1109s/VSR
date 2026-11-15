@@ -26,6 +26,7 @@
 
 .vsr-action-card__status {
   display: flex;
+  align-items: center;
   flex: 0 0 auto;
   flex-wrap: wrap;
   justify-content: flex-end;
