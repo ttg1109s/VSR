@@ -95,6 +95,12 @@ export const ActionSystem = {
         const actDef = effective.find(action => action.id === actionKey);
         if (!actDef) return { success: false, reason: 'action_not_found' };
 
+        const actStateKey = `${sId}_`${rId}_`${actionKey}`;
+        const currentActionState = state.getRuntimeSnapshot('actions.[id]', { id: actStateKey }) || {};
+        const display = currentActionState.display ?? actDef.set?.display ?? 'show';
+        if (display === 'hide') return { success: false, reason: 'action_hidden' };
+        if (display === 'locked') return { success: false, reason: 'locked' };
+
 
         console.log(`[Flow] >>> CLICK ACTION: ${actionKey}`);
 
