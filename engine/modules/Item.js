@@ -78,10 +78,10 @@ export const ItemSystem = {
         }
         if (result === 'unequipped') {
             this.api.presentation.notification.add("Đã cất", "Bỏ vật phẩm vào túi", "info");
-            if (info.effect?.unequip) await this.processRunnables(info.effect.unequip, { itemId: id });
+            if (info.effect?.unequip) await this.processRunnables(info.effect.unequip, { itemId: id, hook: 'unequip' });
         } else {
             this.api.presentation.notification.add("Đã cầm", `${info.name} đang ở trên tay`, "success");
-            if (info.effect?.equip) await this.processRunnables(info.effect.equip, { itemId: id });
+            if (info.effect?.equip) await this.processRunnables(info.effect.equip, { itemId: id, hook: 'equip' });
         }
 
         this.api.presentation.components.updateItemModal(id);
@@ -117,7 +117,7 @@ export const ItemSystem = {
 
         if (info.effect?.use) {
             this.api.presentation.notification.add("Sử dụng", `Đã dùng ${info.name}`, "info");
-            await this.processRunnables(info.effect.use, { itemId: id });
+            await this.processRunnables(info.effect.use, { itemId: id, hook: 'use' });
         } else {
             this.api.presentation.notification.add("Thông báo", "Vật phẩm này không có tác dụng khi sử dụng trực tiếp.", "info");
         }
