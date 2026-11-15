@@ -1,7 +1,7 @@
 // htdocs/engine/modules/effect/Strategies.js
 
 import { AutomationPropertyHandlers, ScenePropertyHandlers, RouterPropertyHandlers, ActionPropertyHandlers, CharacterPropertyHandlers } from './strategies/Handlers.js';
-import { SetStrategies, GotoStrategies, resolveValue, getNestedValue } from './strategies/Logic.js';
+import { SetStrategies as BaseSetStrategies, GotoStrategies, resolveValue, getNestedValue } from './strategies/Logic.js';
 import { CharacterStrategies } from './strategies/Character.js';
 import { ItemStrategies } from './strategies/Item.js';
 import { StatsCalculators, StatsModeHandlers } from './strategies/Stats.js';
@@ -10,8 +10,6 @@ import { EffectKeyStrategies, EffectScopeResolvers, StaticListResolvers, ManageS
 import { CmsStrategies } from './strategies/Cms.js';
 
 // [REFACTOR] Wired SetStrategies with Handlers
-const BaseSetStrategies = SetStrategies;
-
 const WiredSetStrategies = {
     ...BaseSetStrategies,
 
@@ -215,7 +213,7 @@ export const EffectHandlers = {
     },
 
     set(eff) {
-        const handler = SetStrategies[eff.subtype];
+        const handler = WiredSetStrategies[eff.subtype];
         if (typeof handler !== 'function') {
             throw new TypeError(`Unsupported set subtype: ${String(eff.subtype)}`);
         }
