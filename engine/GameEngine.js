@@ -30,7 +30,7 @@ export class GameEngine {
   this.registerProtocolCommands();
  }
  registerProtocolCommands(){
-  this.protocol.registerCommand('engine.init',async payload=>{if(!payload.script||typeof payload.script!=='object')throw new TypeError('engine.init requires payload.script.');await this.init(payload.script,{enterScene:payload.enterScene!==false});return{initialized:!!this.src,sceneEntered:!!this.state.sceneId,entryScene:this.src?.meta?.entryScene??null};});
+  this.protocol.registerCommand('engine.init',async payload=>{if(!payload.script||typeof payload.script!=='object')throw new TypeError('engine.init requires payload.script.');await this.init(payload.script,{enterScene:payload.enterScene!==false});return{initialized:!!this.src,sceneEntered:!!this.api.engine.state.get('sceneId'),entryScene:this.src?.meta?.entryScene??null};});
   this.protocol.registerCommand('scenario.inspect',payload=>{
    if(!payload.scenario||typeof payload.scenario!=='object'||Array.isArray(payload.scenario))throw new TypeError('scenario.inspect requires payload.scenario.');
    const scenario=normalizeScenario(payload.scenario);
