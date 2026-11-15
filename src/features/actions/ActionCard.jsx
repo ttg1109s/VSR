@@ -130,7 +130,6 @@ function ActionCard({ action, pending = false, passwordChallenge = null, feedbac
           trigger={<Button className="vsr-action-card__info-button" variant="tertiary" size="sm" aria-label="Thông tin mô tả"><span className="vsr-action-card__info-glyph" aria-hidden="true">info</span></Button>}
         >
           <div className="vsr-action-card__popover">
-            <h4>Mô tả</h4>
             {description ? <p className="vsr-text-body">{description}</p> : <p className="vsr-text-secondary">Không có mô tả chi tiết.</p>}
           </div>
         </Popover>
