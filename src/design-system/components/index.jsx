@@ -1,4 +1,4 @@
-import React, { createContext, forwardRef, useCallback, useContext, useEffect, useId, useRef, useState } from 'react';
+import React, { cloneElement, isValidElement, createContext, forwardRef, useCallback, useContext, useEffect, useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 const cx = (...v) => v.filter(Boolean).join(' ');
 
@@ -53,11 +53,13 @@ export function Drawer({className,...props}){return <Overlay {...props} classNam
 export function Menu({trigger,items=[],label='Mở menu',align='start',className}){
   const [open,setOpen]=useState(false),root=useRef(null),menu=useRef(null);
   useEffect(()=>{if(!open)return;const outside=e=>{if(!root.current?.contains(e.target))setOpen(false);};const key=e=>{if(e.key==='Escape'){setOpen(false);root.current?.querySelector('button')?.focus();}if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();const nodes=[...(menu.current?.querySelectorAll('[role=menuitem]:not([disabled])')||[])],i=nodes.indexOf(document.activeElement);nodes[(i+(e.key==='ArrowDown'?1:-1)+nodes.length)%nodes.length]?.focus();}};document.addEventListener('pointerdown',outside);document.addEventListener('keydown',key);menu.current?.querySelector('[role=menuitem]')?.focus();return()=>{document.removeEventListener('pointerdown',outside);document.removeEventListener('keydown',key);};},[open]);
-  return <div ref={root} className={cx('vsr-menu',className)}><button type="button" aria-label={label} aria-haspopup="menu" aria-expanded={open} onClick={()=>setOpen(v=>!v)}>{trigger}</button>{open&&<div ref={menu} role="menu" className={'vsr-menu-content vsr-menu-content--'+align}>{items.map((item,i)=>item.separator?<Separator key={'s'+i}/>:<button key={item.key||item.label} type="button" role="menuitem" disabled={item.disabled} className={cx('vsr-menu-item',item.danger&&'is-danger')} onClick={()=>{setOpen(false);item.onSelect?.();}}>{item.icon&&<span>{item.icon}</span>}{item.label}</button>)}</div>}</div>;
+  const triggerNode=isValidElement(trigger)?cloneElement(trigger,{'aria-haspopup':'menu','aria-expanded':open,onClick:e=>{trigger.props.onClick?.(e);if(!e.defaultPrevented)setOpen(v=>!v);}}):<button type="button" aria-label={label} aria-haspopup="menu" aria-expanded={open} onClick={()=>setOpen(v=>!v)}>{trigger}</button>;
+  return <div ref={root} className={cx('vsr-menu',className)}>{triggerNode}{open&&<div ref={menu} role="menu" className={'vsr-menu-content vsr-menu-content--'+align}>{items.map((item,i)=>item.separator?<Separator key={'s'+i}/>:<button key={item.key||item.label} type="button" role="menuitem" disabled={item.disabled} className={cx('vsr-menu-item',item.danger&&'is-danger')} onClick={()=>{setOpen(false);item.onSelect?.();}}>{item.icon&&<span>{item.icon}</span>}{item.label}</button>)}</div>}</div>;
 }
 export function Popover({trigger,children,align='start',label='Mở nội dung bổ sung',className}){
   const [open,setOpen]=useState(false),root=useRef(null);useEffect(()=>{if(!open)return;const outside=e=>{if(!root.current?.contains(e.target))setOpen(false);},key=e=>{if(e.key==='Escape')setOpen(false);};document.addEventListener('pointerdown',outside);document.addEventListener('keydown',key);return()=>{document.removeEventListener('pointerdown',outside);document.removeEventListener('keydown',key);};},[open]);
-  return <div ref={root} className={cx('vsr-popover',className)}><button type="button" aria-label={label} aria-expanded={open} onClick={()=>setOpen(v=>!v)}>{trigger}</button>{open&&<div className={'vsr-popover-content vsr-popover-content--'+align}>{children}</div>}</div>;
+  const triggerNode=isValidElement(trigger)?cloneElement(trigger,{'aria-expanded':open,onClick:e=>{trigger.props.onClick?.(e);if(!e.defaultPrevented)setOpen(v=>!v);}}):<button type="button" aria-label={label} aria-expanded={open} onClick={()=>setOpen(v=>!v)}>{trigger}</button>;
+  return <div ref={root} className={cx('vsr-popover',className)}>{triggerNode}{open&&<div className={'vsr-popover-content vsr-popover-content--'+align}>{children}</div>}</div>;
 }
 export function Tooltip({content,children,side='top'}){return <span className="vsr-tooltip">{children}<span role="tooltip" className={'vsr-tooltip-bubble vsr-tooltip-bubble--'+side}>{content}</span></span>;}
 const ToastContext=createContext(null);let toastId=0;
