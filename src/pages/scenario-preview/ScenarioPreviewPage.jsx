@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, DescriptionList, DescriptionListItem } from '../../design-system/index.js';
+import { Button, DescriptionList, DescriptionListItem, Grid } from '../../design-system/index.js';
 import ScenarioCover from '../../components/scenario-preview/ScenarioCover.jsx';
 
 function ExperienceItem({ label, value }) {
@@ -126,11 +126,11 @@ export default function ScenarioPreviewPage({ preview, onBack }) {
         {experienceItems.length > 0 && (
           <section className="vsr-stack vsr-stack--gap-3" aria-labelledby="scenario-experience-title">
             <h2 id="scenario-experience-title">Thông tin trải nghiệm</h2>
-            <div className="vsr-experience-grid">
+            <Grid columns="auto" gap="3">
               {experienceItems.map(item => (
                 <ExperienceItem key={item.label} label={item.label} value={item.value} />
               ))}
-            </div>
+            </Grid>
           </section>
         )}
 
