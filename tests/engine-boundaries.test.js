@@ -1,5 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { GameEngine } from '../engine/GameEngine.js';
 import { createSaveEnvelope } from '../engine/persistence/SaveState.js';
 
@@ -21,4 +24,22 @@ test('save creation rejects active runtime queues', () => {
   engine.scenario = {};
   engine.runtime.effectQueue.sync.push({ resolve() {} });
   assert.throws(() => createSaveEnvelope(engine), /effect queue is active/);
+});
+
+test('browser client modules depend on JSON transport, never on GameEngine', () => {
+  const root = fileURLToPath(new URL('../client', import.meta.url));
+  const files = [];
+  const walk = directory => {
+    for (const entry of readdirSync(directory, { withFileTypes: true })) {
+      const path = join(directory, entry.name);
+      if (entry.isDirectory()) walk(path);
+      else if (entry.isFile() && path.endsWith('.js')) files.push(path);
+    }
+  };
+  walk(root);
+  for (const path of files) {
+    const source = readFileSync(path, 'utf8');
+    assert.doesNotMatch(source, /from\s+['"][^'"]*engine\//, `Client module imports Engine: ${path}`);
+    assert.doesNotMatch(source, /\.engineAdapter\.engine|adapter\.engine/, `Client module reaches into Engine: ${path}`);
+  }
 });
