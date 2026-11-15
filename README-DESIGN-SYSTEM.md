@@ -38,6 +38,16 @@ import { lightTheme, spacing, colors } from './design-system/index.js';
 
 Use `.vsr-page` for a responsive content width and `.vsr-card` only when content needs a distinct surface. Shared layout primitives are provided in `foundations/layout.css` (for example `.vsr-page-shell`, `.vsr-stack`, `.vsr-content-width`, and typography helpers). Pages compose these primitives; they do not create page stylesheets or local layout rules.
 
+## Layout composition
+
+Layout primitives describe reusable behavior rather than a single screen arrangement:
+
+- `Grid` provides responsive columns and token-based gaps. Prefer content-driven `auto` columns when items have variable content; use fixed column variants only when the content relationship requires them.
+- `DescriptionList` keeps semantic definition-list structure independent from its layout. It supports a vertical list or responsive grid; individual `DescriptionListItem` instances can be stacked, inline, or span the full grid width.
+- Use the same primitives across pages. A page selects composition and variants; it does not define grid tracks, breakpoint rules, item spacing, or typography itself.
+
+Compact is the base layout. Explicit two-/three-column grids collapse on Compact, and three-column grids reduce to two columns at Medium. Content-driven grids use their minimum item width and available space rather than device labels.
+
 ## Rules
 
 - Prefer white surfaces, subtle neutral borders, and restrained elevation.
