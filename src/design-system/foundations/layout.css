@@ -54,10 +54,10 @@
 .vsr-grid--gap-6 { gap: var(--vsr-space-6); }
 @media (max-width: 599px) {
   .vsr-grid--columns-2,
-  .vsr-grid--columns-3 { grid-template-columns: minmax(0, 1fr); }
-}
-@media (min-width: 600px) and (max-width: 839px) {
   .vsr-grid--columns-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 600px) {
+  .vsr-grid--columns-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
 /* Semantic description list: structure is stable; layout is selectable. */
@@ -127,6 +127,10 @@
   justify-content: center;
   gap: var(--vsr-space-1);
   min-width: 0;
+}
+.vsr-experience-item--center {
+  align-items: center;
+  text-align: center;
 }
 .vsr-experience-item__label { font-size: 12px; line-height: 18px; }
 .vsr-experience-item__value { font-size: 16px; line-height: 24px; overflow-wrap: anywhere; }
