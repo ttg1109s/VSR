@@ -7,17 +7,18 @@ export default function LoadingPage({ status = 'loading', error = '', onClose, o
 
   return (
     <main className="vsr-page-shell vsr-loader-page">
-      <div className="vsr-content-width vsr-content-width--narrow vsr-stack vsr-stack--gap-5">
-        <header className="vsr-loader-header">
-          <span aria-hidden="true" />
-          <Button
-            variant="tertiary"
-            size="md"
-            leadingIcon={<span className="vsr-icon" aria-hidden="true">close</span>}
-            aria-label="Cancel loading and return to scenario details"
-            onClick={onClose}
-          />
-        </header>
+          <header className="vsr-loader-header">
+      <span aria-hidden="true" />
+      <Button
+        variant="tertiary"
+        size="md"
+        leadingIcon={<span className="vsr-icon" aria-hidden="true">close</span>}
+        aria-label="Cancel loading and return to scenario details"
+        onClick={onClose}
+      />
+    </header>
+      <div className="vsr-content-width vsr-content-width--narrow">
+
 
         <section className="vsr-loader-panel" aria-live="polite">
           <div className="vsr-loader-status">
