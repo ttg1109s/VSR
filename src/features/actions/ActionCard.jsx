@@ -70,6 +70,7 @@ function ActionCard({ action, pending = false, passwordChallenge = null, onTrigg
           )}
           <Button
             size="md"
+            leadingIcon={meta.buttonIcon}
             disabled={triggerDisabled}
             loading={pending}
             onClick={handleTrigger}
