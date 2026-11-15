@@ -27,20 +27,20 @@ function ActionCard({ action, pending = false, passwordChallenge = null, feedbac
   const [clock, setClock] = useState(Date.now());
   const meta = action.meta || {};
   const presentation = action.presentation || {};
-  const availability = action.availability || { canTrigger: true, reason: 'available' };
-  const reason = availability.reason || 'available';
+  const availability = action.availability || { canTrigger: false, reason: 'unknown' };
+  const reason = availability.reason || 'unknown';
   const description = meta.description || meta.desc || '';
   const locked = presentation.display === 'locked' || reason === 'locked';
   const readRequired = presentation.readRequired === true;
   const read = presentation.read === true;
-  const canRead = readRequired && !read;
   const challengeOpen = !!passwordChallenge && passwordChallenge.uniqueId === action.key;
   const structured = ['puzzle', 'find_way'].includes(passwordChallenge?.type);
   const cooldown = seconds(availability.cooldownUntil, clock);
   const deadline = seconds(passwordChallenge?.deadlineAt, clock);
   const thumbnail = meta.thumbnail || meta.cover;
-  const statusLabel = pending ? 'Đang xử lý thao tác' : locked ? 'Đang khóa' : (REASONS[reason] || (reason === 'available' ? 'Sẵn sàng' : 'Trạng thái chưa xác định'));
-  const statusTone = pending ? 'info' : locked ? 'danger' : (REASON_TONES[reason] || (reason === 'available' ? 'success' : 'neutral'));
+  const ready = reason === 'available' && availability.canTrigger === true && !locked;
+  const statusLabel = pending ? 'Đang xử lý' : locked ? 'Đang khóa' : (REASONS[reason] || (ready ? 'Sẵn sàng' : 'Chưa xác định'));
+  const statusTone = pending ? 'info' : locked ? 'danger' : (REASON_TONES[reason] || (ready ? 'success' : 'neutral'));
 
   useEffect(() => {
     const deadlines = [availability.cooldownUntil, passwordChallenge?.deadlineAt].filter(Number.isFinite);
@@ -100,37 +100,63 @@ function ActionCard({ action, pending = false, passwordChallenge = null, feedbac
     setDetailsOpen(false);
   };
 
+  const availabilityMessage = reason === 'available'
+    ? 'Engine xác nhận hành động hiện có thể thực hiện.'
+    : reason === 'cooldown'
+      ? (cooldown > 0 ? `Còn ${cooldown} giây hồi chiêu.` : 'Đang chờ Engine xác nhận hết hồi chiêu.')
+      : reason === 'not_read'
+        ? 'Cần đọc và xác nhận mô tả trước khi thực hiện.'
+        : reason === 'permission_denied'
+          ? 'Nhân vật hiện tại không có quyền thực hiện hành động này.'
+          : reason === 'requirement_failed'
+            ? 'Engine chưa xác nhận đủ điều kiện thực hiện.'
+            : reason === 'target_locked'
+              ? 'Đích đến hoặc đối tượng của hành động đang bị khóa.'
+              : reason === 'busy'
+                ? 'Một thao tác khác đang được Engine xử lý.'
+                : reason === 'password_required'
+                  ? 'Engine yêu cầu xác thực trước khi tiếp tục.'
+                  : reason === 'locked'
+                    ? 'Hành động đang bị khóa theo trạng thái Engine.'
+                    : 'Chưa có đủ dữ liệu trạng thái để xác định khả năng thực hiện.';
+
   return <article className="vsr-card vsr-action-card" data-action-key={action.key} aria-busy={pending || undefined}>
-    <div className="vsr-action-card__layout">
-      {thumbnail?.url && <MediaFrame className="vsr-action-card__media" src={thumbnail.url} type={thumbnail.type || 'photo'} ratio={thumbnail.ratio || '16:9'} alt={meta.title || action.title || 'Hình minh họa hành động'} />}
-      <div className="vsr-stack vsr-stack--gap-3 vsr-action-card__content">
-        <div className="vsr-action-card__status" aria-label="Trạng thái hành động">
-          <Badge tone={statusTone}>{statusLabel}</Badge>
-          {readRequired && <Badge tone={read ? 'success' : 'warning'}>{read ? 'Đã đọc mô tả' : 'Chưa đọc mô tả'}</Badge>}
-          {!readRequired && <Badge tone="neutral">Không yêu cầu đọc</Badge>}
-        </div>
-        <div className="vsr-stack vsr-stack--gap-1">
-          <h3 className="vsr-action-card__title">{meta.title || action.title || action.id}</h3>
-          {meta.subTitleStatus && <p className="vsr-text-secondary vsr-action-card__subtitle">{meta.subTitleStatus}</p>}
-          {description && <p className="vsr-text-body vsr-action-card__description">{description}</p>}
-        </div>
-        {reason !== 'available' && <div className="vsr-action-card__availability" role="status">
-          <strong>{REASONS[reason] || 'Chưa thể thực hiện'}</strong>
-          {reason === 'cooldown' && <span>{cooldown > 0 ? `Còn ${cooldown} giây` : 'Đang chờ Engine xác nhận hết hồi chiêu'}</span>}
-          {reason === 'not_read' && <span>Đọc mô tả trước khi thực hiện hành động.</span>}
-          {reason === 'password_required' && <span>Engine yêu cầu xác thực trước khi tiếp tục.</span>}
-          {reason === 'busy' && <span>Một thao tác khác đang được Engine xử lý.</span>}
-          {reason === 'permission_denied' && <span>Nhân vật hiện tại không có quyền thực hiện hành động này.</span>}
-          {reason === 'requirement_failed' && <span>Engine chưa xác nhận đủ điều kiện thực hiện.</span>}
-          {reason === 'target_locked' && <span>Đích đến hoặc đối tượng của hành động đang bị khóa.</span>}
-        </div>}
-        {feedback && <p className="vsr-action-card__feedback" role="status">{feedback}</p>}
-        <div className="vsr-action-card__actions">
-          {readRequired && <Button variant="secondary" size="lg" disabled={pending} onClick={() => setDetailsOpen(true)}>{read ? 'Xem lại mô tả' : 'Đọc mô tả'}</Button>}
-          <Button size="lg" leadingIcon={meta.buttonIcon} disabled={pending || !availability.canTrigger || locked} loading={pending} onClick={() => onTrigger?.(action)} aria-label={meta.buttonLabel || `Thực hiện ${meta.title || action.id}`}>{meta.buttonLabel || (reason === 'password_required' ? 'Xác thực' : 'Thực hiện')}</Button>
-        </div>
+    <div className="vsr-action-card__heading">
+      <h3 className="vsr-action-card__title">{meta.title || action.title || action.id}</h3>
+      <div className="vsr-action-card__status" aria-label="Trạng thái hành động">
+        <Badge tone={statusTone}>{statusLabel}</Badge>
       </div>
     </div>
+
+    <MediaFrame className="vsr-action-card__media" src={thumbnail?.url} type={thumbnail?.type || 'photo'} ratio={thumbnail?.ratio || '16:9'} alt={meta.title || action.title || 'Hình minh họa hành động'} />
+
+    {description && <p className="vsr-action-card__summary">{description}</p>}
+
+    <div className="vsr-action-card__section vsr-action-card__description-section">
+      <div className="vsr-action-card__section-heading">
+        <h4>Mô tả</h4>
+        {readRequired
+          ? <Badge tone={read ? 'success' : 'warning'}>{read ? 'Đã đọc' : 'Chưa đọc'}</Badge>
+          : <Badge tone="neutral">Không yêu cầu đọc</Badge>}
+      </div>
+      <p className="vsr-action-card__helper">{read ? 'Bạn có thể xem lại mô tả trước khi thực hiện.' : readRequired ? 'Cần đọc mô tả trước khi thực hiện hành động.' : 'Thông tin mô tả của hành động.'}</p>
+      <Button variant="secondary" size="md" onClick={() => setDetailsOpen(true)}>Xem {readRequired && !read ? 'và đọc' : 'lại'} mô tả</Button>
+    </div>
+
+    <div className="vsr-action-card__section vsr-action-card__requirements">
+      <h4>Điều kiện và quyền</h4>
+      <div className="vsr-action-card__requirement-state">
+        <span className={'vsr-action-card__state-icon ' + (ready ? 'is-success' : 'is-muted')} aria-hidden="true">{ready ? 'check_circle' : 'info'}</span>
+        <span>{availabilityMessage}</span>
+      </div>
+      {reason === 'cooldown' && <div className="vsr-action-card__cooldown" role="timer">Thời gian còn lại: {cooldown} giây</div>}
+    </div>
+
+    {feedback && <p className="vsr-action-card__feedback" role="status">{feedback}</p>}
+    <div className="vsr-action-card__actions">
+      <Button size="lg" leadingIcon={meta.buttonIcon} disabled={pending || availability.canTrigger !== true || locked} loading={pending} onClick={() => onTrigger?.(action)} aria-label={meta.buttonLabel || `Thực hiện ${meta.title || action.id}`}>{meta.buttonLabel || (reason === 'password_required' ? 'Xác thực' : 'Thực hiện')}</Button>
+    </div>
+
     <Dialog open={detailsOpen} onClose={() => setDetailsOpen(false)} title={meta.title || action.title || action.id} description="Thông tin chi tiết của hành động">
       <div className="vsr-stack vsr-stack--gap-3">
         {description ? <p className="vsr-text-body">{description}</p> : <p className="vsr-text-secondary">Không có mô tả chi tiết.</p>}
