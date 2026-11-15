@@ -1,51 +1,54 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { GameEngine, DEMO_SCRIPT } from '../engine/index.js';
-import { EngineAdapter } from '../client/adapters/EngineAdapter.js';
-import { PresentationAdapter } from '../client/adapters/PresentationAdapter.js';
+import { LocalEngineHost } from '../host/LocalEngineHost.js';
+import { JsonClient } from '../client/adapters/JsonClient.js';
 
-test('EngineAdapter projects only the active router action list', async () => {
-  const engine = new GameEngine();
-  const engineAdapter = new EngineAdapter(engine);
-  const adapter = new PresentationAdapter(engineAdapter);
-  const presentationEvents = [];
-  adapter.subscribe(message => { if (message.type === 'presentation') presentationEvents.push(message); });
+test('browser client consumes JSON snapshots and only the active router projection', async () => {
+  const host = new LocalEngineHost();
+  const client = new JsonClient(host);
   try {
-    await engineAdapter.initialize(DEMO_SCRIPT);
-    const initial = adapter.getViewModel();
-
-    assert.equal(initial.sceneId, 'scene_garden');
-    assert.equal(initial.routerId, 'square_gate');
-    assert.deepEqual(initial.actions.map(action => action.id), [
-      'act_read_notice',
-      'act_talk_mai',
-      'act_enter_well',
-      'act_travel_inn',
-      'act_travel_chapel',
-      'act_travel_school',
-      'act_travel_forest'
+    const snapshot = await client.initialize(JSON.parse(host.getDemoScenario()));
+    assert.equal(snapshot.game.sceneId, 'scene_garden');
+    assert.equal(snapshot.game.routerId, 'square_gate');
+    assert.deepEqual(snapshot.presentation.actions.map(action => action.id), [
+      'act_read_notice', 'act_talk_mai', 'act_enter_well', 'act_travel_inn',
+      'act_travel_chapel', 'act_travel_school', 'act_travel_forest'
     ]);
-    assert.equal(initial.actions.some(action => action.id === 'act_inspect_well'), false);
-    const sceneRender = presentationEvents.find(message => message.name === 'scene.render');
-    assert.ok(sceneRender, 'SceneSystem.render() should reach the presentation adapter');
-    assert.equal(sceneRender.payload.sceneId, 'scene_garden');
-    assert.equal(sceneRender.payload.routerId, 'square_gate');
-    assert.deepEqual(sceneRender.payload.actionIds, initial.actions.map(action => action.id));
+    assert.equal(snapshot.presentation.actions.some(action => action.id === 'act_inspect_well'), false);
+    assert.equal(Object.hasOwn(snapshot, 'source'), false);
+    assert.equal(Object.hasOwn(snapshot.state.session || {}, 'passwordChallenge'), false);
 
-    await engine.enterRouter('square_well', true, false, true);
-    const next = adapter.getViewModel();
-
-    assert.equal(next.sceneId, 'scene_garden');
-    assert.equal(next.routerId, 'square_well');
-    assert.deepEqual(next.actions.map(action => action.id), [
-      'act_inspect_well',
-      'act_use_lantern',
-      'act_return_square'
-    ]);
-    assert.equal(next.actions.some(action => action.id === 'act_read_notice'), false);
+    const events = [];
+    client.subscribe(message => events.push(message));
+    await client.markActionRead('scene_garden_square_gate_act_read_notice');
+    assert.ok(events.some(message => message.type === 'state' && message.changedKeys.includes('stateRevision')));
   } finally {
-    adapter.dispose();
-    engineAdapter.dispose();
-    engine.dispose();
+    client.dispose();
+    host.close();
+  }
+});
+
+test('all engine-side protocol operations are exposed as JSON commands', async () => {
+  const host = new LocalEngineHost();
+  const client = new JsonClient(host);
+  try {
+    await client.initialize(JSON.parse(host.getDemoScenario()));
+    await client.markActionRead('scene_garden_square_gate_act_read_notice');
+    await client.useItem('item_not_present'); // no-op domain result, but command is registered
+    await client.pause();
+    await client.resume();
+
+    const exported = await client.exportSave();
+    assert.equal(exported.result.save.protocol, 'vsr-save');
+    const restored = await client.restoreSave(exported.result.save);
+    assert.equal(restored.result.restored, true);
+
+    const notification = host.engine.notifications.add('Test', 'Message', 'info', { dedupe: false });
+    assert.ok(notification.notification?.id);
+    await client.dispatch('notification.read', { notificationId: notification.notification.id });
+    await client.dispatch('notification.dismiss', { notificationId: notification.notification.id });
+  } finally {
+    client.dispose();
+    host.close();
   }
 });

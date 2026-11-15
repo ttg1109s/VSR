@@ -15,7 +15,8 @@
     "./scenario": "./engine/scenario/Scenario.js",
     "./save-schema": "./engine/persistence/save.schema.json",
     "./state": "./state/StateAccess.js",
-    "./utils": "./utils/index.js"
+    "./utils": "./utils/index.js",
+    "./host": "./host/LocalEngineHost.js"
   },
   "scripts": {
     "test": "node --test",
@@ -25,7 +26,9 @@
     "schema:check": "node tools/generate-scenario-schema.js && git diff --exit-code -- engine/scenario/ScenarioSchema.js",
     "dev": "vite --host 0.0.0.0",
     "build": "vite build --base=./",
-    "preview": "vite preview --host 0.0.0.0"
+    "preview": "vite preview --host 0.0.0.0",
+    "server": "node server/index.js",
+    "check:server": "node --check server/index.js"
   },
   "devDependencies": {
     "acorn": "^8.15.0",
