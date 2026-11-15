@@ -11,10 +11,10 @@ export default function HomePage({ onStartDemo, onUploadJson, loading, demoAvail
         <p className="home-description">Một không gian dành cho những câu chuyện tương tác.</p>
         <div className="home-actions">
           <button className="button button-primary" type="button" onClick={onStartDemo} disabled={loading || !demoAvailable}>
-            Chạy demo <span aria-hidden="true" className="icon">↗</span>
+            Chạy demo <span aria-hidden="true" className="material-symbols-outlined">play_arrow</span>
           </button>
           <button className="button button-secondary" type="button" onClick={onUploadJson}>
-            <span aria-hidden="true" className="icon">↑</span> Tải JSON lên
+            <span aria-hidden="true" className="material-symbols-outlined">upload_file</span> Tải JSON lên
           </button>
         </div>
         <div className="home-footnote">BROWSER-BASED INTERACTIVE STORY ENGINE</div>
