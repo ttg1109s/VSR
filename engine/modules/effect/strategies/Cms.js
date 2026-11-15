@@ -47,22 +47,25 @@ function mutateList(list, method, value, index, pairMode = false) {
             if (pairMode) {
                 if (!isPair(value)) return false;
                 if (!list.some(item => item[0] === value[0] && item[1] === value[1])) list.push(value);
-            } else if (!list.includes(value)) list.push(value);
+            } else {
+                if (typeof value !== 'string' || !value) return false;
+                if (!list.includes(value)) list.push(value);
+            }
             return true;
         case 'remove': {
             if (pairMode && typeof value === 'string') {
                 for (let i = list.length - 1; i >= 0; i--) if (list[i]?.[0] === value) list.splice(i, 1);
                 return true;
             }
-            if (pairMode && !isPair(value)) return false;
-            const idx = pairMode
+            if (pairMode ? (!isPair(value) && typeof value !== 'string') : (typeof value !== 'string' || !value)) return false;
+            const idx = pairMode && Array.isArray(value)
                 ? list.findIndex(item => item[0] === value[0] && item[1] === value[1])
-                : list.indexOf(value);
+                : (pairMode ? list.findIndex(item => item[0] === value) : list.indexOf(value));
             if (idx >= 0) list.splice(idx, 1);
             return true;
         }
         case 'insert': {
-            if (pairMode && !isPair(value)) return false;
+            if (pairMode ? !isPair(value) : (typeof value !== 'string' || !value)) return false;
             const indexes = index === undefined
                 ? [list.length]
                 : (Array.isArray(index) ? [...new Set(index)] : [index]);
