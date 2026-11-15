@@ -12,4 +12,3 @@
 
 .vsr-progress{position:relative;width:100%;height:8px;overflow:hidden;border-radius:var(--vsr-radius-full);background:var(--vsr-color-surface-muted)}.vsr-progress__indicator{display:block;height:100%;border-radius:inherit;background:var(--vsr-color-primary)}.vsr-progress__indicator--indeterminate{width:36%;animation:vsr-progress-indeterminate 1.35s var(--vsr-motion-easing) infinite}.vsr-progress__indicator--complete{width:100%}.vsr-progress--complete{background:var(--vsr-color-primary-container)}@keyframes vsr-progress-indeterminate{0%{transform:translateX(-110%)}100%{transform:translateX(290%)}}@media(prefers-reduced-motion:reduce){.vsr-progress__indicator--indeterminate{width:100%;animation:none}}
 
-@import './media.css';
