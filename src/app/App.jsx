@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { WorkerJsonTransport } from '../../client/adapters/WorkerJsonTransport.js';
 import { JsonClient } from '../../client/adapters/JsonClient.js';
+import HomePage from '../pages/HomePage.jsx';
 
 const DEMO_URL = `${import.meta.env.BASE_URL}scenarios/the-silent-village.json`;
 const titleOf = meta => meta?.title || 'Untitled scenario';
@@ -204,24 +205,18 @@ export default function App() {
   const cover = typeof coverValue === 'string' ? coverValue : '';
 
   return <div className="app-frame">
-    {screen === 'library' && <header className="topbar home-topbar"><Brand /><Status /></header>}
-
-    {screen === 'library' && <main className="home-page">
-      <section className="home-content">
-        <div className="home-eyebrow">VISUAL STORY RUNTIME</div>
-        <div className="home-emblem" aria-hidden="true">V</div>
-        <h1>VSR<span>/</span></h1>
-        <p className="home-description">Một không gian dành cho những câu chuyện tương tác.</p>
-        <div className="home-actions">
-          <Button variant="primary" onClick={() => {
-            const demo = library.find(entry => entry.featured) || library[0];
-            if (!demo) { notify('Chưa tải được kịch bản demo.'); return; }
-            setScenarioName('KỊCH BẢN MẪU');
-            startGame(demo.data);
-          }} disabled={loading || library.length === 0}>Chạy demo <Icon>↗</Icon></Button>
-          <Button onClick={() => document.getElementById('scenario-import')?.click()}><Icon>↑</Icon> Tải JSON lên</Button>
-        </div>
-        <div className="home-footnote">BROWSER-BASED INTERACTIVE STORY ENGINE</div>
+    {screen === 'library' && <header className="topba    {screen === 'library' && <HomePage
+      loading={loading}
+      demoAvailable={library.length > 0}
+      onStartDemo={() => {
+        const demo = library.find(entry => entry.featured) || library[0];
+        if (!demo) { notify('Chưa tải được kịch bản demo.'); return; }
+        setScenarioName('KỊCH BẢN MẪU');
+        startGame(demo.data);
+      }}
+      onUploadJson={() => document.getElementById('scenario-import')?.click()}
+    />}
+Y ENGINE</div>
       </section>
     </main>}
 
