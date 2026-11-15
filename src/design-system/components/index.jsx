@@ -79,7 +79,7 @@ export function Menu({trigger,items=[],label='Open menu',align='start',className
 }
 export function Popover({trigger,children,align='start',label='Open additional content',className,onOpenChange}){
   const [open,setOpen]=useState(false),root=useRef(null);useEffect(()=>{if(!open)return;const outside=e=>{if(!root.current?.contains(e.target))setOpen(false);},key=e=>{if(e.key==='Escape')setOpen(false);};document.addEventListener('pointerdown',outside);document.addEventListener('keydown',key);return()=>{document.removeEventListener('pointerdown',outside);document.removeEventListener('keydown',key);};},[open]);
-  const triggerNode=isValidElement(trigger)?cloneElement(trigger,{'aria-expanded':open,onClick:e=>{trigger.props.onClick?.(e);if(!e.defaultPrevented)setOpen(v=>!v);}}):<button type="button" aria-label={label} aria-expanded={open} onClick={()=>setOpen(v=>!v)}>{trigger}</button>;
+  const triggerNode=isValidElement(trigger)?cloneElement(trigger,{'aria-expanded':open,onClick:e=>{trigger.props.onClick?.(e);if(!e.defaultPrevented)setOpen(v=>{const next=!v;onOpenChange?.(next);return next;});}}):<button type="button" aria-label={label} aria-expanded={open} onClick={()=>setOpen(v=>{const next=!v;onOpenChange?.(next);return next;})}>{trigger}</button>;
   return <div ref={root} className={cx('vsr-popover',className)}>{triggerNode}{open&&<div className={'vsr-popover-content vsr-popover-content--'+align}>{children}</div>}</div>;
 }
 export function Tooltip({content,children,side='top'}){return <span className="vsr-tooltip">{children}<span role="tooltip" className={'vsr-tooltip-bubble vsr-tooltip-bubble--'+side}>{content}</span></span>;}
