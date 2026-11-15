@@ -100,6 +100,10 @@ export const DEMO_SCRIPT = {
     "clue_tunnel": {
       "type": "boolean",
       "value": false
+    },
+    "clue_well": {
+      "type": "boolean",
+      "value": false
     }
   },
   "templates": {
@@ -613,7 +617,8 @@ export const DEMO_SCRIPT = {
             "act_question_hanh",
             "act_open_guestbook",
             "act_return_square",
-            "act_travel_chapel"
+            "act_travel_chapel",
+            "act_unlock_cellar"
           ],
           "loop": {
             "still": [
@@ -635,7 +640,6 @@ export const DEMO_SCRIPT = {
             "countVisited": 0
           },
           "actions": [
-            "act_unlock_cellar",
             "act_search_cellar",
             "act_return_inn"
           ]
@@ -999,14 +1003,14 @@ export const DEMO_SCRIPT = {
           {
             "type": "set",
             "subtype": "state",
-            "target": "clue_lantern",
+            "target": "clue_well",
             "value": true
           },
           {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Bốn vạch khắc trùng với ký hiệu trên mặt đồng hồ nhà nguyện."
+            "text": "Bốn vạch khắc là tọa độ của giếng trong bản đồ sơ tán."
           },
           {
             "type": "set",
@@ -1238,6 +1242,12 @@ export const DEMO_SCRIPT = {
             "property": "found_guestbook",
             "op": "==",
             "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "guestbook"
           }
         ]
       }
