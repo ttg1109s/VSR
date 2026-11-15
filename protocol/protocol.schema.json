@@ -454,6 +454,7 @@
                 "cooldown",
                 "target_locked",
                 "requirement_failed",
+                "requirement_unavailable",
                 "password_required"
               ]
             },
@@ -465,10 +466,25 @@
             },
             "checks": {
               "type": "object",
-              "required": ["permission", "requirement"],
+              "required": [
+                "permission",
+                "requirement"
+              ],
               "properties": {
-                "permission": { "enum": ["passed", "failed"] },
-                "requirement": { "enum": ["passed", "failed", "not_required", "not_evaluated"] }
+                "permission": {
+                  "enum": [
+                    "passed",
+                    "failed"
+                  ]
+                },
+                "requirement": {
+                  "enum": [
+                    "passed",
+                    "failed",
+                    "not_required",
+                    "not_evaluated"
+                  ]
+                }
               },
               "additionalProperties": false
             }
