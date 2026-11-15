@@ -6,6 +6,7 @@ import { validateScenario, normalizeScenario, migrateScenario, ScenarioValidatio
 import { LogicSystem } from '../engine/modules/Logic.js';
 import { EffectSystem } from '../engine/modules/Effect.js';
 import { EffectHandlers } from '../engine/modules/effect/Strategies.js';
+import { StatsHelpers } from '../engine/modules/effect/strategies/Stats.js';
 import { LoaderSystem } from '../engine/modules/Loader.js';
 import { ActionSystem } from '../engine/modules/Action.js';
 import { SceneSystem } from '../engine/modules/Scene.js';
@@ -66,7 +67,7 @@ test('invalid and unresolved requirements fail closed', () => {
 
 test('requirement template references resolve and evaluate against runtime state', () => {
   const engine = Object.assign({}, LogicSystem, {
-    src: { templates: { requirements: { allow: { check: [
+    src: { templates: { requirements: { allow: { logic: null, check: [
       { type: 'state', property: 'flag', op: '==', value: 7 }
     ] } } } },
     api: { engine: { state: { get: () => 7 } } }
@@ -74,8 +75,9 @@ test('requirement template references resolve and evaluate against runtime state
   assert.equal(engine.checkReq({ ref: 'allow' }).pass, true);
 });
 
-test('not_has rejects non-array values and NOT requirements require exactly one check', () => {
-  assert.equal(LogicSystem.compare('not-an-array', 'not_has', 'value'), false);
+test('schema requirement operators fail closed for invalid operands and NOT requires one check', () => {
+  assert.equal(LogicSystem.compare('not-an-array', '!has', 'value'), false);
+  assert.equal(LogicSystem.compare(['a'], '=', 'a'), false);
   const engine = Object.assign({}, LogicSystem, { src: {} });
   assert.equal(engine.checkReq({ logic: 'NOT', check: [
     { type: 'unknown', subtype: 'x', op: '==', value: 1 },
@@ -365,4 +367,41 @@ test('scenario schema rejects characters.mng_stats operations outside its contra
     }]
   };
   assert.ok(validateScenario(scenario).length > 0);
+});
+
+
+test('requirements require the canonical logic field and object references', () => {
+  const engine = Object.assign({}, LogicSystem, {
+    src: {
+      templates: {
+        requirements: { canonical: { logic: null, check: [
+          { type: 'state', property: 'flag', op: '==', value: true }
+        ] } },
+        requirement: { legacy: { logic: null, check: [
+          { type: 'state', property: 'flag', op: '==', value: true }
+        ] } }
+      }
+    },
+    api: { engine: { state: { get: () => true } } }
+  });
+
+  assert.equal(engine.checkReq({ ref: 'canonical' }).pass, true);
+  assert.equal(engine.checkReq('canonical').pass, false);
+  assert.equal(engine.checkReq({ ref: 'legacy' }).pass, false);
+  assert.equal(engine.checkReq({ check: [
+    { type: 'state', property: 'flag', op: '==', value: true }
+  ] }).pass, false);
+  assert.equal(engine.checkSingle(null).pass, false);
+});
+
+test('runtime rejects stat field and mode combinations excluded by the schema', () => {
+  const target = { stats: { HP: { current: 5, max: 10 } } };
+  const changed = StatsHelpers.edit_value(target, {
+    property: 'HP', field: 'max', mode: 'full', value: 3
+  }, false, 'item', {});
+  assert.equal(changed, false);
+  assert.equal(target.stats.HP.max, 10);
+  assert.equal(StatsHelpers.edit_value(target, {
+    property: 'HP', field: 'current', mode: 'unknown', value: 3
+  }, false, 'item', {}), false);
 });
