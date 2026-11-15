@@ -9,6 +9,7 @@ export default function App() {
   const clientRef = useRef(null);
   const [client, setClient] = useState(null);
   const [snapshot, setSnapshot] = useState(null);
+  const [preview, setPreview] = useState(null);
   const [busy, setBusy] = useState(false);
   const [busyKind, setBusyKind] = useState('');
   const [error, setError] = useState('');
@@ -26,8 +27,29 @@ export default function App() {
     clientRef.current?.transport?.close?.();
   }, []);
 
-  const startScenario = useCallback(async (scenario, kind) => {
+  const inspectScenario = useCallback(async (scenario, kind) => {
     if (busy) return;
+    setBusy(true);
+    setBusyKind(kind);
+    setError('');
+    let inspector;
+    try {
+      const transport = new WorkerJsonTransport();
+      inspector = new JsonClient(transport);
+      const acknowledgement = await inspector.inspectScenario(scenario);
+      setPreview({ scenario, kind, ...acknowledgement.result });
+    } catch (cause) {
+      setError(cause?.message || 'Không thể kiểm tra kịch bản.');
+    } finally {
+      inspector?.dispose();
+      inspector?.transport?.close?.();
+      setBusy(false);
+      setBusyKind('');
+    }
+  }, [busy]);
+
+  const startScenario = useCallback(async (scenario, kind) => {
+    if (busy) return false;
     setBusy(true);
     setBusyKind(kind);
     setError('');
@@ -44,10 +66,12 @@ export default function App() {
       setClient(nextClient);
       setSnapshot(initialSnapshot);
       nextClient.__homeUnsubscribe = unsubscribe;
+      return true;
     } catch (cause) {
       nextClient?.dispose();
       nextClient?.transport?.close?.();
       setError(cause?.message || 'Không thể khởi chạy kịch bản.');
+      return false;
     } finally {
       setBusy(false);
       setBusyKind('');
@@ -69,11 +93,17 @@ export default function App() {
       if (!scenario || typeof scenario !== 'object' || Array.isArray(scenario)) {
         throw new Error('Nội dung JSON phải là một object scenario.');
       }
-      await startScenario(scenario, 'import');
+      await inspectScenario(scenario, 'import');
     } catch (cause) {
       setError(cause?.message || 'Không thể đọc tệp JSON.');
     }
-  }, [startScenario]);
+  }, [inspectScenario]);
+
+  const confirmPreview = useCallback(async () => {
+    if (!preview) return;
+    const started = await startScenario(preview.scenario, preview.kind);
+    if (started) setPreview(null);
+  }, [preview, startScenario]);
 
   if (client && snapshot) {
     return <RuntimePage client={client} snapshot={snapshot} onExit={disposeRuntime} />;
@@ -81,8 +111,11 @@ export default function App() {
 
   return (
     <HomePage
-      onRunDemo={() => startScenario(DEMO_SCRIPT, 'demo')}
+      onRunDemo={() => inspectScenario(DEMO_SCRIPT, 'demo')}
       onImportFile={handleImportFile}
+      preview={preview}
+      onCancelPreview={() => { if (!busy) setPreview(null); }}
+      onConfirmPreview={confirmPreview}
       busy={busy ? busyKind || true : false}
       error={error}
     />
