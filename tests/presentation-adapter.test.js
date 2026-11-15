@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { LocalEngineHost } from '../engine/LocalEngineHost.js';
 import { JsonClient } from '../client/adapters/JsonClient.js';
+import { JsonProtocol } from '../protocol/JsonProtocol.js';
 
 test('scenario inspection returns validated metadata without initializing or mutating the Engine', async () => {
   const host = new LocalEngineHost();
@@ -99,4 +100,50 @@ test('snapshot.get refreshes the client projection without changing Engine state
     client.dispose();
     host.close();
   }
+});
+
+
+test('password challenge projection exposes safe hints but never password answers or maze solution', () => {
+  const engine = {
+    state: {
+      sceneId: 'scene-a',
+      scenes: { 'scene-a': { activeRouterId: 'router-a' } },
+      session: { passwordChallenge: { answer: 'must-not-leak' } },
+      sceneTree: {}
+    },
+    src: {
+      meta: { title: 'Test' },
+      scenes: { 'scene-a': { routers: { 'router-a': {} } } },
+      passwords: {
+        find_way: {
+          maze: {
+            desc: 'Find the exit',
+            area: [2, 2],
+            start: [0, 0],
+            target: [1, 1],
+            street: [[0, 0], [1, 0], [1, 1]],
+            value: 'private-answer'
+          }
+        }
+      }
+    },
+    pendingPasswordAction: {
+      challengeId: 'challenge-a', type: 'find_way', passwordId: 'maze',
+      actionId: 'open', uniqueId: 'scene-a_router-a_open',
+      sceneId: 'scene-a', routerId: 'router-a', status: 'active',
+      countTest: 1, retryMax: 3, deadlineAt: null
+    },
+    chatState: {},
+    getEffectiveActions: () => []
+  };
+  const snapshot = new JsonProtocol().createSnapshot(engine);
+  assert.deepEqual(snapshot.session.passwordChallenge.findWay, {
+    area: [2, 2], start: [0, 0], target: [1, 1]
+  });
+  assert.equal(snapshot.session.passwordChallenge.remainingAttempts, 2);
+  assert.equal(snapshot.session.passwordChallenge.description, 'Find the exit');
+  const serialized = JSON.stringify(snapshot);
+  assert.equal(serialized.includes('must-not-leak'), false);
+  assert.equal(serialized.includes('private-answer'), false);
+  assert.equal(serialized.includes('street'), false);
 });

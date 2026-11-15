@@ -8,7 +8,7 @@ function ActionCard({action,pending=false,passwordChallenge=null,onTrigger,onMar
  const description=meta.description||meta.desc||'',locked=presentation.display==='locked'||availability.reason==='locked',canRead=presentation.readRequired&&!presentation.read;
  const challengeOpen=!!passwordChallenge&&passwordChallenge.uniqueId===action.key,structured=['puzzle','find_way'].includes(passwordChallenge?.type);
  const cooldown=seconds(availability.cooldownUntil,clock),deadline=seconds(passwordChallenge?.deadlineAt,clock);
- useEffect(()=>{const ds=[availability.cooldownUntil,passwordChallenge?.deadlineAt].filter(Number.isFinite);if(!ds.some(x=>x>Date.now()))return;const t=setInterval(()=>setClock(Date.now()),1000);return()=>clearInterval(t);},[availability.cooldownUntil,passwordChallenge?.deadlineAt]);
+ useEffect(()=>{const ds=[availability.cooldownUntil,passwordChallenge?.deadlineAt].filter(Number.isFinite);if(!ds.some(x=>x>Date.now()))return;const t=setInterval(()=>{const now=Date.now();setClock(now);if(!ds.some(x=>x>now))clearInterval(t);},1000);return()=>clearInterval(t);},[availability.cooldownUntil,passwordChallenge?.deadlineAt]);
  useEffect(()=>{setInput('');setError('');setFeedback('');},[passwordChallenge?.challengeId]);
  const submit=async e=>{e.preventDefault();if(!input.trim()||passwordPending)return;setPasswordPending(true);setError('');setFeedback('');try{const r=await onSubmitPassword?.(passwordChallenge,input);if(r?.retry){setFeedback(r.remainingAttempts===null?'Sai thông tin. Có thể thử lại.':`Sai thông tin. Còn ${r.remainingAttempts} lượt.`);setInput('');}else if(r?.reason==='expired')setError('Thử thách đã hết thời gian.');else if(r?.reason==='exhausted')setError('Đã hết số lượt thử.');else if(r?.reason==='revision_conflict')setError('Trạng thái vừa thay đổi. Hãy kiểm tra lại thử thách.');}catch(x){setError(x?.message||'Không thể gửi câu trả lời.');}finally{setPasswordPending(false);}};
  const cancel=async()=>{if(passwordPending||!passwordChallenge?.challengeId)return;setPasswordPending(true);setError('');try{await onCancelPassword?.(passwordChallenge);setInput('');}catch(x){setError(x?.message||'Không thể hủy thử thách.');}finally{setPasswordPending(false);}};
@@ -20,11 +20,11 @@ function ActionCard({action,pending=false,passwordChallenge=null,onTrigger,onMar
     <h3 className="vsr-text-body">{meta.title||action.title||action.id}</h3>
     {meta.subTitleStatus&&<p className="vsr-text-secondary">{meta.subTitleStatus}</p>}
     {description&&<p className="vsr-text-body">{description}</p>}
-    {availability.reason!=='available'&&availability.reason!=='password_required'&&<p className="vsr-text-secondary" role="status">{availability.reason==='cooldown'?(cooldown?`Còn ${cooldown} giây`:'Đang hồi chiêu'):(REASONS[availability.reason]||'')}</p>}
+    {availability.reason!=='available'&&availability.reason!=='password_required'&&<p className="vsr-text-secondary" role="status">{availability.reason==='cooldown'?(cooldown?`Còn ${cooldown} giây`:'Đang chờ Engine xác nhận hết hồi chiêu'):(REASONS[availability.reason]||'')}</p>}
    </div>
    <Grid columns="auto" gap="2">
     {canRead&&<Button variant="secondary" disabled={pending} onClick={()=>setDetailsOpen(true)}>Đọc mô tả</Button>}
-    <Button leadingIcon={meta.buttonIcon} disabled={pending||!availability.canTrigger||locked} loading={pending} onClick={()=>onTrigger?.(action)} aria-label={meta.buttonLabel||`Thực hiện ${meta.title||action.id}`}>{meta.buttonLabel||(availability.reason==='password_required'?'Xác thực':'Thực hiện')}</Button>
+    <Button size="lg" leadingIcon={meta.buttonIcon} disabled={pending||!availability.canTrigger||locked} loading={pending} onClick={()=>onTrigger?.(action)} aria-label={meta.buttonLabel||`Thực hiện ${meta.title||action.id}`}>{meta.buttonLabel||(availability.reason==='password_required'?'Xác thực':'Thực hiện')}</Button>
    </Grid>
   </div>
   <Dialog open={detailsOpen} onClose={()=>setDetailsOpen(false)} title={meta.title||action.title||action.id} description="Thông tin chi tiết của hành động">
@@ -39,7 +39,7 @@ function ActionCard({action,pending=false,passwordChallenge=null,onTrigger,onMar
     {Number.isFinite(passwordChallenge?.remainingAttempts)&&<p className="vsr-text-secondary" role="status">Số lượt còn lại: {passwordChallenge.remainingAttempts}</p>}
     {deadline>0&&<p className="vsr-text-secondary" role="status">Thời gian còn lại: {deadline} giây</p>}
     {feedback&&<p role="status">{feedback}</p>}{error&&<p className="vsr-text-error" role="alert">{error}</p>}
-    <Grid columns="auto" gap="2"><Button type="button" variant="secondary" disabled={passwordPending} onClick={cancel}>Hủy thử thách</Button><Button type="submit" disabled={!input.trim()||passwordPending} loading={passwordPending}>Gửi câu trả lời</Button></Grid>
+    <Grid columns="auto" gap="2"><Button size="lg" type="button" variant="secondary" disabled={passwordPending} onClick={cancel}>Hủy thử thách</Button><Button size="lg" type="submit" disabled={!input.trim()||passwordPending} loading={passwordPending}>Gửi câu trả lời</Button></Grid>
    </form>
   </Dialog>
  </article>;
