@@ -27,14 +27,6 @@ export class RegionRenderer {
     }
     this.overlayState.notifications = (snapshot.session?.notifications?.pending || []).slice(0, 5);
     this.overlayState.timer = snapshot.session?.timer?.displayText || '';
-    const challenge = snapshot.session?.passwordChallenge;
-    if (challenge) {
-      const action = (snapshot.presentation?.actions || []).find(item => item.id === challenge.actionId);
-      this.overlayState.password = { action, actionId: challenge.actionId, uniqueId: challenge.uniqueId,
-        config: { challengeId: challenge.challengeId, type: challenge.type, countTest: challenge.countTest,
-          retryMax: challenge.retryMax, deadlineAt: challenge.deadlineAt } };
-    }
-    this.overlayState.notifications = (snapshot.session?.notifications?.pending || []).slice(0, 5);
     this.renderAll(snapshot);
   }
 
@@ -136,14 +128,6 @@ export class RegionRenderer {
     if (name === 'scene.hideTimer') { this.overlayState.timer = ''; this.renderOverlays(); }
     if (name === 'scene.transition') this.root.classList.toggle('is-transitioning', payload.args?.[0] === 'start');
     if (name === 'navigation.setBlocking') this.root.classList.toggle('is-blocking', !!payload.args?.[0]);
-    if (name === 'password.retry' && this.overlayState.password) {
-      this.overlayState.password.config.countTest = payload.countTest;
-      this.overlayState.password.config.remainingAttempts = payload.remainingAttempts;
-      this.renderOverlays();
-    }
-    if (name === 'password.expired' || name === 'password.exhausted') {
-      this.overlayState.password = null; this.renderOverlays();
-    }
     if (name === 'password.retry' && this.overlayState.password) {
       this.overlayState.password.config.countTest = payload.countTest;
       this.overlayState.password.config.remainingAttempts = payload.remainingAttempts;
