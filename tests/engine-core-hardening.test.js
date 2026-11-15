@@ -990,8 +990,8 @@ test('item hide only occurs after a successful item operation in action context'
   ItemStrategies.add(engine, { target: 'valid', hide: true }, context);
   assert.equal(action.display, 'show');
 
-  ItemStrategies.hand_on(engine, { target: 'valid', hide: true }, context);
-  assert.equal(action.display, 'show'); // Inventory does not contain valid in this isolated setup.
+  ItemStrategies.hand_on(engine, { target: 'absent', hide: true }, context);
+  assert.equal(action.display, 'show');
 
   inventory.push('valid');
   ItemStrategies.hand_on(engine, { target: 'valid', hide: true }, context);
