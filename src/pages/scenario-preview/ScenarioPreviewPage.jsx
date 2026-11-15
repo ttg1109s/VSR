@@ -64,7 +64,7 @@ export default function ScenarioPreviewPage({ preview, onBack }) {
 
         {Array.isArray(metadata.tags) && metadata.tags.length > 0 && (
           <section className="vsr-stack vsr-stack--gap-2" aria-labelledby="scenario-tags-title">
-            <h2 id="scenario-tags-title">Thể loại và thẻ</h2>
+            <h2 id="scenario-tags-title">Thẻ kịch bản</h2>
             <p className="vsr-text-secondary">{metadata.tags.join(' · ')}</p>
           </section>
         )}
