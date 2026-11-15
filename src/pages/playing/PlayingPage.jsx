@@ -1,105 +1,52 @@
-import React, { useMemo, useState } from 'react';
-
-function SceneBreadcrumb({ path, activeSceneId, onNavigate }) {
-  return (
-    <nav className="vsr-playing-breadcrumb" aria-label="Scene navigation">
-      {path.map((scene, index) => {
-        const active = scene.id === activeSceneId;
-        return (
-          <React.Fragment key={scene.id}>
-            {index > 0 && <span className="vsr-playing-breadcrumb__separator" aria-hidden="true">›</span>}
-            <button
-              type="button"
-              className={`vsr-playing-breadcrumb__item${active ? ' active' : ''}`}
-              aria-current={active ? 'page' : undefined}
-              disabled={active}
-              onClick={() => onNavigate?.(scene.id)}
-            >
-              {scene.title || scene.id}
-            </button>
-          </React.Fragment>
-        );
-      })}
-    </nav>
-  );
-}
-
-function SceneRouterCover({ cover, status }) {
-  const [failedUrl, setFailedUrl] = useState('');
-  const url = typeof cover?.url === 'string' ? cover.url : '';
-  const hasMedia = Boolean(url) && failedUrl !== url;
-  const isVideo = cover?.type === 'video';
-
-  return (
-    <div className="vsr-playing-cover">
-      {hasMedia ? (
-        isVideo ? (
-          <video
-            key={url}
-            className="vsr-playing-cover__media"
-            src={url}
-            autoPlay
-            muted
-            loop
-            playsInline
-            onError={() => setFailedUrl(url)}
-          />
-        ) : (
-          <img
-            key={url}
-            className="vsr-playing-cover__media"
-            src={url}
-            alt=""
-            onError={() => setFailedUrl(url)}
-          />
-        )
-      ) : (
-        <div className="vsr-playing-cover__placeholder" aria-hidden="true">
-          <span className="vsr-icon">image</span>
-        </div>
-      )}
-      {status && <span className="vsr-playing-cover__status vsr-eyebrow">{status}</span>}
-    </div>
-  );
-}
+import React, { useMemo } from 'react';
+import { Badge, Breadcrumb, MediaFrame } from '../../design-system/index.js';
 
 export default function PlayingPage({ snapshot, error = '', onNavigate }) {
+  const scene = snapshot?.presentation?.scene ?? null;
+  const router = snapshot?.presentation?.router ?? null;
+  const activeSceneId = snapshot?.game?.sceneId ?? null;
+
   const scenePath = useMemo(() => {
     const path = snapshot?.presentation?.scenePath;
     if (Array.isArray(path) && path.length) return path;
-    const scene = snapshot?.presentation?.scene;
     return scene ? [{ id: scene.id, title: scene.meta?.title || scene.id }] : [];
-  }, [snapshot?.presentation?.scenePath, snapshot?.presentation?.scene]);
+  }, [snapshot?.presentation?.scenePath, scene]);
 
-  const scene = snapshot?.presentation?.scene;
-  const router = snapshot?.presentation?.router;
-  const sceneCover = scene?.meta?.cover;
+  const breadcrumbItems = useMemo(() => scenePath.map(item => ({
+    key: item.id,
+    label: item.title || item.id,
+    onClick: () => onNavigate?.(item.id)
+  })), [scenePath, onNavigate]);
+
   const routerCover = router?.meta?.cover;
+  const sceneCover = scene?.meta?.cover;
   const cover = routerCover?.url ? routerCover : sceneCover;
-  const sceneDescription = scene?.meta?.desc;
-  const routerDescription = router?.meta?.desc;
-  const routerStatus = router?.meta?.subTitleStatus;
+  const status = router?.meta?.subTitleStatus;
 
   return (
-    <main className="vsr-page-shell vsr-page-shell--start vsr-playing-shell">
-      <SceneBreadcrumb
-        path={scenePath}
-        activeSceneId={snapshot?.game?.sceneId}
-        onNavigate={onNavigate}
+    <main className="vsr-page-shell vsr-page-shell--start vsr-page-shell--flush-top">
+      <Breadcrumb
+        items={breadcrumbItems}
+        activeKey={activeSceneId}
+        separator="›"
+        scrollable
+        sticky
+        aria-label="Scene breadcrumb"
       />
-      <article className="vsr-playing-content">
-        {sceneDescription && (
-          <section aria-label="Scene description">
-            <p className="vsr-playing-description">{sceneDescription}</p>
-          </section>
+      <article className="vsr-page-shell__content vsr-page-shell__content--reading">
+        {scene?.meta?.desc && (
+          <div className="vsr-text-body">{scene.meta.desc}</div>
         )}
-        <SceneRouterCover cover={cover} status={routerStatus} />
-        {routerDescription && (
-          <section aria-label="Router description">
-            <p className="vsr-playing-description">{routerDescription}</p>
-          </section>
+        <MediaFrame
+          src={cover?.url}
+          type={cover?.type || 'photo'}
+          ratio={cover?.ratio || '16:9'}
+          overlay={status ? <Badge tone="neutral">{status}</Badge> : null}
+        />
+        {router?.meta?.desc && (
+          <div className="vsr-text-body">{router.meta.desc}</div>
         )}
-        {error && <p className="vsr-playing-error" role="alert">{error}</p>}
+        {error && <p className="vsr-text-error" role="alert">{error}</p>}
       </article>
     </main>
   );
