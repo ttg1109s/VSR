@@ -127,9 +127,20 @@ Trước khi viết component hoặc CSS mới, kiểm tra public API hiện t�
 
 Tái sử dụng component chung trước khi tự tạo phiên bản tương tự. Nếu component hiện có thiếu khả năng, mở rộng API theo hướng tương thích ngược và cập nhật tài liệu/component tests; không âm thầm tạo một hệ thống song song.
 
-### 5.2. Phân chia CSS — Design System First, No Page-Level CSS
+### 5.2. Phân chia CSS — Design System First, Audit Before Custom CSS
 
 **Quy tắc bắt buộc:** Page chỉ được composition các public component, layout primitive và pattern đã được Design System cung cấp. Page không được tạo stylesheet riêng, CSS module, styled-components, CSS-in-JS, inline style hoặc bất kỳ cơ chế nào khác để tự định nghĩa presentation/layout.
+
+**Quy trình bắt buộc trước khi tạo CSS riêng cho bất kỳ component/feature nào:**
+
+1. **Kiểm kê Design System trước:** kiểm tra token, foundation, layout primitive, component, variant, size, slot, composition pattern và public API hiện có. Đọc implementation và tài liệu liên quan; không kết luận chỉ dựa trên tên component hoặc phỏng đoán.
+2. **Đối chiếu nhu cầu giao diện:** mô tả rõ cấu trúc, hành vi, responsive behavior, trạng thái và yêu cầu accessibility mà feature cần. Đối chiếu từng nhu cầu với khả năng hiện có của Design System.
+3. **Phân loại phần còn thiếu:** xác định đó là năng lực dùng chung, pattern có thể tái sử dụng, hay chi tiết thực sự chỉ thuộc một feature. Không tạo CSS riêng chỉ vì API hiện tại chưa được kiểm tra đầy đủ hoặc vì viết CSS nhanh hơn.
+4. **Chọn đúng nơi sở hữu:** nếu năng lực có tính dùng chung hoặc có khả năng tái sử dụng hợp lý, bổ sung token/component/variant/slot/layout primitive/pattern vào Design System và public export/documentation/tests tương ứng. Nếu chỉ là composition một lần, ưu tiên ghép các API có sẵn; không nâng mọi chi tiết đơn lẻ thành component dùng chung.
+5. **Chỉ giữ CSS riêng khi có lý do kỹ thuật cụ thể:** component phải là một đơn vị UI/feature độc lập với cấu trúc hoặc hành vi đặc thù mà API Design System hiện tại không thể biểu đạt hợp lý. Ghi nhận năng lực còn thiếu, lý do không phù hợp để đưa vào Design System và phạm vi ảnh hưởng. CSS riêng phải dùng token hiện có, không sao chép/định nghĩa lại design language, không phụ thuộc sâu vào DOM nội bộ của component dùng chung.
+6. **Đánh giá lại khi Design System thay đổi:** CSS ngoại lệ phải được xem xét loại bỏ hoặc chuyển thành API Design System khi năng lực tương ứng được cung cấp. Không giữ CSS cũ theo quán tính.
+
+Không được suy luận rằng mọi CSS cạnh feature component đều hợp lệ chỉ vì nó không nằm trong page. Vị trí file không quyết định tính chính đáng; quyết định phải dựa trên audit năng lực, ownership và khả năng tái sử dụng.
 
 Page được phép chứa:
 - JSX/TSX composition và semantic HTML phù hợp.
@@ -144,7 +155,7 @@ Page không được tự định nghĩa:
 
 **Nếu thiếu khả năng:** Không viết workaround tại page. Bổ sung hoặc mở rộng token, layout primitive, pattern hoặc component trong `src/design-system/`, cập nhật public export/tài liệu/tests, sau đó page chỉ sử dụng API mới. Ví dụ layout primitives cần được cung cấp tập trung gồm PageShell/PageContainer, Stack, Cluster, Grid, Center, Surface và các pattern như PageHeader, EmptyState, LoadingState, ErrorState. Đây là danh mục năng lực cần triển khai theo nhu cầu, không mặc nhiên khẳng định tất cả đã tồn tại.
 
-**Ngoại lệ hẹp:** CSS chỉ được đặt cạnh một feature component độc lập khi component đó có cấu trúc/hành vi riêng, được dùng như một đơn vị UI, và không thể biểu đạt hợp lý bằng API Design System hiện có. CSS đó thuộc component, không thuộc page; phải dùng token, không tạo hệ thống style song song. Third-party widget styles phải được cô lập và ghi rõ lý do.
+**Ngoại lệ hẹp:** CSS chỉ được đặt cạnh một feature component độc lập sau khi đã hoàn thành quy trình audit ở trên và chứng minh component có cấu trúc/hành vi riêng, được dùng như một đơn vị UI, đồng thời không thể biểu đạt hợp lý bằng API Design System hiện có. CSS đó thuộc component, không thuộc page; phải dùng token, không tạo hệ thống style song song. Third-party widget styles phải được cô lập và ghi rõ lý do.
 
 Không dùng selector toàn cục từ feature/page để sửa component dùng chung. Hạn chế !important, selector phụ thuộc sâu vào DOM nội bộ và override class của Design System. Nếu cần override thường xuyên, API component hoặc token đang thiếu và cần được xử lý ở đúng lớp.
 
@@ -208,14 +219,16 @@ Component README ghi nhận đây là implementation ban đầu, chưa thay th�
 ## 9. Quy trình thêm một page/feature
 
 1. Xác định page phục vụ use case nào và dữ liệu/hành động nào thực sự có trong application/runtime.
-2. Kiểm tra Design System tokens và component có thể tái sử dụng.
-3. Phác thảo hierarchy và responsive behavior trước khi viết CSS.
-4. Tạo page trong thư mục riêng; component feature đặt riêng nếu có lý do tái sử dụng hoặc cần cô lập hành vi.
-5. Dùng token và public component API; chỉ viết CSS cho composition đặc thù.
-6. Tách orchestration/side effects khỏi component trình bày.
-7. Kiểm tra keyboard, focus, semantic structure, contrast, reduced motion và viewport.
-8. Chạy lint/test/build nếu scripts tương ứng đã được cấu hình; không tuyên bố kiểm thử thành công nếu chưa thực thi.
-9. Cập nhật tài liệu khi thay đổi public component API, token, breakpoint hoặc nguyên tắc nền tảng.
+2. Kiểm kê Design System tokens, foundations, components, variants, slots, layout primitives và patterns; đọc public API/implementation liên quan.
+3. Đối chiếu từng yêu cầu UI với năng lực hiện có; phân loại phần thiếu thành năng lực dùng chung, pattern tái sử dụng hoặc chi tiết đặc thù.
+4. Chọn ownership trước khi code: mở rộng Design System nếu có tính dùng chung; chỉ đề xuất CSS riêng khi có lý do kỹ thuật cụ thể và ghi nhận lý do đó.
+5. Phác thảo hierarchy và responsive behavior theo ngôn ngữ thiết kế hiện hành trước khi triển khai.
+6. Tạo page trong thư mục riêng; component feature đặt riêng nếu có lý do tái sử dụng hoặc cần cô lập hành vi.
+7. Dùng token và public component API; không tạo CSS riêng trước khi hoàn tất audit và quyết định ownership.
+8. Tách orchestration/side effects khỏi component trình bày.
+9. Kiểm tra keyboard, focus, semantic structure, contrast, reduced motion và viewport.
+10. Chạy lint/test/build nếu scripts tương ứng đã được cấu hình; không tuyên bố kiểm thử thành công nếu chưa thực thi.
+11. Cập nhật tài liệu khi thay đổi public component API, token, breakpoint hoặc nguyên tắc nền tảng.
 
 ## 10. Kiểm tra trước khi merge
 
@@ -231,7 +244,11 @@ Component README ghi nhận đây là implementation ban đầu, chưa thay th�
 - [ ] Design System không import engine/protocol/state/transport.
 - [ ] Side effects nằm ở application/service layer hoặc hook phù hợp.
 - [ ] Không tạo state trùng lặp cho runtime state.
-- [ ] Page không có stylesheet, inline style, CSS module hoặc CSS-in-JS.\n- [ ] Page chỉ dùng public Design System components/layout primitives/patterns.\n- [ ] CSS đặc thù (nếu có) thuộc component độc lập, không thuộc page.
+- [ ] Page không có stylesheet, inline style, CSS module hoặc CSS-in-JS.\n- [ ] Page chỉ dùng public Design System components/layout primitives/patterns.\n- [ ] Đã kiểm kê Design System trước khi quyết định tạo CSS riêng.
+- [ ] Mỗi CSS ngoại lệ có lý do kỹ thuật, ownership và phạm vi rõ ràng; không thể biểu đạt hợp lý bằng API hiện có.
+- [ ] Năng lực có tính dùng chung đã được bổ sung vào Design System thay vì nhân bản ở feature.
+- [ ] CSS đặc thù (nếu có) thuộc component độc lập, không thuộc page; dùng token và không phụ thuộc sâu vào DOM nội bộ.
+- [ ] CSS ngoại lệ được đánh giá lại khi Design System bổ sung năng lực tương ứng.
 
 ### Accessibility and responsive
 - [ ] Có keyboard operation và focus-visible.
