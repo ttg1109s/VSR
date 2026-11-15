@@ -216,6 +216,7 @@
   let passwordChallenge = null;
   let lastEvents = 0;
   const runtimeErrors = [];
+  let notificationEventCount = 0;
   const nativeConsoleError = console.error.bind(console);
 
   function recordRuntimeError(kind, message, detail = {}) {
@@ -281,6 +282,7 @@
     const eventName = event.event || event.type || event.name || 'event';
     time.textContent = new Date(event.timestamp || Date.now()).toLocaleTimeString('vi-VN') + ' · ' + eventName;
     if (String(eventName).startsWith('presentation.notification.')) {
+      if (String(eventName).endsWith('.add') || String(eventName).endsWith('.alert') || String(eventName).endsWith('.updated')) notificationEventCount++;
       const notification = event.payload?.notification;
       if (notification && ['add','alert','updated'].some(kind => String(eventName).endsWith('.' + kind))) {
         showToast(notification.title, notification.message, notification.severity || notification.level || 'info');
@@ -464,6 +466,7 @@
   async function runCommand(name, payload={}) {
     if (!engine) { showToast('Engine chưa sẵn sàng', 'Hãy nạp demo trước khi gửi lệnh.', 'warning'); return null; }
     const previousStatus = $('statusText').textContent;
+    const notificationsBefore = notificationEventCount;
     $('statusText').textContent = 'Đang thực thi: ' + name;
     try {
       const ack = await engine.api.protocol.command(name, payload);
@@ -471,7 +474,12 @@
       if (!ack?.ok) throw new Error(ack?.error?.message || ack?.error?.code || `Command ${name} failed.`);
       const result = ack.result;
       if (result && result.success === false) {
-        showToast('Hành động không thành công', describeActionResult(result), 'warning');
+        if (result.retry) {
+          const remaining = Number.isFinite(result.remainingAttempts) ? ` Còn ${result.remainingAttempts} lượt thử.` : '';
+          showToast('Câu trả lời chưa đúng', 'Thử lại.' + remaining, 'warning');
+        } else if (notificationEventCount === notificationsBefore) {
+          showToast('Hành động không thành công', describeActionResult(result), 'warning');
+        }
         logEvent({type:'console.action.result', command:name, payload, result});
       } else if (name === 'action.trigger') {
         showToast('Đã thực thi hành động', 'Engine đã chấp nhận Action: ' + payload.actionId, 'success', 2600);
