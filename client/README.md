@@ -24,6 +24,8 @@ import { WorkerJsonTransport } from './adapters/WorkerJsonTransport.js';
 
 const transport = new WorkerJsonTransport();
 const client = new JsonClient(transport);
+const inspection = await client.inspectScenario(scenario);
+// Show inspection.result.metadata to the user and wait for confirmation.
 const initialSnapshot = await client.initialize(scenario);
 
 const unsubscribe = client.subscribe(message => {
@@ -39,6 +41,8 @@ unsubscribe();
 client.dispose();
 transport.close();
 ```
+
+`client.inspectScenario(scenario)` sends the `scenario.inspect` command and returns its acknowledgement. Inspection validates the scenario and returns safe metadata without initializing gameplay. Call `initialize` only after the user confirms.
 
 The Engine remains inside a dedicated module Worker. The main thread communicates through the versioned JSON protocol and does not import or instantiate `GameEngine`.
 
