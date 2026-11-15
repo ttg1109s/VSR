@@ -11,6 +11,14 @@ export function cloneJsonValue(value,seen=new WeakSet()){
  seen.delete(value);return out;
 }
 const id=(p,n)=>`${p}_${Date.now().toString(36)}_${n.toString(36)}`;
+// Snapshot projections must be deterministic. Random resolver expressions are
+// intentionally left unevaluated here; they belong to action execution, not projection.
+const hasSnapshotUnsafeExpression=value=>{
+ if(typeof value==='string')return /\\$rdnumber\\s*\\(/i.test(value);
+ if(Array.isArray(value))return value.some(hasSnapshotUnsafeExpression);
+ if(value&&typeof value==='object')return Object.values(value).some(hasSnapshotUnsafeExpression);
+ return false;
+};
 export class JsonProtocol{
  constructor({engineId=`vsr-${Math.random().toString(36).slice(2,10)}`,protocolVersion=2,maxEvents=1000,maxRememberedCommands=500,authorizeCommand=null,requireAuthorization=false,onCommandSuccess=null}={}){
   if(typeof requireAuthorization!=='boolean')throw new TypeError('requireAuthorization must be boolean.');
@@ -69,7 +77,12 @@ export class JsonProtocol{
     const permissionAllowed=!Array.isArray(set.charAllow)||set.charAllow.length===0||actingIds.some(id=>set.charAllow.includes(id));
     let requirementPass=null;
     if(set.requirement===true){
-     try{requirementPass=!!(action.requirement&&engine.checkReq?.(action.requirement)?.pass);}catch(_){requirementPass=null;}
+     const requirement=action.requirement;
+     const template=typeof requirement?.ref==='string'?engine.src?.templates?.requirements?.[requirement.ref]:null;
+     const evaluationInput=template||requirement;
+     if(!hasSnapshotUnsafeExpression(evaluationInput)){
+      try{requirementPass=!!(requirement&&engine.checkReq?.(requirement)?.pass);}catch(_){requirementPass=null;}
+     }
     }
     const checks={
      permission:permissionAllowed?'passed':'failed',
