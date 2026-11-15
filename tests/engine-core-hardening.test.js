@@ -13,6 +13,7 @@ import { SceneSystem } from '../engine/modules/Scene.js';
 import { AutomationSystem } from '../engine/modules/Automation.js';
 import { DEMO_SCRIPT } from '../demo_script.js';
 import { GameEngine } from '../engine/GameEngine.js';
+import { JsonProtocol } from '../protocol/JsonProtocol.js';
 
 function validScenario() {
   return {
@@ -774,4 +775,39 @@ test('action snapshot projection exposes stable identity and engine-evaluated av
   } finally {
     engine.dispose();
   }
+});
+
+
+test('snapshot projection does not evaluate random requirement expressions', () => {
+  let evaluations = 0;
+  const action = {
+    id: 'random_requirement',
+    set: { display: 'show', requirement: true },
+    requirement: {
+      logic: null,
+      check: [{ type: 'state', property: 'roll', op: '==', value: '$rdnumber(1, 6)' }]
+    },
+    meta: { title: 'Random requirement' }
+  };
+  const engine = {
+    state: {
+      sceneId: 'start',
+      scenes: { start: { activeRouterId: 'main' } },
+      actions: {},
+      entryCharacter: 'player',
+      faker: { active: false },
+      session: {}
+    },
+    src: { scenes: { start: { routers: { main: {} } } } },
+    getEffectiveActions: () => [action],
+    getConfig: () => false,
+    checkReq: () => { evaluations++; return { pass: true }; }
+  };
+  const snapshot = new JsonProtocol().createSnapshot(engine);
+  const projection = snapshot.presentation.actions[0];
+
+  assert.equal(evaluations, 0);
+  assert.equal(projection.availability.reason, 'requirement_failed');
+  assert.equal(projection.availability.canTrigger, false);
+  assert.equal(projection.availability.checks.requirement, 'not_evaluated');
 });
