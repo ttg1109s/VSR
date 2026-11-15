@@ -8,14 +8,14 @@ export class DebugConsole {
     window.addEventListener('unhandledrejection', e => this.record('error', e.reason?.message || String(e.reason), e.reason?.stack || ''));
     ['error','warn'].forEach(level => {
       const original = console[level].bind(console);
-      console[level] = (...args) => { original(...args); this.record(level, args.map(x => x?.message || (typeof x === 'string' ? x : JSON.stringify(x))).join(' '), args.find(x => x instanceof Error)?.stack || ''); };
+      console[level] = (...args) => { original(...args); this.record(level, args.map(x => { if (x?.message) return x.message; if (typeof x === 'string') return x; try { return JSON.stringify(x); } catch { return String(x); } }).join(' '), args.find(x => x instanceof Error)?.stack || ''); };
     });
     this.render();
   }
   record(level, message, stack = '') {
     this.entries.push({ level, message: String(message), stack, time: new Date().toISOString(), screen: window.__VSR_APP_STATE__?.screen || 'unknown' });
     if (this.entries.length > 300) this.entries.shift();
-    if (this.open) this.render();
+    this.render();
   }
   toggle() { this.open = !this.open; this.render(); }
   render() {
