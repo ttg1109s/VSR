@@ -12,6 +12,7 @@ import { ActionSystem } from '../engine/modules/Action.js';
 import { SceneSystem } from '../engine/modules/Scene.js';
 import { AutomationSystem } from '../engine/modules/Automation.js';
 import { DEMO_SCRIPT } from '../demo_script.js';
+import { GameEngine } from '../engine/GameEngine.js';
 
 function validScenario() {
   return {
@@ -36,6 +37,30 @@ function validScenario() {
     actions: {}, chat: {}, characters: {}, endings: {}, config: {}
   };
 }
+
+test('engine.init can load a scenario without entering its entry scene', async () => {
+  const engine = new GameEngine();
+  try {
+    const command = engine.protocol.createCommand(
+      'engine.init',
+      { script: validScenario(), enterScene: false },
+      { commandId: 'test-load-without-entry' }
+    );
+    const acknowledgement = await engine.dispatchProtocolCommand(command);
+    assert.equal(acknowledgement.ok, true);
+    assert.equal(acknowledgement.result.initialized, true);
+    assert.equal(acknowledgement.result.sceneEntered, false);
+    assert.equal(engine.state.sceneId, '');
+
+    const snapshot = engine.protocol.createSnapshot(engine);
+    assert.equal(snapshot.game.initialized, true);
+    assert.equal(snapshot.game.sceneId, null);
+    assert.equal(snapshot.game.routerId, null);
+    assert.equal(snapshot.presentation.scene, null);
+  } finally {
+    engine.dispose();
+  }
+});
 
 test('scenario validation enforces the complete V9.2 JSON Schema contract', () => {
   const errors = validateScenario({ scenes: {} });

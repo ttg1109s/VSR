@@ -30,7 +30,7 @@ export class GameEngine {
   this.registerProtocolCommands();
  }
  registerProtocolCommands(){
-  this.protocol.registerCommand('engine.init',async payload=>{if(!payload.script||typeof payload.script!=='object')throw new TypeError('engine.init requires payload.script.');await this.init(payload.script);return{initialized:!!this.src};});
+  this.protocol.registerCommand('engine.init',async payload=>{if(!payload.script||typeof payload.script!=='object')throw new TypeError('engine.init requires payload.script.');await this.init(payload.script,{enterScene:payload.enterScene!==false});return{initialized:!!this.src,sceneEntered:!!this.state.sceneId,entryScene:this.src?.meta?.entryScene??null};});
   this.protocol.registerCommand('scenario.inspect',payload=>{
    if(!payload.scenario||typeof payload.scenario!=='object'||Array.isArray(payload.scenario))throw new TypeError('scenario.inspect requires payload.scenario.');
    const scenario=normalizeScenario(payload.scenario);
@@ -175,7 +175,7 @@ export class GameEngine {
   this.timerState=null;
   this.taskSequence=0;this.currentStillTask=null;this.activeTimerTasks=[];this.isActionProcessing=false;this.isTransitioning=false;this.disposed=false;this.restoredTaskTimers={};this.restoredPausedTasks=[];
  }
- async init(script){
+ async init(script,{enterScene=true}={}){
   const loaded=LoaderSystem.loadScript(script,this.api);
   if(!loaded)throw new Error('Scenario loading failed.');
   const sourceCopy=cloneJsonValue(loaded.scenario);
@@ -184,8 +184,10 @@ export class GameEngine {
   this.initCharactersMoving();
   const entry=this.src.meta.entryScene;
   if(!this.api.engine.state.getRuntimeSnapshot('scenes.[id]', { id: entry }))throw new Error(`Entry scene '${entry}' does not exist.`);
-  await this.enterScene(entry);
-  this.api.engine.state.update('playerMoveHistory', history => [...(history || []), entry]);
+  if(enterScene){
+   await this.enterScene(entry);
+   this.api.engine.state.update('playerMoveHistory', history => [...(history || []), entry]);
+  }
   this.commitState('engine.initialized');
   return this;
  }

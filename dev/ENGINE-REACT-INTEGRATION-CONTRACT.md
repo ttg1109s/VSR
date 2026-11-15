@@ -157,7 +157,7 @@ Snapshot là dữ liệu đồng bộ trạng thái tại một thời điểm. 
 | `engineId` | Định danh instance Engine |
 | `revision`, `stateRevision` | Revision trạng thái; `revision` là alias tương thích |
 | `eventSequence` | Vị trí event stream tại lúc snapshot được tạo |
-| `game` | `initialized`, `sceneId`, `routerId` |
+| `game` | `initialized`, `sceneId`, `routerId`; khi scenario đã load nhưng chưa vào scene, `initialized` là `true` còn `sceneId` và `routerId` là `null` |
 | `presentation` | Projection client-safe của scenario title, scene, router và action display metadata |
 | `session` | Chat, password challenge đã sanitize, timer và notification |
 | `state` | Runtime state đã chuyển sang JSON-compatible form và loại bỏ một số runtime-only keys |
@@ -200,7 +200,7 @@ Các command sau được liệt kê trong `protocol/README.md`. Payload dưới
 | Command | Payload | Ý nghĩa |
 |---|---|---|
 | `scenario.inspect` | `{ scenario }` | Chuẩn hóa/validate scenario và trả metadata an toàn, không khởi chạy gameplay |
-| `engine.init` | `{ script }` | Khởi tạo scenario |
+| `engine.init` | `{ script, enterScene? }` | Nạp scenario; `enterScene: false` giữ runtime đã load nhưng chưa vào scene (mặc định `true` để tương thích) |
 | `action.trigger` | `{ actionId, uniqueId? }` | Thực thi action trên router đang active |
 | `action.markAsRead` | `{ uniqueId }` | Đánh dấu mô tả action đã đọc |
 | `chat.next` | `{}` | Tiến hội thoại |
@@ -251,7 +251,7 @@ Lưu ý implementation hiện tại:
 
 - `dispatch` tự tạo `commandId` và thêm `expectedStateRevision` nếu đã có snapshot.
 - `dispatch` parse acknowledgement; nếu `ack.ok === false`, nó throw Error có gắn `code` và `acknowledgement`.
-- `initialize` gửi `engine.init`, sau đó yêu cầu snapshot đã có `game.initialized`; nếu chưa có, nó throw.
+- `initialize(scenario, { enterScene = false } = {})` gửi `engine.init`, mặc định chỉ nạp scenario và giữ `game.sceneId === null`; truyền `enterScene: true` nếu cần vào entry scene ngay. Sau đó yêu cầu snapshot có `game.initialized`; nếu chưa có, nó throw.
 - `dispose()` hủy subscription transport và xóa listener của JsonClient. Vòng đời transport (ví dụ `close()`) vẫn do nơi tạo transport quản lý.
 
 Không gọi `JsonClient.receive` trực tiếp từ component như một cách cập nhật state; message đến từ transport subscription.

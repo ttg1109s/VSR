@@ -91,7 +91,7 @@ function formatDifficulty(value) {
   return labels[value] || value;
 }
 
-export default function ScenarioPreviewPage({ preview, onBack }) {
+export default function ScenarioPreviewPage({ preview, onBack, onPlay }) {
   const metadata = preview?.metadata || {};
   const experienceItems = [
     { label: 'Age rating', value: metadata.ageRating },
@@ -153,6 +153,7 @@ export default function ScenarioPreviewPage({ preview, onBack }) {
           <Button
             variant="primary"
             size="md"
+            onClick={onPlay}
             leadingIcon={<span className="vsr-icon" aria-hidden="true">play_arrow</span>}
           >
             Play

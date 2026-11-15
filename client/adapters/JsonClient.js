@@ -59,8 +59,8 @@ export class JsonClient {
     return this.dispatch('scenario.inspect', { scenario });
   }
 
-  async initialize(scenario) {
-    const acknowledgement = await this.dispatch('engine.init', { script: scenario });
+  async initialize(scenario, { enterScene = false } = {}) {
+    const acknowledgement = await this.dispatch('engine.init', { script: scenario, enterScene });
     const snapshot = this.getSnapshot();
     if (!snapshot?.game?.initialized) {
       throw new Error(acknowledgement.result?.message || 'Engine did not publish an initialized JSON snapshot.');
