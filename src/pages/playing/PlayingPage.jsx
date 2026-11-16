@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Badge, BottomNavigation, Breadcrumb, MediaFrame } from '../../design-system/index.js';
 import ActionCollection from '../../features/actions/ActionCollection.jsx';
 import ContactPanel from './ContactPanel.jsx';
@@ -9,6 +9,13 @@ export default function PlayingPage({ snapshot, client, error = '', onNavigate }
   const scene = snapshot?.presentation?.scene ?? null;
   const router = snapshot?.presentation?.router ?? null;
   const activeSceneId = snapshot?.game?.sceneId ?? null;
+
+  const activeChat = snapshot?.session?.chat ?? null;
+  useEffect(() => {
+    if (activeChat?.active !== true || !activeChat.id || !activeChat.contactId) return;
+    setContactOpen(true);
+    setActiveNavigation('contact');
+  }, [activeChat?.active, activeChat?.id, activeChat?.contactId]);
 
   const scenePath = useMemo(() => {
     const path = snapshot?.presentation?.scenePath;
