@@ -16,6 +16,8 @@ Snapshots expose three separate concerns:
 - `game`: current scene/router identity and initialization state.
 - `presentation`: a client-safe projection of the current scene, active router, `scenePath`, resolved cover metadata, and active-router action projections. Each action has a stable `key` (`sceneId_routerId_actionId`), normalized `meta`, `presentation` read/display state, `availability` (`canTrigger`, `reason`, `cooldownUntil`) and `runtimeState`. It excludes executable effects, requirements, sibling routers, scenario source, and password answers/definitions.
 - `session`: chat state/history, a sanitized active challenge descriptor, and pending/recent notifications.
+- `presentation.player`: safe profile projection of the immutable original entry character (`id`, `name`, `description`, `avatar`, `stats`, and relationship tags resolved to character labels).
+- `presentation.currentIdentity`: safe descriptor of the identity currently controlled by the player (`id`, `name`, `avatar`, Faker `mode`, and whether it is the original entry character). This may differ from `presentation.player` while Faker is active.
 
 The snapshot's `state` remains JSON-compatible runtime state. `session.passwordChallenge` is removed from that state copy; the sanitized descriptor is available under top-level `session.passwordChallenge`. It may include challenge type, public description, retry/deadline counters, puzzle media/ratio/level, or find-way grid/start/target. It must never include the password definition, expected answer, or find-way solution path.
 
