@@ -191,8 +191,16 @@ test('Contact exposes Engine-owned thread summaries and opens only a thread belo
   const client = new JsonClient(host);
   try {
     await client.initialize(JSON.parse(host.getDemoScenario()));
-    host.engine.startChat('chat_mai');
-    host.engine.endChat();
+    const runtimeChat = JSON.parse(JSON.stringify(host.engine.src.chat.chat_mai));
+    runtimeChat.set = {
+      ...(runtimeChat.set || {}),
+      activationTime: Date.now() - 1000,
+      lastInteraction: Date.now() - 500,
+      read: false,
+      bookmark: []
+    };
+    host.engine.state.chats.chat_mai = runtimeChat;
+    host.engine.state.chatHistory.chat_mai = [{ nameID: 'mai', text: 'Tín hiệu ở tháp đã thay đổi.' }];
     host.engine.commitState('contact.thread.available');
 
     const mai = client.getSnapshot().presentation.contacts.find(contact => contact.id === 'mai');
