@@ -124,7 +124,22 @@ export class JsonProtocol{
    ?activeChatMeta.sender
    :(Array.isArray(activeChatMeta.to)?activeChatMeta.to.find(id=>typeof id==='string'&&id!==activeIdentityId):null)||null;
   const chatChoices=engine.chatState?.waitingChoice===true&&Array.isArray(activeChatBlock?.choices)
-   ?activeChatBlock.choices.map((choice,index)=>({index,text:typeof choice?.text==='string'?choice.text:''})).filter(choice=>choice.text)
+   ?activeChatBlock.choices.map((choice,index)=>{
+    let requirementPass=true;
+    if(choice?.req){
+     try{
+      const check=engine.checkReq?.(choice.req)??engine.state?.checkReq?.(choice.req);
+      if(check&&check.pass===false)requirementPass=false;
+     }catch(_){requirementPass=true;}
+    }
+    return{
+     index,
+     text:typeof choice?.text==='string'?choice.text:'',
+     locked:choice?.set?.locked===true,
+     active:choice?.set?.active!==false,
+     requirementPass
+    };
+   }).filter(choice=>choice.text&&choice.active&&choice.requirementPass)
    :[];
   const session={
    chat:{
@@ -137,6 +152,7 @@ export class JsonProtocol{
     id:engine.chatState?.id??null,contactId:chatContactId,blockId:engine.chatState?.blockId??null,
     index:Number(engine.chatState?.index)||0,
     choices:chatChoices,
+    prompt:typeof activeChatBlock?.text==='string'?activeChatBlock.text:'',
     history:cloneJsonValue(engine.state.chatHistory||{})
    },
    passwordChallenge:challenge?{
