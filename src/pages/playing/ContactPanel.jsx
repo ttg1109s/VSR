@@ -335,7 +335,7 @@ export default function ContactPanel({ open, onClose, player, contacts = [], ses
                         const senderId = line.nameID || line.char_id;
                         const isPlayer = senderId === player?.id;
                         return (
-                          <div className={'vsr-contact-message' + (isPlayer ? ' is-player' : '')} key={selectedThreadId + ':' + index}>
+                          <div className={'vsr-contact-message' + (isPlayer ? ' is-player' : '')} key={selectedThreadId + ':' + index} style={{ '--message-index': Math.min(index, 8) }}>
                             <span className="vsr-contact-message__sender">{isPlayer ? 'Bạn' : contactName(senderId)}</span>
                             <p>{line.text || ''}</p>
                           </div>
