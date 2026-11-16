@@ -25,7 +25,6 @@ function ActionCard({ action, pending = false, interactionBlocked = false, passw
   const [error, setError] = useState('');
   const [challengeFeedback, setChallengeFeedback] = useState('');
   const [passwordPending, setPasswordPending] = useState(false);
-  const [showProcessing, setShowProcessing] = useState(false);
   const [clock, setClock] = useState(Date.now());
   const readRequestRef = useRef(false);
   const meta = action.meta || {};
@@ -46,19 +45,8 @@ function ActionCard({ action, pending = false, interactionBlocked = false, passw
   const deadline = seconds(passwordChallenge?.deadlineAt, clock);
   const thumbnail = meta.thumbnail || meta.cover;
   const ready = !coolingDown && (reason === 'available' || reason === 'password_required') && availability.canTrigger === true && !locked;
-  // Keep the availability badge stable while an action is running; busy feedback
-  // is communicated by the disabled/loading action button instead of a "Processing" label.
   const statusLabel = locked ? 'Locked' : coolingDown ? 'Wait' : (ready ? 'Ready' : (REASONS[reason] || 'Unknown'));
   const statusTone = locked ? 'danger' : (ready ? 'success' : (REASON_TONES[reason] || 'neutral'));
-
-  useEffect(() => {
-    if (!pending) {
-      setShowProcessing(false);
-      return undefined;
-    }
-    const timer = setTimeout(() => setShowProcessing(true), 180);
-    return () => clearTimeout(timer);
-  }, [pending]);
 
   useEffect(() => {
     const deadlines = [availability.cooldownUntil, passwordChallenge?.deadlineAt].filter(Number.isFinite);
@@ -151,7 +139,7 @@ function ActionCard({ action, pending = false, interactionBlocked = false, passw
     ? 'Character has permission to perform this action'
     : permissionFailed ? 'Character does not have permission to perform this action' : 'Permission status unknown';
 
-  return <article className="vsr-card vsr-action-card" data-action-key={action.key} aria-busy={showProcessing || undefined}>
+  return <article className="vsr-card vsr-action-card" data-action-key={action.key}>
     <div className="vsr-action-card__heading">
       <h3 className="vsr-action-card__title">{meta.title || action.title || action.id}</h3>
       <div className="vsr-action-card__status" aria-label="Action status">
@@ -194,7 +182,7 @@ function ActionCard({ action, pending = false, interactionBlocked = false, passw
 
     {feedback && <p className="vsr-action-card__feedback" role="status">{feedback}</p>}
     <div className="vsr-action-card__actions">
-      <Button size="lg" leadingIcon={meta.buttonIcon} disabled={pending || interactionBlocked || coolingDown || !ready || availability.canTrigger !== true || locked} loading={showProcessing} onClick={() => onTrigger?.(action)} aria-label={meta.buttonLabel || `Execute ${meta.title || action.id}`}>{meta.buttonLabel || 'Execute'}</Button>
+      <Button size="lg" leadingIcon={meta.buttonIcon} disabled={pending || interactionBlocked || coolingDown || !ready || availability.canTrigger !== true || locked} onClick={() => onTrigger?.(action)} aria-label={meta.buttonLabel || `Execute ${meta.title || action.id}`}>{meta.buttonLabel || 'Execute'}</Button>
     </div>
 
     <Dialog open={challengeOpen} onClose={cancel} title="Verify action" description={passwordChallenge?.description || 'Complete the challenge provided by the Engine.'}>
