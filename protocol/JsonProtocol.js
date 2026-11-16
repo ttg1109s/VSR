@@ -152,14 +152,15 @@ export class JsonProtocol{
     };
    });
   };
+  const fakerMode=faker.mode||engine.getConfig?.('fakerMode')||null;
   const projectCharacter=(characterId,character,{isPlayer=false}={})=>({
    id:characterId,
-   name:(isPlayer&&faker.active&&faker.mode==='mask'?character.set?.name:null)||character.meta?.name||characterId,
-   description:(isPlayer&&faker.active&&faker.mode==='mask'?character.set?.desc:null)??character.meta?.desc??null,
+   name:(isPlayer&&faker.active&&fakerMode==='mask'?character.set?.name:null)||character.meta?.name||characterId,
+   description:(isPlayer&&faker.active&&fakerMode==='mask'?character.set?.desc:null)??character.meta?.desc??null,
    avatar:character.meta?.avatar??null,
    stats:cloneJsonValue(character.stats||{}),
    relationship:projectRelationships(character),
-   ...(isPlayer?{identityMode:faker.active?(faker.mode||null):null}:{})
+   ...(isPlayer?{identityMode:faker.active?fakerMode:null}:{})
   });
   const playerProjection=currentCharacter?projectCharacter(currentIdentityId,currentCharacter,{isPlayer:true}):null;
   const contacts=Object.entries(engine.state.characters||{})
