@@ -48,3 +48,14 @@ export function ContactSection({ children, className, ...props }) {
   return <section className={cx('vsr-contact-section', className)} {...props}>{children}</section>;
 }
 
+export function ContactTopicList({ children, className, ...props }) {
+  return <section className={cx('vsr-contact-topic-list', className)} {...props}>{children}</section>;
+}
+
+export function ContactConversation({ children, className, ...props }) {
+  return <section className={cx('vsr-contact-conversation', className)} {...props}>{children}</section>;
+}
+
+export function ContactComposer({ children, className, ...props }) {
+  return <footer className={cx('vsr-contact-composer', className)} {...props}>{children}</footer>;
+}
