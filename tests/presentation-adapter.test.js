@@ -247,7 +247,7 @@ test('Contact exposes Engine-owned thread summaries and opens only a thread belo
     assert.equal(client.getSnapshot().session.chat.choices.length, 2);
     assert.equal(client.getSnapshot().session.chat.choices.some(choice => Object.hasOwn(choice, 'effect')), false);
 
-    host.engine.state.set('faker', {
+    host.engine.api.engine.state.set('faker', {
       active: true,
       targetId: 'mai',
       mode: 'mask',
