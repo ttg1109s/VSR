@@ -214,7 +214,7 @@
 }
 .vsr-contact-relationship > span:first-child { flex: 1 1 auto; min-width: 120px; }
 .vsr-contact-section { display: flex; flex-direction: column; gap: 12px; }
-.vsr-contact-detail-content { padding: 24px; }
+.vsr-contact-detail-content { padding: 0; }
 .vsr-contact-detail-content > .vsr-contact-profile { margin-bottom: 20px; }
 .vsr-contact-protocol-note {
   width: min(100%, 900px);
@@ -271,7 +271,7 @@
   .vsr-contact-list.is-hidden-compact { display: none; }
   .vsr-contact-detail.is-hidden-compact { display: none; }
   .vsr-contact-back { display: inline-flex; }
-  .vsr-contact-detail-content { padding: 16px; }
+  .vsr-contact-detail-content { padding: 0; }
   .vsr-contact-conversation__history { padding: 16px; }
   .vsr-contact-composer { padding: 12px 16px; }
   .vsr-contact-profile { padding: 16px; }
