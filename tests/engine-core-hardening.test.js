@@ -1065,7 +1065,7 @@ test('Player Entry preserves original profile and exposes current identity acros
     assert.equal(initial.presentation.originalPlayer.id, 'hero');
     assert.equal(initial.presentation.originalPlayer.name, 'Hero');
 
-    engine.state.entryCharacter = 'npc';
+    engine.api.engine.state.set('entryCharacter', 'npc');
     const changed = engine.protocol.createSnapshot(engine);
     assert.equal(changed.presentation.player.id, 'npc');
     assert.equal(changed.presentation.player.name, 'NPC');
@@ -1073,7 +1073,7 @@ test('Player Entry preserves original profile and exposes current identity acros
     assert.equal(changed.presentation.originalPlayer.id, 'hero');
     assert.equal(changed.presentation.originalPlayer.stats.hp.current, 75);
 
-    engine.state.faker = { active: true, targetId: 'hero', mode: 'soul', backupPlayer: { entryCharacter: 'npc' } };
+    engine.api.engine.state.set('faker', { active: true, targetId: 'hero', mode: 'soul', backupPlayer: { entryCharacter: 'npc' } });
     const fakerSnapshot = engine.protocol.createSnapshot(engine);
     assert.equal(fakerSnapshot.presentation.player.id, 'hero');
     assert.equal(fakerSnapshot.presentation.player.identityMode, 'soul');
