@@ -167,8 +167,9 @@ Các quy tắc quan trọng:
 - `stateRevision` là revision trạng thái có thẩm quyền.
 - `presentation` là projection để trình bày, không phải toàn bộ scenario source.
 - `meta.entryCharacter` là cấu hình nhân vật bắt đầu. Loader chuẩn hóa `state.originalEntryCharacter` làm mốc cấu hình tương thích và `state.entryCharacter` làm identity runtime. Identity đang điều khiển được xác định theo đúng quy tắc Engine: khi Faker active là `faker.targetId`, nếu không là `state.entryCharacter`.
-- `presentation.player` mô tả nhân vật hiện đang được điều khiển, bao gồm `identityMode` khi Faker active. React không tự suy diễn identity từ `state.characters`.
-- `presentation.originalPlayer` mô tả profile ổn định của nhân vật được cấu hình trong `meta.entryCharacter`. Contact Player Entry dùng projection này; nếu current identity khác, UI có thể hiển thị `presentation.player` riêng.
+- `presentation.player` là hồ sơ duy nhất của nhân vật hiện đang được điều khiển: target của Faker khi Faker active, nếu không thì `state.entryCharacter`. React không tự suy diễn identity từ `state.characters`.
+- `presentation.contacts` là danh sách chỉ đọc gồm nhân vật đã gặp bởi identity hiện tại hoặc đang hiện diện trong scene hiện tại. Chọn hồ sơ chỉ thay đổi state cục bộ của Contact UI; không đổi danh tính runtime.
+- Không có command `contact.select` hoặc `identity.switch`: Contact chỉ đọc dữ liệu; thay đổi danh tính phải thông qua action/Faker do scenario định nghĩa, không cho UI tự ghi đè Engine state.
 - `session.passwordChallenge` là descriptor đã sanitize; password challenge bị loại khỏi bản sao `state.session`.
 - Không thêm password answer, secret scenario data hoặc executable effect vào projection dành cho client.
 - Snapshot không phải nơi React ghi ngược thay đổi.
