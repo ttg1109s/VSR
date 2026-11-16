@@ -25,21 +25,39 @@
   overflow:auto;
   overscroll-behavior:contain;
 }
-.vsr-popover-content::before{
+/* Two layered triangles create a visible outline that matches the popover border. */
+.vsr-popover-content::before,
+.vsr-popover-content::after{
   position:absolute;
-  top:-8px;
   left:var(--vsr-popover-arrow-left,24px);
   width:0;
   height:0;
-  border-right:8px solid transparent;
-  border-bottom:8px solid white;
-  border-left:8px solid transparent;
   content:'';
   transform:translateX(-50%);
 }
+.vsr-popover-content::before{
+  top:-9px;
+  border-right:9px solid transparent;
+  border-bottom:9px solid var(--vsr-color-border-subtle);
+  border-left:9px solid transparent;
+}
+.vsr-popover-content::after{
+  top:-7px;
+  border-right:8px solid transparent;
+  border-bottom:8px solid white;
+  border-left:8px solid transparent;
+}
 .vsr-popover-content.is-above::before{
   top:auto;
-  bottom:-8px;
+  bottom:-9px;
+  border-top:9px solid var(--vsr-color-border-subtle);
+  border-right:9px solid transparent;
+  border-bottom:0;
+  border-left:9px solid transparent;
+}
+.vsr-popover-content.is-above::after{
+  top:auto;
+  bottom:-7px;
   border-top:8px solid white;
   border-right:8px solid transparent;
   border-bottom:0;
