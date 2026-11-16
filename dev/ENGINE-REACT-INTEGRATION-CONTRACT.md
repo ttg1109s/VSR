@@ -169,7 +169,7 @@ Các quy tắc quan trọng:
 - `meta.entryCharacter` là cấu hình nhân vật bắt đầu. Loader chuẩn hóa `state.originalEntryCharacter` làm mốc cấu hình tương thích và `state.entryCharacter` làm identity runtime. Identity đang điều khiển được xác định theo đúng quy tắc Engine: khi Faker active là `faker.targetId`, nếu không là `state.entryCharacter`.
 - `presentation.player` là hồ sơ duy nhất của nhân vật hiện đang được điều khiển: target của Faker khi Faker active, nếu không thì `state.entryCharacter`. React không tự suy diễn identity từ `state.characters`.
 - `presentation.contacts` gồm hồ sơ an toàn của nhân vật đã gặp bởi identity hiện tại hoặc đang hiện diện trong scene hiện tại; mỗi contact có `threads` là danh sách thread đã được Chat System kích hoạt và liên quan đến contact đó. Thread projection chỉ gồm ID, tiêu đề, preview, thời điểm và trạng thái đọc/kết thúc.
-- Contact UI là lớp hợp nhất Contact System và Chat System: chọn contact để xem thread list; chọn thread để mở đúng lịch sử của thread đó; lịch sử và choices được lấy từ `session.chat`. Chỉ hiển thị choices khi `waitingChoice` là true; khóa thao tác tiếp diễn trong lúc `transitionPending` là true. Chọn contact chỉ là state trình bày cục bộ, còn mở thread là thao tác Engine qua `chat.open`.
+- Contact UI là lớp hợp nhất Contact System và Chat System: chọn contact để xem thread list; chọn thread để mở đúng lịch sử của thread đó; lịch sử và choices được lấy từ `session.chat`. Chỉ hiển thị choices khi `waitingChoice` là true; khóa thao tác tiếp diễn trong lúc `transitionPending` là true. Chọn contact chỉ là state trình bày cục bộ. `chat.open` chỉ dùng khi người chơi chủ động mở một thread đã kích hoạt nhưng không phải thread đang active. Khi Action/Effect System kích hoạt chat, Engine projection phải cung cấp `session.chat.contactId`; React tự mở Contact và chọn `session.chat.id`, không gọi `chat.open` lần nữa vì thread đã được Engine kích hoạt.
 - Không có command `contact.select` hoặc `identity.switch`: thay đổi danh tính phải thông qua action/Faker do scenario định nghĩa, không cho UI tự ghi đè Engine state. Chat System hiện hỗ trợ hội thoại kịch bản và lựa chọn, không hỗ trợ gửi văn bản tự do.
 - `session.passwordChallenge` là descriptor đã sanitize; password challenge bị loại khỏi bản sao `state.session`.
 - Không thêm password answer, secret scenario data hoặc executable effect vào projection dành cho client.
@@ -504,7 +504,7 @@ Trong triển khai hiện tại, hai nút Home gọi `scenario.inspect` qua Work
 - [ ] Có pending, disabled, error và empty states phù hợp.
 - [ ] Có keyboard/accessibility semantics.
 - [ ] Contact UI dùng `presentation.contacts[].threads` làm danh sách thread; không tự dựng thread từ scenario source.
-- [ ] Mở thread qua `chat.open`; lịch sử và lựa chọn lấy từ `session.chat`; tiếp diễn qua `chat.next` / `chat.selectChoice`.
+- [ ] Mở thread cũ qua `chat.open`; nếu Engine kích hoạt chat từ Action/Effect, tự đồng bộ Contact selection từ `session.chat.contactId` và `session.chat.id` mà không kích hoạt lại thread; lịch sử và lựa chọn lấy từ `session.chat`; tiếp diễn qua `chat.next` / `chat.selectChoice`.
 - [ ] Không hiển thị composer gửi văn bản tự do khi protocol chưa hỗ trợ lệnh đó.
 - [ ] Không tạo UI cho capability chưa có contract/data source.
 - [ ] Test cả adapter/service và hành vi UI ở mức phù hợp.
