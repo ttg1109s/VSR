@@ -186,6 +186,7 @@
                     "waitingChoice": { "type": "boolean" },
                     "transitionPending": { "type": "boolean" },
                     "id": { "type": ["string", "null"] },
+                    "contactId": { "type": ["string", "null"] },
                     "blockId": { "type": ["string", "null"] },
                     "index": { "type": "integer", "minimum": 0 },
                     "choices": {
