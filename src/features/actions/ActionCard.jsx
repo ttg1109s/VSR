@@ -46,8 +46,10 @@ function ActionCard({ action, pending = false, interactionBlocked = false, passw
   const deadline = seconds(passwordChallenge?.deadlineAt, clock);
   const thumbnail = meta.thumbnail || meta.cover;
   const ready = !coolingDown && (reason === 'available' || reason === 'password_required') && availability.canTrigger === true && !locked;
-  const statusLabel = showProcessing ? 'Processing' : locked ? 'Locked' : coolingDown ? 'Wait' : (ready ? 'Ready' : (REASONS[reason] || 'Unknown'));
-  const statusTone = showProcessing ? 'info' : locked ? 'danger' : (ready ? 'success' : (REASON_TONES[reason] || 'neutral'));
+  // Keep the availability badge stable while an action is running; busy feedback
+  // is communicated by the disabled/loading action button instead of a "Processing" label.
+  const statusLabel = locked ? 'Locked' : coolingDown ? 'Wait' : (ready ? 'Ready' : (REASONS[reason] || 'Unknown'));
+  const statusTone = locked ? 'danger' : (ready ? 'success' : (REASON_TONES[reason] || 'neutral'));
 
   useEffect(() => {
     if (!pending) {
