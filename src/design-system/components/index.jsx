@@ -82,10 +82,15 @@ export function Popover({trigger,children,align='start',label='Open additional c
   const root=useRef(null),triggerRef=useRef(null),contentRef=useRef(null);
   const close=()=>{setOpen(false);setPosition(null);onOpenChange?.(false);};
   const updatePosition=()=>{
-    const anchor=triggerRef.current?.getBoundingClientRect();
+    const trigger=triggerRef.current;
+    const anchor=trigger?.getBoundingClientRect();
     if(!anchor)return;
-    const margin=16,gap=10,width=Math.min(480,window.innerWidth-margin*2);
-    const left=Math.max(margin,Math.min(align==='end'?anchor.right-width:anchor.left,window.innerWidth-margin-width));
+    const card=trigger.closest('.vsr-action-card')?.getBoundingClientRect();
+    const margin=16,gap=10;
+    const leftBound=Math.max(margin,(card?.left??0)+margin);
+    const rightBound=Math.min(window.innerWidth-margin,(card?.right??window.innerWidth)-margin);
+    const width=Math.max(220,Math.min(480,rightBound-leftBound));
+    const left=Math.max(margin,Math.min(align==='end'?anchor.right-width:leftBound,rightBound-width));
     const initialTop=anchor.bottom+gap;
     setPosition({left,top:initialTop,width,arrowLeft:Math.max(12,Math.min(width-12,anchor.left+anchor.width/2-left)),above:false});
   };
