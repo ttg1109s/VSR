@@ -216,7 +216,10 @@ test('Contact exposes Engine-owned thread summaries and opens only a thread belo
     await client.openChatThread('mai', 'chat_mai');
     assert.equal(client.getSnapshot().session.chat.id, 'chat_mai');
     assert.equal(client.getSnapshot().session.chat.active, true);
-    assert.ok(Array.isArray(client.getSnapshot().session.chat.choices));
+    await client.nextChat();
+    await client.nextChat();
+    assert.equal(client.getSnapshot().session.chat.waitingChoice, true);
+    assert.equal(client.getSnapshot().session.chat.choices.length, 2);
     assert.equal(client.getSnapshot().session.chat.choices.some(choice => Object.hasOwn(choice, 'effect')), false);
   } finally {
     client.dispose();
