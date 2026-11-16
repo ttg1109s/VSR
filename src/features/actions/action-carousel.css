@@ -6,6 +6,6 @@
 .vsr-action-carousel__slide{flex:0 0 clamp(320px,42vw,480px);min-width:0;scroll-snap-align:start}
 .vsr-action-carousel__slide>.vsr-action-card{height:100%;box-sizing:border-box}
 @media(max-width:599px){
- .vsr-action-carousel__slide{flex-basis:86vw;max-width:420px}
- .vsr-action-carousel__viewport{margin-right:-14px;padding-right:14vw}
+ .vsr-action-carousel__slide{flex-basis:100%;max-width:none}
+ .vsr-action-carousel__viewport{margin-right:0;padding-right:0}
 }
