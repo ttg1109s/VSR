@@ -19,7 +19,7 @@ Snapshots expose three separate concerns:
 - `presentation.player`: safe profile projection of the immutable original entry character (`id`, `name`, `description`, `avatar`, `stats`, and relationship tags resolved to character labels).
 - `presentation.currentIdentity`: safe descriptor of the identity currently controlled by the player (`id`, `name`, `avatar`, Faker `mode`, and whether it is the original entry character). This may differ from `presentation.player` while Faker is active.
 
-The snapshot's `state` remains JSON-compatible runtime state. `session.passwordChallenge` is removed from that state copy; the sanitized descriptor is available under top-level `session.passwordChallenge`. It may include challenge type, public description, retry/deadline counters, puzzle media/ratio/level, or find-way grid/start/target. It must never include the password definition, expected answer, or find-way solution path.
+The snapshot's `state` remains JSON-compatible runtime state. It includes `originalEntryCharacter` (immutable scenario entry ID) and `entryCharacter` (current runtime identity, which may change during Faker). `session.passwordChallenge` is removed from that state copy; the sanitized descriptor is available under top-level `session.passwordChallenge`. It may include challenge type, public description, retry/deadline counters, puzzle media/ratio/level, or find-way grid/start/target. It must never include the password definition, expected answer, or find-way solution path.
 
 ## Commands
 
