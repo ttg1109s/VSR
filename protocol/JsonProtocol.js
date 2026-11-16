@@ -131,7 +131,7 @@ export class JsonProtocol{
     active:!!engine.chatState?.active,blocking:!!engine.chatState?.blocking,
     waitingChoice:engine.chatState?.waitingChoice===true,
     transitionPending:engine.chatState?.transitionPending===true,
-    id:engine.chatState?.id??null,blockId:engine.chatState?.blockId??null,
+    id:engine.chatState?.id??null,contactId:chatContactId,blockId:engine.chatState?.blockId??null,
     index:Number(engine.chatState?.index)||0,
     choices:chatChoices,
     history:cloneJsonValue(engine.state.chatHistory||{})
