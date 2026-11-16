@@ -1033,20 +1033,20 @@ test('item hide is ignored outside action context', () => {
 });
 
 
-test('entry character is normalized once and exposed separately from current identity', async () => {
+test('Player Entry follows the currently controlled identity and survives save restoration', async () => {
   const scenario = validScenario();
   scenario.meta.entryCharacter = 'hero';
   scenario.characters.hero = {
-    meta: { name: 'Hero', desc: 'Original protagonist.', avatar: 'https://example.test/hero.png' },
+    meta: { name: 'Hero', desc: 'Initial protagonist.', avatar: 'https://example.test/hero.png' },
     set: { linkEffect: false, alert: null, moving: false, move: null },
     stats: { hp: { current: 75, max: 100, label: 'HP' } },
     inventory: [],
     relationship: [['ally', 'npc']]
   };
   scenario.characters.npc = {
-    meta: { name: 'NPC', desc: 'A companion.' },
+    meta: { name: 'NPC', desc: 'Current controlled character.' },
     set: { linkEffect: false, alert: null, moving: false, move: null },
-    stats: {},
+    stats: { hp: { current: 30, max: 40, label: 'HP' } },
     inventory: []
   };
 
@@ -1061,14 +1061,19 @@ test('entry character is normalized once and exposed separately from current ide
     assert.equal(initial.presentation.player.name, 'Hero');
     assert.equal(initial.presentation.player.stats.hp.current, 75);
     assert.equal(initial.presentation.player.relationship[0].characterName, 'NPC');
-    assert.equal(initial.presentation.currentIdentity.id, 'hero');
-    assert.equal(initial.presentation.currentIdentity.isOriginal, true);
+    assert.equal(initial.presentation.player.identityMode, null);
+    assert.equal(Object.hasOwn(initial.presentation, 'currentIdentity'), false);
 
     engine.state.entryCharacter = 'npc';
     const changed = engine.protocol.createSnapshot(engine);
-    assert.equal(changed.presentation.player.id, 'hero');
-    assert.equal(changed.presentation.currentIdentity.id, 'npc');
-    assert.equal(changed.presentation.currentIdentity.isOriginal, false);
+    assert.equal(changed.presentation.player.id, 'npc');
+    assert.equal(changed.presentation.player.name, 'NPC');
+    assert.equal(changed.presentation.player.stats.hp.current, 30);
+
+    engine.state.faker = { active: true, targetId: 'hero', mode: 'soul', backupPlayer: { entryCharacter: 'npc' } };
+    const fakerSnapshot = engine.protocol.createSnapshot(engine);
+    assert.equal(fakerSnapshot.presentation.player.id, 'hero');
+    assert.equal(fakerSnapshot.presentation.player.identityMode, 'soul');
 
     const save = engine.exportSave();
     const restored = new GameEngine();
@@ -1078,7 +1083,7 @@ test('entry character is normalized once and exposed separately from current ide
       assert.equal(restored.state.entryCharacter, 'npc');
       const restoredSnapshot = restored.protocol.createSnapshot(restored);
       assert.equal(restoredSnapshot.presentation.player.id, 'hero');
-      assert.equal(restoredSnapshot.presentation.currentIdentity.id, 'npc');
+      assert.equal(restoredSnapshot.presentation.player.identityMode, 'soul');
     } finally {
       restored.dispose();
     }
