@@ -116,6 +116,13 @@ export class JsonProtocol{
   const activeChatBlock=engine.chatState?.active&&engine.chatState?.id
    ?engine.resolveBlock?.(engine.chatState.id,engine.chatState.blockId)
    :null;
+  const activeChatMeta=engine.src?.chat?.[engine.chatState?.id]?.meta||{};
+  const activeIdentityId=engine.state.faker?.active&&engine.state.faker?.targetId
+   ?engine.state.faker.targetId
+   :(engine.state.entryCharacter||'player');
+  const chatContactId=typeof activeChatMeta.sender==='string'&&activeChatMeta.sender!==activeIdentityId
+   ?activeChatMeta.sender
+   :(Array.isArray(activeChatMeta.to)?activeChatMeta.to.find(id=>typeof id==='string'&&id!==activeIdentityId):null)||null;
   const chatChoices=engine.chatState?.waitingChoice===true&&Array.isArray(activeChatBlock?.choices)
    ?activeChatBlock.choices.map((choice,index)=>({index,text:typeof choice?.text==='string'?choice.text:''})).filter(choice=>choice.text)
    :[];
