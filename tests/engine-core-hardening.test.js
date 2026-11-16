@@ -1033,7 +1033,7 @@ test('item hide is ignored outside action context', () => {
 });
 
 
-test('Player Entry preserves original profile and exposes current identity across save restoration', async () => {
+test('Player Entry exposes current controlled identity across save restoration', async () => {
   const scenario = validScenario();
   scenario.meta.entryCharacter = 'hero';
   scenario.characters.hero = {
@@ -1106,6 +1106,7 @@ test('loader rejects a configured entry character that is absent from scenario c
 test('Contact snapshot projects the current Player Entry and only known or present contacts', async () => {
   const scenario = validScenario();
   scenario.meta.entryCharacter = 'hero';
+  scenario.scenes.start.routers.main.actions[0].set.charAllow = ['ally'];
   scenario.characters = {
     hero: { meta: { name: 'Hero', desc: 'Current identity' }, stats: { hp: { current: 8, max: 10 } }, relationship: [], place: { scene_id: 'start', currentIndex: 0 }, met: [], moveList: [] },
     ally: { meta: { name: 'Ally' }, stats: {}, relationship: [['friend', 'hero']], place: { scene_id: 'start', currentIndex: 0 }, met: [], moveList: [] },
