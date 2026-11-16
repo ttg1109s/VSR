@@ -360,6 +360,13 @@ export default function ContactPanel({ open, onClose, player, contacts = [], ses
                             </Button>
                           ))}
                         </div>
+                      ) : isActiveThread && chatSession.isReview === true ? (
+                        <div className="vsr-contact-composer__review">
+                          <p className="vsr-contact-composer__hint">Bạn đang xem lại hội thoại đã kết thúc. Nội dung ở chế độ chỉ đọc.</p>
+                          <Button className="vsr-contact-chat-next" disabled={chatActionsDisabled} onClick={() => progressChat()}>
+                            {chatPending ? 'Đang đóng…' : 'Đóng hội thoại'}
+                          </Button>
+                        </div>
                       ) : isActiveThread ? (
                         <Button className="vsr-contact-chat-next" disabled={chatActionsDisabled} onClick={() => progressChat()}>
                           {chatPending || chatSession.transitionPending === true ? 'Đang chuyển đoạn…' : 'Tiếp tục'}
