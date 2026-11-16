@@ -66,7 +66,42 @@ function useLayer(open,onClose,ref){
   };document.addEventListener('keydown',key);const frame=requestAnimationFrame(()=>{(ref.current?.querySelector('[autofocus],button:not([disabled]),input:not([disabled])')||ref.current)?.focus?.();});return()=>{cancelAnimationFrame(frame);document.removeEventListener('keydown',key);previous?.focus?.();};},[open,onClose,ref]);
 }
 function Overlay({open,onClose,title,description,children,size='md',side='right',className}){
-  const ref=useRef(null),titleId=useId(),descId=useId();useLayer(open,onClose,ref);if(!open||typeof document==='undefined')return null;
+  const ref=useRef(null),titleId=useId(),descId=useId();
+  useLayer(open,onClose,ref);
+  useEffect(()=>{
+    const locksPageScroll = open && className?.includes('vsr-contact-drawer');
+    if(!locksPageScroll || typeof document==='undefined')return;
+    const body=document.body,html=document.documentElement;
+    const scrollY=window.scrollY||window.pageYOffset||0;
+    const previous={
+      bodyOverflow:body.style.overflow,
+      bodyPosition:body.style.position,
+      bodyTop:body.style.top,
+      bodyWidth:body.style.width,
+      bodyPaddingRight:body.style.paddingRight,
+      htmlOverflow:html.style.overflow,
+      htmlOverscroll:html.style.overscrollBehavior
+    };
+    const scrollbarWidth=Math.max(0,window.innerWidth-html.clientWidth);
+    body.style.overflow='hidden';
+    body.style.position='fixed';
+    body.style.top='-'+scrollY+'px';
+    body.style.width='100%';
+    if(scrollbarWidth)body.style.paddingRight=scrollbarWidth+'px';
+    html.style.overflow='hidden';
+    html.style.overscrollBehavior='none';
+    return()=>{
+      body.style.overflow=previous.bodyOverflow;
+      body.style.position=previous.bodyPosition;
+      body.style.top=previous.bodyTop;
+      body.style.width=previous.bodyWidth;
+      body.style.paddingRight=previous.bodyPaddingRight;
+      html.style.overflow=previous.htmlOverflow;
+      html.style.overscrollBehavior=previous.htmlOverscroll;
+      window.scrollTo(0,scrollY);
+    };
+  },[open,className]);
+  if(!open||typeof document==='undefined')return null;
   return createPortal(<div className="vsr-overlay" onMouseDown={e=>{if(e.target===e.currentTarget)onClose&&onClose();}}><section ref={ref} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby={titleId} aria-describedby={description?descId:undefined} className={cx('vsr-overlay-panel','vsr-overlay-panel--'+size,'vsr-overlay-panel--'+side,className)}><header className="vsr-overlay-header"><div>{title&&<h2 id={titleId}>{title}</h2>}{description&&<p id={descId}>{description}</p>}</div><button type="button" className="vsr-icon-button" aria-label="Close" onClick={onClose}>close</button></header><div className="vsr-overlay-content">{children}</div></section></div>,document.body);
 }
 export function Dialog(props){return <Overlay {...props}/>;}
