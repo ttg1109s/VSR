@@ -116,8 +116,8 @@ export default function ContactPanel({ open, onClose, player, contacts = [] }) {
       side="right"
       className="vsr-contact-drawer"
     >
-      <div className="vsr-contact-workspace">
-        <section className="vsr-contact-list" aria-label="Danh sách liên hệ">
+      <Grid columns="responsive-cards" gap="4" className="vsr-contact-workspace">
+        <section className="vsr-card vsr-contact-list" aria-label="Danh sách liên hệ">
           <header>
             <h3>Danh bạ</h3>
             <p>{contacts.length} nhân vật đã biết</p>
@@ -150,7 +150,7 @@ export default function ContactPanel({ open, onClose, player, contacts = [] }) {
             onSelect={setSelectedId}
           />
         </section>
-      </div>
+      </Grid>
     </Drawer>
   );
 }
