@@ -55,7 +55,6 @@ export const FakerSystem = {
             state.set('entryCharacter', targetId);
             this.api.presentation.notification.add("Chuyển sinh", `Bạn đã trở thành ${target.set?.name || target.meta?.name}`, "success");
         } else if (mode === 'mask') {
-            const playerId = state.getRuntime('originalEntryCharacter') || state.getRuntime('meta.entryCharacter') || 'player';
             state.update('characters.[id].set', current => ({
                 ...(current || {}),
                 name: target.set?.name || target.meta?.name,
@@ -82,7 +81,7 @@ export const FakerSystem = {
         const backup = faker.backupPlayer;
         const targetId = faker.targetId;
         const target = state.getRuntimeSnapshot('characters.[id]', { id: targetId });
-        const playerId = state.getRuntime('originalEntryCharacter') || state.getRuntime('meta.entryCharacter') || 'player';
+        const playerId = state.getRuntime('entryCharacter') || 'player';
         console.log(`[Faker] Exit: ${mode}`);
 
         if (mode === 'swap') {
