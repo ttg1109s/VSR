@@ -4,7 +4,7 @@
 .vsr-action-carousel__viewport::-webkit-scrollbar{display:none;width:0;height:0}
 .vsr-action-carousel__viewport:focus-visible{outline:2px solid var(--vsr-color-primary)}
 .vsr-action-carousel__track{display:flex;align-items:stretch;gap:var(--vsr-space-4);width:max-content;min-width:100%}
-.vsr-action-carousel__slide{flex:0 0 clamp(320px,42vw,480px);min-width:0;scroll-snap-align:start;scroll-snap-stop:always}
+.vsr-action-carousel__slide{flex:0 0 clamp(320px,42vw,480px);min-width:0;scroll-snap-align:start}
 .vsr-action-carousel__slide>.vsr-action-card{height:100%;box-sizing:border-box}
 @media(max-width:599px){
  .vsr-action-carousel__slide{flex-basis:86vw;max-width:420px}
