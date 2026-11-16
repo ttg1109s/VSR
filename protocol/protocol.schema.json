@@ -701,7 +701,24 @@
         "metCount": {
           "type": "integer",
           "minimum": 0
+        },
+        "threads": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/contactThreadProjection" }
         }
+      },
+      "additionalProperties": false
+    },
+    "contactThreadProjection": {
+      "type": "object",
+      "required": ["id", "title", "preview", "time", "isUnread", "isFinished"],
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "preview": { "type": "string" },
+        "time": { "type": "number" },
+        "isUnread": { "type": "boolean" },
+        "isFinished": { "type": "boolean" }
       },
       "additionalProperties": false
     },
