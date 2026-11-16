@@ -147,3 +147,40 @@ test('password challenge projection exposes safe hints but never password answer
   assert.equal(serialized.includes('private-answer'), false);
   assert.equal(serialized.includes('street'), false);
 });
+
+
+test('Contact consumes the live, read-only character projection from Engine snapshots', async () => {
+  const host = new LocalEngineHost();
+  const client = new JsonClient(host);
+  try {
+    const snapshot = await client.initialize(JSON.parse(host.getDemoScenario()));
+    const player = snapshot.presentation.player;
+    const mai = snapshot.presentation.contacts.find(contact => contact.id === 'mai');
+
+    assert.ok(player);
+    assert.equal(player.id, snapshot.state.faker?.active
+      ? snapshot.state.faker.targetId
+      : snapshot.state.entryCharacter);
+    assert.ok(mai);
+    assert.equal(mai.name, 'Mai');
+    assert.equal(mai.presence, 'present');
+    assert.ok(mai.stats.trust);
+    assert.ok(Array.isArray(mai.relationship));
+    assert.equal(snapshot.presentation.contacts.some(contact => contact.id === player.id), false);
+
+    const received = [];
+    const unsubscribe = client.subscribe(message => {
+      if (message.type === 'state') received.push(message.snapshot);
+    });
+    host.engine.state.characters.mai.stats.trust.current = 4;
+    host.engine.commitState('contact.profile.updated');
+
+    const updated = client.getSnapshot().presentation.contacts.find(contact => contact.id === 'mai');
+    assert.equal(updated.stats.trust.current, 4);
+    assert.equal(received.at(-1).presentation.contacts.find(contact => contact.id === 'mai').stats.trust.current, 4);
+    unsubscribe();
+  } finally {
+    client.dispose();
+    host.close();
+  }
+});
