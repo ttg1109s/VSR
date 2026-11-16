@@ -184,3 +184,34 @@ test('Contact consumes the live, read-only character projection from Engine snap
     host.close();
   }
 });
+
+
+test('Contact exposes Engine-owned thread summaries and opens only a thread belonging to the selected contact', async () => {
+  const host = new LocalEngineHost();
+  const client = new JsonClient(host);
+  try {
+    await client.initialize(JSON.parse(host.getDemoScenario()));
+    host.engine.startChat('chat_mai');
+    host.engine.endChat();
+    host.engine.commitState('contact.thread.available');
+
+    const mai = client.getSnapshot().presentation.contacts.find(contact => contact.id === 'mai');
+    assert.ok(mai);
+    assert.ok(mai.threads.some(thread => thread.id === 'chat_mai'));
+    assert.equal(typeof mai.threads.find(thread => thread.id === 'chat_mai').preview, 'string');
+
+    await assert.rejects(
+      client.openChatThread('hanh', 'chat_mai'),
+      error => /not available for this contact/i.test(error.message)
+    );
+
+    await client.openChatThread('mai', 'chat_mai');
+    assert.equal(client.getSnapshot().session.chat.id, 'chat_mai');
+    assert.equal(client.getSnapshot().session.chat.active, true);
+    assert.ok(Array.isArray(client.getSnapshot().session.chat.choices));
+    assert.equal(client.getSnapshot().session.chat.choices.some(choice => Object.hasOwn(choice, 'effect')), false);
+  } finally {
+    client.dispose();
+    host.close();
+  }
+});
