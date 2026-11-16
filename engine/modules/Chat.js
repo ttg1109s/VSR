@@ -123,8 +123,7 @@ export const ChatSystem = {
         let chatHistory = state.getSnapshot('chat.history', { id }) || [];
         const isLoop = c.meta && c.meta.loop === true;
         const bookmark = chatRuntime.set.bookmark;
-        const hasRead = bookmark.length > 0;
-        console.log(`[ChatSystem] Logic check: isLoop=${isLoop}, hasRead=${hasRead}, readState=${chatRuntime.set.read}`);
+        console.log(`[ChatSystem] Logic check: isLoop=${isLoop}, bookmarkLen=${bookmark.length}, readState=${chatRuntime.set.read}`);
 
         let startBlock = c.meta.entry;
         if (!startBlock || !Object.hasOwn(c.block || {}, startBlock)) {
