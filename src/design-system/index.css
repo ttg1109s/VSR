@@ -2,6 +2,7 @@
 @import './foundations/responsive.css';
 @import './foundations/layout.css';
 @import './components/index.css';
+@import './components/contact-workspace.css';
 @import './components/navigation.css';
 @import './components/media.css';
 @import './components/action-card.css';
