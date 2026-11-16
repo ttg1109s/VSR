@@ -15,6 +15,7 @@ export const ChatBlockHandlers = {
             if (block.choices && block.choices.length > 0) {
                 console.log(`[BlockHandler] Rendering choices...`);
                 hideInput(engine);
+                engine.api.engine.state.update('session.chat', current => ({ ...(current || {}), waitingChoice: true }));
 
                 engine.api.presentation.chat.renderChoices(block.choices, null);
                 return; // Dừng lại đợi user chọn
@@ -53,7 +54,8 @@ export const ChatBlockHandlers = {
 
     router: (engine, block) => {
         // Trường hợp block thuần Router (không content)
-        hideInput();
+        hideInput(engine);
+        engine.api.engine.state.update('session.chat', current => ({ ...(current || {}), waitingChoice: true }));
         engine.api.presentation.chat.renderChoices(block.choices, null);
     }
 };
