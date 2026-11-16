@@ -181,22 +181,56 @@
                 "chat": {
                   "type": "object",
                   "properties": {
-                    "active": { "type": "boolean" },
-                    "blocking": { "type": "boolean" },
-                    "waitingChoice": { "type": "boolean" },
-                    "transitionPending": { "type": "boolean" },
-                    "id": { "type": ["string", "null"] },
-                    "contactId": { "type": ["string", "null"] },
-                    "blockId": { "type": ["string", "null"] },
-                    "index": { "type": "integer", "minimum": 0 },
+                    "active": {
+                      "type": "boolean"
+                    },
+                    "blocking": {
+                      "type": "boolean"
+                    },
+                    "waitingChoice": {
+                      "type": "boolean"
+                    },
+                    "transitionPending": {
+                      "type": "boolean"
+                    },
+                    "id": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "contactId": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "blockId": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "index": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
                     "choices": {
                       "type": "array",
                       "items": {
                         "type": "object",
-                        "required": ["index", "text"],
+                        "required": [
+                          "index",
+                          "text"
+                        ],
                         "properties": {
-                          "index": { "type": "integer", "minimum": 0 },
-                          "text": { "type": "string" }
+                          "index": {
+                            "type": "integer",
+                            "minimum": 0
+                          },
+                          "text": {
+                            "type": "string"
+                          }
                         },
                         "additionalProperties": false
                       }
@@ -205,8 +239,21 @@
                       "type": "object",
                       "additionalProperties": {
                         "type": "array",
-                        "items": { "type": "object" }
+                        "items": {
+                          "type": "object"
+                        }
                       }
+                    },
+                    "mode": {
+                      "type": "string",
+                      "enum": [
+                        "idle",
+                        "active",
+                        "review"
+                      ]
+                    },
+                    "isReview": {
+                      "type": "boolean"
                     }
                   }
                 },
@@ -734,21 +781,42 @@
         },
         "threads": {
           "type": "array",
-          "items": { "$ref": "#/$defs/contactThreadProjection" }
+          "items": {
+            "$ref": "#/$defs/contactThreadProjection"
+          }
         }
       },
       "additionalProperties": false
     },
     "contactThreadProjection": {
       "type": "object",
-      "required": ["id", "title", "preview", "time", "isUnread", "isFinished"],
+      "required": [
+        "id",
+        "title",
+        "preview",
+        "time",
+        "isUnread",
+        "isFinished"
+      ],
       "properties": {
-        "id": { "type": "string" },
-        "title": { "type": "string" },
-        "preview": { "type": "string" },
-        "time": { "type": "number" },
-        "isUnread": { "type": "boolean" },
-        "isFinished": { "type": "boolean" }
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "preview": {
+          "type": "string"
+        },
+        "time": {
+          "type": "number"
+        },
+        "isUnread": {
+          "type": "boolean"
+        },
+        "isFinished": {
+          "type": "boolean"
+        }
       },
       "additionalProperties": false
     },

@@ -123,76 +123,82 @@ export const ChatSystem = {
         let chatHistory = state.getSnapshot('chat.history', { id }) || [];
         const isLoop = c.meta && c.meta.loop === true;
         const bookmark = chatRuntime.set.bookmark;
-        const hasRead = bookmark.length > 0;
-        console.log(`[ChatSystem] Logic check: isLoop=${isLoop}, hasRead=${hasRead}, readState=${chatRuntime.set.read}`);
+        console.log(`[ChatSystem] Logic check: isLoop=${isLoop}, bookmarkLen=${bookmark.length}, readState=${chatRuntime.set.read}`);
 
         let startBlock = c.meta.entry;
         if (!startBlock || !Object.hasOwn(c.block || {}, startBlock)) {
             throw new Error(`Chat '${id}' has an invalid or missing meta.entry block.`);
         }
-        const startIndex = 0;
+        let startIndex = 0;
         let shouldProcessBlock = true;
 
-        if (hasRead || (chatRuntime.set.read === true && !isLoop)) {
-            if (isLoop && !chatRuntime.set.read) {
-                console.log(`[ChatSystem] Loop check: True. Restarting chat '${id}'.`);
-                chatHistory = [];
-                chatRuntime.set.bookmark = [];
-                chatRuntime.set.read = false;
+        if (isLoop && bookmark.length > 0 && chatRuntime.set.read !== true) {
+            console.log(`[ChatSystem] Loop check: True. Restarting chat '${id}'.`);
+            chatHistory = [];
+            chatRuntime.set.bookmark = [];
+            chatRuntime.set.step = 0;
+            chatRuntime.set.read = false;
 
-                // Reset scenario-local choice flags as before; these flags are read by resolveBlock.
-                if (chatRuntime.block) {
-                    Object.values(chatRuntime.block).forEach(variants => {
-                        Object.values(variants).forEach(v => {
-                            if (v.choiced) v.choiced = false;
-                        });
+            // Reset scenario-local choice flags as before; these flags are read by resolveBlock.
+            if (chatRuntime.block) {
+                Object.values(chatRuntime.block).forEach(variants => {
+                    Object.values(variants).forEach(v => {
+                        if (v.choiced) v.choiced = false;
                     });
-                }
-            } else {
-                console.log(`[ChatSystem] Review/Replay '${id}'.`);
-                chatHistory = [];
-                let stopAtBlock = null;
+                });
+            }
+        } else if (chatRuntime.set.read === true) {
+            console.log(`[ChatSystem] Review '${id}'.`);
 
+            // Completed conversations are reconstructed from the scenario bookmark so
+            // the selected branch is included. If legacy saves have no bookmark, retain
+            // their persisted history instead of replacing it with an empty array.
+            if (bookmark.length > 0) {
+                chatHistory = [];
                 for (const blockId of bookmark) {
                     const blockInfo = this.resolveBlock(id, blockId);
                     if (!blockInfo) continue;
 
-                    if (blockInfo.line) {
+                    if (Array.isArray(blockInfo.line)) {
                         blockInfo.line.forEach(line => {
                             chatHistory.push({ ...line, nameID: line.nameID || line.char_id });
                         });
                     }
 
                     if (blockInfo.choices && blockInfo.choices.length > 0) {
-                        const rawVariant = c.block[blockId];
-                        let pickedChoice = null;
-                        if (rawVariant && rawVariant.choiced) {
-                            pickedChoice = blockInfo.choices.find(ch => ch.set && ch.set.choiced === true);
-                        }
+                        const rawVariant = chatRuntime.block?.[blockId] || c.block[blockId];
+                        const pickedChoice = rawVariant?.choiced
+                            ? blockInfo.choices.find(ch => ch.set?.choiced === true)
+                            : null;
                         if (pickedChoice) {
-                            const entryChar = this._getCurrentIdentityKey();
-                            chatHistory.push({ nameID: entryChar, text: pickedChoice.text });
-                        } else {
-                            stopAtBlock = blockId;
-                            break;
+                            chatHistory.push({
+                                nameID: this._getCurrentIdentityKey(),
+                                text: pickedChoice.text
+                            });
                         }
-                    } else if (!chatRuntime.set.read) {
-                        stopAtBlock = blockId;
-                        break;
                     }
-
                     startBlock = blockId;
                 }
-
-                if (stopAtBlock) {
-                    startBlock = stopAtBlock;
-                    shouldProcessBlock = true;
-                } else if (!chatRuntime.set.read) {
-                    shouldProcessBlock = true;
-                } else {
-                    shouldProcessBlock = false;
-                }
             }
+            shouldProcessBlock = false;
+        } else if (bookmark.length > 0) {
+            // Resume an unread thread from its last visited block and saved line index.
+            // Keep chat.history intact: it is the authoritative record of already rendered
+            // lines and must not be replayed into the same history a second time.
+            startBlock = bookmark[bookmark.length - 1];
+            const savedStep = Number(chatRuntime.set.step);
+            const lastBlock = this.resolveBlock(id, startBlock);
+            startIndex = Number.isInteger(savedStep) && savedStep >= 0
+                ? Math.min(savedStep, Array.isArray(lastBlock?.line) ? lastBlock.line.length : 0)
+                : 0;
+        } else if (!chatRuntime.set.read && chatHistory.length > 0) {
+            // Legacy/incomplete saves may contain history without a bookmark.
+            // Honor the saved step when possible rather than duplicating the entry lines.
+            const savedStep = Number(chatRuntime.set.step);
+            const entryBlock = this.resolveBlock(id, startBlock);
+            startIndex = Number.isInteger(savedStep) && savedStep >= 0
+                ? Math.min(savedStep, Array.isArray(entryBlock?.line) ? entryBlock.line.length : 0)
+                : 0;
         }
 
         // Commit the complete progress projection before rendering or dispatching the next block.
@@ -457,7 +463,8 @@ export const ChatSystem = {
             active: false,
             blocking: false,
             waitingChoice: false,
-            transitionPending: false
+            transitionPending: false,
+            isReview: false
         }));
 
         this.toggleChatOverlay(false);
