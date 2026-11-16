@@ -23,6 +23,15 @@
 .vsr-contact-chat-next:active:not(:disabled) { transform: scale(.99); }
 .vsr-contact-chat-next:focus-visible { outline: 2px solid var(--vsr-color-primary); outline-offset: 3px; }
 .vsr-contact-chat-next:disabled { opacity: .65; cursor: wait; }
+.vsr-contact-chat-next .vsr-button__label {
+  display: flex;
+  flex: 1 1 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  min-width: 0;
+}
 .vsr-contact-chat-next__label {
   display: inline-flex;
   flex: 1 1 auto;
