@@ -157,12 +157,6 @@
                     { "type": "null" }
                   ]
                 },
-                "currentIdentity": {
-                  "oneOf": [
-                    { "$ref": "#/$defs/currentIdentityProjection" },
-                    { "type": "null" }
-                  ]
-                },
                 "actions": {
                   "type": "array",
                   "items": {
@@ -371,13 +365,14 @@
     },
     "playerProjection": {
       "type": "object",
-      "required": ["id", "name", "stats", "relationship"],
+      "required": ["id", "name", "stats", "relationship", "identityMode"],
       "properties": {
         "id": { "type": "string" },
         "name": { "type": "string" },
         "description": { "type": ["string", "null"] },
         "avatar": { "type": ["string", "null"] },
         "stats": { "type": "object" },
+        "identityMode": { "type": ["string", "null"], "enum": ["soul", "mask", "swap", null] },
         "relationship": {
           "type": "array",
           "items": {
@@ -391,18 +386,6 @@
             "additionalProperties": false
           }
         }
-      },
-      "additionalProperties": false
-    },
-    "currentIdentityProjection": {
-      "type": "object",
-      "required": ["id", "name", "mode", "isOriginal"],
-      "properties": {
-        "id": { "type": "string" },
-        "name": { "type": "string" },
-        "avatar": { "type": ["string", "null"] },
-        "mode": { "type": ["string", "null"], "enum": ["soul", "mask", "swap", null] },
-        "isOriginal": { "type": "boolean" }
       },
       "additionalProperties": false
     },
