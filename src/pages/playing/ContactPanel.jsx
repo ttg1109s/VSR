@@ -139,6 +139,18 @@ export default function ContactPanel({ open, onClose, player, contacts = [], ses
   }, [allContacts, selectedId]);
 
   useEffect(() => {
+    const activeChat = session?.chat;
+    if (!open || activeChat?.active !== true || !activeChat.id || !activeChat.contactId) return;
+    if (!allContacts.some(contact => contact.id === activeChat.contactId)) return;
+    setSelectedId(activeChat.contactId);
+    setSelectedThreadId(activeChat.id);
+    setMobileView('detail');
+    setActiveArea('conversation');
+    setProfileOpen(false);
+    setChatError('');
+  }, [open, session?.chat?.active, session?.chat?.id, session?.chat?.contactId, allContacts]);
+
+  useEffect(() => {
     if (!open) {
       setMobileView('list');
       setProfileOpen(false);
