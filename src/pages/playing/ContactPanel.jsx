@@ -334,10 +334,23 @@ export default function ContactPanel({ open, onClose, player, contacts = [], ses
                       {history.length ? history.map((line, index) => {
                         const senderId = line.nameID || line.char_id;
                         const isPlayer = senderId === player?.id;
-                        return (
-                          <div className={'vsr-contact-message' + (isPlayer ? ' is-player' : '')} key={selectedThreadId + ':' + index} style={{ '--message-index': Math.min(index, 8) }}>
-                            <span className="vsr-contact-message__sender">{isPlayer ? 'Bạn' : contactName(senderId)}</span>
+                        const sender = allContacts.find(contact => contact.id === senderId);
+                        const messageStyle = { '--message-index': Math.min(index, 8) };
+                        return isPlayer ? (
+                          <div className="vsr-contact-message is-player" key={selectedThreadId + ':' + index} style={messageStyle}>
                             <p>{line.text || ''}</p>
+                          </div>
+                        ) : (
+                          <div className="vsr-contact-message-row" key={selectedThreadId + ':' + index} style={messageStyle}>
+                            <ContactAvatar
+                              name={sender?.name || contactName(senderId)}
+                              avatar={sender?.avatar}
+                              size="sm"
+                              className="vsr-contact-message-row__avatar"
+                            />
+                            <div className="vsr-contact-message">
+                              <p>{line.text || ''}</p>
+                            </div>
                           </div>
                         );
                       }) : (
