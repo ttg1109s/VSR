@@ -1033,7 +1033,7 @@ test('item hide is ignored outside action context', () => {
 });
 
 
-test('Player Entry follows the currently controlled identity and survives save restoration', async () => {
+test('Player Entry preserves original profile and exposes current identity across save restoration', async () => {
   const scenario = validScenario();
   scenario.meta.entryCharacter = 'hero';
   scenario.characters.hero = {
@@ -1062,18 +1062,22 @@ test('Player Entry follows the currently controlled identity and survives save r
     assert.equal(initial.presentation.player.stats.hp.current, 75);
     assert.equal(initial.presentation.player.relationship[0].characterName, 'NPC');
     assert.equal(initial.presentation.player.identityMode, null);
-    assert.equal(Object.hasOwn(initial.presentation, 'currentIdentity'), false);
+    assert.equal(initial.presentation.originalPlayer.id, 'hero');
+    assert.equal(initial.presentation.originalPlayer.name, 'Hero');
 
     engine.state.entryCharacter = 'npc';
     const changed = engine.protocol.createSnapshot(engine);
     assert.equal(changed.presentation.player.id, 'npc');
     assert.equal(changed.presentation.player.name, 'NPC');
     assert.equal(changed.presentation.player.stats.hp.current, 30);
+    assert.equal(changed.presentation.originalPlayer.id, 'hero');
+    assert.equal(changed.presentation.originalPlayer.stats.hp.current, 75);
 
     engine.state.faker = { active: true, targetId: 'hero', mode: 'soul', backupPlayer: { entryCharacter: 'npc' } };
     const fakerSnapshot = engine.protocol.createSnapshot(engine);
     assert.equal(fakerSnapshot.presentation.player.id, 'hero');
     assert.equal(fakerSnapshot.presentation.player.identityMode, 'soul');
+    assert.equal(fakerSnapshot.presentation.originalPlayer.id, 'hero');
 
     const save = engine.exportSave();
     const restored = new GameEngine();
@@ -1084,6 +1088,7 @@ test('Player Entry follows the currently controlled identity and survives save r
       const restoredSnapshot = restored.protocol.createSnapshot(restored);
       assert.equal(restoredSnapshot.presentation.player.id, 'hero');
       assert.equal(restoredSnapshot.presentation.player.identityMode, 'soul');
+      assert.equal(restoredSnapshot.presentation.originalPlayer.id, 'hero');
     } finally {
       restored.dispose();
     }
