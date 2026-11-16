@@ -172,10 +172,10 @@ export class JsonProtocol{
    })
    .map(([characterId,character])=>({
     ...projectCharacter(characterId,character),
-    presence:character?.place?.scene_id===sceneId?'present':'away',
+    presence:sceneId&&character?.place?.scene_id===sceneId?'present':'away',
     metCount:(Array.isArray(character?.met)?character.met:[])
      .filter(entry=>String(entry).split(':')[0]===currentIdentityId)
-     .reduce((count,entry)=>count+(Number(String(entry).split(':')[1])||1),0)
+     .reduce((count,entry)=>count+(parseInt(String(entry).split(':')[1],10)||1),0)
    }))
    .sort((a,b)=>a.name.localeCompare(b.name,undefined,{sensitivity:'base'}));
   const snapshot={
