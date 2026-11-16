@@ -169,7 +169,7 @@ export class GameEngine {
   this.clearEffectQueue?.('all');
   this.notifications?.reset();
   this.taskManager?.killAll?.();
-  this.state={sceneId:'',scenes:{},routers:{},actions:{},global:{},characters:{},itemInfo:{},chats:{},chatHistory:{},executed:[],effect_overrides:{},prevRouter:null,map:{choices:{},blocks:{}},automations:{},faker:{active:false,targetId:null,backupPlayer:null},playerMoveHistory:[],sceneTree:{},config:{}};
+  this.state={sceneId:'',scenes:{},routers:{},actions:{},global:{},characters:{},itemInfo:{},chats:{},chatHistory:{},executed:[],effect_overrides:{},prevRouter:null,map:{choices:{},blocks:{}},automations:{},faker:{active:false,targetId:null,backupPlayer:null},playerMoveHistory:[],sceneTree:{},config:{},originalEntryCharacter:'player',entryCharacter:'player'};
   this.runtime={effectQueue:{sync:[],async:[]},isSyncQueueRunning:false,isAsyncQueueRunning:false};
   this.src=null;this.scenario=null;this.pendingPasswordAction=null;
   this.chatState={active:false,blocking:false,id:null,blockId:null,index:0,triggerActionId:null,actionModified:false};
@@ -252,6 +252,9 @@ export class GameEngine {
   }
   const originalEntryCharacter=restored.originalEntryCharacter||normalized.state.originalEntryCharacter||'player';
   const currentEntryCharacter=restored.entryCharacter||originalEntryCharacter;
+  if(typeof originalEntryCharacter!=='string'||!originalEntryCharacter.trim()||typeof currentEntryCharacter!=='string'||!currentEntryCharacter.trim()) {
+   throw new TypeError('Save player identity fields must be non-empty character IDs.');
+  }
   if(!Object.prototype.hasOwnProperty.call(restored.characters,originalEntryCharacter)) {
    throw new TypeError(`Save original entry character "${originalEntryCharacter}" does not exist.`);
   }
