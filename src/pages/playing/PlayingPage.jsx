@@ -76,8 +76,8 @@ export default function PlayingPage({ snapshot, client, error = '', onNavigate }
       />
       <ContactPanel
         open={contactOpen}
-        player={snapshot?.presentation?.originalPlayer ?? null}
-        currentIdentity={snapshot?.presentation?.player ?? null}
+        player={snapshot?.presentation?.player ?? null}
+        contacts={snapshot?.presentation?.contacts ?? []}
         onClose={() => {
           setContactOpen(false);
           setActiveNavigation('hand');
