@@ -93,9 +93,24 @@ export default function ActionCollection({actions=EMPTY_ACTIONS,client,passwordC
   const m=e?.message||'Không thể hoàn tất thao tác.';setFeedback(s=>({...s,[k]:m}));onError?.(m);return false;
  },[client,onError]);
  const trigger=useCallback(async a=>{
-  if(!client)return;const k=a.key;mark(k,true);setFeedback(s=>({...s,[k]:''}));
-  try{const r=(await client.triggerAction(a.id,a.key))?.result;if(r?.success===false)setFeedback(s=>({...s,[k]:MESSAGES[r.reason]||'Hành động chưa được thực hiện.'}));return r;}
-  catch(e){await report(k,e);return null;}finally{mark(k,false);}
+  if(!client)return;
+  const k=a.key;
+  const startedAt=Date.now();
+  const minimumBusyMs=500;
+  mark(k,true);
+  setFeedback(s=>({...s,[k]:''}));
+  try{
+   const r=(await client.triggerAction(a.id,a.key))?.result;
+   if(r?.success===false)setFeedback(s=>({...s,[k]:MESSAGES[r.reason]||'Hành động chưa được thực hiện.'}));
+   return r;
+  }catch(e){
+   await report(k,e);
+   return null;
+  }finally{
+   const remaining=Math.max(0,minimumBusyMs-(Date.now()-startedAt));
+   if(remaining>0)await new Promise(resolve=>setTimeout(resolve,remaining));
+   mark(k,false);
+  }
  },[client,mark,report]);
  const submit=useCallback(async(c,input)=>{
   if(!client||!c?.challengeId)return{message:'Không có kết nối Engine hoặc thử thách không hợp lệ.'};
