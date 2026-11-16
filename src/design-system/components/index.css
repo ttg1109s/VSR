@@ -16,10 +16,14 @@
 /* Viewport-aware popover surface; positioned by the shared Popover component. */
 .vsr-popover-content{
   position:fixed;
+  max-height:none;
+  overflow:visible;
+  overflow-wrap:anywhere;
+}
+.vsr-popover-content__body{
   max-height:min(65vh,480px);
   overflow:auto;
   overscroll-behavior:contain;
-  overflow-wrap:anywhere;
 }
 .vsr-popover-content::before{
   position:absolute;
