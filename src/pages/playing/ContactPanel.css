@@ -1,0 +1,120 @@
+/* Feature-owned split-view layout: the shared Grid primitive does not expose a two-pane master/detail ratio. All visual values use Design System tokens. */
+.vsr-contact-workspace {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.8fr) minmax(0, 1.7fr);
+  gap: var(--vsr-space-4, 16px);
+  min-height: min(68vh, 720px);
+}
+.vsr-contact-list {
+  min-width: 0;
+  align-self: start;
+}
+.vsr-contact-list > header {
+  margin-bottom: var(--vsr-space-3, 12px);
+}
+.vsr-contact-list h3,
+.vsr-contact-profile h3,
+.vsr-contact-profile h4 {
+  margin: 0;
+}
+.vsr-contact-list > header p,
+.vsr-contact-profile p {
+  color: var(--vsr-color-text-secondary);
+}
+.vsr-contact-list__items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--vsr-space-2, 8px);
+}
+.vsr-contact-row {
+  width: 100%;
+  min-width: 0;
+  justify-content: flex-start;
+  text-align: left;
+  gap: var(--vsr-space-3, 12px);
+}
+.vsr-contact-avatar {
+  display: inline-flex;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  overflow: hidden;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--vsr-color-surface-muted);
+  color: var(--vsr-color-text-primary);
+  font-weight: 600;
+}
+.vsr-contact-avatar--large {
+  flex-basis: 64px;
+  width: 64px;
+  height: 64px;
+  font-size: 20px;
+}
+.vsr-contact-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.vsr-contact-row__copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+.vsr-contact-row__copy strong,
+.vsr-contact-row__copy small {
+  overflow-wrap: anywhere;
+}
+.vsr-contact-row__copy small {
+  color: var(--vsr-color-text-secondary);
+  font-size: 12px;
+}
+.vsr-contact-details {
+  min-width: 0;
+}
+.vsr-contact-profile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--vsr-space-3, 12px);
+}
+.vsr-contact-profile__heading {
+  display: flex;
+  align-items: center;
+  gap: var(--vsr-space-3, 12px);
+}
+.vsr-contact-profile__heading > div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--vsr-space-2, 8px);
+  min-width: 0;
+}
+.vsr-contact-profile__heading p {
+  flex-basis: 100%;
+  margin: 0;
+}
+.vsr-contact-relationships {
+  display: flex;
+  flex-direction: column;
+  gap: var(--vsr-space-2, 8px);
+}
+.vsr-contact-relationship {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--vsr-space-2, 8px);
+  padding-block: var(--vsr-space-2, 8px);
+  border-bottom: 1px solid var(--vsr-color-border-subtle);
+}
+.vsr-contact-relationship > span:first-child {
+  flex: 1 1 auto;
+}
+@media (max-width: 599px) {
+  .vsr-contact-workspace {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 0;
+  }
+}
