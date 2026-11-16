@@ -244,7 +244,8 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .vsr-contact-list-item { transition: none; }
-  .vsr-contact-message { animation: none; }
+  .vsr-contact-message,
+  .vsr-contact-message-row { animation: none; }
 }
 
 .vsr-contact-topic-list { display: flex; flex-direction: column; min-height: 100%; }
@@ -316,6 +317,23 @@
   padding: clamp(16px, 3vw, 26px);
   background: radial-gradient(ellipse at 12% 0%, var(--vsr-color-primary-container) 0, transparent 42%), var(--vsr-color-background);
 }
+.vsr-contact-message-row {
+  display: flex;
+  align-self: flex-start;
+  align-items: flex-end;
+  gap: 9px;
+  width: 100%;
+  max-width: 100%;
+  animation: vsr-contact-message-in 360ms cubic-bezier(.2,.75,.25,1) both;
+  animation-delay: calc(var(--message-index, 0) * 45ms);
+}
+.vsr-contact-message-row__avatar {
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+  margin-bottom: 2px;
+  font-size: 11px;
+}
 .vsr-contact-message {
   position: relative;
   align-self: flex-start;
@@ -328,8 +346,6 @@
   color: var(--vsr-color-text);
   box-shadow: var(--vsr-shadow-sm, 0 2px 8px rgba(0,0,0,.045));
   overflow-wrap: anywhere;
-  animation: vsr-contact-message-in 360ms cubic-bezier(.2,.75,.25,1) both;
-  animation-delay: calc(var(--message-index, 0) * 45ms);
 }
 .vsr-contact-message.is-player {
   align-self: flex-end;
