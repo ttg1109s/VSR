@@ -179,7 +179,33 @@
               "type": "object",
               "properties": {
                 "chat": {
-                  "type": "object"
+                  "type": "object",
+                  "properties": {
+                    "active": { "type": "boolean" },
+                    "blocking": { "type": "boolean" },
+                    "id": { "type": ["string", "null"] },
+                    "blockId": { "type": ["string", "null"] },
+                    "index": { "type": "integer", "minimum": 0 },
+                    "choices": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": ["index", "text"],
+                        "properties": {
+                          "index": { "type": "integer", "minimum": 0 },
+                          "text": { "type": "string" }
+                        },
+                        "additionalProperties": false
+                      }
+                    },
+                    "history": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "array",
+                        "items": { "type": "object" }
+                      }
+                    }
+                  }
                 },
                 "passwordChallenge": {
                   "oneOf": [
