@@ -1107,3 +1107,26 @@ test('loader rejects a configured entry character that is absent from scenario c
     /meta\.entryCharacter.*references missing character 'missing'/
   );
 });
+
+
+test('Contact snapshot projects the current Player Entry and only known or present contacts', async () => {
+  const scenario = validScenario();
+  scenario.meta.entryCharacter = 'hero';
+  scenario.characters = {
+    hero: { meta: { name: 'Hero', desc: 'Current identity' }, stats: { hp: { current: 8, max: 10 } }, relationship: [], place: { scene_id: 'start', currentIndex: 0 }, met: [], moveList: [] },
+    ally: { meta: { name: 'Ally' }, stats: {}, relationship: [['friend', 'hero']], place: { scene_id: 'start', currentIndex: 0 }, met: [], moveList: [] },
+    stranger: { meta: { name: 'Stranger' }, stats: {}, relationship: [], place: { scene_id: 'elsewhere', currentIndex: 0 }, met: [], moveList: [] }
+  };
+  const engine = new GameEngine();
+  try {
+    await engine.init(scenario);
+    const snapshot = engine.protocol.createSnapshot(engine);
+    assert.equal(snapshot.presentation.player.id, 'hero');
+    assert.equal(snapshot.presentation.player.name, 'Hero');
+    assert.deepEqual(snapshot.presentation.contacts.map(contact => contact.id), ['ally']);
+    assert.equal(snapshot.presentation.contacts[0].presence, 'present');
+    assert.equal(snapshot.presentation.contacts[0].relationship[0].characterName, 'Hero');
+  } finally {
+    engine.dispose();
+  }
+});
