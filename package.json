@@ -36,7 +36,8 @@
     "ajv": "^8.17.1",
     "ajv-formats": "^3.0.1",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "embla-carousel-react": "^8.6.0"
   },
   "devDependencies": {
     "acorn": "^8.15.0",

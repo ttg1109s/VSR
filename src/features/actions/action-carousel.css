@@ -1,15 +1,11 @@
-/* Feature-owned styling: this carousel composes ActionCard and is not a shared DS primitive. */
+/* Feature-owned styling: Embla supplies carousel mechanics; ActionCard remains app-owned. */
 .vsr-action-carousel{display:block;width:100%;max-width:100%;min-width:0;box-sizing:border-box;overflow:hidden}
-.vsr-action-carousel__viewport{display:block;width:100%;max-width:100%;min-width:0;box-sizing:border-box;overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;touch-action:pan-x;scroll-snap-type:x mandatory;scroll-behavior:smooth;scrollbar-width:none;-ms-overflow-style:none;padding:2px 2px var(--vsr-space-3);outline-offset:2px}
-.vsr-action-carousel__viewport::-webkit-scrollbar{display:none;width:0;height:0}
+.vsr-action-carousel__viewport{display:block;width:100%;max-width:100%;min-width:0;box-sizing:border-box;overflow:hidden;overscroll-behavior-x:contain;touch-action:pan-y pinch-zoom;outline-offset:2px}
 .vsr-action-carousel__viewport:focus-visible{outline:2px solid var(--vsr-color-primary)}
-.vsr-action-carousel__track{display:flex;align-items:stretch;gap:var(--vsr-space-4);width:max-content;min-width:100%}
+.vsr-action-carousel__track{display:flex;align-items:stretch;gap:var(--vsr-space-4);width:100%;min-width:0}
 .vsr-action-carousel__slide{flex:0 0 clamp(320px,42vw,480px);min-width:0;scroll-snap-align:start}
 .vsr-action-carousel__slide>.vsr-action-card{height:100%;box-sizing:border-box}
 @media(max-width:599px){
  .vsr-action-carousel__slide{flex-basis:86vw;max-width:420px}
  .vsr-action-carousel__viewport{margin-right:-14px;padding-right:14vw}
-}
-@media(prefers-reduced-motion:reduce){
- .vsr-action-carousel__viewport{scroll-behavior:auto}
 }
