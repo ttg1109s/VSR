@@ -78,6 +78,8 @@ export default function PlayingPage({ snapshot, client, error = '', onNavigate }
         open={contactOpen}
         player={snapshot?.presentation?.player ?? null}
         contacts={snapshot?.presentation?.contacts ?? []}
+        session={snapshot?.session ?? null}
+        client={client}
         onClose={() => {
           setContactOpen(false);
           setActiveNavigation('hand');
