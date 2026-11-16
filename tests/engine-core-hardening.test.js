@@ -1120,6 +1120,11 @@ test('Contact snapshot projects the current Player Entry and only known or prese
     assert.deepEqual(snapshot.presentation.contacts.map(contact => contact.id), ['ally']);
     assert.equal(snapshot.presentation.contacts[0].presence, 'present');
     assert.equal(snapshot.presentation.contacts[0].relationship[0].characterName, 'Hero');
+    engine.api.engine.state.set('faker', { active: true, targetId: 'ally', mode: 'mask', backupPlayer: { entryCharacter: 'hero' } });
+    engine.api.engine.state.set('config.fakerMode', 'soul');
+    const maskedSnapshot = engine.protocol.createSnapshot(engine);
+    assert.equal(maskedSnapshot.presentation.player.id, 'ally');
+    assert.equal(maskedSnapshot.presentation.actions[0].availability.checks.permission, 'passed');
   } finally {
     engine.dispose();
   }
