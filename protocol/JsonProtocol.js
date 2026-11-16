@@ -116,12 +116,13 @@ export class JsonProtocol{
   const activeChatBlock=engine.chatState?.active&&engine.chatState?.id
    ?engine.resolveBlock?.(engine.chatState.id,engine.chatState.blockId)
    :null;
-  const chatChoices=Array.isArray(activeChatBlock?.choices)
+  const chatChoices=engine.chatState?.waitingChoice===true&&Array.isArray(activeChatBlock?.choices)
    ?activeChatBlock.choices.map((choice,index)=>({index,text:typeof choice?.text==='string'?choice.text:''})).filter(choice=>choice.text)
    :[];
   const session={
    chat:{
     active:!!engine.chatState?.active,blocking:!!engine.chatState?.blocking,
+    waitingChoice:engine.chatState?.waitingChoice===true,
     id:engine.chatState?.id??null,blockId:engine.chatState?.blockId??null,
     index:Number(engine.chatState?.index)||0,
     choices:chatChoices,
