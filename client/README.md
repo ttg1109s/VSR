@@ -36,6 +36,11 @@ const unsubscribe = client.subscribe(message => {
 
 await client.triggerAction('action-id', 'unique-action-id');
 
+// Contact threads are projected in presentation.contacts[].threads.
+// Opening a selected thread is validated by the Engine.
+await client.openChatThread('contact-id', 'chat-id');
+await client.nextChat(); // or client.selectChatChoice(choiceIndex)
+
 // Teardown
 unsubscribe();
 client.dispose();
