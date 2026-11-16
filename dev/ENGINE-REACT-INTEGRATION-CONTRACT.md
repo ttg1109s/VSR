@@ -158,7 +158,7 @@ Snapshot là dữ liệu đồng bộ trạng thái tại một thời điểm. 
 | `revision`, `stateRevision` | Revision trạng thái; `revision` là alias tương thích |
 | `eventSequence` | Vị trí event stream tại lúc snapshot được tạo |
 | `game` | `initialized`, `sceneId`, `routerId`; khi scenario đã load nhưng chưa vào scene, `initialized` là `true` còn `sceneId` và `routerId` là `null` |
-| `presentation` | Projection client-safe của scenario title, scene, router, ancestor-to-current `scenePath`, resolved cover metadata và action projection có `key`, `meta`, `presentation`, `availability`, `runtimeState` |
+| `presentation` | Projection client-safe của scenario title, scene, router, `scenePath`, cover metadata, action projections, `player` (original entry character) và `currentIdentity` (runtime identity hiện tại) |
 | `session` | Chat, password challenge đã sanitize, timer và notification |
 | `state` | Runtime state đã chuyển sang JSON-compatible form và loại bỏ một số runtime-only keys |
 
@@ -166,6 +166,8 @@ Các quy tắc quan trọng:
 
 - `stateRevision` là revision trạng thái có thẩm quyền.
 - `presentation` là projection để trình bày, không phải toàn bộ scenario source.
+- `meta.entryCharacter` là cấu hình nhân vật bắt đầu. Loader chuẩn hóa `state.originalEntryCharacter` thành ID gốc và `state.entryCharacter` thành current identity runtime (có thể thay đổi khi Faker `swap`). Không dùng hai field thay thế cho nhau.
+- `presentation.player` luôn mô tả original entry character; `presentation.currentIdentity` mô tả danh tính runtime hiện tại. React đọc hai projection này, không tự suy diễn identity từ `state.characters`.
 - `session.passwordChallenge` là descriptor đã sanitize; password challenge bị loại khỏi bản sao `state.session`.
 - Không thêm password answer, secret scenario data hoặc executable effect vào projection dành cho client.
 - Snapshot không phải nơi React ghi ngược thay đổi.
