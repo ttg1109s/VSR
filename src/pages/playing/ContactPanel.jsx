@@ -107,7 +107,7 @@ function ContactProfile({ character, player, contacts, onSelect }) {
 export default function ContactPanel({ open, onClose, player, contacts = [] }) {
   const [selectedId, setSelectedId] = useState(null);
   const [mobileView, setMobileView] = useState('list');
-  const [activeArea, setActiveArea] = useState('topics');
+  const [activeArea, setActiveArea] = useState('threads');
   const [profileOpen, setProfileOpen] = useState(false);
 
   const allContacts = useMemo(() => [
@@ -122,7 +122,7 @@ export default function ContactPanel({ open, onClose, player, contacts = [] }) {
       setSelectedId(null);
       setMobileView('list');
       setProfileOpen(false);
-      setActiveArea('topics');
+      setActiveArea('threads');
     }
   }, [allContacts, selectedId]);
 
@@ -130,7 +130,7 @@ export default function ContactPanel({ open, onClose, player, contacts = [] }) {
     if (!open) {
       setMobileView('list');
       setProfileOpen(false);
-      setActiveArea('topics');
+      setActiveArea('threads');
     }
   }, [open]);
 
@@ -138,7 +138,7 @@ export default function ContactPanel({ open, onClose, player, contacts = [] }) {
     if (!allContacts.some(contact => contact.id === id)) return;
     setSelectedId(id);
     setMobileView('detail');
-    setActiveArea('topics');
+    setActiveArea('threads');
     setProfileOpen(false);
   }
 
@@ -206,10 +206,10 @@ export default function ContactPanel({ open, onClose, player, contacts = [] }) {
                   size="sm"
                   variant="tertiary"
                   onClick={() => {
-                    if (activeArea === 'conversation') setActiveArea('topics');
+                    if (activeArea === 'conversation') setActiveArea('threads');
                     else setMobileView('list');
                   }}
-                  aria-label={activeArea === 'conversation' ? 'Quay lại danh sách chủ đề' : 'Quay lại danh sách liên hệ'}
+                  aria-label={activeArea === 'conversation' ? 'Quay lại danh sách thread' : 'Quay lại danh sách liên hệ'}
                 >
                   ←
                 </Button>
@@ -220,40 +220,19 @@ export default function ContactPanel({ open, onClose, player, contacts = [] }) {
                   onClick={() => setProfileOpen(true)}
                 >
                   <strong>{selected.name || selected.id}</strong>
-                  <small>{activeArea === 'conversation' ? 'Hội thoại' : 'Hồ sơ liên hệ'}</small>
+                  <small>{activeArea === 'conversation' ? 'Hội thoại' : 'Danh sách thread'}</small>
                 </button>
                 <Button size="sm" variant="tertiary" onClick={() => setProfileOpen(true)}>
                   Thông tin
                 </Button>
               </ContactHeader>
 
-              <div className="vsr-contact-tabs" role="tablist" aria-label="Khu vực liên hệ">
-                <button
-                  type="button"
-                  role="tab"
-                  aria-selected={activeArea === 'topics'}
-                  className="vsr-contact-tab"
-                  onClick={() => setActiveArea('topics')}
-                >
-                  Chủ đề
-                </button>
-                <button
-                  type="button"
-                  role="tab"
-                  aria-selected={activeArea === 'conversation'}
-                  className="vsr-contact-tab"
-                  onClick={() => setActiveArea('conversation')}
-                >
-                  Hội thoại
-                </button>
-              </div>
-
               <ContactScrollArea className="vsr-contact-detail-content">
-                {activeArea === 'topics' ? (
+                {activeArea === 'threads' ? (
                   <ContactTopicList>
                     <div className="vsr-contact-topic-list__empty">
-                      <strong>Chưa có chủ đề liên hệ</strong>
-                      <p>Snapshot hiện tại không cung cấp danh sách thread gắn với liên hệ này. Khu vực này được giữ sẵn theo bố cục Contact của main.</p>
+                      <strong>Chưa có thread</strong>
+                      <p>Snapshot hiện tại không cung cấp danh sách thread của liên hệ này. Khi Engine cung cấp thread, chọn một thread sẽ mở nội dung tương ứng tại vùng hội thoại.</p>
                     </div>
                   </ContactTopicList>
                 ) : (
@@ -261,7 +240,7 @@ export default function ContactPanel({ open, onClose, player, contacts = [] }) {
                     <div className="vsr-contact-conversation__history" aria-live="polite">
                       <div className="vsr-contact-conversation__empty">
                         <strong>Khung hội thoại</strong>
-                        <p>Protocol hiện chỉ cung cấp hội thoại kịch bản qua session.chat và các lệnh chat.next/chat.selectChoice. Nó chưa định nghĩa hội thoại tự do hoặc lựa chọn thread trong danh bạ.</p>
+                        <p>Chưa có thread được chọn hoặc dữ liệu hội thoại tương ứng từ Engine.</p>
                       </div>
                     </div>
                     <ContactComposer>

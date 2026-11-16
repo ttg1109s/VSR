@@ -227,26 +227,6 @@
   font-size: 12px;
   line-height: 18px;
 }
-.vsr-contact-tabs {
-  display: flex;
-  gap: 4px;
-  padding: 12px 24px 0;
-  border-bottom: 1px solid var(--vsr-color-border-subtle);
-}
-.vsr-contact-tab {
-  min-height: 40px;
-  padding: 0 14px;
-  border: 0;
-  border-bottom: 2px solid transparent;
-  background: transparent;
-  color: var(--vsr-color-text-secondary);
-  font: 500 13px/20px var(--vsr-font-sans);
-  cursor: pointer;
-}
-.vsr-contact-tab[aria-selected="true"] {
-  border-bottom-color: var(--vsr-color-primary);
-  color: var(--vsr-color-primary);
-}
 .vsr-contact-topic-list { display: flex; flex-direction: column; min-height: 100%; }
 .vsr-contact-topic-list__empty,
 .vsr-contact-conversation__empty {
