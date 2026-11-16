@@ -661,7 +661,8 @@
         "stats",
         "relationship",
         "presence",
-        "metCount"
+        "metCount",
+        "threads"
       ],
       "properties": {
         "id": {
