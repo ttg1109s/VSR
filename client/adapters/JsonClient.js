@@ -92,6 +92,7 @@ export class JsonClient {
 
   triggerAction(actionId, uniqueId) { return this.dispatch('action.trigger', { actionId, uniqueId }); }
   markActionRead(uniqueId) { return this.dispatch('action.markAsRead', { uniqueId }); }
+  openChatThread(contactId, chatId) { return this.dispatch('chat.open', { contactId, chatId }); }
   nextChat() { return this.dispatch('chat.next'); }
   selectChatChoice(index) { return this.dispatch('chat.selectChoice', { index }); }
   toggleHand(itemId) { return this.dispatch('inventory.toggleHand', { itemId }); }
