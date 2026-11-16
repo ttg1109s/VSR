@@ -1110,7 +1110,7 @@ test('Contact snapshot projects the current Player Entry and only known or prese
   const characterSet = { moving: false, alert: null, move: null, actions: [], linkEffect: false };
   scenario.characters = {
     hero: { meta: { name: 'Hero', desc: 'Current identity' }, set: { ...characterSet }, stats: { hp: { current: 8, max: 10 } }, relationship: [], place: { scene_id: 'start', currentIndex: 0 }, met: [], moveList: [] },
-    ally: { meta: { name: 'Ally' }, set: { ...characterSet }, stats: {}, relationship: [['friend', 'hero']], place: { scene_id: 'start', currentIndex: 0 }, met: [], moveList: [] },
+    ally: { meta: { name: 'Ally' }, set: { ...characterSet }, stats: {}, relationship: [['friend', 'hero']], place: { scene_id: 'start', currentIndex: 0 }, met: ['hero:3'], moveList: [] },
     stranger: { meta: { name: 'Stranger' }, set: { ...characterSet }, stats: {}, relationship: [], place: { scene_id: 'elsewhere', currentIndex: 0 }, met: [], moveList: [] }
   };
   const engine = new GameEngine();
@@ -1121,7 +1121,18 @@ test('Contact snapshot projects the current Player Entry and only known or prese
     assert.equal(snapshot.presentation.player.name, 'Hero');
     assert.deepEqual(snapshot.presentation.contacts.map(contact => contact.id), ['ally']);
     assert.equal(snapshot.presentation.contacts[0].presence, 'present');
+    assert.equal(snapshot.presentation.contacts[0].metCount, 3);
     assert.equal(snapshot.presentation.contacts[0].relationship[0].characterName, 'Hero');
+
+    const save = engine.exportSave();
+    const restored = new GameEngine();
+    try {
+      await restored.restoreSave(save);
+      const restoredContacts = restored.protocol.createSnapshot(restored).presentation.contacts;
+      assert.equal(restoredContacts.find(contact => contact.id === 'ally').metCount, 3);
+    } finally {
+      restored.dispose();
+    }
     engine.api.engine.state.set('faker', { active: true, targetId: 'ally', mode: 'mask', backupPlayer: { entryCharacter: 'hero' } });
     engine.api.engine.state.set('config.fakerMode', 'soul');
     const maskedSnapshot = engine.protocol.createSnapshot(engine);
