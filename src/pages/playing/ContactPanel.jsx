@@ -3,22 +3,18 @@ import {
   Badge,
   Button,
   ContactAvatar,
-  ContactComposer,
-  ContactConversation,
   ContactDetail,
   ContactHeader,
   ContactList,
   ContactListItem,
   ContactScrollArea,
   ContactSection,
-  ContactTopicList,
   ContactWorkspace,
   DescriptionList,
   DescriptionListItem,
   Dialog,
   Drawer,
   Separator,
-  Textarea
 } from '../../design-system/index.js';
 
 function StatList({ stats = {} }) {
@@ -107,7 +103,6 @@ function ContactProfile({ character, player, contacts, onSelect }) {
 export default function ContactPanel({ open, onClose, player, contacts = [] }) {
   const [selectedId, setSelectedId] = useState(null);
   const [mobileView, setMobileView] = useState('list');
-  const [activeArea, setActiveArea] = useState('threads');
   const [profileOpen, setProfileOpen] = useState(false);
 
   const allContacts = useMemo(() => [
@@ -122,7 +117,6 @@ export default function ContactPanel({ open, onClose, player, contacts = [] }) {
       setSelectedId(null);
       setMobileView('list');
       setProfileOpen(false);
-      setActiveArea('threads');
     }
   }, [allContacts, selectedId]);
 
@@ -130,7 +124,6 @@ export default function ContactPanel({ open, onClose, player, contacts = [] }) {
     if (!open) {
       setMobileView('list');
       setProfileOpen(false);
-      setActiveArea('threads');
     }
   }, [open]);
 
@@ -138,7 +131,6 @@ export default function ContactPanel({ open, onClose, player, contacts = [] }) {
     if (!allContacts.some(contact => contact.id === id)) return;
     setSelectedId(id);
     setMobileView('detail');
-    setActiveArea('threads');
     setProfileOpen(false);
   }
 
@@ -179,7 +171,9 @@ export default function ContactPanel({ open, onClose, player, contacts = [] }) {
                   <span className="vsr-contact-list-item__preview">
                     {contact.kind === 'player'
                       ? 'Danh tính đang điều khiển'
-                      : contact.presence === 'present' ? 'Đang hiện diện' : 'Đã gặp'}
+                      : contact.presence === 'present'
+                        ? 'Đang hiện diện'
+                        : `Đã gặp · ${Number.isFinite(contact.metCount) ? contact.metCount : 0} lần`}
                   </span>
                 </span>
               </ContactListItem>
@@ -202,14 +196,13 @@ export default function ContactPanel({ open, onClose, player, contacts = [] }) {
             <>
               <ContactHeader>
                 <Button
-                  className={activeArea === 'conversation' ? 'vsr-contact-back is-visible' : 'vsr-contact-back'}
+                  className="vsr-contact-back"
                   size="sm"
                   variant="tertiary"
                   onClick={() => {
-                    if (activeArea === 'conversation') setActiveArea('threads');
-                    else setMobileView('list');
+                    setMobileView('list');
                   }}
-                  aria-label={activeArea === 'conversation' ? 'Quay lại danh sách thread' : 'Quay lại danh sách liên hệ'}
+                  aria-label="Quay lại danh sách liên hệ"
                 >
                   ←
                 </Button>
@@ -220,7 +213,7 @@ export default function ContactPanel({ open, onClose, player, contacts = [] }) {
                   onClick={() => setProfileOpen(true)}
                 >
                   <strong>{selected.name || selected.id}</strong>
-                  <small>{activeArea === 'conversation' ? 'Hội thoại' : 'Danh sách thread'}</small>
+                  <small>Hồ sơ nhân vật</small>
                 </button>
                 <Button size="sm" variant="tertiary" onClick={() => setProfileOpen(true)}>
                   Thông tin
@@ -228,35 +221,10 @@ export default function ContactPanel({ open, onClose, player, contacts = [] }) {
               </ContactHeader>
 
               <ContactScrollArea className="vsr-contact-detail-content">
-                {activeArea === 'threads' ? (
-                  <ContactTopicList>
-                    <div className="vsr-contact-topic-list__empty">
-                      <strong>Chưa có thread</strong>
-                      <p>Snapshot hiện tại không cung cấp danh sách thread của liên hệ này. Khi Engine cung cấp thread, chọn một thread sẽ mở nội dung tương ứng tại vùng hội thoại.</p>
-                    </div>
-                  </ContactTopicList>
-                ) : (
-                  <ContactConversation>
-                    <div className="vsr-contact-conversation__history" aria-live="polite">
-                      <div className="vsr-contact-conversation__empty">
-                        <strong>Khung hội thoại</strong>
-                        <p>Chưa có thread được chọn hoặc dữ liệu hội thoại tương ứng từ Engine.</p>
-                      </div>
-                    </div>
-                    <ContactComposer>
-                      <div className="vsr-contact-composer__row">
-                        <Textarea
-                          aria-label="Soạn tin nhắn"
-                          placeholder="Soạn tin nhắn…"
-                          rows={1}
-                          disabled
-                        />
-                        <Button disabled aria-label="Gửi tin nhắn">Gửi</Button>
-                      </div>
-                      <p className="vsr-contact-composer__hint">Trình soạn tin đang ở trạng thái placeholder; không gửi command giả lập tới Engine.</p>
-                    </ContactComposer>
-                  </ContactConversation>
-                )}
+                <div className="vsr-contact-empty">
+                  <span className="vsr-contact-empty__icon" aria-hidden="true">account_circle</span>
+                  <p>Đây là danh bạ hồ sơ chỉ đọc từ Engine. Chọn “Thông tin” để xem mô tả, chỉ số và quan hệ của nhân vật.</p>
+                </div>
               </ContactScrollArea>
 
             </>
