@@ -463,7 +463,8 @@ export const ChatSystem = {
             active: false,
             blocking: false,
             waitingChoice: false,
-            transitionPending: false
+            transitionPending: false,
+            isReview: false
         }));
 
         this.toggleChatOverlay(false);
