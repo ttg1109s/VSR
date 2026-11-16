@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import './ContactPanel.css';
 import {
   Badge,
   Button,
@@ -349,16 +350,25 @@ export default function ContactPanel({ open, onClose, player, contacts = [], ses
                     <ContactComposer>
                       {chatError && <p className="vsr-contact-chat-error" role="alert">{chatError}</p>}
                       {isActiveThread && choices.length > 0 ? (
-                        <div className="vsr-contact-chat-choices">
-                          {choices.map(choice => (
-                            <Button
-                              key={choice.index}
-                                              disabled={chatActionsDisabled}
-                              onClick={() => progressChat(choice.index)}
-                            >
-                              {choice.text}
-                            </Button>
-                          ))}
+                        <div className="vsr-contact-chat-choice-panel">
+                          {chatSession.prompt && (
+                            <p className="vsr-contact-chat-choice-prompt">{chatSession.prompt}</p>
+                          )}
+                          <div className="vsr-contact-chat-choices">
+                            {choices.map(choice => (
+                              <Button
+                                key={choice.index}
+                                className={'vsr-contact-chat-choice' + (choice.locked ? ' is-locked' : '')}
+                                disabled={chatActionsDisabled || choice.locked === true}
+                                onClick={() => progressChat(choice.index)}
+                              >
+                                <span>{choice.text}</span>
+                                <span className="vsr-contact-chat-choice__icon" aria-hidden="true">
+                                  {choice.locked ? 'lock' : '➜'}
+                                </span>
+                              </Button>
+                            ))}
+                          </div>
                         </div>
                       ) : isActiveThread && chatSession.isReview === true ? (
                         <div className="vsr-contact-composer__review">
@@ -369,7 +379,11 @@ export default function ContactPanel({ open, onClose, player, contacts = [], ses
                         </div>
                       ) : isActiveThread ? (
                         <Button className="vsr-contact-chat-next" disabled={chatActionsDisabled} onClick={() => progressChat()}>
-                          {chatPending || chatSession.transitionPending === true ? 'Đang chuyển đoạn…' : 'Tiếp tục'}
+                          <span className="vsr-contact-chat-next__label">
+                            <span className="vsr-contact-chat-next__status" aria-hidden="true">●</span>
+                            {chatPending || chatSession.transitionPending === true ? 'Đang chuyển đoạn…' : 'Chạm để tiếp tục…'}
+                          </span>
+                          <span className="vsr-contact-chat-next__icon" aria-hidden="true">➜</span>
                         </Button>
                       ) : (
                         <p className="vsr-contact-composer__hint">Đây là lịch sử hội thoại kịch bản. Không có thao tác gửi tin nhắn tự do trong Engine hiện tại.</p>
