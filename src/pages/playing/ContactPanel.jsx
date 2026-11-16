@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import './ContactPanel.css';
 import {
-  Badge, Button, DescriptionList, DescriptionListItem, Drawer, Grid, Separator
+  Badge, Button, DescriptionList, DescriptionListItem, Drawer, Separator
 } from '../../design-system/index.js';
 
 function initials(name, id) {
@@ -116,7 +117,7 @@ export default function ContactPanel({ open, onClose, player, contacts = [] }) {
       side="right"
       className="vsr-contact-drawer"
     >
-      <Grid columns="responsive-cards" gap="4" className="vsr-contact-workspace">
+      <div className="vsr-contact-workspace">
         <section className="vsr-card vsr-contact-list" aria-label="Danh sách liên hệ">
           <header>
             <h3>Danh bạ</h3>
@@ -150,7 +151,7 @@ export default function ContactPanel({ open, onClose, player, contacts = [] }) {
             onSelect={setSelectedId}
           />
         </section>
-      </Grid>
+      </div>
     </Drawer>
   );
 }
