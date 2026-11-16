@@ -47,7 +47,7 @@ function ContactList({ player, selectedId, onSelect }) {
 function ContactDetails({ player, currentIdentity, onBack }) {
   const stats = Object.entries(player?.stats || {});
   const relationships = Array.isArray(player?.relationship) ? player.relationship : [];
-  const identityChanged = currentIdentity && currentIdentity.id !== player?.id;
+  const identityChanged = currentIdentity && (currentIdentity.id !== player?.id || currentIdentity.identityMode);
 
   return (
     <section className="vsr-contact-details">
