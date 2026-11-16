@@ -205,6 +205,7 @@ export const ChatSystem = {
             blockId: startBlock,
             index: startIndex,
             blocking: true,
+            waitingChoice: false,
             triggerActionId,
             actionModified: false,
             isProcessing: false,
@@ -360,7 +361,7 @@ export const ChatSystem = {
 
         this.api.presentation.chat.clearChoices();
 
-        this.api.engine.state.update('session.chat', current => ({ ...(current || {}), blocking: true }));
+        this.api.engine.state.update('session.chat', current => ({ ...(current || {}), blocking: true, waitingChoice: false }));
 
         // --- 3. Run Effect ---
         if (choice.effect) {
@@ -446,7 +447,8 @@ export const ChatSystem = {
         state.update('session.chat', current => ({
             ...(current || {}),
             active: false,
-            blocking: false
+            blocking: false,
+            waitingChoice: false
         }));
 
         this.toggleChatOverlay(false);
