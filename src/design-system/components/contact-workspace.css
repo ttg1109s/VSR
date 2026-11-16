@@ -346,3 +346,39 @@
 .vsr-contact-composer__hint,
 .vsr-contact-chat-error { margin: 0; color: var(--vsr-color-text-secondary); font-size: 12px; line-height: 18px; }
 .vsr-contact-chat-error { padding: 8px 16px; color: var(--vsr-color-error); }
+
+/* A full-screen Contact drawer owns scrolling while it is open. */
+.vsr-contact-drawer.vsr-overlay-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+}
+.vsr-contact-drawer .vsr-overlay-content {
+  flex: 1 1 0;
+  min-height: 0;
+  height: auto;
+  overflow: hidden;
+  overscroll-behavior: contain;
+}
+.vsr-contact-drawer .vsr-contact-workspace,
+.vsr-contact-drawer .vsr-contact-list,
+.vsr-contact-drawer .vsr-contact-detail {
+  min-height: 0;
+}
+.vsr-contact-drawer .vsr-contact-scroll-area {
+  min-height: 0;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+}
+.vsr-contact-drawer .vsr-contact-conversation {
+  min-height: 0;
+}
+.vsr-contact-drawer .vsr-contact-conversation__history {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
