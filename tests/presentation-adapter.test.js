@@ -246,6 +246,21 @@ test('Contact exposes Engine-owned thread summaries and opens only a thread belo
     assert.equal(client.getSnapshot().session.chat.waitingChoice, true);
     assert.equal(client.getSnapshot().session.chat.choices.length, 2);
     assert.equal(client.getSnapshot().session.chat.choices.some(choice => Object.hasOwn(choice, 'effect')), false);
+
+    host.engine.api.engine.state.set('faker', {
+      active: true,
+      targetId: 'mai',
+      mode: 'mask',
+      backupPlayer: { entryCharacter: 'player' }
+    });
+    await client.selectChatChoice(0);
+    const selectedHistory = client.getSnapshot().session.chat.history.chat_mai;
+    assert.equal(selectedHistory.at(-1).nameID, 'mai');
+    assert.equal(client.getSnapshot().session.chat.transitionPending, true);
+    await assert.rejects(
+      client.selectChatChoice(1),
+      error => error.code === 'CHAT_NOT_WAITING'
+    );
   } finally {
     client.dispose();
     host.close();

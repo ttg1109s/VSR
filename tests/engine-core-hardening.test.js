@@ -1107,11 +1107,22 @@ test('Contact snapshot projects the current Player Entry and only known or prese
   const scenario = validScenario();
   scenario.meta.entryCharacter = 'hero';
   scenario.scenes.start.routers.main.actions[0].set.charAllow = ['ally'];
-  const characterSet = { moving: false, alert: null, move: null, actions: [], linkEffect: false };
+  const characterSet = { moving: false, alert: null, move: null, linkEffect: false };
+  scenario.scenes.elsewhere = {
+    meta: { title: 'Elsewhere' },
+    set: { activeRouterId: 'away' },
+    routers: {
+      away: {
+        meta: { subTitleStatus: 'Away' },
+        set: { blocked: false, visited: false, countVisited: 0 },
+        actions: []
+      }
+    }
+  };
   scenario.characters = {
-    hero: { meta: { name: 'Hero', desc: 'Current identity' }, set: { ...characterSet }, stats: { hp: { current: 8, max: 10 } }, relationship: [], place: { scene_id: 'start', currentIndex: 0 }, met: [], moveList: [] },
-    ally: { meta: { name: 'Ally' }, set: { ...characterSet }, stats: {}, relationship: [['friend', 'hero']], place: { scene_id: 'start', currentIndex: 0 }, met: ['hero:3'], moveList: [] },
-    stranger: { meta: { name: 'Stranger' }, set: { ...characterSet }, stats: {}, relationship: [], place: { scene_id: 'elsewhere', currentIndex: 0 }, met: [], moveList: [] }
+    hero: { meta: { name: 'Hero', desc: 'Current identity' }, set: { ...characterSet }, stats: { hp: { current: 8, max: 10, label: 'HP' } }, inventory: [], relationship: [], place: { scene_id: 'start', currentIndex: 0 }, met: [], moveList: [] },
+    ally: { meta: { name: 'Ally', desc: 'Known ally' }, set: { ...characterSet }, stats: {}, inventory: [], relationship: [['friend', 'hero']], place: { scene_id: 'start', currentIndex: 0 }, met: ['hero:2'], moveList: [] },
+    stranger: { meta: { name: 'Stranger', desc: 'Unknown stranger' }, set: { ...characterSet }, stats: {}, inventory: [], relationship: [], place: { scene_id: 'elsewhere', currentIndex: 0 }, met: [], moveList: [] }
   };
   const engine = new GameEngine();
   try {

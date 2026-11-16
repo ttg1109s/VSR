@@ -73,10 +73,12 @@ export class GameEngine {
   this.protocol.registerCommand('action.trigger',payload=>{if(typeof payload.actionId!=='string'||!payload.actionId)throw new TypeError('action.trigger requires actionId.');return this.handleAction(payload.actionId,payload.uniqueId||payload.actionId);});
   this.protocol.registerCommand('chat.open',payload=>{
    if(typeof payload.contactId!=='string'||!payload.contactId||typeof payload.chatId!=='string'||!payload.chatId)throw new TypeError('chat.open requires contactId and chatId.');
-   const contact=this.state.characters?.[payload.contactId];
-   const identityId=this._getCurrentIdentityKey?.()||this.state.entryCharacter||'player';
+   const runtimeState=this.api.engine.state;
+   const characters=runtimeState.getRuntimeSnapshot('characters')||{};
+   const contact=characters[payload.contactId];
+   const identityId=this._getCurrentIdentityKey?.()||runtimeState.get('entryCharacter')||'player';
    const met=Array.isArray(contact?.met)&&contact.met.some(entry=>String(entry).split(':')[0]===identityId);
-   const present=!!contact&&contact.place?.scene_id===this.state.sceneId;
+   const present=!!contact&&contact.place?.scene_id===runtimeState.get('sceneId');
    if(!contact||payload.contactId===identityId||(!met&&!present))throw new Error('Chat thread is not available for this contact.');
    const thread=this.getThreads(payload.contactId).find(item=>item.id===payload.chatId);
    if(!thread)throw new Error('Chat thread is not available for this contact.');

@@ -170,7 +170,7 @@ export const ChatSystem = {
                             pickedChoice = blockInfo.choices.find(ch => ch.set && ch.set.choiced === true);
                         }
                         if (pickedChoice) {
-                            const entryChar = this.api.engine.state.get('entryCharacter') || 'player';
+                            const entryChar = this._getCurrentIdentityKey();
                             chatHistory.push({ nameID: entryChar, text: pickedChoice.text });
                         } else {
                             stopAtBlock = blockId;
@@ -330,6 +330,12 @@ export const ChatSystem = {
     },
 
     async selectChatChoice(idx) {
+        if (!this.chatState?.active || this.chatState.waitingChoice !== true || this.chatState.transitionPending === true) {
+            const error = new Error('Chat is not waiting for a choice.');
+            error.code = 'CHAT_NOT_WAITING';
+            throw error;
+        }
+
         const block = this.resolveBlock(this.chatState.id, this.chatState.blockId);
 
         if (!block || !block.choices || !block.choices[idx]) return;
@@ -354,7 +360,7 @@ export const ChatSystem = {
         console.log(`[ChatSystem] Marked Block ${blockId} (and choice ${idx}) as CHOICED.`);
 
         // --- 2. Render tin nhắn ---
-        const entryChar = this.api.engine.state.get('entryCharacter') || 'player';
+        const entryChar = this._getCurrentIdentityKey();
         const playerLine = { nameID: entryChar, text: choice.text };
 
         this.api.engine.state.update('chat.history', history => [...(history || []), playerLine], { id: this.chatState.id });
