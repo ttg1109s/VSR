@@ -2,7 +2,7 @@
 export const FakerSystem = {
     redirectTarget(targetId) {
         const faker = this.api.engine.state.getRuntimeSnapshot('faker') || {};
-        return faker.active && targetId === faker.targetId ? (this.api.engine.state.getRuntime('originalEntryCharacter') || 'player') : targetId;
+        return faker.active && targetId === faker.targetId ? (this.api.engine.state.getRuntime('entryCharacter') || 'player') : targetId;
     },
 
     calculateSyncStat(val, min, max, pMin, pMax) {
@@ -30,7 +30,7 @@ export const FakerSystem = {
             return;
         }
 
-        const playerId = state.getRuntime('originalEntryCharacter') || state.getRuntime('meta.entryCharacter') || 'player';
+        const playerId = state.getRuntime('entryCharacter') || 'player';
         const player = state.getRuntimeSnapshot('characters.[id]', { id: playerId });
         const target = state.getRuntimeSnapshot('characters.[id]', { id: targetId });
         if (!target) {
@@ -46,7 +46,7 @@ export const FakerSystem = {
             backupPlayer: {
                 set: JSON.parse(JSON.stringify(player?.set || {})),
                 stats: JSON.parse(JSON.stringify(player?.stats || {})),
-                entryCharacter: state.getRuntime('originalEntryCharacter') || state.getRuntime('meta.entryCharacter') || 'player'
+                entryCharacter: state.getRuntime('entryCharacter') || 'player'
             }
         }));
 
