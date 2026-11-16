@@ -140,33 +140,44 @@ export class JsonProtocol{
    ?faker.targetId
    :(engine.state.entryCharacter||'player');
   const currentCharacter=engine.state.characters?.[currentIdentityId]||null;
-  const originalEntryCharacter=engine.state.originalEntryCharacter||engine.state.meta?.entryCharacter||'player';
-  const originalCharacter=engine.state.characters?.[originalEntryCharacter]||null;
-  const originalPlayerProjection=originalCharacter?{
-   id:originalEntryCharacter,
-   name:originalCharacter.meta?.name||originalEntryCharacter,
-   description:originalCharacter.meta?.desc??null,
-   avatar:originalCharacter.meta?.avatar??null,
-   stats:cloneJsonValue(originalCharacter.stats||{}),
-   relationship:(Array.isArray(originalCharacter.relationship)?originalCharacter.relationship:[]).map(item=>({
-    tag:Array.isArray(item)?item[0]??null:null,
-    characterId:Array.isArray(item)?item[1]??null:null,
-    characterName:Array.isArray(item)&&typeof item[1]==='string'?(engine.state.characters?.[item[1]]?.meta?.name||item[1]):null
+  const projectRelationships=(character, fallback=[])=>{
+   const relationships=Array.isArray(character?.set?.relationship)?character.set.relationship:
+    (Array.isArray(character?.relationship)?character.relationship:fallback);
+   return relationships.map(item=>{
+    const characterId=Array.isArray(item)?item[1]??null:item?.characterId??null;
+    return{
+     tag:Array.isArray(item)?item[0]??null:item?.tag??null,
+     characterId,
+     characterName:typeof characterId==='string'?(engine.state.characters?.[characterId]?.meta?.name||characterId):null
+    };
+   });
+  };
+  const projectCharacter=(characterId,character,{isPlayer=false}={})=>({
+   id:characterId,
+   name:(isPlayer&&faker.active&&faker.mode==='mask'?character.set?.name:null)||character.meta?.name||characterId,
+   description:(isPlayer&&faker.active&&faker.mode==='mask'?character.set?.desc:null)??character.meta?.desc??null,
+   avatar:character.meta?.avatar??null,
+   stats:cloneJsonValue(character.stats||{}),
+   relationship:projectRelationships(character),
+   ...(isPlayer?{identityMode:faker.active?(faker.mode||null):null}:{})
+  });
+  const playerProjection=currentCharacter?projectCharacter(currentIdentityId,currentCharacter,{isPlayer:true}):null;
+  const contacts=Object.entries(engine.state.characters||{})
+   .filter(([characterId,character])=>{
+    if(characterId===currentIdentityId)return false;
+    const met=Array.isArray(character?.met)?character.met:[];
+    const hasMet=met.some(entry=>String(entry).split(':')[0]===currentIdentityId);
+    const isPresent=!!sceneId&&character?.place?.scene_id===sceneId;
+    return hasMet||isPresent;
+   })
+   .map(([characterId,character])=>({
+    ...projectCharacter(characterId,character),
+    presence:character?.place?.scene_id===sceneId?'present':'away',
+    metCount:(Array.isArray(character?.met)?character.met:[])
+     .filter(entry=>String(entry).split(':')[0]===currentIdentityId)
+     .reduce((count,entry)=>count+(Number(String(entry).split(':')[1])||1),0)
    }))
-  }:null;
-  const playerProjection=currentCharacter?{
-   id:currentIdentityId,
-   name:currentCharacter.meta?.name||currentIdentityId,
-   description:currentCharacter.meta?.desc??null,
-   avatar:currentCharacter.meta?.avatar??null,
-   stats:cloneJsonValue(currentCharacter.stats||{}),
-   relationship:(Array.isArray(currentCharacter.relationship)?currentCharacter.relationship:[]).map(item=>({
-    tag:Array.isArray(item)?item[0]??null:null,
-    characterId:Array.isArray(item)?item[1]??null:null,
-    characterName:Array.isArray(item)&&typeof item[1]==='string'?(engine.state.characters?.[item[1]]?.meta?.name||item[1]):null
-   })),
-   identityMode:faker.active?(faker.mode||null):null
-  }:null;
+   .sort((a,b)=>a.name.localeCompare(b.name,undefined,{sensitivity:'base'}));
   const snapshot={
    protocol:'vsr',protocolVersion:this.protocolVersion,type:'snapshot',engineId:this.engineId,
    revision:this.stateRevision,stateRevision:this.stateRevision,eventSequence:this.eventSequence,
@@ -178,7 +189,7 @@ export class JsonProtocol{
     router:sourceRouter?{id:routerId,meta:safeMeta(sourceRouter.meta||{})}:null,
     scenePath:sceneId?(state.sceneTree?.[sceneId]||[]).map(node=>({id:node.id,title:node.title})):[],
     player:playerProjection,
-    originalPlayer:originalPlayerProjection,
+    contacts,
     actions
    },
    session,state
