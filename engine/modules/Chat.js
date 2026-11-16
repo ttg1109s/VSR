@@ -88,7 +88,7 @@ export const ChatSystem = {
                 preview: preview,
                 time: c.set.lastInteraction || c.set.activationTime || 0,
                 isUnread: c.set.read === false,
-                isFinished: false
+                isFinished: c.set.read === true
             };
         });
 
