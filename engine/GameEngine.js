@@ -71,6 +71,14 @@ export class GameEngine {
   });
   this.protocol.registerCommand('snapshot.get',()=>this.protocol.createSnapshot(this));
   this.protocol.registerCommand('action.trigger',payload=>{if(typeof payload.actionId!=='string'||!payload.actionId)throw new TypeError('action.trigger requires actionId.');return this.handleAction(payload.actionId,payload.uniqueId||payload.actionId);});
+  this.protocol.registerCommand('chat.open',payload=>{
+   if(typeof payload.contactId!=='string'||!payload.contactId||typeof payload.chatId!=='string'||!payload.chatId)throw new TypeError('chat.open requires contactId and chatId.');
+   if(!this.state.characters?.[payload.contactId])throw new Error('Contact not found.');
+   const thread=this.getThreads(payload.contactId).find(item=>item.id===payload.chatId);
+   if(!thread)throw new Error('Chat thread is not available for this contact.');
+   this.startChat(payload.chatId);
+   return{opened:true,contactId:payload.contactId,chatId:payload.chatId};
+  });
   this.protocol.registerCommand('chat.next',()=>this.nextChat());
   this.protocol.registerCommand('chat.selectChoice',payload=>{if(!Number.isInteger(payload.index))throw new TypeError('chat.selectChoice requires index.');return this.selectChatChoice(payload.index);});
   this.protocol.registerCommand('inventory.toggleHand',payload=>{if(typeof payload.itemId!=='string'||!payload.itemId)throw new TypeError('inventory.toggleHand requires itemId.');return this.toggleHand(payload.itemId);});
