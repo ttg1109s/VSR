@@ -1,5 +1,4 @@
 import React,{useCallback,useEffect,useMemo,useRef,useState}from'react';
-import{Button}from'../../design-system/index.js';
 import ActionCard from'./ActionCard.jsx';
 import './action-carousel.css';
 
@@ -117,23 +116,12 @@ export default function ActionCollection({actions=EMPTY_ACTIONS,client,passwordC
 
  if(!ordered.length)return <section className="vsr-card" aria-label="Hành động"><p>Không có hành động trong ngữ cảnh hiện tại.</p></section>;
  return <section className="vsr-stack vsr-stack--gap-4 vsr-action-carousel" aria-label="Hành động">
-  <header className="vsr-page-header vsr-action-carousel__header">
-   <div className="vsr-action-carousel__heading"><h2>Hành động</h2><span className="vsr-action-carousel__count">{ordered.length}</span></div>
-   <div className="vsr-action-carousel__controls">
-    <span className="vsr-action-carousel__position" aria-live="polite">{activeIndex+1} / {ordered.length}</span>
-    <Button variant="secondary" size="sm" disabled={ordered.length<2} onClick={()=>scrollToIndex(activeIndex-1)} aria-label="Hành động trước">Trước</Button>
-    <Button variant="secondary" size="sm" disabled={ordered.length<2} onClick={()=>scrollToIndex(activeIndex+1)} aria-label="Hành động tiếp theo">Tiếp</Button>
-   </div>
-  </header>
   <div ref={carouselRef} className="vsr-action-carousel__viewport" onScroll={handleScroll} role="region" aria-roledescription="băng chuyền" aria-label="Danh sách hành động, dùng phím mũi tên trái và phải để di chuyển" tabIndex={0} onKeyDown={event=>{if(event.key==='ArrowRight'){event.preventDefault();scrollToIndex(activeIndex+1);}else if(event.key==='ArrowLeft'){event.preventDefault();scrollToIndex(activeIndex-1);}}}>
    <div className="vsr-action-carousel__track">
     {ordered.map((a,index)=><div ref={node=>{slideRefs.current[index]=node;}} key={a.key||a.id} className="vsr-action-carousel__slide" role="group" aria-roledescription="trang chiếu" aria-label={`Hành động ${index+1} trên ${ordered.length}`}>
      <ActionCard action={a} pending={pending.has(a.key)} interactionBlocked={pending.size>0||Boolean(passwordChallenge)} passwordChallenge={passwordChallenge} onTrigger={trigger} onMarkRead={read} onSubmitPassword={submit} onCancelPassword={cancel} onRefreshSnapshot={refresh} feedback={feedback[a.key]||''}/>
     </div>)}
    </div>
-  </div>
-  <div className="vsr-action-carousel__pagination" aria-label="Chọn hành động">
-   {ordered.map((a,index)=><button key={a.key||a.id} type="button" className={'vsr-action-carousel__dot'+(index===activeIndex?' is-active':'')} aria-label={`Đến hành động ${index+1}`} aria-current={index===activeIndex?'true':undefined} onClick={()=>scrollToIndex(index)}/>)}
   </div>
  </section>;
 }

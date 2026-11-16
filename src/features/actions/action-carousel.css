@@ -1,27 +1,15 @@
 /* Feature-owned styling: this carousel composes ActionCard and is not a shared DS primitive. */
 .vsr-action-carousel{display:block;width:100%;max-width:100%;min-width:0;box-sizing:border-box;overflow:hidden}
-.vsr-action-carousel__header{display:flex;align-items:center;justify-content:space-between;gap:var(--vsr-space-3)}
-.vsr-action-carousel__heading,.vsr-action-carousel__controls{display:flex;align-items:center;gap:var(--vsr-space-2)}
-.vsr-action-carousel__heading h2{margin:0}
-.vsr-action-carousel__count,.vsr-action-carousel__position{color:var(--vsr-color-text-secondary);font:var(--vsr-typography-label-small,500 12px/16px var(--vsr-font-sans));font-variant-numeric:tabular-nums}
-.vsr-action-carousel__count{display:inline-flex;min-width:24px;height:24px;align-items:center;justify-content:center;padding-inline:var(--vsr-space-2);border-radius:var(--vsr-radius-full);background:var(--vsr-color-surface-muted)}
-.vsr-action-carousel__viewport{display:block;width:100%;max-width:100%;min-width:0;box-sizing:border-box;overflow-x:auto;overflow-y:hidden;overscroll-behavior-inline:contain;scroll-snap-type:x mandatory;scroll-behavior:smooth;scrollbar-width:thin;scrollbar-color:var(--vsr-color-border) transparent;padding:2px 2px var(--vsr-space-3);outline-offset:2px}
+.vsr-action-carousel__viewport{display:block;width:100%;max-width:100%;min-width:0;box-sizing:border-box;overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;touch-action:pan-x;scroll-snap-type:x mandatory;scroll-behavior:smooth;scrollbar-width:none;-ms-overflow-style:none;padding:2px 2px var(--vsr-space-3);outline-offset:2px}
+.vsr-action-carousel__viewport::-webkit-scrollbar{display:none;width:0;height:0}
 .vsr-action-carousel__viewport:focus-visible{outline:2px solid var(--vsr-color-primary)}
 .vsr-action-carousel__track{display:flex;align-items:stretch;gap:var(--vsr-space-4);width:max-content;min-width:100%}
-.vsr-action-carousel__slide{flex:0 0 clamp(320px,42vw,480px);min-width:0;scroll-snap-align:start;scroll-snap-stop:always}
+.vsr-action-carousel__slide{flex:0 0 clamp(320px,42vw,480px);min-width:0;scroll-snap-align:start}
 .vsr-action-carousel__slide>.vsr-action-card{height:100%;box-sizing:border-box}
-.vsr-action-carousel__pagination{display:flex;justify-content:center;align-items:center;gap:var(--vsr-space-1);min-height:var(--vsr-space-12)}
-.vsr-action-carousel__dot{position:relative;display:grid;place-items:center;flex:0 0 48px;width:48px;height:48px;padding:0;border:0;background:transparent;cursor:pointer}
-.vsr-action-carousel__dot::before{content:"";display:block;width:7px;height:7px;border-radius:var(--vsr-radius-full);background:var(--vsr-color-border);transition:width var(--vsr-motion-short) var(--vsr-motion-easing),background var(--vsr-motion-short) var(--vsr-motion-easing)}
-.vsr-action-carousel__dot.is-active::before{width:22px;background:var(--vsr-color-primary)}
-.vsr-action-carousel__dot:focus-visible{outline:2px solid var(--vsr-color-primary);outline-offset:-2px;border-radius:var(--vsr-radius-full)}
 @media(max-width:599px){
- .vsr-action-carousel__header{align-items:flex-start;flex-wrap:wrap}
- .vsr-action-carousel__controls{margin-left:auto}
  .vsr-action-carousel__slide{flex-basis:86vw;max-width:420px}
  .vsr-action-carousel__viewport{margin-right:-14px;padding-right:14vw}
 }
 @media(prefers-reduced-motion:reduce){
  .vsr-action-carousel__viewport{scroll-behavior:auto}
- .vsr-action-carousel__dot::before{transition:none}
 }
