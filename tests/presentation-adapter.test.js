@@ -266,3 +266,81 @@ test('Contact exposes Engine-owned thread summaries and opens only a thread belo
     host.close();
   }
 });
+
+
+test('chat action can finish and reopen as a read-only review without duplicating history', async () => {
+  const host = new LocalEngineHost();
+  const client = new JsonClient(host);
+  try {
+    const initial = await client.initialize(JSON.parse(host.getDemoScenario()));
+    const action = initial.presentation.actions.find(item => item.id === 'action_talk_mai');
+    assert.ok(action, 'the demo exposes the Mai conversation action');
+
+    await client.markActionRead(action.key);
+    await client.triggerAction(action.id, action.key);
+    assert.equal(client.getSnapshot().session.chat.mode, 'active');
+
+    // Advance through the opening dialogue and wait for the choice transition.
+    await client.nextChat();
+    await client.nextChat();
+    assert.equal(client.getSnapshot().session.chat.waitingChoice, true);
+    await client.selectChatChoice(0);
+    await new Promise(resolve => setTimeout(resolve, 600));
+
+    assert.equal(client.getSnapshot().session.chat.active, true);
+    assert.equal(client.getSnapshot().session.chat.waitingChoice, false);
+    await client.nextChat();
+    assert.equal(client.getSnapshot().session.chat.active, false);
+
+    const completedHistory = structuredClone(client.getSnapshot().session.chat.history.chat_mai);
+    assert.ok(completedHistory.length >= 4);
+    assert.equal(host.engine.state.chats.chat_mai.set.read, true);
+
+    // The same reusable action reopens the completed thread as review, not a new run.
+    await client.triggerAction(action.id, action.key);
+    const reopened = client.getSnapshot();
+    assert.equal(reopened.session.chat.active, true);
+    assert.equal(reopened.session.chat.mode, 'review');
+    assert.equal(reopened.session.chat.isReview, true);
+    assert.equal(reopened.session.chat.waitingChoice, false);
+    assert.deepEqual(reopened.session.chat.history.chat_mai, completedHistory);
+
+    // A review session is read-only; its only progression command closes it.
+    await client.nextChat();
+    assert.equal(client.getSnapshot().session.chat.active, false);
+    assert.deepEqual(client.getSnapshot().session.chat.history.chat_mai, completedHistory);
+  } finally {
+    client.dispose();
+    host.close();
+  }
+});
+
+test('reopening an unread thread resumes from saved step without replaying persisted lines', async () => {
+  const host = new LocalEngineHost();
+  const client = new JsonClient(host);
+  try {
+    await client.initialize(JSON.parse(host.getDemoScenario()));
+    const chat = JSON.parse(JSON.stringify(host.engine.src.chat.chat_mai));
+    chat.set = {
+      ...(chat.set || {}),
+      activationTime: Date.now() - 1000,
+      lastInteraction: Date.now() - 500,
+      read: false,
+      bookmark: ['start'],
+      step: 1
+    };
+    host.engine.state.chats.chat_mai = chat;
+    host.engine.state.chatHistory.chat_mai = [{ nameID: 'mai', text: chat.block.start.line[0].text }];
+    host.engine.commitState('chat.resume.fixture');
+
+    await client.openChatThread('mai', 'chat_mai');
+    const history = client.getSnapshot().session.chat.history.chat_mai;
+    assert.equal(history.length, 1);
+    assert.equal(history[0].text, chat.block.start.line[0].text);
+    assert.equal(client.getSnapshot().session.chat.index, 2);
+    assert.equal(host.engine.state.chats.chat_mai.set.step, 2);
+  } finally {
+    client.dispose();
+    host.close();
+  }
+});
