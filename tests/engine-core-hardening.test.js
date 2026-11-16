@@ -1066,6 +1066,8 @@ test('Player Entry preserves original profile and exposes current identity acros
     assert.equal(initial.presentation.originalPlayer.name, 'Hero');
 
     engine.api.engine.state.set('entryCharacter', 'npc');
+    assert.equal(engine.api.engine.state.get('entryCharacter'), 'npc');
+    assert.equal(engine.api.engine.state.get('scenarioEntryCharacter'), 'hero');
     const changed = engine.protocol.createSnapshot(engine);
     assert.equal(changed.presentation.player.id, 'npc');
     assert.equal(changed.presentation.player.name, 'NPC');
