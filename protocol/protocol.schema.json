@@ -153,20 +153,24 @@
                 },
                 "player": {
                   "oneOf": [
-                    { "$ref": "#/$defs/playerProjection" },
-                    { "type": "null" }
-                  ]
-                },
-                "originalPlayer": {
-                  "oneOf": [
-                    { "$ref": "#/$defs/originalPlayerProjection" },
-                    { "type": "null" }
+                    {
+                      "$ref": "#/$defs/playerProjection"
+                    },
+                    {
+                      "type": "null"
+                    }
                   ]
                 },
                 "actions": {
                   "type": "array",
                   "items": {
                     "$ref": "#/$defs/actionProjection"
+                  }
+                },
+                "contacts": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/contactProjection"
                   }
                 }
               }
@@ -368,57 +372,6 @@
           }
         }
       ]
-    },
-    "originalPlayerProjection": {
-      "type": "object",
-      "required": ["id", "name", "stats", "relationship"],
-      "properties": {
-        "id": { "type": "string" },
-        "name": { "type": "string" },
-        "description": { "type": ["string", "null"] },
-        "avatar": { "type": ["string", "null"] },
-        "stats": { "type": "object" },
-        "relationship": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": ["tag", "characterId", "characterName"],
-            "properties": {
-              "tag": { "type": ["string", "null"] },
-              "characterId": { "type": ["string", "null"] },
-              "characterName": { "type": ["string", "null"] }
-            },
-            "additionalProperties": false
-          }
-        }
-      },
-      "additionalProperties": false
-    },
-    "playerProjection": {
-      "type": "object",
-      "required": ["id", "name", "stats", "relationship", "identityMode"],
-      "properties": {
-        "id": { "type": "string" },
-        "name": { "type": "string" },
-        "description": { "type": ["string", "null"] },
-        "avatar": { "type": ["string", "null"] },
-        "stats": { "type": "object" },
-        "identityMode": { "type": ["string", "null"], "enum": ["soul", "mask", "swap", null] },
-        "relationship": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": ["tag", "characterId", "characterName"],
-            "properties": {
-              "tag": { "type": ["string", "null"] },
-              "characterId": { "type": ["string", "null"] },
-              "characterName": { "type": ["string", "null"] }
-            },
-            "additionalProperties": false
-          }
-        }
-      },
-      "additionalProperties": false
     },
     "actionProjection": {
       "type": "object",
@@ -695,6 +648,136 @@
                 "null"
               ]
             }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "contactProjection": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "stats",
+        "relationship",
+        "presence",
+        "metCount"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "avatar": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "stats": {
+          "type": "object"
+        },
+        "relationship": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/playerProjection/properties/relationship/items"
+          }
+        },
+        "presence": {
+          "type": "string",
+          "enum": [
+            "present",
+            "away"
+          ]
+        },
+        "metCount": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "playerProjection": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "stats",
+        "relationship",
+        "identityMode"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "avatar": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "stats": {
+          "type": "object"
+        },
+        "identityMode": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "soul",
+            "mask",
+            "swap",
+            null
+          ]
+        },
+        "relationship": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "tag",
+              "characterId",
+              "characterName"
+            ],
+            "properties": {
+              "tag": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "characterId": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "characterName": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "additionalProperties": false
           }
         }
       },
