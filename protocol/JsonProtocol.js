@@ -128,8 +128,11 @@ export class JsonProtocol{
    :[];
   const session={
    chat:{
-    active:!!engine.chatState?.active,blocking:!!engine.chatState?.blocking,
-    waitingChoice:engine.chatState?.waitingChoice===true,
+    active:!!engine.chatState?.active,
+    mode:engine.chatState?.isReview===true?'review':(engine.chatState?.active?'active':'idle'),
+    isReview:engine.chatState?.isReview===true,
+    blocking:!!engine.chatState?.blocking,
+    waitingChoice:engine.chatState?.isReview===true?false:engine.chatState?.waitingChoice===true,
     transitionPending:engine.chatState?.transitionPending===true,
     id:engine.chatState?.id??null,contactId:chatContactId,blockId:engine.chatState?.blockId??null,
     index:Number(engine.chatState?.index)||0,
