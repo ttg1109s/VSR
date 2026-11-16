@@ -2,7 +2,7 @@
 export const FakerSystem = {
     redirectTarget(targetId) {
         const faker = this.api.engine.state.getRuntimeSnapshot('faker') || {};
-        return faker.active && targetId === faker.targetId ? 'player' : targetId;
+        return faker.active && targetId === faker.targetId ? (this.api.engine.state.getRuntime('originalEntryCharacter') || 'player') : targetId;
     },
 
     calculateSyncStat(val, min, max, pMin, pMax) {
@@ -30,7 +30,8 @@ export const FakerSystem = {
             return;
         }
 
-        const player = state.getRuntimeSnapshot('characters.[id]', { id: 'player' });
+        const playerId = state.getRuntime('originalEntryCharacter') || state.getRuntime('meta.entryCharacter') || 'player';
+        const player = state.getRuntimeSnapshot('characters.[id]', { id: playerId });
         const target = state.getRuntimeSnapshot('characters.[id]', { id: targetId });
         if (!target) {
             this.api.presentation.notification.add("Lỗi Faker", "Mục tiêu không tồn tại", "error");
@@ -45,7 +46,7 @@ export const FakerSystem = {
             backupPlayer: {
                 set: JSON.parse(JSON.stringify(player?.set || {})),
                 stats: JSON.parse(JSON.stringify(player?.stats || {})),
-                entryCharacter: state.getRuntime('meta.entryCharacter')
+                entryCharacter: state.getRuntime('originalEntryCharacter') || state.getRuntime('meta.entryCharacter') || 'player'
             }
         }));
 
@@ -54,15 +55,16 @@ export const FakerSystem = {
             state.set('entryCharacter', targetId);
             this.api.presentation.notification.add("Chuyển sinh", `Bạn đã trở thành ${target.set?.name || target.meta?.name}`, "success");
         } else if (mode === 'mask') {
+            const playerId = state.getRuntime('originalEntryCharacter') || state.getRuntime('meta.entryCharacter') || 'player';
             state.update('characters.[id].set', current => ({
                 ...(current || {}),
                 name: target.set?.name || target.meta?.name,
                 desc: target.set?.desc,
                 relationship: target.set?.relationship
-            }), { id: 'player' });
+            }), { id: playerId });
             this.api.presentation.notification.add("Cải trang", `Bạn đang khoác lên mình ${target.set?.name || target.meta?.name}`, "info");
         } else {
-            this._syncStats('player', targetId);
+            this._syncStats(playerId, targetId);
             this.api.presentation.notification.add("Đoạt xá", `Đã chiếm lấy cơ thể ${target.set?.name || target.meta?.name}`, "magic");
         }
 
@@ -91,10 +93,11 @@ export const FakerSystem = {
                 name: backup.set?.name,
                 desc: backup.set?.desc,
                 relationship: backup.set?.relationship
-            }), { id: 'player' });
+            }), { id: playerId });
             this.api.presentation.notification.add("Gỡ bỏ", "Tháo bỏ lớp ngụy trang", "info");
         } else {
-            if (target?.stats) this._syncStats('player', targetId, true);
+            const playerId = state.getRuntime('originalEntryCharacter') || state.getRuntime('meta.entryCharacter') || 'player';
+            if (target?.stats) this._syncStats(playerId, targetId, true);
             this.api.presentation.notification.add("Thoát xác", "Trở về cơ thể gốc", "info");
         }
 
