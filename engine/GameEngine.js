@@ -258,8 +258,12 @@ export class GameEngine {
   if(!Object.prototype.hasOwnProperty.call(restored.characters,originalEntryCharacter)) {
    throw new TypeError(`Save original entry character "${originalEntryCharacter}" does not exist.`);
   }
-  if(!Object.prototype.hasOwnProperty.call(restored.characters,currentEntryCharacter)) {
-   throw new TypeError(`Save current identity "${currentEntryCharacter}" does not exist.`);
+  const activeIdentity=restored.faker?.active&&restored.faker?.targetId
+   ?restored.faker.targetId
+   :currentEntryCharacter;
+  if(!Object.prototype.hasOwnProperty.call(restored.characters,currentEntryCharacter)||
+     !Object.prototype.hasOwnProperty.call(restored.characters,activeIdentity)) {
+   throw new TypeError(`Save current identity "${activeIdentity}" does not exist.`);
   }
   restored.originalEntryCharacter=originalEntryCharacter;
   restored.entryCharacter=currentEntryCharacter;
