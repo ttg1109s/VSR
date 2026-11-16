@@ -308,6 +308,8 @@ test('chat action can finish and reopen as a read-only review without duplicatin
     // A review session is read-only; its only progression command closes it.
     await client.nextChat();
     assert.equal(client.getSnapshot().session.chat.active, false);
+    assert.equal(client.getSnapshot().session.chat.mode, 'idle');
+    assert.equal(client.getSnapshot().session.chat.isReview, false);
     assert.deepEqual(client.getSnapshot().session.chat.history.chat_mai, completedHistory);
   } finally {
     client.dispose();
