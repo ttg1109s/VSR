@@ -208,7 +208,8 @@ Các command sau được liệt kê trong `protocol/README.md`. Payload dưới
 | `engine.init` | `{ script, enterScene? }` | Nạp scenario; `enterScene: false` giữ runtime đã load nhưng chưa vào scene (mặc định `true` để tương thích) |
 | `action.trigger` | `{ actionId, uniqueId? }` | Thực thi action trên router đang active |
 | `action.markAsRead` | `{ uniqueId }` | Đánh dấu mô tả action đã đọc |
-| `chat.next` | `{}` | Tiến hội thoại |
+| `chat.open` | `{ contactId, chatId }` | Mở thread đã được Engine kích hoạt và xác thực thuộc contact |
+| `chat.next` | `{}` | Tiến hội thoại đang active |
 | `chat.selectChoice` | `{ index }` | Chọn lựa chọn hội thoại |
 | `inventory.toggleHand` | `{ itemId }` | Trang bị/bỏ trang bị item |
 | `item.use` | `{ itemId }` | Sử dụng item |
@@ -500,6 +501,9 @@ Trong triển khai hiện tại, hai nút Home gọi `scenario.inspect` qua Work
 - [ ] Dùng shared Design System components/tokens.
 - [ ] Có pending, disabled, error và empty states phù hợp.
 - [ ] Có keyboard/accessibility semantics.
+- [ ] Contact UI dùng `presentation.contacts[].threads` làm danh sách thread; không tự dựng thread từ scenario source.
+- [ ] Mở thread qua `chat.open`; lịch sử và lựa chọn lấy từ `session.chat`; tiếp diễn qua `chat.next` / `chat.selectChoice`.
+- [ ] Không hiển thị composer gửi văn bản tự do khi protocol chưa hỗ trợ lệnh đó.
 - [ ] Không tạo UI cho capability chưa có contract/data source.
 - [ ] Test cả adapter/service và hành vi UI ở mức phù hợp.
 
@@ -507,7 +511,7 @@ Trong triển khai hiện tại, hai nút Home gọi `scenario.inspect` qua Work
 
 Tài liệu được xây dựng từ source branch `engine-only`, tập trung vào:
 
-- `protocol/README.md`: JSON Protocol v2, revision/event cursor, snapshot projection, command list, password submission và trust boundary.
+- `protocol/README.md`: JSON Protocol v2, revision/event cursor, snapshot projection, Contact thread projection, chat commands, password submission và trust boundary.
 - `protocol/protocol.schema.json`: schema của snapshot, event, command và acknowledgement.
 - `protocol/JsonProtocol.js`: serialization, snapshot, event log, command dispatch, revision conflict, idempotency và authorization hook.
 - `protocol/index.js`: Engine API facade và presentation event proxy.
