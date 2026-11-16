@@ -3,12 +3,15 @@ import {
   Badge,
   Button,
   ContactAvatar,
+  ContactComposer,
+  ContactConversation,
   ContactDetail,
   ContactHeader,
   ContactList,
   ContactListItem,
   ContactScrollArea,
   ContactSection,
+  ContactTopicList,
   ContactWorkspace,
   DescriptionList,
   DescriptionListItem,
@@ -100,23 +103,38 @@ function ContactProfile({ character, player, contacts, onSelect }) {
   );
 }
 
-export default function ContactPanel({ open, onClose, player, contacts = [] }) {
+export default function ContactPanel({ open, onClose, player, contacts = [], session = null, client }) {
   const [selectedId, setSelectedId] = useState(null);
   const [mobileView, setMobileView] = useState('list');
+  const [activeArea, setActiveArea] = useState('threads');
+  const [selectedThreadId, setSelectedThreadId] = useState(null);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [pendingThreadId, setPendingThreadId] = useState(null);
+  const [chatPending, setChatPending] = useState(false);
+  const [chatError, setChatError] = useState('');
 
   const allContacts = useMemo(() => [
-    ...(player ? [{ ...player, kind: 'player' }] : []),
-    ...contacts.map(contact => ({ ...contact, kind: 'contact' }))
+    ...(player ? [{ ...player, kind: 'player', threads: [] }] : []),
+    ...contacts.map(contact => ({ ...contact, kind: 'contact', threads: Array.isArray(contact.threads) ? contact.threads : [] }))
   ], [player, contacts]);
 
   const selected = allContacts.find(contact => contact.id === selectedId) || null;
+  const threads = selected?.threads || [];
+  const selectedThread = threads.find(thread => thread.id === selectedThreadId) || null;
+  const chatSession = session?.chat || {};
+  const isActiveThread = chatSession.active === true && chatSession.id === selectedThreadId;
+  const history = selectedThreadId && chatSession.history?.[selectedThreadId]
+    ? chatSession.history[selectedThreadId]
+    : [];
+  const choices = isActiveThread && Array.isArray(chatSession.choices) ? chatSession.choices : [];
 
   useEffect(() => {
     if (selectedId && !allContacts.some(contact => contact.id === selectedId)) {
       setSelectedId(null);
+      setSelectedThreadId(null);
       setMobileView('list');
       setProfileOpen(false);
+      setActiveArea('threads');
     }
   }, [allContacts, selectedId]);
 
@@ -124,14 +142,20 @@ export default function ContactPanel({ open, onClose, player, contacts = [] }) {
     if (!open) {
       setMobileView('list');
       setProfileOpen(false);
+      setActiveArea('threads');
+      setSelectedThreadId(null);
+      setChatError('');
     }
   }, [open]);
 
   function selectContact(id) {
     if (!allContacts.some(contact => contact.id === id)) return;
     setSelectedId(id);
+    setSelectedThreadId(null);
     setMobileView('detail');
+    setActiveArea('threads');
     setProfileOpen(false);
+    setChatError('');
   }
 
   function close() {
@@ -139,12 +163,45 @@ export default function ContactPanel({ open, onClose, player, contacts = [] }) {
     onClose?.();
   }
 
+  async function openThread(thread) {
+    if (!selected || !client?.openChatThread || pendingThreadId) return;
+    setPendingThreadId(thread.id);
+    setChatError('');
+    try {
+      await client.openChatThread(selected.id, thread.id);
+      setSelectedThreadId(thread.id);
+      setActiveArea('conversation');
+    } catch (error) {
+      setChatError(error?.message || 'Không thể mở hội thoại này.');
+    } finally {
+      setPendingThreadId(null);
+    }
+  }
+
+  async function progressChat(choiceIndex = null) {
+    if (!client || chatPending || !isActiveThread) return;
+    setChatPending(true);
+    setChatError('');
+    try {
+      if (choiceIndex === null) await client.nextChat();
+      else await client.selectChatChoice(choiceIndex);
+    } catch (error) {
+      setChatError(error?.message || 'Engine không thể tiếp tục hội thoại.');
+    } finally {
+      setChatPending(false);
+    }
+  }
+
+  function contactName(id) {
+    return allContacts.find(contact => contact.id === id)?.name || id || 'Không xác định';
+  }
+
   return (
     <Drawer
       open={open}
       onClose={close}
       title="Messages"
-      description="Danh bạ hồ sơ được Engine cung cấp"
+      description="Danh bạ, thread và hội thoại từ Engine"
       size="full"
       side="right"
       className="vsr-contact-drawer"
@@ -158,26 +215,29 @@ export default function ContactPanel({ open, onClose, player, contacts = [] }) {
             </Button>
           </header>
           <ContactScrollArea className="vsr-contact-list__items" aria-label="Danh sách liên hệ">
-            {allContacts.map(contact => (
-              <ContactListItem
-                key={contact.id}
-                selected={selectedId === contact.id}
-                onClick={() => selectContact(contact.id)}
-                aria-label={'Mở hồ sơ ' + (contact.name || contact.id)}
-              >
-                <ContactAvatar name={contact.name || contact.id} avatar={contact.avatar} />
-                <span className="vsr-contact-list-item__copy">
-                  <span className="vsr-contact-list-item__name">{contact.name || contact.id}</span>
-                  <span className="vsr-contact-list-item__preview">
-                    {contact.kind === 'player'
-                      ? 'Danh tính đang điều khiển'
-                      : contact.presence === 'present'
-                        ? 'Đang hiện diện'
-                        : `Đã gặp · ${Number.isFinite(contact.metCount) ? contact.metCount : 0} lần`}
+            {allContacts.map(contact => {
+              const unreadCount = contact.threads.filter(thread => thread.isUnread).length;
+              const latestThread = contact.threads[0];
+              return (
+                <ContactListItem
+                  key={contact.id}
+                  selected={selectedId === contact.id}
+                  onClick={() => selectContact(contact.id)}
+                  aria-label={'Mở liên hệ ' + (contact.name || contact.id)}
+                >
+                  <ContactAvatar name={contact.name || contact.id} avatar={contact.avatar} />
+                  <span className="vsr-contact-list-item__copy">
+                    <span className="vsr-contact-list-item__name">{contact.name || contact.id}</span>
+                    <span className="vsr-contact-list-item__preview">
+                      {latestThread?.preview || (contact.kind === 'player'
+                        ? 'Danh tính đang điều khiển'
+                        : contact.presence === 'present' ? 'Đang hiện diện' : 'Đã gặp')}
+                    </span>
                   </span>
-                </span>
-              </ContactListItem>
-            ))}
+                  {unreadCount > 0 && <Badge tone="danger">{unreadCount}</Badge>}
+                </ContactListItem>
+              );
+            })}
             {!allContacts.length && (
               <p className="vsr-contact-list__empty">
                 Snapshot hiện chưa có dữ liệu danh tính hoặc liên hệ.
@@ -189,20 +249,25 @@ export default function ContactPanel({ open, onClose, player, contacts = [] }) {
         <ContactDetail className={!selected || mobileView === 'list' ? 'is-hidden-compact' : ''}>
           {!selected ? (
             <div className="vsr-contact-empty">
-              <span className="vsr-contact-empty__icon" aria-hidden="true">account_circle</span>
-              <p>Chọn một liên hệ để xem hồ sơ và các khu vực chi tiết.</p>
+              <span className="vsr-contact-empty__icon" aria-hidden="true">chat_bubble_outline</span>
+              <p>Chọn một liên hệ để xem các thread hội thoại.</p>
             </div>
           ) : (
             <>
               <ContactHeader>
                 <Button
-                  className="vsr-contact-back"
+                  className={activeArea === 'conversation' ? 'vsr-contact-back is-visible' : 'vsr-contact-back'}
                   size="sm"
                   variant="tertiary"
                   onClick={() => {
-                    setMobileView('list');
+                    if (activeArea === 'conversation') {
+                      setActiveArea('threads');
+                      setChatError('');
+                    } else {
+                      setMobileView('list');
+                    }
                   }}
-                  aria-label="Quay lại danh sách liên hệ"
+                  aria-label={activeArea === 'conversation' ? 'Quay lại danh sách thread' : 'Quay lại danh sách liên hệ'}
                 >
                   ←
                 </Button>
@@ -213,7 +278,7 @@ export default function ContactPanel({ open, onClose, player, contacts = [] }) {
                   onClick={() => setProfileOpen(true)}
                 >
                   <strong>{selected.name || selected.id}</strong>
-                  <small>Hồ sơ nhân vật</small>
+                  <small>{activeArea === 'conversation' ? (selectedThread?.title || 'Hội thoại') : 'Danh sách thread'}</small>
                 </button>
                 <Button size="sm" variant="tertiary" onClick={() => setProfileOpen(true)}>
                   Thông tin
@@ -221,12 +286,80 @@ export default function ContactPanel({ open, onClose, player, contacts = [] }) {
               </ContactHeader>
 
               <ContactScrollArea className="vsr-contact-detail-content">
-                <div className="vsr-contact-empty">
-                  <span className="vsr-contact-empty__icon" aria-hidden="true">account_circle</span>
-                  <p>Đây là danh bạ hồ sơ chỉ đọc từ Engine. Chọn “Thông tin” để xem mô tả, chỉ số và quan hệ của nhân vật.</p>
-                </div>
+                {activeArea === 'threads' ? (
+                  <ContactTopicList aria-label={'Thread của ' + (selected.name || selected.id)}>
+                    {threads.length ? threads.map(thread => (
+                      <button
+                        type="button"
+                        className={'vsr-contact-thread' + (thread.isUnread ? ' is-unread' : '')}
+                        key={thread.id}
+                        onClick={() => openThread(thread)}
+                        disabled={Boolean(pendingThreadId)}
+                        aria-label={'Mở thread ' + thread.title}
+                      >
+                        <span className="vsr-contact-thread__icon" aria-hidden="true">
+                          {thread.isUnread ? 'mark_chat_unread' : 'chat_bubble_outline'}
+                        </span>
+                        <span className="vsr-contact-thread__copy">
+                          <span className="vsr-contact-thread__title">{thread.title}</span>
+                          <span className="vsr-contact-thread__preview">{thread.preview}</span>
+                        </span>
+                        {thread.isUnread && <span className="vsr-contact-thread__unread" aria-label="Chưa đọc" />}
+                        {pendingThreadId === thread.id && <span className="vsr-contact-thread__pending">Đang mở…</span>}
+                      </button>
+                    )) : (
+                      <div className="vsr-contact-topic-list__empty">
+                        <strong>Chưa có thread</strong>
+                        <p>Thread sẽ xuất hiện khi Engine kích hoạt hội thoại liên quan đến nhân vật này.</p>
+                      </div>
+                    )}
+                  </ContactTopicList>
+                ) : (
+                  <ContactConversation>
+                    <div className="vsr-contact-conversation__history" aria-live="polite">
+                      {history.length ? history.map((line, index) => {
+                        const senderId = line.nameID || line.char_id;
+                        const isPlayer = senderId === player?.id;
+                        return (
+                          <div className={'vsr-contact-message' + (isPlayer ? ' is-player' : '')} key={selectedThreadId + ':' + index}>
+                            <span className="vsr-contact-message__sender">{isPlayer ? 'Bạn' : contactName(senderId)}</span>
+                            <p>{line.text || ''}</p>
+                          </div>
+                        );
+                      }) : (
+                        <div className="vsr-contact-conversation__empty">
+                          <strong>{selectedThread?.title || 'Hội thoại'}</strong>
+                          <p>Engine chưa trả về nội dung cho thread này.</p>
+                        </div>
+                      )}
+                    </div>
+                    <ContactComposer>
+                      {chatError && <p className="vsr-contact-chat-error" role="alert">{chatError}</p>}
+                      {isActiveThread && choices.length > 0 ? (
+                        <div className="vsr-contact-chat-choices">
+                          {choices.map(choice => (
+                            <Button
+                              key={choice.index}
+                              block
+                              disabled={chatPending}
+                              onClick={() => progressChat(choice.index)}
+                            >
+                              {choice.text}
+                            </Button>
+                          ))}
+                        </div>
+                      ) : isActiveThread ? (
+                        <Button block disabled={chatPending || !client} onClick={() => progressChat()}>
+                          {chatPending ? 'Đang xử lý…' : 'Tiếp tục'}
+                        </Button>
+                      ) : (
+                        <p className="vsr-contact-composer__hint">Đây là lịch sử hội thoại kịch bản. Không có thao tác gửi tin nhắn tự do trong Engine hiện tại.</p>
+                      )}
+                    </ContactComposer>
+                  </ContactConversation>
+                )}
               </ContactScrollArea>
-
+              {activeArea === 'threads' && chatError && <p className="vsr-contact-chat-error" role="alert">{chatError}</p>}
             </>
           )}
         </ContactDetail>
