@@ -1031,3 +1031,67 @@ test('item hide is ignored outside action context', () => {
   ItemStrategies.add(engine, { target: 'item', hide: true }, { itemId: 'item', hook: 'use' });
   assert.equal(action.display, 'show');
 });
+
+
+test('entry character is normalized once and exposed separately from current identity', async () => {
+  const scenario = validScenario();
+  scenario.meta.entryCharacter = 'hero';
+  scenario.characters.hero = {
+    meta: { name: 'Hero', desc: 'Original protagonist.', avatar: 'https://example.test/hero.png' },
+    set: { linkEffect: false, alert: null, moving: false, move: null },
+    stats: { hp: { current: 75, max: 100, label: 'HP' } },
+    inventory: [],
+    relationship: [['ally', 'npc']]
+  };
+  scenario.characters.npc = {
+    meta: { name: 'NPC', desc: 'A companion.' },
+    set: { linkEffect: false, alert: null, moving: false, move: null },
+    stats: {},
+    inventory: []
+  };
+
+  const engine = new GameEngine();
+  try {
+    await engine.init(scenario);
+    assert.equal(engine.state.originalEntryCharacter, 'hero');
+    assert.equal(engine.state.entryCharacter, 'hero');
+
+    const initial = engine.protocol.createSnapshot(engine);
+    assert.equal(initial.presentation.player.id, 'hero');
+    assert.equal(initial.presentation.player.name, 'Hero');
+    assert.equal(initial.presentation.player.stats.hp.current, 75);
+    assert.equal(initial.presentation.player.relationship[0].characterName, 'NPC');
+    assert.equal(initial.presentation.currentIdentity.id, 'hero');
+    assert.equal(initial.presentation.currentIdentity.isOriginal, true);
+
+    engine.state.entryCharacter = 'npc';
+    const changed = engine.protocol.createSnapshot(engine);
+    assert.equal(changed.presentation.player.id, 'hero');
+    assert.equal(changed.presentation.currentIdentity.id, 'npc');
+    assert.equal(changed.presentation.currentIdentity.isOriginal, false);
+
+    const save = engine.exportSave();
+    const restored = new GameEngine();
+    try {
+      await restored.restoreSave(save);
+      assert.equal(restored.state.originalEntryCharacter, 'hero');
+      assert.equal(restored.state.entryCharacter, 'npc');
+      const restoredSnapshot = restored.protocol.createSnapshot(restored);
+      assert.equal(restoredSnapshot.presentation.player.id, 'hero');
+      assert.equal(restoredSnapshot.presentation.currentIdentity.id, 'npc');
+    } finally {
+      restored.dispose();
+    }
+  } finally {
+    engine.dispose();
+  }
+});
+
+test('loader rejects a configured entry character that is absent from scenario characters', () => {
+  const scenario = validScenario();
+  scenario.meta.entryCharacter = 'missing';
+  assert.throws(
+    () => LoaderSystem.loadScript(scenario, {}),
+    /Entry character 'missing' does not exist/
+  );
+});
