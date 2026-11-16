@@ -203,3 +203,25 @@
   .vsr-contact-details__body{padding:24px}
   .vsr-contact-back{display:none}
 }
+
+
+/* Player Entry profile projection. */
+.vsr-contact-avatar img{width:100%;height:100%;border-radius:inherit;object-fit:cover}
+.vsr-contact-list__empty{padding:24px 16px;color:var(--vsr-color-text-secondary);font-size:13px;line-height:20px}
+.vsr-contact-profile{display:flex;flex-direction:column;gap:12px;margin-bottom:16px}
+.vsr-contact-profile__heading{display:flex;align-items:center;gap:12px;margin-bottom:4px}
+.vsr-contact-profile__heading h3{margin:0;font-size:16px;font-weight:600}
+.vsr-contact-profile__heading p{margin:3px 0 0;font-size:12px}
+.vsr-contact-profile>p{margin:0;color:var(--vsr-color-text-secondary);font-size:13px;line-height:20px;white-space:pre-wrap}
+.vsr-contact-current-identity{border-color:var(--vsr-color-primary);background:var(--vsr-color-surface-subtle)}
+.vsr-contact-stats{display:grid;gap:14px}
+.vsr-contact-stat{display:grid;gap:7px}
+.vsr-contact-stat__label{display:flex;justify-content:space-between;gap:12px;font-size:13px}
+.vsr-contact-stat__label strong{font-weight:600}
+.vsr-contact-stat__label span{color:var(--vsr-color-text-secondary);font-variant-numeric:tabular-nums}
+.vsr-contact-stat__track{height:7px;overflow:hidden;border-radius:999px;background:var(--vsr-color-surface-muted)}
+.vsr-contact-stat__track span{display:block;height:100%;border-radius:inherit}
+.vsr-contact-relationships{display:grid;gap:8px}
+.vsr-contact-relationship{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--vsr-color-border-subtle);border-radius:var(--vsr-radius-sm)}
+.vsr-contact-relationship strong{font-size:13px;font-weight:600}
+.vsr-contact-relationship span{color:var(--vsr-color-text-secondary);font-size:12px}
