@@ -293,7 +293,13 @@ test('chat action can finish and reopen as a read-only review without duplicatin
     assert.equal(client.getSnapshot().session.chat.active, false);
 
     const completedHistory = structuredClone(client.getSnapshot().session.chat.history.chat_mai);
-    assert.ok(completedHistory.length >= 4);
+    assert.equal(completedHistory.length, 4);
+    assert.deepEqual(completedHistory.map(line => line.text), [
+      'Nếu nghe loa gọi tên mình, đừng trả lời.',
+      'Đêm đó có mười hai người biến mất. Sáng hôm sau, mọi người chỉ nhớ mười một.',
+      'Hỏi về người thứ mười hai',
+      'Tôi đã nhìn thấy người thứ mười hai đi xuống giếng. Nhưng đó là tôi.'
+    ]);
     assert.equal(host.engine.state.chats.chat_mai.set.read, true);
 
     // The same reusable action reopens the completed thread as review, not a new run.
