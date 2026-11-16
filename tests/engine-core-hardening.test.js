@@ -1107,10 +1107,11 @@ test('Contact snapshot projects the current Player Entry and only known or prese
   const scenario = validScenario();
   scenario.meta.entryCharacter = 'hero';
   scenario.scenes.start.routers.main.actions[0].set.charAllow = ['ally'];
+  const characterSet = { moving: false, alert: null, move: null, actions: [], linkEffect: false };
   scenario.characters = {
-    hero: { meta: { name: 'Hero', desc: 'Current identity' }, stats: { hp: { current: 8, max: 10 } }, relationship: [], place: { scene_id: 'start', currentIndex: 0 }, met: [], moveList: [] },
-    ally: { meta: { name: 'Ally' }, stats: {}, relationship: [['friend', 'hero']], place: { scene_id: 'start', currentIndex: 0 }, met: [], moveList: [] },
-    stranger: { meta: { name: 'Stranger' }, stats: {}, relationship: [], place: { scene_id: 'elsewhere', currentIndex: 0 }, met: [], moveList: [] }
+    hero: { meta: { name: 'Hero', desc: 'Current identity' }, set: { ...characterSet }, stats: { hp: { current: 8, max: 10 } }, relationship: [], place: { scene_id: 'start', currentIndex: 0 }, met: [], moveList: [] },
+    ally: { meta: { name: 'Ally' }, set: { ...characterSet }, stats: {}, relationship: [['friend', 'hero']], place: { scene_id: 'start', currentIndex: 0 }, met: [], moveList: [] },
+    stranger: { meta: { name: 'Stranger' }, set: { ...characterSet }, stats: {}, relationship: [], place: { scene_id: 'elsewhere', currentIndex: 0 }, met: [], moveList: [] }
   };
   const engine = new GameEngine();
   try {
