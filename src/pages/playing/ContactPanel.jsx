@@ -127,6 +127,7 @@ export default function ContactPanel({ open, onClose, player, contacts = [], ses
     ? chatSession.history[selectedThreadId]
     : [];
   const choices = isActiveThread && chatSession.waitingChoice === true && Array.isArray(chatSession.choices) ? chatSession.choices : [];
+  const chatActionsDisabled = chatPending || chatSession.transitionPending === true || !client;
 
   useEffect(() => {
     if (selectedId && !allContacts.some(contact => contact.id === selectedId)) {
@@ -191,7 +192,7 @@ export default function ContactPanel({ open, onClose, player, contacts = [], ses
   }
 
   async function progressChat(choiceIndex = null) {
-    if (!client || chatPending || !isActiveThread) return;
+    if (!client || chatPending || chatSession.transitionPending === true || !isActiveThread) return;
     setChatPending(true);
     setChatError('');
     try {
@@ -352,7 +353,7 @@ export default function ContactPanel({ open, onClose, player, contacts = [], ses
                           {choices.map(choice => (
                             <Button
                               key={choice.index}
-                                              disabled={chatPending}
+                                              disabled={chatActionsDisabled}
                               onClick={() => progressChat(choice.index)}
                             >
                               {choice.text}
@@ -360,7 +361,7 @@ export default function ContactPanel({ open, onClose, player, contacts = [], ses
                           ))}
                         </div>
                       ) : isActiveThread ? (
-                        <Button className="vsr-contact-chat-next" disabled={chatPending || chatSession.transitionPending === true || !client} onClick={() => progressChat()}>
+                        <Button className="vsr-contact-chat-next" disabled={chatActionsDisabled} onClick={() => progressChat()}>
                           {chatPending || chatSession.transitionPending === true ? 'Đang chuyển đoạn…' : 'Tiếp tục'}
                         </Button>
                       ) : (
