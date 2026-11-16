@@ -34,7 +34,7 @@
   font-style: normal;
   line-height: 1.35;
 }
-.vsr-contact-chat-next__status { color: var(--vsr-color-success, var(--vsr-color-primary)); font-size: .65rem; flex: 0 0 auto; }
+.vsr-contact-chat-next__status { color: var(--vsr-color-primary); font-size: .65rem; flex: 0 0 auto; }
 .vsr-contact-chat-next__icon {
   display: inline-flex;
   flex: 0 0 40px;
@@ -51,7 +51,7 @@
 }
 .vsr-contact-chat-next:hover:not(:disabled) .vsr-contact-chat-next__icon {
   background: var(--vsr-color-primary);
-  color: var(--vsr-color-on-primary);
+  color: var(--vsr-color-text-inverse);
   transform: translateX(2px);
 }
 .vsr-contact-chat-choice-panel {
