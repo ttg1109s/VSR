@@ -147,7 +147,7 @@ export const ChatSystem = {
                     });
                 });
             }
-        } else if (chatRuntime.set.read === true && !isLoop) {
+        } else if (chatRuntime.set.read === true) {
             console.log(`[ChatSystem] Review '${id}'.`);
 
             // Completed conversations are reconstructed from the scenario bookmark so
