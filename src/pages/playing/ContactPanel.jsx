@@ -348,7 +348,7 @@ export default function ContactPanel({ open, onClose, player, contacts = [], ses
                           ))}
                         </div>
                       ) : isActiveThread ? (
-                        <Button block disabled={chatPending || !client} onClick={() => progressChat()}>
+                        <Button className="vsr-contact-chat-next" disabled={chatPending || !client} onClick={() => progressChat()}>
                           {chatPending ? 'Đang xử lý…' : 'Tiếp tục'}
                         </Button>
                       ) : (
