@@ -49,6 +49,8 @@ export const LoaderSystem = {
             map: { choices: {}, blocks: {} },
             automations: {},
             faker: { active: false, targetId: null, backupPlayer: null },
+            originalEntryCharacter: 'player',
+            entryCharacter: 'player',
             playerMoveHistory: [],
             sceneTree: {}
         };
@@ -78,6 +80,16 @@ export const LoaderSystem = {
         if (!state.characters.player) {
             state.characters.player = defPlayer;
         }
+
+        const originalEntryCharacter = state.meta.entryCharacter ?? 'player';
+        if (typeof originalEntryCharacter !== 'string' || !originalEntryCharacter.trim()) {
+            throw new TypeError('Scenario meta.entryCharacter must be a non-empty character ID or null.');
+        }
+        if (!Object.prototype.hasOwnProperty.call(state.characters, originalEntryCharacter)) {
+            throw new Error(`Entry character '${originalEntryCharacter}' does not exist in scenario characters.`);
+        }
+        state.originalEntryCharacter = originalEntryCharacter;
+        state.entryCharacter = originalEntryCharacter;
 
         Object.keys(state.characters).forEach(charId => {
             const char = state.characters[charId];
