@@ -123,6 +123,7 @@ export class JsonProtocol{
    chat:{
     active:!!engine.chatState?.active,blocking:!!engine.chatState?.blocking,
     waitingChoice:engine.chatState?.waitingChoice===true,
+    transitionPending:engine.chatState?.transitionPending===true,
     id:engine.chatState?.id??null,blockId:engine.chatState?.blockId??null,
     index:Number(engine.chatState?.index)||0,
     choices:chatChoices,
