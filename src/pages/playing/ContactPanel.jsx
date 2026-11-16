@@ -340,8 +340,7 @@ export default function ContactPanel({ open, onClose, player, contacts = [], ses
                           {choices.map(choice => (
                             <Button
                               key={choice.index}
-                              block
-                              disabled={chatPending}
+                                              disabled={chatPending}
                               onClick={() => progressChat(choice.index)}
                             >
                               {choice.text}
