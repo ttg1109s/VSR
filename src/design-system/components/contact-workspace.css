@@ -228,6 +228,7 @@
   line-height: 18px;
 }
 .vsr-contact-back { display: none; }
+.vsr-contact-back.is-visible { display: inline-flex; }
 .vsr-contact-info-content { display: flex; flex-direction: column; gap: 16px; padding-top: 4px; }
 @media (min-width: 840px) {
   .vsr-contact-list { flex-basis: 360px; }
