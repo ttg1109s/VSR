@@ -250,6 +250,16 @@ export class GameEngine {
   for(const sceneId of Object.keys(restored.scenes)) {
    if(!normalized.state.scenes?.[sceneId])throw new TypeError(`Save contains unknown scene "${sceneId}".`);
   }
+  const originalEntryCharacter=restored.originalEntryCharacter||normalized.state.originalEntryCharacter||'player';
+  const currentEntryCharacter=restored.entryCharacter||originalEntryCharacter;
+  if(!Object.prototype.hasOwnProperty.call(restored.characters,originalEntryCharacter)) {
+   throw new TypeError(`Save original entry character "${originalEntryCharacter}" does not exist.`);
+  }
+  if(!Object.prototype.hasOwnProperty.call(restored.characters,currentEntryCharacter)) {
+   throw new TypeError(`Save current identity "${currentEntryCharacter}" does not exist.`);
+  }
+  restored.originalEntryCharacter=originalEntryCharacter;
+  restored.entryCharacter=currentEntryCharacter;
   this.reset();
   this.scenario=cloneJsonValue(normalized.scenario);
   this.src=normalized.src;
