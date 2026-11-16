@@ -28,6 +28,10 @@ const inspection = await client.inspectScenario(scenario);
 // Show inspection.result.metadata to the user and wait for confirmation.
 const initialSnapshot = await client.initialize(scenario);
 
+// Contact threads are projected in presentation.contacts[].threads.
+// Open a selected thread through the Engine-validated protocol command.
+await client.openChatThread('contact-id', 'chat-id');
+
 const unsubscribe = client.subscribe(message => {
   if (message.type === 'state') {
     // Consume the JSON snapshot in the host's own state layer.
