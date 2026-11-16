@@ -82,6 +82,7 @@ export const FakerSystem = {
         const backup = faker.backupPlayer;
         const targetId = faker.targetId;
         const target = state.getRuntimeSnapshot('characters.[id]', { id: targetId });
+        const playerId = state.getRuntime('originalEntryCharacter') || state.getRuntime('meta.entryCharacter') || 'player';
         console.log(`[Faker] Exit: ${mode}`);
 
         if (mode === 'swap') {
