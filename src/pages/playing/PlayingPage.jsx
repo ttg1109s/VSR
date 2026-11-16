@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Badge, Breadcrumb, MediaFrame } from '../../design-system/index.js';
+import { Badge, BottomNavigation, Breadcrumb, MediaFrame } from '../../design-system/index.js';
 import ActionCollection from '../../features/actions/ActionCollection.jsx';
 
 export default function PlayingPage({ snapshot, client, error = '', onNavigate }) {
@@ -58,6 +58,15 @@ export default function PlayingPage({ snapshot, client, error = '', onNavigate }
         />
         {error && <p className="vsr-text-error" role="alert">{error}</p>}
       </article>
+      <BottomNavigation
+        defaultValue="hand"
+        items={[
+          { value: 'hand', label: 'Hand', icon: 'front_hand' },
+          { value: 'inventor', label: 'Inventor', icon: 'inventory_2' },
+          { value: 'contact', label: 'Contact', icon: 'contacts' },
+          { value: 'notify', label: 'Notify', icon: 'notifications' }
+        ]}
+      />
     </main>
   );
 }
