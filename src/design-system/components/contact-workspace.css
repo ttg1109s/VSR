@@ -325,7 +325,6 @@
   width: 100%;
   max-width: 100%;
   animation: vsr-contact-message-in 360ms cubic-bezier(.2,.75,.25,1) both;
-  animation-delay: calc(var(--message-index, 0) * 45ms);
 }
 .vsr-contact-message-row__avatar {
   flex: 0 0 32px;
@@ -349,6 +348,7 @@
 }
 .vsr-contact-message.is-player {
   align-self: flex-end;
+  animation: vsr-contact-message-in 360ms cubic-bezier(.2,.75,.25,1) both;
   border-color: var(--vsr-color-primary);
   border-radius: 18px 18px 6px 18px;
   background: var(--vsr-color-primary-container);
