@@ -99,7 +99,17 @@
               }
             },
             "state": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "originalEntryCharacter": {
+                  "type": "string",
+                  "description": "Immutable ID of the scenario's configured entry character."
+                },
+                "entryCharacter": {
+                  "type": "string",
+                  "description": "Current runtime identity; may change while Faker is active."
+                }
+              }
             },
             "source": {
               "type": "object"
