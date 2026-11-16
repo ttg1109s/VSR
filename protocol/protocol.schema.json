@@ -230,10 +230,22 @@
                           },
                           "text": {
                             "type": "string"
+                          },
+                          "locked": {
+                            "type": "boolean"
+                          },
+                          "active": {
+                            "type": "boolean"
+                          },
+                          "requirementPass": {
+                            "type": "boolean"
                           }
                         },
                         "additionalProperties": false
                       }
+                    },
+                    "prompt": {
+                      "type": "string"
                     },
                     "history": {
                       "type": "object",
