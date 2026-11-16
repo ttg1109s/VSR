@@ -166,7 +166,7 @@ export const ChatSystem = {
                     }
 
                     if (blockInfo.choices && blockInfo.choices.length > 0) {
-                        const rawVariant = c.block[blockId];
+                        const rawVariant = chatRuntime.block?.[blockId] || c.block[blockId];
                         const pickedChoice = rawVariant?.choiced
                             ? blockInfo.choices.find(ch => ch.set?.choiced === true)
                             : null;
