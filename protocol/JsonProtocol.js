@@ -113,11 +113,18 @@ export class JsonProtocol{
   const challenge=engine.pendingPasswordAction;
   const passwordConfig=challenge?engine.src?.passwords?.[challenge.type]?.[challenge.passwordId]||null:null;
   const puzzleMedia=challenge?.type==='puzzle'?resolveCover(passwordConfig?.url):null;
+  const activeChatBlock=engine.chatState?.active&&engine.chatState?.id
+   ?engine.resolveBlock?.(engine.chatState.id,engine.chatState.blockId)
+   :null;
+  const chatChoices=Array.isArray(activeChatBlock?.choices)
+   ?activeChatBlock.choices.map((choice,index)=>({index,text:typeof choice?.text==='string'?choice.text:''})).filter(choice=>choice.text)
+   :[];
   const session={
    chat:{
     active:!!engine.chatState?.active,blocking:!!engine.chatState?.blocking,
     id:engine.chatState?.id??null,blockId:engine.chatState?.blockId??null,
     index:Number(engine.chatState?.index)||0,
+    choices:chatChoices,
     history:cloneJsonValue(engine.state.chatHistory||{})
    },
    passwordChallenge:challenge?{
@@ -173,6 +180,14 @@ export class JsonProtocol{
    })
    .map(([characterId,character])=>({
     ...projectCharacter(characterId,character),
+    threads:typeof engine.getThreads==='function'
+     ?engine.getThreads(characterId).map(thread=>({
+      id:thread.id,title:typeof thread.title==='string'?thread.title:thread.id,
+      preview:typeof thread.preview==='string'?thread.preview:'',
+      time:Number.isFinite(thread.time)?thread.time:0,
+      isUnread:thread.isUnread===true,isFinished:thread.isFinished===true
+     }))
+     :[],
     presence:sceneId&&character?.place?.scene_id===sceneId?'present':'away',
     metCount:(Array.isArray(character?.met)?character.met:[])
      .filter(entry=>String(entry).split(':')[0]===currentIdentityId)
