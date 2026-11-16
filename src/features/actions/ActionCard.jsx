@@ -143,7 +143,7 @@ function ActionCard({ action, pending = false, interactionBlocked = false, passw
     <div className="vsr-action-card__heading">
       <h3 className="vsr-action-card__title">{meta.title || action.title || action.id}</h3>
       <div className="vsr-action-card__status" aria-label="Action status">
-        <Badge tone={statusTone}>{statusLabel}</Badge>
+        {showStatus && <Badge tone={statusTone}>{statusLabel}</Badge>}
       </div>
     </div>
 
