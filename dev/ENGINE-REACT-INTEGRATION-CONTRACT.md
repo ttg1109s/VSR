@@ -168,8 +168,9 @@ Các quy tắc quan trọng:
 - `presentation` là projection để trình bày, không phải toàn bộ scenario source.
 - `meta.entryCharacter` là cấu hình nhân vật bắt đầu. Loader chuẩn hóa `state.originalEntryCharacter` làm mốc cấu hình tương thích và `state.entryCharacter` làm identity runtime. Identity đang điều khiển được xác định theo đúng quy tắc Engine: khi Faker active là `faker.targetId`, nếu không là `state.entryCharacter`.
 - `presentation.player` là hồ sơ duy nhất của nhân vật hiện đang được điều khiển: target của Faker khi Faker active, nếu không thì `state.entryCharacter`. React không tự suy diễn identity từ `state.characters`.
-- `presentation.contacts` là danh sách chỉ đọc gồm nhân vật đã gặp bởi identity hiện tại hoặc đang hiện diện trong scene hiện tại. Chọn hồ sơ chỉ thay đổi state cục bộ của Contact UI; không đổi danh tính runtime.
-- Không có command `contact.select` hoặc `identity.switch`: Contact chỉ đọc dữ liệu; thay đổi danh tính phải thông qua action/Faker do scenario định nghĩa, không cho UI tự ghi đè Engine state.
+- `presentation.contacts` gồm hồ sơ an toàn của nhân vật đã gặp bởi identity hiện tại hoặc đang hiện diện trong scene hiện tại; mỗi contact có `threads` là danh sách thread đã được Chat System kích hoạt và liên quan đến contact đó. Thread projection chỉ gồm ID, tiêu đề, preview, thời điểm và trạng thái đọc/kết thúc.
+- Contact UI là lớp hợp nhất Contact System và Chat System: chọn contact để xem thread list; chọn thread để mở lịch sử tương ứng; lịch sử và choices được lấy từ `session.chat`. Chọn contact chỉ là state trình bày cục bộ, còn mở thread là thao tác Engine qua `chat.open`.
+- Không có command `contact.select` hoặc `identity.switch`: thay đổi danh tính phải thông qua action/Faker do scenario định nghĩa, không cho UI tự ghi đè Engine state. Chat System hiện hỗ trợ hội thoại kịch bản và lựa chọn, không hỗ trợ gửi văn bản tự do.
 - `session.passwordChallenge` là descriptor đã sanitize; password challenge bị loại khỏi bản sao `state.session`.
 - Không thêm password answer, secret scenario data hoặc executable effect vào projection dành cho client.
 - Snapshot không phải nơi React ghi ngược thay đổi.
@@ -257,6 +258,7 @@ Khi nhận snapshot, JsonClient cập nhật `JsonStateStore` và phát message 
 Lưu ý implementation hiện tại:
 
 - `dispatch` tự tạo `commandId` và thêm `expectedStateRevision` nếu đã có snapshot.
+- Wrapper chat gồm `openChatThread(contactId, chatId)`, `nextChat()` và `selectChatChoice(index)`; thread phải được Engine xác nhận thuộc contact trước khi mở.
 - `dispatch` parse acknowledgement; nếu `ack.ok === false`, nó throw Error có gắn `code` và `acknowledgement`.
 - `initialize(scenario, { enterScene = true } = {})` gửi `engine.init`; mặc định giữ hành vi tương thích là vào entry scene. Luồng Loading có thể truyền `enterScene: false` để chỉ nạp scenario và giữ `game.sceneId === null`. Sau đó yêu cầu snapshot có `game.initialized`; nếu chưa có, nó throw.
 - `dispose()` hủy subscription transport và xóa listener của JsonClient. Vòng đời transport (ví dụ `close()`) vẫn do nơi tạo transport quản lý.
