@@ -157,6 +157,12 @@
                     { "type": "null" }
                   ]
                 },
+                "originalPlayer": {
+                  "oneOf": [
+                    { "$ref": "#/$defs/originalPlayerProjection" },
+                    { "type": "null" }
+                  ]
+                },
                 "actions": {
                   "type": "array",
                   "items": {
@@ -362,6 +368,31 @@
           }
         }
       ]
+    },
+    "originalPlayerProjection": {
+      "type": "object",
+      "required": ["id", "name", "stats", "relationship"],
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": ["string", "null"] },
+        "avatar": { "type": ["string", "null"] },
+        "stats": { "type": "object" },
+        "relationship": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["tag", "characterId", "characterName"],
+            "properties": {
+              "tag": { "type": ["string", "null"] },
+              "characterId": { "type": ["string", "null"] },
+              "characterName": { "type": ["string", "null"] }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
     },
     "playerProjection": {
       "type": "object",
