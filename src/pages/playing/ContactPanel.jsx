@@ -189,7 +189,7 @@ export default function ContactPanel({ open, onClose, player, contacts = [] }) {
         <ContactDetail className={!selected || mobileView === 'list' ? 'is-hidden-compact' : ''}>
           {!selected ? (
             <div className="vsr-contact-empty">
-              <span className="vsr-contact-empty__icon" aria-hidden="true">chat_bubble_outline</span>
+              <span className="vsr-contact-empty__icon" aria-hidden="true">account_circle</span>
               <p>Chọn một liên hệ để xem hồ sơ và các khu vực chi tiết.</p>
             </div>
           ) : (
