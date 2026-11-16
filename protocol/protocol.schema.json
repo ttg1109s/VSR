@@ -184,6 +184,7 @@
                     "active": { "type": "boolean" },
                     "blocking": { "type": "boolean" },
                     "waitingChoice": { "type": "boolean" },
+                    "transitionPending": { "type": "boolean" },
                     "id": { "type": ["string", "null"] },
                     "blockId": { "type": ["string", "null"] },
                     "index": { "type": "integer", "minimum": 0 },
