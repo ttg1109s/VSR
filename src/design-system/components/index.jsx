@@ -78,9 +78,47 @@ export function Menu({trigger,items=[],label='Open menu',align='start',className
   return <div ref={root} className={cx('vsr-menu',className)}>{triggerNode}{open&&<div ref={menu} role="menu" className={'vsr-menu-content vsr-menu-content--'+align}>{items.map((item,i)=>item.separator?<Separator key={'s'+i}/>:<button key={item.key||item.label} type="button" role="menuitem" disabled={item.disabled} className={cx('vsr-menu-item',item.danger&&'is-danger')} onClick={()=>{setOpen(false);item.onSelect?.();}}>{item.icon&&<span>{item.icon}</span>}{item.label}</button>)}</div>}</div>;
 }
 export function Popover({trigger,children,align='start',label='Open additional content',className,onOpenChange}){
-  const [open,setOpen]=useState(false),root=useRef(null);useEffect(()=>{if(!open)return;const outside=e=>{if(!root.current?.contains(e.target))setOpen(false);},key=e=>{if(e.key==='Escape')setOpen(false);};document.addEventListener('pointerdown',outside);document.addEventListener('keydown',key);return()=>{document.removeEventListener('pointerdown',outside);document.removeEventListener('keydown',key);};},[open]);
-  const triggerNode=isValidElement(trigger)?cloneElement(trigger,{'aria-expanded':open,onClick:e=>{trigger.props.onClick?.(e);if(!e.defaultPrevented)setOpen(v=>{const next=!v;onOpenChange?.(next);return next;});}}):<button type="button" aria-label={label} aria-expanded={open} onClick={()=>setOpen(v=>{const next=!v;onOpenChange?.(next);return next;})}>{trigger}</button>;
-  return <div ref={root} className={cx('vsr-popover',className)}>{triggerNode}{open&&<div className={'vsr-popover-content vsr-popover-content--'+align}>{children}</div>}</div>;
+  const [open,setOpen]=useState(false),[position,setPosition]=useState(null);
+  const root=useRef(null),triggerRef=useRef(null),contentRef=useRef(null);
+  const close=()=>{setOpen(false);setPosition(null);onOpenChange?.(false);};
+  const updatePosition=()=>{
+    const anchor=triggerRef.current?.getBoundingClientRect();
+    if(!anchor)return;
+    const margin=16,gap=10,width=Math.min(480,window.innerWidth-margin*2);
+    const left=Math.max(margin,Math.min(align==='end'?anchor.right-width:anchor.left,window.innerWidth-margin-width));
+    const initialTop=anchor.bottom+gap;
+    setPosition({left,top:initialTop,width,arrowLeft:Math.max(12,Math.min(width-12,anchor.left+anchor.width/2-left)),above:false});
+  };
+  useEffect(()=>{
+    if(!open)return;
+    let frame=0;
+    const place=()=>{
+      cancelAnimationFrame(frame);
+      frame=requestAnimationFrame(()=>{
+        updatePosition();
+        const anchor=triggerRef.current?.getBoundingClientRect(),panel=contentRef.current?.getBoundingClientRect();
+        if(!anchor||!panel)return;
+        const margin=16,gap=10,above=anchor.bottom+gap+panel.height>window.innerHeight-margin&&anchor.top-gap-panel.height>=margin;
+        const top=above?Math.max(margin,anchor.top-gap-panel.height):Math.min(anchor.bottom+gap,window.innerHeight-margin-panel.height);
+        setPosition(current=>current?{...current,top,above}:current);
+      });
+    };
+    place();
+    window.addEventListener('resize',place);
+    window.addEventListener('scroll',place,true);
+    return()=>{cancelAnimationFrame(frame);window.removeEventListener('resize',place);window.removeEventListener('scroll',place,true);};
+  },[open,align]);
+  useEffect(()=>{
+    if(!open)return;
+    const outside=e=>{if(!root.current?.contains(e.target)&&!contentRef.current?.contains(e.target))close();};
+    const key=e=>{if(e.key==='Escape'){close();triggerRef.current?.focus?.();}};
+    document.addEventListener('pointerdown',outside);
+    document.addEventListener('keydown',key);
+    return()=>{document.removeEventListener('pointerdown',outside);document.removeEventListener('keydown',key);};
+  },[open]);
+  const toggle=()=>setOpen(value=>{const next=!value;if(next)onOpenChange?.(true);else{setPosition(null);onOpenChange?.(false);}return next;});
+  const triggerNode=isValidElement(trigger)?cloneElement(trigger,{ref:node=>{triggerRef.current=node;const original=trigger.ref;if(typeof original==='function')original(node);else if(original)original.current=node;},'aria-expanded':open,onClick:e=>{trigger.props.onClick?.(e);if(!e.defaultPrevented)toggle();}}):<button ref={triggerRef} type="button" aria-label={label} aria-expanded={open} onClick={toggle}>{trigger}</button>;
+  return <div ref={root} className={cx('vsr-popover',className)}>{triggerNode}{open&&typeof document!=='undefined'&&createPortal(<div ref={contentRef} className={'vsr-popover-content vsr-popover-content--'+align+(position?.above?' is-above':'')} style={{position:'fixed',left:position?.left??16,top:position?.top??16,width:position?.width??'calc(100vw - 32px)',maxWidth:'calc(100vw - 32px)',minWidth:0,boxSizing:'border-box',zIndex:1100,visibility:position?'visible':'hidden','--vsr-popover-arrow-left':(position?.arrowLeft??24)+'px'}}>{children}</div>,document.body)}</div>;
 }
 export function Tooltip({content,children,side='top'}){return <span className="vsr-tooltip">{children}<span role="tooltip" className={'vsr-tooltip-bubble vsr-tooltip-bubble--'+side}>{content}</span></span>;}
 const ToastContext=createContext(null);let toastId=0;
