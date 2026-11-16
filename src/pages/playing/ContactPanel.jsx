@@ -348,8 +348,8 @@ export default function ContactPanel({ open, onClose, player, contacts = [], ses
                           ))}
                         </div>
                       ) : isActiveThread ? (
-                        <Button className="vsr-contact-chat-next" disabled={chatPending || !client} onClick={() => progressChat()}>
-                          {chatPending ? 'Đang xử lý…' : 'Tiếp tục'}
+                        <Button className="vsr-contact-chat-next" disabled={chatPending || chatSession.transitionPending === true || !client} onClick={() => progressChat()}>
+                          {chatPending || chatSession.transitionPending === true ? 'Đang chuyển đoạn…' : 'Tiếp tục'}
                         </Button>
                       ) : (
                         <p className="vsr-contact-composer__hint">Đây là lịch sử hội thoại kịch bản. Không có thao tác gửi tin nhắn tự do trong Engine hiện tại.</p>
