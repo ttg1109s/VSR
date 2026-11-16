@@ -126,7 +126,7 @@ export default function ContactPanel({ open, onClose, player, contacts = [], ses
   const history = selectedThreadId && chatSession.history?.[selectedThreadId]
     ? chatSession.history[selectedThreadId]
     : [];
-  const choices = isActiveThread && Array.isArray(chatSession.choices) ? chatSession.choices : [];
+  const choices = isActiveThread && chatSession.waitingChoice === true && Array.isArray(chatSession.choices) ? chatSession.choices : [];
 
   useEffect(() => {
     if (selectedId && !allContacts.some(contact => contact.id === selectedId)) {
