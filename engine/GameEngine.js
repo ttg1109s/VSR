@@ -80,8 +80,9 @@ export class GameEngine {
    if(!contact||payload.contactId===identityId||(!met&&!present))throw new Error('Chat thread is not available for this contact.');
    const thread=this.getThreads(payload.contactId).find(item=>item.id===payload.chatId);
    if(!thread)throw new Error('Chat thread is not available for this contact.');
+   if(this.chatState?.active&&this.chatState.id===payload.chatId)return{opened:true,alreadyActive:true,contactId:payload.contactId,chatId:payload.chatId};
    this.startChat(payload.chatId);
-   return{opened:true,contactId:payload.contactId,chatId:payload.chatId};
+   return{opened:true,alreadyActive:false,contactId:payload.contactId,chatId:payload.chatId};
   });
   this.protocol.registerCommand('chat.next',()=>this.nextChat());
   this.protocol.registerCommand('chat.selectChoice',payload=>{if(!Number.isInteger(payload.index))throw new TypeError('chat.selectChoice requires index.');return this.selectChatChoice(payload.index);});
