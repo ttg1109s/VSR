@@ -15,6 +15,26 @@ export function Breadcrumb({ items=[], separator='/', activeKey, scrollable=fals
   })}</ol></nav>;
 }
 
+
+export function BottomNavigation({ items=[], value, defaultValue, onChange, ariaLabel='Bottom navigation', className }) {
+  const [internalValue,setInternalValue]=useState(defaultValue??items[0]?.value??null);
+  const selected=value!==undefined?value:internalValue;
+  const select=next=>{if(value===undefined)setInternalValue(next);onChange?.(next);};
+  return <>
+    <nav className={cx('vsr-bottom-navigation',className)} aria-label={ariaLabel}>
+      <ul>
+        {items.map(item=><li key={item.value}>
+          <button type="button" className={cx('vsr-bottom-navigation__item',selected===item.value&&'is-active')} aria-current={selected===item.value?'page':undefined} aria-label={item.label} onClick={()=>select(item.value)}>
+            <span className="vsr-bottom-navigation__icon vsr-icon" aria-hidden="true">{item.icon}</span>
+            <span className="vsr-bottom-navigation__label">{item.label}</span>
+          </button>
+        </li>)}
+      </ul>
+    </nav>
+    <div className="vsr-bottom-navigation-spacer" aria-hidden="true"/>
+  </>;
+}
+
 export function Tabs({ items=[], value, defaultValue, onChange, orientation='horizontal', activation='automatic', className, ariaLabel='Tabs' }) {
   const id=useId(), [internal,setInternal]=useState(defaultValue??items[0]?.value), listRef=useRef(null);
   const active=value??internal, setActive=next=>{if(value===undefined)setInternal(next);onChange?.(next);};
