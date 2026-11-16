@@ -245,6 +245,16 @@ test('Contact exposes Engine-owned thread summaries and opens only a thread belo
     await client.nextChat();
     assert.equal(client.getSnapshot().session.chat.waitingChoice, true);
     assert.equal(client.getSnapshot().session.chat.choices.length, 2);
+    assert.deepEqual(client.getSnapshot().session.chat.choices.map(choice => ({
+      index: choice.index,
+      locked: choice.locked,
+      active: choice.active,
+      requirementPass: choice.requirementPass
+    })), [
+      { index: 0, locked: false, active: true, requirementPass: true },
+      { index: 1, locked: false, active: true, requirementPass: true }
+    ]);
+    assert.equal(typeof client.getSnapshot().session.chat.prompt, 'string');
     assert.equal(client.getSnapshot().session.chat.choices.some(choice => Object.hasOwn(choice, 'effect')), false);
 
     host.engine.api.engine.state.set('faker', {
