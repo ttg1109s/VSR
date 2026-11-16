@@ -1,8 +1,17 @@
-import React,{useCallback,useEffect,useLayoutEffect,useMemo,useRef,useState}from'react';
+import React,{useCallback,useEffect,useMemo,useRef,useState}from'react';
+import useEmblaCarousel from'embla-carousel-react';
 import ActionCard from'./ActionCard.jsx';
 import './action-carousel.css';
 
 const EMPTY_ACTIONS=[];
+const CAROUSEL_OPTIONS={
+ loop:true,
+ align:'start',
+ slidesToScroll:1,
+ breakpoints:{
+  '(prefers-reduced-motion: reduce)':{duration:0}
+ }
+};
 
 const MESSAGES={
  action_hidden:'Hành động hiện không hiển thị.',locked:'Hành động đang bị khóa.',
@@ -28,6 +37,8 @@ function shuffled(items){
 export default function ActionCollection({actions=EMPTY_ACTIONS,client,passwordChallenge=null,onError,sceneId=null}){
  const[pending,setPending]=useState(()=>new Set()),[feedback,setFeedback]=useState({}),cache=useRef(new Map());
  const [order,setOrder]=useState({sceneId:null,keys:[]});
+ const [carouselRef,emblaApi]=useEmblaCarousel(CAROUSEL_OPTIONS);
+ const [activeIndex,setActiveIndex]=useState(0);
  const stable=useMemo(()=> (Array.isArray(actions)?actions:[]).map(a=>{
   const k=a.key||a.id,old=cache.current.get(k);
   return old&&JSON.stringify(old)===JSON.stringify(a)?old:a;
@@ -51,64 +62,27 @@ export default function ActionCollection({actions=EMPTY_ACTIONS,client,passwordC
   const byKey=new Map(stable.map(a=>[a.key||a.id,a]));
   return order.keys.map(k=>byKey.get(k)).filter(Boolean);
  },[stable,order]);
- const carouselRef=useRef(null),slideRefs=useRef([]);
- const[activeIndex,setActiveIndex]=useState(0);
- const lastScrollLeft=useRef(0),pendingRecenter=useRef(0),suppressScroll=useRef(false),recenterFrame=useRef(0);
- useLayoutEffect(()=>{
-  const delta=pendingRecenter.current,viewport=carouselRef.current;
-  if(!delta||!viewport)return;
-  pendingRecenter.current=0;suppressScroll.current=true;
-  const previousBehavior=viewport.style.scrollBehavior;
-  viewport.style.scrollBehavior='auto';
-  viewport.scrollLeft+=delta;
-  viewport.style.scrollBehavior=previousBehavior;
-  lastScrollLeft.current=viewport.scrollLeft;
-  cancelAnimationFrame(recenterFrame.current);
-  recenterFrame.current=requestAnimationFrame(()=>{suppressScroll.current=false;lastScrollLeft.current=viewport.scrollLeft;});
- },[ordered]);
- useEffect(()=>()=>cancelAnimationFrame(recenterFrame.current),[]);
- const scrollToIndex=useCallback((index,behavior='smooth')=>{
-  const count=ordered.length;
-  if(!count)return;
-  const next=(index+count)%count;
-  const node=slideRefs.current[next],viewport=carouselRef.current;
-  if(!node||!viewport)return;
-  setActiveIndex(next);
-  const left=node.getBoundingClientRect().left-viewport.getBoundingClientRect().left+viewport.scrollLeft;
-  viewport.scrollTo({ left, behavior });
- },[ordered.length]);
- const handleScroll=useCallback(()=>{
-  const viewport=carouselRef.current;
-  if(!viewport||!ordered.length||suppressScroll.current)return;
-  const current=viewport.scrollLeft,previous=lastScrollLeft.current,direction=current-previous;
-  lastScrollLeft.current=current;
-  let nearest=0,distance=Infinity;
-  slideRefs.current.slice(0,ordered.length).forEach((node,index)=>{
-   if(!node)return;
-   const delta=Math.abs(node.getBoundingClientRect().left-viewport.getBoundingClientRect().left);
-   if(delta<distance){distance=delta;nearest=index;}
-  });
-  setActiveIndex(nearest);
-  if(ordered.length<2||pendingRecenter.current)return;
-  const first=slideRefs.current[0],second=slideRefs.current[1];
-  if(!first||!second)return;
-  const pitch=second.getBoundingClientRect().left-first.getBoundingClientRect().left;
-  if(!(pitch>0))return;
-  const atEnd=viewport.scrollLeft>=viewport.scrollWidth-viewport.clientWidth-pitch*.35;
-  const atStart=viewport.scrollLeft<=pitch*.35;
-  if(direction>0&&atEnd){
-   pendingRecenter.current=-pitch;
-   setOrder(previousOrder=>({...previousOrder,keys:[...previousOrder.keys.slice(1),previousOrder.keys[0]]}));
-  }else if(direction<0&&atStart){
-   pendingRecenter.current=pitch;
-   setOrder(previousOrder=>({...previousOrder,keys:[previousOrder.keys[previousOrder.keys.length-1],...previousOrder.keys.slice(0,-1)]}));
-  }
- },[ordered]);
+ const scrollToIndex=useCallback((index)=>{
+  if(!ordered.length||!emblaApi)return;
+  const next=(index+ordered.length)%ordered.length;
+  emblaApi.scrollTo(next);
+ },[emblaApi,ordered.length]);
  useEffect(()=>{
+  if(!emblaApi)return;
+  const updateActiveIndex=()=>setActiveIndex(emblaApi.selectedScrollSnap());
+  emblaApi.on('select',updateActiveIndex);
+  emblaApi.on('reInit',updateActiveIndex);
+  updateActiveIndex();
+  return()=>{
+   emblaApi.off('select',updateActiveIndex);
+   emblaApi.off('reInit',updateActiveIndex);
+  };
+ },[emblaApi]);
+ useEffect(()=>{
+  if(!emblaApi)return;
   setActiveIndex(0);
-  const frame=requestAnimationFrame(()=>scrollToIndex(0,'auto'));
-  return()=>cancelAnimationFrame(frame);
- },[sceneId,scrollToIndex]);
+  emblaApi.scrollTo(0,true);
+ },[sceneId,ordered.length,emblaApi]);
  useEffect(()=>{
   if(activeIndex>=ordered.length)setActiveIndex(Math.max(0,ordered.length-1));
  },[activeIndex,ordered.length]);
@@ -146,9 +120,9 @@ export default function ActionCollection({actions=EMPTY_ACTIONS,client,passwordC
 
  if(!ordered.length)return <section className="vsr-card" aria-label="Hành động"><p>Không có hành động trong ngữ cảnh hiện tại.</p></section>;
  return <section className="vsr-stack vsr-stack--gap-4 vsr-action-carousel" aria-label="Hành động">
-  <div ref={carouselRef} className="vsr-action-carousel__viewport" onScroll={handleScroll} role="region" aria-roledescription="băng chuyền" aria-label="Danh sách hành động, dùng phím mũi tên trái và phải để di chuyển" tabIndex={0} onKeyDown={event=>{if(event.key==='ArrowRight'){event.preventDefault();scrollToIndex(activeIndex+1);}else if(event.key==='ArrowLeft'){event.preventDefault();scrollToIndex(activeIndex-1);}}}>
+  <div ref={carouselRef} className="vsr-action-carousel__viewport" role="region" aria-roledescription="băng chuyền" aria-label="Danh sách hành động, dùng phím mũi tên trái và phải để di chuyển" tabIndex={0} onKeyDown={event=>{if(event.key==='ArrowRight'){event.preventDefault();scrollToIndex(activeIndex+1);}else if(event.key==='ArrowLeft'){event.preventDefault();scrollToIndex(activeIndex-1);}}}>
    <div className="vsr-action-carousel__track">
-    {ordered.map((a,index)=><div ref={node=>{slideRefs.current[index]=node;}} key={a.key||a.id} className="vsr-action-carousel__slide" role="group" aria-roledescription="trang chiếu" aria-label={`Hành động ${index+1} trên ${ordered.length}`}>
+    {ordered.map((a,index)=><div key={a.key||a.id} className="vsr-action-carousel__slide" role="group" aria-roledescription="trang chiếu" aria-label={`Hành động ${index+1} trên ${ordered.length}`}>
      <ActionCard action={a} pending={pending.has(a.key)} interactionBlocked={pending.size>0||Boolean(passwordChallenge)} passwordChallenge={passwordChallenge} onTrigger={trigger} onMarkRead={read} onSubmitPassword={submit} onCancelPassword={cancel} onRefreshSnapshot={refresh} feedback={feedback[a.key]||''}/>
     </div>)}
    </div>
