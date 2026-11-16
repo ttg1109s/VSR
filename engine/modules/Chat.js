@@ -39,7 +39,7 @@ export const ChatSystem = {
             chatIds = Object.keys(chats).filter(id => !allDefinedChats.has(id));
         } else {
             // Logic chuẩn: Tìm các chat có liên quan đến charId (Sender hoặc Receiver)
-            const playerChar = this.api.engine.state.get('entryCharacter') || 'player';
+            const playerChar = this._getCurrentIdentityKey?.() || this.api.engine.state.get('entryCharacter') || 'player';
 
             if (this.src.chat) {
                 chatIds = Object.keys(this.src.chat).filter(cid => {
@@ -74,7 +74,7 @@ export const ChatSystem = {
             let preview = c.set.desc || "No content";
             if (h.length > 0) {
                 const last = h[h.length - 1];
-                const entryChar = this.api.engine.state.get('entryCharacter') || 'player';
+                const entryChar = this._getCurrentIdentityKey?.() || this.api.engine.state.get('entryCharacter') || 'player';
                 const senderID = last.nameID || last.char_id;
                 preview = `${(senderID === entryChar) ? 'You: ' : ''}${last.text}`;
             }
