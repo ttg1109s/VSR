@@ -58,7 +58,10 @@ export default function ActionCollection({actions=EMPTY_ACTIONS,client,passwordC
   const delta=pendingRecenter.current,viewport=carouselRef.current;
   if(!delta||!viewport)return;
   pendingRecenter.current=0;suppressScroll.current=true;
+  const previousBehavior=viewport.style.scrollBehavior;
+  viewport.style.scrollBehavior='auto';
   viewport.scrollLeft+=delta;
+  viewport.style.scrollBehavior=previousBehavior;
   lastScrollLeft.current=viewport.scrollLeft;
   cancelAnimationFrame(recenterFrame.current);
   recenterFrame.current=requestAnimationFrame(()=>{suppressScroll.current=false;lastScrollLeft.current=viewport.scrollLeft;});
