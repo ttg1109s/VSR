@@ -140,6 +140,20 @@ export class JsonProtocol{
    ?faker.targetId
    :(engine.state.entryCharacter||'player');
   const currentCharacter=engine.state.characters?.[currentIdentityId]||null;
+  const originalEntryCharacter=engine.state.originalEntryCharacter||engine.state.meta?.entryCharacter||'player';
+  const originalCharacter=engine.state.characters?.[originalEntryCharacter]||null;
+  const originalPlayerProjection=originalCharacter?{
+   id:originalEntryCharacter,
+   name:originalCharacter.meta?.name||originalEntryCharacter,
+   description:originalCharacter.meta?.desc??null,
+   avatar:originalCharacter.meta?.avatar??null,
+   stats:cloneJsonValue(originalCharacter.stats||{}),
+   relationship:(Array.isArray(originalCharacter.relationship)?originalCharacter.relationship:[]).map(item=>({
+    tag:Array.isArray(item)?item[0]??null:null,
+    characterId:Array.isArray(item)?item[1]??null:null,
+    characterName:Array.isArray(item)&&typeof item[1]==='string'?(engine.state.characters?.[item[1]]?.meta?.name||item[1]):null
+   }))
+  }:null;
   const playerProjection=currentCharacter?{
    id:currentIdentityId,
    name:currentCharacter.meta?.name||currentIdentityId,
@@ -164,6 +178,7 @@ export class JsonProtocol{
     router:sourceRouter?{id:routerId,meta:safeMeta(sourceRouter.meta||{})}:null,
     scenePath:sceneId?(state.sceneTree?.[sceneId]||[]).map(node=>({id:node.id,title:node.title})):[],
     player:playerProjection,
+    originalPlayer:originalPlayerProjection,
     actions
    },
    session,state
