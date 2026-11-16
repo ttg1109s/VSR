@@ -96,7 +96,6 @@ export const FakerSystem = {
             }), { id: playerId });
             this.api.presentation.notification.add("Gỡ bỏ", "Tháo bỏ lớp ngụy trang", "info");
         } else {
-            const playerId = state.getRuntime('originalEntryCharacter') || state.getRuntime('meta.entryCharacter') || 'player';
             if (target?.stats) this._syncStats(playerId, targetId, true);
             this.api.presentation.notification.add("Thoát xác", "Trở về cơ thể gốc", "info");
         }
