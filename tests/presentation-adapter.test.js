@@ -186,6 +186,31 @@ test('Contact consumes the live, read-only character projection from Engine snap
 });
 
 
+test('an Action goto chat effect projects the active contact and thread for React navigation', async () => {
+  const host = new LocalEngineHost();
+  const client = new JsonClient(host);
+  try {
+    const initial = await client.initialize(JSON.parse(host.getDemoScenario()));
+    const action = initial.presentation.actions.find(item => item.id === 'action_talk_mai');
+    assert.ok(action, 'the demo exposes the Mai conversation action');
+
+    await client.markActionRead(action.key);
+    await client.triggerAction(action.id, action.key);
+
+    const snapshot = client.getSnapshot();
+    assert.equal(snapshot.session.chat.active, true);
+    assert.equal(snapshot.session.chat.id, 'chat_mai');
+    assert.equal(snapshot.session.chat.contactId, 'mai');
+    assert.ok(snapshot.session.chat.history.chat_mai.length > 0);
+    const mai = snapshot.presentation.contacts.find(contact => contact.id === 'mai');
+    assert.ok(mai.threads.some(thread => thread.id === 'chat_mai'));
+  } finally {
+    client.dispose();
+    host.close();
+  }
+});
+
+
 test('Contact exposes Engine-owned thread summaries and opens only a thread belonging to the selected contact', async () => {
   const host = new LocalEngineHost();
   const client = new JsonClient(host);
