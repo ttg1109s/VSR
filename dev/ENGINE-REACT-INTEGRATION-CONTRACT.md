@@ -168,6 +168,7 @@ Các quy tắc quan trọng:
 - `presentation` là projection để trình bày, không phải toàn bộ scenario source.
 - `meta.entryCharacter` là cấu hình nhân vật bắt đầu. Loader chuẩn hóa `state.originalEntryCharacter` làm mốc cấu hình tương thích và `state.entryCharacter` làm identity runtime. Identity đang điều khiển được xác định theo đúng quy tắc Engine: khi Faker active là `faker.targetId`, nếu không là `state.entryCharacter`.
 - `presentation.player` mô tả nhân vật hiện đang được điều khiển, bao gồm `identityMode` khi Faker active. React không tự suy diễn identity từ `state.characters`.
+- `presentation.originalPlayer` mô tả profile ổn định của nhân vật được cấu hình trong `meta.entryCharacter`. Contact Player Entry dùng projection này; nếu current identity khác, UI có thể hiển thị `presentation.player` riêng.
 - `session.passwordChallenge` là descriptor đã sanitize; password challenge bị loại khỏi bản sao `state.session`.
 - Không thêm password answer, secret scenario data hoặc executable effect vào projection dành cho client.
 - Snapshot không phải nơi React ghi ngược thay đổi.
