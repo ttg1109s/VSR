@@ -73,7 +73,7 @@ export class JsonProtocol{
     const set=action.set||{};
     const entryCharacter=engine.state.entryCharacter||'player';
     const faker=engine.state.faker||{};
-    const fakerMode=engine.getConfig?.('fakerMode')||'soul';
+    const fakerMode=faker.mode||engine.getConfig?.('fakerMode')||'soul';
     const actingIds=[entryCharacter];
     if(faker.active&&fakerMode==='mask'&&faker.targetId)actingIds.push(faker.targetId);
     const permissionAllowed=!Array.isArray(set.charAllow)||set.charAllow.length===0||actingIds.some(id=>set.charAllow.includes(id));
