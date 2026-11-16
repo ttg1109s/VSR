@@ -128,7 +128,7 @@ export const ActionSystem = {
         // --- Identity / Faker Logic ---
         const entryChar = state.get('entryCharacter') || 'player';
         const faker = state.getRuntimeSnapshot('faker') || {};
-        const fakerMode = this.getConfig ? this.getConfig('fakerMode') : 'soul';
+        const fakerMode = faker.mode || (this.getConfig ? this.getConfig('fakerMode') : 'soul');
 
         let actingIds = [entryChar]; // Default: Only the true body can act
 
