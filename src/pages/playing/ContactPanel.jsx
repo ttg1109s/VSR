@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
-  Badge, Button, DescriptionList, DescriptionListItem, Drawer, Separator
+  Badge, Button, DescriptionList, DescriptionListItem, Drawer, Grid, Separator
 } from '../../design-system/index.js';
 
 function initials(name, id) {
@@ -11,7 +11,9 @@ function initials(name, id) {
 function Avatar({ character, large = false }) {
   return (
     <span className={'vsr-contact-avatar' + (large ? ' vsr-contact-avatar--large' : '')} aria-hidden="true">
-      {character?.avatar ? <img src={character.avatar} alt="" /> : initials(character?.name, character?.id)}
+      {character?.avatar
+        ? <img src={character.avatar} alt="" />
+        : initials(character?.name, character?.id)}
     </span>
   );
 }
@@ -116,11 +118,9 @@ export default function ContactPanel({ open, onClose, player, contacts = [] }) {
     >
       <div className="vsr-contact-workspace">
         <section className="vsr-contact-list" aria-label="Danh sách liên hệ">
-          <header className="vsr-contact-list__toolbar">
-            <div>
-              <h3>Danh bạ</h3>
-              <p>{contacts.length} nhân vật đã biết</p>
-            </div>
+          <header>
+            <h3>Danh bạ</h3>
+            <p>{contacts.length} nhân vật đã biết</p>
           </header>
           <div className="vsr-contact-list__items">
             {allContacts.map(contact => (
@@ -139,14 +139,14 @@ export default function ContactPanel({ open, onClose, player, contacts = [] }) {
                 </span>
               </Button>
             ))}
-            {!allContacts.length && <p className="vsr-contact-list__empty">Snapshot chưa có dữ liệu danh tính hoặc liên hệ.</p>}
+            {!allContacts.length && <p>Snapshot chưa có dữ liệu danh tính hoặc liên hệ.</p>}
           </div>
         </section>
         <section className="vsr-contact-details" aria-label="Chi tiết liên hệ" aria-live="polite">
           <ContactDetails
             character={selected}
             player={player}
-            contacts={allContacts}
+            contacts={contacts}
             onSelect={setSelectedId}
           />
         </section>
