@@ -1092,6 +1092,6 @@ test('loader rejects a configured entry character that is absent from scenario c
   scenario.meta.entryCharacter = 'missing';
   assert.throws(
     () => LoaderSystem.loadScript(scenario, {}),
-    /Entry character 'missing' does not exist/
+    /meta\\.entryCharacter.*references missing character 'missing'/
   );
 });
