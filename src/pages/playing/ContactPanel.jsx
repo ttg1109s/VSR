@@ -335,13 +335,12 @@ export default function ContactPanel({ open, onClose, player, contacts = [], ses
                         const senderId = line.nameID || line.char_id;
                         const isPlayer = senderId === player?.id;
                         const sender = allContacts.find(contact => contact.id === senderId);
-                        const messageStyle = { '--message-index': Math.min(index, 8) };
                         return isPlayer ? (
-                          <div className="vsr-contact-message is-player" key={selectedThreadId + ':' + index} style={messageStyle}>
+                          <div className="vsr-contact-message is-player" key={selectedThreadId + ':' + index}>
                             <p>{line.text || ''}</p>
                           </div>
                         ) : (
-                          <div className="vsr-contact-message-row" key={selectedThreadId + ':' + index} style={messageStyle}>
+                          <div className="vsr-contact-message-row" key={selectedThreadId + ':' + index}>
                             <ContactAvatar
                               name={sender?.name || contactName(senderId)}
                               avatar={sender?.avatar}
@@ -399,7 +398,6 @@ export default function ContactPanel({ open, onClose, player, contacts = [], ses
                           <span className="vsr-contact-chat-next__icon" aria-hidden="true">➜</span>
                         </Button>
                       ) : (
-                        <p className="vsr-contact-composer__hint">Đây là lịch sử hội thoại kịch bản. Không có thao tác gửi tin nhắn tự do trong Engine hiện tại.</p>
                       )}
                     </ContactComposer>
                   </ContactConversation>
