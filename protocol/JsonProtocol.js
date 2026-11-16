@@ -135,6 +135,32 @@ export class JsonProtocol{
     history:engine.notifications?.getHistory?.({limit:50})||[]
    }
   };
+  const originalEntryCharacter=engine.state.originalEntryCharacter||engine.state.meta?.entryCharacter||'player';
+  const playerCharacter=engine.state.characters?.[originalEntryCharacter]||null;
+  const faker=engine.state.faker||{};
+  const currentIdentityId=faker.active&&faker.targetId?faker.targetId:(engine.state.entryCharacter||originalEntryCharacter);
+  const currentCharacter=engine.state.characters?.[currentIdentityId]||null;
+  const playerProjection=playerCharacter?{
+   id:originalEntryCharacter,
+   name:playerCharacter.meta?.name||originalEntryCharacter,
+   description:playerCharacter.meta?.desc??null,
+   avatar:playerCharacter.meta?.avatar??null,
+   stats:cloneJsonValue(playerCharacter.stats||{}),
+   relationship:(Array.isArray(playerCharacter.relationship)?playerCharacter.relationship:[]).map(item=>({
+    tag:Array.isArray(item)?item[0]??null:null,
+    characterId:Array.isArray(item)?item[1]??null:null,
+    characterName:Array.isArray(item)&&typeof item[1]==='string'?(engine.state.characters?.[item[1]]?.meta?.name||item[1]):null
+   }))
+  }:null;
+  const currentIdentityProjection=currentCharacter?{
+   id:currentIdentityId,
+   name:faker.active&&faker.mode==='mask'
+    ?(playerCharacter?.set?.name||playerCharacter?.meta?.name||currentCharacter.meta?.name||currentIdentityId)
+    :(currentCharacter.meta?.name||currentIdentityId),
+   avatar:currentCharacter.meta?.avatar??null,
+   mode:faker.active?(faker.mode||null):null,
+   isOriginal:currentIdentityId===originalEntryCharacter
+  }:null;
   const snapshot={
    protocol:'vsr',protocolVersion:this.protocolVersion,type:'snapshot',engineId:this.engineId,
    revision:this.stateRevision,stateRevision:this.stateRevision,eventSequence:this.eventSequence,
@@ -145,6 +171,8 @@ export class JsonProtocol{
     scene:sourceScene?{id:sceneId,meta:safeMeta(sourceScene.meta||{}),title:sourceScene.title||null}:null,
     router:sourceRouter?{id:routerId,meta:safeMeta(sourceRouter.meta||{})}:null,
     scenePath:sceneId?(state.sceneTree?.[sceneId]||[]).map(node=>({id:node.id,title:node.title})):[],
+    player:playerProjection,
+    currentIdentity:currentIdentityProjection,
     actions
    },
    session,state
