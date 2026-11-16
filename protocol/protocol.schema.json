@@ -141,6 +141,18 @@
                     "additionalProperties": false
                   }
                 },
+                "player": {
+                  "oneOf": [
+                    { "$ref": "#/$defs/playerProjection" },
+                    { "type": "null" }
+                  ]
+                },
+                "currentIdentity": {
+                  "oneOf": [
+                    { "$ref": "#/$defs/currentIdentityProjection" },
+                    { "type": "null" }
+                  ]
+                },
                 "actions": {
                   "type": "array",
                   "items": {
@@ -346,6 +358,43 @@
           }
         }
       ]
+    },
+    "playerProjection": {
+      "type": "object",
+      "required": ["id", "name", "stats", "relationship"],
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": ["string", "null"] },
+        "avatar": { "type": ["string", "null"] },
+        "stats": { "type": "object" },
+        "relationship": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["tag", "characterId", "characterName"],
+            "properties": {
+              "tag": { "type": ["string", "null"] },
+              "characterId": { "type": ["string", "null"] },
+              "characterName": { "type": ["string", "null"] }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "currentIdentityProjection": {
+      "type": "object",
+      "required": ["id", "name", "mode", "isOriginal"],
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "avatar": { "type": ["string", "null"] },
+        "mode": { "type": ["string", "null"], "enum": ["soul", "mask", "swap", null] },
+        "isOriginal": { "type": "boolean" }
+      },
+      "additionalProperties": false
     },
     "actionProjection": {
       "type": "object",
