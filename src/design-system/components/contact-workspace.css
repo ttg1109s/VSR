@@ -244,6 +244,7 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .vsr-contact-list-item { transition: none; }
+  .vsr-contact-message { animation: none; }
 }
 
 .vsr-contact-topic-list { display: flex; flex-direction: column; min-height: 100%; }
@@ -310,27 +311,39 @@
   flex: 1;
   flex-direction: column;
   align-items: stretch;
-  gap: 12px;
+  gap: 14px;
   min-height: 260px;
-  padding: 20px;
+  padding: clamp(16px, 3vw, 26px);
+  background: radial-gradient(ellipse at 12% 0%, var(--vsr-color-primary-container) 0, transparent 42%), var(--vsr-color-background);
 }
 .vsr-contact-message {
+  position: relative;
   align-self: flex-start;
   width: fit-content;
-  max-width: min(82%, 680px);
-  padding: 12px 14px;
+  max-width: min(84%, 680px);
+  padding: 13px 16px 14px;
   border: 1px solid var(--vsr-color-border-subtle);
-  border-radius: 14px 14px 14px 4px;
+  border-radius: 18px 18px 18px 6px;
   background: var(--vsr-color-surface);
+  color: var(--vsr-color-text);
+  box-shadow: var(--vsr-shadow-sm, 0 2px 8px rgba(0,0,0,.045));
+  overflow-wrap: anywhere;
+  animation: vsr-contact-message-in 360ms cubic-bezier(.2,.75,.25,1) both;
+  animation-delay: calc(var(--message-index, 0) * 45ms);
 }
 .vsr-contact-message.is-player {
   align-self: flex-end;
-  border-color: var(--vsr-color-primary-container);
-  border-radius: 14px 14px 4px 14px;
+  border-color: var(--vsr-color-primary);
+  border-radius: 18px 18px 6px 18px;
   background: var(--vsr-color-primary-container);
   color: var(--vsr-color-primary-on-container);
 }
-.vsr-contact-message__sender { display: block; margin-bottom: 5px; color: var(--vsr-color-text-secondary); font-size: 11px; font-weight: 600; }
+.vsr-contact-message__sender { display: block; margin-bottom: 6px; color: var(--vsr-color-text-secondary); font-size: 11px; font-weight: 700; letter-spacing: .01em; }
+.vsr-contact-message.is-player .vsr-contact-message__sender { color: inherit; opacity: .72; }
+@keyframes vsr-contact-message-in {
+  from { opacity: 0; transform: translateY(10px) scale(.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
 .vsr-contact-message p { margin: 0; font-size: 14px; line-height: 21px; white-space: pre-wrap; overflow-wrap: anywhere; }
 .vsr-contact-composer {
   display: flex;
