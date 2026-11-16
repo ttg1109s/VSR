@@ -1,4 +1,4 @@
-import React,{useCallback,useEffect,useMemo,useRef,useState}from'react';
+import React,{useCallback,useEffect,useLayoutEffect,useMemo,useRef,useState}from'react';
 import ActionCard from'./ActionCard.jsx';
 import './action-carousel.css';
 
@@ -53,6 +53,17 @@ export default function ActionCollection({actions=EMPTY_ACTIONS,client,passwordC
  },[stable,order]);
  const carouselRef=useRef(null),slideRefs=useRef([]);
  const[activeIndex,setActiveIndex]=useState(0);
+ const lastScrollLeft=useRef(0),pendingRecenter=useRef(0),suppressScroll=useRef(false),recenterFrame=useRef(0);
+ useLayoutEffect(()=>{
+  const delta=pendingRecenter.current,viewport=carouselRef.current;
+  if(!delta||!viewport)return;
+  pendingRecenter.current=0;suppressScroll.current=true;
+  viewport.scrollLeft+=delta;
+  lastScrollLeft.current=viewport.scrollLeft;
+  cancelAnimationFrame(recenterFrame.current);
+  recenterFrame.current=requestAnimationFrame(()=>{suppressScroll.current=false;lastScrollLeft.current=viewport.scrollLeft;});
+ },[ordered]);
+ useEffect(()=>()=>cancelAnimationFrame(recenterFrame.current),[]);
  const scrollToIndex=useCallback((index,behavior='smooth')=>{
   const count=ordered.length;
   if(!count)return;
@@ -65,7 +76,9 @@ export default function ActionCollection({actions=EMPTY_ACTIONS,client,passwordC
  },[ordered.length]);
  const handleScroll=useCallback(()=>{
   const viewport=carouselRef.current;
-  if(!viewport||!ordered.length)return;
+  if(!viewport||!ordered.length||suppressScroll.current)return;
+  const current=viewport.scrollLeft,previous=lastScrollLeft.current,direction=current-previous;
+  lastScrollLeft.current=current;
   let nearest=0,distance=Infinity;
   slideRefs.current.slice(0,ordered.length).forEach((node,index)=>{
    if(!node)return;
@@ -73,7 +86,21 @@ export default function ActionCollection({actions=EMPTY_ACTIONS,client,passwordC
    if(delta<distance){distance=delta;nearest=index;}
   });
   setActiveIndex(nearest);
- },[ordered.length]);
+  if(ordered.length<2||pendingRecenter.current)return;
+  const first=slideRefs.current[0],second=slideRefs.current[1];
+  if(!first||!second)return;
+  const pitch=second.getBoundingClientRect().left-first.getBoundingClientRect().left;
+  if(!(pitch>0))return;
+  const atEnd=viewport.scrollLeft>=viewport.scrollWidth-viewport.clientWidth-pitch*.35;
+  const atStart=viewport.scrollLeft<=pitch*.35;
+  if(direction>0&&atEnd){
+   pendingRecenter.current=-pitch;
+   setOrder(previousOrder=>({...previousOrder,keys:[...previousOrder.keys.slice(1),previousOrder.keys[0]]}));
+  }else if(direction<0&&atStart){
+   pendingRecenter.current=pitch;
+   setOrder(previousOrder=>({...previousOrder,keys:[previousOrder.keys[previousOrder.keys.length-1],...previousOrder.keys.slice(0,-1)]}));
+  }
+ },[ordered]);
  useEffect(()=>{
   setActiveIndex(0);
   const frame=requestAnimationFrame(()=>scrollToIndex(0,'auto'));
