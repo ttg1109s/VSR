@@ -43,7 +43,7 @@ export const SceneSystem = {
         const entryChar = state.get('entryCharacter') || 'player';
         const currentIdentity = faker.active ? faker.targetId : entryChar;
 
-        // Logic: Player LEAVES current scene (trigger 'leave' effect on NPCs staying there)
+        // Logic: Entry identity leaves the current scene (trigger character leave effects for characters remaining there)
         if (currentS && currentS !== id) {
             const characters = state.getRuntimeSnapshot('characters') || {};
             Object.keys(characters).forEach(charId => {
@@ -90,7 +90,7 @@ export const SceneSystem = {
 
         await this.enterRouter(activeRouter, true, true, effectiveSkip);
 
-        // Logic: Player ENTERS new scene (trigger 'meeting' effect on NPCs here)
+        // Logic: Entry identity enters the new scene (trigger character meeting effects for characters already there)
         const currentCharacters = state.getRuntimeSnapshot('characters') || {};
         Object.keys(currentCharacters).forEach(charId => {
             if (charId === entryChar) return;
