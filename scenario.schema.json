@@ -4,6 +4,7 @@
   "description": "Canonical VSR scenario authoring contract. Runtime behavior must conform to this schema.",
   "type": "object",
   "required": [
+    "formatVersion",
     "meta",
     "globalStates",
     "templates",
@@ -21,8 +22,7 @@
     "formatVersion": {
       "type": "integer",
       "const": 1,
-      "default": 1,
-      "description": "Scenario data format version. Independent from meta.version."
+      "description": "Required scenario data format version. Must equal the currently supported format."
     },
     "config": {
       "type": "object",
@@ -1166,7 +1166,7 @@
         },
         "source": {
           "type": "string",
-          "description": "ID nhân vật nguồn cho characters/mng_stats. Ưu tiên field này thay cho cú pháp legacy 'đích:nguồn' trong target."
+          "description": "ID nhân vật nguồn cho các thao tác characters/mng_stats và characters/mng_items. Dùng riêng với target."
         },
         "property": {
           "type": "string",
@@ -4606,44 +4606,19 @@
           "additionalProperties": false
         },
         "actions": {
-          "description": "Danh sách action thuộc router. Model hiện tại: MẢNG gồm string (ID tham chiếu tới 'actions' toàn cục) hoặc object action inline. (Model cũ: object map {actionId: {...action}} vẫn được engine hỗ trợ ngược nhưng KHÔNG khuyến khích dùng cho kịch bản mới.)",
-          "oneOf": [
-            {
-              "type": "array",
-              "items": {
-                "oneOf": [
-                  {
-                    "type": "string",
-                    "description": "ID tham chiếu tới actions.<id> ở cấp gốc kịch bản."
-                  },
-                  {
-                    "$ref": "#/definitions/action",
-                    "description": "Định nghĩa action inline, nên có thêm field 'id' để state có key ổn định."
-                  }
-                ]
-              }
-            },
-            {
-              "type": "object",
-              "description": "[LEGACY] object map {actionId: action}.",
-              "additionalProperties": {
-                "$ref": "#/definitions/action"
-              }
-            }
-          ]
-        },
-        "importAction": {
           "type": "array",
-          "description": "[LEGACY] Nhập lại danh sách action từ router khác. Hỗ trợ một phần trong engine hiện tại.",
+          "description": "Danh sách action thuộc router. Mảng gồm ID tham chiếu tới action toàn cục hoặc object action inline.",
           "items": {
-            "type": "object",
-            "properties": {
-              "of": {
+            "oneOf": [
+              {
                 "type": "string",
-                "description": "ID router nguồn."
+                "description": "ID tham chiếu tới actions.<id> ở cấp gốc kịch bản."
+              },
+              {
+                "$ref": "#/definitions/action",
+                "description": "Định nghĩa action inline với ID ổn định."
               }
-            },
-            "additionalProperties": false
+            ]
           }
         }
       },
