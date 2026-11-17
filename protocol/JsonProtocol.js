@@ -282,13 +282,16 @@ export class JsonProtocol{
    :[];
   const communicationThreads=projectThreadList(COMMUNICATION_SENDER_ID);
   const unknownThreads=projectThreadList(UNKNOWN_SENDER_ID);
-  const systemContacts=[{
-   id:COMMUNICATION_SENDER_ID,name:'Communication',description:'Thông báo và nội dung từ các nguồn hệ thống.',
-   avatar:null,kind:'communication',threads:communicationThreads
-  },...(unknownThreads.length?[{
-   id:UNKNOWN_SENDER_ID,name:'Unknown / Spam',description:'Tin nhắn không xác định được nguồn gửi hoặc đến từ nguồn chưa khai báo.',
-   avatar:null,kind:'unknown',threads:unknownThreads
-  }]:[])];
+  const systemContacts=[
+   {
+    id:COMMUNICATION_SENDER_ID,name:'Communication',description:'Thông báo và nội dung từ các nguồn hệ thống.',
+    avatar:null,kind:'communication',threads:communicationThreads
+   },
+   {
+    id:UNKNOWN_SENDER_ID,name:'Unknown / Spam',description:'Tin nhắn không xác định được nguồn gửi hoặc đến từ nguồn chưa khai báo.',
+    avatar:null,kind:'unknown',threads:unknownThreads
+   }
+  ];
   const contacts=Object.entries(engine.state.characters||{})
    .map(([characterId,character])=>{
     const met=Array.isArray(character?.met)?character.met:[];
