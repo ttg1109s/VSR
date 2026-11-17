@@ -85,18 +85,10 @@ function ContactProfile({ character }) {
   return (
     <div className="vsr-contact-profile">
       <section className="vsr-contact-profile__section">
-        <h4><span aria-hidden="true">person</span>Giới thiệu</h4>
         <p className="vsr-contact-profile__description">
           {character.description || 'Nhân vật chưa có mô tả.'}
         </p>
       </section>
-
-      {Object.keys(character.stats || {}).length > 0 && (
-        <section className="vsr-contact-profile__section">
-          <h4><span aria-hidden="true">insights</span>Chỉ số</h4>
-          <StatList stats={character.stats} />
-        </section>
-      )}
 
       <section className="vsr-contact-profile__section">
         <RelationshipSummary
@@ -104,6 +96,12 @@ function ContactProfile({ character }) {
           metCount={character.metCount}
         />
       </section>
+
+      {Object.keys(character.stats || {}).length > 0 && (
+        <section className="vsr-contact-profile__section">
+          <StatList stats={character.stats} />
+        </section>
+      )}
     </div>
   );
 }
