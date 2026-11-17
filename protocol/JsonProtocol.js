@@ -207,9 +207,11 @@ export class JsonProtocol{
     ?(fakerTarget?.meta?.avatar??currentCharacter.meta?.avatar??null)
     :(currentCharacter.meta?.avatar??null),
    identityMode:faker.active?fakerMode:null,
-   identityTarget:fakerTarget?{
+   identityTarget:fakerTarget&&fakerMode!=='swap'?{
     id:faker.targetId,
-    name:fakerTarget.set?.name||fakerTarget.meta?.name||faker.targetId
+    name:fakerTarget.set?.name||fakerTarget.meta?.name||faker.targetId,
+    avatar:fakerTarget.meta?.avatar??null,
+    description:fakerTarget.set?.desc??fakerTarget.meta?.desc??null
    }:null
   }:null;
   const contacts=Object.entries(engine.state.characters||{})
