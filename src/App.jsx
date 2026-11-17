@@ -95,7 +95,9 @@ export default function App() {
       if (message.type === 'state') {
         setGameSnapshot(message.snapshot);
       } else if (message.type === 'event' && message.event?.event === 'presentation.chat.viewRequested') {
-        const request = message.event.payload?.args;
+        const request = Array.isArray(message.event.payload?.args)
+          ? message.event.payload.args[0]
+          : null;
         if (request?.requestId && request.contactId && request.chatId) {
           setChatViewRequest(request);
         }
