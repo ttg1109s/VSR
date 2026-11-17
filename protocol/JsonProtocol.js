@@ -1,4 +1,4 @@
-import { getFakerActingIds } from '../engine/modules/entity/Identity.js';
+import { getFakerActingIds, getFakerRelationshipIdentityId } from '../engine/modules/entity/Identity.js';
 const RUNTIME_ONLY_STATE_KEYS=new Set(['effectQueue','isSyncQueueRunning','isAsyncQueueRunning','pausedBackgroundTasks']);
 export function cloneJsonValue(value,seen=new WeakSet()){
  if(value===null||typeof value==='string'||typeof value==='boolean')return value;
@@ -177,8 +177,8 @@ export class JsonProtocol{
    ?engine.state.characters?.[faker.targetId]||null
    :null;
   const projectRelationships=(character, fallback=[])=>{
-   const relationships=Array.isArray(character?.set?.relationship)?character.set.relationship:
-    (Array.isArray(character?.relationship)?character.relationship:fallback);
+   const relationships=Array.isArray(character?.relationship)?character.relationship:
+    (Array.isArray(character?.set?.relationship)?character.set.relationship:fallback);
    return relationships.map(item=>{
     const characterId=Array.isArray(item)?item[1]??null:item?.characterId??null;
     return{
@@ -198,8 +198,13 @@ export class JsonProtocol{
    relationship:projectRelationships(character),
    ...(isPlayer?{identityMode:faker.active?fakerMode:null}:{})
   });
+  const playerRelationshipIdentityId=getFakerRelationshipIdentityId(
+   currentIdentityId,currentIdentityId,{...faker,mode:fakerMode}
+  );
+  const playerRelationshipCharacter=engine.state.characters?.[playerRelationshipIdentityId]||currentCharacter;
   const playerProjection=currentCharacter?{
    ...projectCharacter(currentIdentityId,currentCharacter,{isPlayer:true}),
+   relationship:projectRelationships(playerRelationshipCharacter),
    name:faker.active&&fakerMode==='mask'
     ?(currentCharacter.set?.name||fakerTarget?.set?.name||fakerTarget?.meta?.name||currentCharacter.meta?.name||currentIdentityId)
     :(currentCharacter.meta?.name||currentIdentityId),
