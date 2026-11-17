@@ -43,7 +43,7 @@ test('random_count selects without consuming count before a successful transitio
   assert.equal(moveList[1].count, 2);
 });
 
-function createMovementHarness({ blockDestinationAfterLeave = false } = {}) {
+function createMovementHarness({ blockDestinationAfterLeave = false, playerSceneId = 'player-scene' } = {}) {
   const character = {
     set: { moving: true, move: 'random_count' },
     place: { scene_id: 'a', currentIndex: 0 },
@@ -57,7 +57,7 @@ function createMovementHarness({ blockDestinationAfterLeave = false } = {}) {
   const data = {
     characters: { npc: character },
     scenes: { a: { blocked: false, activeRouterId: '' }, b: { blocked: false, activeRouterId: '' } },
-    sceneId: 'player-scene',
+    sceneId: playerSceneId,
     entryCharacter: 'player',
     faker: { active: false, targetId: null },
     playerMoveHistory: []
@@ -104,7 +104,6 @@ function createMovementHarness({ blockDestinationAfterLeave = false } = {}) {
       if (blockDestinationAfterLeave && context.hook === 'leave') data.scenes.b.blocked = true;
       if (context.shouldContinue && !context.shouldContinue()) return;
     },
-    updateMetState() {}
   });
   return { engine, data };
 }
@@ -122,6 +121,20 @@ test('successful Character transition commits location, countVisited and random_
   assert.equal(data.characters.npc.place.currentIndex, 1);
   assert.equal(data.characters.npc.moveList[1].countVisited, 1);
   assert.equal(data.characters.npc.moveList[1].count, 0);
+});
+
+test('entering the Player scene does not automatically mark a Character as met', async () => {
+  const { engine, data } = createMovementHarness({ playerSceneId: 'b' });
+  const originalRandom = Math.random;
+  Math.random = () => 0;
+  try {
+    await engine.executeCharacterMove('npc');
+  } finally {
+    Math.random = originalRandom;
+  }
+
+  assert.equal(data.characters.npc.place.scene_id, 'b');
+  assert.deepEqual(data.characters.npc.met, []);
 });
 
 test('Leave effect blocking the destination cancels transition without consuming count', async () => {
