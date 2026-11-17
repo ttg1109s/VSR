@@ -55,9 +55,6 @@ export const ChatSystem = {
                     // Case 2: Player gửi cho CharId (nếu muốn hiển thị history chat mình gửi)
                     if (meta.sender === playerChar && isRecipient) return true;
 
-                    // Case 3: CharId là sender (Legacy support nếu chưa có to)
-                    if (isSender && !meta.to) return true;
-
                     return false;
                 });
             }
@@ -105,11 +102,8 @@ export const ChatSystem = {
         const chatRuntime = state.getSnapshot('chat.data', { id }) || {};
         if (!chatRuntime.set) chatRuntime.set = { read: false, step: 0, bookmark: [] };
 
-        // Normalize legacy single-value bookmarks without mutating the live state object.
-        if (chatRuntime.set.bookmark && !Array.isArray(chatRuntime.set.bookmark)) {
-            chatRuntime.set.bookmark = [chatRuntime.set.bookmark];
-        } else if (!chatRuntime.set.bookmark) {
-            chatRuntime.set.bookmark = [];
+        if (!Array.isArray(chatRuntime.set.bookmark)) {
+            throw new TypeError(`Chat '${id}' bookmark state must be an array.`);
         }
 
         if (!chatRuntime.set.activationTime) {
@@ -146,8 +140,7 @@ export const ChatSystem = {
         } else if (chatRuntime.set.read === true) {
 
             // Completed conversations are reconstructed from the scenario bookmark so
-            // the selected branch is included. If legacy saves have no bookmark, retain
-            // their persisted history instead of replacing it with an empty array.
+            // the selected branch is included. Empty bookmarks retain persisted history.
             if (bookmark.length > 0) {
                 chatHistory = [];
                 for (const blockId of bookmark) {
