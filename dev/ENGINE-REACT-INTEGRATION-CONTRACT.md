@@ -505,7 +505,7 @@ Trong triển khai hiện tại, hai nút Home gọi `scenario.inspect` qua Work
 - [ ] Có pending, disabled, error và empty states phù hợp.
 - [ ] Có keyboard/accessibility semantics.
 - [ ] Contact UI dùng `presentation.contacts[].threads` làm danh sách thread; không tự dựng thread từ scenario source.
-- [ ] Mở thread cũ qua `chat.open`; nếu Engine kích hoạt chat từ Action/Effect, tự đồng bộ Contact selection từ `session.chat.contactId` và `session.chat.id` mà không kích hoạt lại thread; lịch sử và lựa chọn lấy từ `session.chat`; tiếp diễn qua `chat.next` / `chat.selectChoice`.
+- [ ] Mở thread cũ do người chơi chọn qua `chat.open`. Khi Engine kích hoạt chat từ Action/Effect, tiêu thụ event `presentation.chat.viewRequested` (`requestId`, `contactId`, `chatId`, `mode`) để mở Contact và chọn thread mà không gọi lại `chat.open`; đây là ý định điều hướng UI tạm thời, không phải gameplay state. `session.chat.active` chỉ mô tả vòng đời Engine; lịch sử và lựa chọn lấy từ `session.chat`; tiếp diễn qua `chat.next` / `chat.selectChoice`.
 - [ ] Không hiển thị composer gửi văn bản tự do khi protocol chưa hỗ trợ lệnh đó.
 - [ ] Không tạo UI cho capability chưa có contract/data source.
 - [ ] Test cả adapter/service và hành vi UI ở mức phù hợp.
