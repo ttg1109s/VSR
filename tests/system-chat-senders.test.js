@@ -51,7 +51,9 @@ test('Communication is projected separately from characters and can open its own
   const host = new LocalEngineHost();
   const client = new JsonClient(host);
   try {
-    await client.initialize(JSON.parse(host.getDemoScenario()));
+    const initial = await client.initialize(JSON.parse(host.getDemoScenario()));
+    assert.deepEqual(initial.presentation.systemContacts.map(contact => contact.id), ['$communication', 'spam']);
+    assert.deepEqual(initial.presentation.systemContacts.map(contact => contact.threads.length), [0, 0]);
     const chatId = prepareThread(host, '$communication', '$communication');
     const snapshot = await client.refreshSnapshot();
 
