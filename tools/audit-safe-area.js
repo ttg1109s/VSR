@@ -40,6 +40,15 @@ if (!rootInset.test(rootRule)) errors.push('#root must own all four Safe Area in
 if (/padding[^;]*var\(--vsr-safe-area-(?:top|right|bottom|left)\)/s.test(layoutText)) {
   errors.push('Document-flow layout must not re-apply Safe Area padding already owned by #root');
 }
+
+const overlayText = fs.readFileSync(path.join(root, 'src/design-system/components/index.css'), 'utf8');
+const contactText = fs.readFileSync(path.join(root, 'src/design-system/components/contact-workspace.css'), 'utf8');
+const sharedDrawerRule = /\.vsr-drawer\\.vsr-overlay-panel\\s*\\{([^}]*)\\}/s.exec(overlayText)?.[1] || '';
+const drawerInset = /padding:\\s*var\\(--vsr-safe-area-top\\)\\s+var\\(--vsr-safe-area-right\\)\\s+var\\(--vsr-safe-area-bottom\\)\\s+var\\(--vsr-safe-area-left\\)\\s*;/s;
+if (!drawerInset.test(sharedDrawerRule)) errors.push('Shared Drawer Portal wrapper must own all four Safe Area insets');
+if (/padding[^;]*var\\(--vsr-safe-area-(?:top|right|bottom|left)\\)/s.test(contactText)) {
+  errors.push('Contact Drawer must use the shared Drawer Safe Area owner instead of applying its own insets');
+}
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 if (!/name=["']viewport["'][^>]*viewport-fit\s*=\s*cover/i.test(html)) {
   errors.push('index.html viewport meta must include viewport-fit=cover');
