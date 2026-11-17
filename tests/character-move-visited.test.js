@@ -9,7 +9,15 @@ import { EffectSystem } from '../engine/modules/Effect.js';
 import { validateCharacterVisitCounters } from '../engine/persistence/SaveState.js';
 import { EffectKeyStrategies, EffectScopeResolvers, StaticListResolvers } from '../engine/modules/effect/strategies/Management.js';
 
-test('Character moveList entries receive persistent visit counters at load', () => {
+test('Character moveList entries require explicit persistent visit counters', () => {
+  const scenario = structuredClone(DEMO_SCRIPT);
+  const character = Object.values(scenario.characters).find(item => item.moveList?.length);
+  delete character.moveList[0].countVisited;
+  assert.throws(
+    () => LoaderSystem.loadScript(scenario, {}),
+    /countVisited must be a non-negative safe integer/
+  );
+
   const loaded = LoaderSystem.loadScript(structuredClone(DEMO_SCRIPT), {});
   const entries = Object.values(loaded.state.characters).flatMap(character => character.moveList || []);
   assert.ok(entries.length > 0);
@@ -204,7 +212,7 @@ test('identity changes invalidate the old visit and restart Still with a fresh t
   const character = {
     set: { moving: true, move: 'list' },
     place: { scene_id: 'a', currentIndex: 0 },
-    moveList: [{ scene_id: 'a', nextStep: 10, stillActive: 5, loop: { still: [{}] } }]
+    moveList: [{ scene_id: 'a', countVisited: 0, nextStep: 10, stillActive: 5, loop: { still: [{}] } }]
   };
   const data = { characters: { npc: character }, faker: { active: true, targetId: 'npc' }, entryCharacter: 'player' };
   const state = {
