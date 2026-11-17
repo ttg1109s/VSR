@@ -21,7 +21,7 @@ const LogicGates = {
     XOR: (results) => results.filter(r => r.pass).length === 1
 };
 
-// [LEGACY] ObjectRetrievers maintained for 'set' checks which might need object references
+// Resolve runtime objects used by requirement checks.
 const ObjectRetrievers = {
     scene: (engine, target) => engine.api.engine.state.getRuntime('scenes.[id]', { id: target }),
     router: (engine, target) => {
@@ -55,7 +55,7 @@ const ItemStrategies = {
     inventory: (engine, c) => {
         const { op, value, broken } = c;
         const val = resolveValue(value, engine);
-        const inv = engine.getInventory ? engine.getInventory() : (engine.api.engine.state.getRuntime('inventory') || []);
+        const inv = engine.getInventory();
 
         // [UPDATED] Broken Logic: Default true (Allow broken items)
         // Set broken: false in logic config to filter them out.
@@ -71,7 +71,7 @@ const ItemStrategies = {
     hand: (engine, c) => {
         const { op, value, broken } = c;
         const val = resolveValue(value, engine);
-        const hand = engine.getHand ? engine.getHand() : (engine.api.engine.state.getRuntime('hand') || []);
+        const hand = engine.getHand();
 
         // [UPDATED] Broken Logic: Default true
         const allowBroken = broken !== false;
@@ -138,9 +138,7 @@ const RelationshipStrategies = {
 
         // Canonical relationship data lives at character.relationship.
         // set.relationship is read only as a legacy compatibility fallback.
-        const relationships = Array.isArray(owner.relationship)
-            ? owner.relationship
-            : (Array.isArray(owner.set?.relationship) ? owner.set.relationship : []);
+        const relationships = Array.isArray(owner.relationship) ? owner.relationship : [];
         const tag = resolveValue(value, engine);
         if (typeof tag !== 'string') return false;
 
