@@ -392,45 +392,28 @@ export default function ContactPanel({ open, onClose, player, contacts = [], ses
       onClose={close}
       title="Contact"
       description="Danh bạ, thread và hội thoại từ Engine"
+      headerActions={player && (
+        <Button
+          size="sm"
+          variant="tertiary"
+          className="vsr-contact-identity-trigger"
+          onClick={() => setIdentityOpen(true)}
+          aria-label="Mở căn cước"
+          title="Căn cước"
+        >
+          <svg className="vsr-contact-header-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <rect x="3.5" y="4.5" width="17" height="15" rx="2.5" />
+            <circle cx="9" cy="10" r="2" />
+            <path d="M6.5 16c.6-1.5 1.5-2.2 2.5-2.2s1.9.7 2.5 2.2M14.5 9h3M14.5 13h3" />
+          </svg>
+        </Button>
+      )}
       size="full"
       side="right"
       className="vsr-contact-drawer"
     >
       <ContactWorkspace>
         <ContactList className={mobileView === 'detail' ? 'is-hidden-compact' : ''}>
-          <header className="vsr-contact-list__header">
-            <h1>Contact</h1>
-            <div className="vsr-contact-list__header-actions">
-              {player && (
-                <Button
-                  size="sm"
-                  variant="tertiary"
-                  className="vsr-contact-identity-trigger"
-                  onClick={() => setIdentityOpen(true)}
-                  aria-label="Mở căn cước"
-                  title="Căn cước"
-                >
-                  <svg className="vsr-contact-header-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                    <rect x="3.5" y="4.5" width="17" height="15" rx="2.5" />
-                    <circle cx="9" cy="10" r="2" />
-                    <path d="M6.5 16c.6-1.5 1.5-2.2 2.5-2.2s1.9.7 2.5 2.2M14.5 9h3M14.5 13h3" />
-                  </svg>
-                </Button>
-              )}
-              <Button
-                size="sm"
-                variant="tertiary"
-                className="vsr-contact-close-trigger"
-                onClick={close}
-                aria-label="Đóng danh bạ"
-                title="Đóng"
-              >
-                <svg className="vsr-contact-header-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                  <path d="m6 6 12 12M18 6 6 18" />
-                </svg>
-              </Button>
-            </div>
-          </header>
           <ContactScrollArea className="vsr-contact-list__items" aria-label="Danh sách liên hệ">
             {allContacts.map(contact => {
               const unreadCount = contact.threads.filter(thread => thread.isUnread).length;
