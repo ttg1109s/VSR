@@ -1155,7 +1155,44 @@ test('Contact snapshot projects the current Player Entry and only known or prese
     assert.equal(maskedSnapshot.presentation.player.name, 'Ally');
     assert.equal(maskedSnapshot.presentation.player.identityMode, 'mask');
     assert.equal(maskedSnapshot.presentation.player.identityTarget.id, 'ally');
+    assert.deepEqual(maskedSnapshot.presentation.player.identityContext, {
+      mode: 'mask',
+      originalIdentity: { id: 'hero', name: 'Hero', avatar: null },
+      currentBody: { id: 'hero', name: 'Hero', avatar: null },
+      activePersona: { id: 'ally', name: 'Ally', avatar: null },
+      statsOwner: { id: 'hero', name: 'Hero', avatar: null },
+      relationshipOwner: { id: 'ally', name: 'Ally', avatar: null }
+    });
     assert.deepEqual(maskedSnapshot.presentation.player.relationship.map(item => [item.tag, item.characterId]), [['friend', 'hero']]);
+
+    engine.api.engine.state.set('faker', {
+      active: true, targetId: 'ally', mode: 'soul',
+      backupPlayer: { characterId: 'hero', entryCharacter: 'hero' }
+    });
+    const soulSnapshot = engine.protocol.createSnapshot(engine);
+    assert.deepEqual(soulSnapshot.presentation.player.identityContext, {
+      mode: 'soul',
+      originalIdentity: { id: 'hero', name: 'Hero', avatar: null },
+      currentBody: { id: 'ally', name: 'Ally', avatar: null },
+      activePersona: { id: 'hero', name: 'Hero', avatar: null },
+      statsOwner: { id: 'hero', name: 'Hero', avatar: null },
+      relationshipOwner: { id: 'hero', name: 'Hero', avatar: null }
+    });
+
+    engine.api.engine.state.set('entryCharacter', 'ally');
+    engine.api.engine.state.set('faker', {
+      active: true, targetId: 'ally', mode: 'swap',
+      backupPlayer: { characterId: 'hero', entryCharacter: 'hero' }
+    });
+    const swapSnapshot = engine.protocol.createSnapshot(engine);
+    assert.deepEqual(swapSnapshot.presentation.player.identityContext, {
+      mode: 'swap',
+      originalIdentity: { id: 'hero', name: 'Hero', avatar: null },
+      currentBody: { id: 'ally', name: 'Ally', avatar: null },
+      activePersona: { id: 'ally', name: 'Ally', avatar: null },
+      statsOwner: { id: 'ally', name: 'Ally', avatar: null },
+      relationshipOwner: { id: 'ally', name: 'Ally', avatar: null }
+    });
     assert.equal(engine.checkReq({
       logic: null,
       check: [{ type: 'relationship', target: 'hero', character: 'hero', op: 'has', value: 'friend' }]
