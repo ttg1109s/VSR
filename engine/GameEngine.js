@@ -256,7 +256,7 @@ export class GameEngine {
   const normalized=LoaderSystem.loadScript(save.scenario,this.api);
   if(!normalized)throw new TypeError('Save scenario is invalid.');
   const restored=cloneJsonValue(save.state);
-  const requiredObjects=['scenes','characters','routers','actions','global','automations','chats','chatHistory'];
+  const requiredObjects=['scenes','characters','routers','actions','global','automations','chats','chatHistory','faker'];
   if(requiredObjects.some(key=>!restored[key]||typeof restored[key]!=='object'||Array.isArray(restored[key]))||
      typeof restored.sceneId!=='string'||!restored.sceneId||
      !restored.scenes[restored.sceneId]||!normalized.state.scenes?.[restored.sceneId]) {
@@ -266,8 +266,8 @@ export class GameEngine {
    if(!normalized.state.scenes?.[sceneId])throw new TypeError(`Save contains unknown scene "${sceneId}".`);
   }
   validateCharacterVisitCounters(restored.characters,normalized.state.characters);
-  const originalEntryCharacter=restored.originalEntryCharacter||normalized.state.originalEntryCharacter||'player';
-  const currentEntryCharacter=restored.entryCharacter||originalEntryCharacter;
+  const originalEntryCharacter=restored.originalEntryCharacter;
+  const currentEntryCharacter=restored.entryCharacter;
   if(typeof originalEntryCharacter!=='string'||!originalEntryCharacter.trim()||typeof currentEntryCharacter!=='string'||!currentEntryCharacter.trim()) {
    throw new TypeError('Save player identity fields must be non-empty character IDs.');
   }
@@ -281,8 +281,6 @@ export class GameEngine {
      !Object.prototype.hasOwnProperty.call(restored.characters,activeIdentity)) {
    throw new TypeError(`Save current identity "${activeIdentity}" does not exist.`);
   }
-  restored.originalEntryCharacter=originalEntryCharacter;
-  restored.entryCharacter=currentEntryCharacter;
   this.reset();
   this.scenario=cloneJsonValue(normalized.scenario);
   this.src=normalized.src;
