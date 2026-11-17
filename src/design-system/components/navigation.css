@@ -23,7 +23,7 @@
   right:0;
   bottom:0;
   left:0;
-  padding:8px max(var(--vsr-page-padding),16px) calc(8px + env(safe-area-inset-bottom));
+  padding:8px max(var(--vsr-page-padding),16px) calc(8px + var(--vsr-safe-area-bottom));
   border-top:1px solid var(--vsr-color-border-subtle);
   background:var(--vsr-color-surface);
 }
@@ -72,7 +72,7 @@
   white-space:nowrap;
 }
 .vsr-bottom-navigation-spacer{
-  height:calc(72px + env(safe-area-inset-bottom));
+  height:calc(72px + var(--vsr-safe-area-bottom));
   flex:none;
 }
 @media(prefers-reduced-motion:reduce){
