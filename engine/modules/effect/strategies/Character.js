@@ -60,21 +60,12 @@ const MovingLogic = {
 
 const resolveCharacterPair = (engine, eff, defaultSource = null) => {
     const target = String(eff.target ?? '');
-    if (eff.source !== undefined && eff.source !== null && eff.source !== '') {
-        return [
-            engine.redirectTarget(target),
-            engine.redirectTarget(String(eff.source))
-        ];
-    }
-
-    // Backward compatibility: legacy target syntax is "destination:source".
-    const separator = target.indexOf(':');
-    if (separator < 0) {
-        return [engine.redirectTarget(target), defaultSource ? engine.redirectTarget(defaultSource) : null];
-    }
+    const source = eff.source === undefined || eff.source === null || eff.source === ''
+        ? defaultSource
+        : String(eff.source);
     return [
-        engine.redirectTarget(target.slice(0, separator)),
-        engine.redirectTarget(target.slice(separator + 1))
+        engine.redirectTarget(target),
+        source ? engine.redirectTarget(source) : null
     ];
 };
 
