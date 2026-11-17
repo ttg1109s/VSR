@@ -1547,26 +1547,57 @@
                 },
                 "then": {
                   "required": [
-                    "property",
-                    "value"
+                    "property"
                   ],
                   "properties": {
                     "field": {
                       "enum": [
                         "current",
-                        "max"
+                        "max",
+                        "unknown"
                       ],
                       "default": "current"
-                    },
-                    "mode": {
-                      "enum": [
-                        "set",
-                        "add",
-                        "full"
-                      ],
-                      "default": "add"
                     }
-                  }
+                  },
+                  "allOf": [
+                    {
+                      "if": {
+                        "properties": {
+                          "field": {
+                            "const": "unknown"
+                          }
+                        },
+                        "required": [
+                          "field"
+                        ]
+                      },
+                      "then": {
+                        "properties": {
+                          "mode": {
+                            "enum": [
+                              "disable",
+                              "enable"
+                            ]
+                          }
+                        }
+                      },
+                      "else": {
+                        "required": [
+                          "value"
+                        ],
+                        "properties": {
+                          "mode": {
+                            "enum": [
+                              "set",
+                              "add",
+                              "full"
+                            ],
+                            "default": "add"
+                          }
+                        }
+                      }
+                    }
+                  ]
                 }
               },
               {
