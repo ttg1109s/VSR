@@ -495,13 +495,10 @@
 .vsr-contact-chat-error { margin: 0; color: var(--vsr-color-text-secondary); font-size: 12px; line-height: 18px; }
 .vsr-contact-chat-error { padding: 8px 16px; color: var(--vsr-color-error); }
 
-/* The Playing Contact drawer owns its viewport and keeps content below the device safe area. */
+/* Contact Workspace uses the shared Drawer safe-area geometry. */
 .vsr-contact-drawer.vsr-overlay-panel {
   display: flex;
   flex-direction: column;
-  top: env(safe-area-inset-top, 0px);
-  bottom: auto;
-  height: calc(100dvh - env(safe-area-inset-top, 0px));
   min-height: 0;
   overflow: hidden;
 }
