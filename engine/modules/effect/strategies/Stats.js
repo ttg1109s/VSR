@@ -53,7 +53,9 @@ export const StatsHelpers = {
             current,
             max,
             label: parts[2] || prop,
-            color: parts[3] || null
+            color: parts[3] || null,
+            // Preserve the visibility flag when an existing stat is refreshed.
+            unknown: targetObj.stats?.[prop]?.unknown === true
         };
 
         targetObj.stats ||= {};
