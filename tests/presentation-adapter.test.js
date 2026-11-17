@@ -197,12 +197,19 @@ test('Contact projects only the selected character relationship with entryCharac
     const initial = await client.initialize(JSON.parse(host.getDemoScenario()));
     const entryCharacterId = initial.state.entryCharacter;
     const mai = host.engine.state.characters.mai;
+    const entryCharacter = host.engine.state.characters[entryCharacterId];
     mai.relationship = [
       ['Người quen', 'keeper'],
       ['Đồng minh', entryCharacterId]
     ];
+    // Contact Profile counts meetings recorded by entryCharacter about Mai,
+    // not meetings recorded by Mai about entryCharacter.
+    entryCharacter.met = [
+      'mai:3',
+      'keeper:7'
+    ];
     mai.met = [
-      `${entryCharacterId}:3`,
+      `${entryCharacterId}:99`,
       'keeper:7'
     ];
     host.engine.commitState('contact.relationship.updated');
@@ -216,6 +223,7 @@ test('Contact projects only the selected character relationship with entryCharac
     assert.equal(Object.hasOwn(projectedMai, 'relationship'), false);
 
     mai.relationship = [['Người quen', 'keeper']];
+    entryCharacter.met = ['keeper:7'];
     mai.met = ['keeper:7'];
     host.engine.commitState('contact.relationship.cleared');
 
