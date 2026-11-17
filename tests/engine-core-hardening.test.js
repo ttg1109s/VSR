@@ -1164,6 +1164,10 @@ test('Contact snapshot projects the current Player Entry and only known or prese
       relationshipOwner: { id: 'ally', name: 'Ally', avatar: null }
     });
     assert.deepEqual(maskedSnapshot.presentation.player.relationship.map(item => [item.tag, item.characterId]), [['friend', 'hero']]);
+    assert.equal(engine.checkReq({
+      logic: null,
+      check: [{ type: 'relationship', target: 'hero', character: 'hero', op: 'has', value: 'friend' }]
+    }).pass, true);
 
     engine.api.engine.state.set('faker', {
       active: true, targetId: 'ally', mode: 'soul',
@@ -1193,10 +1197,6 @@ test('Contact snapshot projects the current Player Entry and only known or prese
       statsOwner: { id: 'ally', name: 'Ally', avatar: null },
       relationshipOwner: { id: 'ally', name: 'Ally', avatar: null }
     });
-    assert.equal(engine.checkReq({
-      logic: null,
-      check: [{ type: 'relationship', target: 'hero', character: 'hero', op: 'has', value: 'friend' }]
-    }).pass, true);
     assert.equal(maskedSnapshot.presentation.actions[0].availability.checks.permission, 'passed');
   } finally {
     engine.dispose();
