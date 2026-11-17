@@ -353,7 +353,7 @@ export class GameEngine {
    const taskId=`auto_${id}`;
    const remaining=timers[taskId];
    if(Number.isFinite(remaining))this.scheduleDelay(remaining,()=>this.processAutomationStep(id),taskId);
-   else this.processAutomationStep(id);
+   else this.processAutomationStep(id).catch(error=>{console.error(`Restored automation '${id}' failed:`,error);this.stopAutomation(id);});
    if(this.restoredPausedTasks.includes(taskId))this.taskManager.pause(taskId);
   }
   this.rehydrateRouterTasks?.(timers, this.restoredPausedTasks);

@@ -270,7 +270,7 @@ function validateReferences(scenario) {
         add(`${path}.target`, 'must contain only the destination character ID; provide source in the separate source field');
       }
       if (!characterExists(effect.target)) add(`${path}.target`, `references missing character '${effect.target}'`);
-      if (['mng_stats', 'mng_items'].includes(effect.subtype) && typeof effect.source === 'string' && !effect.source.includes('$(') && !characterExists(effect.source)) {
+      if (['mng_stats', 'mng_items'].includes(effect.subtype) && typeof effect.source === 'string' && !isDynamicExpression(effect.source) && !characterExists(effect.source)) {
         add(`${path}.source`, `references missing source character '${effect.source}'`);
       }
     }

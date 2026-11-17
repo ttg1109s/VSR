@@ -78,6 +78,8 @@ export const SceneSystem = {
         const previousRouter = currentS
             ? state.getRuntimeSnapshot('scenes.[id]', { id: currentS })?.activeRouterId
             : undefined;
+        const previousEntryScene = state.getRuntimeSnapshot('characters.[id]', { id: entryChar })?.place?.scene_id;
+        const previousPrevRouter = state.get('prevRouter');
 
         // Apply these synchronous writes without yielding between them: leave effects
         // may still be running asynchronously and must not invalidate a queued transaction.
@@ -87,16 +89,17 @@ export const SceneSystem = {
             state.set('char.scene_id', id, { id: entryChar });
         }
 
-        const previousEntryScene = state.getRuntimeSnapshot('characters.[id]', { id: entryChar })?.place?.scene_id;
         try {
             const result = await this.enterRouter(activeRouter, true, true, skipTransition);
             if (result?.success === false) {
                 state.set('sceneId', currentS || '');
+                state.set('prevRouter', previousPrevRouter ?? null);
                 if (state.getRuntimeSnapshot('characters.[id]', { id: entryChar })) state.set('char.scene_id', previousEntryScene, { id: entryChar });
                 return result;
             }
         } catch (error) {
             state.set('sceneId', currentS || '');
+            state.set('prevRouter', previousPrevRouter ?? null);
             if (state.getRuntimeSnapshot('characters.[id]', { id: entryChar })) state.set('char.scene_id', previousEntryScene, { id: entryChar });
             if (currentS) this.render();
             throw error;
