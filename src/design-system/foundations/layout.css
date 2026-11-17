@@ -7,7 +7,7 @@
   display: grid;
   align-items: center;
   justify-items: center;
-  padding: var(--vsr-page-padding);
+  padding: max(var(--vsr-page-padding), var(--vsr-safe-area-top)) max(var(--vsr-page-padding), var(--vsr-safe-area-right)) max(var(--vsr-page-padding), var(--vsr-safe-area-bottom)) max(var(--vsr-page-padding), var(--vsr-safe-area-left));
 }
 .vsr-page-shell--start { align-items: start; align-content: start; }
 .vsr-stack { display: flex; flex-direction: column; }
@@ -399,7 +399,7 @@
 
 
 /* Shared reading-page layout primitives for full-width navigation and bounded content. */
-.vsr-page-shell--flush-top { padding: 0; }
+.vsr-page-shell--flush-top { padding: var(--vsr-safe-area-top) max(var(--vsr-page-padding), var(--vsr-safe-area-right)) max(var(--vsr-page-padding), var(--vsr-safe-area-bottom)) max(var(--vsr-page-padding), var(--vsr-safe-area-left)); }
 .vsr-page-shell__content--reading {
   display: flex;
   min-width: 0;
