@@ -565,11 +565,6 @@
                 "color": {
                   "type": "string",
                   "pattern": "^#[0-9a-fA-F]{6}$"
-                },
-                "unknown": {
-                  "type": "boolean",
-                  "default": false,
-                  "description": "Hide this stat from character Contact profiles until it is known."
                 }
               },
               "additionalProperties": false
@@ -1037,6 +1032,11 @@
                 "color": {
                   "type": "string",
                   "pattern": "^#[0-9a-fA-F]{6}$"
+                },
+                "unknown": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Hide this stat from character Contact profiles until it is known."
                 }
               },
               "additionalProperties": false
