@@ -1073,7 +1073,9 @@ test('Player Entry exposes current controlled identity across save restoration',
 
     engine.api.engine.state.set('faker', { active: true, targetId: 'hero', mode: 'soul', backupPlayer: { entryCharacter: 'npc' } });
     const fakerSnapshot = engine.protocol.createSnapshot(engine);
-    assert.equal(fakerSnapshot.presentation.player.id, 'hero');
+    assert.equal(fakerSnapshot.presentation.player.id, 'npc');
+    assert.equal(fakerSnapshot.presentation.player.name, 'NPC');
+    assert.equal(fakerSnapshot.presentation.player.identityTarget.id, 'hero');
     assert.equal(fakerSnapshot.presentation.player.identityMode, 'soul');
 
     const save = engine.exportSave();
@@ -1083,7 +1085,9 @@ test('Player Entry exposes current controlled identity across save restoration',
       assert.equal(restored.state.originalEntryCharacter, 'hero');
       assert.equal(restored.state.entryCharacter, 'npc');
       const restoredSnapshot = restored.protocol.createSnapshot(restored);
-      assert.equal(restoredSnapshot.presentation.player.id, 'hero');
+      assert.equal(restoredSnapshot.presentation.player.id, 'npc');
+      assert.equal(restoredSnapshot.presentation.player.name, 'NPC');
+      assert.equal(restoredSnapshot.presentation.player.identityTarget.id, 'hero');
       assert.equal(restoredSnapshot.presentation.player.identityMode, 'soul');
     } finally {
       restored.dispose();
@@ -1147,7 +1151,10 @@ test('Contact snapshot projects the current Player Entry and only known or prese
     engine.api.engine.state.set('faker', { active: true, targetId: 'ally', mode: 'mask', backupPlayer: { entryCharacter: 'hero' } });
     engine.api.engine.state.set('config.fakerMode', 'soul');
     const maskedSnapshot = engine.protocol.createSnapshot(engine);
-    assert.equal(maskedSnapshot.presentation.player.id, 'ally');
+    assert.equal(maskedSnapshot.presentation.player.id, 'hero');
+    assert.equal(maskedSnapshot.presentation.player.name, 'Ally');
+    assert.equal(maskedSnapshot.presentation.player.identityMode, 'mask');
+    assert.equal(maskedSnapshot.presentation.player.identityTarget.id, 'ally');
     assert.equal(maskedSnapshot.presentation.actions[0].availability.checks.permission, 'passed');
   } finally {
     engine.dispose();
