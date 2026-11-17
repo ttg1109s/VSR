@@ -99,7 +99,6 @@ export const SceneSystem = {
             const char = currentCharacters[charId];
             // [REFACTOR] Use 'char.place.scene_id'
             if (char.place.scene_id === id) {
-                this.updateMetState(charId, currentIdentity);
 
                 // [FIX V9.2] Meeting Logic: Access Object by currentIdentity Key
                 if (char.effect && char.effect.meeting) {
