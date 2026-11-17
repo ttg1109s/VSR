@@ -231,6 +231,7 @@ test('identity changes invalidate the old visit and restart Still with a fresh t
     getConfig: () => 1
   });
 
+  engine.scheduleCharacterStill('npc', 7);
   const oldStillTask = taskManager.plan.move_still_npc_7;
   engine.syncCharacterMovementIdentity();
   assert.equal(engine.getCharacterVisitToken('npc'), null);
