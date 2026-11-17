@@ -450,9 +450,11 @@ export default function ContactPanel({ open, onClose, player, contacts = [], ses
               );
             })}
             {!allContacts.length && (
-              <p className="vsr-contact-list__empty">
-                Snapshot hiện chưa có dữ liệu danh tính hoặc liên hệ.
-              </p>
+              <div className="vsr-contact-list__empty" role="status">
+                <span className="vsr-contact-list__empty-icon" aria-hidden="true">contacts</span>
+                <strong>Chưa có liên hệ nào</strong>
+                <p>Bạn chưa gặp nhân vật nào và cũng chưa có cuộc hội thoại nào được ghi nhận.</p>
+              </div>
             )}
           </ContactScrollArea>
         </ContactList>
@@ -460,8 +462,15 @@ export default function ContactPanel({ open, onClose, player, contacts = [], ses
         <ContactDetail className={!selected || mobileView === 'list' ? 'is-hidden-compact' : ''}>
           {!selected ? (
             <div className="vsr-contact-empty">
-              <span className="vsr-contact-empty__icon" aria-hidden="true">chat_bubble_outline</span>
-              <p>Chọn một liên hệ để xem các thread hội thoại.</p>
+              <span className="vsr-contact-empty__icon" aria-hidden="true">{allContacts.length ? 'chat_bubble_outline' : 'contacts'}</span>
+              {allContacts.length ? (
+                <p>Chọn một liên hệ để xem các thread hội thoại.</p>
+              ) : (
+                <>
+                  <strong>Danh bạ đang trống</strong>
+                  <p>Khi có nhân vật bạn đã gặp hoặc có hội thoại được kích hoạt, họ sẽ xuất hiện tại đây.</p>
+                </>
+              )}
             </div>
           ) : (
             <>
