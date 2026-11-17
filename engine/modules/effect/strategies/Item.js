@@ -61,25 +61,11 @@ export const ItemStrategies = {
 
     add: (engine, eff, context) => {
         let succeeded = false;
-        // [REFACTORED] Sử dụng engine.addItem (Logic Character)
-        if (engine.addItem) {
-            const added = engine.addItem(eff.target);
-            if (added) {
-                succeeded = true;
-                engine.api.notifications.add("Nhận vật phẩm", engine.api.engine.state.getRuntimeSnapshot('itemInfo.[id].name', { id: eff.target }) || eff.target, "success", { source: 'scenario', category: 'scenario.inventory.added' });
-                engine.api.presentation.components.explorer();
-            }
-        } else {
-            // Fallback nếu hàm addItem chưa mixin (hiếm gặp)
-            const char = ItemStrategies._getChar(engine);
-            if (char && !(char.inventory || []).includes(eff.target)) {
-                engine.api.engine.state.update('characters.[id].inventory', inventory => [...(inventory || []), eff.target], {
-                    id: ItemStrategies._getOwnerId(engine)
-                });
-                succeeded = true;
-                engine.api.notifications.add("Nhận vật phẩm", engine.api.engine.state.getRuntimeSnapshot('itemInfo.[id].name', { id: eff.target }) || eff.target, "success");
-                engine.api.presentation.components.explorer();
-            }
+        const added = engine.addItem(eff.target);
+        if (added) {
+            succeeded = true;
+            engine.api.notifications.add("Nhận vật phẩm", engine.api.engine.state.getRuntimeSnapshot('itemInfo.[id].name', { id: eff.target }) || eff.target, "success", { source: 'scenario', category: 'scenario.inventory.added' });
+            engine.api.presentation.components.explorer();
         }
         ItemStrategies._tryHideAction(engine, eff, context, succeeded);
     },
