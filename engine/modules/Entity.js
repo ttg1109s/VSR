@@ -335,7 +335,6 @@ export const EntitySystem = {
 
         if (isEnteringPlayerScene && charId !== currentIdentity && nextVisitIsValid() &&
             state.get('sceneId') === playerSceneId && this.getCurrentIdentity() === currentIdentity) {
-            this.updateMetState(charId, currentIdentity);
             if (Array.isArray(char.effect?.meeting?.[currentIdentity])) {
                 try {
                     const meetingResult = await this.processRunnables(char.effect.meeting[currentIdentity], {
@@ -358,20 +357,4 @@ export const EntitySystem = {
         }
     },
 
-    updateMetState(charId, currentIdentity) {
-        const state = this.api.engine.state;
-        if (!state.getRuntimeSnapshot('characters.[id]', { id: charId })) return;
-        state.update('characters.[id].met', current => {
-            const met = Array.isArray(current) ? current : [];
-            const index = met.findIndex(entry => String(entry).split(':')[0] === currentIdentity);
-            if (index >= 0) {
-                const parts = String(met[index]).split(':');
-                const count = parseInt(parts[1] || '0', 10) + 1;
-                met[index] = `${currentIdentity}:${count}`;
-            } else {
-                met.push(`${currentIdentity}:1`);
-            }
-            return met;
-        }, { id: charId });
-    }
 };
