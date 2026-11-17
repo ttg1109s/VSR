@@ -136,8 +136,7 @@ const RelationshipStrategies = {
         const owner = state.getRuntime('characters.[id]', { id: ownerId });
         if (!owner) return false;
 
-        // Canonical relationship data lives at character.relationship.
-        // set.relationship is read only as a legacy compatibility fallback.
+        // Relationship requirements read the canonical character-level collection.
         const relationships = Array.isArray(owner.relationship) ? owner.relationship : [];
         const tag = resolveValue(value, engine);
         if (typeof tag !== 'string') return false;
