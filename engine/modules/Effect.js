@@ -8,7 +8,7 @@ export const EffectSystem = {
 
     async processRunnables(originalList, context = {}, isAsync = false, isFromQueue = false) {
         const sourceList = Array.isArray(originalList) ? originalList : [];
-        if (sourceList.length === 0) return;
+        if (sourceList.length === 0 || (typeof context.shouldContinue === 'function' && !context.shouldContinue())) return;
 
         let effectiveList = sourceList;
         let listKey = null;
@@ -49,6 +49,7 @@ export const EffectSystem = {
         }
 
         for (let i = 0; i < effectiveList.length; i++) {
+            if (typeof context.shouldContinue === 'function' && !context.shouldContinue()) break;
             const wrapper = effectiveList[i];
             if (!wrapper || typeof wrapper !== 'object' || Array.isArray(wrapper)) {
                 throw new TypeError('Runnable wrapper must be an object.');
@@ -57,12 +58,13 @@ export const EffectSystem = {
             // All wrapper types, including skip_all, pass through the same
             // skip and requirement gate before their control-flow semantics run.
             const shouldStop = await this.processRunnable(wrapper, context, listKey, sourceList, isAsync);
-            if (shouldStop === true) break;
+            if (shouldStop === true || (typeof context.shouldContinue === 'function' && !context.shouldContinue())) break;
         }
     },
 
     async processRunnable(wrapper, context = {}, listKey = null, sourceList = [], isAsync = false) {
         if (!wrapper || typeof wrapper !== 'object') throw new TypeError('Runnable wrapper must be an object.');
+        if (typeof context.shouldContinue === 'function' && !context.shouldContinue()) return true;
         if (wrapper.skip === true) return;
         if (Object.prototype.hasOwnProperty.call(wrapper, 'req') && !this.checkReq(wrapper.req).pass) return;
 
@@ -75,12 +77,12 @@ export const EffectSystem = {
             const process = async (content) => {
                 if (Array.isArray(content)) {
                     await this.processRunnables(content, context, isAsync, true);
-                    return false;
+                    return typeof context.shouldContinue === 'function' && !context.shouldContinue();
                 }
                 // effect_details permits skip_all as an inline payload type.
                 if (content?.type === 'skip_all') return true;
                 await this.applyEffect(content, context, listKey, sourceList);
-                return false;
+                return typeof context.shouldContinue === 'function' && !context.shouldContinue();
             };
 
             if (templateContent && await process(templateContent)) return true;
@@ -92,7 +94,7 @@ export const EffectSystem = {
             throw new TypeError(`Unsupported runnable wrapper type: ${String(wrapper.type)}`);
         }
         await this.applyEffect(wrapper, context, listKey, sourceList);
-        return false;
+        return typeof context.shouldContinue === 'function' && !context.shouldContinue();
     },
 
     getStaticList(scope, params) {
