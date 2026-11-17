@@ -16,8 +16,9 @@ import {
   ProgressBar,
 } from '../../design-system/index.js';
 
-function StatList({ stats = {} }) {
-  const entries = Object.entries(stats || {});
+function StatList({ stats = {}, hideUnknown = false }) {
+  const entries = Object.entries(stats || {}).filter(([, stat]) => !hideUnknown || stat?.unknown !== true);
+  if (hideUnknown && entries.length === 0) return null;
   if (!entries.length) {
     return (
       <div className="vsr-contact-profile__empty-state">
@@ -99,7 +100,7 @@ function ContactProfile({ character }) {
 
       {Object.keys(character.stats || {}).length > 0 && (
         <section className="vsr-contact-profile__section">
-          <StatList stats={character.stats} />
+          <StatList stats={character.stats} hideUnknown />
         </section>
       )}
     </div>
