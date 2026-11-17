@@ -706,8 +706,7 @@
                 "items": {
                   "type": "string"
                 },
-                "description": "Required recipient Character IDs; use an empty array when the chat has no recipients.",
-                "default": []
+                "description": "Required recipient Character IDs; use an empty array when the chat has no recipients."
               }
             },
             "additionalProperties": false
