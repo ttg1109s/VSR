@@ -188,7 +188,8 @@
 .vsr-contact-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:220px;padding:24px;text-align:center}
 .vsr-contact-empty>.vsr-icon{margin-bottom:12px;color:var(--vsr-color-text-disabled);font-size:36px}
 .vsr-contact-empty h4,.vsr-contact-profile h4{margin:0;font-size:15px;font-weight:600}
-.vsr-contact-empty p,.vsr-contact-profile p{max-width:38ch;margin:6px 0 0;color:var(--vsr-color-text-secondary);font-size:13px;line-height:20px}
+.vsr-contact-empty p{max-width:38ch;margin:6px 0 0;color:var(--vsr-color-text-secondary);font-size:13px;line-height:20px}
+.vsr-contact-profile p:not(.vsr-contact-profile__description){max-width:38ch;margin:6px 0 0;color:var(--vsr-color-text-secondary);font-size:13px;line-height:20px}
 
 .vsr-contact-profile__placeholder{display:grid;gap:8px;margin-top:16px}
 .vsr-contact-profile__placeholder span{padding:12px;border:1px dashed var(--vsr-color-border);border-radius:var(--vsr-radius-sm);color:var(--vsr-color-text-disabled);font-size:12px}
