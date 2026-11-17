@@ -516,8 +516,9 @@ export default function ContactPanel({ open, onClose, player, contacts = [], ses
                       </button>
                     )) : (
                       <div className="vsr-contact-topic-list__empty">
-                        <strong>Chưa có thread</strong>
-                        <p>Thread sẽ xuất hiện khi Engine kích hoạt hội thoại liên quan đến nhân vật này.</p>
+                        <span className="vsr-contact-topic-list__empty-icon" aria-hidden="true">forum</span>
+                        <strong>Chưa có cuộc trò chuyện</strong>
+                        <p>Các cuộc trò chuyện với nhân vật sẽ xuất hiện tại đây.</p>
                       </div>
                     )}
                   </ContactTopicList>
