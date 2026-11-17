@@ -391,7 +391,7 @@ export default function ContactPanel({ open, onClose, player, contacts = [], ses
     <Drawer
       open={open}
       onClose={close}
-      title="Messages"
+      title="Contact"
       description="Danh bạ, thread và hội thoại từ Engine"
       size="full"
       side="right"
@@ -400,7 +400,7 @@ export default function ContactPanel({ open, onClose, player, contacts = [], ses
       <ContactWorkspace>
         <ContactList className={mobileView === 'detail' ? 'is-hidden-compact' : ''}>
           <header className="vsr-contact-list__header">
-            <h1>Messages</h1>
+            <h1>Contact</h1>
             <div className="vsr-contact-list__header-actions">
               {player && (
                 <Button
