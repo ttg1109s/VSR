@@ -182,14 +182,14 @@ export const ChatSystem = {
             }
             shouldProcessBlock = false;
         } else if (bookmark.length > 0) {
-            // Resume an unread thread from its last visited block and saved line index.
+            // Resume after the last persisted line; `step` is the last consumed line index in legacy saves.
             // Keep chat.history intact: it is the authoritative record of already rendered
             // lines and must not be replayed into the same history a second time.
             startBlock = bookmark[bookmark.length - 1];
             const savedStep = Number(chatRuntime.set.step);
             const lastBlock = this.resolveBlock(id, startBlock);
             startIndex = Number.isInteger(savedStep) && savedStep >= 0
-                ? Math.min(savedStep, Array.isArray(lastBlock?.line) ? lastBlock.line.length : 0)
+                ? Math.min(savedStep + 1, Array.isArray(lastBlock?.line) ? lastBlock.line.length : 0)
                 : 0;
         } else if (!chatRuntime.set.read && chatHistory.length > 0) {
             // Legacy/incomplete saves may contain history without a bookmark.
