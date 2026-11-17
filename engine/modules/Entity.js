@@ -244,18 +244,20 @@ export const EntitySystem = {
 
         try {
             if (Array.isArray(oldLoopLeave) && oldLoopLeave.length) {
-                await this.processRunnables(oldLoopLeave, {
+                const leaveResult = await this.processRunnables(oldLoopLeave, {
                     sceneId: currentScene, charId, hook: 'leave', moveIndex: oldIndex,
                     visitToken: token,
                     shouldContinue: () => this.isCharacterVisitValid(charId, token, currentScene, oldIndex)
                 }, true);
+                if (leaveResult?.error) throw leaveResult.error;
             }
             if (isLeavingPlayerScene && Array.isArray(char.effect?.leave?.[currentIdentity])) {
-                await this.processRunnables(char.effect.leave[currentIdentity], {
+                const leaveResult = await this.processRunnables(char.effect.leave[currentIdentity], {
                     sceneId: playerSceneId, charId, hook: `leave:${currentIdentity}`, moveIndex: oldIndex,
                     visitToken: token,
                     shouldContinue: () => this.isCharacterVisitValid(charId, token, currentScene, oldIndex)
                 }, true);
+                if (leaveResult?.error) throw leaveResult.error;
             }
         } catch (error) {
             console.error(`[Entity] Character Leave Effect failed for ${charId}; transition cancelled:`, error);
@@ -294,10 +296,11 @@ export const EntitySystem = {
         try {
             const enterEffects = nextItem.loop?.enter;
             if (Array.isArray(enterEffects) && enterEffects.length) {
-                await this.processRunnables(enterEffects, {
+                const enterResult = await this.processRunnables(enterEffects, {
                     sceneId: nextSceneId, charId, hook: 'enter', moveIndex: result.idx,
                     visitToken: nextToken, shouldContinue: nextVisitIsValid
                 }, true);
+                if (enterResult?.error) throw enterResult.error;
             }
         } catch (error) {
             // Enter is post-commit: retain the new location and counter; do not retry it.
@@ -308,10 +311,11 @@ export const EntitySystem = {
             this.updateMetState(charId, currentIdentity);
             if (Array.isArray(char.effect?.meeting?.[currentIdentity])) {
                 try {
-                    await this.processRunnables(char.effect.meeting[currentIdentity], {
+                    const meetingResult = await this.processRunnables(char.effect.meeting[currentIdentity], {
                         sceneId: playerSceneId, charId, hook: `meeting:${currentIdentity}`, moveIndex: result.idx,
                         visitToken: nextToken, shouldContinue: nextVisitIsValid
                     }, true);
+                    if (meetingResult?.error) throw meetingResult.error;
                 } catch (error) {
                     console.error(`[Entity] Character meeting Effect failed for ${charId}:`, error);
                 }
