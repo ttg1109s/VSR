@@ -371,12 +371,13 @@ export default function ContactPanel({ open, onClose, player, contacts = [], ses
                               <Button
                                 key={choice.index}
                                 className={'vsr-contact-chat-choice' + (choice.locked ? ' is-locked' : '')}
+                                variant="secondary"
                                 disabled={chatActionsDisabled || choice.locked === true}
                                 onClick={() => progressChat(choice.index)}
                               >
                                 <span>{choice.text}</span>
                                 <span className="vsr-contact-chat-choice__icon" aria-hidden="true">
-                                  {choice.locked ? 'lock' : '➜'}
+                                  {choice.locked ? 'lock' : '→'}
                                 </span>
                               </Button>
                             ))}
