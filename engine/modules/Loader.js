@@ -137,7 +137,7 @@ export const LoaderSystem = {
 
         Object.keys(state.chats).forEach(chatId => {
             const chat = state.chats[chatId];
-            if (!chat.set) chat.set = { read: false, bookmark: null, step: 0, lastInteraction: 0 };
+            if (!chat.set) chat.set = { read: false, bookmark: [], step: 0, lastInteraction: 0 };
             // [FIX] Khoá thực tế là 'block' (số ít) theo scenario.schema.json và cách
             // engine/modules/Chat.js truy xuất (`chat.block[blockId]`), KHÔNG phải 'blocks'.
             // Với tên sai trước đây, vòng lặp này luôn bị bỏ qua với mọi kịch bản hợp lệ.
