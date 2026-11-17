@@ -176,9 +176,8 @@ export class JsonProtocol{
   const fakerTarget=faker.active&&faker.targetId
    ?engine.state.characters?.[faker.targetId]||null
    :null;
-  const projectRelationships=(character, fallback=[])=>{
-   const relationships=Array.isArray(character?.relationship)?character.relationship:
-    (Array.isArray(character?.set?.relationship)?character.set.relationship:fallback);
+  const projectRelationships=(character)=>{
+   const relationships=Array.isArray(character?.relationship)?character.relationship:[];
    return relationships.map(item=>{
     const characterId=Array.isArray(item)?item[1]??null:item?.characterId??null;
     return{
