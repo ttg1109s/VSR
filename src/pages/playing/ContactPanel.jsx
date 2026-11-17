@@ -292,7 +292,6 @@ export default function ContactPanel({ open, onClose, player, contacts = [], ses
                   onClick={() => setProfileOpen(true)}
                 >
                   <strong>{selected.name || selected.id}</strong>
-                  <small>{activeArea === 'conversation' ? (selectedThread?.title || 'Hội thoại') : 'Danh sách thread'}</small>
                 </button>
                 <Button size="sm" variant="tertiary" onClick={() => setProfileOpen(true)}>
                   Thông tin
