@@ -244,6 +244,12 @@ Không bắt buộc áp dụng đồng loạt Feature-based Architecture cho to�
 Các nguyên tắc nền đã được quy định trong Design System:
 
 - Không dùng hover làm cách duy nhất để khám phá hoặc vận hành hành động.
+- **Phân tách tương tác theo năng lực thiết bị:** hiệu ứng thị giác dành riêng cho rê chuột (hover) chỉ được áp dụng trong `@media (hover: hover) and (pointer: fine)`. Không để selector `:hover` trực tiếp trong CSS nền tảng/component nếu nó làm thay đổi nền, màu, viền, shadow, transform hoặc hiển thị nội dung trên thiết bị cảm ứng.
+- **Touch không được phụ thuộc vào hover:** thao tác chạm phải có phản hồi qua trạng thái `:active` ngắn hạn hoặc trạng thái tương tác có chủ đích. Không dùng `:hover` để biểu diễn trạng thái đã chọn, đã mở, đã kích hoạt hoặc trạng thái nghiệp vụ.
+- **Giữ riêng trạng thái keyboard:** `:focus-visible` và `:focus-within` phải được khai báo độc lập với quy tắc hover; không đặt chúng bên trong media query chỉ dành cho chuột. Tooltip/popover phải có cách truy cập phù hợp bằng bàn phím và cảm ứng, không phụ thuộc hover.
+- **Không xóa trạng thái chọn để chữa lỗi hover:** `.is-selected`, `[aria-selected="true"]`, `[aria-pressed="true"]` và state mở/đóng do ứng dụng quản lý phải tiếp tục phản ánh đúng trạng thái thực. Hover chỉ là affordance tạm thời, không phải nguồn state.
+- Với thiết bị lai (màn hình cảm ứng có thể kết nối chuột), dùng media feature `hover` và `pointer` để xác định năng lực con trỏ chính; không suy luận loại thiết bị chỉ từ viewport width hoặc breakpoint.
+- Khi thêm selector hover mới, phải kiểm tra cả trạng thái touch sau khi nhả tay, trạng thái keyboard focus và trạng thái selected/active. Ưu tiên quy tắc dùng chung trong Design System; không tạo workaround riêng tại page/feature.
 - Duy trì keyboard focus hiển thị rõ ràng.
 - Mục tiêu tương tác tối thiểu 48×48px khi thực tế cho phép; nếu component hiện tại nhỏ hơn, đánh giá hit area và bối cảnh sử dụng.
 - Dùng semantic HTML phù hợp: button cho hành động, anchor cho điều hướng, label liên kết với form control, heading theo cấu trúc nội dung.
@@ -300,6 +306,10 @@ Component README ghi nhận đây là implementation ban đầu, chưa thay th�
 
 ### Accessibility and responsive
 - [ ] Có keyboard operation và focus-visible.
+- [ ] Mọi hiệu ứng hover thị giác được giới hạn trong `@media (hover: hover) and (pointer: fine)`; không có hover giả lập bị giữ sau thao tác chạm.
+- [ ] `:focus-visible`/`:focus-within` hoạt động độc lập với media query hover; touch feedback dùng `:active` hoặc state tường minh.
+- [ ] Selected/pressed/open state không bị nhầm lẫn hoặc ghi đè bởi hover.
+- [ ] Kiểm tra touch: chạm, nhả tay, chạm phần tử khác và cuộn; không còn trạng thái hover dính. Kiểm tra thêm keyboard và thiết bị lai nếu được hỗ trợ.
 - [ ] Không phụ thuộc hover hoặc màu sắc đơn thuần.
 - [ ] Form controls có label/validation semantics.
 - [ ] Kiểm tra compact, medium và expanded breakpoints.
