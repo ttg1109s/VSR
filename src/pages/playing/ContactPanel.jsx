@@ -83,6 +83,7 @@ function RelationshipSummary({ relationshipWithPlayer, metCount = 0 }) {
 
 function ContactProfile({ character }) {
   if (!character) return null;
+  const visibleStats = Object.entries(character.stats || {}).filter(([, stat]) => stat?.unknown !== true);
   return (
     <div className="vsr-contact-profile">
       <section className="vsr-contact-profile__section">
@@ -98,7 +99,7 @@ function ContactProfile({ character }) {
         />
       </section>
 
-      {Object.keys(character.stats || {}).length > 0 && (
+      {visibleStats.length > 0 && (
         <section className="vsr-contact-profile__section">
           <StatList stats={character.stats} hideUnknown />
         </section>
