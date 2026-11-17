@@ -33,6 +33,31 @@ export function createSaveEnvelope(engine) {
   };
 }
 
+export function normalizeCharacterVisitCounters(savedCharacters, scenarioCharacters) {
+  if (!savedCharacters || typeof savedCharacters !== 'object' || Array.isArray(savedCharacters) ||
+      !scenarioCharacters || typeof scenarioCharacters !== 'object' || Array.isArray(scenarioCharacters)) {
+    throw new TypeError('Save Character state is invalid.');
+  }
+  for (const [charId, charState] of Object.entries(savedCharacters)) {
+    const scenarioCharacter = scenarioCharacters[charId];
+    if (!scenarioCharacter) throw new TypeError(`Save contains unknown character "${charId}".`);
+    if (!Array.isArray(charState?.moveList) ||
+        charState.moveList.length !== (scenarioCharacter.moveList || []).length) {
+      throw new TypeError(`Save moveList does not match scenario for character "${charId}".`);
+    }
+    charState.moveList.forEach((entry, index) => {
+      if (!entry || typeof entry !== 'object' || Array.isArray(entry)) {
+        throw new TypeError(`Save character "${charId}" moveList[${index}] is invalid.`);
+      }
+      if (entry.countVisited === undefined) entry.countVisited = 0;
+      if (!Number.isSafeInteger(entry.countVisited) || entry.countVisited < 0) {
+        throw new TypeError(`Save character "${charId}" moveList[${index}].countVisited must be a non-negative safe integer.`);
+      }
+    });
+  }
+  return savedCharacters;
+}
+
 function validateSaveShape(save) {
   if (!save || typeof save !== 'object' || Array.isArray(save)) throw new TypeError('Invalid VSR save envelope.');
   if (save.protocol !== undefined && save.protocol !== 'vsr-save') throw new TypeError('Invalid save protocol.');
