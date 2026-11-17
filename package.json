@@ -18,7 +18,8 @@
     "./utils": "./utils/index.js",
     "./host": "./engine/LocalEngineHost.js",
     "./client": "./client/adapters/JsonClient.js",
-    "./transport": "./client/adapters/WorkerJsonTransport.js"
+    "./transport": "./client/adapters/WorkerJsonTransport.js",
+    "./http-transport": "./client/adapters/HttpJsonTransport.js"
   },
   "scripts": {
     "test": "node --test",

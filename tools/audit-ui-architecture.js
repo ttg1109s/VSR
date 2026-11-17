@@ -24,8 +24,9 @@ for(const file of files.filter(p=>p.startsWith('src/pages/')&&/\.(jsx?|tsx?)$/.t
     errors.push(`Page defines inline presentation: ${file}`);
 }
 function resolveImport(from,specifier){
-  if(!specifier.startsWith('.'))return null;
-  const base=path.normalize(path.join(path.dirname(from),specifier));
+  const cleanSpecifier=specifier.split(/[?#]/,1)[0];
+  if(!cleanSpecifier.startsWith('.'))return null;
+  const base=path.normalize(path.join(path.dirname(from),cleanSpecifier));
   const candidates=[base,...['.js','.jsx','.mjs','.cjs','.json','.css','.svg','.png','.jpg','.jpeg','.webp'].map(ext=>base+ext),...['index.js','index.jsx','index.css'].map(name=>path.join(base,name))];
   return candidates.find(candidate=>sourceFiles.has(candidate))||null;
 }
@@ -39,7 +40,7 @@ function visit(file){
   if(file.endsWith('.css'))imports.push(...[...content.matchAll(/@import\s+['"]([^'"]+)['"]/g)].map(m=>m[1]));
   for(const specifier of imports){const target=resolveImport(file,specifier);if(target)visit(target);}
 }
-const roots=new Set(['src/main.jsx','engine/engine.worker.js','server/index.js','protocol/index.js','vite.config.js']);
+const roots=new Set(['src/main.jsx','engine/engine.worker.js','server/index.js','protocol/index.js','vite.config.js','client/adapters/HttpJsonTransport.js']);
 for(const file of files){
   if(file.startsWith('tests/')&&file.endsWith('.test.js'))roots.add(file);
   if(file.startsWith('tools/')&&file.endsWith('.js'))roots.add(file);
