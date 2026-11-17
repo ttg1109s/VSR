@@ -87,6 +87,21 @@ test('null and undeclared senders are grouped under Unknown / Spam, not as chara
     await client.openChatThread('spam', chatId);
     assert.equal(client.getSnapshot().session.chat.contactId, 'spam');
     assert.equal(client.getSnapshot().session.chat.id, chatId);
+
+    const source = structuredClone(host.engine.src.chat[chatId]);
+    source.meta.sender = null;
+    source.block.start.line[0].char_id = null;
+    host.engine.src.chat[chatId] = source;
+    const runtime = structuredClone(host.engine.state.chats[chatId]);
+    runtime.meta.sender = null;
+    runtime.block.start.line[0].char_id = null;
+    host.engine.state.chats[chatId] = runtime;
+    host.engine.commitState('test.null-chat-sender');
+    const nullSenderSnapshot = await client.refreshSnapshot();
+    assert.ok(nullSenderSnapshot.presentation.systemContacts.find(contact => contact.id === 'spam')
+      .threads.some(thread => thread.id === chatId));
+    await client.openChatThread('spam', chatId);
+    assert.equal(client.getSnapshot().session.chat.contactId, 'spam');
   } finally {
     client.dispose();
     host.close();
