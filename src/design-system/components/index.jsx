@@ -161,12 +161,17 @@ export function Popover({trigger,children,align='start',label='Open additional c
     if(!anchor)return;
     const card=trigger.closest('.vsr-action-card')?.getBoundingClientRect();
     const margin=16,gap=10;
-    const leftBound=Math.max(margin,(card?.left??0)+margin);
-    const rightBound=Math.min(window.innerWidth-margin,(card?.right??window.innerWidth)-margin);
-    const width=Math.max(220,Math.min(480,rightBound-leftBound));
-    const left=Math.max(margin,Math.min(align==='end'?anchor.right-width:leftBound,rightBound-width));
+    const rootStyle=getComputedStyle(document.documentElement);
+    const safeTop=parseFloat(rootStyle.getPropertyValue('--vsr-safe-area-top'))||0;
+    const safeRight=parseFloat(rootStyle.getPropertyValue('--vsr-safe-area-right'))||0;
+    const safeBottom=parseFloat(rootStyle.getPropertyValue('--vsr-safe-area-bottom'))||0;
+    const safeLeft=parseFloat(rootStyle.getPropertyValue('--vsr-safe-area-left'))||0;
+    const leftBound=Math.max(margin+safeLeft,(card?.left??0)+margin);
+    const rightBound=Math.min(window.innerWidth-margin-safeRight,(card?.right??window.innerWidth)-margin-safeRight);
+    const width=Math.max(0,Math.min(480,rightBound-leftBound));
+    const left=Math.max(leftBound,Math.min(align==='end'?anchor.right-width:leftBound,rightBound-width));
     const initialTop=anchor.bottom+gap;
-    setPosition({left,top:initialTop,width,arrowLeft:Math.max(12,Math.min(width-12,anchor.left+anchor.width/2-left)),above:false});
+    setPosition({left,top:initialTop,width,minWidth:Math.min(220,width),arrowLeft:Math.max(12,Math.min(width-12,anchor.left+anchor.width/2-left)),above:false});
   };
   useEffect(()=>{
     if(!open)return;
@@ -177,8 +182,13 @@ export function Popover({trigger,children,align='start',label='Open additional c
         updatePosition();
         const anchor=triggerRef.current?.getBoundingClientRect(),panel=contentRef.current?.getBoundingClientRect();
         if(!anchor||!panel)return;
-        const margin=16,gap=10,above=anchor.bottom+gap+panel.height>window.innerHeight-margin&&anchor.top-gap-panel.height>=margin;
-        const top=above?Math.max(margin,anchor.top-gap-panel.height):Math.min(anchor.bottom+gap,window.innerHeight-margin-panel.height);
+        const margin=16,gap=10;
+        const rootStyle=getComputedStyle(document.documentElement);
+        const safeTop=parseFloat(rootStyle.getPropertyValue('--vsr-safe-area-top'))||0;
+        const safeBottom=parseFloat(rootStyle.getPropertyValue('--vsr-safe-area-bottom'))||0;
+        const topBound=margin+safeTop,bottomBound=window.innerHeight-margin-safeBottom;
+        const above=anchor.bottom+gap+panel.height>bottomBound&&anchor.top-gap-panel.height>=topBound;
+        const top=above?Math.max(topBound,anchor.top-gap-panel.height):Math.min(anchor.bottom+gap,bottomBound-panel.height);
         setPosition(current=>current?{...current,top,above}:current);
       });
     };
@@ -197,7 +207,7 @@ export function Popover({trigger,children,align='start',label='Open additional c
   },[open]);
   const toggle=()=>setOpen(value=>{const next=!value;if(next)onOpenChange?.(true);else{setPosition(null);onOpenChange?.(false);}return next;});
   const triggerNode=isValidElement(trigger)?cloneElement(trigger,{ref:node=>{triggerRef.current=node;const original=trigger.ref;if(typeof original==='function')original(node);else if(original)original.current=node;},'aria-expanded':open,onClick:e=>{trigger.props.onClick?.(e);if(!e.defaultPrevented)toggle();}}):<button ref={triggerRef} type="button" aria-label={label} aria-expanded={open} onClick={toggle}>{trigger}</button>;
-  return <div ref={root} className={cx('vsr-popover',className)}>{triggerNode}{open&&typeof document!=='undefined'&&createPortal(<div ref={contentRef} className={'vsr-popover-content vsr-popover-content--'+align+(position?.above?' is-above':'')} style={{position:'fixed',left:position?.left??16,top:position?.top??16,width:position?.width??'calc(100vw - 32px)',maxWidth:'calc(100vw - 32px)',minWidth:0,boxSizing:'border-box',zIndex:1100,visibility:position?'visible':'hidden','--vsr-popover-arrow-left':(position?.arrowLeft??24)+'px'}}>{<div className="vsr-popover-content__body">{children}</div>}</div>,document.body)}</div>;
+  return <div ref={root} className={cx('vsr-popover',className)}>{triggerNode}{open&&typeof document!=='undefined'&&createPortal(<div ref={contentRef} className={'vsr-popover-content vsr-popover-content--'+align+(position?.above?' is-above':'')} style={{position:'fixed',left:position?.left??16,top:position?.top??16,width:position?.width??'calc(100vw - 32px)',maxWidth:'calc(100vw - 32px)',minWidth:position?.minWidth??0,boxSizing:'border-box',zIndex:1100,visibility:position?'visible':'hidden','--vsr-popover-arrow-left':(position?.arrowLeft??24)+'px'}}>{<div className="vsr-popover-content__body">{children}</div>}</div>,document.body)}</div>;
 }
 export function Tooltip({content,children,side='top'}){return <span className="vsr-tooltip">{children}<span role="tooltip" className={'vsr-tooltip-bubble vsr-tooltip-bubble--'+side}>{content}</span></span>;}
 const ToastContext=createContext(null);let toastId=0;
