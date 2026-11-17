@@ -1155,6 +1155,11 @@ test('Contact snapshot projects the current Player Entry and only known or prese
     assert.equal(maskedSnapshot.presentation.player.name, 'Ally');
     assert.equal(maskedSnapshot.presentation.player.identityMode, 'mask');
     assert.equal(maskedSnapshot.presentation.player.identityTarget.id, 'ally');
+    assert.deepEqual(maskedSnapshot.presentation.player.relationship.map(item => [item.tag, item.characterId]), [['friend', 'hero']]);
+    assert.equal(engine.checkReq({
+      logic: null,
+      check: [{ type: 'relationship', target: 'hero', character: 'hero', op: 'has', value: 'friend' }]
+    }).pass, true);
     assert.equal(maskedSnapshot.presentation.actions[0].availability.checks.permission, 'passed');
   } finally {
     engine.dispose();
@@ -1244,9 +1249,6 @@ test('Mask relationship requirements use the borrowed identity without overwriti
     },
     getRuntimeSnapshot(path) {
       return path === 'faker' ? faker : undefined;
-    },
-    getRuntimeCharacter(path, { id }) {
-      return path === 'characters.[id]' ? characters[id] : undefined;
     },
     getRuntime(path, params) {
       if (path === 'entryCharacter') return 'player';
