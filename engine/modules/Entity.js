@@ -276,6 +276,10 @@ export const EntitySystem = {
 
         // Leave effects may mutate the source, destination, identity, or blocked state.
         if (!this.isCharacterVisitValid(charId, token, currentScene, oldIndex) ||
+            this.getCurrentIdentity() !== currentIdentity ||
+            state.get('sceneId') !== playerSceneId ||
+            !state.getRuntimeSnapshot('scenes.[id]', { id: currentScene }) ||
+            this.isLocationBlocked(currentScene) ||
             !state.getRuntimeSnapshot('scenes.[id]', { id: nextSceneId }) ||
             this.isLocationBlocked(nextSceneId)) {
             if (this.isCharacterVisitValid(charId, token, currentScene, oldIndex)) this.scheduleCharacterMove(charId);
@@ -291,7 +295,12 @@ export const EntitySystem = {
             current._moveDir = result.dir;
             const entry = current.moveList?.[result.idx];
             if (!entry) throw new Error(`Character ${charId} destination move entry disappeared before commit.`);
-            if (!Number.isSafeInteger(entry.countVisited) || entry.countVisited < 0) entry.countVisited = 0;
+            if (!Number.isSafeInteger(entry.countVisited) || entry.countVisited < 0) {
+                throw new TypeError(`Character ${charId} moveList[${result.idx}].countVisited is invalid.`);
+            }
+            if (entry.countVisited >= Number.MAX_SAFE_INTEGER) {
+                throw new RangeError(`Character ${charId} moveList[${result.idx}].countVisited overflow.`);
+            }
             entry.countVisited += 1;
             if (result.consumeCount === true && entry.count > 0) entry.count -= 1;
             return current;
