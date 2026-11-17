@@ -118,25 +118,6 @@ function ContactProfile({ character, player, contacts, onSelect }) {
 
   return (
     <div className="vsr-contact-profile">
-      <header className="vsr-contact-profile__hero">
-        <ContactAvatar name={character.name || character.id} avatar={character.avatar} size="lg" />
-        <div className="vsr-contact-profile__identity">
-          <h3>{character.name || character.id}</h3>
-          <span className="vsr-contact-profile__id">ID: {character.id}</span>
-          <div className="vsr-contact-profile__badges">
-            {isPlayer
-              ? <Badge tone="success">Danh tính đang điều khiển</Badge>
-              : <Badge tone={character.presence === 'present' ? 'success' : 'neutral'}>
-                  {character.presence === 'present' ? 'Đang hiện diện' : 'Đã gặp'}
-                </Badge>}
-            {isPlayer && character.identityMode && <Badge tone="info">Faker · {character.identityMode}</Badge>}
-            {!isPlayer && Number.isFinite(character.metCount) && (
-              <Badge tone="neutral">Đã gặp {character.metCount} lần</Badge>
-            )}
-          </div>
-        </div>
-      </header>
-
       <section className="vsr-contact-profile__section">
         <h4><span aria-hidden="true">person</span>Giới thiệu</h4>
         <p className="vsr-contact-profile__description">
@@ -149,10 +130,12 @@ function ContactProfile({ character, player, contacts, onSelect }) {
         <StatList stats={character.stats} />
       </section>
 
-      <section className="vsr-contact-profile__section">
-        <h4><span aria-hidden="true">groups</span>Quan hệ</h4>
-        <RelationshipList relationships={character.relationship || []} contacts={contacts} onSelect={onSelect} />
-      </section>
+      {Array.isArray(character.relationship) && character.relationship.length > 0 && (
+        <section className="vsr-contact-profile__section">
+          <h4><span aria-hidden="true">groups</span>Quan hệ</h4>
+          <RelationshipList relationships={character.relationship} contacts={contacts} onSelect={onSelect} />
+        </section>
+      )}
     </div>
   );
 }
