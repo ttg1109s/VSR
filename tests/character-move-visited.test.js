@@ -7,6 +7,7 @@ import { MoveAlgorithms } from '../engine/modules/entity/Movement.js';
 import { EntitySystem } from '../engine/modules/Entity.js';
 import { EffectSystem } from '../engine/modules/Effect.js';
 import { normalizeCharacterVisitCounters } from '../engine/persistence/SaveState.js';
+import { EffectKeyStrategies, EffectScopeResolvers, StaticListResolvers } from '../engine/modules/effect/strategies/Management.js';
 
 test('Character moveList entries receive persistent visit counters at load', () => {
   const loaded = LoaderSystem.loadScript(structuredClone(DEMO_SCRIPT), {});
@@ -243,4 +244,64 @@ test('identity changes invalidate the old visit and restart Still with a fresh t
   assert.ok(taskManager.plan.move_char_npc);
   await oldStillTask.exe();
   assert.ok(taskManager.plan[`move_still_npc_${newToken}`], 'a stale Still callback must not kill the new visit task');
+});
+
+
+test('Character Movement Effect Manager isolates each moveList entry and hook', () => {
+  const source = {
+    characters: {
+      npc: {
+        effect: { still: [{ type: 'notify', text: 'character-level' }] },
+        moveList: [
+          { loop: { still: [{ type: 'notify', text: 'entry-0' }] } },
+          { loop: { still: [{ type: 'notify', text: 'entry-1' }] } }
+        ]
+      }
+    }
+  };
+
+  assert.equal(EffectKeyStrategies.character_move({ cId: 'npc', moveIndex: 0, hook: 'still' }), 'char_move_npc_0_still');
+  assert.equal(EffectKeyStrategies.character_move({ cId: 'npc', moveIndex: 1, hook: 'still' }), 'char_move_npc_1_still');
+  assert.notEqual(
+    EffectKeyStrategies.character_move({ cId: 'npc', moveIndex: 0, hook: 'still' }),
+    EffectKeyStrategies.character({ cId: 'npc', hook: 'still' })
+  );
+  assert.deepEqual(StaticListResolvers.character_move(source, { cId: 'npc', moveIndex: 0, hook: 'still' }), source.characters.npc.moveList[0].loop.still);
+  assert.deepEqual(StaticListResolvers.character_move(source, { cId: 'npc', moveIndex: 1, hook: 'still' }), source.characters.npc.moveList[1].loop.still);
+  assert.deepEqual(StaticListResolvers.character_move(source, { cId: 'npc', moveIndex: 0, hook: 'enter' }), []);
+  assert.throws(
+    () => EffectScopeResolvers.character_move({ target: 'npc', moveIndex: -1, in: 'still' }),
+    /non-negative moveIndex/
+  );
+});
+
+test('EffectSystem applies moveList-entry overrides without colliding with Character effects', async () => {
+  const key = 'char_move_npc_1_still';
+  const original = [{ type: 'notify', text: 'original' }];
+  const override = [{ type: 'notify', text: 'managed-override' }];
+  const executed = [];
+  const engine = Object.assign({}, EffectSystem, {
+    api: {
+      engine: {
+        state: {
+          getRuntimeSnapshot(path) {
+            return path === 'effect_overrides' ? { [key]: override } : {};
+          }
+        }
+      }
+    },
+    async processRunnable(wrapper) {
+      executed.push(wrapper);
+    }
+  });
+
+  await engine.processRunnables(original, {
+    sceneId: 'scene_a',
+    charId: 'npc',
+    effectScope: 'character_move',
+    moveIndex: 1,
+    hook: 'still'
+  }, true, true);
+
+  assert.deepEqual(executed, override);
 });
