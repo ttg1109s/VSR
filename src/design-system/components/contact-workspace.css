@@ -267,13 +267,6 @@
   border-radius: 999px;
   background: var(--vsr-color-border);
 }
-.vsr-contact-stat-card__track > span {
-  display: block;
-  height: 100%;
-  border-radius: inherit;
-  background: var(--vsr-color-primary);
-  transition: width var(--vsr-motion-medium, 240ms ease);
-}
 .vsr-contact-stat-card__no-scale {
   color: var(--vsr-color-text-disabled);
   font-size: 11px;
@@ -579,7 +572,6 @@
   .vsr-contact-stat-card { padding: 10px 0; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .vsr-contact-stat-card__track > span { transition: none; }
 }
 
 

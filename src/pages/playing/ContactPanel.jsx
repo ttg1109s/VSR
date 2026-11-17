@@ -10,12 +10,10 @@ import {
   ContactList,
   ContactListItem,
   ContactScrollArea,
-  ContactSection,
   ContactTopicList,
   ContactWorkspace,
   Drawer,
   ProgressBar,
-  Separator,
 } from '../../design-system/index.js';
 
 function StatList({ stats = {} }) {
