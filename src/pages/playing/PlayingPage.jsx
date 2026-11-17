@@ -3,7 +3,7 @@ import { Badge, BottomNavigation, Breadcrumb, MediaFrame } from '../../design-sy
 import ActionCollection from '../../features/actions/ActionCollection.jsx';
 import ContactPanel from './ContactPanel.jsx';
 
-export default function PlayingPage({ snapshot, client, error = '', onNavigate }) {
+export default function PlayingPage({ snapshot, chatViewRequest = null, client, error = '', onNavigate }) {
   const [activeNavigation, setActiveNavigation] = useState('hand');
   const [contactOpen, setContactOpen] = useState(false);
   const scene = snapshot?.presentation?.scene ?? null;
@@ -16,6 +16,12 @@ export default function PlayingPage({ snapshot, client, error = '', onNavigate }
     setContactOpen(true);
     setActiveNavigation('contact');
   }, [activeChat?.active, activeChat?.id, activeChat?.contactId]);
+
+  useEffect(() => {
+    if (!chatViewRequest?.requestId || !chatViewRequest.chatId || !chatViewRequest.contactId) return;
+    setContactOpen(true);
+    setActiveNavigation('contact');
+  }, [chatViewRequest?.requestId, chatViewRequest?.chatId, chatViewRequest?.contactId]);
 
   const scenePath = useMemo(() => {
     const path = snapshot?.presentation?.scenePath;
@@ -86,6 +92,7 @@ export default function PlayingPage({ snapshot, client, error = '', onNavigate }
         player={snapshot?.presentation?.player ?? null}
         contacts={snapshot?.presentation?.contacts ?? []}
         session={snapshot?.session ?? null}
+        viewRequest={chatViewRequest}
         client={client}
         onClose={() => {
           setContactOpen(false);
