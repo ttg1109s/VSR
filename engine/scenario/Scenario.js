@@ -58,7 +58,7 @@ function validateReferences(scenario) {
   const characterExists = (id) => id === 'player' || Object.hasOwn(characters, id);
   const actionExists = (id) => Object.hasOwn(actions, id) || Object.values(scenes).some(scene =>
     Object.values(scene?.routers || {}).some(router =>
-      router.actions.some(item => item === id || (isObject(item) && item.id === id))
+      Array.isArray(router.actions) && router.actions.some(item => item === id || (isObject(item) && item.id === id))
     )
   );
 
@@ -355,6 +355,7 @@ function validateReferences(scenario) {
   for (const [templateId, requirement] of Object.entries(templates.requirements || {})) validateRequirement(requirement, 'templates.requirements.' + templateId);
   for (const [sceneId, scene] of Object.entries(scenes)) {
     for (const [routerId, router] of Object.entries(scene?.routers || {})) {
+      if (!Array.isArray(router.actions)) continue;
       const entries = router.actions.map((item, index) => [index, item]);
       for (const [key, item] of entries) {
         if (isObject(item)) validateAction(item, `scenes.${sceneId}.routers.${routerId}.actions.${key}`);
