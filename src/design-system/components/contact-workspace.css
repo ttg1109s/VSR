@@ -36,7 +36,6 @@
   border-right: 1px solid var(--vsr-color-border-subtle);
   background: var(--vsr-color-surface);
 }
-.vsr-contact-list__header,
 .vsr-contact-header {
   display: flex;
   flex: 0 0 64px;
@@ -46,13 +45,6 @@
   padding: 8px 16px;
   border-bottom: 1px solid var(--vsr-color-border-subtle);
   background: var(--vsr-color-surface);
-}
-.vsr-contact-list__header { justify-content: space-between; }
-.vsr-contact-list__header h1 {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 600;
-  letter-spacing: -.01em;
 }
 .vsr-contact-list__section-heading {
   margin: 0;
@@ -999,7 +991,6 @@
   min-height:40px;
 }
 @media (min-width:600px){
-  .vsr-identity-drawer .vsr-overlay-header{padding:24px 24px 16px}
   .vsr-identity-content{padding:8px 24px 32px;gap:24px}
   .vsr-identity-hero__avatar-wrap .vsr-contact-avatar--lg{width:88px;height:88px}
 }
