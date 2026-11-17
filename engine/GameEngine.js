@@ -337,6 +337,10 @@ export class GameEngine {
    const taskId=`move_char_${charId}`;
    this.scheduleCharacterMove(charId,Number.isFinite(remaining)?remaining:null);
    if(this.restoredPausedTasks.includes(taskId))this.taskManager.pause(taskId);
+   const stillRemaining=Object.entries(timers).find(([name])=>name.startsWith(`move_still_${charId}_`));
+   const stillTaskId=this.characterStillTaskIds?.get(charId);
+   if(stillTaskId&&stillRemaining) this.scheduleCharacterStill(charId,this.getCharacterVisitToken(charId),stillRemaining[1]);
+   if(stillTaskId&&this.restoredPausedTasks.some(name=>name.startsWith(`move_still_${charId}_`)))this.taskManager.pause(this.characterStillTaskIds.get(charId));
   }
   for(const[id,state]of Object.entries(this.api.engine.state.getRuntimeSnapshot('automations') || {})) {
    if(!state?.active)continue;
@@ -392,10 +396,12 @@ export class GameEngine {
  pauseBackgroundTasks(){
   for(const id of Object.keys(this.api.engine.state.getRuntimeSnapshot('automations') || {}))if(this.api.engine.state.get('automation.active', { id }))this.taskManager.pause(`auto_${id}`);
   for(const id of Object.keys(this.api.engine.state.getRuntimeSnapshot('characters') || {}))this.taskManager.pause(`move_char_${id}`);
+  for(const id of Object.keys(this.taskManager.plan || {}))if(id.startsWith('move_still_'))this.taskManager.pause(id);
  }
  resumeBackgroundTasks(){
   for(const id of Object.keys(this.api.engine.state.getRuntimeSnapshot('automations') || {}))if(this.api.engine.state.get('automation.active', { id }))this.taskManager.resume(`auto_${id}`);
   for(const id of Object.keys(this.api.engine.state.getRuntimeSnapshot('characters') || {}))this.taskManager.resume(`move_char_${id}`);
+  for(const id of Object.keys(this.taskManager.plan || {}))if(id.startsWith('move_still_'))this.taskManager.resume(id);
  }
 }
 Object.assign(GameEngine.prototype,ConfigSystem,LogicSystem,EffectSystem,ActionSystem,SceneSystem,EntitySystem,ItemSystem,ChatSystem,AutomationSystem);
