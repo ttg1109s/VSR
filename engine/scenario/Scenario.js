@@ -216,6 +216,14 @@ function validateReferences(scenario) {
         }[check.subtype];
         if (exists && !exists()) add(checkPath + ".target", "references missing " + check.subtype + " target '" + check.target + "'");
       }
+      if (check.type === 'relationship') {
+        if (!characterExists(check.target)) {
+          add(checkPath + ".target", "references missing relationship owner character '" + check.target + "'");
+        }
+        if (!characterExists(check.character)) {
+          add(checkPath + ".character", "references missing related character '" + check.character + "'");
+        }
+      }
     }
   };
 
