@@ -435,15 +435,27 @@ export default function ContactPanel({ open, onClose, player, contacts = [], ses
                   aria-label="Mở căn cước"
                   title="Căn cước"
                 >
-                  <span className="vsr-contact-identity-trigger__icon" aria-hidden="true">badge</span>
+                  <svg className="vsr-contact-header-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <rect x="3.5" y="4.5" width="17" height="15" rx="2.5" />
+                    <circle cx="9" cy="10" r="2" />
+                    <path d="M6.5 16c.6-1.5 1.5-2.2 2.5-2.2s1.9.7 2.5 2.2M14.5 9h3M14.5 13h3" />
+                  </svg>
                 </Button>
               )}
-              <Button size="sm" variant="tertiary" onClick={close} aria-label="Đóng danh bạ">
-                Đóng
+              <Button
+                size="sm"
+                variant="tertiary"
+                className="vsr-contact-close-trigger"
+                onClick={close}
+                aria-label="Đóng danh bạ"
+                title="Đóng"
+              >
+                <svg className="vsr-contact-header-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="m6 6 12 12M18 6 6 18" />
+                </svg>
               </Button>
             </div>
           </header>
-          <h2 className="vsr-contact-list__section-heading">Liên hệ</h2>
           <ContactScrollArea className="vsr-contact-list__items" aria-label="Danh sách liên hệ">
             {allContacts.map(contact => {
               const unreadCount = contact.threads.filter(thread => thread.isUnread).length;
