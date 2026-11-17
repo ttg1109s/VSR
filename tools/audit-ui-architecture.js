@@ -40,9 +40,9 @@ function visit(file){
   if(file.endsWith('.css'))imports.push(...[...content.matchAll(/@import\s+['"]([^'"]+)['"]/g)].map(m=>m[1]));
   for(const specifier of imports){const target=resolveImport(file,specifier);if(target)visit(target);}
 }
-const roots=new Set(['src/main.jsx','engine/engine.worker.js','server/index.js','protocol/index.js','vite.config.js','client/adapters/HttpJsonTransport.js']);
+const roots=new Set(['src/main.jsx','engine/engine.worker.js','server/index.js','protocol/index.js','vite.config.js','playwright.config.js','client/adapters/HttpJsonTransport.js','tests/browser/overlay-fixture.jsx']);
 for(const file of files){
-  if(file.startsWith('tests/')&&file.endsWith('.test.js'))roots.add(file);
+  if(file.startsWith('tests/')&&/\\.(test|spec)\\.js$/.test(file))roots.add(file);
   if(file.startsWith('tools/')&&file.endsWith('.js'))roots.add(file);
 }
 try{

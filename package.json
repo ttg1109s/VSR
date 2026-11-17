@@ -33,7 +33,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "audit:ui": "node tools/audit-ui-architecture.js",
-    "audit:deadcode": "node tools/audit-ui-architecture.js --deadcode"
+    "audit:deadcode": "node tools/audit-ui-architecture.js --deadcode",
+    "test:browser": "playwright test"
   },
   "dependencies": {
     "ajv": "^8.17.1",
@@ -45,6 +46,7 @@
   "devDependencies": {
     "acorn": "^8.15.0",
     "vite": "^6.3.5",
-    "@vitejs/plugin-react": "^4.4.1"
+    "@vitejs/plugin-react": "^4.4.1",
+    "@playwright/test": "^1.56.1"
   }
 }
