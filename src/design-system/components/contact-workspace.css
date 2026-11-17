@@ -775,45 +775,60 @@
   color: var(--vsr-color-text);
 }
 
-/* Identity drawer opened from the Messages header. */
-.vsr-contact-list__header-actions{
-  display:flex;
-  flex:none;
-  align-items:center;
-  gap:4px;
-}
-.vsr-contact-identity-trigger{
-  display:inline-flex;
-  width:40px;
-  min-width:40px;
-  height:40px;
-  align-items:center;
-  justify-content:center;
-  padding:0;
-}
-.vsr-contact-identity-trigger__icon{
-  font:22px/1 var(--vsr-font-icon);
-}
+/* Identity drawer composition: existing VSR tokens and shared primitives. */
 .vsr-identity-drawer.vsr-overlay-panel{
   display:flex;
   flex-direction:column;
-  max-height:min(88dvh,760px);
+  width:min(100%,480px);
+  height:100%;
+  max-height:none;
+  min-height:0;
+}
+.vsr-identity-drawer .vsr-overlay-header{
+  flex:none;
+  align-items:flex-start;
+  padding:20px 16px 16px;
+  border-bottom:1px solid var(--vsr-color-border-subtle);
+}
+.vsr-identity-drawer .vsr-overlay-header h2{
+  font-size:20px;
+  font-weight:600;
+  line-height:28px;
+}
+.vsr-identity-drawer .vsr-overlay-header p{
+  margin-top:4px;
+  font-size:14px;
+  line-height:20px;
+}
+.vsr-identity-drawer .vsr-icon-button{
+  flex:none;
+  width:44px;
+  height:44px;
+  margin:-4px -8px 0 0;
 }
 .vsr-identity-drawer .vsr-overlay-content{
+  display:block;
+  flex:1;
   min-height:0;
+  height:auto;
+  padding:0;
+  overflow-x:hidden;
   overflow-y:auto;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
 }
 .vsr-identity-content{
   display:flex;
   flex-direction:column;
-  gap:12px;
-  padding:4px 16px 20px;
+  gap:16px;
+  padding:16px 16px calc(24px + var(--vsr-safe-area-bottom));
 }
 .vsr-identity-hero{
   display:flex;
   align-items:center;
   gap:16px;
-  padding:12px 0 18px;
+  min-width:0;
+  padding:4px 0 16px;
   border-bottom:1px solid var(--vsr-color-border-subtle);
 }
 .vsr-identity-hero__avatar-wrap{
@@ -822,8 +837,8 @@
   flex:none;
 }
 .vsr-identity-hero__avatar-wrap .vsr-contact-avatar--lg{
-  width:88px;
-  height:88px;
+  width:80px;
+  height:80px;
   font-size:22px;
 }
 .vsr-identity-hero__copy{
@@ -833,56 +848,139 @@
   gap:6px;
   min-width:0;
 }
-.vsr-identity-hero__eyebrow{
-  color:var(--vsr-color-text-secondary);
-  font-size:11px;
-  font-weight:700;
-  letter-spacing:.08em;
-}
-.vsr-identity-hero__copy h3,
-.vsr-identity-mode h3,
-.vsr-identity-content .vsr-contact-profile__section h3{
+.vsr-identity-hero__copy h3{
   margin:0;
+  overflow-wrap:anywhere;
   color:var(--vsr-color-text);
-  font-size:16px;
+  font-size:22px;
   font-weight:650;
+  line-height:28px;
+}
+.vsr-identity-hero__identity-label{
+  color:var(--vsr-color-text-secondary);
+  font-size:14px;
+  line-height:20px;
 }
 .vsr-identity-mode{
   display:flex;
-  flex-direction:column;
-  gap:8px;
-  padding:14px;
+  align-items:flex-start;
+  gap:12px;
+  padding:16px;
   border:1px solid var(--vsr-color-border-subtle);
-  border-radius:var(--vsr-radius-md);
-  background:var(--vsr-color-surface-subtle);
+  border-radius:var(--vsr-radius-lg);
+  background:var(--vsr-color-primary-container);
 }
-.vsr-identity-mode p{
+.vsr-identity-mode__icon{
+  display:flex;
+  flex:none;
+  align-items:center;
+  justify-content:center;
+  width:36px;
+  height:36px;
+  border-radius:var(--vsr-radius-md);
+  background:var(--vsr-color-surface);
+  color:var(--vsr-color-primary);
+  font:24px/1 var(--vsr-font-icon);
+}
+.vsr-identity-mode__copy{
+  display:flex;
+  flex:1;
+  flex-direction:column;
+  gap:6px;
+  min-width:0;
+}
+.vsr-identity-mode__copy h3{
   margin:0;
-  color:var(--vsr-color-text-secondary);
-  font-size:13px;
-  line-height:1.55;
+  color:var(--vsr-color-text);
+  font-size:18px;
+  font-weight:650;
+  line-height:24px;
+}
+.vsr-identity-mode__copy p{
+  margin:0;
+  color:var(--vsr-color-text);
+  font-size:14px;
+  line-height:21px;
 }
 .vsr-identity-target{
   display:flex;
   align-items:center;
   gap:10px;
-  padding-top:10px;
-  border-top:1px solid var(--vsr-color-border-subtle);
+  min-height:64px;
+  padding:10px 12px;
+  border:1px solid var(--vsr-color-border);
+  border-radius:var(--vsr-radius-lg);
+  background:var(--vsr-color-surface);
 }
-.vsr-identity-target>div{
+.vsr-identity-target>strong{
+  flex:1;
+  min-width:0;
+  color:var(--vsr-color-text);
+  font-size:14px;
+  font-weight:600;
+}
+.vsr-identity-target .vsr-contact-avatar{
+  width:44px;
+  height:44px;
+  flex-basis:44px;
+}
+.vsr-identity-target__name{
+  color:var(--vsr-color-text);
+  font-size:15px;
+  font-weight:600;
+}
+.vsr-identity-target__chevron{
+  color:var(--vsr-color-text-secondary);
+  font:22px/1 var(--vsr-font-icon);
+}
+.vsr-identity-section{
   display:flex;
   flex-direction:column;
-  gap:3px;
+  gap:10px;
   min-width:0;
+  padding:14px;
+  border:1px solid var(--vsr-color-border-subtle);
+  border-radius:var(--vsr-radius-lg);
+  background:var(--vsr-color-surface);
 }
-.vsr-identity-target strong{
+.vsr-identity-section>h3{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin:0;
   color:var(--vsr-color-text);
-  font-size:13px;
+  font-size:17px;
+  font-weight:650;
+  line-height:24px;
 }
-.vsr-identity-target span{
+.vsr-identity-section>h3>span{
   color:var(--vsr-color-text-secondary);
-  font-size:12px;
+  font:21px/1 var(--vsr-font-icon);
 }
-.vsr-identity-content .vsr-contact-profile__section{
-  padding:12px 0;
+.vsr-identity-section .vsr-contact-profile__description{
+  font-size:14px;
+  line-height:21px;
+}
+.vsr-identity-section .vsr-contact-stat-grid{gap:10px}
+.vsr-identity-section .vsr-contact-stat-card{padding:4px 0}
+.vsr-identity-section .vsr-contact-relationships{gap:0}
+.vsr-identity-section .vsr-contact-relationship{
+  min-height:64px;
+  padding:8px 0;
+  border-top:1px solid var(--vsr-color-border-subtle);
+}
+.vsr-identity-section .vsr-contact-relationship:first-child{border-top:0}
+.vsr-identity-section .vsr-contact-relationship .vsr-button{
+  min-height:40px;
+}
+.vsr-identity-empty{
+  margin:0;
+  color:var(--vsr-color-text-secondary);
+  font-size:13px;
+  line-height:20px;
+}
+@media (min-width:600px){
+  .vsr-identity-drawer .vsr-overlay-header{padding:24px 24px 16px}
+  .vsr-identity-content{padding:20px 24px 28px;gap:20px}
+  .vsr-identity-hero__avatar-wrap .vsr-contact-avatar--lg{width:88px;height:88px}
 }
