@@ -1228,3 +1228,49 @@ test('relationship requirements read set.relationship when the root collection i
     check: [{ type: 'relationship', target: 'hero', character: 'companion', op: 'has', value: 'ally' }]
   }).pass, true);
 });
+
+
+test('Mask relationship requirements use the borrowed identity without overwriting Player relationships', () => {
+  const characters = {
+    player: { relationship: [['friend', 'ally']] },
+    masked: { relationship: [['enemy', 'rival']] },
+    ally: {},
+    rival: {}
+  };
+  const faker = { active: true, mode: 'mask', targetId: 'masked' };
+  const state = {
+    getRuntime(path) {
+      return path === 'entryCharacter' ? 'player' : undefined;
+    },
+    getRuntimeSnapshot(path) {
+      return path === 'faker' ? faker : undefined;
+    },
+    getRuntimeCharacter(path, { id }) {
+      return path === 'characters.[id]' ? characters[id] : undefined;
+    },
+    getRuntime(path, params) {
+      if (path === 'entryCharacter') return 'player';
+      if (path === 'characters.[id]') return characters[params?.id];
+      return undefined;
+    }
+  };
+  const engine = Object.assign({}, LogicSystem, {
+    src: {},
+    redirectTarget: id => id === 'masked' ? 'player' : id,
+    api: { engine: { state } }
+  });
+
+  assert.equal(engine.checkReq({
+    logic: null,
+    check: [{ type: 'relationship', target: 'player', character: 'rival', op: 'has', value: 'enemy' }]
+  }).pass, true);
+  assert.equal(engine.checkReq({
+    logic: null,
+    check: [{ type: 'relationship', target: 'masked', character: 'rival', op: 'has', value: 'enemy' }]
+  }).pass, true);
+  assert.equal(engine.checkReq({
+    logic: null,
+    check: [{ type: 'relationship', target: 'player', character: 'ally', op: 'has', value: 'friend' }]
+  }).pass, false);
+  assert.deepEqual(characters.player.relationship, [['friend', 'ally']]);
+});
