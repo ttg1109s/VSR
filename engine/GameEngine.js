@@ -339,9 +339,12 @@ export class GameEngine {
    this.scheduleCharacterMove(charId,Number.isFinite(remaining)?remaining:null);
    if(this.restoredPausedTasks.includes(taskId))this.taskManager.pause(taskId);
    const stillRemaining=Object.entries(timers).find(([name])=>name.startsWith(`move_still_${charId}_`));
-   const stillTaskId=this.characterStillTaskIds?.get(charId);
-   if(stillTaskId&&stillRemaining) this.scheduleCharacterStill(charId,this.getCharacterVisitToken(charId),stillRemaining[1]);
-   if(stillTaskId&&this.restoredPausedTasks.some(name=>name.startsWith(`move_still_${charId}_`)))this.taskManager.pause(this.characterStillTaskIds.get(charId));
+   if(stillRemaining) {
+    const visitToken=this.getCharacterVisitToken(charId);
+    this.scheduleCharacterStill(charId,visitToken,stillRemaining[1]);
+    const restoredStillTaskId=this.characterStillTaskIds?.get(charId);
+    if(restoredStillTaskId&&this.restoredPausedTasks.includes(stillRemaining[0]))this.taskManager.pause(restoredStillTaskId);
+   }
   }
   for(const[id,state]of Object.entries(this.api.engine.state.getRuntimeSnapshot('automations') || {})) {
    if(!state?.active)continue;
