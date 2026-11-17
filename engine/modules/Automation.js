@@ -16,7 +16,10 @@ export const AutomationSystem = {
         if (access.get('automation.banClick', { id: autoId })) {
             this.api.presentation.navigation.setBlocking(true);
         }
-        this.processAutomationStep(autoId);
+        this.processAutomationStep(autoId).catch(error => {
+            console.error(`Automation '${autoId}' stopped after an execution error:`, error);
+            this.stopAutomation(autoId);
+        });
     },
 
     stopAutomation(autoId) {
@@ -50,7 +53,10 @@ export const AutomationSystem = {
                 time: 1000,
                 mode: 'timeout',
                 count: 1,
-                exe: () => this.processAutomationStep(autoId)
+                exe: () => this.processAutomationStep(autoId).catch(error => {
+                    console.error(`Automation '${autoId}' stopped after an execution error:`, error);
+                    this.stopAutomation(autoId);
+                })
             });
             this.taskManager.operator(taskId, 'enabled');
             return;
@@ -110,16 +116,20 @@ export const AutomationSystem = {
         }
 
         const minTime = this.getConfig ? this.getConfig('minAutomationNextStep') : 2;
-        const rawSeconds = step?.seconds ? resolveValue(step.seconds) : minTime;
+        const rawSeconds = step?.seconds !== undefined ? resolveValue(step.seconds, this) : minTime;
         const configDelay = Number(rawSeconds);
-        const finalSeconds = Math.max(minTime, Number.isFinite(configDelay) ? configDelay : minTime);
+        const safeMinTime = Number.isFinite(Number(minTime)) && Number(minTime) >= 0 ? Number(minTime) : 2;
+        const finalSeconds = Math.max(safeMinTime, Number.isFinite(configDelay) ? configDelay : safeMinTime);
         const taskId = `auto_${autoId}`;
 
         this.taskManager.addNew(taskId, {
             time: finalSeconds * 1000,
             mode: 'timeout',
             count: 1,
-            exe: () => this.processAutomationStep(autoId)
+            exe: () => this.processAutomationStep(autoId).catch(error => {
+                    console.error(`Automation '${autoId}' stopped after an execution error:`, error);
+                    this.stopAutomation(autoId);
+                })
         });
         this.taskManager.operator(taskId, 'enabled');
     }

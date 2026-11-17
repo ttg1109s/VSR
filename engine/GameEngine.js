@@ -356,6 +356,7 @@ export class GameEngine {
    else this.processAutomationStep(id);
    if(this.restoredPausedTasks.includes(taskId))this.taskManager.pause(taskId);
   }
+  this.rehydrateRouterTasks?.(timers, this.restoredPausedTasks);
   this.restoredTaskTimers={};
   this.restoredPausedTasks=[];
  }
@@ -402,12 +403,12 @@ export class GameEngine {
  pauseBackgroundTasks(){
   for(const id of Object.keys(this.api.engine.state.getRuntimeSnapshot('automations') || {}))if(this.api.engine.state.get('automation.active', { id }))this.taskManager.pause(`auto_${id}`);
   for(const id of Object.keys(this.api.engine.state.getRuntimeSnapshot('characters') || {}))this.taskManager.pause(`move_char_${id}`);
-  for(const id of Object.keys(this.taskManager.plan || {}))if(id.startsWith('move_still_'))this.taskManager.pause(id);
+  for(const id of Object.keys(this.taskManager.plan || {}))if(['move_still_','router_still_','timer_ui_','timer_end_'].some(prefix=>id.startsWith(prefix)))this.taskManager.pause(id);
  }
  resumeBackgroundTasks(){
   for(const id of Object.keys(this.api.engine.state.getRuntimeSnapshot('automations') || {}))if(this.api.engine.state.get('automation.active', { id }))this.taskManager.resume(`auto_${id}`);
   for(const id of Object.keys(this.api.engine.state.getRuntimeSnapshot('characters') || {}))this.taskManager.resume(`move_char_${id}`);
-  for(const id of Object.keys(this.taskManager.plan || {}))if(id.startsWith('move_still_'))this.taskManager.resume(id);
+  for(const id of Object.keys(this.taskManager.plan || {}))if(['move_still_','router_still_','timer_ui_','timer_end_'].some(prefix=>id.startsWith(prefix)))this.taskManager.resume(id);
  }
 }
 Object.assign(GameEngine.prototype,ConfigSystem,LogicSystem,EffectSystem,ActionSystem,SceneSystem,EntitySystem,ItemSystem,ChatSystem,AutomationSystem);

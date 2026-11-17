@@ -194,7 +194,8 @@ export const LoaderSystem = {
                 // giờ được các module khác đọc tới (chúng luôn dùng
                 // `${sceneId}_${routerId}_${actionIdThat}`).
                 const defActionSet = {
-                    countClicks: 0, countFails: 0, display: "show", cooldown: 0,
+                    count: { normal: 0, pass: 0, fail: 0 },
+                    display: "show", cooldown: 0,
                     requirement: false, password: null, readDesc: false
                 };
                 const routerActions = s.routers[rId].actions;

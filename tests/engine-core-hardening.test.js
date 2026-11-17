@@ -959,12 +959,12 @@ test('cooldown is enforced before action counters and normal effects are mutated
     await engine.init(scenario);
     const key = 'start_main_cooldown_action';
     engine.api.engine.state.update('actions.[id]', current => ({
-      ...(current || {}), countClicks: 4, cooldownEnd: Date.now() + 60000
+      ...(current || {}), count: { normal: 4, pass: 0, fail: 0 }, cooldownEnd: Date.now() + 60000
     }), { id: key });
     const result = await engine.handleAction('cooldown_action', key);
     const runtime = engine.api.engine.state.getRuntimeSnapshot('actions.[id]', { id: key });
     assert.equal(result.reason, 'cooldown');
-    assert.equal(runtime.countClicks, 4);
+    assert.equal(runtime.count.normal, 4);
     assert.equal(engine.notifications.getPending().some(item => item.message === 'must-not-run'), false);
   } finally {
     engine.dispose();

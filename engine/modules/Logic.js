@@ -226,23 +226,12 @@ export const LogicSystem = {
 
         // [FIXED] Use this.api.engine.state.get for blocked status
         if (type === 'scene' || type === 'to_scene') {
-            return this.api.engine.state.get('scene.blocked', { id: target });
-        } else {
-            // For router, we need sceneId to construct the context for API
-            // Try to find the scene containing this router
-            const sId = this.api.engine.state.get('sceneId');
-            // Note: Schema for router blocked is 'router.blocked' -> 'scenes.[sceneId].routers.[routerId].set.blocked'
-
-            // Priority 1: Check in current scene
-            let isBlocked = this.api.engine.state.get('router.blocked', { sceneId: sId, routerId: target });
-
-            // Priority 2: If undefined (maybe router is in another scene referenced globally), use legacy search logic
-            if (isBlocked === undefined && this.src.path?.routers[target]) {
-                const parentSceneId = this.src.path.routers[target];
-                isBlocked = this.api.engine.state.get('router.blocked', { sceneId: parentSceneId, routerId: target });
-            }
-
-            return !!isBlocked;
+            return !!this.api.engine.state.get('scene.blocked', { id: target });
         }
+        if (type !== 'router') return false;
+        const currentSceneId = this.api.engine.state.get('sceneId');
+        const ownerSceneId = this.src?.path?.routers?.[target] || currentSceneId;
+        if (!ownerSceneId || !this.src?.scenes?.[ownerSceneId]?.routers?.[target]) return false;
+        return !!this.api.engine.state.get('router.blocked', { sceneId: ownerSceneId, routerId: target });
     }
 };

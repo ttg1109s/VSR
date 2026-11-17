@@ -148,7 +148,8 @@ export class StateAccess {
   update(path, updater, context = {}, options = {}) {
     if (typeof updater !== 'function') throw new TypeError('State updater must be a function.');
     const current = this.get(path, context, options);
-    return this.set(path, updater(current), context, options);
+    const draft = current === undefined ? undefined : clone(current);
+    return this.set(path, updater(draft), context, options);
   }
 
   delete(path, context = {}, options = {}) {

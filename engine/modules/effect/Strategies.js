@@ -225,7 +225,8 @@ export const EffectHandlers = {
         if (typeof handler !== 'function') {
             throw new TypeError(`Unsupported goto subtype: ${String(eff.subtype)}`);
         }
-        if (!this.checkHardLock || !this.checkHardLock(eff.subtype, resolvedEff.target)) {
+        const isNavigationTarget = eff.subtype === 'scene' || eff.subtype === 'router';
+        if (!isNavigationTarget || !this.checkHardLock?.(eff.subtype, resolvedEff.target)) {
             await handler(this, resolvedEff);
         }
     }

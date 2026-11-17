@@ -24,8 +24,9 @@ export const ChatSystem = {
         const isCharacter = id => id === 'player' || Object.hasOwn(characters, id);
         if (sender && sender !== identityId && isCharacter(sender)) return sender;
         if (sender === identityId) {
-            const recipient = (Array.isArray(chat?.meta?.to) ? chat.meta.to : [])
-                .find(id => id !== identityId && isCharacter(id));
+            const recipients = Array.isArray(chat?.meta?.to) ? chat.meta.to : [];
+            if (recipients.includes(COMMUNICATION_SENDER_ID)) return COMMUNICATION_SENDER_ID;
+            const recipient = recipients.find(id => id !== identityId && isCharacter(id));
             if (recipient) return recipient;
         }
         return UNKNOWN_SENDER_ID;
@@ -382,14 +383,24 @@ export const ChatSystem = {
         // --- 3. Run Effect ---
         if (choice.effect) {
             const choiceId = choice.id !== undefined && choice.id !== null ? choice.id : String(idx);
-            this.processRunnables(choice.effect, {
-                sceneId: this.api.engine.state.get('sceneId'),
-                chatId,
-                blockId,
-                choiceId
-            }).catch(e => {
-                console.warn("Effect Error:", e);
-            });
+            try {
+                await this.processRunnables(choice.effect, {
+                    sceneId: this.api.engine.state.get('sceneId'),
+                    chatId,
+                    blockId,
+                    choiceId
+                });
+            } catch (error) {
+                const session = this.api.engine.state.getSession('chatState');
+                if (session?.active && session.id === chatId && session.blockId === blockId) {
+                    this.api.engine.state.update('session.chat', current => ({
+                        ...(current || {}), transitionPending: false, waitingChoice: true
+                    }));
+                }
+                throw error;
+            }
+            const currentSession = this.api.engine.state.getSession('chatState');
+            if (!currentSession?.active || currentSession.id !== chatId || currentSession.blockId !== blockId) return;
         }
 
         // --- 4. Logic JUMP + Kiểm tra CHOICED của Đích ---

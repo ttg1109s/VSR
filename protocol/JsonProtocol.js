@@ -94,8 +94,6 @@ export class JsonProtocol{
     if(engine.isTransitioning||engine.isActionProcessing)reason='busy';
     else if(engine.pendingPasswordAction)reason='challenge_active';
     else if(display==='locked')reason='locked';
-    else if(set.type==='to_scene'&&set.target&&engine.checkHardLock?.('scene',set.target))reason='target_locked';
-    else if(set.type==='swap_router'&&set.target&&engine.checkHardLock?.('router',set.target))reason='target_locked';
     else if(!permissionAllowed)reason='permission_denied';
     else if(readRequired&&!read)reason='not_read';
     else if(set.cooldown>0&&cooldownUntil!==null&&cooldownUntil>Date.now())reason='cooldown';
@@ -108,6 +106,11 @@ export class JsonProtocol{
     return{id:action.id,key,title,name:action.name,meta:{...meta,title,description:meta.desc??meta.description??''},
      presentation:{display:display==='locked'?'locked':'show',readRequired,read},
      availability:{canTrigger:reason==='available'||reason==='password_required',reason,cooldownUntil,cooldownStartedAt,cooldownDuration,checks},
+     count:{
+      normal:Number.isSafeInteger(runtime.count?.normal)&&runtime.count.normal>=0?runtime.count.normal:0,
+      pass:Number.isSafeInteger(runtime.count?.pass)&&runtime.count.pass>=0?runtime.count.pass:0,
+      fail:Number.isSafeInteger(runtime.count?.fail)&&runtime.count.fail>=0?runtime.count.fail:0
+     },
      runtimeState:{display,readDesc:read}};
    }).filter(action=>action.runtimeState.display!=='hide')
    :[];
