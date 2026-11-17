@@ -22,8 +22,8 @@ walk(path.join(root, 'src'));
 const foundationText = fs.readFileSync(path.join(root, foundation), 'utf8');
 
 for (const side of required) {
-  const token = new RegExp('--vsr-safe-area-' + side + '\\s*:\\s*env\\(safe-area-inset-' + side + '\\s*,\\s*0px\\s*\\)');
-  if (!token.test(foundationText)) errors.push('Foundation is missing canonical token for ' + side);
+  const declaration = '--vsr-safe-area-' + side + ': env(safe-area-inset-' + side + ', 0px);';
+  if (!foundationText.includes(declaration)) errors.push('Foundation is missing canonical token for ' + side);
 }
 
 for (const file of cssFiles) {
