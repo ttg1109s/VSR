@@ -246,6 +246,27 @@ export class JsonProtocol{
     description:fakerTarget.set?.desc??fakerTarget.meta?.desc??null
    }:null
   }:null;
+  const getRelationshipWithEntryCharacter=(character)=>{
+   const relationship=(Array.isArray(character?.relationship)?character.relationship:[])
+    .find(item=>{
+     const relatedCharacterId=Array.isArray(item)?item[1]??null:item?.characterId??null;
+     return relatedCharacterId===currentIdentityId;
+    });
+   if(!relationship)return{hasRelationship:false,tag:null};
+   return{
+    hasRelationship:true,
+    tag:Array.isArray(relationship)?relationship[0]??null:relationship?.tag??null
+   };
+  };
+  const getMetCount=(character)=>{
+   return (Array.isArray(character?.met)?character.met:[])
+    .reduce((count,entry)=>{
+     const [characterId,countValue]=String(entry).split(':');
+     if(characterId!==currentIdentityId)return count;
+     const parsed=Number(countValue);
+     return Number.isSafeInteger(parsed)&&parsed>=0?count+parsed:count;
+    },0);
+  };
   const contacts=Object.entries(engine.state.characters||{})
    .filter(([characterId,character])=>{
     if(characterId===currentIdentityId)return false;
@@ -254,21 +275,23 @@ export class JsonProtocol{
     const isPresent=!!sceneId&&character?.place?.scene_id===sceneId;
     return hasMet||isPresent;
    })
-   .map(([characterId,character])=>({
-    ...projectCharacter(characterId,character),
-    threads:typeof engine.getThreads==='function'
-     ?engine.getThreads(characterId).map(thread=>({
-      id:thread.id,title:typeof thread.title==='string'?thread.title:thread.id,
-      preview:typeof thread.preview==='string'?thread.preview:'',
-      time:Number.isFinite(thread.time)?thread.time:0,
-      isUnread:thread.isUnread===true,isFinished:thread.isFinished===true
-     }))
-     :[],
-    presence:sceneId&&character?.place?.scene_id===sceneId?'present':'away',
-    metCount:(Array.isArray(character?.met)?character.met:[])
-     .filter(entry=>String(entry).split(':')[0]===currentIdentityId)
-     .reduce((count,entry)=>count+(parseInt(String(entry).split(':')[1],10)||1),0)
-   }))
+   .map(([characterId,character])=>{
+    const {relationship: _relationships,...contactProjection}=projectCharacter(characterId,character);
+    return{
+     ...contactProjection,
+     relationshipWithPlayer:getRelationshipWithEntryCharacter(character),
+     threads:typeof engine.getThreads==='function'
+      ?engine.getThreads(characterId).map(thread=>({
+       id:thread.id,title:typeof thread.title==='string'?thread.title:thread.id,
+       preview:typeof thread.preview==='string'?thread.preview:'',
+       time:Number.isFinite(thread.time)?thread.time:0,
+       isUnread:thread.isUnread===true,isFinished:thread.isFinished===true
+      }))
+      :[],
+     presence:sceneId&&character?.place?.scene_id===sceneId?'present':'away',
+     metCount:getMetCount(character)
+    };
+   })
    .sort((a,b)=>a.name.localeCompare(b.name,undefined,{sensitivity:'base'}));
   const snapshot={
    protocol:'vsr',protocolVersion:this.protocolVersion,type:'snapshot',engineId:this.engineId,
