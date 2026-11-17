@@ -265,6 +265,9 @@ function IdentityDrawer({ open, onClose, player, contacts, onSelectContact }) {
         {hasStats && (
           <section className="vsr-identity-section">
             <h3><span aria-hidden="true">bar_chart</span>Chỉ số</h3>
+            {context.statsOwner?.name && (
+              <p className="vsr-identity-section__source">Dữ liệu của {context.statsOwner.name}</p>
+            )}
             <StatList stats={stats} />
           </section>
         )}
@@ -272,6 +275,9 @@ function IdentityDrawer({ open, onClose, player, contacts, onSelectContact }) {
         {hasRelationships && (
           <section className="vsr-identity-section">
             <h3><span aria-hidden="true">groups</span>Quan hệ</h3>
+            {context.relationshipOwner?.name && (
+              <p className="vsr-identity-section__source">Quan hệ của {context.relationshipOwner.name}</p>
+            )}
             <RelationshipList
               relationships={relationships}
               contacts={contacts}
