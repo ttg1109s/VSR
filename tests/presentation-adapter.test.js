@@ -313,8 +313,20 @@ test('chat action can finish and reopen as a read-only review without duplicatin
     assert.equal(host.engine.state.chats.chat_mai.set.read, true);
 
     // The same reusable action reopens the completed thread as review, not a new run.
+    const viewEvents = [];
+    const unsubscribe = client.subscribe(message => {
+      if (message.type === 'event' && message.event?.event === 'presentation.chat.viewRequested') {
+        viewEvents.push(message.event.payload?.args);
+      }
+    });
     await client.triggerAction(action.id, action.key);
     const reopened = client.getSnapshot();
+    const reviewRequest = viewEvents.at(-1);
+    assert.equal(reviewRequest?.contactId, 'mai');
+    assert.equal(reviewRequest?.chatId, 'chat_mai');
+    assert.equal(reviewRequest?.mode, 'review');
+    assert.ok(reviewRequest?.requestId);
+    unsubscribe();
     assert.equal(reopened.session.chat.active, true);
     assert.equal(reopened.session.chat.mode, 'review');
     assert.equal(reopened.session.chat.isReview, true);
