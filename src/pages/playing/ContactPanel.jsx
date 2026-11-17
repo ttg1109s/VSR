@@ -128,7 +128,7 @@ function ContactProfile({ character, contacts, onSelect }) {
   );
 }
 
-export default function ContactPanel({ open, onClose, player, contacts = [], session = null, client }) {
+export default function ContactPanel({ open, onClose, player, contacts = [], session = null, viewRequest = null, client }) {
   const [selectedId, setSelectedId] = useState(null);
   const [mobileView, setMobileView] = useState('list');
   const [activeArea, setActiveArea] = useState('threads');
@@ -175,6 +175,18 @@ export default function ContactPanel({ open, onClose, player, contacts = [], ses
     setProfileOpen(false);
     setChatError('');
   }, [open, session?.chat?.active, session?.chat?.id, session?.chat?.contactId, allContacts]);
+
+  useEffect(() => {
+    if (!open || !viewRequest?.requestId || !viewRequest.contactId || !viewRequest.chatId) return;
+    const contact = allContacts.find(item => item.id === viewRequest.contactId);
+    if (!contact?.threads.some(thread => thread.id === viewRequest.chatId)) return;
+    setSelectedId(viewRequest.contactId);
+    setSelectedThreadId(viewRequest.chatId);
+    setMobileView('detail');
+    setActiveArea('conversation');
+    setProfileOpen(false);
+    setChatError('');
+  }, [open, viewRequest?.requestId, viewRequest?.contactId, viewRequest?.chatId, allContacts]);
 
   useEffect(() => {
     if (!open) {
