@@ -271,9 +271,24 @@ test('Contact exposes Engine-owned thread summaries and opens only a thread belo
     };
     host.engine.state.chats.chat_mai = runtimeChat;
     host.engine.state.chatHistory.chat_mai = [{ nameID: 'mai', text: 'Tín hiệu ở tháp đã thay đổi.' }];
+
+    const threadOnlyCharacter = JSON.parse(JSON.stringify(host.engine.state.characters.mai));
+    threadOnlyCharacter.met = [];
+    host.engine.state.characters.threadOnly = threadOnlyCharacter;
+    const threadOnlyDefinition = JSON.parse(JSON.stringify(host.engine.src.chat.chat_mai));
+    threadOnlyDefinition.meta = { ...(threadOnlyDefinition.meta || {}), sender: 'threadOnly', to: ['player'] };
+    host.engine.src.chat.chat_thread_only = threadOnlyDefinition;
+    const threadOnlyRuntime = JSON.parse(JSON.stringify(threadOnlyDefinition));
+    threadOnlyRuntime.set = { ...(threadOnlyRuntime.set || {}), activationTime: Date.now() - 1000, lastInteraction: Date.now() - 500, read: true, bookmark: ['start'] };
+    host.engine.state.chats.chat_thread_only = threadOnlyRuntime;
+    host.engine.state.chatHistory.chat_thread_only = [];
+
     host.engine.commitState('contact.thread.available');
 
-    const mai = client.getSnapshot().presentation.contacts.find(contact => contact.id === 'mai');
+    const contacts = client.getSnapshot().presentation.contacts;
+    assert.ok(contacts.some(contact => contact.id === 'threadOnly'), 'a character with an activated thread is listed even without met history');
+    assert.ok(contacts.find(contact => contact.id === 'threadOnly').threads.some(thread => thread.id === 'chat_thread_only'));
+    const mai = contacts.find(contact => contact.id === 'mai');
     assert.ok(mai);
     assert.ok(mai.threads.some(thread => thread.id === 'chat_mai'));
     assert.equal(typeof mai.threads.find(thread => thread.id === 'chat_mai').preview, 'string');
