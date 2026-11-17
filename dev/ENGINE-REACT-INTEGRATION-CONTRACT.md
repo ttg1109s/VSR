@@ -124,7 +124,7 @@ Quy tắc:
 - `payload` phải là object JSON.
 - Command phải nằm trong allow-list handler đã đăng ký ở Engine.
 - Không tự tạo tên command mới trong React nếu Engine chưa đăng ký handler tương ứng.
-- Không tự retry command có side effect với một `commandId` mới khi chưa xác định kết quả lần gửi trước. Nếu retry cùng một thao tác logic, cần hiểu rõ semantics idempotency và giới hạn lưu kết quả hiện tại.
+- Không tự retry command có side effect với một `commandId` mới khi chưa xác định kết quả lần gửi trước. `JsonClient.dispatch` cho phép truyền lại `commandId` để giữ identity của retry. Idempotency cache là in-memory, có giới hạn số entry và không tồn tại xuyên process restart.
 
 ### 3.2. Acknowledgement
 
@@ -257,7 +257,8 @@ Khi nhận snapshot, JsonClient cập nhật `JsonStateStore` và phát message 
 
 Lưu ý implementation hiện tại:
 
-- `dispatch` tự tạo `commandId` và thêm `expectedStateRevision` nếu đã có snapshot.
+- `dispatch` tự tạo `commandId` nếu caller không truyền `commandId` ổn định; thêm `expectedStateRevision` nếu đã có snapshot.
+- Khi transport timeout hoặc mất acknowledgement, chỉ retry cùng một thao tác logic bằng chính `commandId` cũ; không tạo ID mới cho retry. Idempotency cache là in-memory và có giới hạn, không bảo đảm xuyên process restart.
 - Wrapper chat gồm `openChatThread(contactId, chatId)`, `nextChat()` và `selectChatChoice(index)`; thread phải được Engine xác nhận thuộc contact trước khi mở.
 - `dispatch` parse acknowledgement; nếu `ack.ok === false`, nó throw Error có gắn `code` và `acknowledgement`.
 - `initialize(scenario, { enterScene = true } = {})` gửi `engine.init`; mặc định giữ hành vi tương thích là vào entry scene. Luồng Loading có thể truyền `enterScene: false` để chỉ nạp scenario và giữ `game.sceneId === null`. Sau đó yêu cầu snapshot có `game.initialized`; nếu chưa có, nó throw.
