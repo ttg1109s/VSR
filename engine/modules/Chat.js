@@ -183,6 +183,7 @@ export const ChatSystem = {
         }
         if (chatHistory.length > 0 && bookmark.length === 0) {
             throw new Error(`Chat '${id}' has persisted history without a bookmark.`);
+        }
 
         // Commit the complete progress projection before rendering or dispatching the next block.
         state.set('chat.data', chatRuntime, { id });
