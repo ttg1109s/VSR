@@ -1250,7 +1250,8 @@
             "character",
             "action",
             "chat",
-            "item"
+            "item",
+            "character_move"
           ]
         },
         "in": {
@@ -2563,7 +2564,8 @@
             "character",
             "action",
             "chat",
-            "item"
+            "item",
+            "character_move"
           ]
         },
         "in": {
@@ -4757,7 +4759,8 @@
             "character",
             "action",
             "chat",
-            "item"
+            "item",
+            "character_move"
           ]
         },
         "in": {
@@ -4795,6 +4798,11 @@
         },
         "content": {
           "$ref": "#/definitions/runnable_wrapper"
+        },
+        "moveIndex": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Zero-based moveList entry index; required when space is character_move."
         }
       },
       "allOf": [
@@ -4941,6 +4949,32 @@
             "properties": {
               "in": {
                 "pattern": "^.*:.*$"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "space": {
+                "const": "character_move"
+              }
+            },
+            "required": [
+              "space"
+            ]
+          },
+          "then": {
+            "required": [
+              "moveIndex"
+            ],
+            "properties": {
+              "in": {
+                "enum": [
+                  "enter",
+                  "leave",
+                  "still"
+                ]
               }
             }
           }
