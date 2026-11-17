@@ -482,6 +482,17 @@
   color: var(--vsr-color-text-secondary);
   text-align: center;
 }
+.vsr-contact-topic-list__empty-icon {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  margin-bottom: 4px;
+  border-radius: 50%;
+  background: var(--vsr-color-primary-container);
+  color: var(--vsr-color-primary-on-container);
+  font: 28px/1 var(--vsr-font-icon);
+}
 .vsr-contact-topic-list__empty strong,
 .vsr-contact-conversation__empty strong { color: var(--vsr-color-text); font-size: 14px; }
 .vsr-contact-topic-list__empty p,
