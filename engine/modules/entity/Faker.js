@@ -16,7 +16,7 @@ export const FakerSystem = {
     async enterFaker(targetString) {
         const state = this.api.engine.state;
         if (typeof targetString !== 'string') {
-            this.api.presentation.notification.add("Lỗi Faker", "Sai định dạng target (mode:id)", "error");
+            this.api.presentation.notification.add("Lỗi Faker", "Sai định dạng target (mode:id)", "danger");
             return;
         }
 
@@ -24,11 +24,11 @@ export const FakerSystem = {
         const mode = separator >= 0 ? targetString.slice(0, separator) : '';
         const targetId = separator >= 0 ? targetString.slice(separator + 1) : '';
         if (!mode || !targetId || targetId.includes(':')) {
-            this.api.presentation.notification.add("Lỗi Faker", "Sai định dạng target (mode:id)", "error");
+            this.api.presentation.notification.add("Lỗi Faker", "Sai định dạng target (mode:id)", "danger");
             return;
         }
         if (!['soul', 'mask', 'swap'].includes(mode)) {
-            this.api.presentation.notification.add("Lỗi Faker", `Mode không hợp lệ: ${mode}`, "error");
+            this.api.presentation.notification.add("Lỗi Faker", `Mode không hợp lệ: ${mode}`, "danger");
             return;
         }
 
@@ -36,7 +36,7 @@ export const FakerSystem = {
         // tear down a valid active Faker session.
         const requestedTarget = state.getRuntimeSnapshot('characters.[id]', { id: targetId });
         if (!requestedTarget) {
-            this.api.presentation.notification.add("Lỗi Faker", "Mục tiêu không tồn tại", "error");
+            this.api.presentation.notification.add("Lỗi Faker", "Mục tiêu không tồn tại", "danger");
             return;
         }
 
@@ -48,7 +48,7 @@ export const FakerSystem = {
         const player = state.getRuntimeSnapshot('characters.[id]', { id: playerId });
         const target = state.getRuntimeSnapshot('characters.[id]', { id: targetId });
         if (!player || !target) {
-            this.api.presentation.notification.add("Lỗi Faker", "Không thể xác định nhân vật nguồn hoặc mục tiêu", "error");
+            this.api.presentation.notification.add("Lỗi Faker", "Không thể xác định nhân vật nguồn hoặc mục tiêu", "danger");
             return;
         }
 
@@ -78,7 +78,7 @@ export const FakerSystem = {
             this.api.presentation.notification.add("Cải trang", `Bạn đang khoác lên mình ${target.set?.name || target.meta?.name}`, "info");
         } else {
             this._syncStats(playerId, targetId);
-            this.api.presentation.notification.add("Đoạt xá", `Đã chiếm lấy cơ thể ${target.set?.name || target.meta?.name}`, "magic");
+            this.api.presentation.notification.add("Đoạt xá", `Đã chiếm lấy cơ thể ${target.set?.name || target.meta?.name}`, "special");
         }
 
         this.api.presentation.components.closePlayerCard();
