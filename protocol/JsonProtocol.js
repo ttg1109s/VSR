@@ -258,11 +258,11 @@ export class JsonProtocol{
     tag:Array.isArray(relationship)?relationship[0]??null:relationship?.tag??null
    };
   };
-  const getMetCount=(character)=>{
-   return (Array.isArray(character?.met)?character.met:[])
+  const getMetCount=(characterId)=>{
+   return (Array.isArray(currentCharacter?.met)?currentCharacter.met:[])
     .reduce((count,entry)=>{
-     const [characterId,countValue]=String(entry).split(':');
-     if(characterId!==currentIdentityId)return count;
+     const [metCharacterId,countValue]=String(entry).split(':');
+     if(metCharacterId!==characterId)return count;
      const parsed=Number(countValue);
      return Number.isSafeInteger(parsed)&&parsed>=0?count+parsed:count;
     },0);
@@ -291,7 +291,7 @@ export class JsonProtocol{
       isUnread:thread.isUnread===true,isFinished:thread.isFinished===true
      })),
      presence:sceneId&&character?.place?.scene_id===sceneId?'present':'away',
-     metCount:getMetCount(character)
+     metCount:getMetCount(characterId)
     };
    })
    .sort((a,b)=>a.name.localeCompare(b.name,undefined,{sensitivity:'base'}));
