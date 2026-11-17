@@ -120,7 +120,7 @@ export const ItemStrategies = {
         const inventory = char.inventory || [];
         if (!hand.includes(eff.target) && inventory.includes(eff.target)) {
             if (hand.length >= maxHand) {
-                engine.api.notifications.add("Không thể cầm", "Tay đã đầy.", "warn", { source: 'scenario', category: 'scenario.inventory.hand_full' });
+                engine.api.notifications.add("Không thể cầm", "Tay đã đầy.", "warning", { source: 'scenario', category: 'scenario.inventory.hand_full' });
                 return;
             }
             const ownerId = ItemStrategies._getOwnerId(engine);
