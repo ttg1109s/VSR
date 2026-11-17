@@ -396,8 +396,8 @@ export class GameEngine {
   try{
    while(this.runtime.effectQueue.async.length){
     const item=this.runtime.effectQueue.async.shift();
-    try{await this.processRunnables(item.effectiveList,item.context,true,true);}catch(error){console.error('EffectQueue async error:',error);}
-    item.resolve?.({cancelled:false});
+    try{await this.processRunnables(item.effectiveList,item.context,true,true);item.resolve?.({cancelled:false});}
+    catch(error){console.error('EffectQueue async error:',error);item.resolve?.({cancelled:false,error});}
    }
   }finally{this.runtime.isAsyncQueueRunning=false;}
  }
