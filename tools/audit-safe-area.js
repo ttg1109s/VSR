@@ -50,6 +50,12 @@ const contactText = fs.readFileSync(path.join(root, 'src/design-system/component
 const sharedDrawerRule = /\.vsr-drawer\.vsr-overlay-panel\s*\{([^}]*)\}/s.exec(overlayText)?.[1] || '';
 const drawerInset = /padding:\s*var\(--vsr-safe-area-top\)\s+var\(--vsr-safe-area-right\)\s+var\(--vsr-safe-area-bottom\)\s+var\(--vsr-safe-area-left\)\s*;/s;
 if (!drawerInset.test(sharedDrawerRule)) errors.push('Shared Drawer Portal wrapper must own all four Safe Area insets');
+if (!/\.vsr-drawer\.vsr-overlay-panel--right\s*\{[^}]*animation:\s*vsr-drawer-in-right/s.test(overlayText)) {
+  errors.push('Right Drawer must use horizontal entrance animation to keep its top edge flush');
+}
+if (!/\.vsr-drawer\.vsr-overlay-panel--left\s*\{[^}]*animation:\s*vsr-drawer-in-left/s.test(overlayText)) {
+  errors.push('Left Drawer must use horizontal entrance animation to keep its top edge flush');
+}
 if (/padding[^;]*var\(--vsr-safe-area-(?:top|right|bottom|left)\)/s.test(contactText)) {
   errors.push('Contact Drawer must use the shared Drawer Safe Area owner instead of applying its own insets');
 }

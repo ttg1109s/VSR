@@ -76,3 +76,24 @@
 .vsr-progress--determinate::-webkit-progress-value{border-radius:inherit;background:var(--vsr-color-primary);transition:width var(--vsr-motion-medium)}
 .vsr-progress--determinate::-moz-progress-bar{border-radius:inherit;background:var(--vsr-color-primary);transition:width var(--vsr-motion-medium)}
 @media(prefers-reduced-motion:reduce){.vsr-progress--determinate::-webkit-progress-value,.vsr-progress--determinate::-moz-progress-bar{transition:none}}
+
+
+/* Side drawers enter horizontally so their top edge stays flush with the viewport. */
+.vsr-drawer.vsr-overlay-panel--right { animation: vsr-drawer-in-right .2s ease-out both; }
+.vsr-drawer.vsr-overlay-panel--left { animation: vsr-drawer-in-left .2s ease-out both; }
+.vsr-drawer.vsr-overlay-panel--bottom { animation: vsr-drawer-in-bottom .2s ease-out both; }
+@keyframes vsr-drawer-in-right {
+  from { opacity: 0; transform: translateX(16px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes vsr-drawer-in-left {
+  from { opacity: 0; transform: translateX(-16px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes vsr-drawer-in-bottom {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .vsr-drawer.vsr-overlay-panel { animation: none !important; }
+}
