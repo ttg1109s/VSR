@@ -75,7 +75,7 @@ function RelationshipSummary({ relationshipWithPlayer, metCount = 0 }) {
         <strong className="vsr-contact-relationship-summary__type">
           {tag || (hasRelationship ? 'Đã ghi nhận, chưa phân loại' : 'Chưa có quan hệ')}
         </strong>
-        <span className="vsr-contact-relationship-summary__count">Đã gặp {metCount}</span>
+        <span className="vsr-contact-relationship-summary__count">Bạn đã gặp: {metCount} lần</span>
       </div>
     </div>
   );
