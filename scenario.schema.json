@@ -903,8 +903,7 @@
             "items": {
               "type": "object",
               "required": [
-                "scene_id",
-                "countVisited"
+                "scene_id"
               ],
               "properties": {
                 "scene_id": {
