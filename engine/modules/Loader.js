@@ -117,7 +117,6 @@ export const LoaderSystem = {
                 if (!entry || typeof entry !== 'object' || Array.isArray(entry)) {
                     throw new TypeError(`Character '${charId}' moveList[${index}] must be an object.`);
                 }
-                if (entry.countVisited === undefined) entry.countVisited = 0;
                 if (!Number.isSafeInteger(entry.countVisited) || entry.countVisited < 0) {
                     throw new TypeError(`Character '${charId}' moveList[${index}].countVisited must be a non-negative safe integer.`);
                 }
