@@ -1157,7 +1157,7 @@ test('loader rejects a configured entry character that is absent from scenario c
 });
 
 
-test('Contact snapshot projects the current Player Entry and only known or present contacts', async () => {
+test('Contact snapshot projects only characters met by the current Player Entry', async () => {
   const scenario = validScenario();
   scenario.meta.entryCharacter = 'hero';
   scenario.scenes.start.routers.main.actions[0].set.charAllow = ['ally'];
@@ -1176,7 +1176,8 @@ test('Contact snapshot projects the current Player Entry and only known or prese
   scenario.characters = {
     hero: { meta: { name: 'Hero', desc: 'Current identity' }, set: { ...characterSet }, stats: { hp: { current: 8, max: 10, label: 'HP' } }, inventory: [], relationship: [], place: { scene_id: 'start', currentIndex: 0 }, met: [], moveList: [] },
     ally: { meta: { name: 'Ally', desc: 'Known ally' }, set: { ...characterSet }, stats: {}, inventory: [], relationship: [['friend', 'hero']], place: { scene_id: 'start', currentIndex: 0 }, met: ['hero:2'], moveList: [] },
-    stranger: { meta: { name: 'Stranger', desc: 'Unknown stranger' }, set: { ...characterSet }, stats: {}, inventory: [], relationship: [], place: { scene_id: 'elsewhere', currentIndex: 0 }, met: [], moveList: [] }
+    stranger: { meta: { name: 'Stranger', desc: 'Unknown stranger' }, set: { ...characterSet }, stats: {}, inventory: [], relationship: [], place: { scene_id: 'elsewhere', currentIndex: 0 }, met: [], moveList: [] },
+    unseenPresent: { meta: { name: 'Unseen Present', desc: 'Not yet met, but in this scene' }, set: { ...characterSet }, stats: {}, inventory: [], relationship: [], place: { scene_id: 'start', currentIndex: 0 }, met: [], moveList: [] }
   };
   const engine = new GameEngine();
   try {
@@ -1185,6 +1186,7 @@ test('Contact snapshot projects the current Player Entry and only known or prese
     assert.equal(snapshot.presentation.player.id, 'hero');
     assert.equal(snapshot.presentation.player.name, 'Hero');
     assert.deepEqual(snapshot.presentation.contacts.map(contact => contact.id), ['ally']);
+    assert.equal(snapshot.presentation.contacts.some(contact => contact.id === 'unseenPresent'), false);
     assert.equal(snapshot.presentation.contacts[0].presence, 'present');
     assert.equal(snapshot.presentation.contacts[0].metCount, 3);
     assert.equal(snapshot.presentation.contacts[0].relationship[0].characterName, 'Hero');
