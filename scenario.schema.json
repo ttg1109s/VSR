@@ -938,6 +938,39 @@
                   "items": {
                     "$ref": "#/definitions/runnable_wrapper"
                   }
+                },
+                "stillActive": {
+                  "type": "number",
+                  "minimum": 0,
+                  "description": "Seconds before the current Character visit starts its loop.still effects."
+                },
+                "loop": {
+                  "type": "object",
+                  "description": "Effects tied to one Character moveList visit.",
+                  "properties": {
+                    "enter": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/definitions/runnable_wrapper"
+                      },
+                      "description": "Run after this moveList entry is committed as the Character's new visit."
+                    },
+                    "leave": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/definitions/runnable_wrapper"
+                      },
+                      "description": "Run before the Character leaves this moveList entry."
+                    },
+                    "still": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/definitions/runnable_wrapper"
+                      },
+                      "description": "Repeat while the Character remains on this moveList entry after stillActive seconds."
+                    }
+                  },
+                  "additionalProperties": false
                 }
               },
               "additionalProperties": false
