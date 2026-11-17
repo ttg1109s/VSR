@@ -198,7 +198,7 @@ test('simultaneous movement requests for one Character are serialized', async ()
   assert.equal(data.characters.npc.moveList[1].countVisited, 1);
 });
 
-test('identity changes invalidate the old visit and restart Still with a fresh token', () => {
+test('identity changes invalidate the old visit and restart Still with a fresh token', async () => {
   const character = {
     set: { moving: true, move: 'list' },
     place: { scene_id: 'a', currentIndex: 0 },
@@ -229,6 +229,7 @@ test('identity changes invalidate the old visit and restart Still with a fresh t
     getConfig: () => 1
   });
 
+  const oldStillTask = taskManager.plan.move_still_npc_7;
   engine.syncCharacterMovementIdentity();
   assert.equal(engine.getCharacterVisitToken('npc'), null);
   assert.equal(taskManager.plan.move_char_npc, undefined);
@@ -240,4 +241,6 @@ test('identity changes invalidate the old visit and restart Still with a fresh t
   assert.ok(newToken > 7);
   assert.ok(taskManager.plan[`move_still_npc_${newToken}`]);
   assert.ok(taskManager.plan.move_char_npc);
+  await oldStillTask.exe();
+  assert.ok(taskManager.plan[`move_still_npc_${newToken}`], 'a stale Still callback must not kill the new visit task');
 });
