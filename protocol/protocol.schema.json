@@ -747,7 +747,7 @@
         "id",
         "name",
         "stats",
-        "relationship",
+        "relationshipWithPlayer",
         "presence",
         "metCount",
         "threads"
