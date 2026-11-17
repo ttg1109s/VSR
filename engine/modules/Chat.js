@@ -224,6 +224,17 @@ export const ChatSystem = {
         this.api.presentation.navigation.openThread(id);
         this.toggleChatOverlay(true);
 
+        // UI navigation is independent from the Engine chat-session lifecycle.
+        // In particular, a completed thread becomes inactive immediately after
+        // its history is rendered, but React must still open that read-only view.
+        this.chatViewRequestSequence = (this.chatViewRequestSequence || 0) + 1;
+        this.api.presentation.chat.viewRequested({
+            requestId: `chat-view-${Date.now()}-${this.chatViewRequestSequence}`,
+            contactId: ownerId,
+            chatId: id,
+            mode: shouldProcessBlock ? 'active' : 'review'
+        });
+
         if (shouldProcessBlock) {
             this.processChatBlock();
         } else {
