@@ -302,7 +302,9 @@ Component README ghi nhận đây là implementation ban đầu, chưa thay th�
 - [ ] Có keyboard operation và focus-visible.
 - [ ] Không phụ thuộc hover hoặc màu sắc đơn thuần.
 - [ ] Form controls có label/validation semantics.
-- [ ] Kiểm tra compact, medium và expanded breakpoints.\n- [ ] Kiểm tra Safe Area trên page, flush-top, fixed navigation và portal overlays.\n- [ ] Chạy npm run audit:safe-area; không có direct env() ngoài Foundation.
+- [ ] Kiểm tra compact, medium và expanded breakpoints.
+- [ ] Kiểm tra Safe Area trên page, flush-top, fixed navigation và portal overlays.
+- [ ] Chạy `npm run audit:safe-area`; không có direct `env()` ngoài Foundation.
 - [ ] Kiểm tra viewport thấp, nội dung dài và reduced motion.
 - [ ] Overlay/menu được kiểm tra focus và keyboard behavior.
 
