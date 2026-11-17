@@ -305,3 +305,49 @@ test('EffectSystem applies moveList-entry overrides without colliding with Chara
 
   assert.deepEqual(executed, override);
 });
+
+
+test('manage_effect can mutate one Character moveList entry without touching sibling entries', async () => {
+  const overrides = {};
+  const source = {
+    characters: {
+      npc: {
+        moveList: [
+          { loop: { still: [{ type: 'notify', text: 'first' }] } },
+          { loop: { still: [{ type: 'notify', text: 'second' }] } }
+        ]
+      }
+    }
+  };
+  const engine = Object.assign({}, EffectSystem, {
+    src: source,
+    api: {
+      engine: {
+        state: {
+          getRuntime(path, params) {
+            return path === 'effect_overrides.[key]' ? overrides[params.key] : undefined;
+          },
+          set(path, value, params) {
+            if (path !== 'effect_overrides.[key]') throw new Error('Unexpected state write: ' + path);
+            overrides[params.key] = value;
+          }
+        }
+      }
+    }
+  });
+
+  await engine.handleManageEffect({
+    space: 'character_move',
+    target: 'npc',
+    moveIndex: 1,
+    in: 'still',
+    subtype: 'add_effect',
+    content: { type: 'notify', text: 'managed' }
+  }, {}, null, []);
+
+  assert.deepEqual(overrides.char_move_npc_1_still, [
+    { type: 'notify', text: 'second' },
+    { type: 'notify', text: 'managed' }
+  ]);
+  assert.equal(overrides.char_move_npc_0_still, undefined);
+});
