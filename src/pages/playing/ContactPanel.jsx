@@ -75,7 +75,7 @@ function RelationshipSummary({ relationshipWithPlayer, metCount = 0 }) {
       </div>
       <div className="vsr-contact-relationship-summary__count">
         <span className="vsr-contact-relationship-summary__label">Số lần đã gặp</span>
-        <strong>{metCount} lần</strong>
+        <strong><span className="vsr-contact-relationship-summary__met-icon" aria-hidden="true">handshake</span>{metCount} lần</strong>
       </div>
     </div>
   );
@@ -100,7 +100,7 @@ function ContactProfile({ character }) {
       )}
 
       <section className="vsr-contact-profile__section">
-        <h4><span aria-hidden="true">groups</span>Các mối quan hệ</h4>
+        <h4><span aria-hidden="true">groups</span>Quan hệ</h4>
         <RelationshipSummary
           relationshipWithPlayer={character.relationshipWithPlayer}
           metCount={character.metCount}
