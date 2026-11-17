@@ -801,7 +801,7 @@
     },
     "characters": {
       "type": "object",
-      "description": "List of characters (Roleplay & NPCs).",
+      "description": "Dictionary of Character entities.",
       "additionalProperties": {
         "type": "object",
         "required": [
