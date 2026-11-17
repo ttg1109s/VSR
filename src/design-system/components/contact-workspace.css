@@ -389,6 +389,15 @@
   font-variant-numeric: tabular-nums;
   line-height: 26px;
 }
+.vsr-contact-relationship-summary__met-icon {
+  display: inline-block;
+  margin-right: 8px;
+  font-family: 'Material Symbols Rounded';
+  font-size: 20px;
+  font-weight: normal;
+  line-height: 1;
+  vertical-align: -3px;
+}
 
 .vsr-contact-detail-content { padding: 0; }
 .vsr-contact-detail-content > .vsr-contact-profile { margin-bottom: 20px; }
