@@ -8,3 +8,19 @@ export function getFakerActingIds(entryCharacter, faker = {}, configuredMode = '
     }
     return [...new Set(ids)];
 }
+
+// During Mask, relationship ownership follows the borrowed identity while all
+// writes and runtime mutations continue to belong to the real entry character.
+export function getFakerRelationshipIdentityId(runtimeOwnerId, entryCharacter, faker = {}) {
+    const ownerId = runtimeOwnerId || entryCharacter || 'player';
+    if (
+        faker.active === true &&
+        faker.mode === 'mask' &&
+        ownerId === (entryCharacter || 'player') &&
+        typeof faker.targetId === 'string' &&
+        faker.targetId
+    ) {
+        return faker.targetId;
+    }
+    return ownerId;
+}
