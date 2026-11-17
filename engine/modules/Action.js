@@ -13,7 +13,6 @@ export const ActionSystem = {
             return act;
         };
 
-        // [Refactor] Strict Mode: Prioritize Array format (Global Refs or Inline)
         if (Array.isArray(router.actions)) {
             router.actions.forEach(item => {
                 if (typeof item === 'string') {
@@ -34,30 +33,6 @@ export const ActionSystem = {
                     actions.push(act);
                 }
             });
-        } else if (router.actions && typeof router.actions === 'object') {
-            // [DEPRECATED] Legacy Object/Map support
-            // console.warn(`[Deprecation] Router '${rId}' uses Object-style actions.`);
-            Object.keys(router.actions).forEach(key => {
-                let act = { id: key, source: 'local', ...router.actions[key] };
-                ensureThumb(act);
-                actions.push(act);
-            });
-        }
-
-        // Imports (Legacy feature)
-        if (router.importAction && Array.isArray(router.importAction)) {
-            router.importAction.forEach(imp => {
-                try {
-                    const targetRouterId = imp.of || rId;
-                    const targetRouter = this.src.scenes[sId]?.routers?.[targetRouterId];
-                    if (targetRouter && targetRouter.actions) {
-                        // Complex resolve omitted for brevity
-                    }
-                } catch (e) {
-                    console.error("ActionSystem: Error in importAction loop", e);
-                }
-            });
-        }
         return actions;
     },
 
