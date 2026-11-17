@@ -33,7 +33,7 @@ function visit(file){
   if(reachable.has(file)||!sourceFiles.has(file))return;
   reachable.add(file);
   const content=fs.readFileSync(path.join(ROOT,file),'utf8');
-  const imports=[...content.matchAll(/(?:import\s+(?:[^'"]+?\s+from\s+)?|export\s+[^'"]+?\s+from\s+|import\s*\()\s*['"]([^'"]+)['"]/g)].map(m=>m[1]);
+  const imports=[...content.matchAll(/(?:\bimport\s+(?:[^'"]*?\sfrom\s*)?|\bexport\s+[^'"]*?\sfrom\s*|\bimport\s*\()\s*['"]([^'"]+)['"]/g)].map(m=>m[1]);
   if(file.endsWith('.css'))imports.push(...[...content.matchAll(/@import\s+['"]([^'"]+)['"]/g)].map(m=>m[1]));
   for(const specifier of imports){const target=resolveImport(file,specifier);if(target)visit(target);}
 }

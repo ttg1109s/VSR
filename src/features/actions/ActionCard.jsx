@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useRef, useState } from 'react';
-import { Badge, Button, Dialog, Grid, Input, MediaFrame, Popover, Textarea } from '../../design-system/index.js';
+import { Badge, Button, Dialog, Grid, Input, MediaFrame, Popover, ProgressBar, Textarea } from '../../design-system/index.js';
 
 const REASONS = {
   locked: 'Locked',
@@ -197,7 +197,7 @@ function ActionCard({ action, pending = false, interactionBlocked = false, passw
         <Grid columns="auto" gap="2"><Button size="lg" type="button" variant="secondary" disabled={passwordPending} onClick={cancel}>Cancel challenge</Button><Button size="lg" type="submit" disabled={!input.trim() || passwordPending} loading={passwordPending}>Submit response</Button></Grid>
       </form>
     </Dialog>
-    {coolingDown && <div className="vsr-action-card__cooldown-progress" role="progressbar" aria-label="Cooldown progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(cooldownProgress * 100)}><span style={{ width: `${cooldownProgress * 100}%` }} /></div>}
+    {coolingDown && <div className="vsr-action-card__cooldown-progress"><ProgressBar status="determinate" value={Math.round(cooldownProgress * 100)} label="Cooldown progress" /></div>}
   </article>;
 }
 

@@ -266,3 +266,7 @@
     gap: 6px;
   }
 }
+
+.vsr-action-card__cooldown-progress .vsr-progress--determinate{height:3px;border-radius:0;background:var(--vsr-color-border-subtle)}
+.vsr-action-card__cooldown-progress .vsr-progress--determinate::-webkit-progress-value{background:var(--vsr-color-warning)}
+.vsr-action-card__cooldown-progress .vsr-progress--determinate::-moz-progress-bar{background:var(--vsr-color-warning)}
