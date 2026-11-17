@@ -42,7 +42,7 @@ function visit(file){
 }
 const roots=new Set(['src/main.jsx','engine/engine.worker.js','server/index.js','protocol/index.js','vite.config.js','playwright.config.js','client/adapters/HttpJsonTransport.js','tests/browser/overlay-fixture.jsx']);
 for(const file of files){
-  if(file.startsWith('tests/')&&/\\.(test|spec)\\.js$/.test(file))roots.add(file);
+  if(file.startsWith('tests/')&&/\.(test|spec)\.js$/.test(file))roots.add(file);
   if(file.startsWith('tools/')&&file.endsWith('.js'))roots.add(file);
 }
 try{

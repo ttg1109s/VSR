@@ -37,6 +37,6 @@ Pages choose composition and variants; the shared primitives own responsive beha
 
 Native form elements are retained. Inputs associate labels, hints and errors. Dialog and Drawer provide modal semantics, topmost-overlay Escape handling, a Tab focus loop that excludes hidden controls, backdrop dismissal and focus restoration. Menu supports Escape and arrow navigation. Toasts use a polite live region, with errors announced as alerts.
 
-This dependency-free first implementation needs browser-level regression tests before production use, especially for nested overlays, complex menu navigation, screen-reader announcements, mobile viewport behavior and focus edge cases. Popover and Tooltip are intentionally lightweight primitives, not a complete ARIA menu or positioning system.
+Chromium browser regression tests cover nested dialogs, topmost-overlay Escape handling, focus restoration, Menu dismissal callbacks and compact viewport bounds. These tests are a baseline, not a substitute for manual screen-reader testing or a full WCAG audit. Popover and Tooltip are intentionally lightweight primitives, not a complete ARIA menu or positioning system. Popover and Tooltip are intentionally lightweight primitives, not a complete ARIA menu or positioning system.
 
 Import src/design-system/index.css once in the React entry point. Component styles consume the existing --vsr-* tokens.

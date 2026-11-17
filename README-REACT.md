@@ -21,6 +21,7 @@ The React application is a presentation layer over the framework-agnostic VSR ru
 - `npm run audit:state:strict` — enforce the Engine state-access allowlist.
 - `npm run audit:ui` — reject page-owned stylesheets and inline presentation.
 - `npm run audit:deadcode` — report source files unreachable from application, runtime, test, tool and package-export entry points; candidates require manual review before deletion.
+- `npm run test:browser` — run Chromium browser regressions for overlays, focus management and menus.
 
 ## Architecture rules
 
