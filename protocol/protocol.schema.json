@@ -839,7 +839,8 @@
         "name",
         "stats",
         "relationship",
-        "identityMode"
+        "identityMode",
+        "identityTarget"
       ],
       "properties": {
         "id": {
