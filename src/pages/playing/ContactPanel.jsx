@@ -553,8 +553,8 @@ export default function ContactPanel({ open, onClose, player, contacts = [], sys
                     )) : (
                       <div className="vsr-contact-topic-list__empty">
                         <span className="vsr-contact-topic-list__empty-icon" aria-hidden="true">forum</span>
-                        <strong>Chưa có cuộc trò chuyện</strong>
-                        <p>Các cuộc trò chuyện với nhân vật sẽ xuất hiện tại đây.</p>
+                        <strong>{selected.kind === 'system' ? 'Chưa có nội dung' : 'Chưa có cuộc trò chuyện'}</strong>
+                        <p>{selected.kind === 'system' ? 'Tin nhắn từ nguồn này sẽ xuất hiện tại đây.' : 'Các cuộc trò chuyện với nhân vật sẽ xuất hiện tại đây.'}</p>
                       </div>
                     )}
                   </ContactTopicList>
