@@ -116,6 +116,39 @@ Padding ngang của page tương ứng là 16px, 20px và 24px. Đây là breakp
 - Chỉ áp dụng overflow hidden hoặc khóa cuộn khi trải nghiệm thực sự yêu cầu; không che nội dung bị tràn.
 - Với trang được định nghĩa là one-screen, kiểm tra cả chiều cao viewport thấp và mobile landscape. Không hy sinh khả năng truy cập nội dung để ép vừa màn hình.
 
+### 4.1. Safe Area và edge-to-edge layout (bắt buộc)
+
+Safe Area là nền tảng layout của Design System, không phải logic tùy chọn do từng page/feature tự triển khai.
+
+**Nguồn dữ liệu duy nhất** nằm tại `src/design-system/foundations/base.css` với bốn CSS custom properties:
+
+- `--vsr-safe-area-top`
+- `--vsr-safe-area-right`
+- `--vsr-safe-area-bottom`
+- `--vsr-safe-area-left`
+
+Chỉ Foundation được phép đọc trực tiếp `env(safe-area-inset-*)`. Các stylesheet khác phải dùng biến VSR. `src/design-system/foundations/safe-area.css` cung cấp primitive tái sử dụng; page shell, navigation, overlay và fullscreen component phải xác định rõ lớp nào sở hữu inset để không bỏ sót hoặc cộng hai lần.
+
+**Quy tắc ownership:**
+
+1. Page thông thường dùng `.vsr-page-shell`, kế thừa inset ở bốn cạnh.
+2. Page edge-to-edge được phép cho background/media phủ viewport; vùng nội dung và điều khiển tương tác vẫn phải nằm trong vùng an toàn.
+3. `.vsr-page-shell--flush-top` chỉ bỏ padding của outer shell; child trực tiếp như breadcrumb và content region phải tự nhận inset qua primitive hoặc pattern đã được Design System định nghĩa.
+4. Fixed bottom navigation và spacer phải cùng tính một chiều cao an toàn, tránh nội dung bị che hoặc tạo khoảng trống kép.
+5. Dialog/Drawer/Popover/Toast render qua Portal không kế thừa padding của page cha. Shared overlay/positioning layer phải tự giới hạn trong viewport an toàn.
+6. Fullscreen Drawer/player/loader phải khai báo rõ background edge-to-edge và vùng interactive safe. Không áp dụng padding toàn cục một cách máy móc nếu sẽ làm co sai media hoặc scroll region.
+7. Không tạo React SafeAreaProvider/hook nếu CSS environment variables đáp ứng được yêu cầu. Chỉ bổ sung JS/native bridge khi có yêu cầu runtime đã được chứng minh.
+
+**Kiểm tra bắt buộc:**
+
+- `viewport-fit=cover` có mặt trong viewport meta cho web app hỗ trợ edge-to-edge.
+- Không có direct `env(safe-area-inset-*)` ngoài Foundation.
+- Kiểm tra iOS notch/Dynamic Island, Home Indicator, Android gesture navigation, landscape, viewport thấp và bàn phím ảo.
+- Test page shell, flush-top, bottom navigation, fullscreen drawer, dialog, toast và popover.
+- Chạy `npm run audit:safe-area` trước khi merge.
+
+Không được coi việc thay chuỗi `env()` hoặc việc CSS build thành công là bằng chứng UI đã đúng trên thiết bị. Cần regression test trên browser/device tương ứng.
+
 ## 5. Component reuse và ownership của CSS
 
 ### 5.1. Ưu tiên component chung
@@ -270,6 +303,8 @@ Component README ghi nhận đây là implementation ban đầu, chưa thay th�
 - [ ] Không phụ thuộc hover hoặc màu sắc đơn thuần.
 - [ ] Form controls có label/validation semantics.
 - [ ] Kiểm tra compact, medium và expanded breakpoints.
+- [ ] Kiểm tra Safe Area trên page, flush-top, fixed navigation và portal overlays.
+- [ ] Chạy `npm run audit:safe-area`; không có direct `env()` ngoài Foundation.
 - [ ] Kiểm tra viewport thấp, nội dung dài và reduced motion.
 - [ ] Overlay/menu được kiểm tra focus và keyboard behavior.
 

@@ -33,6 +33,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "audit:ui": "node tools/audit-ui-architecture.js",
+    "audit:safe-area": "node tools/audit-safe-area.js",
     "audit:deadcode": "node tools/audit-ui-architecture.js --deadcode",
     "test:browser": "playwright test"
   },

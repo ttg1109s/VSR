@@ -1,0 +1,21 @@
+/* Safe Area layout primitives. Raw env() access is restricted to foundations/base.css. */
+.vsr-safe-area-top {
+  padding-top: var(--vsr-safe-area-top);
+}
+.vsr-safe-area-right {
+  padding-right: var(--vsr-safe-area-right);
+}
+.vsr-safe-area-bottom {
+  padding-bottom: var(--vsr-safe-area-bottom);
+}
+.vsr-safe-area-left {
+  padding-left: var(--vsr-safe-area-left);
+}
+.vsr-safe-area-inline {
+  padding-left: var(--vsr-safe-area-left);
+  padding-right: var(--vsr-safe-area-right);
+}
+.vsr-safe-area-block {
+  padding-top: var(--vsr-safe-area-top);
+  padding-bottom: var(--vsr-safe-area-bottom);
+}
