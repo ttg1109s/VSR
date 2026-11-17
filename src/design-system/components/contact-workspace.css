@@ -1,11 +1,8 @@
 /* Contact master/detail pattern. Feature pages compose these shared primitives. */
 .vsr-drawer.vsr-overlay-panel.vsr-overlay-panel--full.vsr-contact-drawer {
-  top: var(--vsr-safe-area-top);
-  right: 0;
-  bottom: var(--vsr-safe-area-bottom);
-  left: 0;
+  inset: 0;
   width: 100%;
-  height: auto;
+  height: 100%;
   max-width: none;
   max-height: none;
   border: 0;
@@ -495,10 +492,11 @@
 .vsr-contact-chat-error { margin: 0; color: var(--vsr-color-text-secondary); font-size: 12px; line-height: 18px; }
 .vsr-contact-chat-error { padding: 8px 16px; color: var(--vsr-color-error); }
 
-/* Contact Workspace uses the shared Drawer safe-area geometry. */
+/* A full-screen Contact drawer owns scrolling while it is open. */
 .vsr-contact-drawer.vsr-overlay-panel {
   display: flex;
   flex-direction: column;
+  height: 100dvh;
   min-height: 0;
   overflow: hidden;
 }
