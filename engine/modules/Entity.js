@@ -335,19 +335,6 @@ export const EntitySystem = {
 
         if (isEnteringPlayerScene && charId !== currentIdentity && nextVisitIsValid() &&
             state.get('sceneId') === playerSceneId && this.getCurrentIdentity() === currentIdentity) {
-            if (Array.isArray(char.effect?.meeting?.[currentIdentity])) {
-                try {
-                    const meetingResult = await this.processRunnables(char.effect.meeting[currentIdentity], {
-                        sceneId: playerSceneId, charId, hook: `meeting:${currentIdentity}`, moveIndex: result.idx,
-                        visitToken: nextToken,
-                        shouldContinue: () => nextVisitIsValid() &&
-                            state.get('sceneId') === playerSceneId && this.getCurrentIdentity() === currentIdentity
-                    }, true);
-                    if (meetingResult?.error) throw meetingResult.error;
-                } catch (error) {
-                    console.error(`[Entity] Character meeting Effect failed for ${charId}:`, error);
-                }
-            }
             this.api.presentation?.components?.updateCharacterList?.();
         }
 
