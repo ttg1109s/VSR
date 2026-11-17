@@ -673,7 +673,8 @@
             "description": "Chat metadata.",
             "required": [
               "loop",
-              "entry"
+              "entry",
+              "to"
             ],
             "properties": {
               "title": {
@@ -705,7 +706,8 @@
                 "items": {
                   "type": "string"
                 },
-                "description": "List of recipient Character IDs."
+                "description": "Required recipient Character IDs; use an empty array when the chat has no recipients.",
+                "default": []
               }
             },
             "additionalProperties": false
