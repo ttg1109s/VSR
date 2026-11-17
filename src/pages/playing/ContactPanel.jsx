@@ -83,6 +83,15 @@ function RelationshipSummary({ relationshipWithPlayer, metCount = 0 }) {
 
 function ContactProfile({ character }) {
   if (!character) return null;
+  if (character.kind === 'system') {
+    return (
+      <div className="vsr-contact-profile">
+        <section className="vsr-contact-profile__section">
+          <p className="vsr-contact-profile__description">{character.description || 'Nguồn thông tin hệ thống.'}</p>
+        </section>
+      </div>
+    );
+  }
   const visibleStats = Object.entries(character.stats || {}).filter(([, stat]) => stat?.unknown !== true);
   return (
     <div className="vsr-contact-profile">
@@ -267,7 +276,7 @@ function IdentityDrawer({ open, onClose, player, contacts, onSelectContact }) {
   );
 }
 
-export default function ContactPanel({ open, onClose, player, contacts = [], session = null, viewRequest = null, client }) {
+export default function ContactPanel({ open, onClose, player, contacts = [], systemContacts = [], session = null, viewRequest = null, client }) {
   const [selectedId, setSelectedId] = useState(null);
   const [mobileView, setMobileView] = useState('list');
   const [activeArea, setActiveArea] = useState('threads');
@@ -278,11 +287,20 @@ export default function ContactPanel({ open, onClose, player, contacts = [], ses
   const [chatPending, setChatPending] = useState(false);
   const [chatError, setChatError] = useState('');
 
-  const allContacts = useMemo(() => contacts.map(contact => ({
-    ...contact,
-    kind: 'contact',
-    threads: Array.isArray(contact.threads) ? contact.threads : []
-  })), [contacts]);
+  const allContacts = useMemo(() => [
+    ...contacts.map(contact => ({
+      ...contact,
+      kind: 'character',
+      threads: Array.isArray(contact.threads) ? contact.threads : []
+    })),
+    ...systemContacts.map(contact => ({
+      ...contact,
+      kind: 'system',
+      threads: Array.isArray(contact.threads) ? contact.threads : []
+    }))
+  ], [contacts, systemContacts]);
+  const characterContacts = allContacts.filter(contact => contact.kind === 'character');
+  const systemContactEntries = allContacts.filter(contact => contact.kind === 'system');
 
   const selected = allContacts.find(contact => contact.id === selectedId) || null;
   const threads = selected?.threads || [];
@@ -388,6 +406,33 @@ export default function ContactPanel({ open, onClose, player, contacts = [], ses
     return allContacts.find(contact => contact.id === id)?.name || id || 'Không xác định';
   }
 
+  function renderContactItem(contact) {
+    const unreadCount = contact.threads.filter(thread => thread.isUnread).length;
+    const latestThread = contact.threads[0];
+    return (
+      <ContactListItem
+        key={contact.id}
+        selected={selectedId === contact.id}
+        onClick={() => selectContact(contact.id)}
+        aria-label={'Mở ' + (contact.kind === 'system' ? 'nguồn ' : 'liên hệ ') + (contact.name || contact.id)}
+      >
+        <span className="vsr-contact-avatar-wrap">
+          <ContactAvatar name={contact.name || contact.id} avatar={contact.avatar} />
+          {contact.presence === 'present' && (
+            <span className="vsr-contact-avatar__presence" role="img" aria-label="Đang hiện diện trong scene hiện tại" title="Đang hiện diện trong scene hiện tại" />
+          )}
+        </span>
+        <span className="vsr-contact-list-item__copy">
+          <span className="vsr-contact-list-item__name">{contact.name || contact.id}</span>
+          <span className="vsr-contact-list-item__preview">
+            {latestThread ? (latestThread.preview || 'Đã có cuộc hội thoại') : 'Chưa có tin nhắn hay cuộc hội thoại nào.'}
+          </span>
+        </span>
+        {unreadCount > 0 && <Badge tone="danger">{unreadCount}</Badge>}
+      </ContactListItem>
+    );
+  }
+
   return (
     <Drawer
       open={open}
@@ -415,47 +460,17 @@ export default function ContactPanel({ open, onClose, player, contacts = [], ses
     >
       <ContactWorkspace>
         <ContactList className={mobileView === 'detail' ? 'is-hidden-compact' : ''}>
-          <ContactScrollArea className="vsr-contact-list__items" aria-label="Danh sách liên hệ">
-            {allContacts.map(contact => {
-              const unreadCount = contact.threads.filter(thread => thread.isUnread).length;
-              const latestThread = contact.threads[0];
-              return (
-                <ContactListItem
-                  key={contact.id}
-                  selected={selectedId === contact.id}
-                  onClick={() => selectContact(contact.id)}
-                  aria-label={'Mở liên hệ ' + (contact.name || contact.id)}
-                >
-                  <span className="vsr-contact-avatar-wrap">
-                    <ContactAvatar name={contact.name || contact.id} avatar={contact.avatar} />
-                    {contact.presence === 'present' && (
-                      <span
-                        className="vsr-contact-avatar__presence"
-                        role="img"
-                        aria-label="Đang hiện diện trong scene hiện tại"
-                        title="Đang hiện diện trong scene hiện tại"
-                      />
-                    )}
-                  </span>
-                  <span className="vsr-contact-list-item__copy">
-                    <span className="vsr-contact-list-item__name">{contact.name || contact.id}</span>
-                    <span className="vsr-contact-list-item__preview">
-                      {latestThread
-                        ? (latestThread.preview || 'Đã có cuộc hội thoại')
-                        : 'Chưa có tin nhắn hay cuộc hội thoại nào.'}
-                    </span>
-                  </span>
-                  {unreadCount > 0 && <Badge tone="danger">{unreadCount}</Badge>}
-                </ContactListItem>
-              );
-            })}
-            {!allContacts.length && (
+          <ContactScrollArea className="vsr-contact-list__items" aria-label="Danh sách liên hệ và nguồn hệ thống">
+            <h3 className="vsr-contact-list__section-heading">Nhân vật</h3>
+            {characterContacts.length ? characterContacts.map(renderContactItem) : (
               <div className="vsr-contact-list__empty" role="status">
                 <span className="vsr-contact-list__empty-icon" aria-hidden="true">contacts</span>
-                <strong>Chưa có liên hệ nào</strong>
-                <p>Bạn chưa gặp nhân vật nào và cũng chưa có cuộc hội thoại nào được ghi nhận.</p>
+                <strong>Chưa có nhân vật liên hệ</strong>
+                <p>Nhân vật sẽ xuất hiện tại đây khi đã gặp hoặc có thread được kích hoạt.</p>
               </div>
             )}
+            <h3 className="vsr-contact-list__section-heading">Hệ thống</h3>
+            {systemContactEntries.map(renderContactItem)}
           </ContactScrollArea>
         </ContactList>
 
@@ -550,6 +565,7 @@ export default function ContactPanel({ open, onClose, player, contacts = [], ses
                         const senderId = line.nameID || line.char_id;
                         const isPlayer = senderId === player?.id;
                         const sender = allContacts.find(contact => contact.id === senderId);
+                        const senderName = sender?.name || (selected.kind === 'system' ? selected.name : contactName(senderId));
                         return isPlayer ? (
                           <div className="vsr-contact-message is-player" key={selectedThreadId + ':' + index}>
                             <p>{line.text || ''}</p>
@@ -557,7 +573,7 @@ export default function ContactPanel({ open, onClose, player, contacts = [], ses
                         ) : (
                           <div className="vsr-contact-message-row" key={selectedThreadId + ':' + index}>
                             <ContactAvatar
-                              name={sender?.name || contactName(senderId)}
+                              name={senderName}
                               avatar={sender?.avatar}
                               size="sm"
                               className="vsr-contact-message-row__avatar"
