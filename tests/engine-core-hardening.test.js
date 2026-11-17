@@ -14,6 +14,7 @@ import { SceneSystem } from '../engine/modules/Scene.js';
 import { AutomationSystem } from '../engine/modules/Automation.js';
 import { DEMO_SCRIPT } from '../demo_script.js';
 import { GameEngine } from '../engine/GameEngine.js';
+import { normalizeSaveEnvelope } from '../engine/persistence/SaveState.js';
 import { JsonProtocol } from '../protocol/JsonProtocol.js';
 
 function validScenario() {
@@ -62,6 +63,24 @@ test('engine.init can load a scenario without entering its entry scene', async (
     assert.equal(snapshot.presentation.scene, null);
   } finally {
     engine.dispose();
+  }
+});
+
+test('save envelope accepts only the current explicit save version', () => {
+  const base = {
+    protocol: 'vsr-save',
+    saveVersion: 2,
+    scenario: {},
+    state: {},
+    savedAt: new Date().toISOString()
+  };
+  assert.deepEqual(normalizeSaveEnvelope(base), base);
+
+  for (const saveVersion of [undefined, 1, 3]) {
+    const legacyOrUnsupported = { ...base };
+    if (saveVersion === undefined) delete legacyOrUnsupported.saveVersion;
+    else legacyOrUnsupported.saveVersion = saveVersion;
+    assert.throws(() => normalizeSaveEnvelope(legacyOrUnsupported), /Unsupported save version/);
   }
 });
 
