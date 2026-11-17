@@ -113,10 +113,12 @@ function ContactProfile({ character, contacts, onSelect }) {
         </p>
       </section>
 
-      <section className="vsr-contact-profile__section">
-        <h4><span aria-hidden="true">insights</span>Chỉ số</h4>
-        <StatList stats={character.stats} />
-      </section>
+      {Object.keys(character.stats || {}).length > 0 && (
+        <section className="vsr-contact-profile__section">
+          <h4><span aria-hidden="true">insights</span>Chỉ số</h4>
+          <StatList stats={character.stats} />
+        </section>
+      )}
 
       {Array.isArray(character.relationship) && character.relationship.length > 0 && (
         <section className="vsr-contact-profile__section">
