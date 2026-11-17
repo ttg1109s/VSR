@@ -15,7 +15,7 @@ import {JsonProtocol,cloneJsonValue} from '../protocol/JsonProtocol.js';
 import {verifyPassword} from './modules/password/verify.js';
 import {PasswordSystem} from './modules/password/PasswordSystem.js';
 import {TaskManager} from './runtime/TaskManager.js';
-import {createSaveEnvelope,normalizeSaveEnvelope,SAVE_VERSION} from './persistence/SaveState.js';
+import {createSaveEnvelope,normalizeSaveEnvelope,normalizeCharacterVisitCounters,SAVE_VERSION} from './persistence/SaveState.js';
 
 export class GameEngine {
  constructor({taskManager,engineId,authorizeCommand,requireAuthorization=false,clock}={}) {
@@ -265,20 +265,7 @@ export class GameEngine {
   for(const sceneId of Object.keys(restored.scenes)) {
    if(!normalized.state.scenes?.[sceneId])throw new TypeError(`Save contains unknown scene "${sceneId}".`);
   }
-  for(const [charId,charState] of Object.entries(restored.characters)) {
-   const scenarioCharacter=normalized.state.characters?.[charId];
-   if(!scenarioCharacter)throw new TypeError(`Save contains unknown character "${charId}".`);
-   if(!Array.isArray(charState?.moveList)||charState.moveList.length!==(scenarioCharacter.moveList||[]).length) {
-    throw new TypeError(`Save moveList does not match scenario for character "${charId}".`);
-   }
-   charState.moveList.forEach((entry,index)=>{
-    if(!entry||typeof entry!=='object'||Array.isArray(entry))throw new TypeError(`Save character "${charId}" moveList[${index}] is invalid.`);
-    if(entry.countVisited===undefined)entry.countVisited=0;
-    if(!Number.isSafeInteger(entry.countVisited)||entry.countVisited<0) {
-     throw new TypeError(`Save character "${charId}" moveList[${index}].countVisited must be a non-negative safe integer.`);
-    }
-   });
-  }
+  normalizeCharacterVisitCounters(restored.characters,normalized.state.characters);
   const originalEntryCharacter=restored.originalEntryCharacter||normalized.state.originalEntryCharacter||'player';
   const currentEntryCharacter=restored.entryCharacter||originalEntryCharacter;
   if(typeof originalEntryCharacter!=='string'||!originalEntryCharacter.trim()||typeof currentEntryCharacter!=='string'||!currentEntryCharacter.trim()) {
