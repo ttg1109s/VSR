@@ -775,7 +775,7 @@
   color: var(--vsr-color-text);
 }
 
-/* Identity drawer composition: existing VSR tokens and shared primitives. */
+/* Identity drawer follows the flat Contact detail layout. */
 .vsr-identity-drawer.vsr-overlay-panel{
   display:flex;
   flex-direction:column;
@@ -787,7 +787,7 @@
   flex:none;
   align-items:flex-start;
   padding:20px 16px 16px;
-  border-bottom:1px solid var(--vsr-color-border-subtle);
+  border-bottom:0;
 }
 .vsr-identity-drawer .vsr-overlay-header h2{
   font-size:20px;
@@ -819,16 +819,15 @@
 .vsr-identity-content{
   display:flex;
   flex-direction:column;
-  gap:16px;
-  padding:16px 16px 24px;
+  gap:22px;
+  padding:8px 16px 28px;
 }
 .vsr-identity-hero{
   display:flex;
   align-items:center;
   gap:16px;
   min-width:0;
-  padding:4px 0 16px;
-  border-bottom:1px solid var(--vsr-color-border-subtle);
+  padding:4px 0;
 }
 .vsr-identity-hero__avatar-wrap{
   position:relative;
@@ -864,83 +863,91 @@
   display:flex;
   align-items:flex-start;
   gap:12px;
-  padding:16px;
-  border:1px solid var(--vsr-color-border-subtle);
-  border-radius:var(--vsr-radius-lg);
-  background:var(--vsr-color-primary-container);
+  padding:0;
+  border:0;
+  border-radius:0;
+  background:transparent;
 }
 .vsr-identity-mode__icon{
   display:flex;
   flex:none;
   align-items:center;
   justify-content:center;
-  width:36px;
-  height:36px;
-  border-radius:var(--vsr-radius-md);
-  background:var(--vsr-color-surface);
+  width:28px;
+  height:28px;
   color:var(--vsr-color-primary);
-  font:24px/1 var(--vsr-font-icon);
+  font:22px/1 var(--vsr-font-icon);
 }
 .vsr-identity-mode__copy{
   display:flex;
   flex:1;
   flex-direction:column;
-  gap:6px;
+  gap:5px;
   min-width:0;
 }
 .vsr-identity-mode__copy h3{
   margin:0;
   color:var(--vsr-color-text);
-  font-size:18px;
+  font-size:16px;
   font-weight:650;
-  line-height:24px;
+  line-height:22px;
 }
 .vsr-identity-mode__copy p{
   margin:0;
-  color:var(--vsr-color-text);
+  color:var(--vsr-color-text-secondary);
   font-size:14px;
   line-height:21px;
 }
-.vsr-identity-target{
+.vsr-identity-facts{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  min-width:0;
+}
+.vsr-identity-fact{
   display:flex;
   align-items:center;
-  gap:10px;
-  min-height:64px;
-  padding:10px 12px;
-  border:1px solid var(--vsr-color-border);
-  border-radius:var(--vsr-radius-lg);
-  background:var(--vsr-color-surface);
+  justify-content:space-between;
+  gap:16px;
+  min-width:0;
 }
-.vsr-identity-target>strong{
-  flex:1;
+.vsr-identity-fact__label{
+  color:var(--vsr-color-text-secondary);
+  font-size:13px;
+  line-height:19px;
+}
+.vsr-identity-fact__value{
+  display:inline-flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:9px;
   min-width:0;
   color:var(--vsr-color-text);
   font-size:14px;
+  text-align:right;
+}
+.vsr-identity-fact__value .vsr-contact-avatar{
+  width:32px;
+  height:32px;
+  flex:0 0 32px;
+}
+.vsr-identity-fact__value strong{
+  overflow-wrap:anywhere;
   font-weight:600;
 }
-.vsr-identity-target .vsr-contact-avatar{
-  width:44px;
-  height:44px;
-  flex-basis:44px;
-}
-.vsr-identity-target__name{
-  color:var(--vsr-color-text);
-  font-size:15px;
-  font-weight:600;
-}
-.vsr-identity-target__chevron{
-  color:var(--vsr-color-text-secondary);
-  font:22px/1 var(--vsr-font-icon);
+.vsr-identity-fact.is-emphasized .vsr-identity-fact__label,
+.vsr-identity-fact.is-emphasized .vsr-identity-fact__value{
+  color:var(--vsr-color-primary);
 }
 .vsr-identity-section{
   display:flex;
   flex-direction:column;
   gap:10px;
   min-width:0;
-  padding:14px;
-  border:1px solid var(--vsr-color-border-subtle);
-  border-radius:var(--vsr-radius-lg);
-  background:var(--vsr-color-surface);
+  padding:0;
+  border:0;
+  border-radius:0;
+  background:transparent;
 }
 .vsr-identity-section>h3{
   display:flex;
@@ -948,38 +955,32 @@
   gap:10px;
   margin:0;
   color:var(--vsr-color-text);
-  font-size:17px;
+  font-size:16px;
   font-weight:650;
-  line-height:24px;
+  line-height:23px;
 }
 .vsr-identity-section>h3>span{
   color:var(--vsr-color-text-secondary);
-  font:21px/1 var(--vsr-font-icon);
+  font:20px/1 var(--vsr-font-icon);
 }
 .vsr-identity-section .vsr-contact-profile__description{
+  margin:0;
   font-size:14px;
   line-height:21px;
 }
 .vsr-identity-section .vsr-contact-stat-grid{gap:10px}
 .vsr-identity-section .vsr-contact-stat-card{padding:4px 0}
-.vsr-identity-section .vsr-contact-relationships{gap:0}
+.vsr-identity-section .vsr-contact-relationships{gap:6px}
 .vsr-identity-section .vsr-contact-relationship{
-  min-height:64px;
-  padding:8px 0;
-  border-top:1px solid var(--vsr-color-border-subtle);
+  min-height:56px;
+  padding:6px 0;
+  border:0;
 }
-.vsr-identity-section .vsr-contact-relationship:first-child{border-top:0}
 .vsr-identity-section .vsr-contact-relationship .vsr-button{
   min-height:40px;
 }
-.vsr-identity-empty{
-  margin:0;
-  color:var(--vsr-color-text-secondary);
-  font-size:13px;
-  line-height:20px;
-}
 @media (min-width:600px){
   .vsr-identity-drawer .vsr-overlay-header{padding:24px 24px 16px}
-  .vsr-identity-content{padding:20px 24px 28px;gap:20px}
+  .vsr-identity-content{padding:8px 24px 32px;gap:24px}
   .vsr-identity-hero__avatar-wrap .vsr-contact-avatar--lg{width:88px;height:88px}
 }
