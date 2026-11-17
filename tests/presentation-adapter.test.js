@@ -165,7 +165,11 @@ test('Contact consumes the live, read-only character projection from Engine snap
     assert.equal(mai.name, 'Mai');
     assert.equal(mai.presence, 'present');
     assert.ok(mai.stats.trust);
-    assert.ok(Array.isArray(mai.relationship));
+    assert.deepEqual(mai.relationshipWithPlayer, {
+      hasRelationship: false,
+      tag: null
+    });
+    assert.equal(mai.metCount, 0);
     assert.equal(snapshot.presentation.contacts.some(contact => contact.id === player.id), false);
 
     const received = [];
@@ -185,6 +189,48 @@ test('Contact consumes the live, read-only character projection from Engine snap
   }
 });
 
+
+
+test('Contact projects only the selected character relationship with entryCharacter and its meeting count', async () => {
+  const host = new LocalEngineHost();
+  const client = new JsonClient(host);
+  try {
+    const initial = await client.initialize(JSON.parse(host.getDemoScenario()));
+    const entryCharacterId = initial.state.entryCharacter;
+    const mai = host.engine.state.characters.mai;
+    mai.relationship = [
+      ['Người quen', 'keeper'],
+      ['Đồng minh', entryCharacterId]
+    ];
+    mai.met = [
+      `${entryCharacterId}:3`,
+      'keeper:7'
+    ];
+    host.engine.commitState('contact.relationship.updated');
+
+    const projectedMai = client.getSnapshot().presentation.contacts.find(contact => contact.id === 'mai');
+    assert.deepEqual(projectedMai.relationshipWithPlayer, {
+      hasRelationship: true,
+      tag: 'Đồng minh'
+    });
+    assert.equal(projectedMai.metCount, 3);
+    assert.equal(Object.hasOwn(projectedMai, 'relationship'), false);
+
+    mai.relationship = [['Người quen', 'keeper']];
+    mai.met = ['keeper:7'];
+    host.engine.commitState('contact.relationship.cleared');
+
+    const withoutPlayerRelationship = client.getSnapshot().presentation.contacts.find(contact => contact.id === 'mai');
+    assert.deepEqual(withoutPlayerRelationship.relationshipWithPlayer, {
+      hasRelationship: false,
+      tag: null
+    });
+    assert.equal(withoutPlayerRelationship.metCount, 0);
+  } finally {
+    client.dispose();
+    host.close();
+  }
+});
 
 test('an Action goto chat effect projects the active contact and thread for React navigation', async () => {
   const host = new LocalEngineHost();
