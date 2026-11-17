@@ -61,48 +61,27 @@ function StatList({ stats = {} }) {
   );
 }
 
-function RelationshipList({ relationships = [], contacts, onSelect }) {
-  if (!relationships.length) {
-    return (
-      <div className="vsr-contact-profile__empty-state">
-        <span className="vsr-contact-profile__empty-icon" aria-hidden="true">group</span>
-        <strong>Chưa có quan hệ</strong>
-        <span>Các mối quan hệ sẽ xuất hiện tại đây khi được ghi nhận.</span>
-      </div>
-    );
-  }
+function RelationshipSummary({ relationshipWithPlayer, metCount = 0 }) {
+  const hasRelationship = relationshipWithPlayer?.hasRelationship === true;
+  const tag = hasRelationship && typeof relationshipWithPlayer.tag === 'string'
+    ? relationshipWithPlayer.tag.trim()
+    : '';
 
   return (
-    <div className="vsr-contact-relationships">
-      {relationships.map((relationship, index) => {
-        const related = contacts.find(item => item.id === relationship.characterId);
-        const name = relationship.characterName || related?.name || relationship.characterId || 'Không xác định';
-        return (
-          <div className="vsr-contact-relationship" key={relationship.characterId || index}>
-            {related ? (
-              <ContactAvatar name={related.name || related.id} avatar={related.avatar} />
-            ) : (
-              <span className="vsr-contact-relationship__avatar" aria-hidden="true">
-                {(name || '?').trim().charAt(0).toUpperCase()}
-              </span>
-            )}
-            <div className="vsr-contact-relationship__copy">
-              <strong>{name}</strong>
-              <span>{relationship.tag || 'Chưa phân loại'}</span>
-            </div>
-            {related && (
-              <Button size="sm" variant="tertiary" onClick={() => onSelect(related.id)}>
-                Xem hồ sơ
-              </Button>
-            )}
-          </div>
-        );
-      })}
+    <div className="vsr-contact-relationship-summary">
+      <div className="vsr-contact-relationship-summary__type">
+        <span className="vsr-contact-relationship-summary__label">Quan hệ với người chơi</span>
+        <strong>{tag || 'Chưa có quan hệ được ghi nhận'}</strong>
+      </div>
+      <div className="vsr-contact-relationship-summary__count">
+        <span className="vsr-contact-relationship-summary__label">Số lần đã gặp</span>
+        <strong>{metCount} lần</strong>
+      </div>
     </div>
   );
 }
 
-function ContactProfile({ character, contacts, onSelect }) {
+function ContactProfile({ character }) {
   if (!character) return null;
   return (
     <div className="vsr-contact-profile">
@@ -120,12 +99,13 @@ function ContactProfile({ character, contacts, onSelect }) {
         </section>
       )}
 
-      {Array.isArray(character.relationship) && character.relationship.length > 0 && (
-        <section className="vsr-contact-profile__section">
-          <h4><span aria-hidden="true">groups</span>Quan hệ</h4>
-          <RelationshipList relationships={character.relationship} contacts={contacts} onSelect={onSelect} />
-        </section>
-      )}
+      <section className="vsr-contact-profile__section">
+        <h4><span aria-hidden="true">groups</span>Các mối quan hệ</h4>
+        <RelationshipSummary
+          relationshipWithPlayer={character.relationshipWithPlayer}
+          metCount={character.metCount}
+        />
+      </section>
     </div>
   );
 }
@@ -531,14 +511,7 @@ export default function ContactPanel({ open, onClose, player, contacts = [], ses
               {profileOpen && (
                 <div className="vsr-contact-info-panel" role="region" aria-label="Thông tin liên hệ">
                   <ContactScrollArea className="vsr-contact-info-panel__scroll">
-                    <ContactProfile
-                      character={selected}
-                      contacts={allContacts}
-                      onSelect={id => {
-                        selectContact(id);
-                        setProfileOpen(true);
-                      }}
-                    />
+                    <ContactProfile character={selected} />
                   </ContactScrollArea>
                 </div>
               )}
