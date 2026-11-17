@@ -2,6 +2,7 @@
 
 import { hideInput } from './chat/Presentation.js';
 import { ChatBlockHandlers } from './chat/BlockHandler.js';
+import { COMMUNICATION_SENDER_ID, UNKNOWN_SENDER_ID } from './chat/systemSenders.js';
 
 export const ChatSystem = {
     // --- Helper: Quản lý lớp phủ Z-Index ---
@@ -15,8 +16,19 @@ export const ChatSystem = {
     },
 
     getChatOwner(chatId) {
-        const sender = this.api.engine.state.get('chat.sender', { id: chatId });
-        return sender || 'spam';
+        const chat = this.src.chat?.[chatId];
+        const sender = chat?.meta?.sender ?? this.api.engine.state.get('chat.sender', { id: chatId });
+        const identityId = this._getCurrentIdentityKey?.() || this.api.engine.state.get('entryCharacter') || 'player';
+        if (sender === COMMUNICATION_SENDER_ID) return COMMUNICATION_SENDER_ID;
+        const characters = this.src.characters || {};
+        const isCharacter = id => id === 'player' || Object.hasOwn(characters, id);
+        if (sender && sender !== identityId && isCharacter(sender)) return sender;
+        if (sender === identityId) {
+            const recipient = (Array.isArray(chat?.meta?.to) ? chat.meta.to : [])
+                .find(id => id !== identityId && isCharacter(id));
+            if (recipient) return recipient;
+        }
+        return UNKNOWN_SENDER_ID;
     },
 
     getThreads(charId) {
@@ -25,18 +37,14 @@ export const ChatSystem = {
         const chats = state.getRuntimeSnapshot('chats') || {};
         const histories = state.getRuntimeSnapshot('chatHistory') || {};
 
-        if (charId === 'spam') {
-            // Logic spam: Tìm các chat KHÔNG có sender rõ ràng hoặc sender không tồn tại
-            const allDefinedChats = new Set();
-            // Lấy danh sách các chat đã được assign cho character qua meta.sender
-            if (this.src.chat) {
-                Object.entries(this.src.chat).forEach(([cid, cData]) => {
-                    if (cData.meta && cData.meta.sender) {
-                        allDefinedChats.add(cid);
-                    }
-                });
-            }
-            chatIds = Object.keys(chats).filter(id => !allDefinedChats.has(id));
+        if (charId === UNKNOWN_SENDER_ID) {
+            // Unknown/spam includes null, empty and undeclared sender IDs.
+            // The built-in Communication source is kept in its own system section.
+            chatIds = Object.keys(chats).filter(id => {
+                const sender = this.src.chat?.[id]?.meta?.sender;
+                const isCharacter = sender === 'player' || (typeof sender === 'string' && Object.hasOwn(this.src.characters || {}, sender));
+                return sender !== COMMUNICATION_SENDER_ID && !isCharacter;
+            });
         } else {
             // Logic chuẩn: Tìm các chat có liên quan đến charId (Sender hoặc Receiver)
             const playerChar = this._getCurrentIdentityKey?.() || this.api.engine.state.get('entryCharacter') || 'player';
@@ -77,7 +85,7 @@ export const ChatSystem = {
             }
 
             // [FIXED] Use API for Title
-            const title = this.api.engine.state.get('chat.title', { id: id }) || (charId === 'spam' ? "Unknown Message" : "No Subject");
+            const title = this.api.engine.state.get('chat.title', { id: id }) || (charId === UNKNOWN_SENDER_ID ? "Unknown Message" : "No Subject");
 
             return {
                 id: id,
