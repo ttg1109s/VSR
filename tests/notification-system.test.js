@@ -36,6 +36,17 @@ test('notification manager normalizes severity and publishes the canonical event
   assert.equal(notifications.getPending().length, 1);
 });
 
+test('notification manager rejects legacy notification levels and severity field', () => {
+  const notifications = new NotificationSystem({ protocol: makeProtocol() });
+  for (const level of ['warn', 'error', 'magic']) {
+    assert.throws(() => notifications.add('Legacy', 'Not supported', level), /Unsupported notification level/);
+  }
+  assert.throws(
+    () => notifications.notify({ title: 'Legacy', message: 'Not supported', severity: 'warning' }),
+    /severity is not supported/
+  );
+});
+
 test('notification manager deduplicates, tracks read state, and expires notifications', () => {
   const protocol = makeProtocol();
   let now = 10;
