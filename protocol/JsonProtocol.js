@@ -1,3 +1,4 @@
+import { getFakerActingIds } from '../engine/modules/entity/Identity.js';
 const RUNTIME_ONLY_STATE_KEYS=new Set(['effectQueue','isSyncQueueRunning','isAsyncQueueRunning','pausedBackgroundTasks']);
 export function cloneJsonValue(value,seen=new WeakSet()){
  if(value===null||typeof value==='string'||typeof value==='boolean')return value;
@@ -74,8 +75,7 @@ export class JsonProtocol{
     const entryCharacter=engine.state.entryCharacter||'player';
     const faker=engine.state.faker||{};
     const fakerMode=faker.mode||engine.getConfig?.('fakerMode')||'soul';
-    const actingIds=[entryCharacter];
-    if(faker.active&&fakerMode==='mask'&&faker.targetId)actingIds.push(faker.targetId);
+    const actingIds=getFakerActingIds(entryCharacter,faker,fakerMode);
     const permissionAllowed=!Array.isArray(set.charAllow)||set.charAllow.length===0||actingIds.some(id=>set.charAllow.includes(id));
     let requirementPass=null;
     if(set.requirement===true){
