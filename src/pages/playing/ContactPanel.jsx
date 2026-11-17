@@ -169,7 +169,6 @@ function IdentityDrawer({ open, onClose, player, contacts, onSelectContact }) {
       open={open}
       onClose={onClose}
       title="Căn cước"
-      description="Danh tính và trạng thái hiện tại của bạn"
       size="lg"
       side="right"
       className="vsr-identity-drawer"
