@@ -29,13 +29,16 @@ export const EffectSystem = {
                 hook: context.hook
             });
         } else if (context.sceneId && context.hook) {
-            const scope = context.actionId ? 'action' : (context.charId ? 'character' : (context.routerId ? 'router' : null));
+            const scope = context.effectScope === 'character_move' && context.charId && Number.isSafeInteger(context.moveIndex) && context.moveIndex >= 0
+                ? 'character_move'
+                : (context.actionId ? 'action' : (context.charId ? 'character' : (context.routerId ? 'router' : null)));
             if (scope) {
                 listKey = this.generateBanKey(scope, {
                     sId: context.sceneId,
                     rId: context.routerId,
                     aId: context.actionId,
                     cId: context.charId,
+                    moveIndex: context.moveIndex,
                     hook: context.hook
                 });
             }
