@@ -774,11 +774,14 @@
         "stats": {
           "type": "object"
         },
-        "relationship": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/playerProjection/properties/relationship/items"
-          }
+        "relationshipWithPlayer": {
+          "type": "object",
+          "required": ["hasRelationship", "tag"],
+          "properties": {
+            "hasRelationship": { "type": "boolean" },
+            "tag": { "type": ["string", "null"] }
+          },
+          "additionalProperties": false
         },
         "presence": {
           "type": "string",
