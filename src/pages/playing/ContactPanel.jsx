@@ -150,7 +150,7 @@ function IdentityDrawer({ open, onClose, player, contacts, onSelectContact }) {
     },
     swap: {
       title: 'Hoán đổi · SWAP',
-      description: 'Căn cước hiện tại đã chuyển sang nhân vật này. Me được hiển thị theo nhân vật đang là entryCharacter; không có lớp SOUL hoặc MASK.'
+      description: `Bạn đã hoán đổi sang căn cước của ${player.name || player.id}. Hồ sơ hiện tại phản ánh nhân vật này, không phải một lớp diện mạo hay một cơ thể đang mượn.`
     }
   }[mode] || {
     title: 'Căn cước hiện tại',
