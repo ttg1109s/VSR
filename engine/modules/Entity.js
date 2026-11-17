@@ -57,7 +57,7 @@ export const EntitySystem = {
         this.taskManager.operator(`move_char_${charId}`, 'enabled');
     },
 
-    resumeNPCMovement() {
+    resumeCharacterMovement() {
         const state = this.api.engine.state;
         const faker = state.getRuntimeSnapshot('faker') || {};
         const characters = state.getRuntimeSnapshot('characters') || {};
