@@ -130,12 +130,105 @@ function ContactProfile({ character, contacts, onSelect }) {
   );
 }
 
+
+function IdentityDrawer({ open, onClose, player, contacts, onSelectContact }) {
+  if (!player) return null;
+  const mode = player.identityMode;
+  const target = player.identityTarget;
+  const modeContent = {
+    soul: {
+      title: 'Đoạt xá · SOUL',
+      description: target
+        ? `Bạn vẫn giữ nguyên linh hồn và căn cước gốc, nhưng hiện đang cư trú trong cơ thể của ${target.name}.`
+        : 'Linh hồn và căn cước gốc của bạn được giữ nguyên.'
+    },
+    mask: {
+      title: 'Ngụy trang · MASK',
+      description: target
+        ? `Bạn vẫn là chính mình, nhưng đang khoác tên gọi, diện mạo và quyền hành động của ${target.name}. Đây không phải là hoán đổi chủ thể.`
+        : 'Bạn đang sử dụng một lớp căn cước ngụy trang.'
+    },
+    swap: {
+      title: 'Hoán đổi · SWAP',
+      description: 'Căn cước hiện tại đã chuyển sang nhân vật này. Me được hiển thị theo nhân vật đang là entryCharacter; không có lớp SOUL hoặc MASK.'
+    }
+  }[mode] || {
+    title: 'Căn cước hiện tại',
+    description: 'Đây là danh tính đang được Engine sử dụng cho bạn.'
+  };
+  const badgeLabel = mode === 'soul' ? 'SOUL' : mode === 'mask' ? 'MASK' : null;
+  const profileCharacter = {
+    ...player,
+    relationship: Array.isArray(player.relationship) ? player.relationship : []
+  };
+
+  return (
+    <Drawer
+      open={open}
+      onClose={onClose}
+      title="Căn cước"
+      description="Danh tính và trạng thái hiện tại của Me"
+      size="lg"
+      side="right"
+      className="vsr-identity-drawer"
+    >
+      <div className="vsr-identity-content">
+        <section className="vsr-identity-hero" aria-label="Danh tính hiện tại">
+          <span className="vsr-identity-hero__avatar-wrap">
+            <ContactAvatar name={player.name || player.id} avatar={player.avatar} size="lg" />
+            {badgeLabel && <span className="vsr-contact-me__mode-badge">{badgeLabel}</span>}
+          </span>
+          <div className="vsr-identity-hero__copy">
+            <span className="vsr-identity-hero__eyebrow">ME</span>
+            <h3>{player.name || player.id}</h3>
+            <Badge tone={mode ? 'info' : 'neutral'}>{modeContent.title}</Badge>
+          </div>
+        </section>
+
+        <section className="vsr-identity-mode" aria-label="Ý nghĩa chế độ căn cước">
+          <h3>Trạng thái căn cước</h3>
+          <p>{modeContent.description}</p>
+          {target && (mode === 'soul' || mode === 'mask') && (
+            <div className="vsr-identity-target">
+              <ContactAvatar name={target.name || target.id} avatar={target.avatar} />
+              <div>
+                <strong>{target.name || target.id}</strong>
+                <span>{mode === 'soul' ? 'Cơ thể đang cư trú' : 'Diện mạo và căn cước đang mượn'}</span>
+              </div>
+            </div>
+          )}
+        </section>
+
+        {player.description && (
+          <section className="vsr-contact-profile__section">
+            <h3>Giới thiệu</h3>
+            <p className="vsr-contact-profile__description">{player.description}</p>
+          </section>
+        )}
+        <section className="vsr-contact-profile__section">
+          <h3>Chỉ số của Me</h3>
+          <StatList stats={player.stats || {}} />
+        </section>
+        <section className="vsr-contact-profile__section">
+          <h3>Quan hệ</h3>
+          <RelationshipList
+            relationships={profileCharacter.relationship}
+            contacts={contacts}
+            onSelect={onSelectContact}
+          />
+        </section>
+      </div>
+    </Drawer>
+  );
+}
+
 export default function ContactPanel({ open, onClose, player, contacts = [], session = null, viewRequest = null, client }) {
   const [selectedId, setSelectedId] = useState(null);
   const [mobileView, setMobileView] = useState('list');
   const [activeArea, setActiveArea] = useState('threads');
   const [selectedThreadId, setSelectedThreadId] = useState(null);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [identityOpen, setIdentityOpen] = useState(false);
   const [pendingThreadId, setPendingThreadId] = useState(null);
   const [chatPending, setChatPending] = useState(false);
   const [chatError, setChatError] = useState('');
@@ -213,6 +306,7 @@ export default function ContactPanel({ open, onClose, player, contacts = [], ses
 
   function close() {
     setProfileOpen(false);
+    setIdentityOpen(false);
     onClose?.();
   }
 
@@ -263,28 +357,24 @@ export default function ContactPanel({ open, onClose, player, contacts = [], ses
         <ContactList className={mobileView === 'detail' ? 'is-hidden-compact' : ''}>
           <header className="vsr-contact-list__header">
             <h1>Messages</h1>
-            <Button size="sm" variant="tertiary" onClick={close} aria-label="Đóng danh bạ">
-              Đóng
-            </Button>
+            <div className="vsr-contact-list__header-actions">
+              {player && (
+                <Button
+                  size="sm"
+                  variant="tertiary"
+                  className="vsr-contact-identity-trigger"
+                  onClick={() => setIdentityOpen(true)}
+                  aria-label="Mở căn cước"
+                  title="Căn cước"
+                >
+                  <span className="vsr-contact-identity-trigger__icon" aria-hidden="true">badge</span>
+                </Button>
+              )}
+              <Button size="sm" variant="tertiary" onClick={close} aria-label="Đóng danh bạ">
+                Đóng
+              </Button>
+            </div>
           </header>
-          {player && (
-            <section className="vsr-contact-me" aria-label="Danh tính của bạn">
-              <h2 className="vsr-contact-me__heading">Me</h2>
-              <div className="vsr-contact-me__identity">
-                <span className="vsr-contact-me__avatar-wrap">
-                  <ContactAvatar name={player.name || player.id} avatar={player.avatar} />
-                  {(player.identityMode === 'soul' || player.identityMode === 'mask') && (
-                    <span className="vsr-contact-me__mode-badge" aria-label={player.identityMode === 'soul' ? 'Soul' : 'Mask'}>
-                      {player.identityMode.toUpperCase()}
-                    </span>
-                  )}
-                </span>
-                <div className="vsr-contact-me__copy">
-                  <strong>{player.name || player.id}</strong>
-                </div>
-              </div>
-            </section>
-          )}
           <h2 className="vsr-contact-list__section-heading">Liên hệ</h2>
           <ContactScrollArea className="vsr-contact-list__items" aria-label="Danh sách liên hệ">
             {allContacts.map(contact => {
@@ -474,7 +564,16 @@ export default function ContactPanel({ open, onClose, player, contacts = [], ses
           )}
         </ContactDetail>
       </ContactWorkspace>
-
+      <IdentityDrawer
+        open={identityOpen}
+        onClose={() => setIdentityOpen(false)}
+        player={player}
+        contacts={allContacts}
+        onSelectContact={id => {
+          setIdentityOpen(false);
+          selectContact(id);
+        }}
+      />
     </Drawer>
   );
 }
