@@ -289,7 +289,7 @@
   display: grid;
   place-items: center;
   min-height: 100svh;
-  padding: max(20px, var(--vsr-safe-area-top)) var(--vsr-page-padding) max(20px, var(--vsr-safe-area-bottom));
+  padding: max(20px, var(--vsr-safe-area-top)) max(var(--vsr-page-padding), var(--vsr-safe-area-right)) max(20px, var(--vsr-safe-area-bottom)) max(var(--vsr-page-padding), var(--vsr-safe-area-left));
 }
 .vsr-loader-page > .vsr-content-width {
   width: 100%;
