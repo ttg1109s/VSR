@@ -171,10 +171,11 @@ export class JsonProtocol{
    }
   };
   const faker=engine.state.faker||{};
-  const currentIdentityId=faker.active&&faker.targetId
-   ?faker.targetId
-   :(engine.state.entryCharacter||'player');
+  const currentIdentityId=engine.state.entryCharacter||'player';
   const currentCharacter=engine.state.characters?.[currentIdentityId]||null;
+  const fakerTarget=faker.active&&faker.targetId
+   ?engine.state.characters?.[faker.targetId]||null
+   :null;
   const projectRelationships=(character, fallback=[])=>{
    const relationships=Array.isArray(character?.set?.relationship)?character.set.relationship:
     (Array.isArray(character?.relationship)?character.relationship:fallback);
@@ -197,7 +198,20 @@ export class JsonProtocol{
    relationship:projectRelationships(character),
    ...(isPlayer?{identityMode:faker.active?fakerMode:null}:{})
   });
-  const playerProjection=currentCharacter?projectCharacter(currentIdentityId,currentCharacter,{isPlayer:true}):null;
+  const playerProjection=currentCharacter?{
+   ...projectCharacter(currentIdentityId,currentCharacter,{isPlayer:true}),
+   name:faker.active&&fakerMode==='mask'
+    ?(currentCharacter.set?.name||fakerTarget?.set?.name||fakerTarget?.meta?.name||currentCharacter.meta?.name||currentIdentityId)
+    :(currentCharacter.meta?.name||currentIdentityId),
+   avatar:faker.active&&fakerMode==='mask'
+    ?(fakerTarget?.meta?.avatar??currentCharacter.meta?.avatar??null)
+    :(currentCharacter.meta?.avatar??null),
+   identityMode:faker.active?fakerMode:null,
+   identityTarget:fakerTarget?{
+    id:faker.targetId,
+    name:fakerTarget.set?.name||fakerTarget.meta?.name||faker.targetId
+   }:null
+  }:null;
   const contacts=Object.entries(engine.state.characters||{})
    .filter(([characterId,character])=>{
     if(characterId===currentIdentityId)return false;
