@@ -107,10 +107,6 @@ export const LoaderSystem = {
             if (char.place.scene_id === undefined) char.place.scene_id = "";
             if (char.place.currentIndex === undefined) char.place.currentIndex = 0;
 
-            // Remove legacy root props
-            if (char.currentScene !== undefined) delete char.currentScene;
-            if (char.currentIndex !== undefined) delete char.currentIndex;
-
             if (!char.stats) char.stats = {};
             if (!char.effect) char.effect = { meeting: {}, leave: {} };
             if (char.moveList === undefined || char.moveList === null) char.moveList = [];
@@ -220,14 +216,7 @@ export const LoaderSystem = {
                                 state.actions[actKey] = JSON.parse(JSON.stringify({ ...defActionSet, ...(item.set || {}) }));
                             }
                         }
-                    });
-                } else if (routerActions && typeof routerActions === 'object') {
-                    // [LEGACY] Hỗ trợ ngược: router.actions vẫn là object map {actionId: {set}}
-                    Object.keys(routerActions).forEach(aId => {
-                        if (!routerActions[aId]) return;
-                        const actKey = `${sId}_${rId}_${aId}`;
-                        state.actions[actKey] = JSON.parse(JSON.stringify({ ...defActionSet, ...(routerActions[aId].set || {}) }));
-                    });
+                    }););
                 }
             }
         }
