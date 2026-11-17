@@ -136,8 +136,8 @@ function ActionCard({ action, pending = false, interactionBlocked = false, passw
     ? 'Requirements satisfied'
     : requirementFailed ? 'Requirements not satisfied' : 'Requirement status unknown';
   const permissionText = permissionPassed
-    ? 'Character has permission to perform this action'
-    : permissionFailed ? 'Character does not have permission to perform this action' : 'Permission status unknown';
+    ? 'Permission granted'
+    : permissionFailed ? 'Permission denied' : 'Permission unknown';
 
   return <article className="vsr-card vsr-action-card" data-action-key={action.key}>
     <div className="vsr-action-card__heading">
