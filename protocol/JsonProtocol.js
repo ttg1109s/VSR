@@ -224,7 +224,7 @@ export class JsonProtocol{
    currentBody:describeIdentity(currentBodyId),
    activePersona:describeIdentity(activePersonaId,{useSetName:faker.active&&fakerMode==='mask'}),
    statsOwner:describeIdentity(currentIdentityId),
-   relationshipOwner:describeIdentity(playerRelationshipIdentityId)
+   relationshipOwner:describeIdentity(playerRelationshipIdentityId,{useSetName:faker.active&&fakerMode==='mask'})
   };
   const playerProjection=currentCharacter?{
    ...projectCharacter(currentIdentityId,currentCharacter,{isPlayer:true}),
