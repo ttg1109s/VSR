@@ -130,7 +130,7 @@ const RelationshipStrategies = {
 
         const state = engine.api.engine.state;
         const runtimeOwnerId = engine.redirectTarget(target);
-        const entryCharacter = state.getRuntime?.('entryCharacter') || 'player';
+        const entryCharacter = state.getRuntime?.('entryCharacter', {}) || 'player';
         const faker = state.getRuntimeSnapshot?.('faker') || {};
         const ownerId = getFakerRelationshipIdentityId(runtimeOwnerId, entryCharacter, faker);
         const owner = state.getRuntime('characters.[id]', { id: ownerId });
