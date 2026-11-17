@@ -16,7 +16,6 @@ import {
   ContactWorkspace,
   DescriptionList,
   DescriptionListItem,
-  Dialog,
   Drawer,
   Separator,
 } from '../../design-system/index.js';
@@ -270,18 +269,20 @@ export default function ContactPanel({ open, onClose, player, contacts = [], ses
             <>
               <ContactHeader>
                 <Button
-                  className={activeArea === 'conversation' ? 'vsr-contact-back is-visible' : 'vsr-contact-back'}
+                  className={profileOpen || activeArea === 'conversation' ? 'vsr-contact-back is-visible' : 'vsr-contact-back'}
                   size="sm"
                   variant="tertiary"
                   onClick={() => {
-                    if (activeArea === 'conversation') {
+                    if (profileOpen) {
+                      setProfileOpen(false);
+                    } else if (activeArea === 'conversation') {
                       setActiveArea('threads');
                       setChatError('');
                     } else {
                       setMobileView('list');
                     }
                   }}
-                  aria-label={activeArea === 'conversation' ? 'Quay lại danh sách thread' : 'Quay lại danh sách liên hệ'}
+                  aria-label={profileOpen ? 'Đóng thông tin' : activeArea === 'conversation' ? 'Quay lại danh sách thread' : 'Quay lại danh sách liên hệ'}
                 >
                   ←
                 </Button>
@@ -293,12 +294,27 @@ export default function ContactPanel({ open, onClose, player, contacts = [], ses
                 >
                   <strong>{selected.name || selected.id}</strong>
                 </button>
-                <Button size="sm" variant="tertiary" onClick={() => setProfileOpen(true)}>
-                  Thông tin
+                <Button size="sm" variant="tertiary" className="vsr-contact-info-trigger" onClick={() => setProfileOpen(true)} aria-label="Thông tin">
+                  <span className="vsr-contact-info-trigger__icon" aria-hidden="true">info</span>
                 </Button>
               </ContactHeader>
 
-              <ContactScrollArea className="vsr-contact-detail-content">
+              {profileOpen && (
+                <div className="vsr-contact-info-panel" role="region" aria-label="Thông tin liên hệ">
+                  <ContactScrollArea className="vsr-contact-info-panel__scroll">
+                    <ContactProfile
+                      character={selected}
+                      player={player}
+                      contacts={allContacts}
+                      onSelect={id => {
+                        selectContact(id);
+                        setProfileOpen(true);
+                      }}
+                    />
+                  </ContactScrollArea>
+                </div>
+              )}
+              <ContactScrollArea className="vsr-contact-detail-content" aria-hidden={profileOpen || undefined}>
                 {activeArea === 'threads' ? (
                   <ContactTopicList aria-label={'Thread của ' + (selected.name || selected.id)}>
                     {threads.length ? threads.map(thread => (
@@ -409,25 +425,6 @@ export default function ContactPanel({ open, onClose, player, contacts = [], ses
         </ContactDetail>
       </ContactWorkspace>
 
-      <Dialog
-        open={profileOpen && Boolean(selected)}
-        onClose={() => setProfileOpen(false)}
-        title="Profile"
-        description="Thông tin hồ sơ từ snapshot Engine"
-        size="lg"
-      >
-        <div className="vsr-contact-info-content">
-          <ContactProfile
-            character={selected}
-            player={player}
-            contacts={allContacts}
-            onSelect={id => {
-              selectContact(id);
-              setProfileOpen(true);
-            }}
-          />
-        </div>
-      </Dialog>
     </Drawer>
   );
 }
