@@ -476,7 +476,8 @@
         "meta",
         "presentation",
         "availability",
-        "runtimeState"
+        "runtimeState",
+        "count"
       ],
       "properties": {
         "id": {
@@ -638,6 +639,29 @@
               "type": "boolean"
             }
           }
+        },
+        "count": {
+          "type": "object",
+          "required": [
+            "normal",
+            "pass",
+            "fail"
+          ],
+          "properties": {
+            "normal": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "pass": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "fail": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false
         }
       },
       "additionalProperties": true
@@ -749,14 +773,49 @@
     },
     "systemContactProjection": {
       "type": "object",
-      "required": ["id", "name", "description", "kind", "threads"],
+      "required": [
+        "id",
+        "name",
+        "description",
+        "kind",
+        "threads"
+      ],
       "properties": {
-        "id": { "type": "string", "enum": ["$communication", "spam"] },
-        "name": { "type": "string" },
-        "description": { "type": ["string", "null"] },
-        "avatar": { "type": ["string", "null"] },
-        "kind": { "type": "string", "enum": ["communication", "unknown"] },
-        "threads": { "type": "array", "items": { "$ref": "#/$defs/contactThreadProjection" } }
+        "id": {
+          "type": "string",
+          "enum": [
+            "$communication",
+            "spam"
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "avatar": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "communication",
+            "unknown"
+          ]
+        },
+        "threads": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/contactThreadProjection"
+          }
+        }
       },
       "additionalProperties": false
     },
@@ -795,10 +854,20 @@
         },
         "relationshipWithPlayer": {
           "type": "object",
-          "required": ["hasRelationship", "tag"],
+          "required": [
+            "hasRelationship",
+            "tag"
+          ],
           "properties": {
-            "hasRelationship": { "type": "boolean" },
-            "tag": { "type": ["string", "null"] }
+            "hasRelationship": {
+              "type": "boolean"
+            },
+            "tag": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
           },
           "additionalProperties": false
         },
@@ -907,14 +976,30 @@
                 "name"
               ],
               "properties": {
-                "id": { "type": "string" },
-                "name": { "type": "string" },
-                "avatar": { "type": ["string", "null"] },
-                "description": { "type": ["string", "null"] }
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "avatar": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "description": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
               },
               "additionalProperties": false
             },
-            { "type": "null" }
+            {
+              "type": "null"
+            }
           ]
         },
         "relationship": {
