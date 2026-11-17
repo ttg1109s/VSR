@@ -1205,9 +1205,9 @@
           "enum": [
             "info",
             "success",
-            "warn",
+            "warning",
             "danger",
-            "error"
+            "special"
           ]
         },
         "table": {
@@ -2519,9 +2519,9 @@
           "enum": [
             "info",
             "success",
-            "warn",
+            "warning",
             "danger",
-            "error"
+            "special"
           ]
         },
         "table": {
