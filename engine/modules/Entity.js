@@ -278,8 +278,8 @@ export const EntitySystem = {
         if (!this.isCharacterVisitValid(charId, token, currentScene, oldIndex) ||
             this.getCurrentIdentity() !== currentIdentity ||
             state.get('sceneId') !== playerSceneId ||
-            !state.getRuntimeSnapshot('scenes.[id]', { id: currentScene }) ||
-            this.isLocationBlocked(currentScene) ||
+            (currentScene && (!state.getRuntimeSnapshot('scenes.[id]', { id: currentScene }) ||
+                this.isLocationBlocked(currentScene))) ||
             !state.getRuntimeSnapshot('scenes.[id]', { id: nextSceneId }) ||
             this.isLocationBlocked(nextSceneId)) {
             if (this.isCharacterVisitValid(charId, token, currentScene, oldIndex)) this.scheduleCharacterMove(charId);
