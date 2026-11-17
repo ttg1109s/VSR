@@ -83,6 +83,7 @@ export const FakerSystem = {
 
         this.api.presentation.components.closePlayerCard();
         this.api.presentation.components.updatePlayerCard();
+        this.syncCharacterMovementIdentity?.();
         if (this.commitState) this.commitState('identity.changed');
     },
 
@@ -123,7 +124,7 @@ export const FakerSystem = {
 
         this.api.presentation.components.closePlayerCard();
         this.api.presentation.components.updatePlayerCard();
-        if (targetId && this.scheduleCharacterMove) this.scheduleCharacterMove(targetId);
+        this.syncCharacterMovementIdentity?.();
         if (this.commitState) this.commitState('identity.changed');
     },
 
