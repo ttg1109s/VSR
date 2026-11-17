@@ -132,13 +132,13 @@ export const FakerSystem = {
         state.update('characters', characters => {
             const source = characters?.[sourceId];
             const target = characters?.[targetId];
-            const npcLink = target?.set?.linkEffect === true;
+            const targetLinksStats = target?.set?.linkEffect === true;
             if (!source?.stats || !target?.stats) return characters;
 
             Object.keys(source.stats).forEach(key => {
                 const sourceStat = source.stats[key];
                 const targetStat = target.stats[key];
-                if (!npcLink || !targetStat) return;
+                if (!targetLinksStats || !targetStat) return;
                 if (reverse) {
                     sourceStat.current = Math.round(this.calculateSyncStat(
                         targetStat.current, 0, targetStat.max, 0, sourceStat.max
