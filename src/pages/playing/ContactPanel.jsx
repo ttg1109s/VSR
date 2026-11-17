@@ -114,8 +114,6 @@ function RelationshipList({ relationships = [], contacts, onSelect }) {
 
 function ContactProfile({ character, player, contacts, onSelect }) {
   if (!character) return null;
-  const isPlayer = character.id === player?.id;
-
   return (
     <div className="vsr-contact-profile">
       <section className="vsr-contact-profile__section">
