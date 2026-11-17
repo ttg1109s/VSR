@@ -56,11 +56,16 @@ export const EntitySystem = {
                 this.invalidateCharacterVisit(charId);
                 continue;
             }
+            let needsStart = false;
             if (this.getCharacterVisitToken(charId) === null) {
                 const token = this.createCharacterVisitToken(charId);
                 this.scheduleCharacterStill(charId, token);
+                needsStart = true;
             }
-            if (this.validateMoveState(charId)) this.scheduleCharacterMove(charId);
+            const moveTask = this.taskManager.plan?.[`move_char_${charId}`];
+            if (this.validateMoveState(charId) && (needsStart || !moveTask || !moveTask.isRunning)) {
+                this.scheduleCharacterMove(charId);
+            }
         }
     },
 
