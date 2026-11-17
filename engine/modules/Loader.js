@@ -67,10 +67,8 @@ export const LoaderSystem = {
             relationship: [],
             place: { scene_id: "", currentIndex: 0 },
             stats: {},
-            // [FIX] effect.meeting/leave phải là OBJECT (key theo char_id -> mảng effect),
-            // không phải ARRAY. Khớp với chuẩn hoá bên dưới (dòng ~103) và cách Entity.js
-            // đọc `char.effect.meeting[currentIdentity]` / `char.effect.leave[currentIdentity]`.
-            effect: { meeting: {}, leave: {} },
+            // Leave effects remain scenario-configurable; scene entry is handled by moveList.
+            effect: { leave: {} },
             moveList: [],
             met: [],
             inventory: [],
@@ -108,7 +106,7 @@ export const LoaderSystem = {
             if (char.place.currentIndex === undefined) char.place.currentIndex = 0;
 
             if (!char.stats) char.stats = {};
-            if (!char.effect) char.effect = { meeting: {}, leave: {} };
+            if (!char.effect) char.effect = { leave: {} };
             if (char.moveList === undefined || char.moveList === null) char.moveList = [];
             if (!Array.isArray(char.moveList)) {
                 throw new TypeError(`Character '${charId}' moveList must be an array.`);
