@@ -327,13 +327,15 @@ test('chat action can finish and reopen as a read-only review without duplicatin
     assert.equal(reviewRequest?.mode, 'review');
     assert.ok(reviewRequest?.requestId);
     unsubscribe();
-    assert.equal(reopened.session.chat.active, true);
-    assert.equal(reopened.session.chat.mode, 'review');
-    assert.equal(reopened.session.chat.isReview, true);
+    // The Engine review session ends immediately; the independent view request
+    // keeps the React history view open without pretending gameplay is active.
+    assert.equal(reopened.session.chat.active, false);
+    assert.equal(reopened.session.chat.mode, 'idle');
+    assert.equal(reopened.session.chat.isReview, false);
     assert.equal(reopened.session.chat.waitingChoice, false);
     assert.deepEqual(reopened.session.chat.history.chat_mai, completedHistory);
 
-    // A review session is read-only; its only progression command closes it.
+    // A progression command cannot advance or mutate a completed read-only thread.
     await client.nextChat();
     assert.equal(client.getSnapshot().session.chat.active, false);
     assert.equal(client.getSnapshot().session.chat.mode, 'idle');
