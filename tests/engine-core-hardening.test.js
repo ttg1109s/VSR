@@ -179,6 +179,44 @@ test('entering a locked scene is rejected by the engine', async () => {
   });
 });
 
+test('entering a scene containing a Character does not automatically mark them as met', async () => {
+  const characters = {
+    player: { place: { scene_id: 'start' }, met: [] },
+    npc: { place: { scene_id: 'destination' }, met: [], effect: { meeting: { player: [] } } }
+  };
+  let sceneId = 'start';
+  const state = {
+    get(path) {
+      if (path === 'sceneId') return sceneId;
+      if (path === 'entryCharacter') return 'player';
+      return undefined;
+    },
+    set(path, value) {
+      if (path === 'sceneId') sceneId = value;
+      if (path === 'char.scene_id') characters.player.place.scene_id = value;
+    },
+    getRuntimeSnapshot(path, params = {}) {
+      if (path === 'scenes.[id]') return params.id === 'destination' ? { activeRouterId: 'main' } : undefined;
+      if (path === 'faker') return { active: false };
+      if (path === 'characters') return characters;
+      if (path === 'characters.[id]') return characters[params.id];
+      return undefined;
+    }
+  };
+  const engine = {
+    api: { engine: { state }, presentation: { components: { updateCharacterList() {} } } },
+    src: { scenes: { destination: { routers: { main: {} } } } },
+    checkHardLock: () => false,
+    enterRouter: async () => {},
+    processRunnables: async () => {},
+    commitState() {}
+  };
+
+  await SceneSystem.enterScene.call(engine, 'destination');
+  assert.equal(sceneId, 'destination');
+  assert.deepEqual(characters.npc.met, []);
+});
+
 test('generated runtime schema stays identical to scenario.schema.json', () => {
   const sourceSchema = JSON.parse(readFileSync(new URL('../scenario.schema.json', import.meta.url), 'utf8'));
   assert.deepEqual(scenarioSchema, sourceSchema);
