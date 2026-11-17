@@ -94,3 +94,12 @@
   animation: none !important;
   transition: none !important;
 }
+
+
+/* Shared Drawer header contract: features provide title and optional actions only. */
+.vsr-overlay--drawer .vsr-overlay-header{display:flex;flex:none;align-items:center;min-height:64px;gap:12px;box-sizing:border-box;padding:12px 16px;border-bottom:1px solid var(--vsr-color-border-subtle);background:var(--vsr-color-surface)}
+.vsr-overlay--drawer .vsr-overlay-header__copy{flex:1;min-width:0}
+.vsr-overlay--drawer .vsr-overlay-header h2{margin:0;color:var(--vsr-color-text);font-size:18px;font-weight:600;letter-spacing:-.01em;line-height:24px}
+.vsr-overlay--drawer .vsr-overlay-header p{margin:4px 0 0;color:var(--vsr-color-text-secondary);font-size:13px;line-height:18px}
+.vsr-overlay--drawer .vsr-overlay-header__actions{display:inline-flex;flex:none;align-items:center;gap:8px}
+.vsr-overlay--drawer .vsr-overlay-header>.vsr-icon-button{flex:none;width:44px;height:44px;margin:0;font-size:22px}
