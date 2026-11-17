@@ -694,7 +694,7 @@
                   "string",
                   "null"
                 ],
-                "description": "Character ID of sender, or null for unknown/spam."
+                "description": "Character ID, `$communication` for the built-in Communication source, null for unknown/spam, or an undeclared sender ID routed to unknown/spam."
               },
               "entry": {
                 "type": "string",
@@ -732,8 +732,8 @@
                     ],
                     "properties": {
                       "char_id": {
-                        "type": "string",
-                        "description": "Speaker ID."
+                        "type": ["string", "null"],
+                        "description": "Speaker character ID, `$communication`, the chat sender ID, or null for unknown/spam."
                       },
                       "text": {
                         "type": "string",
