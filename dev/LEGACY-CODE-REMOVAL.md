@@ -1,6 +1,6 @@
 # VSR Legacy Code Removal Policy
 
-> Trạng thái: chỉ thị refactor nền tảng trước production.
+> Trạng thái: chính sách đã được triển khai trên branch `engine-only`; kết quả kiểm thử CI được ghi ở mục 10.
 > Phạm vi: scenario schema, scenario normalization/validation, engine runtime, persistence liên quan đến scenario, generated schema artifacts và test/fixture.
 > Mục tiêu: đưa VSR về một codebase có **một mô hình dữ liệu chuẩn duy nhất**, không mang theo nhánh xử lý dành cho định dạng cũ hoặc giả định về một hệ thống đã vận hành production.
 > Nguyên tắc quyết định: VSR hiện được xem là sản phẩm đang phát triển trước production. Không duy trì backward compatibility chỉ vì một cấu trúc từng tồn tại trong repository.
@@ -308,8 +308,8 @@ Các mục dưới đây là điểm bắt đầu của inventory, không phải
 | `scenario.schema.json` — `definitions.runnable_wrapper.properties.source` | Mô tả source mới thay cú pháp target ghép | Giữ source canonical, xóa mô tả hỗ trợ cú pháp cũ |
 | `engine/modules/effect/strategies/Character.js` | `resolveCharacterPair()` phân tích `target` theo dấu `:` | Xóa parser; dùng target/source riêng |
 | `engine/modules/Loader.js` | Xóa `character.currentScene` và `character.currentIndex` sau load | Xóa cleanup; để schema reject input không canonical |
-| `engine/scenario/Scenario.js` | Migration map đang rỗng | Đánh giá và xóa framework không cần thiết; giữ version check canonical |
-| `tests/engine-core-hardening.test.js` | Có test migration reject phiên bản không hỗ trợ và nhiều test contract hiện hành | Giữ test canonical; thay/bổ sung test âm tính cho legacy structures |
+| `engine/scenario/Scenario.js` | Migration map rỗng và `migrateScenario()` không có migration thực tế | Đã xóa migration framework; chỉ xác thực `formatVersion` canonical bắt buộc |
+| `tests/engine-core-hardening.test.js` | Test contract scenario và router | Đã bổ sung test âm tính cho format version thiếu/sai, router object map, `importAction`, cú pháp target ghép và save version cũ |
 
 Các đường dẫn và phát hiện trong bảng phải được xác minh lại trên HEAD tại thời điểm triển khai. Có thể có thêm consumer hoặc legacy branch ngoài các vị trí đã biết.
 
@@ -327,3 +327,59 @@ Sau refactor, VSR phải tuân theo các nguyên tắc sau:
 8. **Breaking changes are acceptable pre-production:** ưu tiên mô hình sạch, nhất quán và dễ phát triển hơn việc bảo toàn cấu trúc chưa từng có nghĩa vụ tương thích production.
 
 Đây là một đợt refactor có chủ đích để đưa VSR về trạng thái nền tảng sạch trước production, không phải một dự án duy trì tương thích với lịch sử phát triển của chính repository.
+
+
+## 10. Kết quả triển khai trên branch `engine-only`
+
+Đợt refactor đã được thực hiện trực tiếp trên branch `engine-only`. Các thay đổi chính:
+
+### 10.1. Scenario schema và engine
+
+- `formatVersion` là field bắt buộc, chỉ chấp nhận version hiện hành; bỏ default ngầm và bỏ `SCENARIO_MIGRATIONS` / `migrateScenario()`.
+- `router.actions` chỉ chấp nhận array. Đã xóa object-map compatibility branch trong Loader và Action.
+- Đã xóa `router.importAction` khỏi schema, semantic validation và Action runtime.
+- `target` và `source` được xử lý độc lập. Đã xóa parser `destination:source`; semantic validation yêu cầu source riêng khi operation cần.
+- Đã xóa cleanup root-level `currentScene` / `currentIndex`; input không thuộc schema bị từ chối ở boundary.
+- Quan hệ nhân vật chỉ đọc/ghi tại `character.relationship`; CMS, Logic và JSON projection không còn fallback sang `character.set.relationship`.
+- Chat yêu cầu khai báo `meta.to`; bỏ nhánh coi sender là recipient khi thiếu `to`. Bookmark runtime chỉ là array; lịch sử không có bookmark bị từ chối thay vì tự phục hồi.
+- Notification level thống nhất thành `info`, `success`, `warning`, `danger`, `special`. Đã bỏ severity alias, field `severity` và các level synonym cũ; schema, demo và callsite đã được đồng bộ.
+- Đã bỏ fallback chèn item qua global inventory, fallback khi thiếu ItemSystem mixin và fallback khi thiếu EntitySystem mixin.
+- StateAccess loại bỏ hai selector trùng, không được sử dụng (`item.color`, `item.label`). Các named selector còn lại là API truy cập state hiện hành, không phải alternate scenario format.
+- JSON Protocol v2 và transport contract hiện hành không bị đổi version.
+
+### 10.2. Persistence
+
+- Save envelope chỉ chấp nhận `protocol: "vsr-save"` và `saveVersion: 2`; không còn nâng cấp ngầm save version 1.
+- `countVisited` phải tồn tại và là số nguyên không âm an toàn; không còn tự điền 0 khi restore.
+- Restore yêu cầu các trường identity đã lưu tường minh; không suy diễn `originalEntryCharacter` hoặc `entryCharacter` từ scenario/default.
+
+### 10.3. Kiểm thử
+
+Đã bổ sung hoặc cập nhật test cho các trường hợp legacy bị từ chối, gồm scenario version, router object map, `importAction`, target/source ghép, save version cũ, visit counter thiếu, relationship root field và notification alias.
+
+<badge>CI PASS</badge>
+
+Xác minh trên commit `1aa82ed2f99668b7256430b5af9b0c9ffcd3e6d3`:
+
+- `npm run schema:check`
+- `npm run check:server`
+- `npm run audit:ui`
+- `npm run audit:safe-area`
+- `npm run audit:deadcode`
+- `npm run test:browser`
+- `npm test`
+- `npm run audit:state:strict`
+- React build / GitHub Pages workflow
+
+Tất cả các bước trên đều thành công. Kết quả workflow:
+- [Engine quality](https://github.com/ttg1109s/VSR/actions/runs/44165755146)
+- [VSR headless quality](https://github.com/ttg1109s/VSR/actions/runs/44165755117)
+- [React build and GitHub Pages deployment](https://github.com/ttg1109s/VSR/actions/runs/44165755179)
+
+### 10.4. Những contract được giữ có chủ đích
+
+- JSON Protocol v2 vẫn giữ contract công khai hiện hành; refactor scenario không tự ý tạo breaking change cho transport.
+- StateAccess named selectors còn được sử dụng bởi engine được giữ làm API truy cập state; chúng không cho phép một scenario format cũ.
+- Choice ID vẫn có positional selector `String(index)` vì schema hiện tại định nghĩa ID là optional và ChatSystem sử dụng index làm selector ổn định. Đây là hành vi của contract hiện hành, không phải parser cho scenario format cũ.
+
+Các thay đổi trên đã được commit trên `engine-only`; chưa merge sang branch khác.
