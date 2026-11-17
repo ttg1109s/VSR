@@ -158,6 +158,7 @@ export const EntitySystem = {
                 await this.processRunnables(still, {
                     sceneId,
                     charId,
+                    effectScope: 'character_move',
                     hook: 'still',
                     moveIndex,
                     visitToken: token,
@@ -254,7 +255,7 @@ export const EntitySystem = {
         try {
             if (Array.isArray(oldLoopLeave) && oldLoopLeave.length) {
                 const leaveResult = await this.processRunnables(oldLoopLeave, {
-                    sceneId: currentScene, charId, hook: 'leave', moveIndex: oldIndex,
+                    sceneId: currentScene, charId, effectScope: 'character_move', hook: 'leave', moveIndex: oldIndex,
                     visitToken: token,
                     shouldContinue: () => this.isCharacterVisitValid(charId, token, currentScene, oldIndex)
                 }, true);
@@ -322,7 +323,7 @@ export const EntitySystem = {
             const enterEffects = nextItem.loop?.enter;
             if (Array.isArray(enterEffects) && enterEffects.length) {
                 const enterResult = await this.processRunnables(enterEffects, {
-                    sceneId: nextSceneId, charId, hook: 'enter', moveIndex: result.idx,
+                    sceneId: nextSceneId, charId, effectScope: 'character_move', hook: 'enter', moveIndex: result.idx,
                     visitToken: nextToken, shouldContinue: nextVisitIsValid
                 }, true);
                 if (enterResult?.error) throw enterResult.error;
