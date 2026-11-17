@@ -54,8 +54,11 @@ if (/padding[^;]*var\(--vsr-safe-area-(?:top|right|bottom|left)\)/s.test(contact
   errors.push('Contact Drawer must use the shared Drawer Safe Area owner instead of applying its own insets');
 }
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
-if (!/name=["']viewport["'][^>]*viewport-fit\s*=\s*cover/i.test(html)) {
-  errors.push('index.html viewport meta must include viewport-fit=cover');
+if (/name=["']viewport["'][^>]*viewport-fit\s*=\s*cover/i.test(html)) {
+  errors.push('Home Screen viewport must not use viewport-fit=cover when content must stay outside the device cutout');
+}
+if (/name=["']apple-mobile-web-app-status-bar-style["'][^>]*content=["']black-translucent["']/i.test(html)) {
+  errors.push('Home Screen status bar must not overlay application content (black-translucent)');
 }
 
 if (errors.length) {
