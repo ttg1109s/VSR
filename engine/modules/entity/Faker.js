@@ -73,8 +73,7 @@ export const FakerSystem = {
             state.update('characters.[id].set', current => ({
                 ...(current || {}),
                 name: target.set?.name || target.meta?.name,
-                desc: target.set?.desc,
-                relationship: target.set?.relationship
+                desc: target.set?.desc
             }), { id: playerId });
             this.api.presentation.notification.add("Cải trang", `Bạn đang khoác lên mình ${target.set?.name || target.meta?.name}`, "info");
         } else {
@@ -106,8 +105,7 @@ export const FakerSystem = {
             state.update('characters.[id].set', current => ({
                 ...(current || {}),
                 name: backup.set?.name,
-                desc: backup.set?.desc,
-                relationship: backup.set?.relationship
+                desc: backup.set?.desc
             }), { id: playerId });
             this.api.presentation.notification.add("Gỡ bỏ", "Tháo bỏ lớp ngụy trang", "info");
         } else {
