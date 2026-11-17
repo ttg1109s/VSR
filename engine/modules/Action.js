@@ -41,7 +41,8 @@ export const ActionSystem = {
             return { ...action, count: {
                 normal: Number.isSafeInteger(count.normal) && count.normal >= 0 ? count.normal : 0,
                 pass: Number.isSafeInteger(count.pass) && count.pass >= 0 ? count.pass : 0,
-                fail: Number.isSafeInteger(count.fail) && count.fail >= 0 ? count.fail : 0
+                fail: Number.isSafeInteger(count.fail) && count.fail >= 0 ? count.fail : 0,
+                pwFailed: Number.isSafeInteger(count.pwFailed) && count.pwFailed >= 0 ? count.pwFailed : 0
             }};
         });
     },
@@ -60,7 +61,7 @@ export const ActionSystem = {
         const current = state.getRuntimeSnapshot('actions.[id]', { id: uniqueId });
         if (current?.readDesc === true) return { success: true, alreadyRead: true };
         state.update('actions.[id]', value => ({
-            count: { normal: 0, pass: 0, fail: 0 },
+            count: { normal: 0, pass: 0, fail: 0, pwFailed: 0 },
             display: 'show',
             ...(value || {}),
             readDesc: true
@@ -300,7 +301,7 @@ export const ActionSystem = {
     },
 
     incrementActionCount(actionStateKey, phase) {
-        if (!['normal', 'pass', 'fail'].includes(phase)) throw new TypeError(`Unsupported Action count phase: ${phase}`);
+        if (!['normal', 'pass', 'fail', 'pwFailed'].includes(phase)) throw new TypeError(`Unsupported Action count phase: ${phase}`);
         const state = this.api.engine.state;
         state.update('actions.[id]', current => {
             const count = current?.count || {};
@@ -308,6 +309,7 @@ export const ActionSystem = {
                 normal: Number.isSafeInteger(count.normal) && count.normal >= 0 ? count.normal : 0,
                 pass: Number.isSafeInteger(count.pass) && count.pass >= 0 ? count.pass : 0,
                 fail: Number.isSafeInteger(count.fail) && count.fail >= 0 ? count.fail : 0,
+                pwFailed: Number.isSafeInteger(count.pwFailed) && count.pwFailed >= 0 ? count.pwFailed : 0,
                 [phase]: (Number.isSafeInteger(count[phase]) && count[phase] >= 0 ? count[phase] : 0) + 1
             }};
         }, { id: actionStateKey });
@@ -362,9 +364,7 @@ export const ActionSystem = {
             }
             if (result === 'exhausted') {
                 const actStateKey = `${sId}_${rId}_${actionKey}`;
-                if (state.getRuntimeSnapshot('actions.[id]', { id: actStateKey })) {
-                    this.incrementActionCount(actStateKey, 'fail');
-                }
+                this.incrementActionCount(actStateKey, 'pwFailed');
                 if (actDef.effect?.pwFailed) {
                     await this.processRunnables(actDef.effect.pwFailed, {
                         sceneId: sId, routerId: rId, actionId: actionKey, hook: 'pwFailed'

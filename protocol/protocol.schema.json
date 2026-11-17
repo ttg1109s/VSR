@@ -645,7 +645,8 @@
           "required": [
             "normal",
             "pass",
-            "fail"
+            "fail",
+            "pwFailed"
           ],
           "properties": {
             "normal": {
@@ -657,6 +658,10 @@
               "minimum": 0
             },
             "fail": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "pwFailed": {
               "type": "integer",
               "minimum": 0
             }

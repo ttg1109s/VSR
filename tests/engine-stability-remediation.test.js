@@ -8,17 +8,17 @@ import { scenarioSchema } from '../engine/scenario/ScenarioSchema.js';
 import { normalizeSaveEnvelope } from '../engine/persistence/SaveState.js';
 import { LocalEngineHost } from '../engine/LocalEngineHost.js';
 
-test('Action exposes runtime-owned normal/pass/fail counters and removes legacy set fields', () => {
+test('Action exposes runtime-owned normal/pass/fail/pwFailed counters and removes legacy set fields', () => {
   const setProperties = scenarioSchema.definitions.action.properties.set.properties;
   for (const key of ['type', 'target', 'countClicks', 'countFails']) {
     assert.equal(Object.hasOwn(setProperties, key), false);
   }
   assert.equal(scenarioSchema.definitions.action.properties.count.readOnly, true);
-  assert.deepEqual(Object.keys(scenarioSchema.definitions.action.properties.count.properties), ['normal', 'pass', 'fail']);
+  assert.deepEqual(Object.keys(scenarioSchema.definitions.action.properties.count.properties), ['normal', 'pass', 'fail', 'pwFailed']);
 });
 
 test('Action phase counters increment independently and preserve existing phases', () => {
-  let runtime = { display: 'show', count: { normal: 2, pass: 1, fail: 0 } };
+  let runtime = { display: 'show', count: { normal: 2, pass: 1, fail: 0, pwFailed: 3 } };
   const state = {
     update(path, updater) {
       assert.equal(path, 'actions.[id]');
@@ -29,7 +29,8 @@ test('Action phase counters increment independently and preserve existing phases
   engine.incrementActionCount('scene_router_action', 'normal');
   engine.incrementActionCount('scene_router_action', 'fail');
   engine.incrementActionCount('scene_router_action', 'pass');
-  assert.deepEqual(runtime.count, { normal: 3, pass: 2, fail: 1 });
+  engine.incrementActionCount('scene_router_action', 'pwFailed');
+  assert.deepEqual(runtime.count, { normal: 3, pass: 2, fail: 1, pwFailed: 4 });
 });
 
 test('Hard Lock ignores non-navigation goto subtypes', () => {

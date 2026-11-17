@@ -109,7 +109,8 @@ export class JsonProtocol{
      count:{
       normal:Number.isSafeInteger(runtime.count?.normal)&&runtime.count.normal>=0?runtime.count.normal:0,
       pass:Number.isSafeInteger(runtime.count?.pass)&&runtime.count.pass>=0?runtime.count.pass:0,
-      fail:Number.isSafeInteger(runtime.count?.fail)&&runtime.count.fail>=0?runtime.count.fail:0
+      fail:Number.isSafeInteger(runtime.count?.fail)&&runtime.count.fail>=0?runtime.count.fail:0,
+      pwFailed:Number.isSafeInteger(runtime.count?.pwFailed)&&runtime.count.pwFailed>=0?runtime.count.pwFailed:0
      },
      runtimeState:{display,readDesc:read}};
    }).filter(action=>action.runtimeState.display!=='hide')

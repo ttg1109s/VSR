@@ -4458,12 +4458,18 @@
               "type": "integer",
               "minimum": 0,
               "default": 0
+            },
+            "pwFailed": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
             }
           },
           "required": [
             "normal",
             "pass",
-            "fail"
+            "fail",
+            "pwFailed"
           ],
           "additionalProperties": false
         }
