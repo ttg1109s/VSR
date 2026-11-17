@@ -5,15 +5,12 @@ import { ensureInputVisible, hideInput } from './Presentation.js';
 
 export const ChatBlockHandlers = {
     dialogue: (engine, block) => {
-        console.log(`[BlockHandler] Processing 'dialogue'. ID: ${engine.chatState.blockId}, Index: ${engine.chatState.index}`);
 
         // 1. Kiểm tra đã chạy hết Content chưa
         if (!block.line || engine.chatState.index >= block.line.length) {
-            console.log(`[BlockHandler] Content finished.`);
 
             // 2. [HYBRID] Hết content thì tìm xem có Choices không
             if (block.choices && block.choices.length > 0) {
-                console.log(`[BlockHandler] Rendering choices...`);
                 hideInput(engine);
                 engine.api.engine.state.update('session.chat', current => ({ ...(current || {}), waitingChoice: true }));
 
@@ -24,7 +21,6 @@ export const ChatBlockHandlers = {
             // 3. [AUTO-END] Không có Choices (VD: chat2) -> End Chat
             // Schema V9.2 không có 'next' block tự động, mọi điều hướng phải qua 'choice'.
             // Nếu không có choice -> Dead end -> Kết thúc.
-            console.log(`[BlockHandler] No choices found -> End Chat.`);
             engine.endChat();
             return;
         }

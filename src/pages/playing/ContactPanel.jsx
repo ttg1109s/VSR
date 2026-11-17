@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import './ContactPanel.css';
 import {
   Badge,
   Button,
@@ -11,11 +10,10 @@ import {
   ContactList,
   ContactListItem,
   ContactScrollArea,
-  ContactSection,
   ContactTopicList,
   ContactWorkspace,
   Drawer,
-  Separator,
+  ProgressBar,
 } from '../../design-system/index.js';
 
 function StatList({ stats = {} }) {
@@ -37,7 +35,6 @@ function StatList({ stats = {} }) {
         const hasCurrent = stat?.current !== null && stat?.current !== '' && Number.isFinite(current);
         const hasProgress = stat?.max !== undefined && stat?.max !== null && stat?.max !== ''
           && Number.isFinite(max) && max > 0 && hasCurrent;
-        const progress = hasProgress ? Math.min(100, Math.max(0, (current / max) * 100)) : 0;
         const value = !hasCurrent
           ? '—'
           : hasProgress
@@ -51,15 +48,8 @@ function StatList({ stats = {} }) {
               <strong className="vsr-contact-stat-card__value">{value}</strong>
             </div>
             {hasProgress ? (
-              <div
-                className="vsr-contact-stat-card__track"
-                role="progressbar"
-                aria-label={stat?.label || key}
-                aria-valuemin={0}
-                aria-valuemax={max}
-                aria-valuenow={Math.min(max, Math.max(0, current))}
-              >
-                <span style={{ width: progress + '%', backgroundColor: /^#[0-9a-fA-F]{6}$/.test(stat?.color || '') ? stat.color : 'var(--vsr-color-primary)' }} />
+              <div className="vsr-contact-stat-card__track">
+                <ProgressBar status="determinate" value={Math.min(max, Math.max(0, current))} max={max} label={stat?.label || key} />
               </div>
             ) : (
               <span className="vsr-contact-stat-card__no-scale">Không có thang đo</span>
@@ -112,7 +102,7 @@ function RelationshipList({ relationships = [], contacts, onSelect }) {
   );
 }
 
-function ContactProfile({ character, player, contacts, onSelect }) {
+function ContactProfile({ character, contacts, onSelect }) {
   if (!character) return null;
   return (
     <div className="vsr-contact-profile">
@@ -339,7 +329,6 @@ export default function ContactPanel({ open, onClose, player, contacts = [], ses
                   <ContactScrollArea className="vsr-contact-info-panel__scroll">
                     <ContactProfile
                       character={selected}
-                      player={player}
                       contacts={allContacts}
                       onSelect={id => {
                         selectContact(id);

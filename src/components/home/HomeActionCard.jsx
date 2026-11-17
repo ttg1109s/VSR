@@ -1,6 +1,5 @@
 import React from 'react';
 import { Button } from '../../design-system/index.js';
-import './HomeActionCard.css';
 
 export default function HomeActionCard({
   icon,
@@ -13,7 +12,7 @@ export default function HomeActionCard({
 }) {
   return (
     <Button
-      className="home-action-card"
+      layout="card"
       variant={variant}
       size="lg"
       leadingIcon={<span className="vsr-icon" aria-hidden="true">{icon}</span>}
@@ -21,9 +20,9 @@ export default function HomeActionCard({
       disabled={disabled}
       loading={loading}
     >
-      <span className="home-action-card__content">
-        <span className="home-action-card__title">{title}</span>
-        {description ? <span className="home-action-card__description">{description}</span> : null}
+      <span className="vsr-button-card__content">
+        <span className="vsr-button-card__title">{title}</span>
+        {description ? <span className="vsr-button-card__description">{description}</span> : null}
       </span>
     </Button>
   );

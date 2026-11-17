@@ -68,12 +68,12 @@ export class JsonClient {
     return snapshot;
   }
 
-  async dispatch(name, payload = {}, { includeRevision = true } = {}) {
+  async dispatch(name, payload = {}, { includeRevision = true, commandId } = {}) {
     const command = {
       protocol: 'vsr',
       protocolVersion: this.snapshot?.protocolVersion || 2,
       type: 'command',
-      commandId: `client_${Date.now().toString(36)}_${(++this.commandSequence).toString(36)}`,
+      commandId: commandId || `client_${Date.now().toString(36)}_${(++this.commandSequence).toString(36)}`,
       command: name,
       payload: structuredClone(payload)
     };

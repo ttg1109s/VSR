@@ -63,3 +63,15 @@
   border-bottom:0;
   border-left:8px solid transparent;
 }
+
+/* Card-layout button: a public layout variant; no feature selector overrides shared internals. */
+.vsr-button--card{display:grid;grid-template-columns:28px minmax(0,1fr);grid-template-rows:auto auto;align-items:center;justify-content:stretch;column-gap:var(--vsr-space-2);width:100%;min-height:52px;padding:var(--vsr-space-2) var(--vsr-space-3);border-radius:var(--vsr-radius-lg);text-align:left;white-space:normal}
+.vsr-button--card>.vsr-button__icon{grid-column:1;grid-row:1/span 2;display:inline-flex;align-items:center;justify-content:center;margin:0;font-size:21px}
+.vsr-button--card>.vsr-button__label{display:contents}
+.vsr-button--card .vsr-button-card__title{grid-column:2;min-width:0;font-size:14px;line-height:18px;font-weight:600}
+.vsr-button--card .vsr-button-card__description{grid-column:2;min-width:0;color:var(--vsr-color-text-secondary);font-size:12px;line-height:16px}
+.vsr-progress--determinate{display:block;appearance:none;-webkit-appearance:none;width:100%;height:7px;padding:0;border:0;border-radius:var(--vsr-radius-full);background:var(--vsr-color-border);overflow:hidden}
+.vsr-progress--determinate::-webkit-progress-bar{border-radius:inherit;background:var(--vsr-color-border)}
+.vsr-progress--determinate::-webkit-progress-value{border-radius:inherit;background:var(--vsr-color-primary);transition:width var(--vsr-motion-medium)}
+.vsr-progress--determinate::-moz-progress-bar{border-radius:inherit;background:var(--vsr-color-primary);transition:width var(--vsr-motion-medium)}
+@media(prefers-reduced-motion:reduce){.vsr-progress--determinate::-webkit-progress-value,.vsr-progress--determinate::-moz-progress-bar{transition:none}}

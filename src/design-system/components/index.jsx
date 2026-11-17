@@ -5,8 +5,8 @@ const cx = (...v) => v.filter(Boolean).join(' ');
 export const Label = forwardRef(function Label({ required, className, children, ...props }, ref) {
   return <label ref={ref} className={cx('vsr-label', className)} {...props}>{children}{required && <span className="vsr-required"> *</span>}</label>;
 });
-export const Button = forwardRef(function Button({ variant='primary', size='md', loading=false, disabled=false, leadingIcon, trailingIcon, className, children, type='button', ...props }, ref) {
-  return <button ref={ref} type={type} className={cx('vsr-button','vsr-button--'+variant,'vsr-button--'+size,className)} disabled={disabled||loading} aria-busy={loading||undefined} {...props}>
+export const Button = forwardRef(function Button({ variant='primary', size='md', layout, loading=false, disabled=false, leadingIcon, trailingIcon, className, children, type='button', ...props }, ref) {
+  return <button ref={ref} type={type} className={cx('vsr-button','vsr-button--'+variant,'vsr-button--'+size,layout&&'vsr-button--'+layout,className)} disabled={disabled||loading} aria-busy={loading||undefined} {...props}>
     {loading ? <span className="vsr-spinner" aria-hidden="true"/> : leadingIcon && <span className="vsr-button__icon" aria-hidden="true">{leadingIcon}</span>}
     <span className="vsr-button__label">{children}</span>{!loading&&trailingIcon&&<span className="vsr-button__icon" aria-hidden="true">{trailingIcon}</span>}
   </button>;
@@ -35,9 +35,15 @@ export const Switch=forwardRef(function Switch({label,description,className,...p
 export function RadioGroup({label,name,value,defaultValue,onChange,options=[],disabled=false,orientation='vertical',className}){
   const id=useId(); return <fieldset className={cx('vsr-radio-group',className)} disabled={disabled}><legend>{label}</legend><div className={'vsr-radio-options vsr-radio-options--'+orientation}>{options.map(o=><label key={o.value} className="vsr-radio-row"><input type="radio" name={name||id} value={o.value} checked={value!==undefined?value===o.value:undefined} defaultChecked={defaultValue===o.value} disabled={disabled||o.disabled} onChange={e=>onChange&&onChange(e.target.value)}/><span className="vsr-radio-dot"/><span className="vsr-check-copy"><span>{o.label}</span>{o.description&&<small>{o.description}</small>}</span></label>)}</div></fieldset>;
 }
-export function ProgressBar({status='indeterminate',label='Loading'}){
+export function ProgressBar({status='indeterminate',label='Loading',value,max=100,className}){
+  const determinate=status==='determinate'||Number.isFinite(value);
+  if(determinate){
+    const safeMax=Number.isFinite(Number(max))&&Number(max)>0?Number(max):100;
+    const safeValue=Number.isFinite(Number(value))?Math.min(safeMax,Math.max(0,Number(value))):0;
+    return <progress className={cx('vsr-progress','vsr-progress--determinate',className)} aria-label={label} value={safeValue} max={safeMax}/>;
+  }
   const complete=status==='complete';
-  return <div className={'vsr-progress'+(complete?' vsr-progress--complete':'')} role="progressbar" aria-label={label} aria-valuemin="0" aria-valuemax="100" {...(complete?{'aria-valuenow':100}:{'aria-valuetext':'Loading'})}>
+  return <div className={cx('vsr-progress',complete&&'vsr-progress--complete',className)} role="progressbar" aria-label={label} aria-valuemin="0" aria-valuemax="100" {...(complete?{'aria-valuenow':100}:{'aria-valuetext':'Loading'})}>
     <span className={'vsr-progress__indicator'+(complete?' vsr-progress__indicator--complete':' vsr-progress__indicator--indeterminate')}/>
   </div>;
 }
@@ -59,11 +65,44 @@ export function DescriptionListItem({label,value,layout='stacked',span='auto',cl
 export function Separator({orientation='horizontal',decorative=true,className,...props}){
   return <div className={cx('vsr-separator','vsr-separator--'+orientation,className)} role={decorative?undefined:'separator'} aria-orientation={decorative?undefined:orientation} {...props}/>;
 }
+const activeOverlayLayers = [];
+
 function useLayer(open,onClose,ref){
-  useEffect(()=>{if(!open)return;const previous=document.activeElement;const key=e=>{
-    if(e.key==='Escape'){e.stopPropagation();onClose&&onClose();}
-    if(e.key==='Tab'&&ref.current){const els=[...ref.current.querySelectorAll('a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])')];if(!els.length){e.preventDefault();ref.current.focus();return;}if(e.shiftKey&&document.activeElement===els[0]){e.preventDefault();els[els.length-1].focus();}else if(!e.shiftKey&&document.activeElement===els[els.length-1]){e.preventDefault();els[0].focus();}}
-  };document.addEventListener('keydown',key);const frame=requestAnimationFrame(()=>{(ref.current?.querySelector('[autofocus],button:not([disabled]),input:not([disabled])')||ref.current)?.focus?.();});return()=>{cancelAnimationFrame(frame);document.removeEventListener('keydown',key);previous?.focus?.();};},[open,onClose,ref]);
+  const onCloseRef=useRef(onClose);
+  onCloseRef.current=onClose;
+  useEffect(()=>{
+    if(!open)return;
+    const previous=document.activeElement;
+    activeOverlayLayers.push(ref);
+    const key=e=>{
+      if(activeOverlayLayers[activeOverlayLayers.length-1]!==ref)return;
+      if(e.key==='Escape'){
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        onCloseRef.current?.();
+        return;
+      }
+      if(e.key!=='Tab'||!ref.current)return;
+      const selector='a[href],area[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
+      const elements=[...ref.current.querySelectorAll(selector)].filter(node=>!node.hasAttribute('hidden')&&node.getAttribute('aria-hidden')!=='true'&&node.getClientRects().length>0);
+      if(!elements.length){e.preventDefault();ref.current.focus();return;}
+      const first=elements[0],last=elements[elements.length-1];
+      if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+      else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+    };
+    document.addEventListener('keydown',key,true);
+    const frame=requestAnimationFrame(()=>{
+      if(activeOverlayLayers[activeOverlayLayers.length-1]!==ref)return;
+      (ref.current?.querySelector('[autofocus],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled])')||ref.current)?.focus?.();
+    });
+    return()=>{
+      cancelAnimationFrame(frame);
+      document.removeEventListener('keydown',key,true);
+      const index=activeOverlayLayers.lastIndexOf(ref);
+      if(index>=0)activeOverlayLayers.splice(index,1);
+      if(previous?.isConnected)previous.focus?.();
+    };
+  },[open,ref]);
 }
 function Overlay({open,onClose,title,description,children,size='md',side='right',className}){
   const ref=useRef(null),titleId=useId(),descId=useId();
@@ -106,11 +145,11 @@ function Overlay({open,onClose,title,description,children,size='md',side='right'
 }
 export function Dialog(props){return <Overlay {...props}/>;}
 export function Drawer({className,...props}){return <Overlay {...props} className={cx('vsr-drawer',className)}/>;}
-export function Menu({trigger,items=[],label='Open menu',align='start',className}){
+export function Menu({trigger,items=[],label='Open menu',align='start',className,onOpenChange}){
   const [open,setOpen]=useState(false),root=useRef(null),menu=useRef(null);
-  useEffect(()=>{if(!open)return;const outside=e=>{if(!root.current?.contains(e.target))setOpen(false);};const key=e=>{if(e.key==='Escape'){setOpen(false);root.current?.querySelector('button')?.focus();}if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();const nodes=[...(menu.current?.querySelectorAll('[role=menuitem]:not([disabled])')||[])],i=nodes.indexOf(document.activeElement);nodes[(i+(e.key==='ArrowDown'?1:-1)+nodes.length)%nodes.length]?.focus();}};document.addEventListener('pointerdown',outside);document.addEventListener('keydown',key);menu.current?.querySelector('[role=menuitem]')?.focus();return()=>{document.removeEventListener('pointerdown',outside);document.removeEventListener('keydown',key);};},[open]);
+  useEffect(()=>{if(!open)return;const close=()=>{setOpen(false);onOpenChange?.(false);};const outside=e=>{if(!root.current?.contains(e.target))close();};const key=e=>{if(e.key==='Escape'){close();root.current?.querySelector('button')?.focus();}if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();const nodes=[...(menu.current?.querySelectorAll('[role=menuitem]:not([disabled])')||[])],i=nodes.indexOf(document.activeElement);nodes[(i+(e.key==='ArrowDown'?1:-1)+nodes.length)%nodes.length]?.focus();}};document.addEventListener('pointerdown',outside);document.addEventListener('keydown',key);menu.current?.querySelector('[role=menuitem]')?.focus();return()=>{document.removeEventListener('pointerdown',outside);document.removeEventListener('keydown',key);};},[open,onOpenChange]);
   const triggerNode=isValidElement(trigger)?cloneElement(trigger,{'aria-haspopup':'menu','aria-expanded':open,onClick:e=>{trigger.props.onClick?.(e);if(!e.defaultPrevented)setOpen(v=>{const next=!v;onOpenChange?.(next);return next;});}}):<button type="button" aria-label={label} aria-haspopup="menu" aria-expanded={open} onClick={()=>setOpen(v=>{const next=!v;onOpenChange?.(next);return next;})}>{trigger}</button>;
-  return <div ref={root} className={cx('vsr-menu',className)}>{triggerNode}{open&&<div ref={menu} role="menu" className={'vsr-menu-content vsr-menu-content--'+align}>{items.map((item,i)=>item.separator?<Separator key={'s'+i}/>:<button key={item.key||item.label} type="button" role="menuitem" disabled={item.disabled} className={cx('vsr-menu-item',item.danger&&'is-danger')} onClick={()=>{setOpen(false);item.onSelect?.();}}>{item.icon&&<span>{item.icon}</span>}{item.label}</button>)}</div>}</div>;
+  return <div ref={root} className={cx('vsr-menu',className)}>{triggerNode}{open&&<div ref={menu} role="menu" className={'vsr-menu-content vsr-menu-content--'+align}>{items.map((item,i)=>item.separator?<Separator key={'s'+i}/>:<button key={item.key||item.label} type="button" role="menuitem" disabled={item.disabled} className={cx('vsr-menu-item',item.danger&&'is-danger')} onClick={()=>{setOpen(false);onOpenChange?.(false);item.onSelect?.();}}>{item.icon&&<span>{item.icon}</span>}{item.label}</button>)}</div>}</div>;
 }
 export function Popover({trigger,children,align='start',label='Open additional content',className,onOpenChange}){
   const [open,setOpen]=useState(false),[position,setPosition]=useState(null);

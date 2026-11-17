@@ -274,6 +274,8 @@ Component README ghi nhận đây là implementation ban đầu, chưa thay th�
 - [ ] Overlay/menu được kiểm tra focus và keyboard behavior.
 
 ### Verification
+- [ ] Chạy npm run audit:ui và npm run audit:deadcode; review mọi unreachable candidate trước khi xóa.
+- [ ] Chạy npm run test:browser để kiểm tra overlay, focus và menu trên Chromium.
 - [ ] Chạy npm run build.
 - [ ] Chạy test phù hợp với phần thay đổi.
 - [ ] Kiểm tra đường dẫn base của GitHub Pages (/VSR/) khi deploy.

@@ -100,7 +100,6 @@ export const ChatSystem = {
         const c = this.src.chat[id];
         if (!c) return;
 
-        console.log(`[ChatSystem] startChat: ${id} Trigger: ${triggerActionId}`);
         const ownerId = this.getChatOwner(id);
         const state = this.api.engine.state;
         const chatRuntime = state.getSnapshot('chat.data', { id }) || {};
@@ -113,7 +112,6 @@ export const ChatSystem = {
             chatRuntime.set.bookmark = [];
         }
 
-        console.log(`[ChatSystem] State before init: Read=${chatRuntime.set.read}, Activation=${chatRuntime.set.activationTime}, BookmarkLen=${chatRuntime.set.bookmark.length}`);
         if (!chatRuntime.set.activationTime) {
             chatRuntime.set.activationTime = Date.now();
             if (chatRuntime.set.read !== true) chatRuntime.set.read = false;
@@ -123,7 +121,6 @@ export const ChatSystem = {
         let chatHistory = state.getSnapshot('chat.history', { id }) || [];
         const isLoop = c.meta && c.meta.loop === true;
         const bookmark = chatRuntime.set.bookmark;
-        console.log(`[ChatSystem] Logic check: isLoop=${isLoop}, bookmarkLen=${bookmark.length}, readState=${chatRuntime.set.read}`);
 
         let startBlock = c.meta.entry;
         if (!startBlock || !Object.hasOwn(c.block || {}, startBlock)) {
@@ -133,7 +130,6 @@ export const ChatSystem = {
         let shouldProcessBlock = true;
 
         if (isLoop && bookmark.length > 0 && chatRuntime.set.read !== true) {
-            console.log(`[ChatSystem] Loop check: True. Restarting chat '${id}'.`);
             chatHistory = [];
             chatRuntime.set.bookmark = [];
             chatRuntime.set.step = 0;
@@ -148,7 +144,6 @@ export const ChatSystem = {
                 });
             }
         } else if (chatRuntime.set.read === true) {
-            console.log(`[ChatSystem] Review '${id}'.`);
 
             // Completed conversations are reconstructed from the scenario bookmark so
             // the selected branch is included. If legacy saves have no bookmark, retain
@@ -182,14 +177,14 @@ export const ChatSystem = {
             }
             shouldProcessBlock = false;
         } else if (bookmark.length > 0) {
-            // Resume an unread thread from its last visited block and saved line index.
+            // Resume after the last persisted line; `step` is the last consumed line index in legacy saves.
             // Keep chat.history intact: it is the authoritative record of already rendered
             // lines and must not be replayed into the same history a second time.
             startBlock = bookmark[bookmark.length - 1];
             const savedStep = Number(chatRuntime.set.step);
             const lastBlock = this.resolveBlock(id, startBlock);
             startIndex = Number.isInteger(savedStep) && savedStep >= 0
-                ? Math.min(savedStep, Array.isArray(lastBlock?.line) ? lastBlock.line.length : 0)
+                ? Math.min(savedStep + 1, Array.isArray(lastBlock?.line) ? lastBlock.line.length : 0)
                 : 0;
         } else if (!chatRuntime.set.read && chatHistory.length > 0) {
             // Legacy/incomplete saves may contain history without a bookmark.
@@ -232,7 +227,6 @@ export const ChatSystem = {
         if (shouldProcessBlock) {
             this.processChatBlock();
         } else {
-            console.log(`[ChatSystem] Chat '${id}' fully reviewed. Render only.`);
             this.api.presentation.chat.renderChatHistory(id);
             hideInput(this);
         }
@@ -303,7 +297,6 @@ export const ChatSystem = {
         const block = this.resolveBlock(this.chatState.id, this.chatState.blockId);
 
         if (!block) {
-            console.log(`[ChatSystem] Block '${this.chatState.blockId}' not found. Ending.`);
             this.endChat();
             return;
         }
@@ -315,7 +308,6 @@ export const ChatSystem = {
         const isLoopAllowed = chatSrc.meta && chatSrc.meta.loop === true;
 
         if (isChoiced && !isLoopAllowed) {
-            console.log(`[ChatSystem] Block '${block.id}' visited & Loop=False. Ending.`);
             this.endChat();
             return;
         }
@@ -363,7 +355,6 @@ export const ChatSystem = {
             }
             return current;
         }, { id: chatId });
-        console.log(`[ChatSystem] Marked Block ${blockId} (and choice ${idx}) as CHOICED.`);
 
         // --- 2. Render tin nhắn ---
         const entryChar = this._getCurrentIdentityKey();
@@ -403,7 +394,6 @@ export const ChatSystem = {
                     const rawTarget = chatData.block[nextBlockId];
 
                     if (rawTarget && rawTarget.choiced === true) {
-                        console.log(`[ChatSystem] Jump target '${nextBlockId}' is ALREADY CHOICED. Treating as END.`);
                         nextBlockId = null; // FORCE END
                     }
                 }
@@ -440,7 +430,6 @@ export const ChatSystem = {
 
     endChat() {
         const chatId = this.chatState.id;
-        console.log(`[ChatSystem] endChat: ${chatId}`);
 
         const state = this.api.engine.state;
         if (chatId) {
