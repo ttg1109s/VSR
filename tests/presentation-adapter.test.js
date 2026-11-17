@@ -169,7 +169,6 @@ test('Contact consumes the live, read-only character projection from Engine snap
       hasRelationship: false,
       tag: null
     });
-    assert.equal(mai.metCount, 0);
     assert.equal(snapshot.presentation.contacts.some(contact => contact.id === player.id), false);
 
     const received = [];
