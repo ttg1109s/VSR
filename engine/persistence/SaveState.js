@@ -33,7 +33,7 @@ export function createSaveEnvelope(engine) {
   };
 }
 
-export function normalizeCharacterVisitCounters(savedCharacters, scenarioCharacters) {
+export function validateCharacterVisitCounters(savedCharacters, scenarioCharacters) {
   if (!savedCharacters || typeof savedCharacters !== 'object' || Array.isArray(savedCharacters) ||
       !scenarioCharacters || typeof scenarioCharacters !== 'object' || Array.isArray(scenarioCharacters)) {
     throw new TypeError('Save Character state is invalid.');
@@ -49,7 +49,6 @@ export function normalizeCharacterVisitCounters(savedCharacters, scenarioCharact
       if (!entry || typeof entry !== 'object' || Array.isArray(entry)) {
         throw new TypeError(`Save character "${charId}" moveList[${index}] is invalid.`);
       }
-      if (entry.countVisited === undefined) entry.countVisited = 0;
       if (!Number.isSafeInteger(entry.countVisited) || entry.countVisited < 0) {
         throw new TypeError(`Save character "${charId}" moveList[${index}].countVisited must be a non-negative safe integer.`);
       }
@@ -60,7 +59,8 @@ export function normalizeCharacterVisitCounters(savedCharacters, scenarioCharact
 
 function validateSaveShape(save) {
   if (!save || typeof save !== 'object' || Array.isArray(save)) throw new TypeError('Invalid VSR save envelope.');
-  if (save.protocol !== undefined && save.protocol !== 'vsr-save') throw new TypeError('Invalid save protocol.');
+  if (save.protocol !== 'vsr-save') throw new TypeError('Invalid save protocol.');
+  if (save.saveVersion !== SAVE_VERSION) throw new Error(`Unsupported save version: ${save.saveVersion}`);
   if (!save.scenario || typeof save.scenario !== 'object' || Array.isArray(save.scenario)) throw new TypeError('Save scenario must be an object.');
   if (!save.state || typeof save.state !== 'object' || Array.isArray(save.state)) throw new TypeError('Save state must be an object.');
   if (typeof save.savedAt !== 'string' || Number.isNaN(Date.parse(save.savedAt))) throw new TypeError('Save timestamp is invalid.');
@@ -88,23 +88,5 @@ function validateSaveShape(save) {
 
 export function normalizeSaveEnvelope(input) {
   validateSaveShape(input);
-  const version = input.saveVersion ?? 1;
-  if (version === 1) {
-    return {
-      ...cloneJsonValue(input),
-      protocol: 'vsr-save',
-      saveVersion: SAVE_VERSION,
-      pendingPasswordAction: input.pendingPasswordAction ?? null,
-      taskRemainingMs: {},
-      pausedTasks: []
-    };
-  }
-  if (version !== SAVE_VERSION) throw new Error(`Unsupported save version: ${version}`);
-  return {
-    ...cloneJsonValue(input),
-    protocol: 'vsr-save',
-    pendingPasswordAction: input.pendingPasswordAction ?? null,
-    taskRemainingMs: cloneJsonValue(input.taskRemainingMs ?? {}),
-    pausedTasks: [...(input.pausedTasks ?? [])]
-  };
+  return cloneJsonValue(input);
 }
