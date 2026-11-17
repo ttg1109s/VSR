@@ -23,7 +23,7 @@ export const ItemSystem = {
         const ownerLimitPair = Array.isArray(maxInvList) ? maxInvList.find(pair => Array.isArray(pair) && pair[1] === ownerId) : null;
         const limit = ownerLimitPair ? ownerLimitPair[0] : 0;
         if (limit > 0 && inventory.length >= limit) {
-            this.api.presentation.notification.add("Không thể nhặt", "Túi đồ đã đầy.", "warn");
+            this.api.presentation.notification.add("Không thể nhặt", "Túi đồ đã đầy.", "warning");
             return false;
         }
         state.set('characters.[id].inventory', [...inventory, itemId], { id: ownerId });
@@ -73,7 +73,7 @@ export const ItemSystem = {
 
         if (result === 'missing') return;
         if (result === 'full') {
-            this.api.presentation.notification.add("Không thể cầm", "Tay đã đầy.", "warn");
+            this.api.presentation.notification.add("Không thể cầm", "Tay đã đầy.", "warning");
             return;
         }
         if (result === 'unequipped') {
@@ -106,7 +106,7 @@ export const ItemSystem = {
             const isBroken = this.isBroken(id);
             const disableBrokenPenalty = this.getConfig ? this.getConfig('brokenDisable') : false;
             if (isBroken && !disableBrokenPenalty) {
-                this.api.presentation.notification.add("Hỏng", "Vật phẩm đã hỏng hoặc hết lượt dùng.", "warn");
+                this.api.presentation.notification.add("Hỏng", "Vật phẩm đã hỏng hoặc hết lượt dùng.", "warning");
                 return;
             }
             const autoInc = info.usage.autoInc !== false;
