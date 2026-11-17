@@ -1,6 +1,7 @@
 /* Contact master/detail pattern. Feature pages compose these shared primitives. */
 .vsr-drawer.vsr-overlay-panel.vsr-overlay-panel--full.vsr-contact-drawer {
   inset: 0;
+  padding: var(--vsr-safe-area-top) var(--vsr-safe-area-right) var(--vsr-safe-area-bottom) var(--vsr-safe-area-left);
   width: 100%;
   height: 100%;
   max-width: none;
