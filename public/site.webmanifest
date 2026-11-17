@@ -1,7 +1,7 @@
 {
-  "name": "VSR",
+  "name": "VSR — Visual Story Runtime",
   "short_name": "VSR",
-  "description": "VSR",
+  "description": "Visual Story Runtime — runtime for interactive visual stories.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
