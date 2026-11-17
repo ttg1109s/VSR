@@ -109,11 +109,8 @@ export const MoveAlgorithms = {
         let idx = -1;
         if (validC.length > 0) {
             idx = getRandomIndex(validC);
-            if (moveList[idx].count > 0) {
-                moveList[idx].count--;
-            }
         }
-        return { idx, dir: 1 };
+        return { idx, dir: 1, consumeCount: idx >= 0 };
     },
 
     follow_player: ({ moveList, currentScene, playerMoveHistory, engine }) => {

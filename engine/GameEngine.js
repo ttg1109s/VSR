@@ -15,7 +15,7 @@ import {JsonProtocol,cloneJsonValue} from '../protocol/JsonProtocol.js';
 import {verifyPassword} from './modules/password/verify.js';
 import {PasswordSystem} from './modules/password/PasswordSystem.js';
 import {TaskManager} from './runtime/TaskManager.js';
-import {createSaveEnvelope,normalizeSaveEnvelope,SAVE_VERSION} from './persistence/SaveState.js';
+import {createSaveEnvelope,normalizeSaveEnvelope,normalizeCharacterVisitCounters,SAVE_VERSION} from './persistence/SaveState.js';
 
 export class GameEngine {
  constructor({taskManager,engineId,authorizeCommand,requireAuthorization=false,clock}={}) {
@@ -189,7 +189,7 @@ export class GameEngine {
   this.src=null;this.scenario=null;this.pendingPasswordAction=null;
   this.chatState={active:false,blocking:false,id:null,blockId:null,index:0,triggerActionId:null,actionModified:false};
   this.timerState=null;
-  this.taskSequence=0;this.currentStillTask=null;this.activeTimerTasks=[];this.isActionProcessing=false;this.isTransitioning=false;this.disposed=false;this.restoredTaskTimers={};this.restoredPausedTasks=[];
+  this.taskSequence=0;this.currentStillTask=null;this.activeTimerTasks=[];this.characterVisitTokens=new Map();this.characterVisitSequence=0;this.characterStillTaskIds=new Map();this.characterTransitionQueues=new Map();this.isActionProcessing=false;this.isTransitioning=false;this.disposed=false;this.restoredTaskTimers={};this.restoredPausedTasks=[];
  }
  async init(script,{enterScene=true}={}){
   const loaded=LoaderSystem.loadScript(script,this.api);
@@ -265,6 +265,7 @@ export class GameEngine {
   for(const sceneId of Object.keys(restored.scenes)) {
    if(!normalized.state.scenes?.[sceneId])throw new TypeError(`Save contains unknown scene "${sceneId}".`);
   }
+  normalizeCharacterVisitCounters(restored.characters,normalized.state.characters);
   const originalEntryCharacter=restored.originalEntryCharacter||normalized.state.originalEntryCharacter||'player';
   const currentEntryCharacter=restored.entryCharacter||originalEntryCharacter;
   if(typeof originalEntryCharacter!=='string'||!originalEntryCharacter.trim()||typeof currentEntryCharacter!=='string'||!currentEntryCharacter.trim()) {
@@ -337,6 +338,13 @@ export class GameEngine {
    const taskId=`move_char_${charId}`;
    this.scheduleCharacterMove(charId,Number.isFinite(remaining)?remaining:null);
    if(this.restoredPausedTasks.includes(taskId))this.taskManager.pause(taskId);
+   const stillRemaining=Object.entries(timers).find(([name])=>name.startsWith(`move_still_${charId}_`));
+   if(stillRemaining) {
+    const visitToken=this.getCharacterVisitToken(charId);
+    this.scheduleCharacterStill(charId,visitToken,stillRemaining[1]);
+    const restoredStillTaskId=this.characterStillTaskIds?.get(charId);
+    if(restoredStillTaskId&&this.restoredPausedTasks.includes(stillRemaining[0]))this.taskManager.pause(restoredStillTaskId);
+   }
   }
   for(const[id,state]of Object.entries(this.api.engine.state.getRuntimeSnapshot('automations') || {})) {
    if(!state?.active)continue;
@@ -378,8 +386,8 @@ export class GameEngine {
   try{
    while(this.runtime.effectQueue.async.length){
     const item=this.runtime.effectQueue.async.shift();
-    try{await this.processRunnables(item.effectiveList,item.context,true,true);}catch(error){console.error('EffectQueue async error:',error);}
-    item.resolve?.({cancelled:false});
+    try{await this.processRunnables(item.effectiveList,item.context,true,true);item.resolve?.({cancelled:false});}
+    catch(error){console.error('EffectQueue async error:',error);item.resolve?.({cancelled:false,error});}
    }
   }finally{this.runtime.isAsyncQueueRunning=false;}
  }
@@ -392,10 +400,12 @@ export class GameEngine {
  pauseBackgroundTasks(){
   for(const id of Object.keys(this.api.engine.state.getRuntimeSnapshot('automations') || {}))if(this.api.engine.state.get('automation.active', { id }))this.taskManager.pause(`auto_${id}`);
   for(const id of Object.keys(this.api.engine.state.getRuntimeSnapshot('characters') || {}))this.taskManager.pause(`move_char_${id}`);
+  for(const id of Object.keys(this.taskManager.plan || {}))if(id.startsWith('move_still_'))this.taskManager.pause(id);
  }
  resumeBackgroundTasks(){
   for(const id of Object.keys(this.api.engine.state.getRuntimeSnapshot('automations') || {}))if(this.api.engine.state.get('automation.active', { id }))this.taskManager.resume(`auto_${id}`);
   for(const id of Object.keys(this.api.engine.state.getRuntimeSnapshot('characters') || {}))this.taskManager.resume(`move_char_${id}`);
+  for(const id of Object.keys(this.taskManager.plan || {}))if(id.startsWith('move_still_'))this.taskManager.resume(id);
  }
 }
 Object.assign(GameEngine.prototype,ConfigSystem,LogicSystem,EffectSystem,ActionSystem,SceneSystem,EntitySystem,ItemSystem,ChatSystem,AutomationSystem);

@@ -113,7 +113,19 @@ export const LoaderSystem = {
 
             if (!char.stats) char.stats = {};
             if (!char.effect) char.effect = { meeting: {}, leave: {} };
-            if (!char.moveList) char.moveList = [];
+            if (char.moveList === undefined || char.moveList === null) char.moveList = [];
+            if (!Array.isArray(char.moveList)) {
+                throw new TypeError(`Character '${charId}' moveList must be an array.`);
+            }
+            char.moveList.forEach((entry, index) => {
+                if (!entry || typeof entry !== 'object' || Array.isArray(entry)) {
+                    throw new TypeError(`Character '${charId}' moveList[${index}] must be an object.`);
+                }
+                if (entry.countVisited === undefined) entry.countVisited = 0;
+                if (!Number.isSafeInteger(entry.countVisited) || entry.countVisited < 0) {
+                    throw new TypeError(`Character '${charId}' moveList[${index}].countVisited must be a non-negative safe integer.`);
+                }
+            });
 
             if (!char.met || !Array.isArray(char.met)) char.met = [];
 
