@@ -170,11 +170,6 @@ export const EffectHandlers = {
                     if (mediaDef && mediaDef.url) {
                         resolvedValue = mediaDef.url;
                         // Should we also enforce format from definition?
-                        // Strategies eff.format overrides or fallback?
-                        // eff.format is optional in schema?
-                        // If eff.format is missing, maybe invoke exec with format from definition.
-                        // But exec expects format in params.
-                        // Let's modify params passed to exec.
                         if (!resolvedFormat && mediaDef.type) {
                             resolvedFormat = mediaDef.type;
                         }
