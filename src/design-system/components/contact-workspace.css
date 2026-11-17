@@ -1003,8 +1003,7 @@
 }
 
 /* Icon-only actions in the Contact list header. */
-.vsr-contact-identity-trigger,
-.vsr-contact-close-trigger {
+.vsr-contact-identity-trigger {
   display: inline-flex;
   flex: 0 0 40px;
   align-items: center;
