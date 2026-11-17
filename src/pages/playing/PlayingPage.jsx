@@ -91,6 +91,7 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
         open={contactOpen}
         player={snapshot?.presentation?.player ?? null}
         contacts={snapshot?.presentation?.contacts ?? []}
+        systemContacts={snapshot?.presentation?.systemContacts ?? []}
         session={snapshot?.session ?? null}
         viewRequest={chatViewRequest}
         client={client}

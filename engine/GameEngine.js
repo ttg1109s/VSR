@@ -6,6 +6,7 @@ import {SceneSystem} from './modules/Scene.js';
 import {EntitySystem} from './modules/Entity.js';
 import {ItemSystem} from './modules/Item.js';
 import {ChatSystem} from './modules/Chat.js';
+import { COMMUNICATION_SENDER_ID, UNKNOWN_SENDER_ID } from './modules/chat/systemSenders.js';
 import {AutomationSystem} from './modules/Automation.js';
 import {LoaderSystem} from './modules/Loader.js';
 import {normalizeScenario} from './scenario/Scenario.js';
@@ -75,11 +76,14 @@ export class GameEngine {
    if(typeof payload.contactId!=='string'||!payload.contactId||typeof payload.chatId!=='string'||!payload.chatId)throw new TypeError('chat.open requires contactId and chatId.');
    const runtimeState=this.api.engine.state;
    const characters=runtimeState.getRuntimeSnapshot('characters')||{};
-   const contact=characters[payload.contactId];
-   const identityId=this._getCurrentIdentityKey?.()||runtimeState.get('entryCharacter')||'player';
-   const met=Array.isArray(contact?.met)&&contact.met.some(entry=>String(entry).split(':')[0]===identityId);
-   const present=!!contact&&contact.place?.scene_id===runtimeState.get('sceneId');
-   if(!contact||payload.contactId===identityId||(!met&&!present))throw new Error('Chat thread is not available for this contact.');
+   const isSystemContact=payload.contactId===COMMUNICATION_SENDER_ID||payload.contactId===UNKNOWN_SENDER_ID;
+   if(!isSystemContact){
+    const contact=characters[payload.contactId];
+    const identityId=this._getCurrentIdentityKey?.()||runtimeState.get('entryCharacter')||'player';
+    const met=Array.isArray(contact?.met)&&contact.met.some(entry=>String(entry).split(':')[0]===identityId);
+    const present=!!contact&&contact.place?.scene_id===runtimeState.get('sceneId');
+    if(!contact||payload.contactId===identityId||(!met&&!present))throw new Error('Chat thread is not available for this contact.');
+   }
    const thread=this.getThreads(payload.contactId).find(item=>item.id===payload.chatId);
    if(!thread)throw new Error('Chat thread is not available for this contact.');
    if(this.chatState?.active&&this.chatState.id===payload.chatId)return{opened:true,alreadyActive:true,contactId:payload.contactId,chatId:payload.chatId};
