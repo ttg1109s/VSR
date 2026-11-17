@@ -984,3 +984,10 @@
   .vsr-identity-content{padding:8px 24px 32px;gap:24px}
   .vsr-identity-hero__avatar-wrap .vsr-contact-avatar--lg{width:88px;height:88px}
 }
+
+.vsr-identity-section__source{
+  margin:-4px 0 0;
+  color:var(--vsr-color-text-secondary);
+  font-size:12px;
+  line-height:18px;
+}
