@@ -2360,9 +2360,9 @@
                 "enum": [
                   "info",
                   "success",
-                  "warn",
+                  "warning",
                   "danger",
-                  "error"
+                  "special"
                 ],
                 "default": "info"
               }
@@ -3605,9 +3605,9 @@
                 "enum": [
                   "info",
                   "success",
-                  "warn",
+                  "warning",
                   "danger",
-                  "error"
+                  "special"
                 ],
                 "default": "info"
               }
