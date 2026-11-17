@@ -5,8 +5,8 @@
  * Runtime = mutable game state (engine.state).
  * Session = transient interaction state (engine.chatState / engine.pendingPasswordAction).
  *
- * Paths are resolved against the selected namespace. Legacy keys remain supported,
- * but their targets point to the current runtime model rather than the old schema.
+ * Named selectors are the Engine state-access API. Each selector resolves to one
+ * canonical source, runtime, or session path; selectors do not define alternate scenario formats.
  */
 export const STATE_SCHEMA = Object.freeze({
   // Scenario metadata and configuration (runtime copies are used when present).
@@ -66,8 +66,6 @@ export const STATE_SCHEMA = Object.freeze({
   'item.stat.max': ['runtime', 'itemInfo.[id].stats.[statId].max'],
   'item.stat.label': ['runtime', 'itemInfo.[id].stats.[statId].label'],
   'item.stat.color': ['runtime', 'itemInfo.[id].stats.[statId].color'],
-  'item.color': ['runtime', 'itemInfo.[id].stats.[statId].color'],
-  'item.label': ['runtime', 'itemInfo.[id].stats.[statId].label'],
   'item.current': ['runtime', 'itemInfo.[id].usage.current'],
   'item.max': ['runtime', 'itemInfo.[id].usage.max'],
   'item.desc': ['runtime', 'itemInfo.[id].desc'],
