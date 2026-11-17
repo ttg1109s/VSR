@@ -90,30 +90,7 @@ export const SceneSystem = {
 
         await this.enterRouter(activeRouter, true, true, effectiveSkip);
 
-        // Logic: Entry identity enters the new scene (trigger character meeting effects for characters already there)
-        const currentCharacters = state.getRuntimeSnapshot('characters') || {};
-        Object.keys(currentCharacters).forEach(charId => {
-            if (charId === entryChar) return;
-            if (charId === currentIdentity) return;
-
-            const char = currentCharacters[charId];
-            // [REFACTOR] Use 'char.place.scene_id'
-            if (char.place.scene_id === id) {
-
-                // [FIX V9.2] Meeting Logic: Access Object by currentIdentity Key
-                if (char.effect && char.effect.meeting) {
-                    const meetingEffects = char.effect.meeting[currentIdentity];
-
-                    if (Array.isArray(meetingEffects)) {
-                        this.processRunnables(meetingEffects, {
-                            sceneId: id,
-                            charId: charId,
-                            hook: `meeting:${currentIdentity}`
-                        }, true).catch(e => console.warn("Char meeting err:", e));
-                    }
-                }
-            }
-        });
+        // Character movement and entry effects are owned by each Character's moveList.
 
         if (this.api.presentation && this.api.presentation.components && this.api.presentation.components.updateCharacterList) {
             this.api.presentation.components.updateCharacterList();
