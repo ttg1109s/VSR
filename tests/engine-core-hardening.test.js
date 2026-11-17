@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { scenarioSchema } from '../engine/scenario/ScenarioSchema.js';
-import { validateScenario, normalizeScenario, migrateScenario, ScenarioValidationError } from '../engine/scenario/Scenario.js';
+import { validateScenario, normalizeScenario, ScenarioValidationError } from '../engine/scenario/Scenario.js';
 import { LogicSystem } from '../engine/modules/Logic.js';
 import { EffectSystem } from '../engine/modules/Effect.js';
 import { EffectHandlers, CharacterStrategies, SetStrategies } from '../engine/modules/effect/Strategies.js';
@@ -18,6 +18,7 @@ import { JsonProtocol } from '../protocol/JsonProtocol.js';
 
 function validScenario() {
   return {
+    formatVersion: 1,
     meta: {
       title: 'Test', desc: 'Test scenario', version: '1.0.0',
       language: 'vi', writer: null, ageRating: '13+', tags: [], entryScene: 'start'
@@ -340,13 +341,43 @@ test('malformed collection shapes produce validation errors instead of crashing 
 });
 
 
-test('scenario format migration rejects unsupported versions explicitly', () => {
-  const oldFormat = validScenario();
-  oldFormat.formatVersion = 0;
-  assert.throws(() => migrateScenario(oldFormat), /unsupported scenario formatVersion '0'/);
-  const futureFormat = validScenario();
-  futureFormat.formatVersion = 2;
-  assert.throws(() => migrateScenario(futureFormat), /newer than supported version/);
+test('scenario format version is explicit and must match the current contract', () => {
+  const missingVersion = validScenario();
+  delete missingVersion.formatVersion;
+  assert.ok(validateScenario(missingVersion).some(error => error.includes('formatVersion')));
+
+  for (const version of [0, 2]) {
+    const scenario = validScenario();
+    scenario.formatVersion = version;
+    assert.ok(validateScenario(scenario).some(error => error.includes('must be equal to constant')));
+    assert.throws(() => normalizeScenario(scenario), ScenarioValidationError);
+  }
+});
+
+test('router actions accept only the canonical array representation', () => {
+  const objectMap = validScenario();
+  objectMap.scenes.start.routers.main.actions = {
+    legacy: { meta: { title: 'Legacy' }, set: { display: 'show' } }
+  };
+  assert.ok(validateScenario(objectMap).length > 0);
+  assert.throws(() => normalizeScenario(objectMap), ScenarioValidationError);
+
+  const imported = validScenario();
+  imported.scenes.start.routers.main.importAction = [{ of: 'main' }];
+  assert.ok(validateScenario(imported).length > 0);
+  assert.throws(() => normalizeScenario(imported), ScenarioValidationError);
+});
+
+test('character source must be provided as a separate field, not encoded in target', () => {
+  const scenario = validScenario();
+  scenario.characters = { source: {}, destination: {} };
+  scenario.scenes.start.routers.main.actions[0].effect = {
+    normal: [{
+      type: 'characters', subtype: 'mng_stats', exec: 'swap',
+      target: 'destination:source'
+    }]
+  };
+  assert.ok(validateScenario(scenario).some(error => error.includes('separate source field')));
 });
 
 
