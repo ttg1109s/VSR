@@ -16,6 +16,7 @@ export default function App() {
   const [loadStatus, setLoadStatus] = useState('loading');
   const [loadError, setLoadError] = useState('');
   const [gameSnapshot, setGameSnapshot] = useState(null);
+  const [chatViewRequest, setChatViewRequest] = useState(null);
   const [gameError, setGameError] = useState('');
   const runtimeRef = useRef(null);
   const loadGenerationRef = useRef(0);
@@ -26,6 +27,7 @@ export default function App() {
     runtime?.unsubscribe?.();
     runtime?.client?.dispose();
     setGameSnapshot(null);
+    setChatViewRequest(null);
     runtime?.transport?.close?.();
   }, []);
 
@@ -89,8 +91,14 @@ export default function App() {
     const transport = new WorkerJsonTransport({ requestTimeoutMs: 30000 });
     const client = new JsonClient(transport);
     const unsubscribe = client.subscribe(message => {
-      if (message.type === 'state' && generation === loadGenerationRef.current) {
+      if (generation !== loadGenerationRef.current) return;
+      if (message.type === 'state') {
         setGameSnapshot(message.snapshot);
+      } else if (message.type === 'event' && message.event?.event === 'presentation.chat.viewRequested') {
+        const request = message.event.payload?.args;
+        if (request?.requestId && request.contactId && request.chatId) {
+          setChatViewRequest(request);
+        }
       }
     });
     runtimeRef.current = { transport, client, unsubscribe, status: 'loading', generation };
@@ -138,6 +146,7 @@ export default function App() {
     return (
       <PlayingPage
         snapshot={gameSnapshot}
+        chatViewRequest={chatViewRequest}
         client={runtimeRef.current?.client}
         error={gameError}
         onNavigate={async sceneId => {
