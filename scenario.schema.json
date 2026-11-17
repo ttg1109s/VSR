@@ -903,11 +903,18 @@
             "items": {
               "type": "object",
               "required": [
-                "scene_id"
+                "scene_id",
+                "countVisited"
               ],
               "properties": {
                 "scene_id": {
                   "type": "string"
+                },
+                "countVisited": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "default": 0,
+                  "description": "Number of times this Character has entered this moveList entry."
                 },
                 "nextStep": {
                   "type": "number",
