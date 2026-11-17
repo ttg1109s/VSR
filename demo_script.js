@@ -281,7 +281,7 @@ export const DEMO_SCRIPT = {
         {
           "type": "notify",
           "subtype": "toast",
-          "level": "warn",
+          "level": "warning",
           "text": "Sương đang dày lên. Thời gian ở lại không còn nhiều."
         }
       ]
@@ -1623,7 +1623,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "notify",
             "subtype": "toast",
-            "level": "warn",
+            "level": "warning",
             "text": "Ánh sáng chưa được kích hoạt; hãy tìm và khôi phục manh mối liên quan đến chiếc đèn trước khi soi đáy giếng."
           }
         ]
@@ -1744,7 +1744,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "notify",
             "subtype": "toast",
-            "level": "warn",
+            "level": "warning",
             "text": "Chưa đủ căn cứ mở ổ khóa: cần sổ khách cùng chìa khóa phòng thứ bảy. Mật từ thánh ca sẽ được kiểm tra riêng sau khi các vật chứng này có mặt."
           }
         ]
@@ -1977,7 +1977,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "notify",
             "subtype": "toast",
-            "level": "warn",
+            "level": "warning",
             "text": "Cơ cấu chuông chưa đủ bộ phận. Cần quả lắc, dây đồng, trang ghi chú trong thánh ca và xác nhận mã thời điểm trước khi rung."
           }
         ]
@@ -2113,7 +2113,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "notify",
             "subtype": "toast",
-            "level": "warn",
+            "level": "warning",
             "text": "Bạn chưa có bản sao sổ điểm danh để đối chiếu với sơ đồ chỗ ngồi đã bị sửa."
           }
         ]
@@ -2215,7 +2215,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "notify",
             "subtype": "toast",
-            "level": "warn",
+            "level": "warning",
             "text": "Bạn chưa có la bàn của người dẫn đường; các lối mòn thay đổi khiến việc lần đường bằng dấu sơn đơn thuần không đáng tin."
           }
         ]
@@ -2323,7 +2323,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "notify",
             "subtype": "toast",
-            "level": "warn",
+            "level": "warning",
             "text": "Phù hiệu đội sơ tán chưa được tìm thấy. Dấu niêm phong trên hộp cần được đối chiếu trước khi mở."
           }
         ]
@@ -2389,7 +2389,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "notify",
             "subtype": "toast",
-            "level": "warn",
+            "level": "warning",
             "text": "Cối xay chưa thể khởi động: cần cả mảnh bản đồ chỉ chiều xoay và chốt truyền động thay thế."
           }
         ]
@@ -2497,7 +2497,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "notify",
             "subtype": "toast",
-            "level": "warn",
+            "level": "warning",
             "text": "Chưa thể mở tủ hồ sơ. Cần chìa khóa kho, danh sách vận chuyển lấy từ đường hầm và cuộn phim sơ tán để đối chiếu."
           }
         ]
@@ -2550,7 +2550,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "notify",
             "subtype": "toast",
-            "level": "warn",
+            "level": "warning",
             "text": "Chưa có cuộn tinh thể thu sóng để dò đúng tần số của tín hiệu dưới ga."
           }
         ]
@@ -2597,7 +2597,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "notify",
             "subtype": "toast",
-            "level": "warn",
+            "level": "warning",
             "text": "Các điều kiện giải thoát chưa hội đủ: cần khôi phục ít nhất ba mảnh ký ức, rung chuông, mở kho hồ sơ và có con dấu đội sơ tán."
           }
         ]
@@ -2636,7 +2636,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "notify",
             "subtype": "toast",
-            "level": "warn",
+            "level": "warning",
             "text": "Bạn chưa tìm thấy sổ khách; chưa thể xác định hồ sơ nào đang bị che giấu để đưa ra lựa chọn này."
           }
         ]
@@ -2683,7 +2683,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "notify",
             "subtype": "toast",
-            "level": "warn",
+            "level": "warning",
             "text": "Chưa đủ bằng chứng về người thứ mười hai: cần xác định danh tính của họ và nghe được sự thật từ tín hiệu dưới ga."
           }
         ]
@@ -2736,7 +2736,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "notify",
             "subtype": "toast",
-            "level": "warn",
+            "level": "warning",
             "text": "Bạn chưa có vé tàu 03:17 còn nguyên phần kiểm soát để lên chuyến tàu."
           }
         ]
@@ -3050,7 +3050,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "notify",
             "subtype": "toast",
-            "level": "warn",
+            "level": "warning",
             "text": "Lối tới sân ga chưa hiện ra: cần ít nhất ba mảnh ký ức, mở kho hồ sơ và thu được danh sách vận chuyển."
           }
         ]
@@ -3083,7 +3083,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "notify",
             "subtype": "toast",
-            "level": "warn",
+            "level": "warning",
             "text": "Cơ cấu truyền động chưa hoạt động; bánh xe cối xay phải được sửa và khởi động trước khi cửa sập có thể nâng lên."
           }
         ]
