@@ -272,10 +272,13 @@ function validateReferences(scenario) {
       add(`${path}.target`, `references missing item '${effect.target}'`);
     }
     if (effect.type === 'characters' && effect.target && !dynamicTarget) {
-      if (['mng_stats', 'mng_items'].includes(effect.subtype) && effect.target.includes(':')) {
+      if (['mng_stats', 'mng_items'].includes(effect.subtype) && typeof effect.target === 'string' && effect.target.includes(':')) {
         add(`${path}.target`, 'must contain only the destination character ID; provide source in the separate source field');
       }
       if (!characterExists(effect.target)) add(`${path}.target`, `references missing character '${effect.target}'`);
+      if (['mng_stats', 'mng_items'].includes(effect.subtype) && typeof effect.source === 'string' && !effect.source.includes('$(') && !characterExists(effect.source)) {
+        add(`${path}.source`, `references missing source character '${effect.source}'`);
+      }
     }
     if (effect.type === 'cms' && typeof effect.id === 'string' && !effect.id.includes('$(')) {
       if (effect.table === 'characters' && !characterExists(effect.id)) {
