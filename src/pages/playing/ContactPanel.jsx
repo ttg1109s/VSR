@@ -22,34 +22,86 @@ import {
 
 function StatList({ stats = {} }) {
   const entries = Object.entries(stats || {});
-  if (!entries.length) return <p>Nhân vật chưa có chỉ số.</p>;
+  if (!entries.length) {
+    return (
+      <div className="vsr-contact-profile__empty-state">
+        <span className="vsr-contact-profile__empty-icon" aria-hidden="true">insights</span>
+        <span>Nhân vật chưa có chỉ số.</span>
+      </div>
+    );
+  }
 
   return (
-    <DescriptionList layout="grid" columns="2" gap="comfortable">
-      {entries.map(([key, stat]) => (
-        <DescriptionListItem
-          key={key}
-          label={stat?.label || key}
-          value={stat?.max === undefined
-            ? (Number.isFinite(Number(stat?.current)) ? String(stat.current) : '—')
-            : (Number.isFinite(Number(stat?.current)) ? String(stat.current) : '—') + ' / ' + (Number.isFinite(Number(stat?.max)) ? String(stat.max) : '—')}
-        />
-      ))}
-    </DescriptionList>
+    <div className="vsr-contact-stat-grid">
+      {entries.map(([key, stat]) => {
+        const current = Number(stat?.current);
+        const max = Number(stat?.max);
+        const hasCurrent = stat?.current !== null && stat?.current !== '' && Number.isFinite(current);
+        const hasProgress = stat?.max !== undefined && stat?.max !== null && stat?.max !== ''
+          && Number.isFinite(max) && max > 0 && hasCurrent;
+        const progress = hasProgress ? Math.min(100, Math.max(0, (current / max) * 100)) : 0;
+        const value = !hasCurrent
+          ? '—'
+          : hasProgress
+            ? String(stat.current) + ' / ' + String(stat.max)
+            : String(stat.current);
+
+        return (
+          <div className="vsr-contact-stat-card" key={key}>
+            <div className="vsr-contact-stat-card__top">
+              <span className="vsr-contact-stat-card__label">{stat?.label || key}</span>
+              <strong className="vsr-contact-stat-card__value">{value}</strong>
+            </div>
+            {hasProgress ? (
+              <div
+                className="vsr-contact-stat-card__track"
+                role="progressbar"
+                aria-label={stat?.label || key}
+                aria-valuemin={0}
+                aria-valuemax={max}
+                aria-valuenow={Math.min(max, Math.max(0, current))}
+              >
+                <span style={{ width: progress + '%' }} />
+              </div>
+            ) : (
+              <span className="vsr-contact-stat-card__no-scale">Không có thang đo</span>
+            )}
+          </div>
+        );
+      })}
+    </div>
   );
 }
 
 function RelationshipList({ relationships = [], contacts, onSelect }) {
-  if (!relationships.length) return <p>Chưa có dữ liệu quan hệ.</p>;
+  if (!relationships.length) {
+    return (
+      <div className="vsr-contact-profile__empty-state">
+        <span className="vsr-contact-profile__empty-icon" aria-hidden="true">group</span>
+        <strong>Chưa có quan hệ</strong>
+        <span>Các mối quan hệ sẽ xuất hiện tại đây khi được ghi nhận.</span>
+      </div>
+    );
+  }
 
   return (
     <div className="vsr-contact-relationships">
       {relationships.map((relationship, index) => {
         const related = contacts.find(item => item.id === relationship.characterId);
+        const name = relationship.characterName || related?.name || relationship.characterId || 'Không xác định';
         return (
           <div className="vsr-contact-relationship" key={relationship.characterId || index}>
-            <span>{relationship.characterName || relationship.characterId || 'Không xác định'}</span>
-            <Badge tone="neutral">{relationship.tag || 'Chưa phân loại'}</Badge>
+            {related ? (
+              <ContactAvatar name={related.name || related.id} avatar={related.avatar} />
+            ) : (
+              <span className="vsr-contact-relationship__avatar" aria-hidden="true">
+                {(name || '?').trim().charAt(0).toUpperCase()}
+              </span>
+            )}
+            <div className="vsr-contact-relationship__copy">
+              <strong>{name}</strong>
+              <span>{relationship.tag || 'Chưa phân loại'}</span>
+            </div>
             {related && (
               <Button size="sm" variant="tertiary" onClick={() => onSelect(related.id)}>
                 Xem hồ sơ
@@ -68,37 +120,41 @@ function ContactProfile({ character, player, contacts, onSelect }) {
 
   return (
     <div className="vsr-contact-profile">
-      <header className="vsr-contact-profile__heading">
+      <header className="vsr-contact-profile__hero">
         <ContactAvatar name={character.name || character.id} avatar={character.avatar} size="lg" />
-        <div>
+        <div className="vsr-contact-profile__identity">
           <h3>{character.name || character.id}</h3>
-          <p>{character.id}</p>
-          {isPlayer
-            ? <Badge tone="success">Danh tính đang điều khiển</Badge>
-            : <Badge tone={character.presence === 'present' ? 'success' : 'neutral'}>
-                {character.presence === 'present' ? 'Đang hiện diện' : 'Đã gặp'}
-              </Badge>}
-          {isPlayer && character.identityMode && <Badge tone="info">Faker · {character.identityMode}</Badge>}
+          <span className="vsr-contact-profile__id">ID: {character.id}</span>
+          <div className="vsr-contact-profile__badges">
+            {isPlayer
+              ? <Badge tone="success">Danh tính đang điều khiển</Badge>
+              : <Badge tone={character.presence === 'present' ? 'success' : 'neutral'}>
+                  {character.presence === 'present' ? 'Đang hiện diện' : 'Đã gặp'}
+                </Badge>}
+            {isPlayer && character.identityMode && <Badge tone="info">Faker · {character.identityMode}</Badge>}
+            {!isPlayer && Number.isFinite(character.metCount) && (
+              <Badge tone="secondary">Đã gặp {character.metCount} lần</Badge>
+            )}
+          </div>
         </div>
       </header>
-      <Separator />
-      <ContactSection>
-        <h4>Giới thiệu</h4>
-        <p>{character.description || 'Nhân vật chưa có mô tả.'}</p>
-      </ContactSection>
-      <Separator />
-      <ContactSection>
-        <h4>Chỉ số</h4>
+
+      <section className="vsr-contact-profile__section">
+        <h4><span aria-hidden="true">person</span>Giới thiệu</h4>
+        <p className="vsr-contact-profile__description">
+          {character.description || 'Nhân vật chưa có mô tả.'}
+        </p>
+      </section>
+
+      <section className="vsr-contact-profile__section">
+        <h4><span aria-hidden="true">insights</span>Chỉ số</h4>
         <StatList stats={character.stats} />
-      </ContactSection>
-      <Separator />
-      <ContactSection>
-        <h4>Quan hệ</h4>
+      </section>
+
+      <section className="vsr-contact-profile__section">
+        <h4><span aria-hidden="true">groups</span>Quan hệ</h4>
         <RelationshipList relationships={character.relationship || []} contacts={contacts} onSelect={onSelect} />
-      </ContactSection>
-      {!isPlayer && Number.isFinite(character.metCount) && (
-        <p>Số lần gặp danh tính hiện tại: {character.metCount}</p>
-      )}
+      </section>
     </div>
   );
 }
