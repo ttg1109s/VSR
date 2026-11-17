@@ -391,7 +391,6 @@ export default function ContactPanel({ open, onClose, player, contacts = [], ses
       open={open}
       onClose={close}
       title="Contact"
-      description="Danh bạ, thread và hội thoại từ Engine"
       headerActions={player && (
         <Button
           size="sm"
