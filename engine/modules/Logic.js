@@ -1,5 +1,6 @@
 // engine/modules/Logic.js
 import { resolveValue } from '../../engine/modules/Resolver.js';
+import { getFakerRelationshipIdentityId } from './entity/Identity.js';
 
 // --- 1. Comparison Operations ---
 const Operations = {
@@ -127,10 +128,16 @@ const RelationshipStrategies = {
     characters: (engine, { target, character, op, value }) => {
         if (!['has', '!has'].includes(op) || typeof character !== 'string' || !character) return false;
 
-        const ownerId = engine.redirectTarget(target);
-        const owner = engine.api.engine.state.getRuntime('characters.[id]', { id: ownerId });
+        const state = engine.api.engine.state;
+        const runtimeOwnerId = engine.redirectTarget(target);
+        const entryCharacter = state.getRuntime('entryCharacter') || 'player';
+        const faker = state.getRuntimeSnapshot('faker') || {};
+        const ownerId = getFakerRelationshipIdentityId(runtimeOwnerId, entryCharacter, faker);
+        const owner = state.getRuntime('characters.[id]', { id: ownerId });
         if (!owner) return false;
 
+        // Canonical relationship data lives at character.relationship.
+        // set.relationship is read only as a legacy compatibility fallback.
         const relationships = Array.isArray(owner.relationship)
             ? owner.relationship
             : (Array.isArray(owner.set?.relationship) ? owner.set.relationship : []);
