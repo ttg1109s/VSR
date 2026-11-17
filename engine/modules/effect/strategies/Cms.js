@@ -137,8 +137,7 @@ export const CmsStrategies = {
             const owner = tx.get('characters.[id]', { id });
             if (!owner) return;
             if (eff.column === 'relationship') {
-                if (!owner.set) return;
-                const relationship = ensureArray(owner.set, 'relationship');
+                const relationship = ensureArray(owner, 'relationship');
                 if (!mutateList(relationship, eff.method, value, eff.index, true)) {
                     throw new TypeError(`Invalid CMS relationship value for method '${eff.method}'.`);
                 }
