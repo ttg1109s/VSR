@@ -37,7 +37,6 @@ function StatList({ stats = {} }) {
         const hasCurrent = stat?.current !== null && stat?.current !== '' && Number.isFinite(current);
         const hasProgress = stat?.max !== undefined && stat?.max !== null && stat?.max !== ''
           && Number.isFinite(max) && max > 0 && hasCurrent;
-        const progress = hasProgress ? Math.min(100, Math.max(0, (current / max) * 100)) : 0;
         const value = !hasCurrent
           ? '—'
           : hasProgress

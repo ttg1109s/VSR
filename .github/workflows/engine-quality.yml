@@ -17,5 +17,6 @@ jobs:
       - run: npm run schema:check
       - run: npm run check:server
       - run: npm run audit:ui
+      - run: npm run audit:deadcode
       - run: npm test
       - run: npm run audit:state:strict
