@@ -127,7 +127,7 @@ Safe Area là nền tảng layout của Design System, không phải logic tùy 
 - `--vsr-safe-area-bottom`
 - `--vsr-safe-area-left`
 
-Chỉ Foundation được phép đọc trực tiếp `env(safe-area-inset-*)`. Các stylesheet khác phải dùng biến VSR. `src/design-system/foundations/safe-area.css` cung cấp primitive tái sử dụng; page shell, navigation, overlay và fullscreen component phải xác định rõ lớp nào sở hữu inset để không bỏ sót hoặc cộng hai lần.
+Chỉ Foundation được phép đọc trực tiếp `env(safe-area-inset-*)`. `#root` là Safe Area owner mặc định cho toàn bộ document-flow UI và nhận đủ bốn inset theo thứ tự top/right/bottom/left. Page shell, reading content, loader và breadcrumb không được cộng lại inset đã nhận từ root. Sticky UI chỉ dùng token làm vị trí neo (ví dụ `top: var(--vsr-safe-area-top)`), không thêm padding Safe Area lần nữa. Các thành phần fixed hoặc render qua Portal ngoài `#root` (Dialog, Drawer, Popover, Toast, Bottom Navigation) phải tự nhận inset đúng một lần tại lớp bao ngoài của chính chúng. Full-screen media có thể tràn edge-to-edge; các điều khiển tương tác của media phải nằm trong vùng an toàn. Các utility class chỉ được giữ khi có consumer thực tế; không tạo thêm lớp bọc chỉ để chuyển tiếp cùng một inset.
 
 **Quy tắc ownership:**
 
@@ -143,8 +143,8 @@ Chỉ Foundation được phép đọc trực tiếp `env(safe-area-inset-*)`. C
 
 - `viewport-fit=cover` có mặt trong viewport meta cho web app hỗ trợ edge-to-edge.
 - Không có direct `env(safe-area-inset-*)` ngoài Foundation.
-- Kiểm tra iOS notch/Dynamic Island, Home Indicator, Android gesture navigation, landscape, viewport thấp và bàn phím ảo.
-- Test page shell, flush-top, bottom navigation, fullscreen drawer, dialog, toast và popover.
+- Kiểm tra root inset trên mọi page; iOS notch/Dynamic Island, Home Indicator, Android gesture navigation, landscape, viewport thấp và bàn phím ảo.
+- Test page shell, reading content, loader, sticky breadcrumb, bottom navigation, fullscreen drawer, dialog, toast và popover; xác nhận không có inset bị cộng hai lần.
 - Chạy `npm run audit:safe-area` trước khi merge.
 
 Không được coi việc thay chuỗi `env()` hoặc việc CSS build thành công là bằng chứng UI đã đúng trên thiết bị. Cần regression test trên browser/device tương ứng.

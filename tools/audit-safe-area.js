@@ -20,6 +20,7 @@ function walk(dir) {
 
 walk(path.join(root, 'src'));
 const foundationText = fs.readFileSync(path.join(root, foundation), 'utf8');
+const layoutText = fs.readFileSync(path.join(root, 'src/design-system/foundations/layout.css'), 'utf8');
 
 for (const side of required) {
   const declaration = '--vsr-safe-area-' + side + ': env(safe-area-inset-' + side + ', 0px);';
@@ -33,6 +34,12 @@ for (const file of cssFiles) {
   }
 }
 
+const rootRule = /#root\s*\{([^}]*)\}/s.exec(foundationText)?.[1] || '';
+const rootInset = /padding:\s*var\(--vsr-safe-area-top\)\s+var\(--vsr-safe-area-right\)\s+var\(--vsr-safe-area-bottom\)\s+var\(--vsr-safe-area-left\)\s*;/s;
+if (!rootInset.test(rootRule)) errors.push('#root must own all four Safe Area insets in top/right/bottom/left order');
+if (/padding[^;]*var\(--vsr-safe-area-(?:top|right|bottom|left)\)/s.test(layoutText)) {
+  errors.push('Document-flow layout must not re-apply Safe Area padding already owned by #root');
+}
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 if (!/name=["']viewport["'][^>]*viewport-fit\s*=\s*cover/i.test(html)) {
   errors.push('index.html viewport meta must include viewport-fit=cover');
@@ -42,5 +49,5 @@ if (errors.length) {
   for (const error of errors) console.error('FAIL ' + error);
   process.exitCode = 1;
 } else {
-  console.log('Safe Area audit passed: four canonical Foundation tokens, no direct feature env() usage, viewport-fit=cover present.');
+  console.log('Safe Area audit passed: canonical tokens, root ownership, no duplicate document-flow inset padding, no direct feature env() usage, and viewport-fit=cover.');
 }
