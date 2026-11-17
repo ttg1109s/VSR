@@ -123,6 +123,34 @@ const StatsStrategies = {
     }
 };
 
+const RelationshipStrategies = {
+    characters: (engine, { target, character, op, value }) => {
+        if (!['has', '!has'].includes(op) || typeof character !== 'string' || !character) return false;
+
+        const ownerId = engine.redirectTarget(target);
+        const owner = engine.api.engine.state.getRuntime('characters.[id]', { id: ownerId });
+        if (!owner) return false;
+
+        const relationships = Array.isArray(owner.relationship)
+            ? owner.relationship
+            : (Array.isArray(owner.set?.relationship) ? owner.set.relationship : []);
+        const tag = resolveValue(value, engine);
+        if (typeof tag !== 'string') return false;
+
+        const found = relationships.some(entry => {
+            const relatedId = Array.isArray(entry)
+                ? entry[1]
+                : entry?.characterId;
+            const relatedTag = Array.isArray(entry)
+                ? entry[0]
+                : entry?.tag;
+            return relatedId === character && relatedTag === tag;
+        });
+
+        return op === 'has' ? found : !found;
+    }
+};
+
 const CheckTypeHandlers = {
     item: (engine, c) => ItemStrategies[c.subtype]?.(engine, c) ?? false,
     state: (engine, c) => {
@@ -132,6 +160,7 @@ const CheckTypeHandlers = {
         return val !== undefined ? (Operations[c.op]?.(val, resolveValue(c.value, engine)) ?? false) : false;
     },
     stats: (engine, c) => StatsStrategies[c.subtype]?.(engine, c) ?? false,
+    relationship: (engine, c) => RelationshipStrategies.characters(engine, c),
     set: (engine, c) => {
         const retriever = ObjectRetrievers[c.subtype];
         const obj = retriever ? retriever(engine, c.target) : null;
