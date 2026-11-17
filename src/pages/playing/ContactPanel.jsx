@@ -413,8 +413,7 @@ export default function ContactPanel({ open, onClose, player, contacts = [], ses
                           </span>
                           <span className="vsr-contact-chat-next__icon" aria-hidden="true">➜</span>
                         </Button>
-                      ) : (
-                      )}
+                      ) : null}
                     </ContactComposer>
                   </ContactConversation>
                 )}
