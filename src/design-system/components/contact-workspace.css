@@ -780,7 +780,6 @@
   display:flex;
   flex-direction:column;
   width:min(100%,480px);
-  height:100%;
   max-height:none;
   min-height:0;
 }
@@ -821,7 +820,7 @@
   display:flex;
   flex-direction:column;
   gap:16px;
-  padding:16px 16px calc(24px + var(--vsr-safe-area-bottom));
+  padding:16px 16px 24px;
 }
 .vsr-identity-hero{
   display:flex;
