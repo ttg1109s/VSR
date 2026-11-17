@@ -1160,3 +1160,71 @@ test('Contact snapshot projects the current Player Entry and only known or prese
     engine.dispose();
   }
 });
+
+test('relationship requirements match relationship tags and character IDs', () => {
+  const characters = {
+    player: {
+      relationship: [
+        ['friend', 'ally'],
+        { tag: 'enemy', characterId: 'rival' }
+      ]
+    },
+    ally: { relationship: [] },
+    rival: { relationship: [] }
+  };
+  const engine = Object.assign({}, LogicSystem, {
+    src: {},
+    redirectTarget: id => id,
+    api: {
+      engine: {
+        state: {
+          getRuntime(path, { id }) {
+            return path === 'characters.[id]' ? characters[id] : undefined;
+          }
+        }
+      }
+    }
+  });
+
+  assert.equal(engine.checkReq({
+    logic: null,
+    check: [{ type: 'relationship', target: 'player', character: 'ally', op: 'has', value: 'friend' }]
+  }).pass, true);
+  assert.equal(engine.checkReq({
+    logic: null,
+    check: [{ type: 'relationship', target: 'player', character: 'rival', op: 'has', value: 'enemy' }]
+  }).pass, true);
+  assert.equal(engine.checkReq({
+    logic: null,
+    check: [{ type: 'relationship', target: 'player', character: 'ally', op: 'has', value: 'enemy' }]
+  }).pass, false);
+  assert.equal(engine.checkReq({
+    logic: null,
+    check: [{ type: 'relationship', target: 'player', character: 'stranger', op: '!has', value: 'friend' }]
+  }).pass, true);
+});
+
+test('relationship requirements read set.relationship when the root collection is absent', () => {
+  const characters = {
+    hero: { set: { relationship: [['ally', 'companion']] } },
+    companion: {}
+  };
+  const engine = Object.assign({}, LogicSystem, {
+    src: {},
+    redirectTarget: id => id,
+    api: {
+      engine: {
+        state: {
+          getRuntime(path, { id }) {
+            return path === 'characters.[id]' ? characters[id] : undefined;
+          }
+        }
+      }
+    }
+  });
+
+  assert.equal(engine.checkReq({
+    logic: null,
+    check: [{ type: 'relationship', target: 'hero', character: 'companion', op: 'has', value: 'ally' }]
+  }).pass, true);
+});
