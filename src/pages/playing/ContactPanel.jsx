@@ -140,10 +140,11 @@ export default function ContactPanel({ open, onClose, player, contacts = [], ses
   const [chatPending, setChatPending] = useState(false);
   const [chatError, setChatError] = useState('');
 
-  const allContacts = useMemo(() => [
-    ...(player ? [{ ...player, kind: 'player', threads: [] }] : []),
-    ...contacts.map(contact => ({ ...contact, kind: 'contact', threads: Array.isArray(contact.threads) ? contact.threads : [] }))
-  ], [player, contacts]);
+  const allContacts = useMemo(() => contacts.map(contact => ({
+    ...contact,
+    kind: 'contact',
+    threads: Array.isArray(contact.threads) ? contact.threads : []
+  })), [contacts]);
 
   const selected = allContacts.find(contact => contact.id === selectedId) || null;
   const threads = selected?.threads || [];
@@ -266,6 +267,24 @@ export default function ContactPanel({ open, onClose, player, contacts = [], ses
               Đóng
             </Button>
           </header>
+          {player && (
+            <section className="vsr-contact-me" aria-label="Danh tính của bạn">
+              <h2 className="vsr-contact-me__heading">Me</h2>
+              <div className="vsr-contact-me__identity">
+                <ContactAvatar name={player.name || player.id} avatar={player.avatar} />
+                <div className="vsr-contact-me__copy">
+                  <strong>{player.name || player.id}</strong>
+                  {player.identityMode === 'soul' && player.identityTarget?.name && (
+                    <span>Đang đoạt xá {player.identityTarget.name}</span>
+                  )}
+                  {player.identityMode === 'mask' && (
+                    <span>Danh tính Faker{player.identityTarget?.name ? ' · ' + player.identityTarget.name : ''}</span>
+                  )}
+                </div>
+              </div>
+            </section>
+          )}
+          <h2 className="vsr-contact-list__section-heading">Liên hệ</h2>
           <ContactScrollArea className="vsr-contact-list__items" aria-label="Danh sách liên hệ">
             {allContacts.map(contact => {
               const unreadCount = contact.threads.filter(thread => thread.isUnread).length;
