@@ -1,9 +1,5 @@
 import { cloneJsonValue } from '../../protocol/JsonProtocol.js';
 
-const SEVERITY_ALIASES = Object.freeze({
-  info: 'info', success: 'success', warn: 'warning', warning: 'warning',
-  danger: 'danger', error: 'danger', magic: 'special', special: 'special'
-});
 const PRIORITY = Object.freeze({ danger: 5, warning: 4, special: 3, success: 2, info: 1 });
 
 export class NotificationSystem {
@@ -24,8 +20,9 @@ export class NotificationSystem {
     if (!input || typeof input !== 'object' || Array.isArray(input)) throw new TypeError('Notification must be an object.');
     const title = input.title == null ? 'Thông báo' : String(input.title);
     const message = input.message == null ? '' : String(input.message);
-    const originalLevel = String(input.level || input.severity || 'info').toLowerCase();
-    const severity = SEVERITY_ALIASES[originalLevel] || 'info';
+    const originalLevel = String(input.level ?? 'info').toLowerCase();
+    if (!Object.hasOwn(PRIORITY, originalLevel)) throw new TypeError(`Unsupported notification level: ${originalLevel}`);
+    const severity = originalLevel;
     const now = this.clock();
     const duration = input.duration === undefined
       ? (presentation === 'modal' ? null : this.defaultDurationMs)
@@ -76,7 +73,7 @@ export class NotificationSystem {
       options = message && typeof message === 'object' ? message : input;
       title = input.title;
       message = input.message;
-      level = input.level || input.severity || 'info';
+      level = input.level ?? 'info';
     }
     options = options && typeof options === 'object' && !Array.isArray(options) ? options : {};
     const presentation = options.presentation === 'modal' ? 'modal' : 'toast';
@@ -158,7 +155,7 @@ export class NotificationSystem {
   notify(input) {
     if (!input || typeof input !== 'object' || Array.isArray(input)) throw new TypeError('notify() expects a notification object.');
     const { presentation = 'toast', ...rest } = input;
-    return presentation === 'modal' ? this.alert(rest.title, rest.message, rest.level || rest.severity || 'info', rest) : this.add(rest.title, rest.message, rest.level || rest.severity || 'info', rest);
+    return presentation === 'modal' ? this.alert(rest.title, rest.message, rest.level ?? 'info', rest) : this.add(rest.title, rest.message, rest.level ?? 'info', rest);
   }
 
   dismiss(id, reason = 'dismissed') {
