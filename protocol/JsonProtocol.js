@@ -203,6 +203,9 @@ export class JsonProtocol{
    name:faker.active&&fakerMode==='mask'
     ?(currentCharacter.set?.name||fakerTarget?.set?.name||fakerTarget?.meta?.name||currentCharacter.meta?.name||currentIdentityId)
     :(currentCharacter.meta?.name||currentIdentityId),
+   description:faker.active&&fakerMode==='mask'
+    ?(fakerTarget?.set?.desc??fakerTarget?.meta?.desc??currentCharacter.meta?.desc??null)
+    :(currentCharacter.meta?.desc??null),
    avatar:faker.active&&fakerMode==='mask'
     ?(fakerTarget?.meta?.avatar??currentCharacter.meta?.avatar??null)
     :(currentCharacter.meta?.avatar??null),
