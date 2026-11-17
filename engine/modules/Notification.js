@@ -18,6 +18,7 @@ export class NotificationSystem {
 
   normalize(input = {}, presentation = 'toast') {
     if (!input || typeof input !== 'object' || Array.isArray(input)) throw new TypeError('Notification must be an object.');
+    if (Object.hasOwn(input, 'severity')) throw new TypeError('Notification uses the level field; severity is not supported.');
     const title = input.title == null ? 'Thông báo' : String(input.title);
     const message = input.message == null ? '' : String(input.message);
     const originalLevel = String(input.level ?? 'info').toLowerCase();
