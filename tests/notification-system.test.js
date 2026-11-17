@@ -22,14 +22,14 @@ test('notification manager normalizes severity and publishes the canonical event
   const notifications = new NotificationSystem({
     protocol, engineId: 'test-engine', clock: () => now
   });
-  const result = notifications.add('Cảnh báo', 'Nội dung', 'warn', {
+  const result = notifications.add('Cảnh báo', 'Nội dung', 'warning', {
     source: 'action', category: 'action.blocked', duration: 1500
   });
   const event = protocol.events.at(-1);
   assert.equal(event.event, 'presentation.notification.add');
   assert.equal(Object.hasOwn(event.payload, 'args'), false);
   assert.equal(event.payload.notification.title, 'Cảnh báo');
-  assert.equal(event.payload.notification.level, 'warn');
+  assert.equal(event.payload.notification.level, 'warning');
   assert.equal(result.notification.severity, 'warning');
   assert.equal(result.notification.source, 'action');
   assert.equal(result.notification.expiresAt, 2500);
@@ -40,11 +40,11 @@ test('notification manager deduplicates, tracks read state, and expires notifica
   const protocol = makeProtocol();
   let now = 10;
   const notifications = new NotificationSystem({ protocol, clock: () => now });
-  const first = notifications.add('Chưa đọc', 'Đọc mô tả', 'warn', {
+  const first = notifications.add('Chưa đọc', 'Đọc mô tả', 'warning', {
     source: 'action', dedupeKey: 'action.not_read:a', duration: 100
   });
   now = 20;
-  const second = notifications.add('Chưa đọc', 'Đọc mô tả', 'warn', {
+  const second = notifications.add('Chưa đọc', 'Đọc mô tả', 'warning', {
     source: 'action', dedupeKey: 'action.not_read:a', duration: 100
   });
   assert.equal(second.deduplicated, true);
@@ -75,9 +75,9 @@ test('notification manager rate-limits bursts within a source category', () => {
   const notifications = new NotificationSystem({
     protocol, clock: () => 100, maxPerWindow: 2, rateWindowMs: 1000
   });
-  notifications.add('Cảnh báo', 'Một', 'warn', { source: 'action', category: 'action.failure', dedupe: false });
-  notifications.add('Cảnh báo', 'Hai', 'warn', { source: 'action', category: 'action.failure', dedupe: false });
-  const blocked = notifications.add('Cảnh báo', 'Ba', 'warn', { source: 'action', category: 'action.failure', dedupe: false });
+  notifications.add('Cảnh báo', 'Một', 'warning', { source: 'action', category: 'action.failure', dedupe: false });
+  notifications.add('Cảnh báo', 'Hai', 'warning', { source: 'action', category: 'action.failure', dedupe: false });
+  const blocked = notifications.add('Cảnh báo', 'Ba', 'warning', { source: 'action', category: 'action.failure', dedupe: false });
   assert.equal(blocked.rateLimited, true);
   assert.equal(notifications.getHistory().length, 2);
   assert.equal(protocol.events.at(-1).event, 'presentation.notification.rateLimited');
@@ -128,7 +128,7 @@ test('action blocked by unread description emits a deduplicated not_read notific
   assert.deepEqual(result, { success: false, reason: 'not_read' });
   assert.equal(calls.length, 1);
   assert.equal(calls[0][0], 'Chưa đọc mô tả');
-  assert.equal(calls[0][2], 'warn');
+  assert.equal(calls[0][2], 'warning');
   assert.equal(calls[0][3].category, 'action.not_read');
   assert.equal(calls[0][3].dedupeKey, 'action.not_read:scene_router_inspect');
 });
