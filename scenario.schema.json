@@ -3664,7 +3664,7 @@
     },
     "requirement_check": {
       "type": "object",
-      "description": "Một điều kiện đơn lẻ trong requirement.check[] (xem engine/modules/Logic.js cho danh sách op được hỗ trợ).",
+      "description": "Một điều kiện đơn lẻ trong requirement.check[]; type=relationship kiểm tra một loại quan hệ giữa hai nhân vật.",
       "required": [
         "type",
         "op",
@@ -3677,7 +3677,8 @@
             "item",
             "state",
             "stats",
-            "set"
+            "set",
+            "relationship"
           ],
           "description": "[FIX] Enum trước đây ghi 'stat'/'character' — engine thật (engine/modules/Logic.js: CheckTypeHandlers) chỉ có 4 key này ('stats' số nhiều, không phải 'stat'; không có 'character'). Dùng 'stat' hoặc 'character' sẽ luôn fail âm thầm (checkSingle trả về pass:false khi không tìm thấy handler). type=item -> kiểm tra vật phẩm; type=state -> global state; type=stats -> chỉ số nhân vật/vật phẩm (subtype 'characters'|'item'); type=set -> field trong .set của scene/router/action/characters/chat/chat_choice/automation (subtype tương ứng)."
         },
@@ -3719,6 +3720,11 @@
         },
         "broken": {
           "type": "boolean"
+        },
+        "character": {
+          "type": "string",
+          "minLength": 1,
+          "description": "ID nhân vật có quan hệ với target; dùng cùng type=relationship."
         }
       },
       "additionalProperties": false,
@@ -3914,6 +3920,37 @@
                   "chat_choice",
                   "automation"
                 ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "relationship"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "target",
+              "character"
+            ],
+            "properties": {
+              "op": {
+                "enum": [
+                  "has",
+                  "!has"
+                ]
+              },
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Nhãn quan hệ, ví dụ friend, enemy, ally."
               }
             }
           }
