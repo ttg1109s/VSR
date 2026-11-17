@@ -229,16 +229,37 @@ export const CharacterStrategies = {
     edit_stats: (engine, eff) => {
         const field = eff.field || 'current';
         const mode = eff.mode || 'add';
-        if (!['current', 'max'].includes(field) ||
-            !['set', 'add', 'full'].includes(mode) ||
-            (field === 'max' && mode === 'full')) {
-            throw new TypeError(`Unsupported characters.edit_stats mode: ${String(mode)} for field ${String(field)}`);
-        }
         const charId = engine.redirectTarget(eff.target);
         const char = engine.api.engine.state.getRuntime('characters.[id]', { id: charId });
         if (!char) return;
 
         if (!char.stats) char.stats = {};
+
+        if (field === 'unknown') {
+            if (!['disable', 'enable'].includes(mode)) {
+                throw new TypeError(`Unsupported characters.edit_stats mode: ${String(mode)} for field unknown`);
+            }
+            const property = resolveValue(eff.property, engine);
+            const stat = char.stats[property];
+            if (!stat || typeof stat !== 'object') return;
+
+            // "enable" marks the stat as unknown (hidden); "disable" reveals it.
+            stat.unknown = mode === 'enable';
+            engine.api.engine.state.set('characters.[id]', char, { id: charId });
+
+            const entryChar = engine.api.engine.state.getRuntime('meta.entryCharacter') || 'player';
+            if (charId === entryChar) engine.api.presentation.components.updatePlayerCard();
+            if (engine.api.presentation.updateContactDetails) {
+                engine.api.presentation.updateContactDetails(charId);
+            }
+            return;
+        }
+
+        if (!['current', 'max'].includes(field) ||
+            !['set', 'add', 'full'].includes(mode) ||
+            (field === 'max' && mode === 'full')) {
+            throw new TypeError(`Unsupported characters.edit_stats mode: ${String(mode)} for field ${String(field)}`);
+        }
 
         // Delegate to StatsHelpers.edit_value on a detached character snapshot.
         StatsHelpers.edit_value(char, eff, true, charId, engine);
