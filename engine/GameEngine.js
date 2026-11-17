@@ -265,7 +265,7 @@ export class GameEngine {
   for(const sceneId of Object.keys(restored.scenes)) {
    if(!normalized.state.scenes?.[sceneId])throw new TypeError(`Save contains unknown scene "${sceneId}".`);
   }
-  normalizeCharacterVisitCounters(restored.characters,normalized.state.characters);
+  validateCharacterVisitCounters(restored.characters,normalized.state.characters);
   const originalEntryCharacter=restored.originalEntryCharacter||normalized.state.originalEntryCharacter||'player';
   const currentEntryCharacter=restored.entryCharacter||originalEntryCharacter;
   if(typeof originalEntryCharacter!=='string'||!originalEntryCharacter.trim()||typeof currentEntryCharacter!=='string'||!currentEntryCharacter.trim()) {
