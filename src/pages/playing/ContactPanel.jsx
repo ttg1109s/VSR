@@ -426,13 +426,23 @@ export default function ContactPanel({ open, onClose, player, contacts = [], ses
                   onClick={() => selectContact(contact.id)}
                   aria-label={'Mở liên hệ ' + (contact.name || contact.id)}
                 >
-                  <ContactAvatar name={contact.name || contact.id} avatar={contact.avatar} />
+                  <span className="vsr-contact-avatar-wrap">
+                    <ContactAvatar name={contact.name || contact.id} avatar={contact.avatar} />
+                    {contact.presence === 'present' && (
+                      <span
+                        className="vsr-contact-avatar__presence"
+                        role="img"
+                        aria-label="Đang hiện diện trong scene hiện tại"
+                        title="Đang hiện diện trong scene hiện tại"
+                      />
+                    )}
+                  </span>
                   <span className="vsr-contact-list-item__copy">
                     <span className="vsr-contact-list-item__name">{contact.name || contact.id}</span>
                     <span className="vsr-contact-list-item__preview">
-                      {latestThread?.preview || (contact.kind === 'player'
-                        ? 'Danh tính đang điều khiển'
-                        : contact.presence === 'present' ? 'Đang hiện diện' : 'Đã gặp')}
+                      {latestThread
+                        ? (latestThread.preview || 'Đã có cuộc hội thoại')
+                        : 'Chưa có tin nhắn hay cuộc hội thoại nào.'}
                     </span>
                   </span>
                   {unreadCount > 0 && <Badge tone="danger">{unreadCount}</Badge>}
