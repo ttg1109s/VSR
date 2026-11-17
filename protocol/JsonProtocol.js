@@ -268,25 +268,28 @@ export class JsonProtocol{
     },0);
   };
   const contacts=Object.entries(engine.state.characters||{})
-   .filter(([characterId,character])=>{
-    if(characterId===currentIdentityId)return false;
+   .map(([characterId,character])=>{
     const met=Array.isArray(character?.met)?character.met:[];
     const hasMet=met.some(entry=>String(entry).split(':')[0]===currentIdentityId);
-    return hasMet;
+    const threads=characterId!==currentIdentityId&&typeof engine.getThreads==='function'
+     ?engine.getThreads(characterId)
+     :[];
+    return{characterId,character,hasMet,threads};
    })
-   .map(([characterId,character])=>{
+   .filter(({characterId,hasMet,threads})=>
+    characterId!==currentIdentityId&&(hasMet||threads.length>0)
+   )
+   .map(({characterId,character,threads})=>{
     const {relationship: _relationships,...contactProjection}=projectCharacter(characterId,character);
     return{
      ...contactProjection,
      relationshipWithPlayer:getRelationshipWithEntryCharacter(character),
-     threads:typeof engine.getThreads==='function'
-      ?engine.getThreads(characterId).map(thread=>({
-       id:thread.id,title:typeof thread.title==='string'?thread.title:thread.id,
-       preview:typeof thread.preview==='string'?thread.preview:'',
-       time:Number.isFinite(thread.time)?thread.time:0,
-       isUnread:thread.isUnread===true,isFinished:thread.isFinished===true
-      }))
-      :[],
+     threads:threads.map(thread=>({
+      id:thread.id,title:typeof thread.title==='string'?thread.title:thread.id,
+      preview:typeof thread.preview==='string'?thread.preview:'',
+      time:Number.isFinite(thread.time)?thread.time:0,
+      isUnread:thread.isUnread===true,isFinished:thread.isFinished===true
+     })),
      presence:sceneId&&character?.place?.scene_id===sceneId?'present':'away',
      metCount:getMetCount(character)
     };
