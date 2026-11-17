@@ -260,11 +260,14 @@ export const EntitySystem = {
                 }, true);
                 if (leaveResult?.error) throw leaveResult.error;
             }
-            if (isLeavingPlayerScene && Array.isArray(char.effect?.leave?.[currentIdentity])) {
+            if (isLeavingPlayerScene && state.get('sceneId') === playerSceneId &&
+                this.getCurrentIdentity() === currentIdentity &&
+                Array.isArray(char.effect?.leave?.[currentIdentity])) {
                 const leaveResult = await this.processRunnables(char.effect.leave[currentIdentity], {
                     sceneId: playerSceneId, charId, hook: `leave:${currentIdentity}`, moveIndex: oldIndex,
                     visitToken: token,
-                    shouldContinue: () => this.isCharacterVisitValid(charId, token, currentScene, oldIndex)
+                    shouldContinue: () => this.isCharacterVisitValid(charId, token, currentScene, oldIndex) &&
+                        state.get('sceneId') === playerSceneId && this.getCurrentIdentity() === currentIdentity
                 }, true);
                 if (leaveResult?.error) throw leaveResult.error;
             }
@@ -329,13 +332,16 @@ export const EntitySystem = {
             console.error(`[Entity] Character Enter Effect failed for ${charId}:`, error);
         }
 
-        if (isEnteringPlayerScene && charId !== currentIdentity && nextVisitIsValid()) {
+        if (isEnteringPlayerScene && charId !== currentIdentity && nextVisitIsValid() &&
+            state.get('sceneId') === playerSceneId && this.getCurrentIdentity() === currentIdentity) {
             this.updateMetState(charId, currentIdentity);
             if (Array.isArray(char.effect?.meeting?.[currentIdentity])) {
                 try {
                     const meetingResult = await this.processRunnables(char.effect.meeting[currentIdentity], {
                         sceneId: playerSceneId, charId, hook: `meeting:${currentIdentity}`, moveIndex: result.idx,
-                        visitToken: nextToken, shouldContinue: nextVisitIsValid
+                        visitToken: nextToken,
+                        shouldContinue: () => nextVisitIsValid() &&
+                            state.get('sceneId') === playerSceneId && this.getCurrentIdentity() === currentIdentity
                     }, true);
                     if (meetingResult?.error) throw meetingResult.error;
                 } catch (error) {
