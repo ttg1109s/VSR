@@ -229,6 +229,10 @@ export const ChatSystem = {
         } else {
             this.api.presentation.chat.renderChatHistory(id);
             hideInput(this);
+
+            // A completed thread is rendered as a read-only view, not kept as an
+            // active Engine conversation. The React view remains open independently.
+            this.endChatReview();
         }
     },
 
@@ -321,7 +325,7 @@ export const ChatSystem = {
         if (!this.chatState.active) return;
         // [FIX] If reviewing history, next tap closes the chat.
         if (this.chatState.isReview) {
-            this.endChat();
+            this.endChatReview();
             return;
         }
         this.processChatBlock();
@@ -428,6 +432,23 @@ export const ChatSystem = {
         }
     },
 
+    // End only the transient review session. Do not mark the thread read again,
+    // hide gameplay actions, or emit Presentation commands: the client owns the
+    // already-rendered read-only history view.
+    endChatReview() {
+        const state = this.api.engine.state;
+        state.set('session.chat', {
+            ...(this.chatState || {}),
+            active: false,
+            blocking: false,
+            waitingChoice: false,
+            transitionPending: false,
+            isReview: false
+        });
+    },
+
+    // Completing a live conversation also performs the gameplay and Presentation
+    // side effects. Keep this separate from ending a read-only review session.
     endChat() {
         const chatId = this.chatState.id;
 
