@@ -1,6 +1,7 @@
 import Ajv from 'ajv';
 import { scenarioSchema } from './ScenarioSchema.js';
 import addFormats from 'ajv-formats';
+import { COMMUNICATION_SENDER_ID } from '../modules/chat/systemSenders.js';
 
 export const SCENARIO_FORMAT_VERSION = scenarioSchema.properties.formatVersion.const;
 
@@ -396,9 +397,8 @@ function validateReferences(scenario) {
     const choices = chat?.choice || {};
     const entry = chat?.meta?.entry;
     if (entry && !Object.hasOwn(blocks, entry)) add(`chat.${chatId}.meta.entry`, `references missing entry block '${entry}'`);
-    if (chat?.meta?.sender && !characterExists(chat.meta.sender)) {
-      add(`chat.${chatId}.meta.sender`, `references missing character '${chat.meta.sender}'`);
-    }
+    // Sender IDs are not all Characters: `$communication` is built in and
+    // undeclared sender IDs are intentionally grouped as unknown/spam.
     for (const [index, recipient] of asArray(chat?.meta?.to).entries()) {
       if (!characterExists(recipient)) add(`chat.${chatId}.meta.to[${index}]`, `references missing character '${recipient}'`);
     }
@@ -407,8 +407,9 @@ function validateReferences(scenario) {
         add(`chat.${chatId}.block.${blockId}.choice_id`, `references missing choice group '${block.choice_id}'`);
       }
       for (const [index, line] of asArray(block?.line).entries()) {
-        if (line?.char_id && !characterExists(line.char_id)) {
-          add(`chat.${chatId}.block.${blockId}.line[${index}].char_id`, `references missing character '${line.char_id}'`);
+        if (line?.char_id && !characterExists(line.char_id) &&
+            line.char_id !== COMMUNICATION_SENDER_ID && line.char_id !== chat?.meta?.sender) {
+          add(`chat.${chatId}.block.${blockId}.line[${index}].char_id`, `references missing character or chat sender '${line.char_id}'`);
         }
       }
     }
