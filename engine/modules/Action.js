@@ -1,3 +1,4 @@
+import { getFakerActingIds } from './entity/Identity.js';
 
 export const ActionSystem = {
     getEffectiveActions(sId, rId) {
@@ -129,23 +130,7 @@ export const ActionSystem = {
         const entryChar = state.get('entryCharacter') || 'player';
         const faker = state.getRuntimeSnapshot('faker') || {};
         const fakerMode = faker.mode || (this.getConfig ? this.getConfig('fakerMode') : 'soul');
-
-        let actingIds = [entryChar]; // Default: Only the true body can act
-
-        if (faker.active) {
-            const targetId = faker.targetId;
-            // [Faker Mode Logic]
-            if (fakerMode === 'mask') {
-                // Mask Mode: Allow acting as the disguised Identity
-                actingIds.push(targetId);
-            } else if (fakerMode === 'swap') {
-                // Swap Mode: Entry Character is ALREADY the targetId (handled in FakerSystem)
-                // So entryChar == targetId. actingIds is correct.
-            } else {
-                // Soul Mode: Do NOT add targetId. Can only act as 'player' (entryChar).
-                // Requirement: "Không được hưởng quyền action dù đang link với char_id" -> Strict Soul.
-            }
-        }
+        const actingIds = getFakerActingIds(entryChar, faker, fakerMode);
 
         let isAllowed = true;
         let blockReason = "Danh tính hiện tại không thể thực hiện hành động này.";

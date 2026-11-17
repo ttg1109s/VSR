@@ -15,13 +15,15 @@ export const FakerSystem = {
 
     async enterFaker(targetString) {
         const state = this.api.engine.state;
-        const activeFaker = state.getRuntimeSnapshot('faker') || {};
-        if (activeFaker.active) this.exitFaker();
+        if (typeof targetString !== 'string') {
+            this.api.presentation.notification.add("Lỗi Faker", "Sai định dạng target (mode:id)", "error");
+            return;
+        }
 
-        const parts = targetString.split(':');
-        const mode = parts[0];
-        const targetId = parts[1];
-        if (!mode || !targetId) {
+        const separator = targetString.indexOf(':');
+        const mode = separator >= 0 ? targetString.slice(0, separator) : '';
+        const targetId = separator >= 0 ? targetString.slice(separator + 1) : '';
+        if (!mode || !targetId || targetId.includes(':')) {
             this.api.presentation.notification.add("Lỗi Faker", "Sai định dạng target (mode:id)", "error");
             return;
         }
@@ -30,11 +32,23 @@ export const FakerSystem = {
             return;
         }
 
+        // Validate before leaving the current identity. A bad target must never
+        // tear down a valid active Faker session.
+        const requestedTarget = state.getRuntimeSnapshot('characters.[id]', { id: targetId });
+        if (!requestedTarget) {
+            this.api.presentation.notification.add("Lỗi Faker", "Mục tiêu không tồn tại", "error");
+            return;
+        }
+
+        const activeFaker = state.getRuntimeSnapshot('faker') || {};
+        if (activeFaker.active) this.exitFaker();
+
+        // Resolve the body only after the previous mode has restored it.
         const playerId = state.getRuntime('entryCharacter') || 'player';
         const player = state.getRuntimeSnapshot('characters.[id]', { id: playerId });
         const target = state.getRuntimeSnapshot('characters.[id]', { id: targetId });
-        if (!target) {
-            this.api.presentation.notification.add("Lỗi Faker", "Mục tiêu không tồn tại", "error");
+        if (!player || !target) {
+            this.api.presentation.notification.add("Lỗi Faker", "Không thể xác định nhân vật nguồn hoặc mục tiêu", "error");
             return;
         }
 
@@ -46,6 +60,7 @@ export const FakerSystem = {
             backupPlayer: {
                 set: JSON.parse(JSON.stringify(player?.set || {})),
                 stats: JSON.parse(JSON.stringify(player?.stats || {})),
+                characterId: playerId,
                 entryCharacter: state.getRuntime('entryCharacter') || 'player'
             }
         }));
@@ -58,8 +73,7 @@ export const FakerSystem = {
             state.update('characters.[id].set', current => ({
                 ...(current || {}),
                 name: target.set?.name || target.meta?.name,
-                desc: target.set?.desc,
-                relationship: target.set?.relationship
+                desc: target.set?.desc
             }), { id: playerId });
             this.api.presentation.notification.add("Cải trang", `Bạn đang khoác lên mình ${target.set?.name || target.meta?.name}`, "info");
         } else {
@@ -81,7 +95,7 @@ export const FakerSystem = {
         const backup = faker.backupPlayer;
         const targetId = faker.targetId;
         const target = state.getRuntimeSnapshot('characters.[id]', { id: targetId });
-        const playerId = state.getRuntime('entryCharacter') || 'player';
+        const playerId = backup.characterId || backup.entryCharacter || 'player';
         console.log(`[Faker] Exit: ${mode}`);
 
         if (mode === 'swap') {
@@ -91,8 +105,7 @@ export const FakerSystem = {
             state.update('characters.[id].set', current => ({
                 ...(current || {}),
                 name: backup.set?.name,
-                desc: backup.set?.desc,
-                relationship: backup.set?.relationship
+                desc: backup.set?.desc
             }), { id: playerId });
             this.api.presentation.notification.add("Gỡ bỏ", "Tháo bỏ lớp ngụy trang", "info");
         } else {

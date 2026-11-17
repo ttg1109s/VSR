@@ -1155,8 +1155,161 @@ test('Contact snapshot projects the current Player Entry and only known or prese
     assert.equal(maskedSnapshot.presentation.player.name, 'Ally');
     assert.equal(maskedSnapshot.presentation.player.identityMode, 'mask');
     assert.equal(maskedSnapshot.presentation.player.identityTarget.id, 'ally');
+    assert.deepEqual(maskedSnapshot.presentation.player.identityContext, {
+      mode: 'mask',
+      originalIdentity: { id: 'hero', name: 'Hero', avatar: null },
+      currentBody: { id: 'hero', name: 'Hero', avatar: null },
+      activePersona: { id: 'ally', name: 'Ally', avatar: null },
+      statsOwner: { id: 'hero', name: 'Hero', avatar: null },
+      relationshipOwner: { id: 'ally', name: 'Ally', avatar: null }
+    });
+    assert.deepEqual(maskedSnapshot.presentation.player.relationship.map(item => [item.tag, item.characterId]), [['friend', 'hero']]);
+    assert.equal(engine.checkReq({
+      logic: null,
+      check: [{ type: 'relationship', target: 'hero', character: 'hero', op: 'has', value: 'friend' }]
+    }).pass, true);
+
+    engine.api.engine.state.set('faker', {
+      active: true, targetId: 'ally', mode: 'soul',
+      backupPlayer: { characterId: 'hero', entryCharacter: 'hero' }
+    });
+    const soulSnapshot = engine.protocol.createSnapshot(engine);
+    assert.deepEqual(soulSnapshot.presentation.player.identityContext, {
+      mode: 'soul',
+      originalIdentity: { id: 'hero', name: 'Hero', avatar: null },
+      currentBody: { id: 'ally', name: 'Ally', avatar: null },
+      activePersona: { id: 'hero', name: 'Hero', avatar: null },
+      statsOwner: { id: 'hero', name: 'Hero', avatar: null },
+      relationshipOwner: { id: 'hero', name: 'Hero', avatar: null }
+    });
+
+    engine.api.engine.state.set('entryCharacter', 'ally');
+    engine.api.engine.state.set('faker', {
+      active: true, targetId: 'ally', mode: 'swap',
+      backupPlayer: { characterId: 'hero', entryCharacter: 'hero' }
+    });
+    const swapSnapshot = engine.protocol.createSnapshot(engine);
+    assert.deepEqual(swapSnapshot.presentation.player.identityContext, {
+      mode: 'swap',
+      originalIdentity: { id: 'hero', name: 'Hero', avatar: null },
+      currentBody: { id: 'ally', name: 'Ally', avatar: null },
+      activePersona: { id: 'ally', name: 'Ally', avatar: null },
+      statsOwner: { id: 'ally', name: 'Ally', avatar: null },
+      relationshipOwner: { id: 'ally', name: 'Ally', avatar: null }
+    });
     assert.equal(maskedSnapshot.presentation.actions[0].availability.checks.permission, 'passed');
   } finally {
     engine.dispose();
   }
+});
+
+test('relationship requirements match relationship tags and character IDs', () => {
+  const characters = {
+    player: {
+      relationship: [
+        ['friend', 'ally'],
+        { tag: 'enemy', characterId: 'rival' }
+      ]
+    },
+    ally: { relationship: [] },
+    rival: { relationship: [] }
+  };
+  const engine = Object.assign({}, LogicSystem, {
+    src: {},
+    redirectTarget: id => id,
+    api: {
+      engine: {
+        state: {
+          getRuntime(path, { id }) {
+            return path === 'characters.[id]' ? characters[id] : undefined;
+          }
+        }
+      }
+    }
+  });
+
+  assert.equal(engine.checkReq({
+    logic: null,
+    check: [{ type: 'relationship', target: 'player', character: 'ally', op: 'has', value: 'friend' }]
+  }).pass, true);
+  assert.equal(engine.checkReq({
+    logic: null,
+    check: [{ type: 'relationship', target: 'player', character: 'rival', op: 'has', value: 'enemy' }]
+  }).pass, true);
+  assert.equal(engine.checkReq({
+    logic: null,
+    check: [{ type: 'relationship', target: 'player', character: 'ally', op: 'has', value: 'enemy' }]
+  }).pass, false);
+  assert.equal(engine.checkReq({
+    logic: null,
+    check: [{ type: 'relationship', target: 'player', character: 'stranger', op: '!has', value: 'friend' }]
+  }).pass, true);
+});
+
+test('relationship requirements read set.relationship when the root collection is absent', () => {
+  const characters = {
+    hero: { set: { relationship: [['ally', 'companion']] } },
+    companion: {}
+  };
+  const engine = Object.assign({}, LogicSystem, {
+    src: {},
+    redirectTarget: id => id,
+    api: {
+      engine: {
+        state: {
+          getRuntime(path, { id }) {
+            return path === 'characters.[id]' ? characters[id] : undefined;
+          }
+        }
+      }
+    }
+  });
+
+  assert.equal(engine.checkReq({
+    logic: null,
+    check: [{ type: 'relationship', target: 'hero', character: 'companion', op: 'has', value: 'ally' }]
+  }).pass, true);
+});
+
+
+test('Mask relationship requirements use the borrowed identity without overwriting Player relationships', () => {
+  const characters = {
+    player: { relationship: [['friend', 'ally']] },
+    masked: { relationship: [['enemy', 'rival']] },
+    ally: {},
+    rival: {}
+  };
+  const faker = { active: true, mode: 'mask', targetId: 'masked' };
+  const state = {
+    getRuntime(path) {
+      return path === 'entryCharacter' ? 'player' : undefined;
+    },
+    getRuntimeSnapshot(path) {
+      return path === 'faker' ? faker : undefined;
+    },
+    getRuntime(path, params) {
+      if (path === 'entryCharacter') return 'player';
+      if (path === 'characters.[id]') return characters[params?.id];
+      return undefined;
+    }
+  };
+  const engine = Object.assign({}, LogicSystem, {
+    src: {},
+    redirectTarget: id => id === 'masked' ? 'player' : id,
+    api: { engine: { state } }
+  });
+
+  assert.equal(engine.checkReq({
+    logic: null,
+    check: [{ type: 'relationship', target: 'player', character: 'rival', op: 'has', value: 'enemy' }]
+  }).pass, true);
+  assert.equal(engine.checkReq({
+    logic: null,
+    check: [{ type: 'relationship', target: 'masked', character: 'rival', op: 'has', value: 'enemy' }]
+  }).pass, true);
+  assert.equal(engine.checkReq({
+    logic: null,
+    check: [{ type: 'relationship', target: 'player', character: 'ally', op: 'has', value: 'friend' }]
+  }).pass, false);
+  assert.deepEqual(characters.player.relationship, [['friend', 'ally']]);
 });

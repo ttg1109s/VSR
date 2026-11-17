@@ -131,9 +131,23 @@ function ContactProfile({ character, contacts, onSelect }) {
 }
 
 
+function IdentityFact({ label, identity, emphasis = false }) {
+  if (!identity?.id) return null;
+  return (
+    <div className={`vsr-identity-fact${emphasis ? ' is-emphasized' : ''}`}>
+      <span className="vsr-identity-fact__label">{label}</span>
+      <span className="vsr-identity-fact__value">
+        <ContactAvatar name={identity.name || identity.id} avatar={identity.avatar} />
+        <strong>{identity.name || identity.id}</strong>
+      </span>
+    </div>
+  );
+}
+
 function IdentityDrawer({ open, onClose, player, contacts, onSelectContact }) {
   if (!player) return null;
   const mode = player.identityMode;
+  const context = player.identityContext || {};
   const target = player.identityTarget;
   const name = player.name || player.id;
   const modeContent = {
@@ -141,23 +155,23 @@ function IdentityDrawer({ open, onClose, player, contacts, onSelectContact }) {
       title: 'Đoạt xá',
       badge: 'SOUL',
       identityLabel: 'Danh tính gốc',
-      description: target
-        ? `Linh hồn của bạn vẫn thuộc về chính mình, nhưng hiện đang cư trú trong thân xác của ${target.name}.`
-        : 'Linh hồn và danh tính của bạn vẫn vẹn nguyên.'
+      description: context.currentBody?.name
+        ? `Danh tính của bạn vẫn được giữ nguyên, hiện đang cư trú trong thân xác của ${context.currentBody.name}.`
+        : 'Danh tính của bạn vẫn được giữ nguyên trong một thân xác khác.'
     },
     mask: {
       title: 'Ngụy trang',
       badge: 'MASK',
-      identityLabel: 'Thân phận đang mang',
-      description: target
-        ? `Bạn vẫn là chính mình, nhưng đang mang diện mạo và thân phận của ${target.name}.`
-        : 'Bạn vẫn là chính mình, hiện đang mang một thân phận khác.'
+      identityLabel: 'Thân phận đang sử dụng',
+      description: context.activePersona?.name
+        ? `Bạn vẫn giữ danh tính và thân xác gốc, nhưng đang xuất hiện dưới thân phận ${context.activePersona.name}.`
+        : 'Bạn vẫn giữ danh tính và thân xác gốc, nhưng đang sử dụng một thân phận khác.'
     },
     swap: {
       title: 'Hoán đổi',
-      badge: null,
+      badge: 'SWAP',
       identityLabel: 'Danh tính hiện tại',
-      description: `Bạn đã hoán đổi thân phận và hiện mang danh tính của ${name}.`
+      description: `Danh tính điều khiển hiện tại là ${name}.`
     }
   }[mode] || {
     title: null,
@@ -165,13 +179,14 @@ function IdentityDrawer({ open, onClose, player, contacts, onSelectContact }) {
     identityLabel: 'Danh tính của bạn',
     description: null
   };
-  const profileCharacter = {
-    ...player,
-    relationship: Array.isArray(player.relationship) ? player.relationship : []
-  };
-  const hasStats = Object.keys(player.stats || {}).length > 0;
-  const hasRelationships = profileCharacter.relationship.length > 0;
-  const targetLabel = mode === 'soul' ? 'Thân xác hiện tại' : 'Diện mạo đang mượn';
+
+  const originalIdentity = context.originalIdentity || player;
+  const currentBody = context.currentBody || (mode === 'soul' ? target : player);
+  const activePersona = context.activePersona || (mode === 'mask' ? target : player);
+  const relationships = Array.isArray(player.relationship) ? player.relationship : [];
+  const stats = player.stats && typeof player.stats === 'object' ? player.stats : {};
+  const hasStats = Object.keys(stats).length > 0;
+  const hasRelationships = relationships.length > 0;
 
   return (
     <Drawer
@@ -184,7 +199,7 @@ function IdentityDrawer({ open, onClose, player, contacts, onSelectContact }) {
       className="vsr-identity-drawer"
     >
       <div className="vsr-identity-content">
-        <section className="vsr-identity-hero" aria-label="Danh tính của bạn">
+        <section className="vsr-identity-hero" aria-label="Danh tính đang sử dụng">
           <span className="vsr-identity-hero__avatar-wrap">
             <ContactAvatar name={name} avatar={player.avatar} size="lg" />
             {modeContent.badge && (
@@ -201,9 +216,9 @@ function IdentityDrawer({ open, onClose, player, contacts, onSelectContact }) {
 
         {modeContent.description && (
           <section className="vsr-identity-mode" aria-label="Trạng thái căn cước">
-            <div className="vsr-identity-mode__icon" aria-hidden="true">
+            <span className="vsr-identity-mode__icon" aria-hidden="true">
               {mode === 'soul' ? 'psychology_alt' : mode === 'mask' ? 'masks' : 'swap_horiz'}
-            </div>
+            </span>
             <div className="vsr-identity-mode__copy">
               <h3>{modeContent.title}</h3>
               <p>{modeContent.description}</p>
@@ -211,12 +226,32 @@ function IdentityDrawer({ open, onClose, player, contacts, onSelectContact }) {
           </section>
         )}
 
-        {target && (mode === 'soul' || mode === 'mask') && (
-          <section className="vsr-identity-target" aria-label={targetLabel}>
-            <strong>{targetLabel}</strong>
-            <ContactAvatar name={target.name || target.id} avatar={target.avatar} />
-            <span className="vsr-identity-target__name">{target.name || target.id}</span>
-            <span className="vsr-identity-target__chevron" aria-hidden="true">chevron_right</span>
+        {mode === 'mask' && (
+          <section className="vsr-identity-facts" aria-label="Các lớp căn cước">
+            <IdentityFact label="Danh tính gốc" identity={originalIdentity} />
+            <IdentityFact label="Thân xác hiện tại" identity={currentBody} />
+            <IdentityFact label="Thân phận đang sử dụng" identity={activePersona} emphasis />
+          </section>
+        )}
+
+        {mode === 'soul' && (
+          <section className="vsr-identity-facts" aria-label="Các lớp căn cước">
+            <IdentityFact label="Danh tính gốc" identity={originalIdentity} />
+            <IdentityFact label="Thân xác hiện tại" identity={currentBody} emphasis />
+          </section>
+        )}
+
+        {mode === 'swap' && (
+          <section className="vsr-identity-facts" aria-label="Các lớp căn cước">
+            <IdentityFact label="Danh tính trước hoán đổi" identity={originalIdentity} />
+            <IdentityFact label="Danh tính hiện tại" identity={activePersona} emphasis />
+          </section>
+        )}
+
+        {mode !== 'soul' && mode !== 'mask' && mode !== 'swap' && player.identityContext && (
+          <section className="vsr-identity-facts" aria-label="Các lớp căn cước">
+            <IdentityFact label="Danh tính gốc" identity={originalIdentity} />
+            <IdentityFact label="Thân xác hiện tại" identity={currentBody} />
           </section>
         )}
 
@@ -227,25 +262,29 @@ function IdentityDrawer({ open, onClose, player, contacts, onSelectContact }) {
           </section>
         )}
 
-        <section className="vsr-identity-section">
-          <h3><span aria-hidden="true">bar_chart</span>Chỉ số</h3>
-          {hasStats
-            ? <StatList stats={player.stats || {}} />
-            : <p className="vsr-identity-empty">Chưa có chỉ số được thiết lập.</p>}
-        </section>
+        {hasStats && (
+          <section className="vsr-identity-section">
+            <h3><span aria-hidden="true">bar_chart</span>Chỉ số</h3>
+            {context.statsOwner?.name && (
+              <p className="vsr-identity-section__source">Dữ liệu của {context.statsOwner.name}</p>
+            )}
+            <StatList stats={stats} />
+          </section>
+        )}
 
-        <section className="vsr-identity-section">
-          <h3><span aria-hidden="true">groups</span>Quan hệ</h3>
-          {hasRelationships ? (
+        {hasRelationships && (
+          <section className="vsr-identity-section">
+            <h3><span aria-hidden="true">groups</span>Quan hệ</h3>
+            {context.relationshipOwner?.name && (
+              <p className="vsr-identity-section__source">Quan hệ của {context.relationshipOwner.name}</p>
+            )}
             <RelationshipList
-              relationships={profileCharacter.relationship}
+              relationships={relationships}
               contacts={contacts}
               onSelect={onSelectContact}
             />
-          ) : (
-            <p className="vsr-identity-empty">Chưa có mối quan hệ được ghi nhận.</p>
-          )}
-        </section>
+          </section>
+        )}
       </div>
     </Drawer>
   );

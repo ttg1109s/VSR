@@ -1,3 +1,4 @@
+import { getFakerActingIds, getFakerRelationshipIdentityId } from '../engine/modules/entity/Identity.js';
 const RUNTIME_ONLY_STATE_KEYS=new Set(['effectQueue','isSyncQueueRunning','isAsyncQueueRunning','pausedBackgroundTasks']);
 export function cloneJsonValue(value,seen=new WeakSet()){
  if(value===null||typeof value==='string'||typeof value==='boolean')return value;
@@ -74,8 +75,7 @@ export class JsonProtocol{
     const entryCharacter=engine.state.entryCharacter||'player';
     const faker=engine.state.faker||{};
     const fakerMode=faker.mode||engine.getConfig?.('fakerMode')||'soul';
-    const actingIds=[entryCharacter];
-    if(faker.active&&fakerMode==='mask'&&faker.targetId)actingIds.push(faker.targetId);
+    const actingIds=getFakerActingIds(entryCharacter,faker,fakerMode);
     const permissionAllowed=!Array.isArray(set.charAllow)||set.charAllow.length===0||actingIds.some(id=>set.charAllow.includes(id));
     let requirementPass=null;
     if(set.requirement===true){
@@ -177,8 +177,8 @@ export class JsonProtocol{
    ?engine.state.characters?.[faker.targetId]||null
    :null;
   const projectRelationships=(character, fallback=[])=>{
-   const relationships=Array.isArray(character?.set?.relationship)?character.set.relationship:
-    (Array.isArray(character?.relationship)?character.relationship:fallback);
+   const relationships=Array.isArray(character?.relationship)?character.relationship:
+    (Array.isArray(character?.set?.relationship)?character.set.relationship:fallback);
    return relationships.map(item=>{
     const characterId=Array.isArray(item)?item[1]??null:item?.characterId??null;
     return{
@@ -198,8 +198,38 @@ export class JsonProtocol{
    relationship:projectRelationships(character),
    ...(isPlayer?{identityMode:faker.active?fakerMode:null}:{})
   });
+  const playerRelationshipIdentityId=getFakerRelationshipIdentityId(
+   currentIdentityId,currentIdentityId,{...faker,mode:fakerMode}
+  );
+  const playerRelationshipCharacter=engine.state.characters?.[playerRelationshipIdentityId]||currentCharacter;
+  const fakerBackupCharacterId=faker.backupPlayer?.characterId||faker.backupPlayer?.entryCharacter||null;
+  const originalIdentityId=faker.active&&fakerMode==='swap'&&fakerBackupCharacterId
+   ?fakerBackupCharacterId:currentIdentityId;
+  const currentBodyId=faker.active&&fakerMode==='soul'&&faker.targetId
+   ?faker.targetId:currentIdentityId;
+  const activePersonaId=faker.active&&fakerMode==='mask'&&faker.targetId
+   ?faker.targetId:currentIdentityId;
+  const describeIdentity=(characterId,{useSetName=false}={})=>{
+   const character=engine.state.characters?.[characterId];
+   if(!character)return null;
+   return{
+    id:characterId,
+    name:(useSetName?character.set?.name:null)||character.meta?.name||characterId,
+    avatar:character.meta?.avatar??null
+   };
+  };
+  const playerIdentityContext={
+   mode:faker.active?fakerMode:null,
+   originalIdentity:describeIdentity(originalIdentityId),
+   currentBody:describeIdentity(currentBodyId),
+   activePersona:describeIdentity(activePersonaId,{useSetName:faker.active&&fakerMode==='mask'}),
+   statsOwner:describeIdentity(currentIdentityId),
+   relationshipOwner:describeIdentity(playerRelationshipIdentityId,{useSetName:faker.active&&fakerMode==='mask'})
+  };
   const playerProjection=currentCharacter?{
    ...projectCharacter(currentIdentityId,currentCharacter,{isPlayer:true}),
+   identityContext:playerIdentityContext,
+   relationship:projectRelationships(playerRelationshipCharacter),
    name:faker.active&&fakerMode==='mask'
     ?(currentCharacter.set?.name||fakerTarget?.set?.name||fakerTarget?.meta?.name||currentCharacter.meta?.name||currentIdentityId)
     :(currentCharacter.meta?.name||currentIdentityId),

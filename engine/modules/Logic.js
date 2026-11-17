@@ -1,5 +1,6 @@
 // engine/modules/Logic.js
 import { resolveValue } from '../../engine/modules/Resolver.js';
+import { getFakerRelationshipIdentityId } from './entity/Identity.js';
 
 // --- 1. Comparison Operations ---
 const Operations = {
@@ -123,6 +124,40 @@ const StatsStrategies = {
     }
 };
 
+const RelationshipStrategies = {
+    characters: (engine, { target, character, op, value }) => {
+        if (!['has', '!has'].includes(op) || typeof character !== 'string' || !character) return false;
+
+        const state = engine.api.engine.state;
+        const runtimeOwnerId = engine.redirectTarget(target);
+        const entryCharacter = state.getRuntime?.('entryCharacter', {}) || 'player';
+        const faker = state.getRuntimeSnapshot?.('faker') || {};
+        const ownerId = getFakerRelationshipIdentityId(runtimeOwnerId, entryCharacter, faker);
+        const owner = state.getRuntime('characters.[id]', { id: ownerId });
+        if (!owner) return false;
+
+        // Canonical relationship data lives at character.relationship.
+        // set.relationship is read only as a legacy compatibility fallback.
+        const relationships = Array.isArray(owner.relationship)
+            ? owner.relationship
+            : (Array.isArray(owner.set?.relationship) ? owner.set.relationship : []);
+        const tag = resolveValue(value, engine);
+        if (typeof tag !== 'string') return false;
+
+        const found = relationships.some(entry => {
+            const relatedId = Array.isArray(entry)
+                ? entry[1]
+                : entry?.characterId;
+            const relatedTag = Array.isArray(entry)
+                ? entry[0]
+                : entry?.tag;
+            return relatedId === character && relatedTag === tag;
+        });
+
+        return op === 'has' ? found : !found;
+    }
+};
+
 const CheckTypeHandlers = {
     item: (engine, c) => ItemStrategies[c.subtype]?.(engine, c) ?? false,
     state: (engine, c) => {
@@ -132,6 +167,7 @@ const CheckTypeHandlers = {
         return val !== undefined ? (Operations[c.op]?.(val, resolveValue(c.value, engine)) ?? false) : false;
     },
     stats: (engine, c) => StatsStrategies[c.subtype]?.(engine, c) ?? false,
+    relationship: (engine, c) => RelationshipStrategies.characters(engine, c),
     set: (engine, c) => {
         const retriever = ObjectRetrievers[c.subtype];
         const obj = retriever ? retriever(engine, c.target) : null;
