@@ -120,6 +120,23 @@
   font-size: 13px;
   font-weight: 600;
 }
+.vsr-contact-avatar-wrap {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+}
+.vsr-contact-avatar__presence {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--vsr-color-surface);
+  border-radius: 50%;
+  background: var(--vsr-color-success);
+}
 .vsr-contact-avatar--lg {
   flex-basis: 64px;
   width: 64px;
