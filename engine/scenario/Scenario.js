@@ -32,33 +32,6 @@ function clone(input) {
   }
 }
 
-const SCENARIO_MIGRATIONS = new Map();
-
-export function migrateScenario(input) {
-  let scenario = clone(input);
-  if (!isObject(scenario)) throw new ScenarioValidationError(['root must be a JSON object']);
-
-  let version = scenario.formatVersion ?? SCENARIO_FORMAT_VERSION;
-  if (!Number.isInteger(version) || version < 1) {
-    throw new ScenarioValidationError([`unsupported scenario formatVersion '${version}'`]);
-  }
-  if (version > SCENARIO_FORMAT_VERSION) {
-    throw new ScenarioValidationError([`scenario formatVersion ${version} is newer than supported version ${SCENARIO_FORMAT_VERSION}`]);
-  }
-
-  while (version < SCENARIO_FORMAT_VERSION) {
-    const migration = SCENARIO_MIGRATIONS.get(version);
-    if (typeof migration !== 'function') {
-      throw new ScenarioValidationError([`no scenario migration is registered from formatVersion ${version}`]);
-    }
-    scenario = migration(scenario);
-    version += 1;
-    scenario.formatVersion = version;
-  }
-  scenario.formatVersion = SCENARIO_FORMAT_VERSION;
-  return scenario;
-}
-
 function isObject(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
@@ -84,11 +57,9 @@ function validateReferences(scenario) {
   const routerExists = (id) => allRouterIds.has(id);
   const characterExists = (id) => id === 'player' || Object.hasOwn(characters, id);
   const actionExists = (id) => Object.hasOwn(actions, id) || Object.values(scenes).some(scene =>
-    Object.values(scene?.routers || {}).some(router => {
-      const list = router?.actions;
-      if (Array.isArray(list)) return list.some(item => item === id || (isObject(item) && item.id === id));
-      return isObject(list) && Object.hasOwn(list, id);
-    })
+    Object.values(scene?.routers || {}).some(router =>
+      router.actions.some(item => item === id || (isObject(item) && item.id === id))
+    )
   );
 
   for (const [sceneId, scene] of Object.entries(scenes)) {
@@ -113,11 +84,6 @@ function validateReferences(scenario) {
         routerOwners.set(routerId, sceneId);
       }
 
-      for (const [index, imported] of asArray(router?.importAction).entries()) {
-        if (imported?.of && !routerExists(imported.of)) {
-          add(`scenes.${sceneId}.routers.${routerId}.importAction[${index}].of`, `references missing router '${imported.of}'`);
-        }
-      }
       const seen = new Set();
       const routerActions = router?.actions;
       if (Array.isArray(routerActions)) {
@@ -133,11 +99,6 @@ function validateReferences(scenario) {
             seen.add(action.id);
           }
         });
-      } else if (isObject(routerActions)) {
-        for (const actionId of Object.keys(routerActions)) {
-          if (seen.has(actionId)) add(`scenes.${sceneId}.routers.${routerId}.actions`, `contains duplicate action ID '${actionId}'`);
-          seen.add(actionId);
-        }
       }
     }
   }
@@ -311,12 +272,10 @@ function validateReferences(scenario) {
       add(`${path}.target`, `references missing item '${effect.target}'`);
     }
     if (effect.type === 'characters' && effect.target && !dynamicTarget) {
-      const targets = effect.subtype === 'mng_stats' && typeof effect.target === 'string'
-        ? effect.target.split(':').filter(Boolean)
-        : [effect.target];
-      for (const target of targets) {
-        if (!characterExists(target)) add(`${path}.target`, `references missing character '${target}'`);
+      if (['mng_stats', 'mng_items'].includes(effect.subtype) && effect.target.includes(':')) {
+        add(`${path}.target`, 'must contain only the destination character ID; provide source in the separate source field');
       }
+      if (!characterExists(effect.target)) add(`${path}.target`, `references missing character '${effect.target}'`);
     }
     if (effect.type === 'cms' && typeof effect.id === 'string' && !effect.id.includes('$(')) {
       if (effect.table === 'characters' && !characterExists(effect.id)) {
@@ -396,9 +355,7 @@ function validateReferences(scenario) {
   for (const [templateId, requirement] of Object.entries(templates.requirements || {})) validateRequirement(requirement, 'templates.requirements.' + templateId);
   for (const [sceneId, scene] of Object.entries(scenes)) {
     for (const [routerId, router] of Object.entries(scene?.routers || {})) {
-      const entries = Array.isArray(router?.actions)
-        ? router.actions.map((item, index) => [index, item])
-        : Object.entries(router?.actions || {});
+      const entries = router.actions.map((item, index) => [index, item]);
       for (const [key, item] of entries) {
         if (isObject(item)) validateAction(item, `scenes.${sceneId}.routers.${routerId}.actions.${key}`);
       }
@@ -536,7 +493,8 @@ export function validateScenario(scenario) {
 }
 
 export function normalizeScenario(input) {
-  const scenario = migrateScenario(input);
+  const scenario = clone(input);
+  if (!isObject(scenario)) throw new ScenarioValidationError(['root must be a JSON object']);
 
   if (isObject(scenario.meta) && scenario.meta.entryCharacter == null) {
     scenario.meta.entryCharacter = 'player';
