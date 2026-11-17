@@ -216,7 +216,7 @@ export const LoaderSystem = {
                                 state.actions[actKey] = JSON.parse(JSON.stringify({ ...defActionSet, ...(item.set || {}) }));
                             }
                         }
-                    }););
+                    });
                 }
             }
         }
