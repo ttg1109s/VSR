@@ -9,14 +9,12 @@ import { EffectSystem } from '../engine/modules/Effect.js';
 import { validateCharacterVisitCounters } from '../engine/persistence/SaveState.js';
 import { EffectKeyStrategies, EffectScopeResolvers, StaticListResolvers } from '../engine/modules/effect/strategies/Management.js';
 
-test('Character moveList entries require explicit persistent visit counters', () => {
+test('Character moveList entries receive persistent visit counters at load', () => {
   const scenario = structuredClone(DEMO_SCRIPT);
   const character = Object.values(scenario.characters).find(item => item.moveList?.length);
   delete character.moveList[0].countVisited;
-  assert.throws(
-    () => LoaderSystem.loadScript(scenario, {}),
-    /countVisited must be a non-negative safe integer/
-  );
+  const loadedMissing = LoaderSystem.loadScript(scenario, {});
+  assert.equal(loadedMissing.state.characters[Object.keys(scenario.characters).find(id => scenario.characters[id] === character)].moveList[0].countVisited, 0);
 
   const loaded = LoaderSystem.loadScript(structuredClone(DEMO_SCRIPT), {});
   const entries = Object.values(loaded.state.characters).flatMap(character => character.moveList || []);
