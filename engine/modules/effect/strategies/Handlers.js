@@ -15,7 +15,7 @@ export const AutomationPropertyHandlers = {
 export const ScenePropertyHandlers = {
     blocked: (engine, scene, val, sceneId) => {
         stateOf(engine).set('scenes.[id].blocked', val, { id: sceneId });
-        if (val === false) engine.resumeNPCMovement();
+        if (val === false) engine.resumeCharacterMovement();
     },
     activeRouterId: (engine, scene, val, sceneId) => {
         stateOf(engine).set('scenes.[id].activeRouterId', val, { id: sceneId });
@@ -31,7 +31,7 @@ export const RouterPropertyHandlers = {
     blocked: (engine, router, val, routerId) => {
         const sceneId = stateOf(engine).sceneId;
         stateOf(engine).set('routers.[routerKey].blocked', val, { routerKey: `${sceneId}_${routerId}` });
-        if (val === false) engine.resumeNPCMovement();
+        if (val === false) engine.resumeCharacterMovement();
     },
     __default__: (engine, router, val, routerId, prop) => {
         const sceneId = stateOf(engine).sceneId;
