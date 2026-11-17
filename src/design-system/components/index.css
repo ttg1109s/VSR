@@ -67,6 +67,10 @@
 /* Card-layout button: a public layout variant; no feature selector overrides shared internals. */
 .vsr-button--card{display:grid;grid-template-columns:28px minmax(0,1fr);grid-template-rows:auto auto;align-items:center;justify-content:stretch;column-gap:var(--vsr-space-2);width:100%;min-height:52px;padding:var(--vsr-space-2) var(--vsr-space-3);border-radius:var(--vsr-radius-lg);text-align:left;white-space:normal}
 .vsr-button--card>.vsr-button__icon{grid-column:1;grid-row:1/span 2;display:inline-flex;align-items:center;justify-content:center;margin:0;font-size:21px}
+/* Loading replaces the leading icon; keep the spinner and label on one centered row. */
+.vsr-button--card:has(>.vsr-spinner){display:inline-flex;align-items:center;justify-content:flex-start;grid-template-columns:none;grid-template-rows:none}
+.vsr-button--card:has(>.vsr-spinner)>.vsr-spinner{display:block;flex:0 0 14px;align-self:center;grid-column:auto;grid-row:auto}
+.vsr-button--card:has(>.vsr-spinner)>.vsr-button__label{display:inline-flex;align-items:center;grid-column:auto;grid-row:auto}
 .vsr-button--card>.vsr-button__label{display:contents}
 .vsr-button--card .vsr-button-card__content{grid-column:2;grid-row:1/span 2;display:grid;align-content:center;justify-items:start;min-width:0}
 .vsr-button--card .vsr-button-card__title{display:block;min-width:0;font-size:14px;line-height:18px;font-weight:600}
