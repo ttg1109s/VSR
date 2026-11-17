@@ -483,7 +483,6 @@
   flex-direction: column;
   gap: 10px;
   padding: 14px 18px;
-  border-top: 1px solid var(--vsr-color-border-subtle);
   background: var(--vsr-color-surface);
 }
 .vsr-contact-chat-choices .vsr-button,
