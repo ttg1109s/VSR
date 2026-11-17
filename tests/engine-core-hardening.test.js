@@ -615,7 +615,7 @@ test('CMS implements schema-defined collection set and met insert operations', a
   const store = {
     characters: {
       character: {
-        set: { relationship: [['old', 'friend']] },
+        relationship: [['old', 'friend']],
         met: ['first:2', 'last:1']
       }
     },
@@ -645,7 +645,7 @@ test('CMS implements schema-defined collection set and met insert operations', a
     table: 'characters', id: 'character', column: 'relationship',
     method: 'set', value: [['new', 'ally']]
   });
-  assert.deepEqual(store.characters.character.set.relationship, [['new', 'ally']]);
+  assert.deepEqual(store.characters.character.relationship, [['new', 'ally']]);
 
   await EffectHandlers.cms.call(engine, {
     table: 'characters', id: 'character', column: 'met',
@@ -1277,9 +1277,9 @@ test('relationship requirements match relationship tags and character IDs', () =
   }).pass, true);
 });
 
-test('relationship requirements read set.relationship when the root collection is absent', () => {
+test('relationship requirements read only the canonical root relationship collection', () => {
   const characters = {
-    hero: { set: { relationship: [['ally', 'companion']] } },
+    hero: { relationship: [['ally', 'companion']] },
     companion: {}
   };
   const engine = Object.assign({}, LogicSystem, {
