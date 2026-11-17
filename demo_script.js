@@ -1476,7 +1476,7 @@ export const DEMO_SCRIPT = {
       }
     }
   },
-  "actions": {
+  "actions":   {
     "action_read_notice": {
       "meta": {
         "title": "Bảng thông báo",
@@ -1484,7 +1484,6 @@ export const DEMO_SCRIPT = {
         "desc": "Bảng thông báo dựng cạnh lối vào quảng trường, nơi dân làng từng xem tin và lịch sơ tán. Danh sách vẫn còn nguyên các dòng chữ, chỉ riêng một cái tên bị cạo sâu đến rách mặt giấy. Dưới chân bảng là chiếc đèn bão phủ bụi, như thể người cuối cùng đọc thông báo đã vội bỏ nó lại giữa chừng."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -1530,7 +1529,6 @@ export const DEMO_SCRIPT = {
         "desc": "Mai đứng gần quảng trường nhưng luôn giữ khoảng cách với giếng đá. Mỗi lần loa phát thanh gọi tên một người mất tích, cô lại ngừng nói và nhìn về phía mặt nước. Cô dường như biết nhiều hơn những gì đang kể, nhưng cần được hỏi đúng cách để chịu nhắc lại đêm hôm ấy."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -1551,7 +1549,6 @@ export const DEMO_SCRIPT = {
         "desc": "Giếng đá nằm ở rìa quảng trường, phủ rêu nhưng phần thành phía đông có dấu mới bị cạo sạch. Bốn vạch khắc thẳng hàng giống ký hiệu đo đạc hơn là vết xước ngẫu nhiên; bên cạnh là một rãnh kim loại mảnh, như thể có vật gì từng được móc khỏi hốc đá."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -1592,7 +1589,6 @@ export const DEMO_SCRIPT = {
         "desc": "Đáy giếng chìm trong lớp nước cũ và bóng tối, nơi mắt thường không thể phân biệt ký hiệu trên thành đá. Những dấu khắc chỉ hiện rõ khi ánh sáng được chiếu đúng góc; chiếc đèn bão nhặt ở quảng trường có thể giúp soi ra phần chữ bị che khuất."
       },
       "set": {
-        "type": "none",
         "display": "show",
         "requirement": true
       },
@@ -1647,7 +1643,6 @@ export const DEMO_SCRIPT = {
         "desc": "Bà Hạnh quản lý nhà trọ và nắm giữ cuốn sổ ghi khách đến, khách đi. Bà khẳng định nơi này chỉ có sáu phòng, nhưng hành lang phía sau quầy lại có bảy cánh cửa. Sự chênh lệch ấy không giống một nhầm lẫn trong cách đếm; nó giống một căn phòng đã bị cố tình xóa khỏi lời kể."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -1668,7 +1663,6 @@ export const DEMO_SCRIPT = {
         "desc": "Cuốn sổ khách nằm sau quầy lễ tân, giấy đã ngả vàng và nhiều trang bị nhòe bởi hơi ẩm. Những dòng ghi chép cũ cho thấy khách thường rời đi ngay sau đêm mất điện. Ở trang cuối, tên bạn xuất hiện cạnh ngày đến là ngày mai, nét mực vẫn còn mới dù cuốn sổ đã bị bỏ quên."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -1714,7 +1708,6 @@ export const DEMO_SCRIPT = {
         "desc": "Ổ khóa phụ dưới quầy không dẫn ra cửa chính mà mở lối xuống hầm rượu, nơi nhà trọ cất những thứ không muốn khách nhìn thấy. Trên thân khóa có vết khắc của căn phòng thứ bảy; cơ cấu chỉ nhận đúng mật từ trong thánh ca và cần đối chiếu với sổ khách cùng chìa khóa dự phòng."
       },
       "set": {
-        "type": "none",
         "display": "show",
         "password": "string:pw_guest",
         "requirement": true
@@ -1780,7 +1773,6 @@ export const DEMO_SCRIPT = {
         "desc": "Hầm rượu lạnh và gần như trống rỗng, ngoại trừ những thùng gỗ xếp sát tường. Một thùng rỗng có vết kéo lê mới trên nền bụi, phía sau nó là cuộn băng được bọc trong giấy dầu. Ngày ghi trên nhãn trùng với đêm mất điện mà các nhân chứng đều né tránh nhắc đến."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -1826,7 +1818,6 @@ export const DEMO_SCRIPT = {
         "desc": "Bản thánh ca nằm trên giá gỗ trong gian cầu nguyện. Mực ở vài dòng đã nhạt, nhưng chữ cái đầu mỗi dòng vẫn được viết đậm bất thường; ghép chúng lại thành cụm “IM LANG”. Một dòng khác bị gạch dưới nhiều lần, nhắc đến ba hồi chuông và sự im lặng sau đó."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -1867,7 +1858,6 @@ export const DEMO_SCRIPT = {
         "desc": "Người giữ nhà nguyện đã ở đây từ trước khi chuông ngừng ngân. Ông không phủ nhận việc cơ cấu chuông bị tháo rời, nhưng luôn nói rằng tiếng chuông không chỉ để báo giờ. Theo ông, người giữ chuông phải chấp nhận điều đã xảy ra trước khi có thể đánh thức những ký ức bị chôn vùi."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -1888,7 +1878,6 @@ export const DEMO_SCRIPT = {
         "desc": "Mặt đồng hồ trên tháp đã dừng ở một thời điểm không khớp với bất kỳ chiếc đồng hồ nào trong làng. Dưới lớp bụi có mã bốn chữ số được khắc sâu, ngay cạnh dấu vít cho thấy quả lắc từng bị tháo khỏi cơ cấu. Con số này liên hệ trực tiếp đến thời khắc dân làng biến mất."
       },
       "set": {
-        "type": "none",
         "display": "show",
         "password": "number:pw_bell"
       },
@@ -1935,7 +1924,6 @@ export const DEMO_SCRIPT = {
         "desc": "Quả chuông lớn vẫn treo trên tháp, nhưng cơ cấu truyền lực đã bị tháo rời và để lại những đầu dây đồng trơ ra. Quả lắc được cất riêng, còn trang ghi chú trong thánh ca mô tả thứ tự tín hiệu: ba hồi để báo kết thúc sơ tán, tuyệt đối không có hồi thứ tư. Chỉ khi các bộ phận được lắp đúng, chuông mới có thể vang trở lại."
       },
       "set": {
-        "type": "none",
         "display": "show",
         "requirement": true
       },
@@ -2019,7 +2007,6 @@ export const DEMO_SCRIPT = {
         "desc": "Ngăn bàn giáo viên chứa một danh sách lớp đã bị sửa bằng mực đen. Bốn cái tên bị gạch bỏ, còn bức ảnh tập thể bên cạnh bị xé khỏi phần giữa. Những dấu ghim và mép giấy cho thấy ảnh từng được giữ cùng một ghi chú về học sinh thứ mười hai."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -2065,7 +2052,6 @@ export const DEMO_SCRIPT = {
         "desc": "Sơ đồ chỗ ngồi của lớp số 3 có một khoảng trống bất thường giữa các dãy bàn. Bản gốc và những bản sao còn lại đều xóa cùng một vị trí, như thể mọi hồ sơ đã được sửa theo một chỉ thị thống nhất. Bản sao sổ điểm danh là đối chứng duy nhất còn ghi đủ sĩ số của ngày sơ tán."
       },
       "set": {
-        "type": "none",
         "display": "show",
         "requirement": true
       },
@@ -2137,7 +2123,6 @@ export const DEMO_SCRIPT = {
         "desc": "Các vệt sơn trên thân thông xuất hiện theo cặp, có chỗ bị rêu che gần hết. Chúng không phải dấu đánh dấu đường đi thông thường: khoảng cách giữa các vệt thay đổi theo hướng rẽ và dẫn đến một khoảng đất trống khuất sau sườn dốc. Từ đó có thể nhìn thấy vòng cọc gỗ giữa rừng."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -2178,7 +2163,6 @@ export const DEMO_SCRIPT = {
         "desc": "Lối mòn trong rừng thay đổi vị trí mỗi khi bạn quay đi, khiến các dấu cây quen thuộc không còn đáng tin. La bàn của người dẫn đường có khắc một tuyến ô vuông cố định; đường đúng phải nối các ô liền kề từ cổng rừng đến khoảng đất trống, không được tự ý cắt qua những ô không có dấu."
       },
       "set": {
-        "type": "none",
         "display": "show",
         "password": "find_way:pw_forest",
         "requirement": true
@@ -2239,7 +2223,6 @@ export const DEMO_SCRIPT = {
         "desc": "Mười hai cọc gỗ cắm thành một vòng cung trên nền đất cứng. Ánh sáng chỉ tạo ra mười một chiếc bóng, dù không có cọc nào bị gãy hay nghiêng khỏi mặt đất. Khoảng trống không bóng nằm đúng vị trí trung tâm của vòng cung, như thể nơi đó dành cho một người mà ngôi làng không còn nhớ."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -2280,7 +2263,6 @@ export const DEMO_SCRIPT = {
         "desc": "Một hộp gỗ được chôn gần vòng cọc, nắp đóng kín và trên mặt có dấu niêm phong của đội sơ tán. Phù hiệu kim loại tìm thấy dưới giếng mang cùng ký hiệu, cho biết đây là vật chứng được chôn có chủ ý chứ không phải đồ thất lạc. Bên trong hộp là những mảnh ảnh gia đình bị xé rời, cần ghép lại để nhận diện đứa trẻ."
       },
       "set": {
-        "type": "none",
         "display": "show",
         "password": "puzzle:pw_photo",
         "requirement": true
@@ -2347,7 +2329,6 @@ export const DEMO_SCRIPT = {
         "desc": "Cối xay nước đã ngừng hoạt động từ lâu; bánh xe mục kẹt trên trục và cơ cấu truyền động thiếu một chốt kim loại. Hộp bánh răng dưới sàn còn giữ đúng bộ phận thay thế, trong khi mảnh bản đồ ở trường học ghi chú chiều xoay ngược để nhả chốt cửa sập. Đây là lối cơ giới duy nhất nối cối xay với đường hầm dưới đê."
       },
       "set": {
-        "type": "none",
         "display": "show",
         "requirement": true
       },
@@ -2419,7 +2400,6 @@ export const DEMO_SCRIPT = {
         "desc": "Đường hầm chạy dưới chân đê, hai bên tường phủ đầy tên người và ngày tháng. Các dòng chữ được sắp theo thứ tự biến mất chứ không theo họ tên, cho thấy nơi này từng được dùng để ghi nhận một cuộc di chuyển có tổ chức. Một số đoạn đã bị cạo sửa, đặc biệt ở phần cuối danh sách."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -2460,7 +2440,6 @@ export const DEMO_SCRIPT = {
         "desc": "Tủ hồ sơ được đặt trong hốc bê tông dưới đê, khóa bằng loại ổ chỉ có thể mở bằng chìa chuyên dụng. Bên trong là hồ sơ vận chuyển, danh sách người qua đường hầm và cuộn phim ghi lại đêm sơ tán. Ba nguồn tư liệu phải được đặt cạnh nhau để xác định bản ghi nào đã bị sửa và điều gì thực sự xảy ra mười bảy năm trước."
       },
       "set": {
-        "type": "none",
         "display": "show",
         "requirement": true
       },
@@ -2533,7 +2512,6 @@ export const DEMO_SCRIPT = {
         "desc": "Từ đường ray vang lên một tín hiệu méo tiếng, lặp lại nhịp phát thanh từng phát ở quảng trường. Cuộn tinh thể thu sóng lấy từ hộp loa có thể dò lại đúng tần số để tách giọng nói khỏi nhiễu. Đằng sau tín hiệu là một câu hỏi không chỉ về việc ai được cứu, mà còn về ký ức nào sẽ được giữ lại."
       },
       "set": {
-        "type": "none",
         "display": "show",
         "requirement": true
       },
@@ -2574,7 +2552,6 @@ export const DEMO_SCRIPT = {
         "desc": "Sân ga 03:17 là điểm cuối của tuyến sơ tán và cũng là nơi những lời kể rời rạc hội tụ. Những gì được tìm thấy trong giếng, nhà nguyện, trường học và kho hồ sơ cho thấy ký ức của làng đã bị thay đổi có chủ đích. Quyết định ở đây không đơn thuần là chọn một lối ra; nó xác định liệu sự thật được trả lại, bị chôn vùi hay tiếp tục tồn tại như một tiếng vọng."
       },
       "set": {
-        "type": "none",
         "display": "show",
         "requirement": true
       },
@@ -2613,7 +2590,6 @@ export const DEMO_SCRIPT = {
         "desc": "Hồ sơ sơ tán nằm trước mặt bạn, ghi lại những cái tên mà ngôi làng đã cố quên. Đốt hoặc phá hủy chúng sẽ giữ nguyên sự yên ổn giả tạo hiện tại, nhưng cũng xóa đi cơ hội để những người bị loại khỏi ký ức được thừa nhận. Đây là lựa chọn khép lại sự việc bằng cách chôn sự thật thêm một lần nữa."
       },
       "set": {
-        "type": "none",
         "display": "show",
         "requirement": true
       },
@@ -2660,7 +2636,6 @@ export const DEMO_SCRIPT = {
         "desc": "Tiếng vọng thứ mười hai không thuộc về bản ghi phát thanh thông thường. Nó gắn với người đã bị xóa khỏi danh sách và vẫn còn hiện diện trong ký ức của một số nhân chứng. Ở lại đồng nghĩa với việc chấp nhận nghe hết câu chuyện, kể cả khi ranh giới giữa người sống và ký ức không còn rõ ràng."
       },
       "set": {
-        "type": "none",
         "display": "show",
         "requirement": true
       },
@@ -2713,7 +2688,6 @@ export const DEMO_SCRIPT = {
         "desc": "Chuyến tàu 03:17 dừng ở sân ga không có trên bản đồ. Tấm vé chưa bị xé là bằng chứng duy nhất cho phép bạn bước lên, nhưng nó không nói rõ chuyến tàu sẽ đưa ai đi và bỏ ai lại. Rời khỏi làng có thể chấm dứt hành trình của bạn mà không giải quyết những điều đã xảy ra."
       },
       "set": {
-        "type": "none",
         "display": "show",
         "requirement": true
       },
@@ -2760,7 +2734,6 @@ export const DEMO_SCRIPT = {
         "desc": "Giếng đá nằm sát quảng trường, phủ rêu và có những vết khắc mới trên thành. Từ mặt nước vọng lên tiếng gõ đều đặn, dù không thấy ai ở dưới. Con đường ngắn từ bảng thông báo dẫn thẳng đến nơi dấu vết của người thứ mười hai bị che giấu."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -2781,7 +2754,6 @@ export const DEMO_SCRIPT = {
         "desc": "Quảng trường là trung tâm của ngôi làng và là nơi các con đường tỏa về nhà trọ, nhà nguyện, trường học cùng khu rừng phía Bắc. Bảng thông báo và hộp loa nằm gần cổng, giữ lại những dấu vết đầu tiên về danh sách dân làng đã bị sửa."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -2802,7 +2774,6 @@ export const DEMO_SCRIPT = {
         "desc": "Sảnh nhà trọ nằm phía trên căn hầm rượu và quầy lễ tân vẫn là nơi lưu cuốn sổ khách. Những lời khai của Bà Hạnh cùng căn phòng thứ bảy có thể giúp nối các vật chứng dưới hầm với đêm mất điện."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -2823,7 +2794,6 @@ export const DEMO_SCRIPT = {
         "desc": "Cầu thang hẹp dẫn từ gian cầu nguyện lên tháp chuông. Trên đó treo quả chuông đã câm lặng suốt mười bảy năm, bên cạnh là mặt đồng hồ dừng ở thời điểm liên quan đến vụ mất tích. Cơ cấu bên trong vẫn còn dấu vết của lần tháo dỡ có chủ ý."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -2844,7 +2814,6 @@ export const DEMO_SCRIPT = {
         "desc": "Gian nhà nguyện lưu bản thánh ca và những lời giải thích về ba hồi chuông. Trở xuống đây giúp đối chiếu ghi chú tìm được trong gáy sách với cơ cấu chuông trên tháp."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -2865,7 +2834,6 @@ export const DEMO_SCRIPT = {
         "desc": "Khoảng đất trống nằm sâu trong rừng, nơi các vệt sơn hội tụ thành một vòng cọc gỗ. Mười hai cọc được dựng thành hình cung, cạnh đó là dấu đất mới xới cho thấy có vật chứng bị chôn xuống."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -2886,7 +2854,6 @@ export const DEMO_SCRIPT = {
         "desc": "Lối mòn dưới tán thông là tuyến quay lại khu rừng phía Bắc. Các dấu sơn trên thân cây giúp nhận ra đường đi dù địa hình thường thay đổi, đồng thời hé lộ tuyến vận chuyển từng dẫn xuống bờ đê."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -2907,7 +2874,6 @@ export const DEMO_SCRIPT = {
         "desc": "Nhà trọ Bà Hạnh nằm trên con đường lát đá rời quảng trường. Đây là nơi lưu cuốn sổ khách, lời khai về căn phòng thứ bảy và lối xuống hầm rượu bị giấu sau quầy lễ tân."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -2928,7 +2894,6 @@ export const DEMO_SCRIPT = {
         "desc": "Nhà nguyện nằm cuối con đường nơi tiếng chuông đã im bặt từ mười bảy năm trước. Bản thánh ca trong gian cầu nguyện giữ mật từ và quy tắc ba hồi chuông cần thiết để hiểu chuyện gì đã xảy ra."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -2949,7 +2914,6 @@ export const DEMO_SCRIPT = {
         "desc": "Trường tiểu học bỏ hoang nằm bên con đường có những dấu chân nhỏ dẫn vào lớp số 3. Hồ sơ lớp học và bức ảnh bị xé là những bằng chứng quan trọng về người thứ mười hai."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -2970,7 +2934,6 @@ export const DEMO_SCRIPT = {
         "desc": "Rừng thông phía Bắc bắt đầu ở rìa làng, nơi những vệt sơn lặp lại trên thân cây. Con đường ở đây không ổn định, nhưng các dấu mốc dẫn đến khoảng đất nghi lễ và tuyến xuống chân đê."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -2991,7 +2954,6 @@ export const DEMO_SCRIPT = {
         "desc": "Cối xay nước nằm cạnh dòng suối đã cạn ở phía Bắc. Bánh xe dừng hoạt động che giấu một cửa sập dưới sàn, nối công trình cũ với đường hầm chạy dưới chân đê."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -3012,7 +2974,6 @@ export const DEMO_SCRIPT = {
         "desc": "Phòng máy dưới chân đê chứa hộp bánh răng và trục truyền động của cối xay. Chốt kim loại bị cong là nguyên nhân khiến bánh xe ngừng quay; khi sửa đúng cơ cấu, cửa sập dẫn xuống đường hầm sẽ hoạt động."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -3033,7 +2994,6 @@ export const DEMO_SCRIPT = {
         "desc": "Ga tàu 03:17 không xuất hiện trên bản đồ làng và chỉ hiện ra ở cuối tuyến đường hầm. Những manh mối về cuộc sơ tán, danh sách vận chuyển và kho hồ sơ phải được ghép lại trước khi có thể tìm thấy sân ga."
       },
       "set": {
-        "type": "none",
         "display": "show",
         "requirement": true
       },
@@ -3066,7 +3026,6 @@ export const DEMO_SCRIPT = {
         "desc": "Cửa sập nằm dưới sàn cối xay, nối phòng máy với đường hầm dưới chân đê. Một hệ đối trọng giữ cánh cửa khóa chặt khi bánh xe đứng yên; khi trục truyền động hoạt động, sức kéo mới đủ nâng cửa và để lộ bậc thang đi xuống."
       },
       "set": {
-        "type": "none",
         "display": "show",
         "requirement": true
       },
@@ -3107,7 +3066,6 @@ export const DEMO_SCRIPT = {
         "desc": "Hộp loa phát thanh được gắn sau bảng thông báo ở quảng trường. Tiếng gọi tên dân làng phát ra đều đặn nhưng không có dấu hiệu của người điều khiển trực tiếp; phía sau bảng mạch là một cuộn tinh thể có thể lưu và dò lại tần số của bản ghi."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -3152,7 +3110,6 @@ export const DEMO_SCRIPT = {
         "desc": "Từ góc nhìn tổng thể, quảng trường hiện ra cùng bảng thông báo, hộp loa và những con đường tỏa về các khu vực khác. Lùi lại giúp quan sát cách các dấu vết nằm trong cùng một không gian, thay vì chỉ tập trung vào một vật thể riêng lẻ."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -3180,7 +3137,6 @@ export const DEMO_SCRIPT = {
         "desc": "Một vật kim loại mắc trong hốc đá dưới mực nước cũ, chỉ lộ ra khi ánh sáng chiếu đúng góc. Mép phù hiệu bị bám cặn nhưng ký hiệu đội sơ tán vẫn còn nguyên, trùng với dấu niêm phong trên chiếc hộp chôn trong rừng."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -3225,7 +3181,6 @@ export const DEMO_SCRIPT = {
         "desc": "Từ góc nhìn tổng thể, giếng đá nằm sát quảng trường và phần thành có bốn vạch khắc mới. Vết cào kim loại, hốc đá dưới mực nước cũ và mặt giếng tạo thành một chuỗi dấu vết liên quan đến vật bị giấu bên dưới."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -3253,7 +3208,6 @@ export const DEMO_SCRIPT = {
         "desc": "Ngăn kéo sau quầy lễ tân bị khóa riêng, khác với các ngăn chứa sổ sách thông thường. Bên trong có một chìa khóa đồng mang số bảy; nó mở cánh cửa không xuất hiện trên sơ đồ nhà trọ và giải thích vì sao Bà Hạnh luôn khẳng định chỉ có sáu phòng."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -3298,7 +3252,6 @@ export const DEMO_SCRIPT = {
         "desc": "Từ góc nhìn tổng thể, quầy lễ tân, hành lang và những cánh cửa phòng hiện rõ trong cùng một bố cục. Có bảy cửa dọc hành lang dù lời Bà Hạnh chỉ thừa nhận sáu phòng; ngăn kéo sau quầy là nơi giữ chìa khóa cho phần bị bỏ sót."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -3326,7 +3279,6 @@ export const DEMO_SCRIPT = {
         "desc": "Hộp thiếc nằm khuất sau kệ rượu, được bọc để tránh ẩm và bụi. Cuộn phim bên trong ghi lại đám đông tập trung ở bờ đê trước đêm mất điện, cung cấp hình ảnh đối chứng cho danh sách vận chuyển và lời kể trong cuộn băng."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -3371,7 +3323,6 @@ export const DEMO_SCRIPT = {
         "desc": "Từ góc nhìn tổng thể, căn hầm hiện ra với các thùng rượu, kệ gỗ và lối cầu thang dẫn lên nhà trọ. Những vật được giấu ở đây không phải đồ dự trữ thông thường: cuộn băng và hộp thiếc chứa phim đều liên quan đến đêm sơ tán."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -3399,7 +3350,6 @@ export const DEMO_SCRIPT = {
         "desc": "Phần gáy bản thánh ca dày hơn các trang còn lại và có đường chỉ khâu không đồng màu. Bên trong là một trang ghi chú được gấp nhỏ, giải thích ý nghĩa của ba hồi chuông và vì sao hồi thứ tư không được vang lên."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -3444,7 +3394,6 @@ export const DEMO_SCRIPT = {
         "desc": "Từ góc nhìn tổng thể, gian cầu nguyện vẫn giữ nguyên những hàng ghế và giá sách phủ bụi. Bản thánh ca nằm ở vị trí dễ thấy, nhưng phần ghi chú quan trọng lại bị giấu trong gáy sách, cạnh những dòng nhắc đến ba hồi chuông."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -3472,7 +3421,6 @@ export const DEMO_SCRIPT = {
         "desc": "Đoạn dây đồng còn mắc quanh bánh răng của cơ cấu chuông, một đầu bị tuột khỏi trục truyền lực. Dấu xoắn trên dây cho thấy nó từng được tháo ra chứ không tự đứt; đoạn dây này có thể nối lại bộ phận truyền động trên tháp."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -3517,7 +3465,6 @@ export const DEMO_SCRIPT = {
         "desc": "Từ góc nhìn tổng thể, quả chuông treo trên xà gỗ phía trên mặt đồng hồ đã dừng. Trục bánh răng, dây đồng bị tháo và vị trí trống của quả lắc cho thấy cơ cấu bị vô hiệu hóa theo từng bộ phận."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -3545,7 +3492,6 @@ export const DEMO_SCRIPT = {
         "desc": "Ngăn bàn cuối lớp bị đóng đinh, khác với những ngăn còn lại đã bị lục soát. Bản sao sổ điểm danh bên trong vẫn giữ sĩ số mười hai học sinh vào ngày sơ tán, dù tên của một em đã bị bôi đen ở các hồ sơ khác."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -3590,7 +3536,6 @@ export const DEMO_SCRIPT = {
         "desc": "Từ góc nhìn tổng thể, lớp học số 3 hiện ra với dãy bàn, bảng đen và ngăn bàn giáo viên bị bỏ ngỏ. Sơ đồ chỗ ngồi không khớp với số học sinh trong bản sao sổ điểm danh; bức ảnh tập thể bị xé nằm ngay cạnh khoảng trống ấy."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -3618,7 +3563,6 @@ export const DEMO_SCRIPT = {
         "desc": "La bàn cũ mắc dưới gốc cây có hai vệt sơn song song. Mặt sau khắc tuyến đường từ rừng xuống chân đê, cho thấy người dẫn đường từng dùng nó để đưa người qua địa hình thay đổi mà không phụ thuộc vào lối mòn."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -3663,7 +3607,6 @@ export const DEMO_SCRIPT = {
         "desc": "Từ góc nhìn tổng thể, lối mòn xuyên rừng và các dấu sơn trên thân thông tạo thành một tuyến không liên tục. Những dấu mốc này vừa giúp định hướng qua mê cung, vừa đánh dấu con đường vận chuyển về phía bờ đê."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -3691,7 +3634,6 @@ export const DEMO_SCRIPT = {
         "desc": "Phiến đá nằm giữa vòng cọc có mép bị xê dịch, để lộ một hốc đất nhỏ bên dưới. Trong hốc là con dấu gỗ của đội sơ tán, vật từng dùng để xác nhận danh sách chính thức trước khi niêm phong hồ sơ."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -3736,7 +3678,6 @@ export const DEMO_SCRIPT = {
         "desc": "Từ góc nhìn tổng thể, mười hai cọc gỗ tạo thành vòng cung quanh khoảng đất giữa rừng. Hộp chôn nằm lệch khỏi tâm vòng, còn phiến đá có con dấu ở vị trí trung tâm; hai nơi cất giữ vật chứng của cùng một cuộc sơ tán."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -3764,7 +3705,6 @@ export const DEMO_SCRIPT = {
         "desc": "Hộp bánh răng dưới sàn cối xay có nắp bị kẹt và dấu dầu khô quanh bản lề. Bên trong là chốt truyền động bị cong, đúng bộ phận còn thiếu trên trục máy; nếu không thay chốt, bánh xe không thể truyền lực để nâng cửa sập."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -3809,7 +3749,6 @@ export const DEMO_SCRIPT = {
         "desc": "Từ góc nhìn tổng thể, bánh xe, trục truyền động và tấm che hộp số cho thấy cối xay đã ngừng hoạt động từ lâu. Dấu nước cạn dưới chân máy và chốt bị cong trong hộp bánh răng giải thích vì sao cơ cấu không còn đủ lực vận hành cửa sập."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -3837,7 +3776,6 @@ export const DEMO_SCRIPT = {
         "desc": "Ống tài liệu được giấu sau một viên gạch rỗng trong đường hầm và có lớp bọc chống ẩm. Danh sách bên trong ghi tên những người được vận chuyển qua đây theo từng lượt, cung cấp bằng chứng trực tiếp về tuyến sơ tán mà hồ sơ làng đã phủ nhận."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -3882,7 +3820,6 @@ export const DEMO_SCRIPT = {
         "desc": "Từ góc nhìn tổng thể, đường hầm kéo dài dưới chân đê với những cái tên và ngày tháng khắc dọc hai bên tường. Một đoạn tường mới được trám vữa che vị trí ống tài liệu, còn lối sâu hơn dẫn về phía sân ga 03:17."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -3910,7 +3847,6 @@ export const DEMO_SCRIPT = {
         "desc": "Dưới hàng ghế chờ có một khe gỗ bị bung khỏi khung, đủ rộng để giấu một tấm vé. Vé tàu bên trong vẫn còn nguyên phần kiểm soát, mang giờ khởi hành 03:17 và là bằng chứng rằng sân ga từng phục vụ một chuyến tàu thực sự."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
@@ -3955,7 +3891,6 @@ export const DEMO_SCRIPT = {
         "desc": "Từ góc nhìn tổng thể, sân ga vắng người nằm dưới bảng giờ dừng ở 03:17. Hàng ghế chờ, đường ray và lối vào đường hầm đều hướng về cùng một điểm; nơi này giống một ga tập kết bị xóa khỏi bản đồ hơn là một nhà ga đang hoạt động."
       },
       "set": {
-        "type": "none",
         "display": "show"
       },
       "effect": {
