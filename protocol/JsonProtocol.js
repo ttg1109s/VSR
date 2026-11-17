@@ -272,8 +272,7 @@ export class JsonProtocol{
     if(characterId===currentIdentityId)return false;
     const met=Array.isArray(character?.met)?character.met:[];
     const hasMet=met.some(entry=>String(entry).split(':')[0]===currentIdentityId);
-    const isPresent=!!sceneId&&character?.place?.scene_id===sceneId;
-    return hasMet||isPresent;
+    return hasMet;
    })
    .map(([characterId,character])=>{
     const {relationship: _relationships,...contactProjection}=projectCharacter(characterId,character);
