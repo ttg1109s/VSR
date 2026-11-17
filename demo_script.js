@@ -4290,6 +4290,7 @@ export const DEMO_SCRIPT = {
       "moveList": [
         {
           "scene_id": "scene_village_square",
+          "countVisited": 0,
           "nextStep": 30
         }
       ]
@@ -4320,6 +4321,7 @@ export const DEMO_SCRIPT = {
       "moveList": [
         {
           "scene_id": "scene_inn",
+          "countVisited": 0,
           "nextStep": 45
         }
       ]
@@ -4350,6 +4352,7 @@ export const DEMO_SCRIPT = {
       "moveList": [
         {
           "scene_id": "scene_chapel",
+          "countVisited": 0,
           "nextStep": 60
         }
       ]
@@ -4380,6 +4383,7 @@ export const DEMO_SCRIPT = {
       "moveList": [
         {
           "scene_id": "scene_abandoned_school",
+          "countVisited": 0,
           "nextStep": 35
         }
       ]
@@ -4410,6 +4414,7 @@ export const DEMO_SCRIPT = {
       "moveList": [
         {
           "scene_id": "scene_ghost_station",
+          "countVisited": 0,
           "nextStep": 50
         }
       ]
