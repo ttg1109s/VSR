@@ -172,6 +172,12 @@
                   "items": {
                     "$ref": "#/$defs/contactProjection"
                   }
+                },
+                "systemContacts": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/systemContactProjection"
+                  }
                 }
               }
             },
@@ -738,6 +744,19 @@
             }
           }
         }
+      },
+      "additionalProperties": false
+    },
+    "systemContactProjection": {
+      "type": "object",
+      "required": ["id", "name", "description", "kind", "threads"],
+      "properties": {
+        "id": { "type": "string", "enum": ["$communication", "spam"] },
+        "name": { "type": "string" },
+        "description": { "type": ["string", "null"] },
+        "avatar": { "type": ["string", "null"] },
+        "kind": { "type": "string", "enum": ["communication", "unknown"] },
+        "threads": { "type": "array", "items": { "$ref": "#/$defs/contactThreadProjection" } }
       },
       "additionalProperties": false
     },
