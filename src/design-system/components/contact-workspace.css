@@ -363,40 +363,39 @@
 
 .vsr-contact-relationship-summary {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: 14px;
+  min-width: 0;
 }
-.vsr-contact-relationship-summary__type,
-.vsr-contact-relationship-summary__count {
+.vsr-contact-relationship-summary__icon {
+  display: inline-flex;
+  flex: 0 0 28px;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  color: var(--vsr-color-primary);
+  font: 26px/1 var(--vsr-font-icon);
+}
+.vsr-contact-relationship-summary__copy {
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: 4px;
+  min-width: 0;
 }
-.vsr-contact-relationship-summary__label {
-  color: var(--vsr-color-text-secondary);
-  font-size: 12px;
-  line-height: 18px;
-}
-.vsr-contact-relationship-summary__type strong,
-.vsr-contact-relationship-summary__count strong {
+.vsr-contact-relationship-summary__type {
   color: var(--vsr-color-text);
   font-size: 14px;
   font-weight: 650;
   line-height: 20px;
+  overflow-wrap: anywhere;
 }
-.vsr-contact-relationship-summary__count strong {
-  font-size: 20px;
+.vsr-contact-relationship-summary__count {
+  color: var(--vsr-color-text-secondary);
+  font-size: 13px;
+  line-height: 19px;
   font-variant-numeric: tabular-nums;
-  line-height: 26px;
-}
-.vsr-contact-relationship-summary__met-icon {
-  display: inline-block;
-  margin-right: 8px;
-  font-family: 'Material Symbols Rounded';
-  font-size: 20px;
-  font-weight: normal;
-  line-height: 1;
-  vertical-align: -3px;
 }
 
 .vsr-contact-detail-content { padding: 0; }
