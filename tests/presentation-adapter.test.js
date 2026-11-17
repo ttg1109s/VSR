@@ -316,7 +316,7 @@ test('chat action can finish and reopen as a read-only review without duplicatin
     const viewEvents = [];
     const unsubscribe = client.subscribe(message => {
       if (message.type === 'event' && message.event?.event === 'presentation.chat.viewRequested') {
-        viewEvents.push(message.event.payload?.args);
+        viewEvents.push(message.event.payload?.args?.[0]);
       }
     });
     await client.triggerAction(action.id, action.key);
