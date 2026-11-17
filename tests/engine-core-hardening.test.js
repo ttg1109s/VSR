@@ -545,7 +545,7 @@ test('characters.moving.replace supports every schema-valid index in an index ar
   };
 
   CharacterStrategies.moving(engine, {
-    target: 'npc', exec: 'replace', property: 'moveList',
+    target: 'character', exec: 'replace', property: 'moveList',
     value: { scene_id: 'new_route' }, index: [0, 1]
   });
 
@@ -563,13 +563,13 @@ test('inline character effects enforce the same subtype contract as runnable wra
       {
         type: 'effect',
         inline: {
-          type: 'characters', subtype: 'mng_items', target: 'npc'
+          type: 'characters', subtype: 'mng_items', target: 'character'
         }
       },
       {
         type: 'effect',
         inline: {
-          type: 'characters', subtype: 'moving', target: 'npc',
+          type: 'characters', subtype: 'moving', target: 'character',
           exec: 'teleport', property: 'moveList', value: {}
         }
       }
@@ -583,7 +583,7 @@ test('inline character effects enforce the same subtype contract as runnable wra
 test('CMS implements schema-defined collection set and met insert operations', async () => {
   const store = {
     characters: {
-      npc: {
+      character: {
         set: { relationship: [['old', 'friend']] },
         met: ['first:2', 'last:1']
       }
@@ -611,16 +611,16 @@ test('CMS implements schema-defined collection set and met insert operations', a
   const engine = { api: { engine: { state } } };
 
   await EffectHandlers.cms.call(engine, {
-    table: 'characters', id: 'npc', column: 'relationship',
+    table: 'characters', id: 'character', column: 'relationship',
     method: 'set', value: [['new', 'ally']]
   });
-  assert.deepEqual(store.characters.npc.set.relationship, [['new', 'ally']]);
+  assert.deepEqual(store.characters.character.set.relationship, [['new', 'ally']]);
 
   await EffectHandlers.cms.call(engine, {
-    table: 'characters', id: 'npc', column: 'met',
+    table: 'characters', id: 'character', column: 'met',
     method: 'insert', value: 'middle:3', index: 1
   });
-  assert.deepEqual(store.characters.npc.met, ['first:2', 'middle:3', 'last:1']);
+  assert.deepEqual(store.characters.character.met, ['first:2', 'middle:3', 'last:1']);
 
   await EffectHandlers.cms.call(engine, {
     table: 'routers', id: 'main', column: 'actions',
@@ -633,8 +633,8 @@ test('CMS schema constrains met insert indexes to a single integer', () => {
   const scenario = validScenario();
   scenario.scenes.start.routers.main.actions[0].effect = {
     normal: [{
-      type: 'cms', table: 'characters', id: 'npc', column: 'met',
-      method: 'insert', value: 'npc:1', index: [0, 1]
+      type: 'cms', table: 'characters', id: 'character', column: 'met',
+      method: 'insert', value: 'character:1', index: [0, 1]
     }]
   };
   assert.ok(validateScenario(scenario).length > 0);
@@ -706,7 +706,7 @@ test('set.state preserves the declared global-state type and numeric delta seman
 
 
 test('CharacterStrategies.mng_stats adds a stat through the shared stat helper', () => {
-  const character = { set: { name: 'NPC' }, stats: {} };
+  const character = { set: { name: 'Character' }, stats: {} };
   let persisted;
   const state = {
     getRuntime(path) {
@@ -728,14 +728,14 @@ test('CharacterStrategies.mng_stats adds a stat through the shared stat helper',
   };
 
   CharacterStrategies.mng_stats(engine, {
-    exec: 'add', target: 'npc', property: 'strength', value: '25:50:Strength:#ff5555'
+    exec: 'add', target: 'character', property: 'strength', value: '25:50:Strength:#ff5555'
   });
 
   assert.deepEqual(character.stats.strength, {
     current: 25, max: 50, label: 'Strength', color: '#ff5555'
   });
   assert.equal(persisted.path, 'characters.[id]');
-  assert.equal(persisted.params.id, 'npc');
+  assert.equal(persisted.params.id, 'character');
 });
 
 test('action snapshot projection exposes stable identity and engine-evaluated availability', async () => {
@@ -1041,10 +1041,10 @@ test('Player Entry exposes current controlled identity across save restoration',
     set: { linkEffect: false, alert: null, moving: false, move: null },
     stats: { hp: { current: 75, max: 100, label: 'HP' } },
     inventory: [],
-    relationship: [['ally', 'npc']]
+    relationship: [['ally', 'character']]
   };
-  scenario.characters.npc = {
-    meta: { name: 'NPC', desc: 'Current controlled character.' },
+  scenario.characters.character = {
+    meta: { name: 'Character', desc: 'Current controlled character.' },
     set: { linkEffect: false, alert: null, moving: false, move: null },
     stats: { hp: { current: 30, max: 40, label: 'HP' } },
     inventory: []
@@ -1060,21 +1060,21 @@ test('Player Entry exposes current controlled identity across save restoration',
     assert.equal(initial.presentation.player.id, 'hero');
     assert.equal(initial.presentation.player.name, 'Hero');
     assert.equal(initial.presentation.player.stats.hp.current, 75);
-    assert.equal(initial.presentation.player.relationship[0].characterName, 'NPC');
+    assert.equal(initial.presentation.player.relationship[0].characterName, 'Character');
     assert.equal(initial.presentation.player.identityMode, null);
 
-    engine.api.engine.state.set('entryCharacter', 'npc');
-    assert.equal(engine.api.engine.state.get('entryCharacter'), 'npc');
+    engine.api.engine.state.set('entryCharacter', 'character');
+    assert.equal(engine.api.engine.state.get('entryCharacter'), 'character');
     assert.equal(engine.api.engine.state.get('scenarioEntryCharacter'), 'hero');
     const changed = engine.protocol.createSnapshot(engine);
-    assert.equal(changed.presentation.player.id, 'npc');
-    assert.equal(changed.presentation.player.name, 'NPC');
+    assert.equal(changed.presentation.player.id, 'character');
+    assert.equal(changed.presentation.player.name, 'Character');
     assert.equal(changed.presentation.player.stats.hp.current, 30);
 
-    engine.api.engine.state.set('faker', { active: true, targetId: 'hero', mode: 'soul', backupPlayer: { entryCharacter: 'npc' } });
+    engine.api.engine.state.set('faker', { active: true, targetId: 'hero', mode: 'soul', backupPlayer: { entryCharacter: 'character' } });
     const fakerSnapshot = engine.protocol.createSnapshot(engine);
-    assert.equal(fakerSnapshot.presentation.player.id, 'npc');
-    assert.equal(fakerSnapshot.presentation.player.name, 'NPC');
+    assert.equal(fakerSnapshot.presentation.player.id, 'character');
+    assert.equal(fakerSnapshot.presentation.player.name, 'Character');
     assert.equal(fakerSnapshot.presentation.player.identityTarget.id, 'hero');
     assert.equal(fakerSnapshot.presentation.player.identityMode, 'soul');
 
@@ -1083,10 +1083,10 @@ test('Player Entry exposes current controlled identity across save restoration',
     try {
       await restored.restoreSave(save);
       assert.equal(restored.state.originalEntryCharacter, 'hero');
-      assert.equal(restored.state.entryCharacter, 'npc');
+      assert.equal(restored.state.entryCharacter, 'character');
       const restoredSnapshot = restored.protocol.createSnapshot(restored);
-      assert.equal(restoredSnapshot.presentation.player.id, 'npc');
-      assert.equal(restoredSnapshot.presentation.player.name, 'NPC');
+      assert.equal(restoredSnapshot.presentation.player.id, 'character');
+      assert.equal(restoredSnapshot.presentation.player.name, 'Character');
       assert.equal(restoredSnapshot.presentation.player.identityTarget.id, 'hero');
       assert.equal(restoredSnapshot.presentation.player.identityMode, 'soul');
     } finally {
