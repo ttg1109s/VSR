@@ -99,12 +99,7 @@ export const SceneSystem = {
             const char = currentCharacters[charId];
             // [REFACTOR] Use 'char.place.scene_id'
             if (char.place.scene_id === id) {
-                // [FIX] Use shared updateMetState from EntitySystem (mixed into API.engine)
-                if (this.updateMetState) {
-                    this.updateMetState(charId, currentIdentity);
-                } else {
-                    console.warn("API.engine.updateMetState not found, using valid fallback or check mixin.");
-                }
+                this.updateMetState(charId, currentIdentity);
 
                 // [FIX V9.2] Meeting Logic: Access Object by currentIdentity Key
                 if (char.effect && char.effect.meeting) {
@@ -205,20 +200,7 @@ export const SceneSystem = {
         const ovType = rSet.overlay !== undefined ? rSet.overlay : rConfigSet.overlay;
         const ovFlick = rSet.overlayFlick !== undefined ? rSet.overlayFlick : rConfigSet.overlayFlick;
 
-        let ovDuration = null; // Lifetime duration (legacy assumption: usually permanent)
-        let ovFlicker = null;
-
-        if (typeof ovFlick === 'number') {
-            if (ovFlick >= 2) {
-                // It is a flicker interval
-                ovFlicker = ovFlick;
-            } else if (ovFlick > 0) {
-                // Backward compatibility? 
-                // Schema says: "If < 2, null or empty -> false" (for flicker logic).
-                // So if < 2, no flicker.
-                ovFlicker = null;
-            }
-        }
+        const ovFlicker = typeof ovFlick === 'number' && ovFlick >= 2 ? ovFlick : null;
 
         if (this.api.presentation.vfx && this.api.presentation.vfx.exec) {
             this.api.presentation.vfx.exec('overlay', ovType || 'none', {
