@@ -97,8 +97,10 @@
   cursor: pointer;
   transition: background var(--vsr-motion-short);
 }
-.vsr-contact-list-item:hover,
 .vsr-contact-list-item.is-selected { background: var(--vsr-color-surface-muted); }
+@media (hover: hover) and (pointer: fine) {
+  .vsr-contact-list-item:hover { background: var(--vsr-color-surface-muted); }
+}
 .vsr-contact-list-item:focus-visible,
 .vsr-contact-identity:focus-visible {
   outline: 2px solid var(--vsr-color-primary);
@@ -439,8 +441,10 @@
   text-align: left;
   cursor: pointer;
 }
-.vsr-contact-thread:hover:not(:disabled),
 .vsr-contact-thread:focus-visible { background: var(--vsr-color-surface-muted); }
+@media (hover: hover) and (pointer: fine) {
+  .vsr-contact-thread:hover:not(:disabled) { background: var(--vsr-color-surface-muted); }
+}
 .vsr-contact-thread:focus-visible { outline: 2px solid var(--vsr-color-primary); outline-offset: -2px; }
 .vsr-contact-thread:disabled { cursor: wait; opacity: .7; }
 .vsr-contact-thread__icon {
@@ -656,10 +660,12 @@
   box-shadow: var(--vsr-shadow-sm, 0 2px 8px rgba(0,0,0,.08));
   transition: background var(--vsr-motion-short), border-color var(--vsr-motion-short), box-shadow var(--vsr-motion-short), transform var(--vsr-motion-short);
 }
-.vsr-contact-chat-next:hover:not(:disabled) {
-  background: var(--vsr-color-surface-muted);
-  border-color: var(--vsr-color-primary);
-  box-shadow: var(--vsr-shadow-md, 0 5px 16px rgba(0,0,0,.1));
+@media (hover: hover) and (pointer: fine) {
+  .vsr-contact-chat-next:hover:not(:disabled) {
+    background: var(--vsr-color-surface-muted);
+    border-color: var(--vsr-color-primary);
+    box-shadow: var(--vsr-shadow-md, 0 5px 16px rgba(0,0,0,.1));
+  }
 }
 .vsr-contact-chat-next:active:not(:disabled) { transform: scale(.99); }
 .vsr-contact-chat-next:focus-visible { outline: 2px solid var(--vsr-color-primary); outline-offset: 3px; }
@@ -699,10 +705,12 @@
   font-style: normal;
   transition: background var(--vsr-motion-short), color var(--vsr-motion-short), transform var(--vsr-motion-short);
 }
-.vsr-contact-chat-next:hover:not(:disabled) .vsr-contact-chat-next__icon {
-  background: var(--vsr-color-primary);
-  color: var(--vsr-color-text-inverse);
-  transform: translateX(2px);
+@media (hover: hover) and (pointer: fine) {
+  .vsr-contact-chat-next:hover:not(:disabled) .vsr-contact-chat-next__icon {
+    background: var(--vsr-color-primary);
+    color: var(--vsr-color-text-inverse);
+    transform: translateX(2px);
+  }
 }
 .vsr-contact-chat-choice-panel {
   display: flex;
@@ -754,11 +762,13 @@
   width: 100%;
   min-width: 0;
 }
-.vsr-contact-chat-choice:hover:not(:disabled) {
-  border-color: var(--vsr-color-primary);
-  background: var(--vsr-color-primary-container);
-  color: var(--vsr-color-primary-on-container);
-  box-shadow: var(--vsr-elevation-2, 0 2px 6px rgba(0,0,0,.1));
+@media (hover: hover) and (pointer: fine) {
+  .vsr-contact-chat-choice:hover:not(:disabled) {
+    border-color: var(--vsr-color-primary);
+    background: var(--vsr-color-primary-container);
+    color: var(--vsr-color-primary-on-container);
+    box-shadow: var(--vsr-elevation-2, 0 2px 6px rgba(0,0,0,.1));
+  }
 }
 .vsr-contact-chat-choice:active:not(:disabled) { transform: scale(.99); }
 .vsr-contact-chat-choice:focus-visible {
@@ -788,10 +798,12 @@
   line-height: 1;
   transition: background var(--vsr-motion-short), color var(--vsr-motion-short), transform var(--vsr-motion-short);
 }
-.vsr-contact-chat-choice:hover:not(:disabled) .vsr-contact-chat-choice__icon {
-  background: var(--vsr-color-primary);
-  color: var(--vsr-color-text-inverse);
-  transform: translateX(2px);
+@media (hover: hover) and (pointer: fine) {
+  .vsr-contact-chat-choice:hover:not(:disabled) .vsr-contact-chat-choice__icon {
+    background: var(--vsr-color-primary);
+    color: var(--vsr-color-text-inverse);
+    transform: translateX(2px);
+  }
 }
 .vsr-contact-chat-choice.is-locked .vsr-contact-chat-choice__icon,
 .vsr-contact-chat-choice:disabled .vsr-contact-chat-choice__icon {
