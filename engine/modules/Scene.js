@@ -318,7 +318,7 @@ export const SceneSystem = {
         const routerId = sceneId ? state.get('scene.activeRouterId', { id: sceneId }) : null;
         const router = this.src?.scenes?.[sceneId]?.routers?.[routerId];
         if (!router) return;
-        const runtime = state.getRuntimeSnapshot('routers.[id]', { id: `${sceneId}_${routerId}`) || {};
+        const runtime = state.getRuntimeSnapshot('routers.[id]', { id: `${sceneId}_${routerId}` }) || {};
         const config = router.set || {};
         const stillId = `router_still_${sceneId}_${routerId}`;
         const stillSeconds = runtime.secondsStill !== undefined ? runtime.secondsStill : (config.secondsStill || 0);
