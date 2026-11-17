@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('nested dialogs keep Escape and focus ownership on the topmost overlay', async ({ page }) => {
-  await page.goto('/tests/browser/overlay-fixture.html');
+  await page.goto('tests/browser/overlay-fixture.html');
   const opener = page.locator('#outer-trigger');
 
   await opener.click();
@@ -30,7 +30,7 @@ test('nested dialogs keep Escape and focus ownership on the topmost overlay', as
 });
 
 test('Menu reports open, Escape, outside-click and item-selection state changes', async ({ page }) => {
-  await page.goto('/tests/browser/overlay-fixture.html');
+  await page.goto('tests/browser/overlay-fixture.html');
   const trigger = page.locator('#menu-trigger');
   const state = page.locator('#menu-state');
 
@@ -53,7 +53,7 @@ test('Menu reports open, Escape, outside-click and item-selection state changes'
 
 test('Dialog remains within a compact mobile viewport', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/tests/browser/overlay-fixture.html');
+  await page.goto('tests/browser/overlay-fixture.html');
   await page.locator('#outer-trigger').click();
 
   const dialog = page.getByRole('dialog', { name: 'Outer dialog' });
