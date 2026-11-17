@@ -59,7 +59,7 @@ function StatList({ stats = {} }) {
                 aria-valuemax={max}
                 aria-valuenow={Math.min(max, Math.max(0, current))}
               >
-                <span style={{ width: progress + '%' }} />
+                <span style={{ width: progress + '%', backgroundColor: /^#[0-9a-fA-F]{6}$/.test(stat?.color || '') ? stat.color : 'var(--vsr-color-primary)' }} />
               </div>
             ) : (
               <span className="vsr-contact-stat-card__no-scale">Không có thang đo</span>
