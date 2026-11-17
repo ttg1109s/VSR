@@ -35,7 +35,6 @@ export function createEngineAPI(engine) {
             chat: { next: () => engine.nextChat(), selectChoice: index => engine.selectChatChoice(index) },
             inventory: { toggleHand: id => engine.toggleHand(id) },
             scene: { getPath: id => engine.getPath(id), enterScene: (id, skip) => engine.enterScene(id, skip) },
-            updateMetState: (id, identity) => engine.updateMetState(id, identity),
             state: {
                 get: (key, context, options) => state.get(key, context, options),
                 getFrom: (namespace, path, context) => state.getFrom(namespace, path, context),
