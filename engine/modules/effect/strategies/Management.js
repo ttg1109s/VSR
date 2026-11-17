@@ -2,6 +2,9 @@
 
 export const EffectKeyStrategies = {
     action: ({ sId, rId, aId, hook }) => (sId && rId && aId) ? `${sId}_${rId}_${aId}_${hook}` : null,
+    character_move: ({ cId, moveIndex, hook }) =>
+        (cId && Number.isSafeInteger(moveIndex) && moveIndex >= 0 && hook)
+            ? `char_move_${cId}_${moveIndex}_${hook}` : null,
     character: ({ cId, hook }) => {
         if (!cId) return null;
         if (hook && hook.startsWith('meeting:')) return `char_${cId}_${hook.replace(':', '_')}`;
@@ -20,6 +23,12 @@ export const EffectScopeResolvers = {
         scope: 'router',
         params: { sId: ctx.sceneId || engine.api.engine.state.sceneId, rId: cfg.target, hook: cfg.in }
     }),
+    character_move: (cfg) => {
+        if (!Number.isSafeInteger(cfg.moveIndex) || cfg.moveIndex < 0) {
+            throw new TypeError('manage_effect space character_move requires a non-negative moveIndex.');
+        }
+        return { scope: 'character_move', params: { cId: cfg.target, moveIndex: cfg.moveIndex, hook: cfg.in } };
+    },
     character: (cfg, ctx, engine) => ({
         scope: 'character',
         params: { cId: cfg.target, hook: cfg.in }
@@ -50,6 +59,12 @@ export const EffectScopeResolvers = {
 
 export const StaticListResolvers = {
     action: (src, { sId, rId, aId, hook }) => src.scenes[sId]?.routers[rId]?.actions[aId]?.effect?.[hook] || [],
+    character_move: (src, { cId, moveIndex, hook }) => {
+        const entry = src.characters?.[cId]?.moveList?.[moveIndex];
+        if (!entry || !['enter', 'leave', 'still'].includes(hook)) return [];
+        const list = entry.loop?.[hook];
+        return Array.isArray(list) ? list : [];
+    },
     character: (src, { cId, hook }) => {
         if (!src.characters[cId]) return [];
         if (hook && hook.startsWith('meeting:')) {
