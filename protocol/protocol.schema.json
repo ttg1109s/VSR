@@ -875,6 +875,23 @@
             null
           ]
         },
+        "identityTarget": {
+          "oneOf": [
+            {
+              "type": "object",
+              "required": [
+                "id",
+                "name"
+              ],
+              "properties": {
+                "id": { "type": "string" },
+                "name": { "type": "string" }
+              },
+              "additionalProperties": false
+            },
+            { "type": "null" }
+          ]
+        },
         "relationship": {
           "type": "array",
           "items": {
