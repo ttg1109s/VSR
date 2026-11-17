@@ -237,7 +237,7 @@ export const EntitySystem = {
             return;
         }
 
-        const nextItem = moveList[result.idx];
+        let nextItem = moveList[result.idx];
         const nextSceneId = nextItem?.scene_id;
         if (!nextSceneId || !state.getRuntimeSnapshot('scenes.[id]', { id: nextSceneId }) ||
             this.isLocationBlocked(nextSceneId)) {
@@ -274,17 +274,21 @@ export const EntitySystem = {
             return;
         }
 
-        // Leave effects may mutate the source, destination, identity, or blocked state.
+        // Leave effects may mutate the source, destination entry, identity, or blocked state.
+        const postLeaveCharacter = state.getRuntimeSnapshot('characters.[id]', { id: charId });
+        const postLeaveItem = postLeaveCharacter?.moveList?.[result.idx];
         if (!this.isCharacterVisitValid(charId, token, currentScene, oldIndex) ||
             this.getCurrentIdentity() !== currentIdentity ||
             state.get('sceneId') !== playerSceneId ||
             (currentScene && (!state.getRuntimeSnapshot('scenes.[id]', { id: currentScene }) ||
                 this.isLocationBlocked(currentScene))) ||
             !state.getRuntimeSnapshot('scenes.[id]', { id: nextSceneId }) ||
-            this.isLocationBlocked(nextSceneId)) {
+            this.isLocationBlocked(nextSceneId) ||
+            !postLeaveItem || postLeaveItem.skip || postLeaveItem.scene_id !== nextSceneId) {
             if (this.isCharacterVisitValid(charId, token, currentScene, oldIndex)) this.scheduleCharacterMove(charId);
             return;
         }
+        nextItem = postLeaveItem;
 
         // Commit the visit atomically only after the destination has been revalidated.
         this.invalidateCharacterVisit(charId);
