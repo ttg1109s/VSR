@@ -886,7 +886,9 @@
               ],
               "properties": {
                 "id": { "type": "string" },
-                "name": { "type": "string" }
+                "name": { "type": "string" },
+                "avatar": { "type": ["string", "null"] },
+                "description": { "type": ["string", "null"] }
               },
               "additionalProperties": false
             },
