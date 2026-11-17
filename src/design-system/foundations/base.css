@@ -17,11 +17,20 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 html { min-width: 320px; min-height: 100%; background: var(--vsr-color-background); }
-body { min-width: 320px; min-height: 100dvh; margin: 0; color: var(--vsr-color-text); background: var(--vsr-color-background); font-family: var(--vsr-font-sans); font-size: 14px; line-height: 20px; }
-#root {
+body {
+  min-width: 320px;
   min-height: 100dvh;
+  margin: 0;
   padding: var(--vsr-safe-area-top) var(--vsr-safe-area-right) var(--vsr-safe-area-bottom) var(--vsr-safe-area-left);
-  box-sizing: border-box;
+  color: var(--vsr-color-text);
+  background: var(--vsr-color-background);
+  font-family: var(--vsr-font-sans);
+  font-size: 14px;
+  line-height: 20px;
+}
+#root {
+  min-height: calc(100dvh - var(--vsr-safe-area-top) - var(--vsr-safe-area-bottom));
+  min-width: 0;
 }
 button, input, textarea, select { font: inherit; }
 button { color: inherit; }
