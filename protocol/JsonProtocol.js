@@ -1,4 +1,5 @@
 import { getFakerActingIds, getFakerRelationshipIdentityId } from '../engine/modules/entity/Identity.js';
+import { COMMUNICATION_SENDER_ID, UNKNOWN_SENDER_ID } from '../engine/modules/chat/systemSenders.js';
 const RUNTIME_ONLY_STATE_KEYS=new Set(['effectQueue','isSyncQueueRunning','isAsyncQueueRunning','pausedBackgroundTasks']);
 export function cloneJsonValue(value,seen=new WeakSet()){
  if(value===null||typeof value==='string'||typeof value==='boolean')return value;
@@ -120,9 +121,13 @@ export class JsonProtocol{
   const activeIdentityId=engine.state.faker?.active&&engine.state.faker?.targetId
    ?engine.state.faker.targetId
    :(engine.state.entryCharacter||'player');
-  const chatContactId=typeof activeChatMeta.sender==='string'&&activeChatMeta.sender!==activeIdentityId
-   ?activeChatMeta.sender
-   :(Array.isArray(activeChatMeta.to)?activeChatMeta.to.find(id=>typeof id==='string'&&id!==activeIdentityId):null)||null;
+  const chatContactId=engine.chatState?.id
+   ?(engine.getChatOwner?.(engine.chatState.id)??(
+     typeof activeChatMeta.sender==='string'&&activeChatMeta.sender!==activeIdentityId
+      ?activeChatMeta.sender
+      :(Array.isArray(activeChatMeta.to)?activeChatMeta.to.find(id=>typeof id==='string'&&id!==activeIdentityId):null)
+    ))
+   :null;
   const chatChoices=engine.chatState?.waitingChoice===true&&Array.isArray(activeChatBlock?.choices)
    ?activeChatBlock.choices.map((choice,index)=>{
     let requirementPass=true;
@@ -267,6 +272,23 @@ export class JsonProtocol{
      return Number.isSafeInteger(parsed)&&parsed>=0?count+parsed:count;
     },0);
   };
+  const projectThreadList=(ownerId)=>typeof engine.getThreads==='function'
+   ?engine.getThreads(ownerId).map(thread=>({
+    id:thread.id,title:typeof thread.title==='string'?thread.title:thread.id,
+    preview:typeof thread.preview==='string'?thread.preview:'',
+    time:Number.isFinite(thread.time)?thread.time:0,
+    isUnread:thread.isUnread===true,isFinished:thread.isFinished===true
+   }))
+   :[];
+  const communicationThreads=projectThreadList(COMMUNICATION_SENDER_ID);
+  const unknownThreads=projectThreadList(UNKNOWN_SENDER_ID);
+  const systemContacts=[{
+   id:COMMUNICATION_SENDER_ID,name:'Communication',description:'Thông báo và nội dung từ các nguồn hệ thống.',
+   avatar:null,kind:'communication',threads:communicationThreads
+  },...(unknownThreads.length?[{
+   id:UNKNOWN_SENDER_ID,name:'Unknown / Spam',description:'Tin nhắn không xác định được nguồn gửi hoặc đến từ nguồn chưa khai báo.',
+   avatar:null,kind:'unknown',threads:unknownThreads
+  }]:[])];
   const contacts=Object.entries(engine.state.characters||{})
    .map(([characterId,character])=>{
     const met=Array.isArray(character?.met)?character.met:[];
@@ -307,6 +329,7 @@ export class JsonProtocol{
     scenePath:sceneId?(state.sceneTree?.[sceneId]||[]).map(node=>({id:node.id,title:node.title})):[],
     player:playerProjection,
     contacts,
+    systemContacts,
     actions
    },
    session,state
