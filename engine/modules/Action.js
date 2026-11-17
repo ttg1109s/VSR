@@ -33,6 +33,7 @@ export const ActionSystem = {
                     actions.push(act);
                 }
             });
+        }
         return actions;
     },
 
