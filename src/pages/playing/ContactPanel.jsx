@@ -135,87 +135,116 @@ function IdentityDrawer({ open, onClose, player, contacts, onSelectContact }) {
   if (!player) return null;
   const mode = player.identityMode;
   const target = player.identityTarget;
+  const name = player.name || player.id;
   const modeContent = {
     soul: {
-      title: 'Đoạt xá · SOUL',
+      title: 'Đoạt xá',
+      badge: 'SOUL',
+      identityLabel: 'Danh tính gốc',
       description: target
-        ? `Bạn vẫn giữ nguyên linh hồn và căn cước gốc, nhưng hiện đang cư trú trong cơ thể của ${target.name}.`
-        : 'Linh hồn và căn cước gốc của bạn được giữ nguyên.'
+        ? `Linh hồn của bạn vẫn thuộc về chính mình, nhưng hiện đang cư trú trong thân xác của ${target.name}.`
+        : 'Linh hồn và danh tính của bạn vẫn vẹn nguyên.'
     },
     mask: {
-      title: 'Ngụy trang · MASK',
+      title: 'Ngụy trang',
+      badge: 'MASK',
+      identityLabel: 'Thân phận đang mang',
       description: target
-        ? `Bạn vẫn là chính mình, nhưng đang khoác tên gọi, diện mạo và quyền hành động của ${target.name}. Đây không phải là hoán đổi chủ thể.`
-        : 'Bạn đang sử dụng một lớp căn cước ngụy trang.'
+        ? `Bạn vẫn là chính mình, nhưng đang mang diện mạo và thân phận của ${target.name}.`
+        : 'Bạn vẫn là chính mình, hiện đang mang một thân phận khác.'
     },
     swap: {
-      title: 'Hoán đổi · SWAP',
-      description: `Bạn đã hoán đổi sang căn cước của ${player.name || player.id}. Hồ sơ hiện tại phản ánh nhân vật này, không phải một lớp diện mạo hay một cơ thể đang mượn.`
+      title: 'Hoán đổi',
+      badge: null,
+      identityLabel: 'Danh tính hiện tại',
+      description: `Bạn đã hoán đổi thân phận và hiện mang danh tính của ${name}.`
     }
   }[mode] || {
-    title: 'Căn cước hiện tại',
-    description: 'Đây là danh tính đang được Engine sử dụng cho bạn.'
+    title: null,
+    badge: null,
+    identityLabel: 'Danh tính của bạn',
+    description: null
   };
-  const badgeLabel = mode === 'soul' ? 'SOUL' : mode === 'mask' ? 'MASK' : null;
   const profileCharacter = {
     ...player,
     relationship: Array.isArray(player.relationship) ? player.relationship : []
   };
+  const hasStats = Object.keys(player.stats || {}).length > 0;
+  const hasRelationships = profileCharacter.relationship.length > 0;
+  const targetLabel = mode === 'soul' ? 'Thân xác hiện tại' : 'Diện mạo đang mượn';
 
   return (
     <Drawer
       open={open}
       onClose={onClose}
       title="Căn cước"
-      description="Danh tính và trạng thái hiện tại của Me"
+      description="Danh tính và trạng thái hiện tại của bạn"
       size="lg"
       side="right"
       className="vsr-identity-drawer"
     >
       <div className="vsr-identity-content">
-        <section className="vsr-identity-hero" aria-label="Danh tính hiện tại">
+        <section className="vsr-identity-hero" aria-label="Danh tính của bạn">
           <span className="vsr-identity-hero__avatar-wrap">
-            <ContactAvatar name={player.name || player.id} avatar={player.avatar} size="lg" />
-            {badgeLabel && <span className="vsr-contact-me__mode-badge">{badgeLabel}</span>}
+            <ContactAvatar name={name} avatar={player.avatar} size="lg" />
+            {modeContent.badge && (
+              <span className="vsr-contact-me__mode-badge" aria-label={modeContent.badge}>
+                {modeContent.badge}
+              </span>
+            )}
           </span>
           <div className="vsr-identity-hero__copy">
-            <span className="vsr-identity-hero__eyebrow">ME</span>
-            <h3>{player.name || player.id}</h3>
-            <Badge tone={mode ? 'info' : 'neutral'}>{modeContent.title}</Badge>
+            <h3>{name}</h3>
+            <span className="vsr-identity-hero__identity-label">{modeContent.identityLabel}</span>
           </div>
         </section>
 
-        <section className="vsr-identity-mode" aria-label="Ý nghĩa chế độ căn cước">
-          <h3>Trạng thái căn cước</h3>
-          <p>{modeContent.description}</p>
-          {target && (mode === 'soul' || mode === 'mask') && (
-            <div className="vsr-identity-target">
-              <ContactAvatar name={target.name || target.id} avatar={target.avatar} />
-              <div>
-                <strong>{target.name || target.id}</strong>
-                <span>{mode === 'soul' ? 'Cơ thể đang cư trú' : 'Diện mạo và căn cước đang mượn'}</span>
-              </div>
+        {modeContent.description && (
+          <section className="vsr-identity-mode" aria-label="Trạng thái căn cước">
+            <div className="vsr-identity-mode__icon" aria-hidden="true">
+              {mode === 'soul' ? 'psychology_alt' : mode === 'mask' ? 'masks' : 'swap_horiz'}
             </div>
-          )}
-        </section>
+            <div className="vsr-identity-mode__copy">
+              <h3>{modeContent.title}</h3>
+              <p>{modeContent.description}</p>
+            </div>
+          </section>
+        )}
+
+        {target && (mode === 'soul' || mode === 'mask') && (
+          <section className="vsr-identity-target" aria-label={targetLabel}>
+            <strong>{targetLabel}</strong>
+            <ContactAvatar name={target.name || target.id} avatar={target.avatar} />
+            <span className="vsr-identity-target__name">{target.name || target.id}</span>
+            <span className="vsr-identity-target__chevron" aria-hidden="true">chevron_right</span>
+          </section>
+        )}
 
         {player.description && (
-          <section className="vsr-contact-profile__section">
-            <h3>Giới thiệu</h3>
+          <section className="vsr-identity-section">
+            <h3><span aria-hidden="true">description</span>Giới thiệu</h3>
             <p className="vsr-contact-profile__description">{player.description}</p>
           </section>
         )}
-        <section className="vsr-contact-profile__section">
-          <h3>Chỉ số của Me</h3>
-          <StatList stats={player.stats || {}} />
+
+        <section className="vsr-identity-section">
+          <h3><span aria-hidden="true">bar_chart</span>Chỉ số</h3>
+          {hasStats
+            ? <StatList stats={player.stats || {}} />
+            : <p className="vsr-identity-empty">Chưa có chỉ số được thiết lập.</p>}
         </section>
-        <section className="vsr-contact-profile__section">
-          <h3>Quan hệ</h3>
-          <RelationshipList
-            relationships={profileCharacter.relationship}
-            contacts={contacts}
-            onSelect={onSelectContact}
-          />
+
+        <section className="vsr-identity-section">
+          <h3><span aria-hidden="true">groups</span>Quan hệ</h3>
+          {hasRelationships ? (
+            <RelationshipList
+              relationships={profileCharacter.relationship}
+              contacts={contacts}
+              onSelect={onSelectContact}
+            />
+          ) : (
+            <p className="vsr-identity-empty">Chưa có mối quan hệ được ghi nhận.</p>
+          )}
         </section>
       </div>
     </Drawer>
