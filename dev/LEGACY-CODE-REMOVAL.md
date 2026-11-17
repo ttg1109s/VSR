@@ -357,7 +357,7 @@ Sau refactor, VSR phải tuân theo các nguyên tắc sau:
 
 Đã bổ sung hoặc cập nhật test cho các trường hợp legacy bị từ chối, gồm scenario version, router object map, `importAction`, target/source ghép, save version cũ, visit counter thiếu, relationship root field và notification alias.
 
-<badge>CI PASS</badge>
+**CI: PASS**
 
 Xác minh trên commit `1aa82ed2f99668b7256430b5af9b0c9ffcd3e6d3`:
 
