@@ -71,7 +71,7 @@ function RelationshipSummary({ relationshipWithPlayer, metCount = 0 }) {
     <div className="vsr-contact-relationship-summary">
       <div className="vsr-contact-relationship-summary__type">
         <span className="vsr-contact-relationship-summary__label">Quan hệ với người chơi</span>
-        <strong>{tag || 'Chưa có quan hệ được ghi nhận'}</strong>
+        <strong>{tag || (hasRelationship ? 'Đã ghi nhận, chưa phân loại' : 'Chưa có quan hệ được ghi nhận')}</strong>
       </div>
       <div className="vsr-contact-relationship-summary__count">
         <span className="vsr-contact-relationship-summary__label">Số lần đã gặp</span>
