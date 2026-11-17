@@ -15,7 +15,7 @@ import {JsonProtocol,cloneJsonValue} from '../protocol/JsonProtocol.js';
 import {verifyPassword} from './modules/password/verify.js';
 import {PasswordSystem} from './modules/password/PasswordSystem.js';
 import {TaskManager} from './runtime/TaskManager.js';
-import {createSaveEnvelope,normalizeSaveEnvelope,normalizeCharacterVisitCounters,SAVE_VERSION} from './persistence/SaveState.js';
+import {createSaveEnvelope,normalizeSaveEnvelope,validateCharacterVisitCounters,SAVE_VERSION} from './persistence/SaveState.js';
 
 export class GameEngine {
  constructor({taskManager,engineId,authorizeCommand,requireAuthorization=false,clock}={}) {
