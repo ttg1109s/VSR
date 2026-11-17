@@ -987,16 +987,6 @@
             "type": "object",
             "description": "Character interaction effects keyed by Target Character ID.",
             "properties": {
-              "meeting": {
-                "type": "object",
-                "description": "Map of Character ID to Effect List. Run when this Character meets another Character.",
-                "additionalProperties": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/definitions/runnable_wrapper"
-                  }
-                }
-              },
               "leave": {
                 "type": "object",
                 "description": "Map of Character ID to Effect List. Run when this Character leaves another Character.",
