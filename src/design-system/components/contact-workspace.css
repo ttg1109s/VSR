@@ -55,6 +55,52 @@
   font-weight: 600;
   letter-spacing: -.01em;
 }
+.vsr-contact-me {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px 16px;
+  border-bottom: 1px solid var(--vsr-color-border-subtle);
+  background: var(--vsr-color-surface);
+}
+.vsr-contact-me__heading,
+.vsr-contact-list__section-heading {
+  margin: 0;
+  color: var(--vsr-color-text-secondary);
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: .02em;
+}
+.vsr-contact-me__identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.vsr-contact-me__copy {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.vsr-contact-me__copy strong {
+  overflow: hidden;
+  color: var(--vsr-color-text);
+  font-size: 14px;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.vsr-contact-me__copy span {
+  overflow: hidden;
+  color: var(--vsr-color-text-secondary);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.vsr-contact-list__section-heading { padding: 14px 16px 6px; }
+
 .vsr-contact-list__items {
   flex: 1;
   min-height: 0;
