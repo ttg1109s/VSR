@@ -222,7 +222,7 @@ test('Contact exposes Engine-owned thread summaries and opens only a thread belo
       activationTime: Date.now() - 1000,
       lastInteraction: Date.now() - 500,
       read: false,
-      bookmark: []
+      bookmark: ['start']
     };
     host.engine.state.chats.chat_mai = runtimeChat;
     host.engine.state.chatHistory.chat_mai = [{ nameID: 'mai', text: 'Tín hiệu ở tháp đã thay đổi.' }];
