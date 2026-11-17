@@ -14,8 +14,6 @@ import {
   ContactSection,
   ContactTopicList,
   ContactWorkspace,
-  DescriptionList,
-  DescriptionListItem,
   Drawer,
   Separator,
 } from '../../design-system/index.js';
@@ -133,7 +131,7 @@ function ContactProfile({ character, player, contacts, onSelect }) {
                 </Badge>}
             {isPlayer && character.identityMode && <Badge tone="info">Faker · {character.identityMode}</Badge>}
             {!isPlayer && Number.isFinite(character.metCount) && (
-              <Badge tone="secondary">Đã gặp {character.metCount} lần</Badge>
+              <Badge tone="neutral">Đã gặp {character.metCount} lần</Badge>
             )}
           </div>
         </div>
