@@ -33,10 +33,14 @@ export const EntitySystem = {
         return this.getCurrentIdentity() !== charId;
     },
 
-    cancelCharacterStill(charId) {
+    cancelCharacterStill(charId, expectedTaskId = null) {
         this.characterStillTaskIds ||= new Map();
-        const taskId = this.characterStillTaskIds.get(charId);
-        if (taskId) this.taskManager.kill(taskId);
+        const currentTaskId = this.characterStillTaskIds.get(charId);
+        if (expectedTaskId && currentTaskId !== expectedTaskId) {
+            this.taskManager.kill(expectedTaskId);
+            return;
+        }
+        if (currentTaskId) this.taskManager.kill(currentTaskId);
         this.characterStillTaskIds.delete(charId);
     },
 
@@ -148,7 +152,7 @@ export const EntitySystem = {
             count: 0,
             exe: async () => {
                 if (!this.isCharacterVisitValid(charId, token, sceneId, moveIndex)) {
-                    this.cancelCharacterStill(charId);
+                    this.cancelCharacterStill(charId, taskId);
                     return;
                 }
                 await this.processRunnables(still, {
