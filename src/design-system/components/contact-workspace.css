@@ -199,7 +199,7 @@
   flex-direction: column;
   gap: 9px;
   padding: 13px 0;
-  border-top: 1px solid var(--vsr-color-border-subtle);
+  border-top: 0;
 }
 .vsr-contact-profile__section h4 {
   display: flex;
@@ -235,7 +235,6 @@
   min-width: 0;
   padding: 11px 0;
   border: 0;
-  border-bottom: 1px solid var(--vsr-color-border-subtle);
   border-radius: 0;
   background: transparent;
 }
@@ -306,7 +305,7 @@
   gap: 11px;
   min-width: 0;
   padding: 9px 0;
-  border-bottom: 1px solid var(--vsr-color-border-subtle);
+  border-bottom: 0;
 }
 .vsr-contact-relationship:last-child { border-bottom: 0; }
 .vsr-contact-relationship__avatar {
