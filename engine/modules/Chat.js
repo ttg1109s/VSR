@@ -100,8 +100,9 @@ export const ChatSystem = {
         const ownerId = this.getChatOwner(id);
         const state = this.api.engine.state;
         const chatRuntime = state.getSnapshot('chat.data', { id }) || {};
-        if (!chatRuntime.set) chatRuntime.set = { read: false, step: 0, bookmark: [] };
-
+        if (!chatRuntime.set || typeof chatRuntime.set !== 'object' || Array.isArray(chatRuntime.set)) {
+            throw new TypeError(`Chat '${id}' runtime state is missing its set object.`);
+        }
         if (!Array.isArray(chatRuntime.set.bookmark)) {
             throw new TypeError(`Chat '${id}' bookmark state must be an array.`);
         }
@@ -170,7 +171,7 @@ export const ChatSystem = {
             }
             shouldProcessBlock = false;
         } else if (bookmark.length > 0) {
-            // Resume after the last persisted line; `step` is the last consumed line index in legacy saves.
+            // Resume after the last persisted line; `step` is the last consumed line index.
             // Keep chat.history intact: it is the authoritative record of already rendered
             // lines and must not be replayed into the same history a second time.
             startBlock = bookmark[bookmark.length - 1];
@@ -179,15 +180,9 @@ export const ChatSystem = {
             startIndex = Number.isInteger(savedStep) && savedStep >= 0
                 ? Math.min(savedStep + 1, Array.isArray(lastBlock?.line) ? lastBlock.line.length : 0)
                 : 0;
-        } else if (!chatRuntime.set.read && chatHistory.length > 0) {
-            // Legacy/incomplete saves may contain history without a bookmark.
-            // Honor the saved step when possible rather than duplicating the entry lines.
-            const savedStep = Number(chatRuntime.set.step);
-            const entryBlock = this.resolveBlock(id, startBlock);
-            startIndex = Number.isInteger(savedStep) && savedStep >= 0
-                ? Math.min(savedStep, Array.isArray(entryBlock?.line) ? entryBlock.line.length : 0)
-                : 0;
         }
+        if (chatHistory.length > 0 && bookmark.length === 0) {
+            throw new Error(`Chat '${id}' has persisted history without a bookmark.`);
 
         // Commit the complete progress projection before rendering or dispatching the next block.
         state.set('chat.data', chatRuntime, { id });
