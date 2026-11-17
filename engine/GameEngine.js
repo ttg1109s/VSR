@@ -189,7 +189,7 @@ export class GameEngine {
   this.src=null;this.scenario=null;this.pendingPasswordAction=null;
   this.chatState={active:false,blocking:false,id:null,blockId:null,index:0,triggerActionId:null,actionModified:false};
   this.timerState=null;
-  this.taskSequence=0;this.currentStillTask=null;this.activeTimerTasks=[];this.isActionProcessing=false;this.isTransitioning=false;this.disposed=false;this.restoredTaskTimers={};this.restoredPausedTasks=[];
+  this.taskSequence=0;this.currentStillTask=null;this.activeTimerTasks=[];this.characterVisitTokens=new Map();this.characterVisitSequence=0;this.characterStillTaskIds=new Map();this.characterTransitionQueues=new Map();this.isActionProcessing=false;this.isTransitioning=false;this.disposed=false;this.restoredTaskTimers={};this.restoredPausedTasks=[];
  }
  async init(script,{enterScene=true}={}){
   const loaded=LoaderSystem.loadScript(script,this.api);
@@ -264,6 +264,20 @@ export class GameEngine {
   }
   for(const sceneId of Object.keys(restored.scenes)) {
    if(!normalized.state.scenes?.[sceneId])throw new TypeError(`Save contains unknown scene "${sceneId}".`);
+  }
+  for(const [charId,charState] of Object.entries(restored.characters)) {
+   const scenarioCharacter=normalized.state.characters?.[charId];
+   if(!scenarioCharacter)throw new TypeError(`Save contains unknown character "${charId}".`);
+   if(!Array.isArray(charState?.moveList)||charState.moveList.length!==(scenarioCharacter.moveList||[]).length) {
+    throw new TypeError(`Save moveList does not match scenario for character "${charId}".`);
+   }
+   charState.moveList.forEach((entry,index)=>{
+    if(!entry||typeof entry!=='object'||Array.isArray(entry))throw new TypeError(`Save character "${charId}" moveList[${index}] is invalid.`);
+    if(entry.countVisited===undefined)entry.countVisited=0;
+    if(!Number.isSafeInteger(entry.countVisited)||entry.countVisited<0) {
+     throw new TypeError(`Save character "${charId}" moveList[${index}].countVisited must be a non-negative safe integer.`);
+    }
+   });
   }
   const originalEntryCharacter=restored.originalEntryCharacter||normalized.state.originalEntryCharacter||'player';
   const currentEntryCharacter=restored.entryCharacter||originalEntryCharacter;
