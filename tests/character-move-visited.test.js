@@ -6,7 +6,7 @@ import { validateScenario } from '../engine/scenario/Scenario.js';
 import { MoveAlgorithms } from '../engine/modules/entity/Movement.js';
 import { EntitySystem } from '../engine/modules/Entity.js';
 import { EffectSystem } from '../engine/modules/Effect.js';
-import { normalizeCharacterVisitCounters } from '../engine/persistence/SaveState.js';
+import { validateCharacterVisitCounters } from '../engine/persistence/SaveState.js';
 import { EffectKeyStrategies, EffectScopeResolvers, StaticListResolvers } from '../engine/modules/effect/strategies/Management.js';
 
 test('Character moveList entries receive persistent visit counters at load', () => {
@@ -148,16 +148,17 @@ test('Effect runner stops the remaining list as soon as the visit token becomes 
 });
 
 
-test('save migration defaults missing visit counters and rejects invalid values', () => {
-  const saved = { npc: { moveList: [{ scene_id: 'a' }, { scene_id: 'b', countVisited: 4 }] } };
-  normalizeCharacterVisitCounters(saved, { npc: { moveList: [{ scene_id: 'a' }, { scene_id: 'b' }] } });
-  assert.equal(saved.npc.moveList[0].countVisited, 0);
-  assert.equal(saved.npc.moveList[1].countVisited, 4);
+test('save restore requires canonical visit counters and rejects invalid values', () => {
+  const missing = { npc: { moveList: [{ scene_id: 'a' }] } };
+  assert.throws(
+    () => validateCharacterVisitCounters(missing, { npc: { moveList: [{ scene_id: 'a' }] } }),
+    /countVisited must be a non-negative safe integer/
+  );
 
   for (const invalid of [-1, 1.5, '2', null, Number.MAX_SAFE_INTEGER + 1]) {
     const malformed = { npc: { moveList: [{ scene_id: 'a', countVisited: invalid }] } };
     assert.throws(
-      () => normalizeCharacterVisitCounters(malformed, { npc: { moveList: [{ scene_id: 'a' }] } }),
+      () => validateCharacterVisitCounters(malformed, { npc: { moveList: [{ scene_id: 'a' }] } }),
       /countVisited must be a non-negative safe integer/
     );
   }
