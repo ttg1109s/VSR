@@ -364,8 +364,8 @@ export const ActionSystem = {
             }
             if (result === 'exhausted') {
                 const actStateKey = `${sId}_${rId}_${actionKey}`;
-                this.incrementActionCount(actStateKey, 'pwFailed');
                 if (actDef.effect?.pwFailed) {
+                    this.incrementActionCount(actStateKey, 'pwFailed');
                     await this.processRunnables(actDef.effect.pwFailed, {
                         sceneId: sId, routerId: rId, actionId: actionKey, hook: 'pwFailed'
                     });
