@@ -271,15 +271,16 @@ export default function ContactPanel({ open, onClose, player, contacts = [], ses
             <section className="vsr-contact-me" aria-label="Danh tính của bạn">
               <h2 className="vsr-contact-me__heading">Me</h2>
               <div className="vsr-contact-me__identity">
-                <ContactAvatar name={player.name || player.id} avatar={player.avatar} />
+                <span className="vsr-contact-me__avatar-wrap">
+                  <ContactAvatar name={player.name || player.id} avatar={player.avatar} />
+                  {(player.identityMode === 'soul' || player.identityMode === 'mask') && (
+                    <span className="vsr-contact-me__mode-badge" aria-label={player.identityMode === 'soul' ? 'Soul' : 'Mask'}>
+                      {player.identityMode.toUpperCase()}
+                    </span>
+                  )}
+                </span>
                 <div className="vsr-contact-me__copy">
                   <strong>{player.name || player.id}</strong>
-                  {player.identityMode === 'soul' && player.identityTarget?.name && (
-                    <span>Đang đoạt xá {player.identityTarget.name}</span>
-                  )}
-                  {player.identityMode === 'mask' && (
-                    <span>Danh tính Faker{player.identityTarget?.name ? ' · ' + player.identityTarget.name : ''}</span>
-                  )}
                 </div>
               </div>
             </section>
