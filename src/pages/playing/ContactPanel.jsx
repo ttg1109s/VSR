@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Badge,
   Button,
@@ -286,6 +286,7 @@ export default function ContactPanel({ open, onClose, player, contacts = [], sys
   const [pendingThreadId, setPendingThreadId] = useState(null);
   const [chatPending, setChatPending] = useState(false);
   const [chatError, setChatError] = useState('');
+  const handledViewRequestIdRef = useRef(null);
 
   const allContacts = useMemo(() => [
     ...contacts.map(contact => ({
@@ -337,8 +338,12 @@ export default function ContactPanel({ open, onClose, player, contacts = [], sys
 
   useEffect(() => {
     if (!open || !viewRequest?.requestId || !viewRequest.contactId || !viewRequest.chatId) return;
+    // viewRequested is a one-shot navigation intent. Do not replay an old
+    // request when Contact is closed and opened again.
+    if (handledViewRequestIdRef.current === viewRequest.requestId) return;
     const contact = allContacts.find(item => item.id === viewRequest.contactId);
     if (!contact?.threads.some(thread => thread.id === viewRequest.chatId)) return;
+    handledViewRequestIdRef.current = viewRequest.requestId;
     setSelectedId(viewRequest.contactId);
     setSelectedThreadId(viewRequest.chatId);
     setMobileView('detail');
