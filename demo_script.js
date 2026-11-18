@@ -2037,7 +2037,7 @@ export const DEMO_SCRIPT = {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Trong hầm vang lên tiếng máy chiếu cũ; cuộn băng ghi âm đêm mất điện hé lộ điều đã xảy ra trước khi làng chìm vào im lặng."
+            "text": "Cuộn băng lưu lại âm thanh trong đêm mất điện; bản ghi có thể hé lộ điều đã xảy ra trước khi làng chìm vào im lặng."
           },
           {
             "type": "set",
