@@ -1,6 +1,6 @@
 import { cloneJsonValue } from '../../protocol/JsonProtocol.js';
 
-export const SAVE_VERSION = 2;
+export const SAVE_VERSION = 3;
 const RUNTIME_KEYS = ['effectQueue', 'isSyncQueueRunning', 'isAsyncQueueRunning', 'pausedBackgroundTasks'];
 
 export function createSaveEnvelope(engine) {
@@ -60,7 +60,7 @@ export function validateCharacterVisitCounters(savedCharacters, scenarioCharacte
 function validateSaveShape(save) {
   if (!save || typeof save !== 'object' || Array.isArray(save)) throw new TypeError('Invalid VSR save envelope.');
   if (save.protocol !== 'vsr-save') throw new TypeError('Invalid save protocol.');
-  if (save.saveVersion !== SAVE_VERSION) throw new Error(`Unsupported save version: ${save.saveVersion}`);
+  if (![2, SAVE_VERSION].includes(save.saveVersion)) throw new Error(`Unsupported save version: ${save.saveVersion}`);
   if (!save.scenario || typeof save.scenario !== 'object' || Array.isArray(save.scenario)) throw new TypeError('Save scenario must be an object.');
   if (!save.state || typeof save.state !== 'object' || Array.isArray(save.state)) throw new TypeError('Save state must be an object.');
   if (typeof save.savedAt !== 'string' || Number.isNaN(Date.parse(save.savedAt))) throw new TypeError('Save timestamp is invalid.');
@@ -86,7 +86,55 @@ function validateSaveShape(save) {
   }
 }
 
+function migrateLegacyActionRuntime(save) {
+  const scenario = save.scenario || {};
+  const runtimeActions = save.state.actions || {};
+  const legacyKeysByAction = new Map();
+
+  for (const [sceneId, scene] of Object.entries(scenario.scenes || {})) {
+    for (const [routerId, router] of Object.entries(scene?.routers || {})) {
+      for (const [index, actionId] of (Array.isArray(router?.actions) ? router.actions : []).entries()) {
+        if (typeof actionId !== 'string' || !actionId.trim()) {
+          throw new Error(`Cannot migrate save: inline or invalid Action at scenes.${sceneId}.routers.${routerId}.actions[${index}] is not supported. Convert the scenario to global Action IDs and create a new save.`);
+        }
+        const keys = legacyKeysByAction.get(actionId) || [];
+        keys.push(`${sceneId}_${routerId}_${actionId}`);
+        legacyKeysByAction.set(actionId, keys);
+      }
+    }
+  }
+
+  const migrated = {};
+  for (const [actionId, keys] of legacyKeysByAction) {
+    const records = keys.filter(key => Object.prototype.hasOwnProperty.call(runtimeActions, key))
+      .map(key => runtimeActions[key]);
+    if (!records.length) continue;
+    const canonical = JSON.stringify(records[0]);
+    if (records.some(record => JSON.stringify(record) !== canonical)) {
+      throw new Error(`Cannot migrate save: legacy per-Router runtime records for Action '${actionId}' differ. Their counters/properties have ambiguous ownership; resolve the save explicitly before restoring.`);
+    }
+    migrated[actionId] = cloneJsonValue(records[0]);
+  }
+
+  const knownLegacyKeys = new Set([...legacyKeysByAction.values()].flat());
+  for (const key of Object.keys(runtimeActions)) {
+    if (knownLegacyKeys.has(key)) delete runtimeActions[key];
+  }
+  for (const [actionId, record] of Object.entries(migrated)) {
+    if (Object.prototype.hasOwnProperty.call(runtimeActions, actionId) &&
+        JSON.stringify(runtimeActions[actionId]) !== JSON.stringify(record)) {
+      throw new Error(`Cannot migrate save: global and legacy runtime records conflict for Action '${actionId}'.`);
+    }
+    runtimeActions[actionId] = record;
+  }
+}
+
 export function normalizeSaveEnvelope(input) {
   validateSaveShape(input);
-  return cloneJsonValue(input);
+  const save = cloneJsonValue(input);
+  if (save.saveVersion === 2) {
+    migrateLegacyActionRuntime(save);
+    save.saveVersion = SAVE_VERSION;
+  }
+  return save;
 }
