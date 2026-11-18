@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { Badge, Button, Dialog, Drawer, Input, Menu, Popover, Switch } from '../../design-system/index.js';
 import './notifications.css';
 import { filterNotifications } from './notificationFilters.js';
@@ -66,6 +66,7 @@ export default function NotificationCenter({
   const [searchOpen, setSearchOpen] = useState(false);
   const [busyIds, setBusyIds] = useState([]);
   const [actionError, setActionError] = useState('');
+  const swipeStart = useRef(null);
   const history = useMemo(() => [...notifications].sort((a, b) =>
     (b.createdAt || 0) - (a.createdAt || 0)
   ).slice(0, 200), [notifications]);
@@ -185,12 +186,41 @@ export default function NotificationCenter({
                   const tone = levelTone(item.level);
                   const timestamp = new Date(item.createdAt);
                   const validTimestamp = Number.isFinite(timestamp.getTime());
-                  const menuItems = [
-                    !item.read && { key: 'read', label: 'Mark as read', icon: 'done', disabled: busyIds.includes(item.id), onSelect: () => markRead(item.id) },
-                    !['dismissed', 'expired', 'cleared'].includes(item.status) && { key: 'dismiss', label: 'Dismiss', icon: 'close', danger: true, disabled: busyIds.includes(item.id), onSelect: () => dismiss(item.id) }
-                  ].filter(Boolean);
+                  const canDismiss = !['dismissed', 'expired', 'cleared'].includes(item.status);
+                  const handlePointerDown = event => {
+                    if (event.pointerType === 'mouse' && event.button !== 0) return;
+                    swipeStart.current = { id: item.id, x: event.clientX, y: event.clientY };
+                  };
+                  const handlePointerUp = event => {
+                    const start = swipeStart.current;
+                    swipeStart.current = null;
+                    if (!start || start.id !== item.id || !canDismiss || busyIds.includes(item.id)) return;
+                    const dx = event.clientX - start.x;
+                    const dy = event.clientY - start.y;
+                    if (Math.abs(dx) >= 72 && Math.abs(dx) > Math.abs(dy) * 1.3) dismiss(item.id);
+                  };
+                  const handleItemClick = event => {
+                    if (event.target.closest('button, a, input, [role="menu"], .vsr-popover')) return;
+                    if (!item.read) markRead(item.id);
+                  };
                   return (
-                    <article className={'vsr-notification-item' + (item.read ? '' : ' is-unread')} key={item.id}>
+                    <article
+                      className={'vsr-notification-item' + (item.read ? '' : ' is-unread')}
+                      key={item.id}
+                      onPointerDown={handlePointerDown}
+                      onPointerUp={handlePointerUp}
+                      onPointerCancel={() => { swipeStart.current = null; }}
+                      onClick={handleItemClick}
+                      onKeyDown={event => {
+                        if ((event.key === 'Enter' || event.key === ' ') && !item.read) {
+                          event.preventDefault();
+                          markRead(item.id);
+                        }
+                      }}
+                      role={!item.read ? 'button' : undefined}
+                      tabIndex={!item.read ? 0 : undefined}
+                      aria-label={!item.read ? 'Mark ' + (item.title || 'notification') + ' as read' : undefined}
+                    >
                       <div className={'vsr-notification-item__marker vsr-notification-item__marker--' + tone} aria-hidden="true">
                         <span className="vsr-icon">{notificationIcon(item.category, item.level)}</span>
                       </div>
@@ -201,14 +231,6 @@ export default function NotificationCenter({
                         </div>
                         <p>{item.message}{validTimestamp && <> <span className="vsr-notification-item__time-separator" aria-hidden="true">·</span> <time dateTime={timestamp.toISOString()}>{formatRelativeTime(timestamp)}</time></>}</p>
                       </div>
-                      {menuItems.length > 0 && (
-                        <Menu
-                          align="end"
-                          label={'Actions for ' + (item.title || 'notification')}
-                          trigger={<button type="button" className="vsr-icon-button vsr-notification-item__menu-trigger" aria-label={'Actions for ' + (item.title || 'notification')}>more_vert</button>}
-                          items={menuItems}
-                        />
-                      )}
                     </article>
                   );
                 })}
