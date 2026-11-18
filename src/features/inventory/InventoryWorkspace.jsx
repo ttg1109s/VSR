@@ -6,7 +6,6 @@ const formatNumber = value => Number.isFinite(value) ? new Intl.NumberFormat('en
 
 export default function InventoryWorkspace({ snapshot, client, open = false, onClose, onError }) {
   const inventory = snapshot?.presentation?.inventory;
-  const player = snapshot?.presentation?.player;
   const items = inventory?.items || [];
   const equippedItems = items.filter(item => item.equipped);
   const [query, setQuery] = useState('');
@@ -50,11 +49,10 @@ export default function InventoryWorkspace({ snapshot, client, open = false, onC
       <Drawer open={open} title="Inventory" description="Your character's items and equipment." onClose={onClose} size="lg">
         <div className="vsr-inventory">
           <section className="vsr-inventory__character" aria-label="Current character">
-            <div className="vsr-inventory__portrait" aria-hidden="true"><span>{(inventory.ownerName || player?.name || 'P').trim().charAt(0).toLocaleUpperCase()}</span></div>
+            <div className="vsr-inventory__portrait" aria-hidden="true"><span>{(inventory.ownerName || 'P').trim().charAt(0).toLocaleUpperCase()}</span></div>
             <div className="vsr-inventory__character-info">
               <span className="vsr-inventory__eyebrow">PLAYER CHARACTER</span>
-              <strong>{inventory.ownerName || player?.name || 'Character'}</strong>
-              {player?.description && <p>{player.description}</p>}
+              <strong>{inventory.ownerName || 'Character'}</strong>
             </div>
             <div className="vsr-inventory__capacity">
               <strong>{formatNumber(inventory.itemCount)}</strong>
