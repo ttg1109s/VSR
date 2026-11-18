@@ -35,6 +35,13 @@ export class NotificationSoundService {
     this.pending = [];
   }
 
+  dispose() {
+    this.clearPending();
+    const context = this.context;
+    this.context = null;
+    if (context && context.state !== 'closed') context.close().catch(() => {});
+  }
+
   play(profile = 'default') {
     const normalized = Object.hasOwn(SOUND_PROFILES, profile) ? profile : 'default';
     if (!this.context || this.context.state !== 'running') {
