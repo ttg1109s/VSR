@@ -23,7 +23,7 @@ export const ItemSystem = {
         const ownerLimitPair = Array.isArray(maxInvList) ? maxInvList.find(pair => Array.isArray(pair) && pair[1] === ownerId) : null;
         const limit = ownerLimitPair ? ownerLimitPair[0] : 0;
         if (limit > 0 && inventory.length >= limit) {
-            this.api.presentation.notification.add("Không thể nhặt", "Túi đồ đã đầy.", "warning");
+            this.api.presentation.notification.add("Cannot pick up item", "Inventory is full.", "warning");
             return false;
         }
         state.set('characters.[id].inventory', [...inventory, itemId], { id: ownerId });
@@ -42,7 +42,7 @@ export const ItemSystem = {
         const info = state.getRuntimeSnapshot('itemInfo.[id]', { id });
 
         if (!info) {
-            this.api.presentation.notification.add("Lỗi", "Vật phẩm không tồn tại.", "danger");
+            this.api.presentation.notification.add("Error", "Item does not exist.", "danger");
             return;
         }
 
@@ -52,7 +52,7 @@ export const ItemSystem = {
         if (idx < 0 && info.requirements) {
             const res = this.checkReq(info.requirements);
             if (!res.pass) {
-                this.api.presentation.notification.add("Không thể cầm", "Chưa đủ điều kiện sử dụng.", "danger");
+                this.api.presentation.notification.add("Cannot hold item", "Requirements not met.", "danger");
                 return;
             }
         }
@@ -74,14 +74,14 @@ export const ItemSystem = {
 
         if (result === 'missing') return;
         if (result === 'full') {
-            this.api.presentation.notification.add("Không thể cầm", "Tay đã đầy.", "warning");
+            this.api.presentation.notification.add("Cannot hold item", "Hands are full.", "warning");
             return;
         }
         if (result === 'unequipped') {
-            this.api.presentation.notification.add("Đã cất", "Bỏ vật phẩm vào túi", "info");
+            this.api.presentation.notification.add("Item stored", "Item added to inventory", "info");
             if (info.effect?.unequip) await this.processRunnables(info.effect.unequip, { itemId: id, hook: 'unequip' });
         } else {
-            this.api.presentation.notification.add("Đã cầm", `${info.name} đang ở trên tay`, "success");
+            this.api.presentation.notification.add("Item equipped", `${info.name} is now in your hand`, "success");
             if (info.effect?.equip) await this.processRunnables(info.effect.equip, { itemId: id, hook: 'equip' });
         }
 
@@ -98,7 +98,7 @@ export const ItemSystem = {
         if (info.requirements) {
             const res = this.checkReq(info.requirements);
             if (!res.pass) {
-                this.api.presentation.notification.add("Không thể dùng", "Chưa đủ điều kiện sử dụng.", "danger");
+                this.api.presentation.notification.add("Cannot use item", "Requirements not met.", "danger");
                 return;
             }
         }
@@ -107,7 +107,7 @@ export const ItemSystem = {
             const isBroken = this.isBroken(id);
             const disableBrokenUse = this.getConfig ? this.getConfig('brokenDisable') : false;
             if (isBroken && disableBrokenUse) {
-                this.api.presentation.notification.add("Hỏng", "Vật phẩm đã hỏng hoặc hết lượt dùng.", "warning");
+                this.api.presentation.notification.add("Broken", "The item is broken or has no uses remaining.", "warning");
                 return;
             }
             const autoInc = info.usage.autoInc !== false;
@@ -117,10 +117,10 @@ export const ItemSystem = {
         }
 
         if (info.effect?.use) {
-            this.api.presentation.notification.add("Sử dụng", `Đã dùng ${info.name}`, "info");
+            this.api.presentation.notification.add("Used", `Used ${info.name}`, "info");
             await this.processRunnables(info.effect.use, { itemId: id, hook: 'use' });
         } else {
-            this.api.presentation.notification.add("Thông báo", "Vật phẩm này không có tác dụng khi sử dụng trực tiếp.", "info");
+            this.api.presentation.notification.add("Notice", "This item has no effect when used directly.", "info");
         }
 
         this.api.presentation.components.updateItemModal(id);
