@@ -1296,7 +1296,7 @@ export const DEMO_SCRIPT = {
             "visited": false,
             "countVisited": 0
           },
-          "actions": [],
+          "actions": []
         }
       }
     },
