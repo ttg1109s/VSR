@@ -33,7 +33,7 @@ function validScenario() {
           main: {
             meta: { subTitleStatus: 'Main' },
             set: { blocked: false, visited: false, countVisited: 0 },
-            actions: [{ meta: { title: 'Inline' }, set: { display: 'show' } }]
+            actions: []
           }
         }
       }
@@ -66,7 +66,7 @@ test('engine.init can load a scenario without entering its entry scene', async (
   }
 });
 
-test('save envelope accepts only the current explicit save version', () => {
+test('save envelope migrates the previous version and rejects unsupported versions', () => {
   const base = {
     protocol: 'vsr-save',
     saveVersion: 2,
@@ -74,9 +74,10 @@ test('save envelope accepts only the current explicit save version', () => {
     state: {},
     savedAt: new Date().toISOString()
   };
-  assert.deepEqual(normalizeSaveEnvelope(base), base);
+  const migrated = normalizeSaveEnvelope(base);
+  assert.equal(migrated.saveVersion, 3);
 
-  for (const saveVersion of [undefined, 1, 3]) {
+  for (const saveVersion of [undefined, 1, 4]) {
     const legacyOrUnsupported = { ...base };
     if (saveVersion === undefined) delete legacyOrUnsupported.saveVersion;
     else legacyOrUnsupported.saveVersion = saveVersion;
@@ -89,11 +90,10 @@ test('scenario validation enforces the complete V9.2 JSON Schema contract', () =
   assert.ok(errors.some(error => error.includes('must have required property')));
 });
 
-test('normalization assigns stable IDs to inline actions', () => {
-  const first = normalizeScenario(validScenario()).scenes.start.routers.main.actions[0].id;
-  const second = normalizeScenario(validScenario()).scenes.start.routers.main.actions[0].id;
-  assert.equal(first, 'inline_start_main_0');
-  assert.equal(first, second);
+test('normalization rejects inline Action definitions', () => {
+  const scenario = validScenario();
+  scenario.scenes.start.routers.main.actions = [{ meta: { title: 'Inline' }, set: { display: 'show' } }];
+  assert.throws(() => normalizeScenario(scenario), /inline Action definitions are not supported/);
 });
 
 test('semantic validation rejects missing scene parents and global action references', () => {
