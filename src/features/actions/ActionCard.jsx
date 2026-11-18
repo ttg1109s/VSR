@@ -6,11 +6,10 @@ const REASONS = {
   permission_denied: 'Permission denied',
   not_read: 'Read description',
   cooldown: 'On cooldown',
-  requirement_failed: 'Requirements not met',
-  requirement_unavailable: 'Requirement evaluation unavailable',
+  requirement_unavailable: 'Req. unknown',
   target_locked: 'Target is locked',
   password_required: 'Ready',
-  challenge_active: 'Complete the active password challenge',
+  challenge_active: 'Challenge active',
 };
 const REASON_TONES = {
   locked: 'danger', permission_denied: 'danger', target_locked: 'danger',
@@ -142,12 +141,12 @@ function ActionCard({ action, pending = false, interactionBlocked = false, passw
   return <article className="vsr-card vsr-action-card" data-action-key={action.key}>
     <div className="vsr-action-card__heading">
       <h3 className="vsr-action-card__title">{meta.title || action.title || action.id}</h3>
-      <div className="vsr-action-card__status" aria-label="Action status">
-        {showStatus && <Badge tone={statusTone}>{statusLabel}</Badge>}
-      </div>
     </div>
 
-    <MediaFrame className="vsr-action-card__media" src={thumbnail?.url} type={thumbnail?.type || 'photo'} ratio={thumbnail?.ratio || '16:9'} alt={meta.title || action.title || 'Action illustration'} />
+    <div className="vsr-action-card__media-wrap">
+      <MediaFrame className="vsr-action-card__media" src={thumbnail?.url} type={thumbnail?.type || 'photo'} ratio={thumbnail?.ratio || '16:9'} alt={meta.title || action.title || 'Action illustration'} />
+      {showStatus && <div className="vsr-action-card__status" aria-label="Action status"><Badge tone={statusTone}>{statusLabel}</Badge></div>}
+    </div>
 
     <div className="vsr-action-card__section vsr-action-card__description-section">
       <div className="vsr-action-card__section-heading">
