@@ -250,3 +250,15 @@ test('scenario notify strategy forwards presentation intent and sound metadata',
   NotifyStrategies.modal(engine, { title: 'Critical', text: 'Stop.', level: 'danger' });
   assert.equal(calls[1].method, 'alert');
 });
+
+
+test('notification manager marks all unread history entries as read', () => {
+  const protocol = makeProtocol();
+  const notifications = new NotificationSystem({ protocol, clock: () => 500 });
+  const first = notifications.add('One', 'First', 'info', { source: 'scenario' }).notification;
+  const second = notifications.add('Two', 'Second', 'info', { source: 'engine' }).notification;
+  notifications.markRead(first.id);
+  assert.equal(notifications.markAllRead(), 1);
+  assert.equal(notifications.getHistory({ unreadOnly: true }).length, 0);
+  assert.equal(notifications.getHistory().find(item => item.id === second.id).readAt, 500);
+});
