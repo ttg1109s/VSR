@@ -245,7 +245,7 @@ export const SceneSystem = {
 
             this.taskManager.addNew(uiTaskId, {
                 time: 1000,
-                mode: 'interval',
+                mode: 'timeout',
                 exe: () => {
                     const remainingSeconds = Math.ceil((endTime - Date.now()) / 1000);
                     if (remainingSeconds >= 0) {
@@ -350,7 +350,7 @@ export const SceneSystem = {
             this.updateTimerUI(seconds, mode, maxSeconds);
         };
         refresh();
-        this.taskManager.addNew(uiId, { time: Math.min(1000, Math.max(1, remainingMs)), mode: 'interval', exe: refresh });
+        this.taskManager.addNew(uiId, { time: 1000, mode: 'timeout', exe: refresh });
         this.taskManager.operator(uiId, 'enabled');
         this.activeTimerTasks.push(uiId);
         this.taskManager.addNew(endId, {
