@@ -35,6 +35,33 @@ Các ưu tiên đã được xác lập:
 
 Không tự ý chuyển sản phẩm sang dark theme, phong cách gaming dashboard, glassmorphism, neon hoặc visual language khác nếu chưa có quyết định thiết kế riêng. Dark theme hiện chưa được triển khai; theme composition chỉ được tổ chức để có thể mở rộng sau này.
 
+### 2.1. Ngôn ngữ giao diện: English-only, độc lập với scenario
+
+Toàn bộ UI hướng tới người dùng phải sử dụng **tiếng Anh** trên mọi màn hình và trong mọi trạng thái. Quy định này độc lập hoàn toàn với ngôn ngữ của scenario đang được tải hoặc thực thi.
+
+**UI-owned copy bắt buộc bằng tiếng Anh**, bao gồm nhưng không giới hạn:
+- Navigation, page title, heading, tab, breadcrumb và menu item.
+- Button, form label, placeholder, helper text, validation và confirmation.
+- Loading, empty, error, warning, success và status message.
+- Dialog, Drawer, Popover, Tooltip, Toast và notification.
+- Accessibility text: accessible name, label, description, live-region announcement và nội dung dành cho screen reader.
+- Nội dung hệ thống được tạo động bởi presentation layer.
+
+**Scenario content không phải UI copy:**
+- Nội dung do scenario cung cấp (ví dụ tên, mô tả, lời thoại, văn bản, nhãn hoặc dữ liệu do tác giả scenario định nghĩa) phải được giữ nguyên ngôn ngữ gốc và hiển thị đúng như dữ liệu nguồn.
+- Không tự dịch, phiên âm, viết lại hoặc chuẩn hóa ngôn ngữ của scenario chỉ để làm giao diện đồng nhất.
+- Không lấy ngôn ngữ, locale, metadata hoặc nội dung scenario làm căn cứ chọn ngôn ngữ giao diện.
+- Scenario language không được thay đổi UI labels, component behavior, layout, design tokens hoặc system messages.
+
+**Ranh giới triển khai:**
+1. UI strings thuộc presentation layer hoặc nguồn tài nguyên chuỗi UI được quản lý tập trung; không nhúng nhãn giao diện vào scenario definition/runtime content.
+2. Không tạo cơ chế tự động chuyển UI language theo scenario. English là ngôn ngữ UI cố định theo quy định sản phẩm, không phải setting của scenario.
+3. Date, number và các giá trị do UI tự định dạng phải dùng locale tiếng Anh nhất quán, không kế thừa scenario locale. Dữ liệu văn bản scenario phải được giữ nguyên, trừ khi có contract định dạng dữ liệu riêng được xác định rõ.
+4. Khi thêm hoặc sửa component, page, thông báo hay accessibility copy, phải kiểm tra tất cả UI-owned strings đều là tiếng Anh; không chỉ kiểm tra phần chữ đang nhìn thấy.
+5. Không dịch nội dung scenario thành tiếng Anh để đáp ứng quy tắc này. Quy tắc chỉ áp dụng cho giao diện và thông điệp do sản phẩm sở hữu.
+
+Đây là invariant cấp sản phẩm, áp dụng cho toàn bộ presentation layer; không phải tùy chọn theo page, user, scenario hoặc thiết bị.
+
 ## 3. Design System là nguồn chuẩn duy nhất
 
 ### 3.1. Cấu trúc hiện tại
