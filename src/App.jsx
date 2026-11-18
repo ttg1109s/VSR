@@ -125,7 +125,13 @@ function AppContent() {
     notificationEventIdsRef.current.clear();
     const unsubscribe = client.subscribe(message => {
       if (generation !== loadGenerationRef.current) return;
-      if (message.type === 'state') {
+      if (message.type === 'transport.error') {
+        window.dispatchEvent(new CustomEvent('vsr:debug-message', { detail: {
+          level: 'error',
+          message: message.error?.message || 'Engine Worker transport error',
+          details: message.error?.stack || ''
+        }}));
+      } else if (message.type === 'state') {
         setGameSnapshot(message.snapshot);
       } else if (message.type === 'event' && message.event?.event === 'presentation.chat.viewRequested') {
         const request = Array.isArray(message.event.payload?.args)
