@@ -246,11 +246,14 @@ export const ActionSystem = {
                 // generic engine warning. Avoid stacking both for one failed Action.
                 const hasStoryFailNotice = Array.isArray(actDef.effect?.fail)
                     && actDef.effect.fail.some(effect => effect?.type === 'notify');
+                let notificationEmitted = hasStoryFailNotice;
                 if (!hasStoryFailNotice) {
                     if (failType && failActions[failType]) {
                         failActions[failType]();
+                        notificationEmitted = true;
                     } else if (this.getConfig && this.getConfig('defaultNotice')) {
                         this.notifyActionFailure("Action failed", "Requirements not met.", "action.requirement_failed");
+                        notificationEmitted = true;
                     }
                 }
 
@@ -261,7 +264,7 @@ export const ActionSystem = {
                 }
 
                 this.commitState('action.changed');
-                return { success: false, reason: 'requirement_failed', failType };
+                return { success: false, reason: 'requirement_failed', failType, notificationEmitted };
             }
 
             // Password Check — fail closed: a malformed or missing definition
