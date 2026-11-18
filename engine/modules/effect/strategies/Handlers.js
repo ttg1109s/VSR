@@ -46,7 +46,7 @@ export const RouterPropertyHandlers = {
 
 export const ActionPropertyHandlers = {
     __default__: (engine, action, val, actKey, prop) => {
-        stateOf(engine).set('actions.[actionKey].[property]', val, { actionKey: actKey, property: prop });
+        stateOf(engine).set('actions.[id].[property]', val, { id: actKey, property: prop });
         const state = stateOf(engine);
         const chatState = state.getSession('chatState');
         if (chatState?.active && chatState.triggerActionId === actKey) {
