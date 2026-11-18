@@ -402,7 +402,7 @@ test('chat action can finish and reopen as a read-only review without duplicatin
     assert.deepEqual(completedHistory.map(line => line.text), [
       'Nếu nghe loa gọi tên mình, đừng trả lời.',
       'Đêm đó có mười hai người biến mất. Sáng hôm sau, mọi người chỉ nhớ mười một.',
-      'Cô nói mười hai người biến mất. Người thứ mười hai là ai?',
+      'Hỏi về người thứ mười hai',
       'Tôi đã nhìn thấy người thứ mười hai đi xuống giếng. Nhưng đó là tôi.',
       'Khi nói “đó là tôi”, cô muốn nói mình đã đi xuống giếng?',
       'Tôi nhớ mình đứng ở miệng giếng. Nhưng tôi không biết đó là ký ức của tôi, hay ký ức của người đã bị xóa.'
