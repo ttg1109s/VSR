@@ -218,6 +218,7 @@ test('Contact projects only the selected character relationship with entryCharac
       'keeper:7'
     ];
     host.engine.commitState('contact.relationship.updated');
+    await client.refreshSnapshot();
 
     const projectedMai = client.getSnapshot().presentation.contacts.find(contact => contact.id === 'mai');
     assert.deepEqual(projectedMai.relationshipWithPlayer, {
