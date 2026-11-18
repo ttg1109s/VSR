@@ -21,6 +21,8 @@ const seconds = (until, now) => Number.isFinite(until) ? Math.max(0, Math.ceil((
 function ActionCard({ action, pending = false, interactionBlocked = false, passwordChallenge = null, onTrigger, onMarkRead, onSubmitPassword, onCancelPassword, onRefreshSnapshot }) {
   const [input, setInput] = useState('');
   const [passwordPending, setPasswordPending] = useState(false);
+  const [feedback, setFeedback] = useState(null);
+  const [passwordFeedback, setPasswordFeedback] = useState(null);
   const [clock, setClock] = useState(Date.now());
   const readRequestRef = useRef(false);
   const meta = action.meta || {};
@@ -41,7 +43,10 @@ function ActionCard({ action, pending = false, interactionBlocked = false, passw
   const deadline = seconds(passwordChallenge?.deadlineAt, clock);
   const thumbnail = meta.thumbnail || meta.cover;
   const ready = !coolingDown && (reason === 'available' || reason === 'password_required') && availability.canTrigger === true && !locked;
-  const statusLabel = locked ? 'Locked' : coolingDown ? 'Wait' : (ready ? 'Ready' : (REASONS[reason] || 'Unknown'));
+  const retryableReason = reason === 'permission_denied' || reason === 'requirement_failed';
+  const hardBlocked = locked || coolingDown || ['not_read', 'target_locked', 'busy', 'transitioning', 'challenge_active', 'action_hidden', 'invalid_context', 'action_not_found'].includes(reason);
+  const executeDisabled = pending || interactionBlocked || hardBlocked || !(availability.canTrigger === true || retryableReason);
+  const statusLabel = locked ? 'Locked' : coolingDown ? 'Wait' : (ready ? 'Ready' : (REASONS[reason] || (reason === 'requirement_failed' ? 'Requirements not met' : 'Unknown')));
   const statusTone = locked ? 'danger' : (ready ? 'success' : (REASON_TONES[reason] || 'neutral'));
   const showStatus = reason !== 'busy';
 
@@ -72,10 +77,16 @@ function ActionCard({ action, pending = false, interactionBlocked = false, passw
   const submit = async event => {
     event.preventDefault();
     if (!input.trim() || passwordPending) return;
+    setPasswordFeedback(null);
     setPasswordPending(true);
     try {
       const result = await onSubmitPassword?.(passwordChallenge, input);
-      if (result?.retry) setInput('');
+      if (result?.retry) {
+        setInput('');
+        setPasswordFeedback('retry');
+      } else if (result?.reason === 'expired' || result?.reason === 'exhausted') {
+        setPasswordFeedback(result.reason);
+      }
     } catch {
       return;
     } finally {
@@ -95,6 +106,15 @@ function ActionCard({ action, pending = false, interactionBlocked = false, passw
     }
   };
 
+  const handleTrigger = async () => {
+    if (executeDisabled) return;
+    setFeedback(null);
+    const result = await onTrigger?.(action);
+    if (result?.success === true) setFeedback('success');
+    else if (result?.reason === 'requirement_failed') setFeedback('requirement');
+    else if (result?.reason === 'permission_denied') setFeedback('permission');
+  };
+
   const handleDescriptionOpen = async open => {
     if (!open || !readRequired || read || !onMarkRead || pending || readRequestRef.current) return;
     readRequestRef.current = true;
@@ -112,7 +132,7 @@ function ActionCard({ action, pending = false, interactionBlocked = false, passw
 
 
 
-  return <article className="vsr-card vsr-action-card" data-action-key={action.key}>
+  return <article className={`vsr-card vsr-action-card${feedback ? ` vsr-action-card--feedback-${feedback}` : ''}`} data-action-key={action.key}>
     <div className="vsr-action-card__heading">
       <h3 className="vsr-action-card__title">{meta.title || action.title || action.id}</h3>
       <Popover
@@ -140,14 +160,16 @@ function ActionCard({ action, pending = false, interactionBlocked = false, passw
     {coolingDown && <div className="vsr-action-card__cooldown" role="timer">Time remaining: {cooldown}s</div>}
 
     <div className="vsr-action-card__actions">
-      <Button size="lg" leadingIcon={meta.buttonIcon} disabled={pending || interactionBlocked || coolingDown || !ready || availability.canTrigger !== true || locked} onClick={() => onTrigger?.(action)} aria-label={meta.buttonLabel || `Execute ${meta.title || action.id}`}>{meta.buttonLabel || 'Execute'}</Button>
+      <Button className={`vsr-action-card__execute-button${feedback === 'requirement' || feedback === 'permission' ? ` vsr-action-card__execute-button--feedback-${feedback}` : ''}`} size="lg" leadingIcon={meta.buttonIcon} disabled={executeDisabled} onClick={handleTrigger} aria-label={meta.buttonLabel || `Execute ${meta.title || action.id}`}>{meta.buttonLabel || 'Execute'}</Button>
     </div>
 
     <Dialog open={challengeOpen} onClose={cancel} title="Verify action" description={passwordChallenge?.description || 'Complete the challenge provided by the Engine.'}>
       <form className="vsr-stack vsr-stack--gap-3" onSubmit={submit}>
         {passwordChallenge?.type === 'puzzle' && passwordChallenge.puzzle?.url && <MediaFrame src={passwordChallenge.puzzle.url} ratio="1:1" alt="Puzzle challenge" />}
         {passwordChallenge?.type === 'find_way' && passwordChallenge.findWay && <div className="vsr-stack vsr-stack--gap-1"><p className="vsr-text-secondary">Grid: {passwordChallenge.findWay.area?.join(' × ') || '—'}</p><p className="vsr-text-secondary">Start: {passwordChallenge.findWay.start?.join(', ') || '—'}</p><p className="vsr-text-secondary">Target: {passwordChallenge.findWay.target?.join(', ') || '—'}</p></div>}
-        {structured ? <Textarea label={passwordChallenge.type === 'puzzle' ? 'Piece order (JSON)' : 'Path (coordinate JSON)'} hint={passwordChallenge.type === 'puzzle' ? 'Enter the piece-index array in row order.' : 'Enter the coordinate array [x,y], from the start point to the destination.'} rows={4} value={input} onChange={event => setInput(event.target.value)} required /> : <Input label="Password" type="password" autoComplete="current-password" value={input} onChange={event => setInput(event.target.value)} required />}
+        <div className={`vsr-action-card__password-field${passwordFeedback ? ` vsr-action-card__password-field--${passwordFeedback}` : ''}`}>
+          {structured ? <Textarea label={passwordChallenge.type === 'puzzle' ? 'Piece order (JSON)' : 'Path (coordinate JSON)'} hint={passwordChallenge.type === 'puzzle' ? 'Enter the piece-index array in row order.' : 'Enter the coordinate array [x,y], from the start point to the destination.'} rows={4} value={input} onChange={event => setInput(event.target.value)} required /> : <Input label="Password" type="password" autoComplete="current-password" value={input} onChange={event => setInput(event.target.value)} required />}
+        </div>
         {Number.isFinite(passwordChallenge?.remainingAttempts) && <p className="vsr-text-secondary" role="status">Attempts remaining: {passwordChallenge.remainingAttempts}</p>}
         {deadline > 0 && <p className="vsr-text-secondary" role="status">Time remaining: {deadline}s</p>}
         <Grid columns="auto" gap="2"><Button size="lg" type="button" variant="secondary" disabled={passwordPending} onClick={cancel}>Cancel challenge</Button><Button size="lg" type="submit" disabled={!input.trim() || passwordPending} loading={passwordPending}>Submit response</Button></Grid>
