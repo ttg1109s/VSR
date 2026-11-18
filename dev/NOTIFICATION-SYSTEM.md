@@ -9,7 +9,7 @@ The presentation UI is English-only. Scenario-authored notification titles and m
 ## Interaction model
 
 - The Notify item in Bottom Navigation opens the Notification Center Drawer; it does not navigate away from the active scene.
-- The Drawer is the durable notification history surface. It supports All, Unread, Scenario, and System filters, date grouping, mark-read, mark-all-read, dismiss, and a sound preference.
+- The Drawer is the durable notification history surface. It supports All, Unread, System, and Story filters (Story maps to Engine notifications whose source is `scenario`), Today/Earlier date grouping, per-item mark-read and dismiss actions, mark-all-read, and a sound preference exposed from the header settings control.
 - Toast is transient feedback. A Toast being removed must not mark its notification read or delete it from Engine history.
 - A maximum of five Toasts may be visible at once.
 - Modal notifications are reserved by Engine policy for danger and special levels. A scenario request for a Modal at another level is downgraded to Toast.
