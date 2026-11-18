@@ -3941,7 +3941,7 @@ export const DEMO_SCRIPT = {
       }
     }
   },
-  "chat": {
+  "chat":   {
     "chat_mai": {
       "meta": {
         "title": "Mai — Quảng trường",
@@ -3967,20 +3967,86 @@ export const DEMO_SCRIPT = {
           "choice_id": "reply",
           "choiced": false
         },
-        "truth": {
+        "person": {
           "line": [
             {
               "char_id": "mai",
               "text": "Tôi đã nhìn thấy người thứ mười hai đi xuống giếng. Nhưng đó là tôi."
             }
           ],
+          "choice_id": "person_follow",
           "choiced": false
         },
-        "silence": {
+        "well": {
           "line": [
             {
               "char_id": "mai",
-              "text": "Có những chuyện nếu nói ra sẽ khiến làng nhớ lại."
+              "text": "Tôi nghe tiếng động dưới giếng vào đúng đêm sơ tán. Không ai tin tôi, vì sáng hôm sau giếng đã cạn."
+            }
+          ],
+          "choice_id": "well_follow",
+          "choiced": false
+        },
+        "gentle": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Cảm ơn. Người ta thường hỏi dồn cho đến khi tôi phải nói điều mà chính mình cũng không chắc."
+            }
+          ],
+          "choice_id": "gentle_follow",
+          "choiced": false
+        },
+        "person_meaning": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Tôi nhớ mình đứng ở miệng giếng. Nhưng tôi không biết đó là ký ức của tôi, hay ký ức của người đã bị xóa."
+            }
+          ],
+          "choiced": false
+        },
+        "person_still_here": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Tôi vẫn ở đây, đúng không? Ít nhất mọi người đều nói vậy. Nhưng đôi khi tôi không nhớ nổi mình đã sống ở đây bao lâu."
+            }
+          ],
+          "choiced": false
+        },
+        "well_seen": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Không. Tôi chỉ thấy mặt nước rung lên, rồi nghe ai đó gọi tên mình từ dưới đáy."
+            }
+          ],
+          "choiced": false
+        },
+        "well_silent": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Vì sau đêm đó, mỗi lần tôi kể lại, người nghe lại nhớ một chuyện khác. Tôi sợ mình sẽ quên mất phần còn lại."
+            }
+          ],
+          "choiced": false
+        },
+        "gentle_return": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Nếu cậu quay lại, hãy mang theo thứ gì đó chứng minh rằng chuyện này đã thật sự xảy ra."
+            }
+          ],
+          "choiced": false
+        },
+        "gentle_doubt": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Cậu không cần tin tôi. Chỉ cần đừng vội tin những gì cả làng cùng nhớ."
             }
           ],
           "choiced": false
@@ -3989,9 +4055,9 @@ export const DEMO_SCRIPT = {
       "choice": {
         "reply": [
           {
-            "id": "mai_truth",
-            "text": "Hỏi về người thứ mười hai",
-            "jump": "truth",
+            "id": "mai_person",
+            "text": "Cô nói mười hai người biến mất. Người thứ mười hai là ai?",
+            "jump": "person",
             "effect": [
               {
                 "type": "set",
@@ -4025,23 +4091,58 @@ export const DEMO_SCRIPT = {
             ]
           },
           {
-            "id": "mai_silence",
-            "text": "Không ép cô ấy",
-            "jump": "silence",
+            "id": "mai_well",
+            "text": "Cô nhắc đến cái giếng. Đêm đó cô đã nghe thấy gì?",
+            "jump": "well"
+          },
+          {
+            "id": "mai_gentle",
+            "text": "Tôi không muốn ép cô kể điều cô chưa sẵn sàng.",
+            "jump": "gentle",
             "effect": [
               {
                 "type": "set",
                 "subtype": "state",
                 "target": "trust_mai",
                 "value": 1
-              },
-              {
-                "type": "notify",
-                "subtype": "toast",
-                "level": "success",
-                "text": "Mai tin bạn đủ để không rời khỏi quảng trường."
               }
             ]
+          }
+        ],
+        "person_follow": [
+          {
+            "id": "mai_person_meaning",
+            "text": "Khi nói “đó là tôi”, cô muốn nói mình đã đi xuống giếng?",
+            "jump": "person_meaning"
+          },
+          {
+            "id": "mai_person_still",
+            "text": "Nếu cô là người đó, tại sao cô vẫn ở đây?",
+            "jump": "person_still_here"
+          }
+        ],
+        "well_follow": [
+          {
+            "id": "mai_well_seen",
+            "text": "Cô có nhìn thấy ai ở dưới đó không?",
+            "jump": "well_seen"
+          },
+          {
+            "id": "mai_well_silent",
+            "text": "Tại sao cô chưa từng kể chuyện này với ai?",
+            "jump": "well_silent"
+          }
+        ],
+        "gentle_follow": [
+          {
+            "id": "mai_gentle_return",
+            "text": "Tôi sẽ quay lại. Có lẽ lúc đó cô sẽ nhớ thêm.",
+            "jump": "gentle_return"
+          },
+          {
+            "id": "mai_gentle_doubt",
+            "text": "Tôi chưa biết có thể tin cô đến đâu.",
+            "jump": "gentle_doubt"
           }
         ]
       }
@@ -4065,17 +4166,92 @@ export const DEMO_SCRIPT = {
             },
             {
               "char_id": "hanh",
-              "text": "Tôi không nhớ ai đã đặt phòng."
+              "text": "Tôi không nhớ ai đã đặt phòng. Chỉ biết chìa khóa được để đúng chỗ như thể cậu chưa từng rời đi."
             }
           ],
           "choice_id": "ask",
           "choiced": false
         },
-        "answer": {
+        "room": {
           "line": [
             {
               "char_id": "hanh",
-              "text": "Sổ khách không ghi người đến. Nó ghi người chưa rời đi."
+              "text": "Tôi nhận được lời dặn phải giữ căn phòng ấy. Không có tên người gửi, chỉ có ngày tháng... là ngày hôm nay."
+            }
+          ],
+          "choice_id": "room_follow",
+          "choiced": false
+        },
+        "book": {
+          "line": [
+            {
+              "char_id": "hanh",
+              "text": "Sổ khách không ghi người đến. Nó ghi người chưa rời đi. Tên cậu nằm ở trang cuối, nhưng nét mực còn mới."
+            }
+          ],
+          "choice_id": "book_follow",
+          "choiced": false
+        },
+        "expected": {
+          "line": [
+            {
+              "char_id": "hanh",
+              "text": "Tôi đã nghe tiếng bước chân ngoài hành lang trước khi cậu gõ cửa. Tôi không biết mình chờ cậu, hay chỉ sợ cậu sẽ đến."
+            }
+          ],
+          "choice_id": "expected_follow",
+          "choiced": false
+        },
+        "room_who": {
+          "line": [
+            {
+              "char_id": "hanh",
+              "text": "Nếu tôi biết người đó là ai, cậu nghĩ tôi còn phải giữ bí mật đến tận bây giờ sao?"
+            }
+          ],
+          "choiced": false
+        },
+        "room_date": {
+          "line": [
+            {
+              "char_id": "hanh",
+              "text": "Ngày ghi trên giấy là hôm nay. Nhưng nét chữ cũ đến mức tôi không dám chắc tờ giấy được viết khi nào."
+            }
+          ],
+          "choiced": false
+        },
+        "book_name": {
+          "line": [
+            {
+              "char_id": "hanh",
+              "text": "Tôi đã thấy tên ấy nhiều lần. Mỗi lần mở sổ, tôi lại nhớ một người khác nhau đã viết nó."
+            }
+          ],
+          "choiced": false
+        },
+        "book_leave": {
+          "line": [
+            {
+              "char_id": "hanh",
+              "text": "Có người từng trả chìa khóa, có người bỏ đi giữa đêm. Nhưng sổ vẫn giữ tên họ. Tôi không biết phải tin cuốn sổ hay trí nhớ của mình."
+            }
+          ],
+          "choiced": false
+        },
+        "expected_wait": {
+          "line": [
+            {
+              "char_id": "hanh",
+              "text": "Tôi không biết. Chỉ nhớ rằng có một chiếc cốc đặt sẵn trên bàn, dù tôi sống một mình."
+            }
+          ],
+          "choiced": false
+        },
+        "expected_room": {
+          "line": [
+            {
+              "char_id": "hanh",
+              "text": "Căn phòng ở cuối hành lang. Nếu cậu vào đó, đừng tin ngay mọi thứ được sắp đặt sẵn."
             }
           ],
           "choiced": false
@@ -4084,9 +4260,14 @@ export const DEMO_SCRIPT = {
       "choice": {
         "ask": [
           {
-            "id": "ask_book",
-            "text": "Hỏi về cuốn sổ",
-            "jump": "answer",
+            "id": "hanh_room",
+            "text": "Ai đã chuẩn bị phòng cho tôi?",
+            "jump": "room"
+          },
+          {
+            "id": "hanh_book",
+            "text": "Bà có thể cho tôi xem cuốn sổ khách không?",
+            "jump": "book",
             "effect": [
               {
                 "type": "set",
@@ -4101,6 +4282,47 @@ export const DEMO_SCRIPT = {
                 "text": "Bà Hạnh xác nhận cuốn sổ ghi những người chưa thể rời làng."
               }
             ]
+          },
+          {
+            "id": "hanh_expected",
+            "text": "Bà vừa nói như thể đã biết tôi sẽ đến. Bà có chờ tôi không?",
+            "jump": "expected"
+          }
+        ],
+        "room_follow": [
+          {
+            "id": "hanh_room_who",
+            "text": "Bà thật sự không biết ai đã gửi lời dặn sao?",
+            "jump": "room_who"
+          },
+          {
+            "id": "hanh_room_date",
+            "text": "Ngày tháng trên lời dặn là ngày nào?",
+            "jump": "room_date"
+          }
+        ],
+        "book_follow": [
+          {
+            "id": "hanh_book_name",
+            "text": "Bà có biết ai đã viết tên tôi vào đây không?",
+            "jump": "book_name"
+          },
+          {
+            "id": "hanh_book_leave",
+            "text": "Vậy những người có tên trong sổ có thể rời khỏi làng không?",
+            "jump": "book_leave"
+          }
+        ],
+        "expected_follow": [
+          {
+            "id": "hanh_expected_wait",
+            "text": "Bà đã chờ tôi bao lâu rồi?",
+            "jump": "expected_wait"
+          },
+          {
+            "id": "hanh_expected_room",
+            "text": "Tôi muốn tự mình xem căn phòng đó.",
+            "jump": "expected_room"
           }
         ]
       }
@@ -4121,16 +4343,95 @@ export const DEMO_SCRIPT = {
             {
               "char_id": "keeper",
               "text": "Chuông không gọi người chết. Nó gọi những người còn nhớ."
+            },
+            {
+              "char_id": "keeper",
+              "text": "Đêm sơ tán, tôi đã nghe đủ ba hồi. Nhưng sáng hôm sau, có người nói họ nghe thấy hồi thứ tư."
             }
           ],
           "choice_id": "ask",
           "choiced": false
         },
-        "answer": {
+        "stay": {
           "line": [
             {
               "char_id": "keeper",
-              "text": "Nếu chuông ngân ba hồi, ký ức sẽ trở lại. Nếu ngân bốn hồi, ngôi làng sẽ biến mất."
+              "text": "Tôi ở lại vì có người phải nhớ lời cầu nguyện cuối cùng. Tôi không chắc mình còn nhớ đúng lời."
+            }
+          ],
+          "choice_id": "stay_follow",
+          "choiced": false
+        },
+        "bells": {
+          "line": [
+            {
+              "char_id": "keeper",
+              "text": "Ba hồi chuông gọi ký ức trở về. Hồi thứ tư không nằm trong nghi thức. Nó chỉ xuất hiện trong những lời kể mà không ai nhận là của mình."
+            }
+          ],
+          "choice_id": "bells_follow",
+          "choiced": false
+        },
+        "fourth": {
+          "line": [
+            {
+              "char_id": "keeper",
+              "text": "Tôi không biết hồi thứ tư sẽ làm gì. Có người nói nó xóa ngôi làng; có người nói nó chỉ xóa những người đã bị quên."
+            }
+          ],
+          "choice_id": "fourth_follow",
+          "choiced": false
+        },
+        "stay_name": {
+          "line": [
+            {
+              "char_id": "keeper",
+              "text": "Tôi từng biết tên người đọc lời cầu nguyện. Bây giờ tôi chỉ nhớ giọng nói. Có lẽ đó là điều đã xảy ra với tất cả chúng ta."
+            }
+          ],
+          "choiced": false
+        },
+        "stay_belief": {
+          "line": [
+            {
+              "char_id": "keeper",
+              "text": "Tôi vẫn giữ nghi thức, nhưng không còn dám gọi đó là đức tin. Đôi khi người ta lặp lại một điều chỉ vì sợ điều gì sẽ xảy ra nếu dừng lại."
+            }
+          ],
+          "choiced": false
+        },
+        "bells_source": {
+          "line": [
+            {
+              "char_id": "keeper",
+              "text": "Bản thánh ca có ghi ba hồi. Phần nói về hồi thứ tư đã bị cạo khỏi trang giấy."
+            }
+          ],
+          "choiced": false
+        },
+        "bells_test": {
+          "line": [
+            {
+              "char_id": "keeper",
+              "text": "Tôi không dám thử. Nếu ký ức là thứ giữ ngôi làng này lại, có thể một hồi chuông sai sẽ khiến chúng ta không còn đường quay về."
+            }
+          ],
+          "choiced": false
+        },
+        "fourth_truth": {
+          "line": [
+            {
+              "char_id": "keeper",
+              "text": "Tôi chỉ có lời kể, không có bằng chứng. Cậu đừng biến nỗi sợ của tôi thành sự thật chỉ vì nó khớp với điều cậu đang tìm."
+            }
+          ],
+          "choiced": false
+        },
+        "fourth_stop": {
+          "line": [
+            {
+              "char_id": "keeper",
+              "text": "Có lẽ dừng ở đây là tốt nhất. Ngay cả những điều được gọi là sự thật cũng có thể làm tổn thương người còn sống."
             }
           ],
           "choiced": false
@@ -4139,9 +4440,14 @@ export const DEMO_SCRIPT = {
       "choice": {
         "ask": [
           {
-            "id": "keeper_why",
-            "text": "Hỏi vì sao ông ở lại",
-            "jump": "answer",
+            "id": "keeper_stay",
+            "text": "Vì sao ông vẫn ở lại nhà nguyện này?",
+            "jump": "stay"
+          },
+          {
+            "id": "keeper_bells",
+            "text": "Ba hồi chuông có ý nghĩa gì?",
+            "jump": "bells",
             "effect": [
               {
                 "type": "set",
@@ -4153,9 +4459,50 @@ export const DEMO_SCRIPT = {
                 "type": "notify",
                 "subtype": "toast",
                 "level": "success",
-                "text": "Người giữ nhà nguyện tiết lộ: ba hồi chuông gọi ký ức, hồi thứ tư xóa ngôi làng."
+                "text": "Người giữ nhà nguyện nói về ý nghĩa của ba hồi chuông và điều ông sợ ở hồi thứ tư."
               }
             ]
+          },
+          {
+            "id": "keeper_fourth",
+            "text": "Ông vừa nhắc đến hồi thứ tư. Ông nghĩ điều gì sẽ xảy ra nếu nó vang lên?",
+            "jump": "fourth"
+          }
+        ],
+        "stay_follow": [
+          {
+            "id": "keeper_stay_name",
+            "text": "Ông còn nhớ người đã đọc lời cầu nguyện đêm đó không?",
+            "jump": "stay_name"
+          },
+          {
+            "id": "keeper_stay_belief",
+            "text": "Ông còn tin vào nghi thức này không?",
+            "jump": "stay_belief"
+          }
+        ],
+        "bells_follow": [
+          {
+            "id": "keeper_bells_source",
+            "text": "Có tài liệu nào ghi lại nghi thức ấy không?",
+            "jump": "bells_source"
+          },
+          {
+            "id": "keeper_bells_test",
+            "text": "Ông đã từng thử làm chuông ngân lại chưa?",
+            "jump": "bells_test"
+          }
+        ],
+        "fourth_follow": [
+          {
+            "id": "keeper_fourth_truth",
+            "text": "Ông biết điều đó, hay chỉ đang sợ điều có thể xảy ra?",
+            "jump": "fourth_truth"
+          },
+          {
+            "id": "keeper_fourth_stop",
+            "text": "Tôi hiểu rồi. Tôi sẽ không bắt ông phải nói thêm.",
+            "jump": "fourth_stop"
           }
         ]
       }
@@ -4176,16 +4523,95 @@ export const DEMO_SCRIPT = {
             {
               "char_id": "voice",
               "text": "Cậu đã đến muộn mười bảy năm."
+            },
+            {
+              "char_id": "voice",
+              "text": "Đừng hỏi tôi cậu đã bỏ lỡ điều gì. Hãy hỏi vì sao mọi người vẫn nhớ cậu theo những cách khác nhau."
             }
           ],
           "choice_id": "reply",
           "choiced": false
         },
-        "reveal": {
+        "late": {
           "line": [
             {
               "char_id": "voice",
-              "text": "Ngôi làng là ký ức tập thể của những người không chấp nhận cuộc sơ tán."
+              "text": "Chuyến tàu rời ga vào đêm sơ tán. Cậu xuất hiện trong bản ghi sau ngày nó rời đi, nhưng vé của cậu lại được đóng dấu trước đó."
+            }
+          ],
+          "choice_id": "late_follow",
+          "choiced": false
+        },
+        "identity": {
+          "line": [
+            {
+              "char_id": "voice",
+              "text": "Tôi là phần còn lại của một thông báo chưa được phát hết. Nếu cậu cần một cái tên, tôi không có cái tên nào đáng tin."
+            }
+          ],
+          "choice_id": "identity_follow",
+          "choiced": false
+        },
+        "village": {
+          "line": [
+            {
+              "char_id": "voice",
+              "text": "Có thể ngôi làng là ký ức tập thể của những người không chấp nhận cuộc sơ tán. Nhưng ký ức tập thể cũng biết nói dối."
+            }
+          ],
+          "choice_id": "village_follow",
+          "choiced": false
+        },
+        "late_record": {
+          "line": [
+            {
+              "char_id": "voice",
+              "text": "Bản ghi có hai mốc giờ. Một mốc nói cậu đến muộn mười bảy năm; mốc kia nói cậu đã lên tàu trước khi cuộc sơ tán bắt đầu."
+            }
+          ],
+          "choiced": false
+        },
+        "late_person": {
+          "line": [
+            {
+              "char_id": "voice",
+              "text": "Tôi không biết cậu là ai trong đêm đó. Tôi chỉ biết có một chỗ trống trong danh sách, và mọi người đều tìm cách gọi nó bằng một cái tên khác."
+            }
+          ],
+          "choiced": false
+        },
+        "identity_source": {
+          "line": [
+            {
+              "char_id": "voice",
+              "text": "Giọng nói này xuất hiện trên băng ghi âm ở ga. Nhưng đoạn băng bắt đầu giữa câu, như thể ai đó đã cắt bỏ phần giới thiệu."
+            }
+          ],
+          "choiced": false
+        },
+        "identity_trust": {
+          "line": [
+            {
+              "char_id": "voice",
+              "text": "Đừng tin tôi chỉ vì tôi nói được điều cậu chưa biết. Tôi cũng chỉ là một mảnh ghi âm, mắc kẹt trong thứ tự phát lại."
+            }
+          ],
+          "choiced": false
+        },
+        "village_proof": {
+          "line": [
+            {
+              "char_id": "voice",
+              "text": "Hãy tìm bản kê hành khách và cuộn phim sơ tán. Nếu chúng mâu thuẫn với tôi, hãy tin vật chứng trước khi tin giọng nói."
+            }
+          ],
+          "choiced": false
+        },
+        "village_question": {
+          "line": [
+            {
+              "char_id": "voice",
+              "text": "Đó là điều cậu phải tự quyết định. Tôi có thể chỉ ra những mâu thuẫn, nhưng không thể chọn ký ức nào là của cậu."
             }
           ],
           "choiced": false
@@ -4194,9 +4620,19 @@ export const DEMO_SCRIPT = {
       "choice": {
         "reply": [
           {
-            "id": "voice_truth",
-            "text": "Hỏi sự thật",
-            "jump": "reveal",
+            "id": "voice_late",
+            "text": "Tại sao lại là mười bảy năm? Tôi đã bỏ lỡ chuyện gì?",
+            "jump": "late"
+          },
+          {
+            "id": "voice_identity",
+            "text": "Anh là ai? Tại sao lại biết tôi?",
+            "jump": "identity"
+          },
+          {
+            "id": "voice_village",
+            "text": "Anh nói ngôi làng là ký ức. Dựa vào đâu tôi phải tin điều đó?",
+            "jump": "village",
             "effect": [
               {
                 "type": "set",
@@ -4214,9 +4650,45 @@ export const DEMO_SCRIPT = {
                 "type": "notify",
                 "subtype": "toast",
                 "level": "success",
-                "text": "Tín hiệu xác nhận ngôi làng là ký ức tập thể của những người không chấp nhận cuộc sơ tán."
+                "text": "Tín hiệu tiết lộ một giả thuyết về ngôi làng, nhưng không chứng minh đó là toàn bộ sự thật."
               }
             ]
+          }
+        ],
+        "late_follow": [
+          {
+            "id": "voice_late_record",
+            "text": "Bản ghi nào có hai mốc giờ đó?",
+            "jump": "late_record"
+          },
+          {
+            "id": "voice_late_person",
+            "text": "Anh có biết ai đang bị thiếu khỏi danh sách không?",
+            "jump": "late_person"
+          }
+        ],
+        "identity_follow": [
+          {
+            "id": "voice_identity_source",
+            "text": "Giọng nói này được ghi lại ở đâu?",
+            "jump": "identity_source"
+          },
+          {
+            "id": "voice_identity_trust",
+            "text": "Nếu chính anh cũng không đáng tin, tại sao tôi phải nghe tiếp?",
+            "jump": "identity_trust"
+          }
+        ],
+        "village_follow": [
+          {
+            "id": "voice_village_proof",
+            "text": "Vậy tôi cần tìm vật chứng nào để kiểm tra lời anh?",
+            "jump": "village_proof"
+          },
+          {
+            "id": "voice_village_question",
+            "text": "Nếu ký ức có thể nói dối, làm sao tôi biết đâu là sự thật?",
+            "jump": "village_question"
           }
         ]
       }
