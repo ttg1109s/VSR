@@ -9,7 +9,7 @@
 
 .vsr-action-card__heading {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 12px;
   margin-bottom: 14px;
@@ -20,6 +20,7 @@
   margin: 0;
   font-size: 19px;
   line-height: 1.35;
+  flex: 1 1 auto;
   font-weight: 700;
   white-space: nowrap;
   overflow: hidden;
@@ -96,7 +97,7 @@
   gap: 8px;
 }
 
-.vsr-action-card__description-section .vsr-action-card__info-button {
+.vsr-action-card__heading .vsr-action-card__info-button {
   width: 36px;
   min-width: 36px;
   min-height: 36px;
@@ -104,7 +105,7 @@
   color: var(--vsr-color-text-secondary);
 }
 
-.vsr-action-card__description-section .vsr-action-card__info-button .vsr-button__label {
+.vsr-action-card__heading .vsr-action-card__info-button .vsr-button__label {
   display: inline-flex;
 }
 
