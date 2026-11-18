@@ -140,7 +140,7 @@ test('action blocked by unread description emits a deduplicated not_read notific
   const result = await ActionSystem.handleAction.call(engine, 'inspect');
   assert.deepEqual(result, { success: false, reason: 'not_read' });
   assert.equal(calls.length, 1);
-  assert.equal(calls[0][0], 'Chưa đọc mô tả');
+  assert.equal(calls[0][0], 'Description not read');
   assert.equal(calls[0][2], 'warning');
   assert.equal(calls[0][3].category, 'action.not_read');
   assert.equal(calls[0][3].dedupeKey, 'action.not_read:inspect');
