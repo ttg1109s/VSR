@@ -168,6 +168,20 @@ export const LoaderSystem = {
             });
         }
 
+        // Action runtime is global: one mutable record per Action ID, independent of Router references.
+        const defActionSet = {
+            count: { normal: 0, pass: 0, fail: 0, pwFailed: 0 },
+            display: "show", cooldown: 0,
+            requirement: false, password: null, readDesc: false
+        };
+        for (const [actionId, action] of Object.entries(script.actions || {})) {
+            state.actions[actionId] = JSON.parse(JSON.stringify({
+                ...defActionSet,
+                ...(action?.set || {}),
+                count: { ...defActionSet.count, ...(action?.count || {}) }
+            }));
+        }
+
         for (let sId in script.scenes) {
             const s = script.scenes[sId];
             if (!s) continue;
@@ -185,38 +199,23 @@ export const LoaderSystem = {
                 };
                 state.routers[rKey] = JSON.parse(JSON.stringify({ ...defR, ...s.routers[rId].set }));
 
-                // [FIX] Router.actions ở model hiện tại (xem engine/modules/Action.js
-                // getEffectiveActions) là MẢNG chứa string ID (tham chiếu tới `script.actions`
-                // toàn cục) hoặc object định nghĩa inline — không còn là object map
-                // {actionId: {set:{...}}} như bản cũ. Vòng lặp `for...in` trên mảng trước đây
-                // duyệt theo INDEX ("0","1",...) chứ không phải action ID thật, nên
-                // `state.actions` bị khởi tạo với key sai (vd "scene1_router1_0") và không bao
-                // giờ được các module khác đọc tới (chúng luôn dùng
-                // `${sceneId}_${routerId}_${actionIdThat}`).
-                const defActionSet = {
-                    count: { normal: 0, pass: 0, fail: 0 },
-                    display: "show", cooldown: 0,
-                    requirement: false, password: null, readDesc: false
-                };
                 const routerActions = s.routers[rId].actions;
-
-                if (Array.isArray(routerActions)) {
-                    routerActions.forEach(item => {
-                        if (typeof item === 'string') {
-                            // Tham chiếu tới action toàn cục (script.actions[item])
-                            const actKey = `${sId}_${rId}_${item}`;
-                            const globalAct = script.actions ? script.actions[item] : null;
-                            state.actions[actKey] = JSON.parse(JSON.stringify({ ...defActionSet, ...((globalAct && globalAct.set) || {}) }));
-                        } else if (item && typeof item === 'object') {
-                            // Định nghĩa inline: dùng id khai báo sẵn hoặc bỏ qua (id ngẫu nhiên
-                            // sẽ được ActionSystem.getEffectiveActions tự sinh lúc render).
-                            if (item.id) {
-                                const actKey = `${sId}_${rId}_${item.id}`;
-                                state.actions[actKey] = JSON.parse(JSON.stringify({ ...defActionSet, ...(item.set || {}) }));
-                            }
-                        }
-                    });
+                if (!Array.isArray(routerActions)) {
+                    throw new TypeError(`Router '${sId}.${rId}' actions must be an array of global Action IDs.`);
                 }
+                const seenActionIds = new Set();
+                routerActions.forEach((actionId, index) => {
+                    if (typeof actionId !== 'string' || !actionId.trim()) {
+                        throw new TypeError(`Router '${sId}.${rId}' actions[${index}] must be a non-empty global Action ID; inline Action definitions are not supported.`);
+                    }
+                    if (!Object.prototype.hasOwnProperty.call(script.actions || {}, actionId)) {
+                        throw new Error(`Router '${sId}.${rId}' references unknown Action ID '${actionId}'.`);
+                    }
+                    if (seenActionIds.has(actionId)) {
+                        throw new Error(`Router '${sId}.${rId}' contains duplicate Action ID '${actionId}'.`);
+                    }
+                    seenActionIds.add(actionId);
+                });
             }
         }
 
