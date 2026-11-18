@@ -150,7 +150,7 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
         }}
         items={[
           { value: 'hand', label: 'Hand', icon: 'front_hand' },
-          { value: 'inventor', label: 'Inventory', icon: 'inventory_2' },
+          ...(snapshot?.presentation?.inventory?.enabled !== false ? [{ value: 'inventor', label: 'Inventory', icon: 'inventory_2' }] : []),
           { value: 'contact', label: 'Contact', icon: 'contacts' },
           { value: 'notify', label: 'Notify', icon: 'notifications', badge: unreadCount, badgeLabel: 'unread notifications' }
         ]}
