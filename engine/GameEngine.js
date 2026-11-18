@@ -279,6 +279,11 @@ export class GameEngine {
     if (!this.passwordSystem.finish(challenge, 'expired')) return;
     this.pendingPasswordAction = null;
     this.api.engine.state.set('session.passwordChallenge', null);
+    this.notifications.add('Challenge expired','The password challenge has expired.','warning',{
+     source:'engine',
+     category:'action.password_expired',
+     dedupeKey:`action.password_expired:${challenge.challengeId}`
+    });
     await this.finishPasswordAction(action, challenge.actionId, challenge.uniqueId, 'expired');
     return;
    }
