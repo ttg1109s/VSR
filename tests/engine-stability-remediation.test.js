@@ -95,6 +95,21 @@ test('scenario normalization initializes counters only on global Actions', () =>
   }
 });
 
+test('scenario normalization rejects inline Actions instead of generating IDs', () => {
+  const host = new LocalEngineHost();
+  try {
+    const scenario = JSON.parse(host.getDemoScenario());
+    const sceneId = Object.keys(scenario.scenes)[0];
+    const routerId = Object.keys(scenario.scenes[sceneId].routers)[0];
+    scenario.scenes[sceneId].routers[routerId].actions = [
+      { meta: { title: 'Legacy inline' }, set: { display: 'show' } }
+    ];
+    assert.throws(() => normalizeScenario(scenario), /inline Action definitions are not supported/);
+  } finally {
+    host.close();
+  }
+});
+
 test('Hard Lock ignores non-navigation goto subtypes', () => {
   const engine = Object.assign({}, LogicSystem, {
     src: { path: { routers: {} } },
