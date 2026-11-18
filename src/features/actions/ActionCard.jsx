@@ -20,8 +20,6 @@ const seconds = (until, now) => Number.isFinite(until) ? Math.max(0, Math.ceil((
 
 function ActionCard({ action, pending = false, interactionBlocked = false, passwordChallenge = null, onTrigger, onMarkRead, onSubmitPassword, onCancelPassword, onRefreshSnapshot }) {
   const [input, setInput] = useState('');
-  const [error, setError] = useState('');
-  const [challengeFeedback, setChallengeFeedback] = useState('');
   const [passwordPending, setPasswordPending] = useState(false);
   const [clock, setClock] = useState(Date.now());
   const readRequestRef = useRef(false);
@@ -69,29 +67,16 @@ function ActionCard({ action, pending = false, interactionBlocked = false, passw
 
   useEffect(() => {
     setInput('');
-    setError('');
-    setChallengeFeedback('');
   }, [passwordChallenge?.challengeId]);
 
   const submit = async event => {
     event.preventDefault();
     if (!input.trim() || passwordPending) return;
     setPasswordPending(true);
-    setError('');
-    setChallengeFeedback('');
     try {
       const result = await onSubmitPassword?.(passwordChallenge, input);
-      if (result?.retry) {
-        setChallengeFeedback(result.remainingAttempts === null ? 'Incorrect response. You can try again.' : `Incorrect response. ${result.remainingAttempts} attempts remaining.`);
-        setInput('');
-      } else if (result?.reason === 'expired') setError('The challenge has expired.');
-      else if (result?.reason === 'exhausted') setError('No attempts remaining.');
-      else if (result?.reason === 'revision_conflict') setError(result.message || 'The state has changed. Please review the challenge.');
-      else if (result?.error || result?.message) setError(result.message || 'Unable to verify the challenge.');
-      else if (result?.success === false && !result?.retry) setError('The Engine rejected the response. Please review the challenge.');
-      else if (!result) setError('No verification response was received from the Engine.');
+      if (result?.retry) setInput('');
     } catch (cause) {
-      setError(cause?.message || 'Unable to submit the response.');
     } finally {
       setPasswordPending(false);
     }
@@ -100,12 +85,10 @@ function ActionCard({ action, pending = false, interactionBlocked = false, passw
   const cancel = async () => {
     if (passwordPending || !passwordChallenge?.challengeId) return;
     setPasswordPending(true);
-    setError('');
     try {
       await onCancelPassword?.(passwordChallenge);
       setInput('');
     } catch (cause) {
-      setError(cause?.message || 'Unable to cancel the challenge.');
     } finally {
       setPasswordPending(false);
     }
@@ -166,8 +149,6 @@ function ActionCard({ action, pending = false, interactionBlocked = false, passw
         {structured ? <Textarea label={passwordChallenge.type === 'puzzle' ? 'Piece order (JSON)' : 'Path (coordinate JSON)'} hint={passwordChallenge.type === 'puzzle' ? 'Enter the piece-index array in row order.' : 'Enter the coordinate array [x,y], from the start point to the destination.'} rows={4} value={input} onChange={event => setInput(event.target.value)} required /> : <Input label="Password" type="password" autoComplete="current-password" value={input} onChange={event => setInput(event.target.value)} required />}
         {Number.isFinite(passwordChallenge?.remainingAttempts) && <p className="vsr-text-secondary" role="status">Attempts remaining: {passwordChallenge.remainingAttempts}</p>}
         {deadline > 0 && <p className="vsr-text-secondary" role="status">Time remaining: {deadline}s</p>}
-        {challengeFeedback && <p role="status">{challengeFeedback}</p>}
-        {error && <p className="vsr-text-error" role="alert">{error}</p>}
         <Grid columns="auto" gap="2"><Button size="lg" type="button" variant="secondary" disabled={passwordPending} onClick={cancel}>Cancel challenge</Button><Button size="lg" type="submit" disabled={!input.trim() || passwordPending} loading={passwordPending}>Submit response</Button></Grid>
       </form>
     </Dialog>
