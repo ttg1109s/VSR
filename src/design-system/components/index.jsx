@@ -211,7 +211,7 @@ export function Popover({trigger,children,align='start',label='Open additional c
 }
 export function Tooltip({content,children,side='top'}){return <span className="vsr-tooltip">{children}<span role="tooltip" className={'vsr-tooltip-bubble vsr-tooltip-bubble--'+side}>{content}</span></span>;}
 const ToastContext=createContext(null);let toastId=0;
-export function ToastProvider({children,duration=5000,position='top-right'}){
+export function ToastProvider({children,duration=4000,position='bottom-right'}){
   const [items,setItems]=useState([]),timers=useRef(new Map());
   const dismiss=useCallback(id=>{const t=timers.current.get(id);if(t)clearTimeout(t);timers.current.delete(id);setItems(v=>v.filter(x=>x.id!==id));},[]);
   const toast=useCallback((message,options={})=>{const id=options.id??++toastId;const existing=timers.current.get(id);if(existing)clearTimeout(existing);timers.current.delete(id);setItems(v=>[...v.filter(x=>x.id!==id),{id,message,tone:options.tone||'default',action:options.action}].slice(-5));const ms=options.duration??duration;if(ms!==null&&Number.isFinite(ms)&&ms>=0)timers.current.set(id,setTimeout(()=>dismiss(id),ms));return id;},[dismiss,duration]);
