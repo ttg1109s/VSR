@@ -6,6 +6,18 @@ Status: foundation implemented; no product screens or feature UI included.
 
 VSR uses Material Design 3 as its design foundation, with Linear as a visual reference for clean hierarchy and balanced information density, and Fluent 2 as a reference for adaptive desktop layout. The system is mobile-first, light-theme-first, and uses Roboto with Google Material Symbols Rounded.
 
+## UI language policy
+
+All user-facing interface UI must be written in **English**, consistently across every screen and interaction. This requirement is independent of the language used by a scenario.
+
+- UI-owned strings must be English: navigation, page titles, buttons, labels, placeholders, helper text, validation messages, empty/loading/error/success states, dialogs, menus, tooltips, notifications, accessibility names/descriptions, and other system-generated copy.
+- Scenario-authored content is data, not UI copy. Preserve and display it in its original language; do not translate, transliterate, rewrite, or use it to select the UI language.
+- Never infer, switch, or localize the interface language from a scenario's language, content, metadata, or locale. Scenario language must not control UI labels, component behavior, layout, or design tokens.
+- Keep UI copy in the presentation layer or its designated string resources. Do not embed UI labels in scenario definitions or runtime content.
+- When formatting UI-owned dates, numbers, and other locale-sensitive values, use a consistent English locale rather than inheriting the scenario locale. Preserve scenario-provided textual values verbatim unless the product explicitly defines a separate data-formatting contract.
+
+This is a product-level invariant, not a per-page preference or a scenario setting.
+
 ## Structure
 
 - `src/design-system/tokens/`: source-of-truth JavaScript tokens for color, typography, spacing, shape, elevation, and motion.
