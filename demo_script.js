@@ -1210,7 +1210,7 @@ export const DEMO_SCRIPT = {
     "scene_school_classroom_03": {
       "meta": {
         "title": "Lớp học số 3",
-        "desc": "Một lớp học tiểu học bỏ hoang vẫn còn nguyên những dãy bàn thấp, bục giảng, tủ đồ, cửa sổ và chiếc đồng hồ treo tường đã ngừng chạy. Bụi phủ kín mặt bàn; vài trang thông báo sơ tán còn ghim cạnh cửa. Căn phòng chưa tự tiết lộ điều gì — người chơi phải tự chọn nơi quan sát và lần theo các dấu vết.",
+        "desc": "Một lớp học tiểu học bỏ hoang vẫn còn nguyên những dãy bàn thấp, bục giảng, tủ đồ, cửa sổ và chiếc đồng hồ treo tường đã ngừng chạy. Bụi phủ kín mặt bàn; vài trang thông báo sơ tán còn ghim cạnh cửa. Căn phòng chưa tự tiết lộ điều gì — người chơi phải tự chọn nơi khám phá và lần theo các dấu vết.",
         "parentScene": "scene_abandoned_school"
       },
       "set": {
@@ -1221,7 +1221,7 @@ export const DEMO_SCRIPT = {
           "meta": {
             "sceneID": "scene_school_classroom_03",
             "subTitleStatus": "Toàn cảnh lớp học",
-            "desc": "Bạn vừa bước vào lớp học số 3. Bàn ghế phủ bụi được xếp thành ba dãy; bục giảng nằm dưới bảng đen, một chiếc đồng hồ chết máy treo gần cửa sổ và tờ thông báo sơ tán đã ngả vàng vẫn còn trên bảng tin. Chưa có dấu hiệu nào đủ rõ để kết luận chuyện gì đã xảy ra.",
+            "desc": "Bạn vừa bước vào lớp học số 3. Bàn ghế phủ bụi được xếp thành ba dãy; bục giảng nằm dưới bảng đen, một chiếc đồng hồ chết máy treo gần cửa sổ và tờ thông báo sơ tán đã ngả vàng vẫn còn trên bảng tin. Chưa có dấu hiệu nào đủ rõ để kết luận chuyện gì đã xảy ra."
           },
           "set": {
             "blocked": false,
@@ -1234,14 +1234,48 @@ export const DEMO_SCRIPT = {
             "action_inspect_class_clock",
             "action_inspect_evacuation_notice",
             "action_check_desk",
-            "action_talk_linh"
+            "action_talk_linh",
+            "action_decode_roster",
+            "action_recover_class_register"
           ]
         },
-        "router_classroom_blackboard": {
+        "router_classroom_archive_open": {
           "meta": {
             "sceneID": "scene_school_classroom_03",
-            "subTitleStatus": "Cận cảnh bảng đen",
-            "desc": "Góc nhìn tập trung vào bảng đen. Dưới lớp bụi phấn là những vệt lau không đều, các nét chữ bị cạo mạnh đến xước mặt bảng và một dãy tên chỉ còn sót lại vài nét cuối. Có vẻ ai đó đã cố xóa cả một phần danh sách lớp.",
+            "subTitleStatus": "Đã khôi phục hồ sơ",
+            "desc": "Một ngăn bàn cuối lớp bị đóng đinh chứa bản sao sổ điểm danh. Tên học sinh thứ mười hai vẫn bị bôi đen, nhưng số thứ tự và ngày nghỉ học trùng với hồ sơ sơ tán. Sĩ số mười hai người vì thế vẫn được xác nhận, dù danh tính một học sinh đã bị xóa khỏi những tài liệu khác."
+          },
+          "set": {
+            "blocked": false,
+            "visited": false,
+            "countVisited": 0
+          },
+          "actions": [
+            "action_inspect_student_seat",
+            "action_inspect_class_clock",
+            "action_inspect_evacuation_notice",
+            "action_check_desk",
+            "action_talk_linh",
+            "action_decode_roster"
+          ]
+        }
+      }
+    },
+    "scene_classroom_blackboard": {
+      "meta": {
+        "title": "Bảng đen lớp học số 3",
+        "desc": "Khu vực bảng đen ở phía trước lớp học số 3. Những vệt phấn, dòng chữ bị cạo và phần danh sách còn sót lại tập trung quanh cùng một vị trí.",
+        "parentScene": "scene_school_classroom_03"
+      },
+      "set": {
+        "activeRouterId": "router_classroom_blackboard"
+      },
+      "routers": {
+        "router_classroom_blackboard": {
+          "meta": {
+            "sceneID": "scene_classroom_blackboard",
+            "subTitleStatus": "Bảng đen chưa được giải mã",
+            "desc": "Mặt bảng phủ bụi phấn. Những vệt lau không đều chồng lên nhau; vài nét chữ còn sót lại nhưng chưa đủ để xác định nội dung. Một vị trí có dấu hiệu bị cạo mạnh hơn những chỗ khác."
           },
           "set": {
             "blocked": false,
@@ -1255,9 +1289,9 @@ export const DEMO_SCRIPT = {
         },
         "router_classroom_erased": {
           "meta": {
-            "sceneID": "scene_school_classroom_03",
-            "subTitleStatus": "Bị xóa tên",
-            "desc": "Sau khi quan sát kỹ bảng đen, bạn nhận ra đây không phải vết lau bảng thông thường. Một số tên học sinh đã bị xóa có chủ ý; những nét phấn còn sót lại khớp với khoảng trống trên sơ đồ chỗ ngồi. Bức ảnh tập thể cũng bị xé đúng tại vị trí của một học sinh.",
+            "sceneID": "scene_classroom_blackboard",
+            "subTitleStatus": "Danh sách bị xóa có chủ ý",
+            "desc": "Sau khi đọc những nét phấn còn sót lại, bạn nhận ra đây không phải vết lau bảng thông thường. Một số tên học sinh đã bị xóa có chủ ý; một vị trí bị cạo mạnh đến mức mặt bảng xước thành những đường trắng. Dấu vết này cần được đối chiếu với sơ đồ chỗ ngồi và hồ sơ của lớp."
           },
           "set": {
             "blocked": false,
@@ -1265,34 +1299,6 @@ export const DEMO_SCRIPT = {
             "countVisited": 0
           },
           "actions": [
-            "action_inspect_student_seat",
-            "action_inspect_class_clock",
-            "action_inspect_evacuation_notice",
-            "action_check_desk",
-            "action_talk_linh",
-            "action_decode_roster",
-            "action_recover_class_register",
-            "action_return_classroom_overview"
-          ]
-        },
-        "router_classroom_archive_open": {
-          "meta": {
-            "sceneID": "scene_school_classroom_03",
-            "subTitleStatus": "Đã khôi phục hồ sơ",
-            "desc": "Một ngăn bàn cuối lớp bị đóng đinh chứa bản sao sổ điểm danh. Tên học sinh thứ mười hai vẫn bị bôi đen, nhưng số thứ tự và ngày nghỉ học trùng với hồ sơ sơ tán. Sĩ số mười hai người vì thế vẫn được xác nhận, dù danh tính một học sinh đã bị xóa khỏi những tài liệu khác.",
-          },
-          "set": {
-            "blocked": false,
-            "visited": false,
-            "countVisited": 0
-          },
-          "actions": [
-            "action_inspect_student_seat",
-            "action_inspect_class_clock",
-            "action_inspect_evacuation_notice",
-            "action_check_desk",
-            "action_talk_linh",
-            "action_decode_roster",
             "action_return_classroom_overview"
           ]
         }
@@ -2363,7 +2369,7 @@ export const DEMO_SCRIPT = {
         "desc": "Sơ đồ chỗ ngồi của lớp số 3 có một khoảng trống bất thường giữa các dãy bàn. Bản gốc và những bản sao còn lại đều xóa cùng một vị trí, như thể mọi hồ sơ đã được sửa theo một chỉ thị thống nhất. Bản sao sổ điểm danh là đối chứng duy nhất còn ghi đủ sĩ số của ngày sơ tán."
       },
       "set": {
-        "display": "show",
+        "display": "hide",
         "requirement": true
       },
       "effect": {
@@ -3220,8 +3226,8 @@ export const DEMO_SCRIPT = {
         "pass": [
           {
             "type": "goto",
-            "subtype": "router",
-            "target": "router_classroom_blackboard"
+            "subtype": "scene",
+            "target": "scene_classroom_blackboard"
           }
         ]
       }
@@ -3245,6 +3251,20 @@ export const DEMO_SCRIPT = {
             "value": true
           },
           {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_decode_roster",
+            "property": "display",
+            "value": "show"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_recover_class_register",
+            "property": "display",
+            "value": "show"
+          },
+          {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
@@ -3260,9 +3280,9 @@ export const DEMO_SCRIPT = {
     },
     "action_return_classroom_overview": {
       "meta": {
-        "title": "Quan sát toàn bộ lớp",
-        "buttonLabel": "Lùi lại",
-        "desc": "Bạn lùi khỏi điểm quan sát và nhìn lại toàn bộ căn phòng."
+        "title": "Trở lại lớp học",
+        "buttonLabel": "Quay lại",
+        "desc": "Bạn rời khu vực bảng đen và trở về lớp học số 3."
       },
       "set": {
         "display": "show"
@@ -3272,8 +3292,8 @@ export const DEMO_SCRIPT = {
         "pass": [
           {
             "type": "goto",
-            "subtype": "router",
-            "target": "router_classroom_overview"
+            "subtype": "scene",
+            "target": "scene_school_classroom_03"
           }
         ]
       }
@@ -3728,7 +3748,7 @@ export const DEMO_SCRIPT = {
         "desc": "Ngăn bàn cuối lớp bị đóng đinh, khác với những ngăn còn lại đã bị lục soát. Bản sao sổ điểm danh bên trong vẫn giữ sĩ số mười hai học sinh vào ngày sơ tán, dù tên của một em đã bị bôi đen ở các hồ sơ khác."
       },
       "set": {
-        "display": "show"
+        "display": "hide"
       },
       "effect": {
         "normal": [],
