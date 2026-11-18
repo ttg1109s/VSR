@@ -6,11 +6,14 @@ const ROOT=process.cwd();
 const IGNORE=new Set(['.git','node_modules','dist','build','coverage','.next']);
 const errors=[];
 const files=[];
+const htmlFiles=[];
 function walk(dir){
   for(const entry of fs.readdirSync(dir,{withFileTypes:true})){
     if(entry.isDirectory()){if(!IGNORE.has(entry.name))walk(path.join(dir,entry.name));}
     else if(entry.isFile()&&/\.(js|jsx|mjs|cjs|css)$/.test(entry.name))
       files.push(path.relative(ROOT,path.join(dir,entry.name)).replaceAll(path.sep,'/'));
+    else if(entry.isFile()&&entry.name.endsWith('.html'))
+      htmlFiles.push(path.relative(ROOT,path.join(dir,entry.name)).replaceAll(path.sep,'/'));
   }
 }
 walk(ROOT);
@@ -53,6 +56,12 @@ try{
   }
 }catch(error){errors.push('Unable to read package.json exports: '+error.message);}
 for(const root of roots)visit(root);
+// Browser fixtures are launched by HTML module entry points rather than JS imports.
+for(const htmlFile of htmlFiles){
+  const content=fs.readFileSync(path.join(ROOT,htmlFile),'utf8');
+  const moduleSources=[...content.matchAll(/<script\b[^>]*type=["']module["'][^>]*src=["']([^"']+)["'][^>]*>/gi)].map(match=>match[1]);
+  for(const specifier of moduleSources){const target=resolveImport(htmlFile,specifier);if(target)visit(target);}
+}
 const unreachable=files.filter(file=>/\.(js|jsx|mjs|cjs|css)$/.test(file)&&!reachable.has(file));
 if(process.argv.includes('--deadcode')&&unreachable.length){
   for(const file of unreachable)console.error(`Unreachable source candidate (manual review required): ${file}`);
