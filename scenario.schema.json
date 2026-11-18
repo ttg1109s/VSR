@@ -2502,8 +2502,7 @@
                   "warning",
                   "critical",
                   "special"
-                ],
-                "default": "default"
+                ]
               }
             }
           }
@@ -3848,8 +3847,7 @@
                   "warning",
                   "critical",
                   "special"
-                ],
-                "default": "default"
+                ]
               }
             }
           }
