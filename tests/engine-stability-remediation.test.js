@@ -68,12 +68,15 @@ test('set/action and set/action_count resolve Action IDs across every Scene and 
 });
 
 test('set/action_count assigns a non-negative integer and rejects mode/add semantics', () => {
-  const schemaRule = scenarioSchema.definitions.runnable_wrapper.allOf
-    .find(rule => rule.if?.properties?.type?.const === 'set')
-    .then.allOf.find(rule => rule.if?.properties?.subtype?.const === 'action_count').then;
-  assert.deepEqual(schemaRule.properties.value, { type: 'integer', minimum: 0 });
-  assert.equal(Object.hasOwn(schemaRule.properties, 'mode'), false);
-  assert.deepEqual(schemaRule.not, { required: ['mode'] });
+  for (const definition of ['runnable_wrapper', 'effect_details']) {
+    const schemaRule = scenarioSchema.definitions[definition].allOf
+      .find(rule => rule.if?.properties?.type?.const === 'set')
+      .then.allOf.find(rule => rule.if?.properties?.subtype?.const === 'action_count').then;
+    assert.deepEqual(schemaRule.required, ['target', 'phase', 'value']);
+    assert.deepEqual(schemaRule.properties.value, { type: 'integer', minimum: 0 });
+    assert.equal(Object.hasOwn(schemaRule.properties, 'mode'), false);
+    assert.deepEqual(schemaRule.not, { required: ['mode'] });
+  }
 });
 
 test('scenario loader initializes missing Action counters on global and inline Actions', () => {
