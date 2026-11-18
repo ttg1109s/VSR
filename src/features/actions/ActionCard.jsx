@@ -161,7 +161,7 @@ function ActionCard({ action, pending = false, interactionBlocked = false, passw
     {coolingDown && <div className="vsr-action-card__cooldown" role="timer">Time remaining: {cooldown}s</div>}
 
     <div className="vsr-action-card__actions">
-      <Button className={`vsr-action-card__execute-button${feedback === 'requirement' || feedback === 'permission' ? ` vsr-action-card__execute-button--feedback-${feedback}` : ''}`} size="lg" leadingIcon={meta.buttonIcon} disabled={executeDisabled} onClick={handleTrigger} aria-label={meta.buttonLabel || `Execute ${meta.title || action.id}`}>{meta.buttonLabel || 'Execute'}</Button>
+      <Button className="vsr-action-card__execute-button" size="lg" leadingIcon={meta.buttonIcon} disabled={executeDisabled} onClick={handleTrigger} aria-label={meta.buttonLabel || `Execute ${meta.title || action.id}`}>{meta.buttonLabel || 'Execute'}</Button>
     </div>
 
     <Dialog open={challengeOpen} onClose={cancel} title="Verify action" description={passwordChallenge?.description || 'Complete the challenge provided by the Engine.'}>
