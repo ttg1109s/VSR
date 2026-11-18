@@ -1,6 +1,6 @@
 const STORY_GROUP_VALUES = new Set(['story', 'scenario']);
 
-function isStoryNamespace(value) {
+function isStorySource(value) {
   const normalized = String(value ?? '').trim().toLowerCase();
   if (!normalized) return false;
   const namespace = normalized.split('.', 1)[0];
@@ -8,14 +8,9 @@ function isStoryNamespace(value) {
 }
 
 export function getNotificationGroup(notification) {
-  const source = String(notification?.source ?? '').trim().toLowerCase();
-  const category = String(notification?.category ?? '').trim().toLowerCase();
-
-  // Source identifies the emitter; category identifies the notification domain.
-  // Either may classify a notification as Story. All other notifications are System.
-  const storySource = isStoryNamespace(source);
-  const storyCategory = isStoryNamespace(category);
-  return storySource || storyCategory ? 'story' : 'system';
+  // Source is the trusted emitter identity. Category is descriptive metadata
+  // and must never promote an Engine notification into the Story group.
+  return isStorySource(notification?.source) ? 'story' : 'system';
 }
 
 export function filterNotifications(notifications, filter) {
