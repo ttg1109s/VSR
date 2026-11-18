@@ -1228,7 +1228,7 @@ test('Contact snapshot projects only characters met by the current Player Entry'
     assert.equal(snapshot.presentation.contacts.some(contact => contact.id === 'unseenPresent'), false);
     assert.equal(snapshot.presentation.contacts[0].presence, 'present');
     assert.equal(snapshot.presentation.contacts[0].metCount, 3);
-    assert.equal(snapshot.presentation.contacts[0].relationship[0].characterName, 'Hero');
+    assert.deepEqual(snapshot.presentation.contacts[0].relationshipWithPlayer, { hasRelationship: true, tag: 'friend' });
 
     const save = engine.exportSave();
     const restored = new GameEngine();
