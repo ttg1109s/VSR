@@ -165,6 +165,15 @@ const CheckTypeHandlers = {
     },
     stats: (engine, c) => StatsStrategies[c.subtype]?.(engine, c) ?? false,
     relationship: (engine, c) => RelationshipStrategies.characters(engine, c),
+    action_count: (engine, c) => {
+        if (!['normal', 'pass', 'fail', 'pwFailed'].includes(c.phase)) return false;
+        const action = ObjectRetrievers.action(engine, c.target);
+        const count = action?.count?.[c.phase];
+        if (!Number.isSafeInteger(count) || count < 0) return false;
+        const expected = resolveValue(c.value, engine);
+        if (!Number.isSafeInteger(expected) || expected < 0) return false;
+        return Operations[c.op]?.(count, expected) ?? false;
+    },
     set: (engine, c) => {
         const retriever = ObjectRetrievers[c.subtype];
         const obj = retriever ? retriever(engine, c.target) : null;

@@ -155,3 +155,44 @@ test('Scenario validator rejects removed legacy Action fields with a migration d
     host.close();
   }
 });
+
+test('Requirement action_count compares the selected Action phase counter in the active Router', () => {
+  const runtime = {
+    scene_a_router_1_action_01: { count: { normal: 3, pass: 5, fail: 1, pwFailed: 0 } },
+    scene_a_router_2_action_01: { count: { normal: 99, pass: 99, fail: 99, pwFailed: 99 } }
+  };
+  const state = {
+    sceneId: 'scene_a',
+    get(path, { id } = {}) {
+      if (path === 'scene.activeRouterId' && id === 'scene_a') return 'router_1';
+      return undefined;
+    },
+    getRuntime(path, { actionKey } = {}) {
+      return path === 'actions.[actionKey]' ? runtime[actionKey] : undefined;
+    }
+  };
+  const engine = Object.assign({}, LogicSystem, { api: { engine: { state } } });
+  const check = (phase, op, value) => engine.checkSingle({
+    type: 'action_count', target: 'action_01', phase, op, value
+  }).pass;
+  assert.equal(check('pass', '>=', 5), true);
+  assert.equal(check('pass', '>', 5), false);
+  assert.equal(check('normal', '==', 3), true);
+  assert.equal(check('fail', '<=', 1), true);
+  assert.equal(check('pwFailed', '!=', 0), false);
+  assert.equal(check('unknown', '==', 0), false);
+  assert.equal(check('pass', '>=', -1), false);
+  assert.equal(engine.checkSingle({
+    type: 'action_count', target: 'missing_action', phase: 'pass', op: '>=', value: 0
+  }).pass, false);
+});
+
+test('Requirement schema validates action_count phase and non-negative integer threshold', () => {
+  const checkSchema = scenarioSchema.definitions.requirement_check;
+  assert.ok(checkSchema.properties.type.enum.includes('action_count'));
+  const rule = checkSchema.allOf.find(item => item.if?.properties?.type?.const === 'action_count').then;
+  assert.deepEqual(rule.required, ['target', 'phase']);
+  assert.deepEqual(rule.properties.op.enum, ['==', '!=', '>', '>=', '<', '<=']);
+  assert.deepEqual(rule.properties.value, { type: 'integer', minimum: 0 });
+  assert.deepEqual(checkSchema.properties.phase.enum, ['normal', 'pass', 'fail', 'pwFailed']);
+});
