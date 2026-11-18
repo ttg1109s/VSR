@@ -32,3 +32,12 @@ test('Notification Drawer fits compact and medium viewports without horizontal o
     expect(bounds.x + bounds.width).toBeLessThanOrEqual(viewport.width);
   }
 });
+
+test('Dismiss action remains independently keyboard operable', async ({ page }) => {
+  await page.goto('tests/browser/notification-fixture.html');
+  const dismiss = page.getByRole('button', { name: 'Dismiss Unread system notice' });
+  await dismiss.focus();
+  await expect(dismiss).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect.poll(() => page.evaluate(() => window.__notifyCalls)).toContainEqual(['dismiss', 'n1']);
+});
