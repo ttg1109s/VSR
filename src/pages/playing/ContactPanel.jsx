@@ -312,9 +312,9 @@ export default function ContactPanel({ open, onClose, player, contacts = [], sys
     : [];
   const choices = isActiveThread && chatSession.waitingChoice === true && Array.isArray(chatSession.choices) ? chatSession.choices : [];
   const chatActionsDisabled = chatPending || chatSession.transitionPending === true || !client;
-  const showContactThreadHeader = Boolean(
-    selected && activeArea === 'conversation' && (viewRequest?.headerMode === 'contact' || selectedThreadId)
-  );
+  // A selected contact owns the Drawer header in both its thread list and conversation.
+  // The generic "Contact" header is only shown while browsing the contact list.
+  const showContactThreadHeader = Boolean(selected);
 
   useEffect(() => {
     if (selectedId && !allContacts.some(contact => contact.id === selectedId)) {
@@ -417,7 +417,7 @@ export default function ContactPanel({ open, onClose, player, contacts = [], sys
     return (
       <div className={'vsr-contact-header' + (inDrawer ? ' vsr-contact-header--drawer' : '')}>
         <Button
-          className={profileOpen || activeArea === 'conversation' ? 'vsr-contact-back is-visible' : 'vsr-contact-back'}
+          className={inDrawer || profileOpen || activeArea === 'conversation' ? 'vsr-contact-back is-visible' : 'vsr-contact-back'}
           size="sm"
           variant="tertiary"
           onClick={() => {
@@ -426,6 +426,11 @@ export default function ContactPanel({ open, onClose, player, contacts = [], sys
             } else if (activeArea === 'conversation') {
               setActiveArea('threads');
               setChatError('');
+            } else if (inDrawer) {
+              setSelectedId(null);
+              setSelectedThreadId(null);
+              setActiveArea('threads');
+              setMobileView('list');
             } else {
               setMobileView('list');
             }
