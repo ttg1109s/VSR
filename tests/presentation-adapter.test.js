@@ -226,10 +226,17 @@ test('Contact projects only the selected character relationship with entryCharac
     assert.equal(projectedMai.metCount, 3);
     assert.equal(Object.hasOwn(projectedMai, 'relationship'), false);
 
-    mai.relationship = [['Người quen', 'keeper']];
-    entryCharacter.met = ['keeper:7'];
-    mai.met = ['keeper:7'];
+    host.engine.api.engine.state.update('characters.[id]', current => ({
+      ...current,
+      met: ['keeper:7']
+    }), { id: entryCharacterId });
+    host.engine.api.engine.state.update('characters.[id]', current => ({
+      ...current,
+      relationship: [['Người quen', 'keeper']],
+      met: ['keeper:7']
+    }), { id: 'mai' });
     host.engine.commitState('contact.relationship.cleared');
+    await client.refreshSnapshot();
 
     const withoutPlayerRelationship = client.getSnapshot().presentation.contacts.find(contact => contact.id === 'mai');
     assert.deepEqual(withoutPlayerRelationship.relationshipWithPlayer, {
