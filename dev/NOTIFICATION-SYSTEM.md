@@ -9,7 +9,7 @@ The presentation UI is English-only. Scenario-authored notification titles and m
 ## Interaction model
 
 - The Notify item in Bottom Navigation opens the Notification Center Drawer; it does not navigate away from the active scene.
-- The Drawer is the durable notification history surface. It supports All, Unread, System, and Story filters (Story maps to Engine notifications whose source is `scenario`), Today/Earlier date grouping, per-item mark-read and dismiss actions, mark-all-read, and a sound preference exposed from the header settings control.
+- The Drawer is the durable notification history surface. It supports All, Unread, System, and Story filters (Story maps only to Scenario-authored Notify effects whose source is `scenario`; Engine-authored hardcoded notifications use `engine` and appear under System), Today/Earlier date grouping, per-item mark-read and dismiss actions, mark-all-read, and a sound preference exposed from the header settings control.
 - Toast is transient feedback. A Toast being removed must not mark its notification read or delete it from Engine history.
 - A maximum of five Toasts may be visible at once.
 - Modal notifications are reserved by Engine policy for danger and special levels. A scenario request for a Modal at another level is downgraded to Toast.
@@ -25,7 +25,7 @@ Optional scenario intent fields:
 - durationMs: requested Toast lifetime in milliseconds; Engine validates and clamps it.
 - soundProfile: default, soft, success, warning, critical, or special.
 
-The scenario can request presentation and sound profile. Engine policy remains authoritative and can downgrade presentation. Every accepted notification carries a sound cue by default; only the user-level sound-off preference can mute it.
+Only notifications explicitly authored through a Scenario Notify effect are Story notifications. Notifications with fixed titles/messages emitted by Engine implementation code are System notifications, even when emitted while executing a Scenario effect strategy. The Scenario cannot choose or override the notification source. The scenario can request presentation and sound profile. Engine policy remains authoritative and can downgrade presentation. Every accepted notification carries a sound cue by default; only the user-level sound-off preference can mute it.
 
 ## Sound behavior
 
