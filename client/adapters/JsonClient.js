@@ -98,6 +98,7 @@ export class JsonClient {
   toggleHand(itemId) { return this.dispatch('inventory.toggleHand', { itemId }); }
   useItem(itemId) { return this.dispatch('item.use', { itemId }); }
   enterScene(sceneId, skipTransition = false) { return this.dispatch('scene.enter', { sceneId, skipTransition }); }
+  backParent() { return this.dispatch('scene.backParent'); }
   submitPassword(challengeId, input, cancel = false) { return this.dispatch('password.submit', { challengeId, input, cancel }); }
   pause() { return this.dispatch('engine.pause'); }
   resume() { return this.dispatch('engine.resume'); }
