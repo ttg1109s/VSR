@@ -4590,7 +4590,7 @@
             },
             "thumb": {
               "type": "string",
-              "description": "URL/đường dẫn ảnh thumbnail. Rỗng -> dùng assets/images/thumbnail.jpg mặc định."
+              "description": "URL/đường dẫn ảnh thumbnail. Để trống hoặc bỏ qua thì dùng placeholder; nếu ảnh được chỉ định tải thất bại, giao diện cũng chuyển sang placeholder."
             },
             "desc": {
               "type": [
