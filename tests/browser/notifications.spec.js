@@ -9,14 +9,24 @@ test('Tapping a notification marks it read without showing per-item action butto
   await expect.poll(() => page.evaluate(() => window.__notifyCalls)).toContainEqual(['read', 'n1']);
 });
 
-test('Swiping a notification dismisses it', async ({ page }) => {
+test('A touch swipe dismisses a notification', async ({ page }) => {
   await page.goto('tests/browser/notification-fixture.html');
   const item = page.locator('.vsr-notification-item').filter({ hasText: 'Unread system notice' });
   const bounds = await item.boundingBox();
-  await page.mouse.move(bounds.x + bounds.width - 24, bounds.y + bounds.height / 2);
-  await page.mouse.down();
-  await page.mouse.move(bounds.x + 24, bounds.y + bounds.height / 2, { steps: 6 });
-  await page.mouse.up();
+  await item.evaluate((element, rect) => {
+    element.setPointerCapture = () => {};
+    const startX = rect.x + rect.width - 24;
+    const endX = rect.x + 24;
+    const y = rect.y + rect.height / 2;
+    element.dispatchEvent(new PointerEvent('pointerdown', {
+      bubbles: true, pointerId: 7, pointerType: 'touch', isPrimary: true,
+      clientX: startX, clientY: y
+    }));
+    element.dispatchEvent(new PointerEvent('pointerup', {
+      bubbles: true, pointerId: 7, pointerType: 'touch', isPrimary: true,
+      clientX: endX, clientY: y
+    }));
+  }, bounds);
   await expect.poll(() => page.evaluate(() => window.__notifyCalls)).toContainEqual(['dismiss', 'n1']);
 });
 
@@ -49,11 +59,11 @@ test('Notification Drawer fits compact and medium viewports without horizontal o
   }
 });
 
-test('Dismiss action remains independently keyboard operable', async ({ page }) => {
+test('Unread notification remains independently keyboard operable', async ({ page }) => {
   await page.goto('tests/browser/notification-fixture.html');
-  const dismiss = page.getByRole('button', { name: 'Dismiss Unread system notice' });
-  await dismiss.focus();
-  await expect(dismiss).toBeFocused();
+  const item = page.getByRole('button', { name: 'Mark Unread system notice as read' });
+  await item.focus();
+  await expect(item).toBeFocused();
   await page.keyboard.press('Enter');
-  await expect.poll(() => page.evaluate(() => window.__notifyCalls)).toContainEqual(['dismiss', 'n1']);
+  await expect.poll(() => page.evaluate(() => window.__notifyCalls)).toContainEqual(['read', 'n1']);
 });

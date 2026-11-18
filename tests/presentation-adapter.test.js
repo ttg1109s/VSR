@@ -3,6 +3,28 @@ import assert from 'node:assert/strict';
 import { LocalEngineHost } from '../engine/LocalEngineHost.js';
 import { JsonClient } from '../client/adapters/JsonClient.js';
 import { JsonProtocol } from '../protocol/JsonProtocol.js';
+async function waitForClientSnapshot(client, predicate, timeoutMs = 2000) {
+  if (predicate(client.getSnapshot())) return;
+  await new Promise((resolve, reject) => {
+    let unsubscribe = () => {};
+    const timeout = setTimeout(() => {
+      unsubscribe();
+      reject(new Error('Timed out waiting for the expected client snapshot.'));
+    }, timeoutMs);
+    unsubscribe = client.subscribe(message => {
+      if (message.type !== 'state' || !predicate(client.getSnapshot())) return;
+      clearTimeout(timeout);
+      unsubscribe();
+      resolve();
+    });
+    if (predicate(client.getSnapshot())) {
+      clearTimeout(timeout);
+      unsubscribe();
+      resolve();
+    }
+  });
+}
+
 
 test('scenario inspection returns validated metadata without initializing or mutating the Engine', async () => {
   const host = new LocalEngineHost();
@@ -363,7 +385,7 @@ test('Contact exposes Engine-owned thread summaries and opens only a thread belo
 });
 
 
-test('chat action can finish and reopen as a read-only review without duplicating history', async () => {
+test('chat action starts the umbrella follow-up without duplicating completed thread history', async () => {
   const host = new LocalEngineHost();
   const client = new JsonClient(host);
   try {
@@ -380,7 +402,7 @@ test('chat action can finish and reopen as a read-only review without duplicatin
     await client.nextChat();
     assert.equal(client.getSnapshot().session.chat.waitingChoice, true);
     await client.selectChatChoice(0);
-    await new Promise(resolve => setTimeout(resolve, 600));
+    await waitForClientSnapshot(client, snapshot => snapshot.session.chat.active && !snapshot.session.chat.waitingChoice && !snapshot.session.chat.transitionPending);
 
     assert.equal(client.getSnapshot().session.chat.active, true);
     assert.equal(client.getSnapshot().session.chat.waitingChoice, false);
@@ -390,7 +412,7 @@ test('chat action can finish and reopen as a read-only review without duplicatin
     assert.equal(client.getSnapshot().session.chat.waitingChoice, true);
     assert.equal(client.getSnapshot().session.chat.choices.length, 2);
     await client.selectChatChoice(0);
-    await new Promise(resolve => setTimeout(resolve, 600));
+    await waitForClientSnapshot(client, snapshot => snapshot.session.chat.active && !snapshot.session.chat.waitingChoice && !snapshot.session.chat.transitionPending);
 
     assert.equal(client.getSnapshot().session.chat.active, true);
     assert.equal(client.getSnapshot().session.chat.waitingChoice, false);
@@ -402,14 +424,14 @@ test('chat action can finish and reopen as a read-only review without duplicatin
     assert.deepEqual(completedHistory.map(line => line.text), [
       'Nếu nghe loa gọi tên mình, đừng trả lời.',
       'Đêm đó có mười hai người biến mất. Sáng hôm sau, mọi người chỉ nhớ mười một.',
-      'Hỏi về người thứ mười hai',
+      'Cô nói mười hai người biến mất. Người thứ mười hai là ai?',
       'Tôi đã nhìn thấy người thứ mười hai đi xuống giếng. Nhưng đó là tôi.',
       'Khi nói “đó là tôi”, cô muốn nói mình đã đi xuống giếng?',
       'Tôi nhớ mình đứng ở miệng giếng. Nhưng tôi không biết đó là ký ức của tôi, hay ký ức của người đã bị xóa.'
     ]);
     assert.equal(host.engine.state.chats.chat_mai.set.read, true);
 
-    // The same reusable action reopens the completed thread as review, not a new run.
+    // The reusable action advances to the scenario's umbrella follow-up thread.
     const viewEvents = [];
     const unsubscribe = client.subscribe(message => {
       if (message.type === 'event' && message.event?.event === 'presentation.chat.viewRequested') {
@@ -420,24 +442,16 @@ test('chat action can finish and reopen as a read-only review without duplicatin
     const reopened = client.getSnapshot();
     const reviewRequest = viewEvents.at(-1);
     assert.equal(reviewRequest?.contactId, 'mai');
-    assert.equal(reviewRequest?.chatId, 'chat_mai');
-    assert.equal(reviewRequest?.mode, 'review');
+    assert.equal(reviewRequest?.chatId, 'chat_mai_umbrella');
+    assert.equal(reviewRequest?.mode, 'active');
     assert.ok(reviewRequest?.requestId);
     unsubscribe();
-    // The Engine review session ends immediately; the independent view request
-    // keeps the React history view open without pretending gameplay is active.
-    assert.equal(reopened.session.chat.active, false);
-    assert.equal(reopened.session.chat.mode, 'idle');
+    // The follow-up is active independently; the completed earlier thread remains unchanged.
+    assert.equal(reopened.session.chat.active, true);
+    assert.equal(reopened.session.chat.mode, 'active');
     assert.equal(reopened.session.chat.isReview, false);
     assert.equal(reopened.session.chat.waitingChoice, false);
     assert.deepEqual(reopened.session.chat.history.chat_mai, completedHistory);
-
-    // A progression command cannot advance or mutate a completed read-only thread.
-    await client.nextChat();
-    assert.equal(client.getSnapshot().session.chat.active, false);
-    assert.equal(client.getSnapshot().session.chat.mode, 'idle');
-    assert.equal(client.getSnapshot().session.chat.isReview, false);
-    assert.deepEqual(client.getSnapshot().session.chat.history.chat_mai, completedHistory);
   } finally {
     client.dispose();
     host.close();

@@ -24,7 +24,7 @@ export class GameEngine {
   this.protocol=new JsonProtocol({engineId,protocolVersion:2,authorizeCommand,requireAuthorization,onCommandSuccess:({command,revisionBefore})=>{
    if(!['engine.init','scenario.inspect','snapshot.get'].includes(command)&&this.protocol.stateRevision===revisionBefore)this.commitState(`command:${command}`);
   }});
-  this.notifications=new NotificationSystem({protocol:this.protocol,engineId:this.protocol.engineId,clock:clock||(()=>Date.now())});
+  this.notifications=new NotificationSystem({protocol:this.protocol,engineId:this.protocol.engineId,clock:clock||(()=>Date.now()),schedule:(callback,delay,name)=>this.taskManager.once(callback,Math.max(1,delay),name),cancelSchedule:handle=>handle?.kill?.()});
   this.api=createEngineAPI(this);
   this.passwordSystem=new PasswordSystem({clock:clock||(()=>Date.now())});
   this.reset();

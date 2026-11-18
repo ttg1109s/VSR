@@ -115,3 +115,20 @@ test('once validates callback, delay, and optional name',()=>{
  assert.throws(()=>manager.once(()=>{},NaN),/delay/);
  assert.throws(()=>manager.once(()=>{},10,''),/name/);
 });
+
+test('once cancellation handles preserve native timer unref support',()=>{
+ const timers=new Map();
+ let nextId=0;
+ const clock={
+  now:()=>0,
+  setTimeout(callback,delay){const timer={id:++nextId,callback,delay,unrefCalled:false,unref(){this.unrefCalled=true;}};timers.set(timer.id,timer);return timer;},
+  clearTimeout(timer){timers.delete(timer.id);}
+ };
+ const manager=new TaskManager({},120,{clock});
+ const task=manager.once(()=>{},25);
+ const timer=timers.get(1);
+ assert.equal(task.unref(),true);
+ assert.equal(timer.unrefCalled,true);
+ assert.equal(task.kill(),true);
+ assert.equal(task.unref(),false);
+});

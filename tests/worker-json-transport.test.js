@@ -3,15 +3,16 @@ import assert from 'node:assert/strict';
 import { WorkerJsonTransport } from '../client/adapters/WorkerJsonTransport.js';
 
 class FakeWorker {
-  constructor() { this.listeners = new Map(); this.messages = []; this.terminated = false; }
+  constructor({ respond = true, failPost = false } = {}) { this.listeners = new Map(); this.messages = []; this.terminated = false; this.respond = respond; this.failPost = failPost; }
   addEventListener(type, listener) {
     if (!this.listeners.has(type)) this.listeners.set(type, new Set());
     this.listeners.get(type).add(listener);
   }
   removeEventListener(type, listener) { this.listeners.get(type)?.delete(listener); }
   postMessage(message) {
+    if (this.failPost && message.type === 'request') throw new Error('postMessage failed');
     this.messages.push(message);
-    if (message.type === 'request') {
+    if (this.respond && message.type === 'request') {
       queueMicrotask(() => this.emit('message', {
         data: { type: 'response', requestId: message.requestId, ok: true, body: JSON.stringify({
           protocol: 'vsr', protocolVersion: 2, type: 'ack',
@@ -52,4 +53,31 @@ test('WorkerJsonTransport rejects pending requests when closed', async () => {
   const request = transport.request({ protocol: 'vsr', protocolVersion: 2, type: 'command', commandId: 'test-2', command: 'engine.pause', payload: {} });
   transport.close();
   await assert.rejects(request, /closed/i);
+});
+
+test('WorkerJsonTransport rejects requests when the worker does not respond before timeout', async () => {
+  const worker = new FakeWorker({ respond: false });
+  const transport = new WorkerJsonTransport({ worker, requestTimeoutMs: 5 });
+  const request = transport.request({ protocol: 'vsr', protocolVersion: 2, type: 'command', commandId: 'timeout', command: 'engine.pause', payload: {} });
+  await assert.rejects(request, /timed out after 5 ms/i);
+  assert.equal(transport.pending.size, 0);
+  transport.close();
+});
+
+test('WorkerJsonTransport rejects pending requests when the worker errors', async () => {
+  const worker = new FakeWorker({ respond: false });
+  const transport = new WorkerJsonTransport({ worker, requestTimeoutMs: 1000 });
+  const request = transport.request({ protocol: 'vsr', protocolVersion: 2, type: 'command', commandId: 'worker-error', command: 'engine.pause', payload: {} });
+  worker.emit('error', { error: new Error('worker crashed') });
+  await assert.rejects(request, /worker crashed/);
+  assert.equal(transport.pending.size, 0);
+  transport.close();
+});
+
+test('WorkerJsonTransport clears a request timeout when postMessage throws', async () => {
+  const worker = new FakeWorker({ respond: false, failPost: true });
+  const transport = new WorkerJsonTransport({ worker, requestTimeoutMs: 5 });
+  await assert.rejects(transport.request({ protocol: 'vsr', protocolVersion: 2, type: 'command', commandId: 'post-error', command: 'engine.pause', payload: {} }), /postMessage failed/);
+  assert.equal(transport.pending.size, 0);
+  transport.close();
 });

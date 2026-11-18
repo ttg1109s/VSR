@@ -136,3 +136,12 @@ Run `npm test`, `npm run schema:check`, `npm run audit:state:strict`, and `npm r
 ## React application and deployment
 
 A separate React/Vite application scaffold is available at the repository root. It intentionally renders no UI; the VSR engine remains framework-agnostic. Run `npm run dev` for local development and `npm run build` for a production build. GitHub Pages deployment is configured in `.github/workflows/deploy-react-pages.yml`; see [README-REACT.md](./README-REACT.md) for setup details.
+
+
+## Timer ownership
+
+Engine-owned one-shot work must use `engine.taskManager.once(callback, ms, name?)`. Notification expiry is scheduled through that API with a stable per-notification task name; the returned handle retains `unref()` support for Node.js process lifecycle compatibility. Expiry delays are clamped to at least one millisecond because TaskManager rejects zero or negative delays.
+
+React-owned timers remain local to their component/provider lifecycle. `ActionCard` owns its cooldown countdown interval and refresh timeout; `ToastProvider` owns toast dismissal timers and clears its timer registry on unmount. `ActionCollection` uses an abortable UI delay for its minimum busy indicator, cancelling pending delay timers when the collection unmounts. These timers must not depend on the engine TaskManager.
+
+Transport-owned request timeouts remain inside `WorkerJsonTransport`. They protect request/response liveness independently of gameplay pause/reset behavior. Test harness timers likewise remain test-owned; prefer fake clocks or event-based waits where practical.
