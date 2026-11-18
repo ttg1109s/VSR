@@ -267,7 +267,7 @@ export default function InventoryWorkspace({ snapshot, open = false, onClose }) 
             />
           ) : (
             <>
-              <Grid columns="auto" gap="3" aria-label="Inventory items">
+              <Grid columns="auto" gap="3" className="vsr-inventory-items-grid" aria-label="Inventory items">
                 {pageItems.map(item => (
                   <InventoryItemCard key={item.id} item={item} />
                 ))}
