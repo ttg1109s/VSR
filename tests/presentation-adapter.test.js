@@ -76,8 +76,13 @@ test('all engine-side protocol operations are exposed as JSON commands', async (
 
     const notification = host.engine.notifications.add('Test', 'Message', 'info', { dedupe: false });
     assert.ok(notification.notification?.id);
-    await client.dispatch('notification.read', { notificationId: notification.notification.id });
-    await client.dispatch('notification.dismiss', { notificationId: notification.notification.id });
+    await client.markNotificationRead(notification.notification.id);
+    const secondNotification = host.engine.notifications.add('Second', 'Unread', 'info', { dedupe: false });
+    const readAll = await client.markAllNotificationsRead();
+    assert.equal(readAll.result.updated, 1);
+    assert.equal(client.getSnapshot().session.notifications.unreadCount, 0);
+    await client.dismissNotification(notification.notification.id);
+    await client.dismissNotification(secondNotification.notification.id);
   } finally {
     client.dispose();
     host.close();
