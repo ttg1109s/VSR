@@ -110,7 +110,7 @@ function useLayer(open,onClose,ref){
     };
   },[open,ref]);
 }
-function Overlay({open,onClose,title,description,headerActions,headerContent,headerClassName,contentClassName,ariaLabel,children,size='md',side='right',className,lockScroll=false,width}){
+function Overlay({open,onClose,title,description,headerActions,headerContent,headerClassName,headerContentClassName,contentClassName,ariaLabel,children,size='md',side='right',className,lockScroll=false,width}){
   const ref=useRef(null),titleId=useId(),descId=useId();
   useLayer(open,onClose,ref);
   useEffect(()=>{
@@ -147,7 +147,7 @@ function Overlay({open,onClose,title,description,headerActions,headerContent,hea
     };
   },[open,lockScroll]);
   if(!open||typeof document==='undefined')return null;
-  return createPortal(<div className={cx("vsr-overlay",className?.includes("vsr-drawer")&&"vsr-overlay--drawer")} onMouseDown={e=>{if(e.target===e.currentTarget)onClose&&onClose();}}><section ref={ref} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby={headerContent?undefined:titleId} aria-label={headerContent?(ariaLabel||title||'Dialog'):undefined} aria-describedby={description&&!headerContent?descId:undefined} style={width?{'--vsr-overlay-panel-width':typeof width==='number'?width+'px':width}:undefined} className={cx('vsr-overlay-panel','vsr-overlay-panel--'+size,'vsr-overlay-panel--'+side,className)}><header className={cx('vsr-overlay-header',headerClassName)}>{headerContent?<div className="vsr-overlay-header__custom">{headerContent}</div>:<><div className="vsr-overlay-header__copy">{title&&<h2 id={titleId}>{title}</h2>}{description&&<p id={descId}>{description}</p>}</div>{headerActions&&<div className="vsr-overlay-header__actions">{headerActions}</div>}</>}<button type="button" className="vsr-icon-button" aria-label="Close" onClick={onClose}>close</button></header><div className={cx('vsr-overlay-content',contentClassName)}>{children}</div></section></div>,document.body);
+  return createPortal(<div className={cx("vsr-overlay",className?.includes("vsr-drawer")&&"vsr-overlay--drawer")} onMouseDown={e=>{if(e.target===e.currentTarget)onClose&&onClose();}}><section ref={ref} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby={headerContent?undefined:titleId} aria-label={headerContent?(ariaLabel||title||'Dialog'):undefined} aria-describedby={description&&!headerContent?descId:undefined} style={width?{'--vsr-overlay-panel-width':typeof width==='number'?width+'px':width}:undefined} className={cx('vsr-overlay-panel','vsr-overlay-panel--'+size,'vsr-overlay-panel--'+side,className)}><header className={cx('vsr-overlay-header',headerClassName)}>{headerContent?<div className={cx('vsr-overlay-header__custom',headerContentClassName)}>{headerContent}</div>:<><div className="vsr-overlay-header__copy">{title&&<h2 id={titleId}>{title}</h2>}{description&&<p id={descId}>{description}</p>}</div>{headerActions&&<div className="vsr-overlay-header__actions">{headerActions}</div>}</>}<button type="button" className="vsr-icon-button" aria-label="Close" onClick={onClose}>close</button></header><div className={cx('vsr-overlay-content',contentClassName)}>{children}</div></section></div>,document.body);
 }
 export function Dialog(props){return <Overlay {...props}/>;}
 export function Drawer({className,...props}){return <Overlay {...props} className={cx('vsr-drawer',className)}/>;}
