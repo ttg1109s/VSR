@@ -40,7 +40,7 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
   const cover = routerCover?.url ? routerCover : sceneCover;
   const status = typeof router?.meta?.subTitleStatus === 'string' && router.meta.subTitleStatus.trim()
     ? router.meta.subTitleStatus.trim()
-    : 'Chưa thiết lập trạng thái';
+    : 'Status not set';
 
   return (
     <main className="vsr-page-shell vsr-page-shell--start vsr-page-shell--flush-top">
