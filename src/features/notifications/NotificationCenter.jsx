@@ -94,9 +94,7 @@ export default function NotificationCenter({
     if (!client) return;
     try {
       setActionError('');
-      for (const item of history) {
-        if (!item.read) await client.markNotificationRead(item.id);
-      }
+      await client.markAllNotificationsRead();
     } catch (error) {
       setActionError(error?.message || 'Unable to mark notifications as read.');
     }
