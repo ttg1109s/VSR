@@ -1014,7 +1014,6 @@ export const DEMO_SCRIPT = {
           "actions": [
             "action_talk_hanh",
             "action_open_guestbook",
-            "action_travel_chapel",
             "action_unlock_cellar",
             "action_find_spare_key"
           ]
@@ -1033,7 +1032,6 @@ export const DEMO_SCRIPT = {
           "actions": [
             "action_talk_hanh",
             "action_open_guestbook",
-            "action_travel_chapel",
             "action_unlock_cellar",
           ]
         }
@@ -1107,7 +1105,6 @@ export const DEMO_SCRIPT = {
             "action_read_hymn",
             "action_talk_keeper",
             "action_enter_tower",
-            "action_travel_school",
             "action_find_hymn_note"
           ]
         },
@@ -1126,7 +1123,6 @@ export const DEMO_SCRIPT = {
             "action_read_hymn",
             "action_talk_keeper",
             "action_enter_tower",
-            "action_travel_school",
           ]
         }
       }
