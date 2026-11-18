@@ -16,7 +16,7 @@ export const FakerSystem = {
     async enterFaker(targetString) {
         const state = this.api.engine.state;
         if (typeof targetString !== 'string') {
-            this.api.presentation.notification.add("Lỗi Faker", "Sai định dạng target (mode:id)", "danger");
+            this.api.presentation.notification.add("Identity error", "Invalid target format (mode:id)", "danger");
             return;
         }
 
@@ -24,11 +24,11 @@ export const FakerSystem = {
         const mode = separator >= 0 ? targetString.slice(0, separator) : '';
         const targetId = separator >= 0 ? targetString.slice(separator + 1) : '';
         if (!mode || !targetId || targetId.includes(':')) {
-            this.api.presentation.notification.add("Lỗi Faker", "Sai định dạng target (mode:id)", "danger");
+            this.api.presentation.notification.add("Identity error", "Invalid target format (mode:id)", "danger");
             return;
         }
         if (!['soul', 'mask', 'swap'].includes(mode)) {
-            this.api.presentation.notification.add("Lỗi Faker", `Mode không hợp lệ: ${mode}`, "danger");
+            this.api.presentation.notification.add("Identity error", `Invalid mode: ${mode}`, "danger");
             return;
         }
 
@@ -36,7 +36,7 @@ export const FakerSystem = {
         // tear down a valid active Faker session.
         const requestedTarget = state.getRuntimeSnapshot('characters.[id]', { id: targetId });
         if (!requestedTarget) {
-            this.api.presentation.notification.add("Lỗi Faker", "Mục tiêu không tồn tại", "danger");
+            this.api.presentation.notification.add("Identity error", "Target does not exist", "danger");
             return;
         }
 
@@ -48,7 +48,7 @@ export const FakerSystem = {
         const player = state.getRuntimeSnapshot('characters.[id]', { id: playerId });
         const target = state.getRuntimeSnapshot('characters.[id]', { id: targetId });
         if (!player || !target) {
-            this.api.presentation.notification.add("Lỗi Faker", "Không thể xác định nhân vật nguồn hoặc mục tiêu", "danger");
+            this.api.presentation.notification.add("Identity error", "Unable to identify the source or target character", "danger");
             return;
         }
 
@@ -68,17 +68,17 @@ export const FakerSystem = {
         console.log(`[Faker] Enter: ${mode} -> ${targetId}`);
         if (mode === 'swap') {
             state.set('entryCharacter', targetId);
-            this.api.presentation.notification.add("Chuyển sinh", `Bạn đã trở thành ${target.set?.name || target.meta?.name}`, "success");
+            this.api.presentation.notification.add("Reincarnation", `You have become ${target.set?.name || target.meta?.name}`, "success");
         } else if (mode === 'mask') {
             state.update('characters.[id].set', current => ({
                 ...(current || {}),
                 name: target.set?.name || target.meta?.name,
                 desc: target.set?.desc
             }), { id: playerId });
-            this.api.presentation.notification.add("Cải trang", `Bạn đang khoác lên mình ${target.set?.name || target.meta?.name}`, "info");
+            this.api.presentation.notification.add("Disguise", `You are now disguised as ${target.set?.name || target.meta?.name}`, "info");
         } else {
             this._syncStats(playerId, targetId);
-            this.api.presentation.notification.add("Đoạt xá", `Đã chiếm lấy cơ thể ${target.set?.name || target.meta?.name}`, "special");
+            this.api.presentation.notification.add("Possession", `You have taken over ${target.set?.name || target.meta?.name}'s body`, "special");
         }
 
         this.api.presentation.components.closePlayerCard();
@@ -101,17 +101,17 @@ export const FakerSystem = {
 
         if (mode === 'swap') {
             state.set('entryCharacter', backup.entryCharacter || 'player');
-            this.api.presentation.notification.add("Hoàn trả", "Trở về nhân vật gốc", "info");
+            this.api.presentation.notification.add("Return", "Returned to the original character", "info");
         } else if (mode === 'mask') {
             state.update('characters.[id].set', current => ({
                 ...(current || {}),
                 name: backup.set?.name,
                 desc: backup.set?.desc
             }), { id: playerId });
-            this.api.presentation.notification.add("Gỡ bỏ", "Tháo bỏ lớp ngụy trang", "info");
+            this.api.presentation.notification.add("Remove disguise", "Disguise removed", "info");
         } else {
             if (target?.stats) this._syncStats(playerId, targetId, true);
-            this.api.presentation.notification.add("Thoát xác", "Trở về cơ thể gốc", "info");
+            this.api.presentation.notification.add("Leave body", "Returned to the original body", "info");
         }
 
         state.update('faker', current => ({
