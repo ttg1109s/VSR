@@ -328,7 +328,7 @@ test('Contact exposes Engine-owned thread summaries and opens only a thread belo
     await client.nextChat();
     await client.nextChat();
     assert.equal(client.getSnapshot().session.chat.waitingChoice, true);
-    assert.equal(client.getSnapshot().session.chat.choices.length, 2);
+    assert.equal(client.getSnapshot().session.chat.choices.length, 3);
     assert.deepEqual(client.getSnapshot().session.chat.choices.map(choice => ({
       index: choice.index,
       locked: choice.locked,
@@ -336,7 +336,8 @@ test('Contact exposes Engine-owned thread summaries and opens only a thread belo
       requirementPass: choice.requirementPass
     })), [
       { index: 0, locked: false, active: true, requirementPass: true },
-      { index: 1, locked: false, active: true, requirementPass: true }
+      { index: 1, locked: false, active: true, requirementPass: true },
+      { index: 2, locked: false, active: true, requirementPass: true }
     ]);
     assert.equal(typeof client.getSnapshot().session.chat.prompt, 'string');
     assert.equal(client.getSnapshot().session.chat.choices.some(choice => Object.hasOwn(choice, 'effect')), false);
@@ -383,16 +384,28 @@ test('chat action can finish and reopen as a read-only review without duplicatin
 
     assert.equal(client.getSnapshot().session.chat.active, true);
     assert.equal(client.getSnapshot().session.chat.waitingChoice, false);
+
+    // The selected route continues through the person block and its follow-up choice.
+    await client.nextChat();
+    assert.equal(client.getSnapshot().session.chat.waitingChoice, true);
+    assert.equal(client.getSnapshot().session.chat.choices.length, 2);
+    await client.selectChatChoice(0);
+    await new Promise(resolve => setTimeout(resolve, 600));
+
+    assert.equal(client.getSnapshot().session.chat.active, true);
+    assert.equal(client.getSnapshot().session.chat.waitingChoice, false);
     await client.nextChat();
     assert.equal(client.getSnapshot().session.chat.active, false);
 
     const completedHistory = structuredClone(client.getSnapshot().session.chat.history.chat_mai);
-    assert.equal(completedHistory.length, 4);
+    assert.equal(completedHistory.length, 6);
     assert.deepEqual(completedHistory.map(line => line.text), [
       'Nếu nghe loa gọi tên mình, đừng trả lời.',
       'Đêm đó có mười hai người biến mất. Sáng hôm sau, mọi người chỉ nhớ mười một.',
       'Hỏi về người thứ mười hai',
-      'Tôi đã nhìn thấy người thứ mười hai đi xuống giếng. Nhưng đó là tôi.'
+      'Tôi đã nhìn thấy người thứ mười hai đi xuống giếng. Nhưng đó là tôi.',
+      'Khi nói “đó là tôi”, cô muốn nói mình đã đi xuống giếng?',
+      'Tôi nhớ mình đứng ở miệng giếng. Nhưng tôi không biết đó là ký ức của tôi, hay ký ức của người đã bị xóa.'
     ]);
     assert.equal(host.engine.state.chats.chat_mai.set.read, true);
 
