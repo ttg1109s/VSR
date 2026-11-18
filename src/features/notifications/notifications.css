@@ -5,7 +5,7 @@
 .vsr-notification-center__header-actions{display:flex;flex:none;align-items:center;gap:var(--vsr-space-2)}
 .vsr-notification-center__settings{min-width:240px}
 .vsr-notification-center__settings .vsr-switch-row{min-height:48px}
-.vsr-notification-drawer__content{overflow:hidden;padding:0 0 var(--vsr-space-4)}
+.vsr-notification-drawer__content{display:flex;flex:1;min-height:0;overflow:hidden;flex-direction:column;padding:0 0 var(--vsr-space-4)}
 .vsr-notification-center{display:flex;flex:1;min-height:0;flex-direction:column;gap:0;padding-inline:var(--vsr-space-4);box-sizing:border-box}
 .vsr-notification-center__filters{display:flex;align-items:center;gap:8px;overflow-x:auto;padding:12px 0 12px;border-bottom:0}
 .vsr-notification-center__history{display:flex;flex:1;min-height:0;overflow-y:auto;flex-direction:column;gap:var(--vsr-space-6);overscroll-behavior:contain}
