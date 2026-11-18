@@ -3000,7 +3000,8 @@ export const DEMO_SCRIPT = {
           }
         ]
       }
-    }        "action_enter_tower": {
+    },
+    "action_enter_tower": {
       "meta": {
         "title": "Tháp chuông",
         "buttonLabel": "Lên tầng trên",
@@ -3020,7 +3021,8 @@ export const DEMO_SCRIPT = {
           }
         ]
       }
-    }    "action_enter_clearing": {
+    },
+    "action_enter_clearing": {
       "meta": {
         "title": "Khoảng đất trống",
         "buttonLabel": "Đi đến",
@@ -3040,7 +3042,8 @@ export const DEMO_SCRIPT = {
           }
         ]
       }
-    }    "action_travel_inn": {
+    },
+    "action_travel_inn": {
       "meta": {
         "title": "Nhà trọ Bà Hạnh",
         "buttonLabel": "Di chuyển đến",
