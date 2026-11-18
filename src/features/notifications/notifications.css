@@ -1,8 +1,9 @@
 .vsr-notification-drawer.vsr-overlay-panel{width:min(100%,560px)}
 .vsr-notification-center{display:flex;min-height:0;flex-direction:column;gap:16px}
 .vsr-notification-center__settings{padding:12px 0;border-bottom:1px solid var(--vsr-color-border-subtle)}
+.vsr-notification-center__settings .vsr-switch-row{min-height:48px}
 .vsr-notification-center__filters{display:flex;gap:8px;overflow-x:auto;padding:2px 0 8px}
-.vsr-notification-filter{display:inline-flex;flex:none;align-items:center;gap:6px;min-height:36px;padding:0 12px;border:1px solid var(--vsr-color-border);border-radius:var(--vsr-radius-full);background:var(--vsr-color-surface);color:var(--vsr-color-text-secondary);font:500 13px/18px var(--vsr-font-sans);cursor:pointer}
+.vsr-notification-filter{display:inline-flex;flex:none;align-items:center;gap:6px;min-height:44px;padding:0 12px;border:1px solid var(--vsr-color-border);border-radius:var(--vsr-radius-full);background:var(--vsr-color-surface);color:var(--vsr-color-text-secondary);font:500 13px/18px var(--vsr-font-sans);cursor:pointer}
 .vsr-notification-filter.is-active{border-color:var(--vsr-color-primary);background:var(--vsr-color-primary-container);color:var(--vsr-color-primary)}
 .vsr-notification-filter span{font-variant-numeric:tabular-nums}
 .vsr-notification-center__history{display:flex;flex:1;flex-direction:column;gap:20px}
