@@ -6,8 +6,11 @@ import HomePage from './pages/home/HomePage.jsx';
 import ScenarioPreviewPage from './pages/scenario-preview/ScenarioPreviewPage.jsx';
 import LoadingPage from './pages/loading/LoadingPage.jsx';
 import PlayingPage from './pages/playing/PlayingPage.jsx';
+import { ToastProvider, useToast } from './design-system/index.js';
+import { notificationSoundService } from './features/notifications/NotificationSoundService.js';
 
-export default function App() {
+function AppContent() {
+  const toast = useToast();
   const [preview, setPreview] = useState(null);
   const [page, setPage] = useState('home');
   const [busy, setBusy] = useState(false);
@@ -18,6 +21,11 @@ export default function App() {
   const [gameSnapshot, setGameSnapshot] = useState(null);
   const [chatViewRequest, setChatViewRequest] = useState(null);
   const [gameError, setGameError] = useState('');
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [modalNotification, setModalNotification] = useState(null);
+  const soundEnabledRef = useRef(soundEnabled);
+  const notificationEventIdsRef = useRef(new Set());
+  soundEnabledRef.current = soundEnabled;
   const runtimeRef = useRef(null);
   const loadGenerationRef = useRef(0);
 
@@ -28,7 +36,19 @@ export default function App() {
     runtime?.client?.dispose();
     setGameSnapshot(null);
     setChatViewRequest(null);
+    setModalNotification(null);
     runtime?.transport?.close?.();
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined;
+    const unlock = () => notificationSoundService.unlock();
+    window.addEventListener('pointerdown', unlock, { once: true, capture: true });
+    window.addEventListener('keydown', unlock, { once: true, capture: true });
+    return () => {
+      window.removeEventListener('pointerdown', unlock, true);
+      window.removeEventListener('keydown', unlock, true);
+    };
   }, []);
 
   useEffect(() => () => {
@@ -90,6 +110,7 @@ export default function App() {
 
     const transport = new WorkerJsonTransport({ requestTimeoutMs: 30000 });
     const client = new JsonClient(transport);
+    notificationEventIdsRef.current.clear();
     const unsubscribe = client.subscribe(message => {
       if (generation !== loadGenerationRef.current) return;
       if (message.type === 'state') {
@@ -100,6 +121,25 @@ export default function App() {
           : null;
         if (request?.requestId && request.contactId && request.chatId) {
           setChatViewRequest(request);
+        }
+      } else if (message.type === 'event') {
+        const eventName = message.event?.event;
+        if (eventName !== 'presentation.notification.add' && eventName !== 'presentation.notification.alert') return;
+        const notification = message.event?.payload?.notification;
+        if (!notification?.id || notificationEventIdsRef.current.has(notification.id)) return;
+        notificationEventIdsRef.current.add(notification.id);
+        if (notificationEventIdsRef.current.size > 500) {
+          notificationEventIdsRef.current.delete(notificationEventIdsRef.current.values().next().value);
+        }
+        if (eventName === 'presentation.notification.alert') {
+          setModalNotification(notification);
+        } else {
+          const content = [notification.title, notification.message].filter(Boolean).join(': ') || 'New notification';
+          const tone = notification.level === 'danger' ? 'error' : notification.level === 'warning' ? 'warning' : notification.level === 'success' ? 'success' : 'default';
+          toast(content, { tone, duration: notification.duration ?? 5000 });
+        }
+        if (soundEnabledRef.current && notification.sound !== false) {
+          notificationSoundService.play(notification.soundProfile || notification.level || 'default');
         }
       }
     });
@@ -124,7 +164,7 @@ export default function App() {
       setLoadError(detail || 'Initialization failed. The runtime did not provide an error message.');
       setLoadStatus('error');
     }
-  }, [preview, closeRuntime]);
+  }, [preview, closeRuntime, toast]);
 
   const cancelLoading = useCallback(() => {
     loadGenerationRef.current += 1;
@@ -151,6 +191,19 @@ export default function App() {
         chatViewRequest={chatViewRequest}
         client={runtimeRef.current?.client}
         error={gameError}
+        soundEnabled={soundEnabled}
+        onSoundChange={enabled => {
+          setSoundEnabled(enabled);
+          if (!enabled) notificationSoundService.clearPending();
+        }}
+        modalNotification={modalNotification}
+        onModalClose={async () => {
+          const notificationId = modalNotification?.id;
+          setModalNotification(null);
+          if (notificationId) {
+            try { await runtimeRef.current?.client?.dismissNotification(notificationId); } catch (cause) { setGameError(cause?.message || 'Unable to dismiss the notification.'); }
+          }
+        }}
         onNavigate={async sceneId => {
           setGameError('');
           try {
@@ -173,4 +226,9 @@ export default function App() {
       error={error}
     />
   );
+}
+
+
+export default function App() {
+  return <ToastProvider duration={5000} position="top-right"><AppContent /></ToastProvider>;
 }
