@@ -179,7 +179,7 @@ export default function NotificationCenter({
                           </Button>
                         )}
                         {item.status === 'pending' && (
-                          <Button size="sm" variant="tertiary" disabled={busyIds.includes(item.id)} onClick={() => dismiss(item.id)}>
+                          <Button variant="tertiary" disabled={busyIds.includes(item.id)} onClick={() => dismiss(item.id)}>
                             Dismiss
                           </Button>
                         )}
