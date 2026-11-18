@@ -442,7 +442,7 @@ test('chat action can finish and reopen as a read-only review without duplicatin
     const reopened = client.getSnapshot();
     const reviewRequest = viewEvents.at(-1);
     assert.equal(reviewRequest?.contactId, 'mai');
-    assert.equal(reviewRequest?.chatId, 'chat_mai');
+    assert.equal(reviewRequest?.chatId, 'chat_mai_umbrella');
     assert.equal(reviewRequest?.mode, 'review');
     assert.ok(reviewRequest?.requestId);
     unsubscribe();
