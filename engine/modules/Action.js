@@ -23,7 +23,7 @@ export const ActionSystem = {
             const runtime = this.api.engine.state.getRuntimeSnapshot('actions.[id]', { id: actionId }) || {};
             const count = runtime.count || {};
             return {
-                ...ensureThumb({ id: actionId, ...definition }),
+                ...ensureThumb({ ...definition, id: actionId }),
                 count: {
                     normal: Number.isSafeInteger(count.normal) && count.normal >= 0 ? count.normal : 0,
                     pass: Number.isSafeInteger(count.pass) && count.pass >= 0 ? count.pass : 0,
