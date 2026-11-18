@@ -25,7 +25,7 @@ export const StatsHelpers = {
         if (!targetObj?.stats || !Object.prototype.hasOwnProperty.call(targetObj.stats, prop)) return;
 
         delete targetObj.stats[prop];
-        if (eff.notify) engine.api.notifications.add("Stat removed", `Removed ${prop}`, "info", { source: 'scenario', category: 'scenario.stats.removed' });
+        if (eff.notify) engine.api.notifications.add("Stat removed", `Removed ${prop}`, "info", { source: 'engine', category: 'stats.removed' });
         const entryChar = engine.api.engine.state.getRuntime('meta.entryCharacter') || 'player';
         if (isChar && effectiveTarget === entryChar) engine.api.presentation.components.updatePlayerCard();
         if (isChar && engine.api.presentation.updateContactDetails) engine.api.presentation.updateContactDetails(effectiveTarget);
@@ -63,7 +63,7 @@ export const StatsHelpers = {
 
         if (eff.notify) {
             const type = parsedCurrent < 0 ? "danger" : "success";
-            engine.api.notifications.add(newStat.label, current, type, { source: 'scenario', category: 'scenario.stats.added' });
+            engine.api.notifications.add(newStat.label, current, type, { source: 'engine', category: 'stats.added' });
         }
 
         const entryChar = engine.api.engine.state.getRuntime('meta.entryCharacter') || 'player';
@@ -117,7 +117,7 @@ export const StatsHelpers = {
                 isChar ? "Stats" : "Items",
                 `${name} (${label}): ${sign}${diff}`,
                 type,
-                { source: 'scenario', category: 'scenario.stats.changed' }
+                { source: 'engine', category: 'stats.changed' }
             );
         }
 
