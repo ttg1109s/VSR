@@ -4,7 +4,7 @@ import { Badge, Button, DataTable, DescriptionList, DescriptionListItem, Dialog,
 
 const formatNumber = value => Number.isFinite(value) ? new Intl.NumberFormat('en-US').format(value) : '—';
 
-export default function InventoryWorkspace({ snapshot, client, onClose, onError }) {
+export default function InventoryWorkspace({ snapshot, client, open = false, onClose, onError }) {
   const inventory = snapshot?.presentation?.inventory;
   const items = inventory?.items || [];
   const owners = inventory?.owners || [];
@@ -41,7 +41,7 @@ export default function InventoryWorkspace({ snapshot, client, onClose, onError 
     }
   }
 
-  if (!inventory) return <Drawer open title="Inventory" onClose={onClose} size="lg">
+  if (!inventory) return <Drawer open={open} title="Inventory" onClose={onClose} size="lg">
     <p role="status">Inventory data is not available in this snapshot. Refresh the Engine snapshot and try again.</p>
   </Drawer>;
 
@@ -101,7 +101,7 @@ export default function InventoryWorkspace({ snapshot, client, onClose, onError 
         {selected.broken && <p className="vsr-inventory__notice" role="status">This item has reached its usage limit. Whether it can still be used is controlled by the Engine.</p>}
       </div>}
     </Drawer>
-    <Dialog open={transferOpen && !!selected} title="Transfer item" description="Move this item from the active character to another character." onClose={()=>setTransferOpen(false)}>
+    <Dialog open={open && transferOpen && !!selected} title="Transfer item" description="Move this item from the active character to another character." onClose={()=>setTransferOpen(false)}>
       <div className="vsr-inventory__transfer">
         <Select label="Target character" value={transferTarget} onChange={event=>setTransferTarget(event.target.value)} options={owners.filter(owner=>owner.id!==inventory.ownerId).map(owner=>({value:owner.id,label:owner.name+' ('+owner.itemCount+' items)'}))} placeholder="Choose a character"/>
         <div className="vsr-inventory__actions">
