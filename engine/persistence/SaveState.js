@@ -88,7 +88,10 @@ function validateSaveShape(save) {
 
 function migrateLegacyActionRuntime(save) {
   const scenario = save.scenario || {};
-  const runtimeActions = save.state.actions || {};
+  const runtimeActions = save.state.actions || (save.state.actions = {});
+  if (!runtimeActions || typeof runtimeActions !== 'object' || Array.isArray(runtimeActions)) {
+    throw new TypeError('Cannot migrate save: state.actions must be an object.');
+  }
   const legacyKeysByAction = new Map();
 
   for (const [sceneId, scene] of Object.entries(scenario.scenes || {})) {
