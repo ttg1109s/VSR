@@ -126,17 +126,7 @@ function ActionCard({ action, pending = false, interactionBlocked = false, passw
     if (read || !readRequired) readRequestRef.current = false;
   }, [action.key, read, readRequired]);
 
-  const checks = availability.checks || {};
-  const permissionPassed = checks.permission === 'passed';
-  const permissionFailed = checks.permission === 'failed';
-  const requirementPassed = checks.requirement === 'passed' || checks.requirement === 'not_required';
-  const requirementFailed = checks.requirement === 'failed';
-  const conditionText = requirementPassed
-    ? 'Requirements satisfied'
-    : requirementFailed ? 'Requirements not satisfied' : 'Requirement status unknown';
-  const permissionText = permissionPassed
-    ? 'Permission granted'
-    : permissionFailed ? 'Permission denied' : 'Permission unknown';
+
 
   return <article className="vsr-card vsr-action-card" data-action-key={action.key}>
     <div className="vsr-action-card__heading">
@@ -166,18 +156,7 @@ function ActionCard({ action, pending = false, interactionBlocked = false, passw
       </div>
     </div>
 
-    <div className="vsr-action-card__section vsr-action-card__requirements">
-      <h4>Requirements and permissions</h4>
-      <div className="vsr-action-card__requirement-state">
-        <span className={'vsr-action-card__state-icon ' + (requirementPassed ? 'is-success' : requirementFailed ? 'is-error' : 'is-muted')} aria-hidden="true">{requirementPassed ? 'check_circle' : requirementFailed ? 'cancel' : 'info'}</span>
-        <span>{conditionText}</span>
-      </div>
-      <div className="vsr-action-card__requirement-state">
-        <span className={'vsr-action-card__state-icon vsr-action-card__permission-icon ' + (permissionPassed ? 'is-success' : permissionFailed ? 'is-error' : 'is-muted')} aria-hidden="true">{permissionPassed ? 'verified_user' : 'shield'}</span>
-        <span>{permissionText}</span>
-      </div>
-      {coolingDown && <div className="vsr-action-card__cooldown" role="timer">Time remaining: {cooldown}s</div>}
-    </div>
+    {coolingDown && <div className="vsr-action-card__cooldown" role="timer">Time remaining: {cooldown}s</div>}
 
     {feedback && <p className="vsr-action-card__feedback" role="status">{feedback}</p>}
     <div className="vsr-action-card__actions">
