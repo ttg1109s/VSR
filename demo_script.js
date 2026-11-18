@@ -972,7 +972,7 @@ export const DEMO_SCRIPT = {
     "scene_inn": {
       "meta": {
         "title": "Nhà trọ Bà Hạnh",
-        "desc": "Nhà trọ là nơi lưu giữ sổ khách và lời khai về những người chưa thể rời làng."
+        "desc": "Nhà trọ là nơi lưu giữ sổ khách và lời khai về những người chưa thể rời làng.",
         "parentScene": "scene_village_square"
       },
       "set": {
@@ -1068,7 +1068,7 @@ export const DEMO_SCRIPT = {
     "scene_chapel": {
       "meta": {
         "title": "Nhà nguyện",
-        "desc": "Gian cầu nguyện lưu bản thánh ca chứa mật từ và lời giải về hồi chuông cuối."
+        "desc": "Gian cầu nguyện lưu bản thánh ca chứa mật từ và lời giải về hồi chuông cuối.",
         "parentScene": "scene_village_square"
       },
       "set": {
@@ -1166,7 +1166,7 @@ export const DEMO_SCRIPT = {
     "scene_abandoned_school": {
       "meta": {
         "title": "Trường tiểu học bỏ hoang",
-        "desc": "Trường học lưu sơ đồ lớp và dấu vết về học sinh thứ mười hai bị xóa khỏi hồ sơ."
+        "desc": "Trường học lưu sơ đồ lớp và dấu vết về học sinh thứ mười hai bị xóa khỏi hồ sơ.",
         "parentScene": "scene_village_square"
       },
       "set": {
@@ -1217,7 +1217,7 @@ export const DEMO_SCRIPT = {
     "scene_north_forest": {
       "meta": {
         "title": "Lối rừng phía Bắc",
-        "desc": "Con đường xuyên rừng biến đổi, nhưng các dấu sơn giúp lần tới khu đất nghi lễ."
+        "desc": "Con đường xuyên rừng biến đổi, nhưng các dấu sơn giúp lần tới khu đất nghi lễ.",
         "parentScene": "scene_village_square"
       },
       "set": {
