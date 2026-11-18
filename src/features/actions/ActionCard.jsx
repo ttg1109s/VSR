@@ -76,7 +76,8 @@ function ActionCard({ action, pending = false, interactionBlocked = false, passw
     try {
       const result = await onSubmitPassword?.(passwordChallenge, input);
       if (result?.retry) setInput('');
-    } catch (cause) {
+    } catch {
+      return;
     } finally {
       setPasswordPending(false);
     }
