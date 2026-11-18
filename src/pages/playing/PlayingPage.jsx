@@ -189,7 +189,7 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
         client={client}
         onClose={() => {
           setNotificationOpen(false);
-          setActiveNavigation('hand');
+          setActiveNavigation(null);
         }}
         soundEnabled={soundEnabled}
         onSoundChange={onSoundChange}
