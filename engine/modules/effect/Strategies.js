@@ -77,14 +77,12 @@ const WiredSetStrategies = {
         const state = engine.api.engine.state;
         const actionId = String(resolveValue(eff.target, engine) ?? '');
         const phase = resolveValue(eff.phase, engine);
-        const mode = resolveValue(eff.mode, engine);
-        const amount = resolveValue(eff.value, engine);
+        const value = resolveValue(eff.value, engine);
         if (!['normal', 'pass', 'fail', 'pwFailed'].includes(phase)) {
             throw new TypeError(`Unsupported action counter phase: ${String(phase)}`);
         }
-        if (mode !== 'add') throw new TypeError(`Unsupported action counter mode: ${String(mode)}`);
-        if (!Number.isSafeInteger(amount) || amount < 1) {
-            throw new TypeError('set/action_count requires a positive safe integer value.');
+        if (!Number.isSafeInteger(value) || value < 0) {
+            throw new TypeError('set/action_count requires a non-negative safe integer value.');
         }
 
         const actionKeys = resolveActionRuntimeKeys(engine, actionId);
@@ -92,11 +90,7 @@ const WiredSetStrategies = {
         actionKeys.forEach(actionKey => {
             state.update('actions.[id]', current => {
                 const count = { normal: 0, pass: 0, fail: 0, pwFailed: 0, ...(current?.count || {}) };
-                const next = count[phase] + amount;
-                if (!Number.isSafeInteger(next) || next < 0) {
-                    throw new RangeError(`Invalid action counter result for ${actionId}.`);
-                }
-                return { ...(current || {}), count: { ...count, [phase]: next } };
+                return { ...(current || {}), count: { ...count, [phase]: value } };
             }, { id: actionKey });
         });
     },

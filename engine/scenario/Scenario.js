@@ -500,12 +500,24 @@ export function normalizeScenario(input) {
   // The single compiled validator also applies schema defaults (useDefaults: true).
   validateAgainstSchema(scenario);
 
+  const ensureActionCount = action => {
+    if (!isObject(action)) return;
+    action.count ??= {};
+    for (const phase of ['normal', 'pass', 'fail', 'pwFailed']) {
+      action.count[phase] ??= 0;
+    }
+  };
+  Object.values(isObject(scenario.actions) ? scenario.actions : {}).forEach(ensureActionCount);
+
   for (const [sceneId, scene] of Object.entries(isObject(scenario.scenes) ? scenario.scenes : {})) {
     for (const [routerId, router] of Object.entries(isObject(scene?.routers) ? scene.routers : {})) {
       if (Array.isArray(router?.actions)) {
         router.actions.forEach((action, index) => {
-          if (action && typeof action === 'object' && !Array.isArray(action) && !action.id) {
-            action.id = 'inline_' + sceneId + '_' + routerId + '_' + index;
+          if (action && typeof action === 'object' && !Array.isArray(action)) {
+            if (!action.id) action.id = 'inline_' + sceneId + '_' + routerId + '_' + index;
+            ensureActionCount(action);
+          } else if (typeof action === 'string') {
+            ensureActionCount(scenario.actions?.[action]);
           }
         });
       }

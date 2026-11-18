@@ -4,7 +4,7 @@ import { ActionSystem } from '../engine/modules/Action.js';
 import { SetStrategies } from '../engine/modules/effect/Strategies.js';
 import { LogicSystem } from '../engine/modules/Logic.js';
 import { SceneSystem } from '../engine/modules/Scene.js';
-import { validateScenario } from '../engine/scenario/Scenario.js';
+import { normalizeScenario, validateScenario } from '../engine/scenario/Scenario.js';
 import { scenarioSchema } from '../engine/scenario/ScenarioSchema.js';
 import { normalizeSaveEnvelope } from '../engine/persistence/SaveState.js';
 import { LocalEngineHost } from '../engine/LocalEngineHost.js';
@@ -55,16 +55,40 @@ test('set/action and set/action_count resolve Action IDs across every Scene and 
   const engine = { src, api: { engine: { state } } };
 
   SetStrategies.action_count(engine, {
-    target: 'action_01', phase: 'pass', mode: 'add', value: 1
+    target: 'action_01', phase: 'pass', value: 7
   });
-  assert.equal(updates['scene_a_router_1_action_01'].count.pass, 1);
-  assert.equal(updates['scene_b_router_2_action_01'].count.pass, 1);
+  assert.equal(updates['scene_a_router_1_action_01'].count.pass, 7);
+  assert.equal(updates['scene_b_router_2_action_01'].count.pass, 7);
 
   SetStrategies.action(engine, {
     target: 'action_01', property: 'display', value: 'hide'
   });
   assert.equal(updates['scene_a_router_1_action_01'].display, 'hide');
   assert.equal(updates['scene_b_router_2_action_01'].display, 'hide');
+});
+
+test('set/action_count assigns a non-negative integer and rejects mode/add semantics', () => {
+  const schemaRule = scenarioSchema.definitions.runnable_wrapper.allOf
+    .find(rule => rule.if?.properties?.type?.const === 'set')
+    .then.allOf.find(rule => rule.if?.properties?.subtype?.const === 'action_count').then;
+  assert.deepEqual(schemaRule.properties.value, { type: 'integer', minimum: 0 });
+  assert.equal(Object.hasOwn(schemaRule.properties, 'mode'), false);
+  assert.deepEqual(schemaRule.not, { required: ['mode'] });
+});
+
+test('scenario loader initializes missing Action counters on global and inline Actions', () => {
+  const scenario = JSON.parse(new LocalEngineHost().getDemoScenario());
+  const globalId = Object.keys(scenario.actions)[0];
+  const sceneId = Object.keys(scenario.scenes)[0];
+  const routerId = Object.keys(scenario.scenes[sceneId].routers)[0];
+  const router = scenario.scenes[sceneId].routers[routerId];
+  router.actions = [...(router.actions || []), { meta: { title: 'Inline test' }, set: { display: 'show' } }];
+  delete scenario.actions[globalId].count;
+  const inline = router.actions.at(-1);
+  const normalized = normalizeScenario(scenario);
+  assert.deepEqual(normalized.actions[globalId].count, { normal: 0, pass: 0, fail: 0, pwFailed: 0 });
+  assert.deepEqual(inline.count, undefined);
+  assert.deepEqual(normalized.scenes[sceneId].routers[routerId].actions.at(-1).count, { normal: 0, pass: 0, fail: 0, pwFailed: 0 });
 });
 
 test('Hard Lock ignores non-navigation goto subtypes', () => {

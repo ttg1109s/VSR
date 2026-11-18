@@ -1905,7 +1905,7 @@
                   "required": [
                     "target",
                     "phase",
-                    "mode",
+                    null,
                     "value"
                   ],
                   "properties": {
@@ -1917,13 +1917,15 @@
                         "pwFailed"
                       ]
                     },
-                    "mode": {
-                      "const": "add"
-                    },
                     "value": {
                       "type": "integer",
-                      "minimum": 1
+                      "minimum": 0
                     }
+                  },
+                  "not": {
+                    "required": [
+                      "mode"
+                    ]
                   }
                 }
               }
