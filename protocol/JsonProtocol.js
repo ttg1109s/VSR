@@ -176,7 +176,8 @@ export class JsonProtocol{
    timer:engine.timerState?cloneJsonValue(engine.timerState):null,
    notifications:{
     pending:engine.notifications?.getPending?.()||[],
-    history:engine.notifications?.getHistory?.({limit:50})||[]
+    history:engine.notifications?.getHistory?.({limit:200})||[],
+    unreadCount:(engine.notifications?.getHistory?.({limit:200})||[]).filter(item=>!item.read).length
    }
   };
   const faker=engine.state.faker||{};
