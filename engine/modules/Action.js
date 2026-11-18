@@ -68,20 +68,34 @@ export const ActionSystem = {
         return { success: true };
     },
 
+    notifyActionFailure(title, message, category, dedupeKey) {
+        this.api.notifications.add(title, message, "warning", {
+            source: 'engine',
+            category: category || 'action.failed',
+            dedupeKey: dedupeKey || undefined,
+            duration: 5000
+        });
+    },
+
     async handleAction(actionKey, uniqueId = actionKey) {
         if (this.isActionProcessing || this.isTransitioning) {
             const reason = this.isTransitioning ? 'transitioning' : 'busy';
             console.warn(`[Flow] Action ignored. Busy: Processing=${this.isActionProcessing}, Trans=${this.isTransitioning}`);
+            this.notifyActionFailure('Action unavailable', this.isTransitioning ? 'The Engine is transitioning scenes. Please wait for it to finish.' : 'The Engine is processing another action.', `action.${reason}`);
             return { success: false, reason };
         }
         // A password challenge owns the action flow until it is submitted or cancelled.
-        if (this.pendingPasswordAction) return { success: false, reason: 'challenge_active' };
+        if (this.pendingPasswordAction) {
+            this.notifyActionFailure('Action unavailable', 'Complete or cancel the current password challenge first.', 'action.challenge_active');
+            return { success: false, reason: 'challenge_active' };
+        }
 
         const state = this.api.engine.state;
         const sId = state.get('sceneId');
         const rId = state.get('scene.activeRouterId', { id: sId });
 
         if (!rId || !this.src?.scenes?.[sId]?.routers?.[rId]) {
+            this.notifyActionFailure('Action unavailable', 'No valid action context remains.', 'action.invalid_context');
             return { success: false, reason: 'invalid_context' };
         }
 
@@ -89,13 +103,22 @@ export const ActionSystem = {
         // action definition is not executable unless this router references it.
         const effective = this.getEffectiveActions(sId, rId);
         const actDef = effective.find(action => action.id === actionKey);
-        if (!actDef) return { success: false, reason: 'action_not_found' };
+        if (!actDef) {
+            this.notifyActionFailure('Action unavailable', 'This action is no longer part of the current game.', 'action.not_found');
+            return { success: false, reason: 'action_not_found' };
+        }
 
         const actStateKey = actionKey;
         const currentActionState = state.getRuntimeSnapshot('actions.[id]', { id: actStateKey }) || {};
         const display = currentActionState.display ?? actDef.set?.display ?? 'show';
-        if (display === 'hide') return { success: false, reason: 'action_hidden' };
-        if (display === 'locked') return { success: false, reason: 'locked' };
+        if (display === 'hide') {
+            this.notifyActionFailure('Action unavailable', 'This action is currently hidden.', 'action.hidden');
+            return { success: false, reason: 'action_hidden' };
+        }
+        if (display === 'locked') {
+            this.notifyActionFailure('Action locked', 'This action is locked.', 'action.locked');
+            return { success: false, reason: 'locked' };
+        }
 
 
         console.log(`[Flow] >>> CLICK ACTION: ${actionKey}`);
@@ -140,7 +163,7 @@ export const ActionSystem = {
                 await this.processRunnables(actDef.effect.normal, { sceneId: sId, routerId: rId, actionId: actionKey, hook: 'normal' });
             }
             this.api.presentation.effects.shake(uniqueId);
-            this.api.notifications.add("Blocked", blockReason, "warning");
+            this.notifyActionFailure("Blocked", blockReason, "action.permission_denied", `action.permission_denied:${actStateKey}`);
             this.commitState('action.changed'); // Re-render to update UI states if needed
             return { success: false, reason: 'permission_denied' };
         }
@@ -155,12 +178,7 @@ export const ActionSystem = {
         const hasBeenRead = currentState.readDesc === true;
 
         if (requiresRead && !hasBeenRead) {
-            this.api.notifications.add(
-                'Description not read',
-                'Please read the description before performing this action.',
-                'warning',
-                { source: 'action', category: 'action.not_read', dedupeKey: `action.not_read:${actStateKey}`, duration: 4000 }
-            );
+            this.notifyActionFailure('Description not read', 'Please read the description before performing this action.', 'action.not_read', `action.not_read:${actStateKey}`);
             return { success: false, reason: 'not_read' };
         }
 
@@ -169,7 +187,7 @@ export const ActionSystem = {
         if (set.cooldown > 0 && Number.isFinite(cooldownUntil) && cooldownUntil > Date.now()) {
             const remainingSeconds = Math.ceil((cooldownUntil - Date.now()) / 1000);
             this.api.presentation.effects.shake(uniqueId);
-            this.api.notifications.add('Action failed', `Please wait ${remainingSeconds}s`, 'warning');
+            this.notifyActionFailure('Action on cooldown', `Please wait ${remainingSeconds}s before trying again.`, 'action.cooldown', `action.cooldown:${actStateKey}`);
             return { success: false, reason: 'cooldown', remainingSeconds };
         }
 
@@ -214,9 +232,9 @@ export const ActionSystem = {
                 this.api.presentation.effects.shake(uniqueId);
 
                 const failActions = {
-                    item_surplus: () => this.api.notifications.add("Warning", "You are carrying too many items!", "warning"),
-                    item_missing: () => this.api.notifications.add("Warning", "Required item missing!", "warning"),
-                    item_order: () => this.api.notifications.add("Warning", "Incorrect item order!", "warning")
+                    item_surplus: () => this.notifyActionFailure("Warning", "You are carrying too many items!", "action.requirement_failed"),
+                    item_missing: () => this.notifyActionFailure("Warning", "Required item missing!", "action.requirement_failed"),
+                    item_order: () => this.notifyActionFailure("Warning", "Incorrect item order!", "action.requirement_failed")
                 };
                 // A Story-authored fail notification is more specific than the
                 // generic engine warning. Avoid stacking both for one failed Action.
@@ -226,7 +244,7 @@ export const ActionSystem = {
                     if (failType && failActions[failType]) {
                         failActions[failType]();
                     } else if (this.getConfig && this.getConfig('defaultNotice')) {
-                        this.api.notifications.add("Failed", "Requirements not met.", "warning");
+                        this.notifyActionFailure("Action failed", "Requirements not met.", "action.requirement_failed");
                     }
                 }
 
