@@ -305,7 +305,7 @@ export const DEMO_SCRIPT = {
   "itemInfo": {
     "lantern": {
       "name": "Đèn bão",
-      "icon": "lantern",
+      "icon": "light",
       "desc": "Chiếu sáng những dấu vết chỉ xuất hiện trong sương.",
       "usage": {
         "current": 10,
@@ -351,7 +351,7 @@ export const DEMO_SCRIPT = {
     },
     "tape": {
       "name": "Cuộn băng",
-      "icon": "cassette",
+      "icon": "audio_file",
       "desc": "Bản ghi âm đêm mất điện.",
       "usage": {
         "current": 10,
@@ -377,7 +377,7 @@ export const DEMO_SCRIPT = {
     },
     "red_umbrella": {
       "name": "Ô đỏ",
-      "icon": "umbrella",
+      "icon": "rainy",
       "desc": "Vật chứng xuất hiện trong lời kể của Mai.",
       "usage": {
         "current": 10,
@@ -561,7 +561,7 @@ export const DEMO_SCRIPT = {
     },
     "evacuation_film": {
       "name": "Cuộn phim sơ tán",
-      "icon": "film",
+      "icon": "movie",
       "desc": "Cuộn phim ghi lại đám đông ở bờ đê trong đêm mất tích.",
       "usage": {
         "current": 1,
@@ -587,7 +587,7 @@ export const DEMO_SCRIPT = {
     },
     "hymn_note": {
       "name": "Trang ghi chú trong thánh ca",
-      "icon": "scroll",
+      "icon": "description",
       "desc": "Mảnh giấy giải thích ý nghĩa của ba hồi chuông trong đêm sơ tán.",
       "usage": {
         "current": 1,
@@ -639,7 +639,7 @@ export const DEMO_SCRIPT = {
     },
     "class_register_copy": {
       "name": "Bản sao sổ điểm danh",
-      "icon": "book-open",
+      "icon": "menu_book",
       "desc": "Bản ghi xác nhận có mười hai học sinh trong lớp vào ngày sơ tán.",
       "usage": {
         "current": 1,
@@ -665,7 +665,7 @@ export const DEMO_SCRIPT = {
     },
     "guide_compass": {
       "name": "La bàn người dẫn đường",
-      "icon": "compass",
+      "icon": "explore",
       "desc": "La bàn cũ có khắc tuyến đường từ rừng xuống chân đê.",
       "usage": {
         "current": 1,
@@ -691,7 +691,7 @@ export const DEMO_SCRIPT = {
     },
     "evacuation_seal": {
       "name": "Con dấu đội sơ tán",
-      "icon": "stamp",
+      "icon": "approval",
       "desc": "Con dấu gỗ dùng để xác nhận danh sách sơ tán chính thức.",
       "usage": {
         "current": 1,
@@ -743,7 +743,7 @@ export const DEMO_SCRIPT = {
     },
     "tunnel_manifest": {
       "name": "Danh sách vận chuyển",
-      "icon": "file-text",
+      "icon": "description",
       "desc": "Danh sách ghi tên những người được đưa qua đường hầm trong đêm sơ tán.",
       "usage": {
         "current": 1,
@@ -769,7 +769,7 @@ export const DEMO_SCRIPT = {
     },
     "unpunched_ticket": {
       "name": "Vé tàu chưa xé",
-      "icon": "ticket",
+      "icon": "confirmation_number",
       "desc": "Vé của chuyến 03:17, còn nguyên phần kiểm soát.",
       "usage": {
         "current": 1,
