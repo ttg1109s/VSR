@@ -292,7 +292,7 @@ export class JsonProtocol{
     avatar:null,kind:'communication',threads:communicationThreads
    },
    {
-    id:UNKNOWN_SENDER_ID,name:'Unknown / Spam',description:'Tin nhắn không xác định được nguồn gửi hoặc đến từ nguồn chưa khai báo.',
+    id:UNKNOWN_SENDER_ID,name:'Unknown / Spam',description:'Messages from an unknown or undeclared sender.',
     avatar:null,kind:'unknown',threads:unknownThreads
    }
   ];
