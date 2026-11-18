@@ -20,13 +20,6 @@
 .vsr-notification-group h3{margin:0 0 8px;padding-top:12px;color:var(--vsr-color-text-secondary);font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
 .vsr-notification-item{display:flex;align-items:stretch;padding:16px 0;border-bottom:1px solid var(--vsr-color-border-subtle)}
 .vsr-notification-item.is-unread{background:transparent;cursor:pointer;touch-action:pan-y}
-.vsr-notification-item__marker{display:flex;flex:none;align-items:center;justify-content:center;width:52px;height:52px;border-radius:18px;color:var(--vsr-color-primary);background:var(--vsr-color-primary-container)}
-.vsr-notification-item__marker .vsr-icon{font-size:25px}
-.vsr-notification-item__marker--success{background:#E6F4EA;color:#188038}
-.vsr-notification-item__marker--warning{background:#FEF7E0;color:#A56A00}
-.vsr-notification-item__marker--danger{background:#FCE8E6;color:#B3261E}
-.vsr-notification-item__marker--info{background:#E8F0FE;color:#1967D2}
-.vsr-notification-item__marker--neutral{background:var(--vsr-color-surface-muted);color:var(--vsr-color-text-secondary)}
 .vsr-notification-item__body{display:flex;flex:1;min-width:0;flex-direction:column;gap:6px}
 .vsr-notification-item__heading{display:flex;align-items:center;gap:8px;min-width:0}
 .vsr-notification-item__heading strong{overflow-wrap:anywhere;font-size:16px;font-weight:600;line-height:22px}
