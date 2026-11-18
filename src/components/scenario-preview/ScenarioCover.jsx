@@ -30,7 +30,7 @@ export default function ScenarioCover({ url, ratio, title }) {
           aria-label="Không có ảnh bìa cho kịch bản"
         >
           <span className="vsr-icon" aria-hidden="true">image</span>
-          <span>No cover image</span>
+          <span>Chưa có ảnh bìa</span>
         </div>
       )}
     </figure>
