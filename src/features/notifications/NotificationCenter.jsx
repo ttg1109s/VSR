@@ -1,12 +1,12 @@
 import React, { useMemo, useState } from 'react';
-import { Badge, Button, Dialog, Drawer, Input, Switch } from '../../design-system/index.js';
+import { Badge, Button, Dialog, Drawer, Menu, Popover, Switch } from '../../design-system/index.js';
 import './notifications.css';
 
 const FILTERS = [
   { value: 'all', label: 'All' },
   { value: 'unread', label: 'Unread' },
-  { value: 'scenario', label: 'Scenario' },
-  { value: 'system', label: 'System' }
+  { value: 'system', label: 'System' },
+  { value: 'story', label: 'Story' }
 ];
 
 const levelTone = level => ({
@@ -17,22 +17,35 @@ const levelTone = level => ({
   info: 'neutral'
 }[level] || 'neutral');
 
-const formatDate = timestamp => {
-  const date = new Date(timestamp);
-  if (!Number.isFinite(date.getTime())) return '';
-  return new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit' }).format(date);
-};
-
 const dateGroup = timestamp => {
   const date = new Date(timestamp);
   if (!Number.isFinite(date.getTime())) return 'Earlier';
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
   const day = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
-  if (day === today) return 'Today';
-  if (day === today - 86400000) return 'Yesterday';
-  return 'Earlier';
+  return day === today ? 'Today' : 'Earlier';
 };
+
+const formatRelativeTime = timestamp => {
+  const date = new Date(timestamp);
+  if (!Number.isFinite(date.getTime())) return '';
+  const seconds = Math.round((date.getTime() - Date.now()) / 1000);
+  const formatter = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
+  if (Math.abs(seconds) < 60) return seconds >= 0 ? 'Just now' : formatter.format(seconds, 'second');
+  if (Math.abs(seconds) < 3600) return formatter.format(Math.round(seconds / 60), 'minute');
+  if (Math.abs(seconds) < 86400) return formatter.format(Math.round(seconds / 3600), 'hour');
+  return formatter.format(Math.round(seconds / 86400), 'day');
+};
+
+const notificationIcon = level => ({
+  success: 'check_circle',
+  warning: 'warning',
+  danger: 'warning',
+  special: 'auto_awesome',
+  info: 'info',
+  inventory: 'inventory_2',
+  quest: 'task_alt'
+}[level] || 'notifications');
 
 export default function NotificationCenter({
   open,
@@ -45,21 +58,19 @@ export default function NotificationCenter({
   onModalClose
 }) {
   const [filter, setFilter] = useState('all');
-  const [query, setQuery] = useState('');
   const [busyIds, setBusyIds] = useState([]);
   const [actionError, setActionError] = useState('');
   const history = useMemo(() => [...notifications].sort((a, b) =>
     (b.createdAt || 0) - (a.createdAt || 0)
-  ), [notifications]);
+  ).slice(0, 200), [notifications]);
   const unreadCount = history.filter(item => !item.read).length;
   const visible = history.filter(item => {
     if (filter === 'unread' && item.read) return false;
-    if (filter === 'scenario' && item.source !== 'scenario') return false;
+    if (filter === 'story' && item.source !== 'scenario') return false;
     if (filter === 'system' && item.source === 'scenario') return false;
-    const searchText = (item.title || '') + ' ' + (item.message || '') + ' ' + (item.category || '');
-    return !query.trim() || searchText.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase());
+    return true;
   });
-  const groups = ['Today', 'Yesterday', 'Earlier'].map(label => ({
+  const groups = ['Today', 'Earlier'].map(label => ({
     label,
     items: visible.filter(item => dateGroup(item.createdAt) === label)
   })).filter(group => group.items.length > 0);
@@ -91,7 +102,7 @@ export default function NotificationCenter({
   };
 
   const markAllRead = async () => {
-    if (!client) return;
+    if (!client || !unreadCount) return;
     try {
       setActionError('');
       await client.markAllNotificationsRead();
@@ -100,37 +111,45 @@ export default function NotificationCenter({
     }
   };
 
+  const settings = (
+    <Switch
+      label="Notification sounds"
+      description="Play a sound when a new notification arrives."
+      checked={soundEnabled}
+      onChange={event => onSoundChange?.(event.target.checked)}
+    />
+  );
+
   return (
     <>
       <Drawer
         open={open}
         onClose={onClose}
-        title="Notifications"
-        description={unreadCount ? unreadCount + ' unread' : 'Your notification history'}
         side="right"
         size="lg"
         className="vsr-notification-drawer"
-        headerActions={
-          <Button variant="tertiary" disabled={!unreadCount} onClick={markAllRead}>
-            Mark all as read
-          </Button>
+        ariaLabel="Notifications"
+        headerClassName="vsr-notification-center__header"
+        headerContent={
+          <div className="vsr-notification-center__header-content">
+            <div className="vsr-notification-center__header-copy">
+              <h2>Notifications</h2>
+              <p>Stay updated on what happens in your world.</p>
+            </div>
+            <div className="vsr-notification-center__header-actions">
+              <Badge tone="info" size="lg" aria-label={unreadCount + ' unread notifications'}>{unreadCount} unread</Badge>
+              <Popover
+                align="end"
+                label="Notification settings"
+                trigger={<button type="button" className="vsr-icon-button vsr-notification-settings-trigger" aria-label="Notification settings">tune</button>}
+              >
+                <div className="vsr-notification-center__settings">{settings}</div>
+              </Popover>
+            </div>
+          </div>
         }
       >
         <div className="vsr-notification-center">
-          <div className="vsr-notification-center__settings">
-            <Switch
-              label="Notification sounds"
-              description="Play a sound when a new notification arrives."
-              checked={soundEnabled}
-              onChange={event => onSoundChange?.(event.target.checked)}
-            />
-          </div>
-          <Input
-            aria-label="Search notifications"
-            placeholder="Search notifications"
-            value={query}
-            onChange={event => setQuery(event.target.value)}
-          />
           <div className="vsr-notification-center__filters" role="group" aria-label="Filter notifications">
             {FILTERS.map(option => (
               <button
@@ -157,41 +176,44 @@ export default function NotificationCenter({
             {groups.map(group => (
               <section className="vsr-notification-group" key={group.label} aria-label={group.label}>
                 <h3>{group.label}</h3>
-                {group.items.map(item => (
-                  <article className={'vsr-notification-item' + (item.read ? '' : ' is-unread')} key={item.id}>
-                    <div className="vsr-notification-item__marker" aria-hidden="true">
-                      <span className="vsr-icon">{item.level === 'success' ? 'check_circle' : item.level === 'warning' || item.level === 'danger' ? 'warning' : item.level === 'special' ? 'auto_awesome' : 'info'}</span>
-                    </div>
-                    <div className="vsr-notification-item__body">
-                      <div className="vsr-notification-item__heading">
-                        <strong>{item.title || 'Notification'}</strong>
-                        {!item.read && <Badge tone="info" size="sm">New</Badge>}
+                {group.items.map(item => {
+                  const tone = levelTone(item.level);
+                  const timestamp = new Date(item.createdAt);
+                  const validTimestamp = Number.isFinite(timestamp.getTime());
+                  const menuItems = [
+                    !item.read && { key: 'read', label: 'Mark as read', icon: 'done', disabled: busyIds.includes(item.id), onSelect: () => markRead(item.id) },
+                    item.status === 'pending' && { key: 'dismiss', label: 'Dismiss', icon: 'close', danger: true, disabled: busyIds.includes(item.id), onSelect: () => dismiss(item.id) }
+                  ].filter(Boolean);
+                  return (
+                    <article className={'vsr-notification-item' + (item.read ? '' : ' is-unread')} key={item.id}>
+                      <div className={'vsr-notification-item__marker vsr-notification-item__marker--' + tone} aria-hidden="true">
+                        <span className="vsr-icon">{notificationIcon(item.category || item.level)}</span>
                       </div>
-                      <p>{item.message}</p>
-                      <div className="vsr-notification-item__meta">
-                        <Badge tone={levelTone(item.level)} size="sm">{item.category || item.source || 'System'}</Badge>
-                        <time dateTime={new Date(item.createdAt).toISOString()}>{formatDate(item.createdAt)}</time>
+                      <div className="vsr-notification-item__body">
+                        <div className="vsr-notification-item__heading">
+                          <strong>{item.title || 'Notification'}</strong>
+                          {!item.read && <Badge tone={tone === 'error' ? 'warning' : 'info'} size="lg">New</Badge>}
+                        </div>
+                        <p>{item.message}</p>
+                        {validTimestamp && <time dateTime={timestamp.toISOString()}>{formatRelativeTime(timestamp)}</time>}
                       </div>
-                      <div className="vsr-notification-item__actions">
-                        {!item.read && (
-                          <Button variant="tertiary" disabled={busyIds.includes(item.id)} onClick={() => markRead(item.id)}>
-                            Mark as read
-                          </Button>
-                        )}
-                        {item.status === 'pending' && (
-                          <Button variant="tertiary" disabled={busyIds.includes(item.id)} onClick={() => dismiss(item.id)}>
-                            Dismiss
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  </article>
-                ))}
+                      {menuItems.length > 0 && (
+                        <Menu
+                          align="end"
+                          label={'Actions for ' + (item.title || 'notification')}
+                          trigger={<button type="button" className="vsr-icon-button vsr-notification-item__menu-trigger" aria-label={'Actions for ' + (item.title || 'notification')}>more_vert</button>}
+                          items={menuItems}
+                        />
+                      )}
+                    </article>
+                  );
+                })}
               </section>
             ))}
           </div>
           <div className="vsr-notification-center__footer">
-            {visible.length} of {history.length} notifications
+            <span>Showing recent notifications</span>
+            <Button variant="tertiary" disabled={!unreadCount} onClick={markAllRead}>Mark all as read</Button>
           </div>
         </div>
       </Drawer>
