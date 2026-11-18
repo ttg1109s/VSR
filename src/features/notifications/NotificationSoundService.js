@@ -19,7 +19,7 @@ export class NotificationSoundService {
     const AudioContextClass = window.AudioContext || window.webkitAudioContext;
     if (!AudioContextClass) return false;
     try {
-      if (!this.context) this.context = new AudioContextClass();
+      if (!this.context || this.context.state === 'closed') this.context = new AudioContextClass();
       if (this.context.state === 'suspended') {
         this.context.resume().then(() => this.flush()).catch(() => {});
       } else {
