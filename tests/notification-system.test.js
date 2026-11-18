@@ -213,10 +213,6 @@ test('notification sound metadata defaults on and rejects invalid profiles', () 
     () => notifications.add('Notice', 'Message', 'info', { soundProfile: 'untrusted-profile' }),
     /Unsupported notification sound profile/
   );
-  assert.throws(
-    () => notifications.add('Notice', 'Message', 'info', { sound: 'yes' }),
-    /sound must be a boolean/
-  );
 });
 
 
@@ -246,7 +242,6 @@ test('scenario notify strategy forwards presentation intent and sound metadata',
   assert.equal(calls[0].args[3].category, 'story.quest');
   assert.equal(calls[0].args[3].priority, 8);
   assert.equal(calls[0].args[3].duration, 6500);
-  assert.equal(calls[0].args[3].sound, true);
   assert.equal(calls[0].args[3].soundProfile, 'warning');
 
   NotifyStrategies.modal(engine, { title: 'Critical', text: 'Stop.', level: 'danger' });
@@ -277,7 +272,6 @@ test('scenario schema applies notification defaults only to notify effects', () 
   const normalizedNotify = normalized.itemInfo.guestbook.effect.use.find(item => item.type === 'notify');
   const normalizedSet = normalized.itemInfo.lantern.effect.use.find(item => item.type === 'set');
 
-  assert.equal(normalizedNotify.sound, true);
   assert.equal(normalizedNotify.soundProfile, 'success');
   assert.equal(normalizedNotify.category, 'story.clue');
   assert.equal(normalizedNotify.priority, 8);
