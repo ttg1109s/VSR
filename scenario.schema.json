@@ -1334,6 +1334,42 @@
             "pwFailed"
           ],
           "description": "Action counter phase for set/action_count."
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "description": "Scenario-defined notification category."
+        },
+        "priority": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10,
+          "description": "Requested notification priority; Engine clamps it to the supported range."
+        },
+        "durationMs": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 30000,
+          "description": "Requested toast lifetime in milliseconds; Engine applies its duration policy."
+        },
+        "sound": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether this notification requests an audio cue. User preference may override it."
+        },
+        "soundProfile": {
+          "type": "string",
+          "enum": [
+            "default",
+            "soft",
+            "success",
+            "warning",
+            "critical",
+            "special"
+          ],
+          "default": "default",
+          "description": "Requested synthesized Web Audio profile."
         }
       },
       "additionalProperties": false,
@@ -2452,6 +2488,22 @@
                   "special"
                 ],
                 "default": "info"
+              },
+              "sound": {
+                "type": "boolean",
+                "default": true
+              },
+              "soundProfile": {
+                "type": "string",
+                "enum": [
+                  "default",
+                  "soft",
+                  "success",
+                  "warning",
+                  "critical",
+                  "special"
+                ],
+                "default": "default"
               }
             }
           }
@@ -2737,6 +2789,42 @@
             "pwFailed"
           ],
           "description": "Action counter phase for set/action_count."
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "description": "Scenario-defined notification category."
+        },
+        "priority": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10,
+          "description": "Requested notification priority; Engine clamps it to the supported range."
+        },
+        "durationMs": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 30000,
+          "description": "Requested toast lifetime in milliseconds; Engine applies its duration policy."
+        },
+        "sound": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether this notification requests an audio cue. User preference may override it."
+        },
+        "soundProfile": {
+          "type": "string",
+          "enum": [
+            "default",
+            "soft",
+            "success",
+            "warning",
+            "critical",
+            "special"
+          ],
+          "default": "default",
+          "description": "Requested synthesized Web Audio profile."
         }
       },
       "additionalProperties": false,
@@ -3746,6 +3834,22 @@
                   "special"
                 ],
                 "default": "info"
+              },
+              "sound": {
+                "type": "boolean",
+                "default": true
+              },
+              "soundProfile": {
+                "type": "string",
+                "enum": [
+                  "default",
+                  "soft",
+                  "success",
+                  "warning",
+                  "critical",
+                  "special"
+                ],
+                "default": "default"
               }
             }
           }
