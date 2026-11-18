@@ -218,10 +218,16 @@ export const ActionSystem = {
                     item_missing: () => this.api.notifications.add("Warning", "Required item missing!", "warning"),
                     item_order: () => this.api.notifications.add("Warning", "Incorrect item order!", "warning")
                 };
-                if (failType && failActions[failType]) {
-                    failActions[failType]();
-                } else if (this.getConfig && this.getConfig('defaultNotice')) {
-                    this.api.notifications.add("Failed", "Requirements not met.", "warning");
+                // A Story-authored fail notification is more specific than the
+                // generic engine warning. Avoid stacking both for one failed Action.
+                const hasStoryFailNotice = Array.isArray(actDef.effect?.fail)
+                    && actDef.effect.fail.some(effect => effect?.type === 'notify');
+                if (!hasStoryFailNotice) {
+                    if (failType && failActions[failType]) {
+                        failActions[failType]();
+                    } else if (this.getConfig && this.getConfig('defaultNotice')) {
+                        this.api.notifications.add("Failed", "Requirements not met.", "warning");
+                    }
                 }
 
                 // Fail Effect
