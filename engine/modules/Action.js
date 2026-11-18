@@ -2,48 +2,35 @@ import { getFakerActingIds } from './entity/Identity.js';
 
 export const ActionSystem = {
     getEffectiveActions(sId, rId) {
-        if (!this.src || !this.src.scenes[sId] || !this.src.scenes[sId].routers[rId]) return [];
-
-        const router = this.src.scenes[sId].routers[rId];
-        let actions = [];
-        const ensureThumb = (act) => {
-            // Do not mutate nested metadata shared with the immutable scenario source.
-            act.meta = { ...(act.meta || {}) };
-            if (!act.meta.thumb) act.meta.thumb = 'assets/images/thumbnail.jpg';
-            return act;
-        };
-
-        if (Array.isArray(router.actions)) {
-            router.actions.forEach(item => {
-                if (typeof item === 'string') {
-                    // Global Reference
-                    const globalAct = this.src.actions ? this.src.actions[item] : null;
-                    if (globalAct) {
-                        let act = { id: item, source: 'global', ...globalAct };
-                        ensureThumb(act);
-                        actions.push(act);
-                    } else {
-                        console.error(`ActionSystem: Missing Global Action '${item}' in Router '${rId}'`);
-                    }
-                } else if (typeof item === 'object') {
-                    // Inline Definition
-                    let act = { ...item, source: 'inline' };
-                    if (!act.id) throw new Error(`Inline action in router '${rId}' must have a stable id; normalize the scenario before resolving actions.`);
-                    ensureThumb(act);
-                    actions.push(act);
-                }
-            });
+        const router = this.src?.scenes?.[sId]?.routers?.[rId];
+        if (!router) return [];
+        if (!Array.isArray(router.actions)) {
+            throw new TypeError(`Router '${sId}.${rId}' actions must be an array of global Action IDs.`);
         }
-        return actions.map(action => {
-            const key = `${sId}_${rId}_${action.id}`;
-            const runtime = this.api.engine.state.getRuntimeSnapshot('actions.[id]', { id: key }) || {};
+        const ensureThumb = action => {
+            const meta = { ...(action.meta || {}) };
+            if (!meta.thumb) meta.thumb = 'assets/images/thumbnail.jpg';
+            return { ...action, meta, source: 'global' };
+        };
+        return router.actions.map(actionId => {
+            if (typeof actionId !== 'string' || !actionId.trim()) {
+                throw new TypeError(`Router '${sId}.${rId}' contains an invalid Action reference; inline Actions are not supported.`);
+            }
+            const definition = this.src.actions?.[actionId];
+            if (!definition) {
+                throw new Error(`Router '${sId}.${rId}' references unknown Action ID '${actionId}'.`);
+            }
+            const runtime = this.api.engine.state.getRuntimeSnapshot('actions.[id]', { id: actionId }) || {};
             const count = runtime.count || {};
-            return { ...action, count: {
-                normal: Number.isSafeInteger(count.normal) && count.normal >= 0 ? count.normal : 0,
-                pass: Number.isSafeInteger(count.pass) && count.pass >= 0 ? count.pass : 0,
-                fail: Number.isSafeInteger(count.fail) && count.fail >= 0 ? count.fail : 0,
-                pwFailed: Number.isSafeInteger(count.pwFailed) && count.pwFailed >= 0 ? count.pwFailed : 0
-            }};
+            return {
+                ...ensureThumb({ id: actionId, ...definition }),
+                count: {
+                    normal: Number.isSafeInteger(count.normal) && count.normal >= 0 ? count.normal : 0,
+                    pass: Number.isSafeInteger(count.pass) && count.pass >= 0 ? count.pass : 0,
+                    fail: Number.isSafeInteger(count.fail) && count.fail >= 0 ? count.fail : 0,
+                    pwFailed: Number.isSafeInteger(count.pwFailed) && count.pwFailed >= 0 ? count.pwFailed : 0
+                }
+            };
         });
     },
 
@@ -58,14 +45,14 @@ export const ActionSystem = {
             .find(item => `${sceneId}_${routerId}_${item.id}` === uniqueId);
         if (!action) return { success: false, reason: 'action_not_found' };
 
-        const current = state.getRuntimeSnapshot('actions.[id]', { id: uniqueId });
+        const current = state.getRuntimeSnapshot('actions.[id]', { id: action.id });
         if (current?.readDesc === true) return { success: true, alreadyRead: true };
         state.update('actions.[id]', value => ({
             count: { normal: 0, pass: 0, fail: 0, pwFailed: 0 },
             display: 'show',
             ...(value || {}),
             readDesc: true
-        }), { id: uniqueId });
+        }), { id: action.id });
         return { success: true };
     },
 
@@ -92,7 +79,7 @@ export const ActionSystem = {
         const actDef = effective.find(action => action.id === actionKey);
         if (!actDef) return { success: false, reason: 'action_not_found' };
 
-        const actStateKey = `${sId}_${rId}_${actionKey}`;
+        const actStateKey = actionKey;
         const currentActionState = state.getRuntimeSnapshot('actions.[id]', { id: actStateKey }) || {};
         const display = currentActionState.display ?? actDef.set?.display ?? 'show';
         if (display === 'hide') return { success: false, reason: 'action_hidden' };
@@ -318,7 +305,7 @@ export const ActionSystem = {
     async executeActionSuccess(actDef, sId, rId, actionKey, uniqueId) {
         const set = actDef.set || {};
         const state = this.api.engine.state;
-        const actStateKey = `${sId}_${rId}_${actionKey}`;
+        const actStateKey = actionKey;
 
         // Set Cooldown
         if (set.cooldown && set.cooldown > 0 && state.getRuntimeSnapshot('actions.[id]', { id: actStateKey })) {
@@ -363,7 +350,7 @@ export const ActionSystem = {
                 return { success: true };
             }
             if (result === 'exhausted') {
-                const actStateKey = `${sId}_${rId}_${actionKey}`;
+                const actStateKey = actionKey;
                 if (actDef.effect?.pwFailed) {
                     this.incrementActionCount(actStateKey, 'pwFailed');
                     await this.processRunnables(actDef.effect.pwFailed, {
