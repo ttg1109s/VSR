@@ -652,7 +652,7 @@
 .vsr-contact-info-panel {
   position: absolute;
   z-index: 5;
-  inset: 64px 0 0;
+  inset: 0;
   display: flex;
   min-width: 0;
   min-height: 0;
