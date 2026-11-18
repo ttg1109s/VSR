@@ -1905,7 +1905,6 @@
                   "required": [
                     "target",
                     "phase",
-                    null,
                     "value"
                   ],
                   "properties": {
