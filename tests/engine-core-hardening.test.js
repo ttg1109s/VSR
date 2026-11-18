@@ -987,6 +987,39 @@ test('mark-as-read only mutates actions in the active router', async () => {
 });
 
 
+test('runtime Action requirement overrides are projected into subsequent effective Action definitions', () => {
+  const runtime = { requirement: true, count: { normal: 1, pass: 1, fail: 0, pwFailed: 0 } };
+  const engine = {
+    src: {
+      scenes: { start: { routers: { main: { actions: ['notice'] } } } },
+      actions: { notice: { meta: { title: 'Notice' }, set: { display: 'show', requirement: false } } }
+    },
+    api: {
+      engine: {
+        state: {
+          getRuntimeSnapshot(path, params) {
+            assert.equal(path, 'actions.[id]');
+            assert.equal(params.id, 'notice');
+            return runtime;
+          }
+        }
+      }
+    }
+  };
+
+  const enabled = ActionSystem.getEffectiveActions.call(engine, 'start', 'main')[0];
+  assert.equal(enabled.set.requirement, true);
+  assert.deepEqual(enabled.count, { normal: 1, pass: 1, fail: 0, pwFailed: 0 });
+
+  runtime.requirement = false;
+  const disabled = ActionSystem.getEffectiveActions.call(engine, 'start', 'main')[0];
+  assert.equal(disabled.set.requirement, false);
+
+  delete runtime.requirement;
+  const sourceDefault = ActionSystem.getEffectiveActions.call(engine, 'start', 'main')[0];
+  assert.equal(sourceDefault.set.requirement, false);
+});
+
 test('set.action dispatches through the wired strategy and updates runtime action state', () => {
   const action = { display: 'show' };
   const writes = [];
