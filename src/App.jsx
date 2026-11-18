@@ -28,7 +28,7 @@ function AppContent() {
       return true;
     }
   });
-  const [modalNotification, setModalNotification] = useState(null);
+  const [modalNotifications, setModalNotifications] = useState([]);
   const soundEnabledRef = useRef(soundEnabled);
   const notificationEventIdsRef = useRef(new Set());
   soundEnabledRef.current = soundEnabled;
@@ -46,7 +46,7 @@ function AppContent() {
     runtime?.client?.dispose();
     setGameSnapshot(null);
     setChatViewRequest(null);
-    setModalNotification(null);
+    setModalNotifications([]);
     runtime?.transport?.close?.();
   }, []);
 
@@ -142,7 +142,7 @@ function AppContent() {
           notificationEventIdsRef.current.delete(notificationEventIdsRef.current.values().next().value);
         }
         if (eventName === 'presentation.notification.alert') {
-          setModalNotification(notification);
+          setModalNotifications(current => [...current, notification]);
         } else {
           const content = [notification.title, notification.message].filter(Boolean).join(': ') || 'New notification';
           const tone = notification.level === 'danger' ? 'error' : notification.level === 'warning' ? 'warning' : notification.level === 'success' ? 'success' : 'default';
@@ -206,10 +206,10 @@ function AppContent() {
           setSoundEnabled(enabled);
           if (!enabled) notificationSoundService.clearPending();
         }}
-        modalNotification={modalNotification}
+        modalNotification={modalNotifications[0] || null}
         onModalClose={async () => {
-          const notificationId = modalNotification?.id;
-          setModalNotification(null);
+          const notificationId = modalNotifications[0]?.id;
+          setModalNotifications(current => current.slice(1));
           if (notificationId) {
             try { await runtimeRef.current?.client?.dismissNotification(notificationId); } catch (cause) { setGameError(cause?.message || 'Unable to dismiss the notification.'); }
           }
