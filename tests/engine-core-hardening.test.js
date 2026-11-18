@@ -821,7 +821,7 @@ test('CharacterStrategies.mng_stats adds a stat through the shared stat helper',
   });
 
   assert.deepEqual(character.stats.strength, {
-    current: 25, max: 50, label: 'Strength', color: '#ff5555'
+    current: 25, max: 50, label: 'Strength', color: '#ff5555', unknown: false
   });
   assert.equal(persisted.path, 'characters.[id]');
   assert.equal(persisted.params.id, 'character');
@@ -1199,6 +1199,7 @@ test('loader rejects a configured entry character that is absent from scenario c
 test('Contact snapshot projects only characters met by the current Player Entry', async () => {
   const scenario = validScenario();
   scenario.meta.entryCharacter = 'hero';
+  scenario.characters.hero = { meta: { name: 'Hero' }, set: {}, stats: {}, inventory: [], relationship: [], place: { scene_id: 'start', currentIndex: 0 }, met: ['ally:3'], moveList: [] };
   scenario.actions.test_action.set.charAllow = ['ally'];
   const characterSet = { moving: false, alert: null, move: null, linkEffect: false };
   scenario.scenes.elsewhere = {
