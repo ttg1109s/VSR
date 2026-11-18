@@ -47,6 +47,7 @@ export default function NotificationCenter({
   const [filter, setFilter] = useState('all');
   const [query, setQuery] = useState('');
   const [busyIds, setBusyIds] = useState([]);
+  const [actionError, setActionError] = useState('');
   const history = useMemo(() => [...notifications].sort((a, b) =>
     (b.createdAt || 0) - (a.createdAt || 0)
   ), [notifications]);
@@ -67,7 +68,10 @@ export default function NotificationCenter({
     if (!client || busyIds.includes(id)) return;
     setBusyIds(current => [...current, id]);
     try {
+      setActionError('');
       await client.markNotificationRead(id);
+    } catch (error) {
+      setActionError(error?.message || 'Unable to update the notification.');
     } finally {
       setBusyIds(current => current.filter(value => value !== id));
     }
@@ -77,7 +81,10 @@ export default function NotificationCenter({
     if (!client || busyIds.includes(id)) return;
     setBusyIds(current => [...current, id]);
     try {
+      setActionError('');
       await client.dismissNotification(id);
+    } catch (error) {
+      setActionError(error?.message || 'Unable to dismiss the notification.');
     } finally {
       setBusyIds(current => current.filter(value => value !== id));
     }
@@ -85,8 +92,13 @@ export default function NotificationCenter({
 
   const markAllRead = async () => {
     if (!client) return;
-    for (const item of history) {
-      if (!item.read) await client.markNotificationRead(item.id);
+    try {
+      setActionError('');
+      for (const item of history) {
+        if (!item.read) await client.markNotificationRead(item.id);
+      }
+    } catch (error) {
+      setActionError(error?.message || 'Unable to mark notifications as read.');
     }
   };
 
@@ -135,6 +147,7 @@ export default function NotificationCenter({
               </button>
             ))}
           </div>
+          {actionError && <p className="vsr-notification-center__error" role="alert">{actionError}</p>}
           <div className="vsr-notification-center__history">
             {!visible.length && (
               <div className="vsr-notification-center__empty">
