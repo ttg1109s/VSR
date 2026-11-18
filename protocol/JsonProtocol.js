@@ -288,7 +288,7 @@ export class JsonProtocol{
   const unknownThreads=projectThreadList(UNKNOWN_SENDER_ID);
   const systemContacts=[
    {
-    id:COMMUNICATION_SENDER_ID,name:'Communication',description:'Thông báo và nội dung từ các nguồn hệ thống.',
+    id:COMMUNICATION_SENDER_ID,name:'Communication',description:'Notifications and content from system sources.',
     avatar:null,kind:'communication',threads:communicationThreads
    },
    {
