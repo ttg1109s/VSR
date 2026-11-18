@@ -151,7 +151,9 @@
                     "additionalProperties": false
                   }
                 },
-                "inventory": { "type": ["object", "null"] },
+                "inventory": {
+                  "$ref": "#/$defs/inventoryProjection"
+                },
                 "player": {
                   "oneOf": [
                     {
@@ -1042,6 +1044,233 @@
         }
       },
       "additionalProperties": false
+    },
+    "inventoryItemProjection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "icon",
+        "description",
+        "category",
+        "equipped",
+        "requirements",
+        "usage",
+        "broken",
+        "canEquip",
+        "canUse",
+        "stats"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "icon": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "description": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "equipped": {
+          "type": "boolean"
+        },
+        "requirements": {
+          "type": "object",
+          "required": [
+            "hasRequirements",
+            "passed"
+          ],
+          "properties": {
+            "hasRequirements": {
+              "type": "boolean"
+            },
+            "passed": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "usage": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "properties": {
+            "current": {
+              "type": "number"
+            },
+            "max": {
+              "type": "number"
+            },
+            "autoInc": {
+              "type": "boolean"
+            },
+            "status": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "prefixItems": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "minItems": 2,
+                "maxItems": 2
+              }
+            }
+          },
+          "required": [
+            "current",
+            "max",
+            "autoInc",
+            "status"
+          ],
+          "additionalProperties": false
+        },
+        "broken": {
+          "type": "boolean"
+        },
+        "canEquip": {
+          "type": "boolean"
+        },
+        "canUse": {
+          "type": "boolean"
+        },
+        "stats": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "label",
+              "current",
+              "max",
+              "color"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "label": {
+                "type": "string"
+              },
+              "current": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "max": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "color": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    "inventoryProjection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "enabled",
+        "ownerId",
+        "owners",
+        "items",
+        "handCount",
+        "handLimit",
+        "itemCount",
+        "inventoryLimit"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "ownerId": {
+          "type": "string"
+        },
+        "owners": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "name",
+              "isActive",
+              "itemCount"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "isActive": {
+                "type": "boolean"
+              },
+              "itemCount": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inventoryItemProjection"
+          }
+        },
+        "handCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "handLimit": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "itemCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "inventoryLimit": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        }
+      }
     }
   }
 }
