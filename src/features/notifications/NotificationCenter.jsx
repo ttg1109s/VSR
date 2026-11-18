@@ -111,7 +111,7 @@ export default function NotificationCenter({
         size="lg"
         className="vsr-notification-drawer"
         headerActions={
-          <Button size="sm" variant="tertiary" disabled={!unreadCount} onClick={markAllRead}>
+          <Button variant="tertiary" disabled={!unreadCount} onClick={markAllRead}>
             Mark all as read
           </Button>
         }
@@ -174,7 +174,7 @@ export default function NotificationCenter({
                       </div>
                       <div className="vsr-notification-item__actions">
                         {!item.read && (
-                          <Button size="sm" variant="tertiary" disabled={busyIds.includes(item.id)} onClick={() => markRead(item.id)}>
+                          <Button variant="tertiary" disabled={busyIds.includes(item.id)} onClick={() => markRead(item.id)}>
                             Mark as read
                           </Button>
                         )}
