@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Badge, Button, Dialog, Drawer, Menu, Popover, Switch } from '../../design-system/index.js';
+import { Badge, Button, Dialog, Drawer, Input, Menu, Popover, Switch } from '../../design-system/index.js';
 import './notifications.css';
 
 const FILTERS = [
@@ -61,6 +61,8 @@ export default function NotificationCenter({
   onModalClose
 }) {
   const [filter, setFilter] = useState('all');
+  const [query, setQuery] = useState('');
+  const [searchOpen, setSearchOpen] = useState(false);
   const [busyIds, setBusyIds] = useState([]);
   const [actionError, setActionError] = useState('');
   const history = useMemo(() => [...notifications].sort((a, b) =>
@@ -71,7 +73,8 @@ export default function NotificationCenter({
     if (filter === 'unread' && item.read) return false;
     if (filter === 'story' && item.source !== 'scenario') return false;
     if (filter === 'system' && item.source === 'scenario') return false;
-    return true;
+    const searchText = (item.title || '') + ' ' + (item.message || '') + ' ' + (item.category || '');
+    return !query.trim() || searchText.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase());
   });
   const groups = ['Today', 'Earlier'].map(label => ({
     label,
@@ -166,7 +169,9 @@ export default function NotificationCenter({
                 {option.value === 'unread' && unreadCount > 0 && <span>{unreadCount}</span>}
               </button>
             ))}
+            <button type="button" className="vsr-icon-button vsr-notification-search-trigger" aria-label={searchOpen ? 'Close notification search' : 'Search notifications'} aria-expanded={searchOpen} onClick={() => { setSearchOpen(value => !value); setQuery(''); }}>{searchOpen ? 'close' : 'search'}</button>
           </div>
+          {searchOpen && <Input aria-label="Search notifications" placeholder="Search notifications" value={query} onChange={event => setQuery(event.target.value)} />}
           {actionError && <p className="vsr-notification-center__error" role="alert">{actionError}</p>}
           <div className="vsr-notification-center__history">
             {!visible.length && (
