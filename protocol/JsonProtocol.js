@@ -325,12 +325,9 @@ export class JsonProtocol{
     };
    })
    .sort((a,b)=>a.name.localeCompare(b.name,undefined,{sensitivity:'base'}));
-  const inventoryOwnerId=engine.getOwnerId?.()||engine.state.entryCharacter||'player';
-  const inventoryOwners=Object.entries(engine.state.characters||{}).map(([characterId,character])=>({
-   id:characterId,name:character?.meta?.name||characterId,
-   isActive:characterId===inventoryOwnerId,
-   itemCount:Array.isArray(character?.inventory)?character.inventory.length:0
-  }));
+  // Inventory is scoped to the scenario's single entry character. Do not
+  // project other characters' inventories into the player-facing snapshot.
+  const inventoryOwnerId=engine.state.entryCharacter||'player';
   const inventoryCharacter=engine.state.characters?.[inventoryOwnerId]||null;
   const inventoryIds=Array.isArray(inventoryCharacter?.inventory)?inventoryCharacter.inventory:[];
   const handIds=Array.isArray(inventoryCharacter?.hand)?inventoryCharacter.hand:[];
@@ -368,7 +365,7 @@ export class JsonProtocol{
    };
   }).filter(Boolean);
   const inventoryProjection={
-   enabled:engine.getConfig?.('navInventory')!==false,ownerId:inventoryOwnerId,owners:inventoryOwners,items:inventoryItems,
+   enabled:engine.getConfig?.('navInventory')!==false,ownerName:inventoryCharacter?.meta?.name||inventoryOwnerId,items:inventoryItems,
    handCount:handIds.length,handLimit:maxHand>0?maxHand:null,
    itemCount:inventoryIds.length,inventoryLimit:ownerLimit>0?ownerLimit:null
   };
