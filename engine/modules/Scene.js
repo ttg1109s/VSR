@@ -284,17 +284,18 @@ export const SceneSystem = {
         }
     },
 
-    goBackParent() {
+    async goBackParent() {
         const state = this.api.engine.state;
         const sId = state.get('sceneId');
+        const parentId = this.src?.scenes?.[sId]?.meta?.parentScene;
 
-        const sceneMeta = this.src.scenes[sId]?.meta;
-        if (sceneMeta?.parentScene) {
-            const parentId = sceneMeta.parentScene;
-            if (this.src.scenes[parentId]) {
-                this.enterScene(parentId, true);
-            }
+        if (!parentId || !this.src?.scenes?.[parentId]) {
+            return { success: false, reason: 'no_parent' };
         }
+
+        const result = await this.enterScene(parentId, true);
+        if (result?.success === false) return result;
+        return { success: true, sceneId: parentId };
     },
 
     goBackTimerEnd() {
