@@ -108,7 +108,7 @@ export const ItemSystem = {
         const info = state.getRuntimeSnapshot('itemInfo.[id]', { id });
 
         if (!info) {
-            this.api.presentation.notification.add("Error", "Item does not exist.", "danger");
+            this.api.notifications.add("Error", "Item does not exist.", "danger", { source: "engine", category: "inventory.equip_failed" });
             return;
         }
 
@@ -118,7 +118,7 @@ export const ItemSystem = {
         if (idx < 0 && info.requirements) {
             const res = this.checkReq(info.requirements);
             if (!res.pass) {
-                this.api.presentation.notification.add("Cannot hold item", "Requirements not met.", "danger");
+                this.api.notifications.add("Cannot equip item", "Requirements not met.", "danger", { source: "engine", category: "inventory.equip_failed" });
                 return;
             }
         }
@@ -140,14 +140,14 @@ export const ItemSystem = {
 
         if (result === 'missing') return;
         if (result === 'full') {
-            this.api.presentation.notification.add("Cannot hold item", "Hands are full.", "warning");
+            this.api.notifications.add("Cannot equip item", "Hands are full.", "warning", { source: "engine", category: "inventory.hand_full" });
             return;
         }
         if (result === 'unequipped') {
-            this.api.presentation.notification.add("Item stored", "Item added to inventory", "info");
+            this.api.notifications.add("Item unequipped", `${info.name} was returned to inventory`, "info", { source: "engine", category: "inventory.unequipped" });
             if (info.effect?.unequip) await this.processRunnables(info.effect.unequip, { itemId: id, hook: 'unequip' });
         } else {
-            this.api.presentation.notification.add("Item equipped", `${info.name} is now in your hand`, "success");
+            this.api.notifications.add("Item equipped", `${info.name} is now in your hand`, "success", { source: "engine", category: "inventory.equipped" });
             if (info.effect?.equip) await this.processRunnables(info.effect.equip, { itemId: id, hook: 'equip' });
         }
 
