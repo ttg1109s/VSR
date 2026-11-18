@@ -6,7 +6,7 @@ export const DEMO_SCRIPT = {
   "meta": {
     "title": "NGÔI LÀNG KHÔNG TIẾNG ĐỘNG",
     "subtitle": "Một bí ẩn dân gian về ký ức, sự mất tích và cái giá của việc nhớ lại",
-    "desc": "Bạn tỉnh dậy ở quảng trường của một ngôi làng bị mắc kẹt trong ký ức. Lần theo dấu vết qua giếng đá, nhà trọ, nhà nguyện, trường học, khu rừng, cối xay và đường hầm để tìm sân ga xuất hiện lúc 03:17; sự thật được ghép lại sẽ quyết định ai được giải thoát.",
+    "desc": "Bạn tỉnh dậy giữa màn đêm của một ngôi làng bị mắc kẹt trong ký ức. Sương mù che khuất những con đường và tiếng loa rè rè vọng ra từ quảng trường. Hãy lần theo dấu vết qua các địa điểm trong làng — từ giếng đá, nhà trọ, nhà nguyện, trường học đến khu rừng, cối xay và đường hầm — để tìm sân ga xuất hiện lúc 03:17; sự thật được ghép lại sẽ quyết định ai được giải thoát.",
     "writer": "Nhóm phát triển bản demo VSR",
     "studio": "VSR",
     "version": "2.0.0",
