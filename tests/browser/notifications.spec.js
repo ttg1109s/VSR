@@ -14,7 +14,11 @@ test('Notification filters and mark-all-read use accessible shared controls', as
   const filters = page.getByRole('group', { name: 'Filter notifications' });
   await filters.getByRole('button', { name: 'Story' }).click();
   await expect(page.getByText('Story update')).toBeVisible();
+  await expect(page.getByText('Category-only story update')).toBeVisible();
   await expect(page.getByText('Unread system notice')).toHaveCount(0);
+  await filters.getByRole('button', { name: 'System' }).click();
+  await expect(page.getByText('Unread system notice')).toBeVisible();
+  await expect(page.getByText('Category-only story update')).toHaveCount(0);
   await filters.getByRole('button', { name: 'All' }).click();
   await page.getByRole('button', { name: 'Mark all as read' }).click();
   await expect.poll(() => page.evaluate(() => window.__notifyCalls)).toContainEqual(['read-all']);
