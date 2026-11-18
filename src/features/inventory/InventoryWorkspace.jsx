@@ -13,6 +13,7 @@ export default function InventoryWorkspace({ snapshot, open = false, onClose }) 
       onClose={onClose}
       size="lg"
       width="min(100vw, 760px)"
+      lockScroll
     >
       <div className="vsr-stack vsr-stack--gap-4">
         <div className="vsr-stack vsr-stack--gap-2">
