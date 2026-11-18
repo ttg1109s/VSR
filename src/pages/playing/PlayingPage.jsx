@@ -1,11 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Badge, BottomNavigation, Breadcrumb, MediaFrame } from '../../design-system/index.js';
 import ActionCollection from '../../features/actions/ActionCollection.jsx';
-import ContactPanel from './ContactPanel.jsx';
+import Liên hệPanel from './Liên hệPanel.jsx';
 
 export default function PlayingPage({ snapshot, chatViewRequest = null, client, error = '', onNavigate }) {
   const [activeNavigation, setActiveNavigation] = useState('hand');
-  const [contactOpen, setContactOpen] = useState(false);
+  const [contactOpen, setLiên hệOpen] = useState(false);
   const scene = snapshot?.presentation?.scene ?? null;
   const router = snapshot?.presentation?.router ?? null;
   const activeSceneId = snapshot?.game?.sceneId ?? null;
@@ -13,13 +13,13 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
   const activeChat = snapshot?.session?.chat ?? null;
   useEffect(() => {
     if (activeChat?.active !== true || !activeChat.id || !activeChat.contactId) return;
-    setContactOpen(true);
+    setLiên hệOpen(true);
     setActiveNavigation('contact');
   }, [activeChat?.active, activeChat?.id, activeChat?.contactId]);
 
   useEffect(() => {
     if (!chatViewRequest?.requestId || !chatViewRequest.chatId || !chatViewRequest.contactId) return;
-    setContactOpen(true);
+    setLiên hệOpen(true);
     setActiveNavigation('contact');
   }, [chatViewRequest?.requestId, chatViewRequest?.chatId, chatViewRequest?.contactId]);
 
@@ -40,7 +40,7 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
   const cover = routerCover?.url ? routerCover : sceneCover;
   const status = typeof router?.meta?.subTitleStatus === 'string' && router.meta.subTitleStatus.trim()
     ? router.meta.subTitleStatus.trim()
-    : 'Status not set';
+    : 'Chưa thiết lập trạng thái';
 
   return (
     <main className="vsr-page-shell vsr-page-shell--start vsr-page-shell--flush-top">
@@ -50,7 +50,7 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
         separator="›"
         scrollable
         sticky
-        aria-label="Scene breadcrumb"
+        aria-label="Đường dẫn cảnh"
       />
       <article className="vsr-page-shell__content vsr-page-shell__content--reading">
         {scene?.meta?.desc && (
@@ -78,25 +78,25 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
         value={activeNavigation}
         onChange={value => {
           setActiveNavigation(value);
-          if (value === 'contact') setContactOpen(true);
+          if (value === 'contact') setLiên hệOpen(true);
         }}
         items={[
-          { value: 'hand', label: 'Hand', icon: 'front_hand' },
-          { value: 'inventor', label: 'Inventor', icon: 'inventory_2' },
-          { value: 'contact', label: 'Contact', icon: 'contacts' },
-          { value: 'notify', label: 'Notify', icon: 'notifications' }
+          { value: 'hand', label: 'Đồ đang cầm', icon: 'front_hand' },
+          { value: 'inventor', label: 'Vật phẩm', icon: 'inventory_2' },
+          { value: 'contact', label: 'Liên hệ', icon: 'contacts' },
+          { value: 'notify', label: 'Thông báo', icon: 'notifications' }
         ]}
       />
-      <ContactPanel
+      <Liên hệPanel
         open={contactOpen}
         player={snapshot?.presentation?.player ?? null}
         contacts={snapshot?.presentation?.contacts ?? []}
-        systemContacts={snapshot?.presentation?.systemContacts ?? []}
+        systemLiên hệs={snapshot?.presentation?.systemLiên hệs ?? []}
         session={snapshot?.session ?? null}
         viewRequest={chatViewRequest}
         client={client}
         onClose={() => {
-          setContactOpen(false);
+          setLiên hệOpen(false);
           setActiveNavigation('hand');
         }}
       />
