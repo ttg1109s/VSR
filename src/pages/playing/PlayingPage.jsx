@@ -4,12 +4,13 @@ import ActionCollection from '../../features/actions/ActionCollection.jsx';
 import ActionNavigator from '../../features/actions/ActionNavigator.jsx';
 import ContactPanel from './ContactPanel.jsx';
 import NotificationCenter from '../../features/notifications/NotificationCenter.jsx';
+import InventoryWorkspace from '../../features/inventory/InventoryWorkspace.jsx';
 import './playing-page.css';
 
 export default function PlayingPage({ snapshot, chatViewRequest = null, client, error = '', onNavigate, soundEnabled = true, onSoundChange, modalNotification = null, onModalClose }) {
   const toast = useToast();
   const [activeNavigation, setActiveNavigation] = useState('hand');
-  const [contactOpen, setContactOpen] = useState(false);
+  const [contactOpen, setContactOpen] = useState(false);\n  const [inventoryOpen, setInventoryOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [backParentPending, setBackParentPending] = useState(false);
   const actionCollectionRef = useRef(null);
@@ -135,7 +136,7 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
       <BottomNavigation
         value={activeNavigation}
         onChange={value => {
-          if (value === 'notify') {
+          if (value === 'inventor') {\n            setInventoryOpen(current => !current);\n            setContactOpen(false);\n            setNotificationOpen(false);\n            setActiveNavigation(inventoryOpen ? 'hand' : 'inventor');\n            return;\n          }\n          if (value === 'notify') {
             setNotificationOpen(current => !current);
             setContactOpen(false);
             setActiveNavigation(notificationOpen ? 'hand' : 'notify');
@@ -147,7 +148,7 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
         }}
         items={[
           { value: 'hand', label: 'Hand', icon: 'front_hand' },
-          { value: 'inventor', label: 'Inventor', icon: 'inventory_2' },
+          { value: 'inventor', label: 'Inventory', icon: 'inventory_2' },
           { value: 'contact', label: 'Contact', icon: 'contacts' },
           { value: 'notify', label: 'Notify', icon: 'notifications', badge: unreadCount, badgeLabel: 'unread notifications' }
         ]}
