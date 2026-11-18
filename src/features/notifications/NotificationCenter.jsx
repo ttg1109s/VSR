@@ -176,7 +176,7 @@ export default function NotificationCenter({
                   const validTimestamp = Number.isFinite(timestamp.getTime());
                   const canDismiss = !['dismissed', 'expired', 'cleared'].includes(item.status);
                   const handlePointerDown = event => {
-                    if (!event.isPrimary || (event.pointerType === 'mouse' && event.button !== 0)) return;
+                    if (!event.isPrimary || event.pointerType === 'mouse' || event.target.closest('button, a, input, [role="menu"]')) return;
                     swipeStart.current = {
                       id: item.id,
                       pointerId: event.pointerId,
