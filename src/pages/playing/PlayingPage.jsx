@@ -49,12 +49,15 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
     onClick: () => onNavigate?.(item.id)
   })), [scenePath, onNavigate]);
 
+  const sceneTitle = scene?.meta?.title || scenePath.find(item => item.id === activeSceneId)?.title || '';
+  const routerTitle = typeof router?.meta?.title === 'string' ? router.meta.title.trim() : '';
+  const routerDescription = typeof router?.meta?.desc === 'string' ? router.meta.desc : '';
   const routerCover = router?.meta?.cover;
   const sceneCover = scene?.meta?.cover;
   const cover = routerCover?.url ? routerCover : sceneCover;
   const status = typeof router?.meta?.subTitleStatus === 'string' && router.meta.subTitleStatus.trim()
     ? router.meta.subTitleStatus.trim()
-    : 'Status not set';
+    : '';
 
   return (
     <main className="vsr-page-shell vsr-page-shell--start vsr-page-shell--flush-top">
@@ -67,25 +70,29 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
         aria-label="Scene breadcrumb"
       />
       <article className="vsr-page-shell__content vsr-page-shell__content--reading">
-        {scene?.meta?.desc && (
-          <div className="vsr-text-body">{scene.meta.desc}</div>
-        )}
-        <MediaFrame
-          src={cover?.url}
-          type={cover?.type || 'photo'}
-          ratio={cover?.ratio || '16:9'}
-          overlay={<Badge tone="neutral">{status}</Badge>}
-        />
-        {router?.meta?.desc && (
-          <div className="vsr-text-body">{router.meta.desc}</div>
-        )}
-        {actionNavigation.actionCount > 0 && (
-          <ActionNavigator
-            activeIndex={actionNavigation.activeIndex}
-            actionCount={actionNavigation.actionCount}
-            activeTitle={actionNavigation.activeTitle}
-            onNavigate={index => actionCollectionRef.current?.scrollToIndex(index)}
+        <section className="vsr-stack vsr-stack--gap-3" aria-label="Scene context">
+          {sceneTitle && <h1 id="playing-scene-title" className="vsr-heading-display">{sceneTitle}</h1>}
+          <MediaFrame
+            src={cover?.url}
+            type={cover?.type || 'photo'}
+            ratio={cover?.ratio || '16:9'}
+            alt={sceneTitle ? `${sceneTitle} scene` : 'Scene media'}
           />
+          {scene?.meta?.desc && (
+            <div className="vsr-text-body">{scene.meta.desc}</div>
+          )}
+        </section>
+        {(routerTitle || routerDescription || status) && (
+          <section className="vsr-stack vsr-stack--gap-2" aria-labelledby="playing-situation-title">
+            <header className="vsr-page-header">
+              <div className="vsr-stack vsr-stack--gap-1">
+                <h2 id="playing-situation-title" className="vsr-text-body"><strong>Current Situation</strong></h2>
+                {routerTitle && <p className="vsr-text-secondary">{routerTitle}</p>}
+              </div>
+              {status && <Badge tone="neutral">{status}</Badge>}
+            </header>
+            {routerDescription && <p className="vsr-text-body">{routerDescription}</p>}
+          </section>
         )}
         <ActionCollection
           ref={actionCollectionRef}
@@ -96,6 +103,14 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
           onNavigationStateChange={handleActionNavigationStateChange}
           onError={message => toast(message, { tone: 'warning' })}
         />
+        {actionNavigation.actionCount > 0 && (
+          <ActionNavigator
+            activeIndex={actionNavigation.activeIndex}
+            actionCount={actionNavigation.actionCount}
+            activeTitle={actionNavigation.activeTitle}
+            onNavigate={index => actionCollectionRef.current?.scrollToIndex(index)}
+          />
+        )}
         {error && <p className="vsr-text-error" role="alert">{error}</p>}
       </article>
       <BottomNavigation

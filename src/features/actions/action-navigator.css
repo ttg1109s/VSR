@@ -1,6 +1,6 @@
 .vsr-action-navigator{
  display:grid;
- gap:var(--vsr-space-4);
+ gap:var(--vsr-space-3);
  width:100%;
  min-width:0;
  box-sizing:border-box;
@@ -8,33 +8,6 @@
  border:1px solid var(--vsr-color-border-subtle);
  border-radius:var(--vsr-radius-md);
  background:var(--vsr-color-surface);
-}
-.vsr-action-navigator__header{
- display:flex;
- align-items:center;
- justify-content:space-between;
- gap:var(--vsr-space-3);
- min-width:0;
-}
-.vsr-action-navigator__heading{
- margin:0;
- color:var(--vsr-color-text);
- font-size:var(--vsr-font-size-h3);
- line-height:var(--vsr-line-height-h3);
- font-weight:600;
-}
-.vsr-action-navigator__count{
- display:inline-flex;
- align-items:center;
- gap:var(--vsr-space-2);
- color:var(--vsr-color-text-secondary);
- font-size:16px;
- line-height:24px;
- white-space:nowrap;
-}
-.vsr-action-navigator__count-icon{
- font:22px/1 var(--vsr-font-icon);
- color:var(--vsr-color-text);
 }
 .vsr-action-navigator__controls{
  display:grid;
@@ -91,22 +64,39 @@
  outline:2px solid var(--vsr-color-primary);
  outline-offset:-2px;
 }
-.vsr-action-navigator__current{
+.vsr-action-navigator__summary{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:var(--vsr-space-3);
+ min-width:0;
+}
+.vsr-action-navigator__title{
  margin:0;
- color:var(--vsr-color-text-secondary);
+ min-width:0;
+ color:var(--vsr-color-text);
  font-size:16px;
  line-height:24px;
- text-align:center;
- overflow-wrap:anywhere;
+ font-weight:500;
+ overflow:hidden;
+ text-overflow:ellipsis;
+ white-space:nowrap;
+}
+.vsr-action-navigator__position{
+ flex:0 0 auto;
+ margin:0;
+ color:var(--vsr-color-text-secondary);
+ font-size:14px;
+ line-height:20px;
+ font-variant-numeric:tabular-nums;
+ white-space:nowrap;
 }
 @media(max-width:599px){
  .vsr-action-navigator{gap:var(--vsr-space-3);padding:var(--vsr-space-3)}
- .vsr-action-navigator__heading{font-size:18px;line-height:24px}
- .vsr-action-navigator__count{font-size:14px;line-height:20px}
  .vsr-action-navigator__controls{grid-template-columns:44px minmax(0,1fr) 44px;gap:var(--vsr-space-2)}
  .vsr-action-navigator__arrow{width:44px;min-width:44px;height:44px;min-height:44px}
  .vsr-action-navigator__page{flex-basis:36px;width:36px;height:44px}
- .vsr-action-navigator__current{font-size:14px;line-height:20px}
+
 }
 @media(prefers-reduced-motion:reduce){
  .vsr-action-navigator__dot{transition:none}

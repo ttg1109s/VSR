@@ -52,14 +52,6 @@ export default function ActionNavigator({ activeIndex = 0, actionCount = 0, acti
 
   return (
     <section className="vsr-action-navigator" aria-label="Action navigation">
-      <header className="vsr-action-navigator__header">
-        <h2 className="vsr-action-navigator__heading">Action Navigator</h2>
-        <div className="vsr-action-navigator__count" aria-label={`${actionCount} actions`}>
-          <span className="vsr-action-navigator__count-icon" aria-hidden="true">layers</span>
-          <span>{actionCount} {actionCount === 1 ? 'Action' : 'Actions'}</span>
-        </div>
-      </header>
-
       <div className="vsr-action-navigator__controls">
         <IconButton
           className="vsr-action-navigator__arrow"
@@ -95,9 +87,10 @@ export default function ActionNavigator({ activeIndex = 0, actionCount = 0, acti
         />
       </div>
 
-      <p className="vsr-action-navigator__current" aria-live="polite">
-        {safeActiveIndex + 1} / {actionCount}{activeTitle ? ` · ${activeTitle}` : ''}
-      </p>
+      <div className="vsr-action-navigator__summary" aria-live="polite">
+        <p className="vsr-action-navigator__title">{activeTitle}</p>
+        <p className="vsr-action-navigator__position">{safeActiveIndex + 1} / {actionCount}</p>
+      </div>
     </section>
   );
 }
