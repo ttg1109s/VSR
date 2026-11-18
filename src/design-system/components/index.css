@@ -159,10 +159,14 @@
 }
 .vsr-inventory-item__info h3,
 .vsr-inventory-item__info p {
+  display: block;
+  width: 100%;
   max-width: 100%;
   margin: 0;
+  overflow: hidden;
   text-align: center;
-  overflow-wrap: anywhere;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .vsr-inventory-item__info h3 {
   font-size: 15px;
