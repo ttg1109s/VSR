@@ -141,7 +141,7 @@ test('action blocked by unread description emits a deduplicated not_read notific
   assert.equal(calls[0][0], 'Chưa đọc mô tả');
   assert.equal(calls[0][2], 'warning');
   assert.equal(calls[0][3].category, 'action.not_read');
-  assert.equal(calls[0][3].dedupeKey, 'action.not_read:scene_router_inspect');
+  assert.equal(calls[0][3].dedupeKey, 'action.not_read:inspect');
 });
 
 test('notification manager automatically expires toast notifications', () => {

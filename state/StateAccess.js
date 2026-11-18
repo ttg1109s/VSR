@@ -96,18 +96,17 @@ function routerKey(context) {
   return `${context.sceneId}_${context.routerId}`;
 }
 
-function actionKey(context, engine) {
-  if (context.actionKey) return context.actionKey;
-  const sceneId = context.sceneId ?? engine?.state?.sceneId;
-  const routerId = context.routerId ?? engine?.state?.scenes?.[sceneId]?.activeRouterId;
-  if (context.id === undefined || sceneId === undefined || routerId === undefined) return undefined;
-  return `${sceneId}_${routerId}_${context.id}`;
+function actionId(context) {
+  return context.id ?? context.actionId ?? context.actionKey;
 }
 
 function resolveContext(key, context, engine) {
   const next = { ...context };
   if (key.startsWith('router.')) next.routerKey = routerKey(next);
-  if (key.startsWith('action.')) next.actionKey = actionKey(next, engine);
+  if (key.startsWith('action.')) {
+    const id = actionId(next);
+    if (id !== undefined) next.id = id;
+  }
   return next;
 }
 

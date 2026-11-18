@@ -4494,7 +4494,7 @@
     },
     "action": {
       "type": "object",
-      "description": "Định nghĩa một hành động (được tham chiếu bởi router.actions[] qua ID, hoặc định nghĩa inline).",
+      "description": "Global Action definition stored in the root-level actions map and referenced by Router through its Action ID.",
       "required": [
         "meta",
         "set"
@@ -4617,11 +4617,6 @@
           },
           "additionalProperties": false
         },
-        "id": {
-          "type": "string",
-          "minLength": 1,
-          "description": "Stable inline action identifier; generated deterministically when omitted."
-        },
         "count": {
           "type": "object",
           "readOnly": true,
@@ -4661,7 +4656,7 @@
     },
     "router": {
       "type": "object",
-      "description": "Một 'view' con trong scene (scene có thể có nhiều router, chỉ 1 router active tại 1 thời điểm qua scene.set.activeRouterId).",
+      "description": "A Router view within a Scene. Router action membership is defined only by references to global Action IDs.",
       "required": [
         "meta",
         "set",
@@ -4833,18 +4828,11 @@
         },
         "actions": {
           "type": "array",
-          "description": "Danh sách action thuộc router. Mảng gồm ID tham chiếu tới action toàn cục hoặc object action inline.",
+          "description": "List of global Action IDs defined in the root-level actions object.",
           "items": {
-            "oneOf": [
-              {
-                "type": "string",
-                "description": "ID tham chiếu tới actions.<id> ở cấp gốc kịch bản."
-              },
-              {
-                "$ref": "#/definitions/action",
-                "description": "Định nghĩa action inline với ID ổn định."
-              }
-            ]
+            "type": "string",
+            "minLength": 1,
+            "description": "ID referencing actions.<id> at the Scenario root."
           }
         }
       },

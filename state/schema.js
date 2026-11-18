@@ -95,10 +95,10 @@ export const STATE_SCHEMA = Object.freeze({
   // Actions: definition fields come from source; mutable counters/flags from runtime.
   'action.buttonIcon': ['source', 'actions.[id].meta.buttonIcon'],
   'action.buttonLabel': ['source', 'actions.[id].meta.buttonLabel'],
-  'action.cooldown': ['runtime', 'actions.[actionKey].cooldown'],
-  'action.count': ['runtime', 'actions.[actionKey].count'],
+  'action.cooldown': ['runtime', 'actions.[id].cooldown'],
+  'action.count': ['runtime', 'actions.[id].count'],
   'action.desc': ['source', 'actions.[id].meta.desc'],
-  'action.display': ['runtime', 'actions.[actionKey].display'],
+  'action.display': ['runtime', 'actions.[id].display'],
   'action.password': ['source', 'actions.[id].set.password'],
   'action.requirement': ['source', 'actions.[id].set.requirement'],
   'action.thumb': ['source', 'actions.[id].meta.thumb'],

@@ -57,11 +57,7 @@ function validateReferences(scenario) {
   const add = (path, message) => errors.push(`${path}: ${message}`);
   const routerExists = (id) => allRouterIds.has(id);
   const characterExists = (id) => id === 'player' || Object.hasOwn(characters, id);
-  const actionExists = (id) => Object.hasOwn(actions, id) || Object.values(scenes).some(scene =>
-    Object.values(scene?.routers || {}).some(router =>
-      Array.isArray(router.actions) && router.actions.some(item => item === id || (isObject(item) && item.id === id))
-    )
-  );
+  const actionExists = (id) => Object.hasOwn(actions, id);
 
   for (const [sceneId, scene] of Object.entries(scenes)) {
     const parentId = scene?.meta?.parentScene;
@@ -90,15 +86,13 @@ function validateReferences(scenario) {
       if (Array.isArray(routerActions)) {
         routerActions.forEach((action, index) => {
           const path = `scenes.${sceneId}.routers.${routerId}.actions[${index}]`;
-          if (typeof action === 'string') {
-            if (!Object.hasOwn(actions, action)) add(path, `references missing global action '${action}'`);
-            if (seen.has(action)) add(path, `duplicates action ID '${action}' in this router`);
-            seen.add(action);
+          if (typeof action !== 'string' || !action.trim()) {
+            add(path, 'must be a non-empty Action ID string; inline Action definitions are not supported');
+            return;
           }
-          if (isObject(action) && action.id) {
-            if (seen.has(action.id)) add(path, `duplicates action ID '${action.id}' in this router`);
-            seen.add(action.id);
-          }
+          if (!Object.hasOwn(actions, action)) add(path, `references missing global action '${action}'`);
+          if (seen.has(action)) add(path, `duplicates action ID '${action}' in this router`);
+          seen.add(action);
         });
       }
     }
@@ -350,16 +344,6 @@ function validateReferences(scenario) {
   for (const [actionId, action] of Object.entries(actions)) validateAction(action, 'actions.' + actionId);
   for (const [itemId, item] of Object.entries(items)) validateRequirement(item?.requirements, 'itemInfo.' + itemId + '.requirements');
   for (const [templateId, requirement] of Object.entries(templates.requirements || {})) validateRequirement(requirement, 'templates.requirements.' + templateId);
-  for (const [sceneId, scene] of Object.entries(scenes)) {
-    for (const [routerId, router] of Object.entries(scene?.routers || {})) {
-      if (!Array.isArray(router.actions)) continue;
-      const entries = router.actions.map((item, index) => [index, item]);
-      for (const [key, item] of entries) {
-        if (isObject(item)) validateAction(item, `scenes.${sceneId}.routers.${routerId}.actions.${key}`);
-      }
-    }
-  }
-
   for (const [characterId, character] of Object.entries(characters)) {
     for (const [index, move] of asArray(character?.moveList).entries()) {
       if (move?.scene_id && !Object.hasOwn(scenes, move.scene_id)) {
@@ -512,13 +496,8 @@ export function normalizeScenario(input) {
   for (const [sceneId, scene] of Object.entries(isObject(scenario.scenes) ? scenario.scenes : {})) {
     for (const [routerId, router] of Object.entries(isObject(scene?.routers) ? scene.routers : {})) {
       if (Array.isArray(router?.actions)) {
-        router.actions.forEach((action, index) => {
-          if (action && typeof action === 'object' && !Array.isArray(action)) {
-            if (!action.id) action.id = 'inline_' + sceneId + '_' + routerId + '_' + index;
-            ensureActionCount(action);
-          } else if (typeof action === 'string') {
-            ensureActionCount(scenario.actions?.[action]);
-          }
+        router.actions.forEach(actionId => {
+          if (typeof actionId === 'string') ensureActionCount(scenario.actions?.[actionId]);
         });
       }
     }

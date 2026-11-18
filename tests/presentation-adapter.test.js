@@ -153,7 +153,12 @@ test('Contact consumes the live, read-only character projection from Engine snap
   const host = new LocalEngineHost();
   const client = new JsonClient(host);
   try {
-    const snapshot = await client.initialize(JSON.parse(host.getDemoScenario()));
+    await client.initialize(JSON.parse(host.getDemoScenario()));
+    // Contact visibility and meeting counts are scoped to the current Player Entry.
+    host.engine.state.characters.player.met = ['mai:1'];
+    host.engine.state.characters.mai.met = ['player:1'];
+    host.engine.commitState('test.contact.seeded');
+    const snapshot = client.getSnapshot();
     const player = snapshot.presentation.player;
     const mai = snapshot.presentation.contacts.find(contact => contact.id === 'mai');
 
@@ -196,23 +201,22 @@ test('Contact projects only the selected character relationship with entryCharac
   try {
     const initial = await client.initialize(JSON.parse(host.getDemoScenario()));
     const entryCharacterId = initial.state.entryCharacter;
-    const mai = host.engine.state.characters.mai;
-    const entryCharacter = host.engine.state.characters[entryCharacterId];
-    mai.relationship = [
-      ['Người quen', 'keeper'],
-      ['Đồng minh', entryCharacterId]
-    ];
     // Contact Profile counts meetings recorded by entryCharacter about Mai,
-    // not meetings recorded by Mai about entryCharacter.
-    entryCharacter.met = [
-      'mai:3',
-      'keeper:7'
-    ];
-    mai.met = [
-      `${entryCharacterId}:99`,
-      'keeper:7'
-    ];
+    // while visibility is established by Mai's record of meeting entryCharacter.
+    host.engine.api.engine.state.update('characters.[id]', current => ({
+      ...current,
+      met: ['mai:3', 'keeper:7']
+    }), { id: entryCharacterId });
+    host.engine.api.engine.state.update('characters.[id]', current => ({
+      ...current,
+      relationship: [
+        ['Người quen', 'keeper'],
+        ['Đồng minh', entryCharacterId]
+      ],
+      met: [`${entryCharacterId}:99`, 'keeper:7']
+    }), { id: 'mai' });
     host.engine.commitState('contact.relationship.updated');
+    await client.refreshSnapshot();
 
     const projectedMai = client.getSnapshot().presentation.contacts.find(contact => contact.id === 'mai');
     assert.deepEqual(projectedMai.relationshipWithPlayer, {
@@ -222,10 +226,17 @@ test('Contact projects only the selected character relationship with entryCharac
     assert.equal(projectedMai.metCount, 3);
     assert.equal(Object.hasOwn(projectedMai, 'relationship'), false);
 
-    mai.relationship = [['Người quen', 'keeper']];
-    entryCharacter.met = ['keeper:7'];
-    mai.met = ['keeper:7'];
+    host.engine.api.engine.state.update('characters.[id]', current => ({
+      ...current,
+      met: ['keeper:7']
+    }), { id: entryCharacterId });
+    host.engine.api.engine.state.update('characters.[id]', current => ({
+      ...current,
+      relationship: [['Người quen', 'keeper']],
+      met: [`${entryCharacterId}:99`, 'keeper:7']
+    }), { id: 'mai' });
     host.engine.commitState('contact.relationship.cleared');
+    await client.refreshSnapshot();
 
     const withoutPlayerRelationship = client.getSnapshot().presentation.contacts.find(contact => contact.id === 'mai');
     assert.deepEqual(withoutPlayerRelationship.relationshipWithPlayer, {
