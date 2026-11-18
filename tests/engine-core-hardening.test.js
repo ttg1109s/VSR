@@ -33,12 +33,12 @@ function validScenario() {
           main: {
             meta: { subTitleStatus: 'Main' },
             set: { blocked: false, visited: false, countVisited: 0 },
-            actions: []
+            actions: ['test_action']
           }
         }
       }
     },
-    actions: {}, chat: {}, characters: {}, endings: {}, config: {}
+    actions: { test_action: { meta: { title: 'Test Action' }, set: { display: 'show' } } }, chat: {}, characters: {}, endings: {}, config: {}
   };
 }
 
@@ -352,7 +352,8 @@ test('normalization applies schema defaults before runtime use', () => {
   assert.deepEqual(normalized.config.maxInventory, []);
   assert.equal(normalized.scenes.start.set.blocked, false);
   assert.equal(normalized.scenes.start.routers.main.set.blocked, false);
-  assert.equal(normalized.scenes.start.routers.main.actions[0].id, 'inline_start_main_0');
+  assert.equal(normalized.scenes.start.routers.main.actions[0], 'test_action');
+  assert.deepEqual(normalized.actions.test_action.count, { normal: 0, pass: 0, fail: 0, pwFailed: 0 });
 });
 
 test('loader keeps the normalized scenario separate from runtime-only indexes', () => {
@@ -379,7 +380,7 @@ test('nested effect templates are valid runnable graphs and resolve their refere
 
 test('management effects validate their target namespace', () => {
   const scenario = validScenario();
-  scenario.scenes.start.routers.main.actions[0].effect = {
+  scenario.actions.test_action.effect = {
     normal: [{
       type: 'manage_effect',
       inline: { space: 'router', in: 'enter', subtype: 'locked', target: 'missing_router', index: [0] }
@@ -428,7 +429,7 @@ test('router actions accept only the canonical array representation', () => {
 test('character source must be provided as a separate field, not encoded in target', () => {
   const scenario = validScenario();
   scenario.characters = { source: {}, destination: {} };
-  scenario.scenes.start.routers.main.actions[0].effect = {
+  scenario.actions.test_action.effect = {
     normal: [{
       type: 'characters', subtype: 'mng_stats', exec: 'swap',
       target: 'destination:source'
@@ -477,7 +478,7 @@ test('runtime rejects characters.mng_stats operations outside the schema enum', 
 
 test('scenario schema rejects characters.mng_stats operations outside its contract', () => {
   const scenario = validScenario();
-  scenario.scenes.start.routers.main.actions[0].effect = {
+  scenario.actions.test_action.effect = {
     normal: [{
       type: 'characters', subtype: 'mng_stats', exec: 'add_stats',
       target: 'player', value: 'HP'
@@ -646,7 +647,7 @@ test('characters.moving.replace supports every schema-valid index in an index ar
 
 test('inline character effects enforce the same subtype contract as runnable wrappers', () => {
   const scenario = validScenario();
-  scenario.scenes.start.routers.main.actions[0].effect = {
+  scenario.actions.test_action.effect = {
     normal: [
       {
         type: 'effect',
@@ -719,7 +720,7 @@ test('CMS implements schema-defined collection set and met insert operations', a
 
 test('CMS schema constrains met insert indexes to a single integer', () => {
   const scenario = validScenario();
-  scenario.scenes.start.routers.main.actions[0].effect = {
+  scenario.actions.test_action.effect = {
     normal: [{
       type: 'cms', table: 'characters', id: 'character', column: 'met',
       method: 'insert', value: 'character:1', index: [0, 1]
@@ -732,7 +733,7 @@ test('CMS schema constrains met insert indexes to a single integer', () => {
 test('manage_effect schema limits router, item, and chat hooks to runtime-supported forms', () => {
   const makeScenario = inline => {
     const scenario = validScenario();
-    scenario.scenes.start.routers.main.actions[0].effect = {
+    scenario.actions.test_action.effect = {
       normal: [{ type: 'manage_effect', inline }]
     };
     return scenario;
@@ -828,16 +829,15 @@ test('CharacterStrategies.mng_stats adds a stat through the shared stat helper',
 
 test('action snapshot projection exposes stable identity and engine-evaluated availability', async () => {
   const scenario = validScenario();
-  scenario.scenes.start.routers.main.actions = [
-    { id: 'readable', meta: { title: 'Read first', desc: 'Details' }, set: { display: 'show', readDesc: true } },
-    { id: 'locked', meta: { title: 'Locked' }, set: { display: 'show' } },
-    { id: 'hidden', meta: { title: 'Hidden' }, set: { display: 'hide' } }
-  ];
+  scenario.actions.readable = { meta: { title: 'Read first', desc: 'Details' }, set: { display: 'show', readDesc: true } };
+  scenario.actions.locked = { meta: { title: 'Locked' }, set: { display: 'show' } };
+  scenario.actions.hidden = { meta: { title: 'Hidden' }, set: { display: 'hide' } };
+  scenario.scenes.start.routers.main.actions = ['readable', 'locked', 'hidden'];
   const engine = new GameEngine();
   try {
     await engine.init(scenario);
-    engine.api.engine.state.update('actions.[id]', current => ({ ...(current || {}), display: 'locked' }), { id: 'start_main_locked' });
-    engine.api.engine.state.update('actions.[id]', current => ({ ...(current || {}), readDesc: false }), { id: 'start_main_readable' });
+    engine.api.engine.state.update('actions.[id]', current => ({ ...(current || {}), display: 'locked' }), { id: 'locked' });
+    engine.api.engine.state.update('actions.[id]', current => ({ ...(current || {}), readDesc: false }), { id: 'readable' });
     let snapshot = engine.protocol.createSnapshot(engine);
     const actions = snapshot.presentation.actions;
     assert.deepEqual(actions.map(action => action.id), ['readable', 'locked']);
@@ -948,16 +948,16 @@ test('random requirements remain triggerable and are evaluated only at execution
 
 test('cooldown is enforced before action counters and normal effects are mutated', async () => {
   const scenario = validScenario();
-  scenario.scenes.start.routers.main.actions = [{
-    id: 'cooldown_action',
+  scenario.actions.cooldown_action = {
     meta: { title: 'Cooldown action' },
     set: { display: 'show', cooldown: 60 },
     effect: { normal: [{ type: 'notify', text: 'must-not-run' }] }
-  }];
+  };
+  scenario.scenes.start.routers.main.actions = ['cooldown_action'];
   const engine = new GameEngine();
   try {
     await engine.init(scenario);
-    const key = 'start_main_cooldown_action';
+    const key = 'cooldown_action';
     engine.api.engine.state.update('actions.[id]', current => ({
       ...(current || {}), count: { normal: 4, pass: 0, fail: 0 }, cooldownEnd: Date.now() + 60000
     }), { id: key });
@@ -973,13 +973,14 @@ test('cooldown is enforced before action counters and normal effects are mutated
 
 test('mark-as-read only mutates actions in the active router', async () => {
   const scenario = validScenario();
-  scenario.scenes.start.routers.main.actions = [{ id: 'readable', meta: { title: 'Readable', desc: 'Read me' }, set: { display: 'show', readDesc: true } }];
+  scenario.actions.readable = { meta: { title: 'Readable', desc: 'Read me' }, set: { display: 'show', readDesc: true } };
+  scenario.scenes.start.routers.main.actions = ['readable'];
   const engine = new GameEngine();
   try {
     await engine.init(scenario);
     assert.deepEqual(engine.markAsRead('forged_action_key'), { success: false, reason: 'action_not_found' });
     assert.equal(engine.markAsRead('start_main_readable').success, true);
-    assert.equal(engine.api.engine.state.getRuntimeSnapshot('actions.[id]', { id: 'start_main_readable' }).readDesc, true);
+    assert.equal(engine.api.engine.state.getRuntimeSnapshot('actions.[id]', { id: 'readable' }).readDesc, true);
   } finally {
     engine.dispose();
   }
@@ -996,18 +997,18 @@ test('set.action dispatches through the wired strategy and updates runtime actio
       return undefined;
     },
     getRuntime(path, context) {
-      if (path === 'actions.[actionKey]') return context.actionKey === 'start_main_action_read_notice' ? action : undefined;
+      if (path === 'actions.[id]') return context.id === 'action_read_notice' ? action : undefined;
       return undefined;
     },
     getSession() { return null; },
     set(path, value, context) {
       writes.push({ path, value, context });
-      if (path === 'actions.[actionKey].[property]' && context.actionKey === 'start_main_action_read_notice') {
+      if (path === 'actions.[id].[property]' && context.id === 'action_read_notice') {
         action[context.property] = value;
       }
     }
   };
-  const engine = { api: { engine: { state } } };
+  const engine = { src: { actions: { action_read_notice: {} } }, api: { engine: { state } } };
 
   assert.doesNotThrow(() => EffectHandlers.set.call(engine, {
     type: 'set', subtype: 'action', target: 'action_read_notice',
@@ -1016,7 +1017,7 @@ test('set.action dispatches through the wired strategy and updates runtime actio
 
   assert.equal(action.display, 'hide');
   assert.equal(writes.length, 1);
-  assert.equal(writes[0].path, 'actions.[actionKey].[property]');
+  assert.equal(writes[0].path, 'actions.[id].[property]');
 });
 
 test('set dispatcher rejects unknown subtypes explicitly', () => {
@@ -1037,7 +1038,7 @@ test('item hide only occurs after a successful item operation in action context'
   };
   const state = {
     getRuntimeSnapshot(path, params = {}) {
-      if (path === 'actions.[id]') return params.id === 'scene_router_action' ? action : undefined;
+      if (path === 'actions.[id]') return params.id === 'action' ? action : undefined;
       if (path === 'characters.[id]') return { inventory, hand };
       if (path === 'itemInfo.[id]') return itemInfo[params.id];
       return undefined;
@@ -1198,7 +1199,7 @@ test('loader rejects a configured entry character that is absent from scenario c
 test('Contact snapshot projects only characters met by the current Player Entry', async () => {
   const scenario = validScenario();
   scenario.meta.entryCharacter = 'hero';
-  scenario.scenes.start.routers.main.actions[0].set.charAllow = ['ally'];
+  scenario.actions.test_action.set.charAllow = ['ally'];
   const characterSet = { moving: false, alert: null, move: null, linkEffect: false };
   scenario.scenes.elsewhere = {
     meta: { title: 'Elsewhere' },
