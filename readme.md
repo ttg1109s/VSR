@@ -102,6 +102,29 @@ Scenario loading clones JSON-compatible input, applies declared defaults, assign
 
 Each `GameEngine` instance owns its API facade, protocol, gameplay state, session state, orchestration state, and `TaskManager`. Create one Engine per game session. Call `engine.dispose()` when disposing the instance to stop scheduled work and timers.
 
+## Task scheduling
+
+Use the Engine-owned `taskManager` for delayed work that belongs to the game session. `once(callback, ms, name?)` schedules a callback exactly once and returns a cancellable handle:
+
+```js
+const expiryTask = engine.taskManager.once(() => {
+  expireChallenge();
+}, 5_000);
+
+// Cancel before it fires:
+expiryTask.kill();
+```
+
+Omitting `name` creates an independent task with a generated name. Passing a stable name replaces any pending task with that name, which provides debounce behavior:
+
+```js
+engine.taskManager.once(() => saveConfig(), 500, 'saveConfig');
+```
+
+Calling the same named task again cancels and restarts its delay. A returned handle only cancels the exact task instance it created; an old handle cannot cancel a newer task that reused the same name. Completed one-shot tasks remove themselves from the TaskManager plan before invoking the callback. The delay must be a finite number greater than zero, and the callback must be a function.
+
+Use `addNew()` for recurring or explicitly managed task lifecycles. Call `engine.dispose()` to cancel all tasks owned by the Engine.
+
 ## State access
 
 The StateAccess facade provides explicit reads, writes, deletes, snapshots, and serialized transactions across source, runtime, and session namespaces. Scenario source is read-only through this interface. Prefer snapshot methods for read-only consumers.
