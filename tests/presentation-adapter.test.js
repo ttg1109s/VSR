@@ -156,6 +156,7 @@ test('Contact consumes the live, read-only character projection from Engine snap
     await client.initialize(JSON.parse(host.getDemoScenario()));
     // Contact visibility and meeting counts are scoped to the current Player Entry.
     host.engine.state.characters.player.met = ['mai:1'];
+    host.engine.state.characters.mai.met = ['player:1'];
     host.engine.commitState('test.contact.seeded');
     const snapshot = client.getSnapshot();
     const player = snapshot.presentation.player;
