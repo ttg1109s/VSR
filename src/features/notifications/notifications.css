@@ -27,4 +27,4 @@
 .vsr-notification-modal__actions{display:flex;justify-content:flex-end}
 @media(max-width:599px){.vsr-notification-drawer.vsr-overlay-panel{width:100%}.vsr-notification-item{gap:8px}}
 
-.vsr-notification-center__error{margin:0;padding:8px 10px;border-radius:var(--vsr-radius-sm);background:var(--vsr-color-error-container);color:var(--vsr-color-error);font-size:12px}
+.vsr-notification-center__error{margin:0;padding:8px 10px;border-left:3px solid var(--vsr-color-error);color:var(--vsr-color-error);font-size:12px}
