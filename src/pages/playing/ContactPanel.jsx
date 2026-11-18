@@ -6,7 +6,6 @@ import {
   ContactComposer,
   ContactConversation,
   ContactDetail,
-  ContactHeader,
   ContactList,
   ContactListItem,
   ContactScrollArea,
@@ -413,7 +412,7 @@ export default function ContactPanel({ open, onClose, player, contacts = [], sys
 
   function renderContactHeader() {
     return (
-      <ContactHeader className={activeArea === 'conversation' ? 'vsr-contact-header--drawer' : undefined}>
+      <div className="vsr-contact-header vsr-contact-header--drawer">
         <Button
           className={profileOpen || activeArea === 'conversation' ? 'vsr-contact-back is-visible' : 'vsr-contact-back'}
           size="sm"
@@ -443,7 +442,7 @@ export default function ContactPanel({ open, onClose, player, contacts = [], sys
         <Button size="sm" variant="tertiary" className="vsr-contact-info-trigger" onClick={() => setProfileOpen(true)} aria-label="Thông tin">
           <span className="vsr-contact-info-trigger__icon" aria-hidden="true">info</span>
         </Button>
-      </ContactHeader>
+      </div>
     );
   }
 
