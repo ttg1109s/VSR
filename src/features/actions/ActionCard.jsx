@@ -131,29 +131,21 @@ function ActionCard({ action, pending = false, interactionBlocked = false, passw
   return <article className="vsr-card vsr-action-card" data-action-key={action.key}>
     <div className="vsr-action-card__heading">
       <h3 className="vsr-action-card__title">{meta.title || action.title || action.id}</h3>
+      <Popover
+        align="end"
+        onOpenChange={handleDescriptionOpen}
+        label="Description information"
+        trigger={<Button className="vsr-action-card__info-button" variant="tertiary" size="sm" aria-label="Description information"><span className="vsr-action-card__info-glyph" aria-hidden="true">info</span></Button>}
+      >
+        <div className="vsr-action-card__popover">
+          {description ? <p className="vsr-text-body">{description}</p> : <p className="vsr-text-secondary">No detailed description available.</p>}
+        </div>
+      </Popover>
     </div>
 
     <div className="vsr-action-card__media-wrap">
       <MediaFrame className="vsr-action-card__media" src={thumbnail?.url} type={thumbnail?.type || 'photo'} ratio={thumbnail?.ratio || '16:9'} alt={meta.title || action.title || 'Action illustration'} />
       {showStatus && <div className="vsr-action-card__status" aria-label="Action status"><Badge tone={statusTone}>{statusLabel}</Badge></div>}
-    </div>
-
-    <div className="vsr-action-card__section vsr-action-card__description-section">
-      <div className="vsr-action-card__section-heading">
-        <Popover
-          align="start"
-          onOpenChange={handleDescriptionOpen}
-          label="Description information"
-          trigger={<Button className="vsr-action-card__info-button" variant="tertiary" size="sm" aria-label="Description information"><span className="vsr-action-card__info-glyph" aria-hidden="true">info</span></Button>}
-        >
-          <div className="vsr-action-card__popover">
-            {description ? <p className="vsr-text-body">{description}</p> : <p className="vsr-text-secondary">No detailed description available.</p>}
-          </div>
-        </Popover>
-        {readRequired
-          ? <Badge tone={read ? 'success' : 'warning'}>{read ? 'Read' : 'Unread'}</Badge>
-          : <Badge tone="neutral">Reading not required</Badge>}
-      </div>
     </div>
 
     {coolingDown && <div className="vsr-action-card__cooldown" role="timer">Time remaining: {cooldown}s</div>}
