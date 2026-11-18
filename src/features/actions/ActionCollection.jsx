@@ -120,11 +120,11 @@ export default function ActionCollection({actions=EMPTY_ACTIONS,client,passwordC
  const submit=useCallback(async(c,input)=>{
   if(!client||!c?.challengeId)return{message:'No engine connection or invalid challenge.'};
   try{return(await client.submitPassword(c.challengeId,input))?.result||{message:'The engine returned no authentication result.'};}
-  catch(e){const refreshed=await report(c.uniqueId,e);if(refreshed)return{reason:'revision_conflict',message:'The state changed. The snapshot has been synchronized; review the challenge again.'};return{reason:e?.code||'command_failed',message:e?.message||'Unable to submit the answer to the engine.'};}
+  catch(e){const refreshed=await report(c.uniqueId,e,{notify:false});if(refreshed)return{reason:'revision_conflict',message:'The state changed. The snapshot has been synchronized; review the challenge again.'};return{reason:e?.code||'command_failed',message:e?.message||'Unable to submit the answer to the engine.'};}
  },[client,report]);
  const cancel=useCallback(async c=>{
   if(!client||!c?.challengeId)return;
-  try{return await client.submitPassword(c.challengeId,null,true);}catch(e){await report(c.uniqueId,e);throw e;}
+  try{return await client.submitPassword(c.challengeId,null,true);}catch(e){await report(c.uniqueId,e,{notify:false});throw e;}
  },[client,report]);
  const read=useCallback(async a=>{
   if(!client)return false;
