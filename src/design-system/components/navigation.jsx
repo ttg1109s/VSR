@@ -11,7 +11,7 @@ export function Breadcrumb({ items=[], separator='/', activeKey, scrollable=fals
   return <nav className={cx('vsr-breadcrumb',scrollable&&'vsr-breadcrumb--scrollable',sticky&&'vsr-breadcrumb--sticky',className)} aria-label={ariaLabel}><ol>{items.map((item,index) => {
     const key=item.key??item.href??item.label;
     const current=key===currentKey;
-    return <li key={key}><span className="vsr-breadcrumb-separator" aria-hidden="true">{index>0?separator:null}</span>{current?<span aria-current="page">{item.label}</span>:item.href?<a href={item.href} onClick={item.onClick}>{item.label}</a>:<button type="button" onClick={item.onClick} disabled={!item.onClick}>{item.label}</button>}</li>;
+    return <li key={key}><span className="vsr-breadcrumb-separator" aria-hidden="true">{index>0?separator:null}</span><span aria-current={current ? "page" : undefined}>{item.label}</span></li>;
   })}</ol></nav>;
 }
 
