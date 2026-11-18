@@ -7,16 +7,16 @@ export const DEMO_SCRIPT = {
     "title": "THE SILENT VILLAGE — Ngôi Làng Không Tiếng Động",
     "subtitle": "Một bí ẩn dân gian về ký ức, sự mất tích và cái giá của việc nhớ lại",
     "desc": "Bạn tỉnh dậy ở quảng trường của một ngôi làng bị mắc kẹt trong ký ức. Lần theo dấu vết qua giếng đá, nhà trọ, nhà nguyện, trường học, khu rừng, cối xay và đường hầm để tìm sân ga xuất hiện lúc 03:17; sự thật được ghép lại sẽ quyết định ai được giải thoát.",
-    "writer": "VSR Demo Team",
+    "writer": "Nhóm phát triển bản demo VSR",
     "studio": "VSR",
     "version": "2.0.0",
     "language": "vi",
     "ageRating": "16+",
     "tags": [
-      "mystery",
-      "psychological-horror",
-      "investigation",
-      "puzzle"
+      "Bí ẩn",
+      "Kinh dị tâm lý",
+      "Điều tra",
+      "Giải đố"
     ],
     "difficulty": "normal",
     "estimatedPlayTime": 55,
@@ -24,8 +24,8 @@ export const DEMO_SCRIPT = {
     "entryCharacter": "player",
     "createdAt": "2026-11-15T00:00:00.000Z",
     "updatedAt": "2026-11-16T00:00:00.000Z",
-    "copyright": "Original demo scenario for VSR Engine",
-    "license": "UNLICENSED",
+    "copyright": "Kịch bản demo gốc dành cho VSR Engine",
+    "license": "Chưa cấp phép",
     "notes": "Structural rewrite: every distinct physical location is a Scene; each Router represents a state/presentation of that space; Actions encode interaction, state changes and navigation."
   },
   "globalStates": {
@@ -848,7 +848,7 @@ export const DEMO_SCRIPT = {
         "retryMax": 3
       }
     },
-    "puzzle": {
+    "Giải đố": {
       "pw_photo": {
         "desc": "Ghép lại bức ảnh gia đình bị xé.",
         "url": "assets/puzzles/silent-village-family.jpg",
