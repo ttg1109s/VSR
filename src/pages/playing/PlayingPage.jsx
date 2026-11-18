@@ -4,6 +4,7 @@ import ActionCollection from '../../features/actions/ActionCollection.jsx';
 import ActionNavigator from '../../features/actions/ActionNavigator.jsx';
 import ContactPanel from './ContactPanel.jsx';
 import NotificationCenter from '../../features/notifications/NotificationCenter.jsx';
+import './playing-page.css';
 
 export default function PlayingPage({ snapshot, chatViewRequest = null, client, error = '', onNavigate, soundEnabled = true, onSoundChange, modalNotification = null, onModalClose }) {
   const toast = useToast();
@@ -83,20 +84,15 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
             ratio={cover?.ratio || '16:9'}
             alt={sceneTitle ? `${sceneTitle} scene` : 'Scene media'}
           />
-          {scene?.meta?.desc && (
-            <div className="vsr-text-body">{scene.meta.desc}</div>
-          )}
         </section>
         {(routerTitle || routerDescription || status) && (
-          <section className="vsr-stack vsr-stack--gap-2" aria-labelledby="playing-situation-title">
-            <header className="vsr-page-header">
-              <div className="vsr-stack vsr-stack--gap-1">
-                <h2 id="playing-situation-title" className="vsr-text-body"><strong>Current Situation</strong></h2>
-                {routerTitle && <p className="vsr-text-secondary">{routerTitle}</p>}
-              </div>
+          <section className="vsr-playing-situation" aria-labelledby="playing-situation-title">
+            <header className="vsr-playing-situation__header">
+              <h2 id="playing-situation-title" className="vsr-playing-situation__eyebrow">Current Situation</h2>
               {status && <Badge tone="neutral">{status}</Badge>}
             </header>
-            {routerDescription && <p className="vsr-text-body">{routerDescription}</p>}
+            {routerTitle && <h3 className="vsr-playing-situation__title">{routerTitle}</h3>}
+            {routerDescription && <p className="vsr-playing-situation__description">{routerDescription}</p>}
           </section>
         )}
         <ActionCollection
