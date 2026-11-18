@@ -166,7 +166,7 @@ export class NotificationSystem {
   }
 
   alert(title, message, level = 'info', options = {}) {
-    return this.add(title, message, level, { ...options, presentation: 'modal', duration: options.duration === undefined ? null : options.duration });
+    return this.add(title, message, level, { ...options, presentation: 'modal', duration: options.duration });
   }
 
   notify(input) {
