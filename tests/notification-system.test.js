@@ -180,3 +180,39 @@ test('GameEngine exposes notifications only through the canonical API', () => {
   assert.equal(engine.api.notifications.getHistory().length, 1);
   engine.dispose();
 });
+
+
+test('engine policy downgrades low-level scenario modals and bounds notification options', () => {
+  const protocol = makeProtocol();
+  const notifications = new NotificationSystem({ protocol, clock: () => 100 });
+  const downgraded = notifications.alert('Routine', 'A routine update.', 'info', {
+    source: 'scenario', sound: true, soundProfile: 'soft', priority: 99, duration: 45000
+  });
+  assert.equal(downgraded.notification.requestedPresentation, 'modal');
+  assert.equal(downgraded.notification.presentation, 'toast');
+  assert.equal(downgraded.notification.priority, 10);
+  assert.equal(downgraded.notification.duration, 30000);
+  assert.equal(downgraded.notification.sound, true);
+  assert.equal(protocol.events.at(-1).event, 'presentation.notification.add');
+
+  const approved = notifications.alert('Critical', 'An urgent event.', 'danger', {
+    source: 'scenario', soundProfile: 'critical'
+  });
+  assert.equal(approved.notification.presentation, 'modal');
+  assert.equal(protocol.events.at(-1).event, 'presentation.notification.alert');
+});
+
+test('notification sound metadata defaults on and rejects invalid profiles', () => {
+  const notifications = new NotificationSystem({ protocol: makeProtocol() });
+  const item = notifications.add('Notice', 'Message', 'info').notification;
+  assert.equal(item.sound, true);
+  assert.equal(item.soundProfile, 'default');
+  assert.throws(
+    () => notifications.add('Notice', 'Message', 'info', { soundProfile: 'untrusted-profile' }),
+    /Unsupported notification sound profile/
+  );
+  assert.throws(
+    () => notifications.add('Notice', 'Message', 'info', { sound: 'yes' }),
+    /sound must be a boolean/
+  );
+});
