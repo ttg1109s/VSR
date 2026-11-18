@@ -126,3 +126,6 @@
 .vsr-segmented-control__count{font-variant-numeric:tabular-nums}
 .vsr-overlay-panel{width:min(100%,var(--vsr-overlay-panel-width,520px))}
 .vsr-drawer.vsr-overlay-panel{width:min(100%,var(--vsr-overlay-panel-width,480px))}
+
+/* Drawer content is edge-to-edge; safe-area spacing remains on the Drawer panel. */
+.vsr-overlay--drawer .vsr-overlay-content{padding:0}
