@@ -989,16 +989,7 @@ export const DEMO_SCRIPT = {
             "visited": false,
             "countVisited": 0
           },
-          "actions": [
-            "action_question_hanh",
-            "action_question_hanh_guestbook",
-            "action_question_hanh_room",
-            "action_open_guestbook",
-            "action_return_square",
-            "action_travel_chapel",
-            "action_unlock_cellar",
-            "action_find_spare_key"
-          ]
+          "actions": ["action_question_hanh","action_question_hanh_guestbook","action_question_hanh_room","action_open_guestbook","action_return_square","action_travel_chapel","action_unlock_cellar","action_find_spare_key","action_talk_hanh_notice"]
         },
         "router_inn_hidden_room": {
           "meta": {
@@ -1011,16 +1002,7 @@ export const DEMO_SCRIPT = {
             "visited": false,
             "countVisited": 0
           },
-          "actions": [
-            "action_question_hanh",
-            "action_question_hanh_guestbook",
-            "action_question_hanh_room",
-            "action_open_guestbook",
-            "action_return_square",
-            "action_travel_chapel",
-            "action_unlock_cellar",
-            "action_return_view_inn"
-          ]
+          "actions": ["action_question_hanh","action_question_hanh_guestbook","action_question_hanh_room","action_open_guestbook","action_return_square","action_travel_chapel","action_unlock_cellar","action_return_view_inn","action_talk_hanh_notice"]
         }
       }
     },
@@ -1494,40 +1476,196 @@ export const DEMO_SCRIPT = {
         "desc": "Bảng thông báo dựng cạnh lối vào quảng trường, nơi dân làng từng xem tin và lịch sơ tán. Danh sách vẫn còn nguyên các dòng chữ, chỉ riêng một cái tên bị cạo sâu đến rách mặt giấy. Dưới chân bảng là chiếc đèn bão phủ bụi, như thể người cuối cùng đọc thông báo đã vội bỏ nó lại giữa chừng."
       },
       "set": {
-        "display": "show"
+        "display": "show",
+        "requirement": false
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "stats",
+            "subtype": "characters",
+            "target": "player",
+            "property": "memory",
+            "field": "current",
+            "op": ">=",
+            "value": 5
+          }
+        ]
       },
       "effect": {
-        "normal": [],
-        "pass": [
+        "normal": [
           {
             "type": "set",
             "subtype": "state",
             "target": "truth_fragments",
-            "value": 1
+            "value": 1,
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "action_count",
+                  "target": "action_read_notice",
+                  "phase": "normal",
+                  "op": "==",
+                  "value": 1
+                }
+              ]
+            }
           },
           {
             "type": "set",
             "subtype": "state",
             "target": "clue_notice",
-            "value": true
+            "value": true,
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "action_count",
+                  "target": "action_read_notice",
+                  "phase": "normal",
+                  "op": "==",
+                  "value": 1
+                }
+              ]
+            }
           },
           {
             "type": "item",
             "subtype": "add",
-            "target": "lantern"
+            "target": "lantern",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "action_count",
+                  "target": "action_read_notice",
+                  "phase": "normal",
+                  "op": "==",
+                  "value": 1
+                }
+              ]
+            }
           },
           {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Bạn nhặt được đèn bão. Ánh sáng của nó có thể làm lộ dấu vết trong sương."
+            "text": "Bạn nhặt được đèn bão. Ánh sáng của nó có thể làm lộ dấu vết trong sương.",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "action_count",
+                  "target": "action_read_notice",
+                  "phase": "normal",
+                  "op": "==",
+                  "value": 1
+                }
+              ]
+            }
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_read_notice",
+            "property": "requirement",
+            "value": true,
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "action_count",
+                  "target": "action_read_notice",
+                  "phase": "normal",
+                  "op": "==",
+                  "value": 1
+                }
+              ]
+            }
           },
           {
             "type": "set",
             "subtype": "action",
             "target": "action_read_notice",
             "property": "display",
-            "value": "hide"
+            "value": "hide",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "action_count",
+                  "target": "action_read_notice",
+                  "phase": "normal",
+                  "op": "==",
+                  "value": 1
+                }
+              ]
+            }
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_talk_hanh_notice",
+            "property": "display",
+            "value": "show",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "action_count",
+                  "target": "action_read_notice",
+                  "phase": "normal",
+                  "op": "==",
+                  "value": 1
+                }
+              ]
+            }
+          },
+          {
+            "type": "goto",
+            "subtype": "chat",
+            "target": "chat_notice_history",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "action_count",
+                  "target": "action_read_notice",
+                  "phase": "normal",
+                  "op": "==",
+                  "value": 1
+                }
+              ]
+            }
+          }
+        ],
+        "pass": [
+          {
+            "type": "goto",
+            "subtype": "chat",
+            "target": "chat_notice_memory",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "action_count",
+                  "target": "action_read_notice",
+                  "phase": "normal",
+                  "op": ">=",
+                  "value": 2
+                }
+              ]
+            }
+          }
+        ],
+        "fail": [
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "warning",
+            "text": "Những dòng chữ vẫn chưa khơi lại đủ ký ức. Hãy tìm thêm manh mối rồi quay lại."
           }
         ]
       }
@@ -4018,6 +4156,38 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
+    "action_talk_hanh_notice": {
+        "meta": {
+          "title": "Bà Hạnh — Bản thông báo cũ",
+          "buttonLabel": "Hỏi về thông báo",
+          "desc": "Sau khi đọc bản lưu phát thanh ở quảng trường, bạn muốn hỏi Bà Hạnh về một bản thông báo khác mà bà từng giữ lại."
+        },
+        "set": {
+          "display": "hide",
+          "requirement": true
+        },
+        "requirement": {
+          "logic": "AND",
+          "check": [
+            {
+              "type": "state",
+              "property": "clue_notice",
+              "op": "==",
+              "value": true
+            }
+          ]
+        },
+        "effect": {
+          "normal": [],
+          "pass": [
+            {
+              "type": "goto",
+              "subtype": "chat",
+              "target": "chat_hanh_notice"
+            }
+          ]
+        }
+      },
     "action_question_hanh_guestbook": {
       "meta": {
         "title": "Bà Hạnh — Đối chiếu sổ khách",
@@ -5516,6 +5686,190 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
+    "chat_notice_history": {
+        "meta": {
+          "title": "Thông báo sơ tán — Bản lưu phát thanh",
+          "loop": false,
+          "sender": "$communication",
+          "entry": "start",
+          "to": [
+            "player"
+          ]
+        },
+        "block": {
+          "start": {
+            "line": [
+              {
+                "char_id": "$communication",
+                "text": "THÔNG BÁO SƠ TÁN — mười bảy năm trước. Toàn bộ cư dân có tên trong danh sách phải tập trung tại quảng trường trước 03:17."
+              },
+              {
+                "char_id": "$communication",
+                "text": "Đội sơ tán xác nhận đã tiếp nhận mười hai người. Không tự ý tách đoàn. Người phụ trách phải đối chiếu tên với sổ điểm danh trước khi rời làng."
+              },
+              {
+                "char_id": "$communication",
+                "text": "Bản lưu thứ hai ghi nhận mười một người lên chuyến xe. Dòng thứ mười hai trên bản niêm phong đã bị cạo bỏ; không có chữ ký xác nhận việc sửa danh sách."
+              },
+              {
+                "char_id": "$communication",
+                "text": "Mọi khiếu nại về số người phải gửi cho người quản lý nhà trọ. Bảng thông báo sẽ được thay mới sau khi hoàn tất sơ tán."
+              }
+            ],
+            "choice_id": "history_ack",
+            "choiced": false
+          }
+        },
+        "choice": {
+          "history_ack": [
+            {
+              "id": "notice_history_acknowledge",
+              "text": "Tôi đã đọc xong bản thông báo.",
+              "jump": null
+            }
+          ]
+        }
+      },
+    "chat_notice_memory": {
+        "meta": {
+          "title": "Bảng thông báo — Phần ký ức còn sót",
+          "loop": false,
+          "sender": "$communication",
+          "entry": "start",
+          "to": [
+            "player"
+          ]
+        },
+        "block": {
+          "start": {
+            "line": [
+              {
+                "char_id": "$communication",
+                "text": "BẢN ĐỐI CHIẾU — chỉ được mở khi người đọc có thể nhớ lại đầy đủ danh sách."
+              },
+              {
+                "char_id": "$communication",
+                "text": "Bản gốc ghi mười hai người được bàn giao tại quảng trường. Bản sao gửi về huyện chỉ ghi mười một."
+              },
+              {
+                "char_id": "$communication",
+                "text": "Ở mép giấy còn vết hằn của một cái tên. Nét chữ bị cạo đi nhưng áp lực bút vẫn in trên tờ giấy phía dưới."
+              },
+              {
+                "char_id": "$communication",
+                "text": "Dòng cuối cùng không có trong bản lưu chính thức: “Người bị xóa không được xem là đã rời đi. Hãy hỏi người giữ chìa khóa nhà trọ.”"
+              }
+            ],
+            "choice_id": "memory_choice",
+            "choiced": false
+          }
+        },
+        "choice": {
+          "memory_choice": [
+            {
+              "id": "notice_memory_recall",
+              "text": "Tôi nhớ lại được thứ gì đó…",
+              "jump": null,
+              "effect": [
+                {
+                  "type": "set",
+                  "subtype": "action",
+                  "target": "action_read_notice",
+                  "property": "display",
+                  "value": "hide"
+                }
+              ]
+            },
+            {
+              "id": "notice_memory_forget",
+              "text": "Tôi mong sao quên đi tất cả…",
+              "jump": null,
+              "effect": [
+                {
+                  "type": "set",
+                  "subtype": "action",
+                  "target": "action_read_notice",
+                  "property": "display",
+                  "value": "hide"
+                }
+              ]
+            }
+          ]
+        }
+      },
+    "chat_hanh_notice": {
+        "meta": {
+          "title": "Bà Hạnh — Bản thông báo bị giữ lại",
+          "loop": false,
+          "sender": "hanh",
+          "entry": "start",
+          "to": [
+            "player"
+          ]
+        },
+        "block": {
+          "start": {
+            "line": [
+              {
+                "char_id": "hanh",
+                "text": "Tôi từng giữ lại một bản thông báo khác sau đêm sơ tán. Bản ấy không được phát qua loa, vì nó ghi một điều mà danh sách chính thức không thừa nhận."
+              },
+              {
+                "char_id": "hanh",
+                "text": "Tôi không thể đưa nó cho cậu trước khi cậu tự đọc bản ở quảng trường. Nếu muốn biết phần còn lại, hãy quay lại đó và nhìn kỹ những dòng bị cạo."
+              }
+            ],
+            "choice_id": "notice_return",
+            "choiced": false
+          }
+        },
+        "choice": {
+          "notice_return": [
+            {
+              "id": "hanh_notice_return_read",
+              "text": "Tôi sẽ quay lại quảng trường và đọc phần còn lại.",
+              "jump": null,
+              "effect": [
+                {
+                  "type": "set",
+                  "subtype": "action",
+                  "target": "action_read_notice",
+                  "property": "display",
+                  "value": "show"
+                },
+                {
+                  "type": "set",
+                  "subtype": "action",
+                  "target": "action_talk_hanh_notice",
+                  "property": "display",
+                  "value": "hide"
+                }
+              ]
+            },
+            {
+              "id": "hanh_notice_verify",
+              "text": "Tôi muốn tự đối chiếu, không chỉ nghe lời kể.",
+              "jump": null,
+              "effect": [
+                {
+                  "type": "set",
+                  "subtype": "action",
+                  "target": "action_read_notice",
+                  "property": "display",
+                  "value": "show"
+                },
+                {
+                  "type": "set",
+                  "subtype": "action",
+                  "target": "action_talk_hanh_notice",
+                  "property": "display",
+                  "value": "hide"
+                }
+              ]
+            }
+          ]
+        }
+      },
     "chat_linh": {
       "meta": {
         "title": "Linh — Chỗ ngồi bị xóa",
