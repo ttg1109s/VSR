@@ -344,16 +344,6 @@ function validateReferences(scenario) {
   for (const [actionId, action] of Object.entries(actions)) validateAction(action, 'actions.' + actionId);
   for (const [itemId, item] of Object.entries(items)) validateRequirement(item?.requirements, 'itemInfo.' + itemId + '.requirements');
   for (const [templateId, requirement] of Object.entries(templates.requirements || {})) validateRequirement(requirement, 'templates.requirements.' + templateId);
-  for (const [sceneId, scene] of Object.entries(scenes)) {
-    for (const [routerId, router] of Object.entries(scene?.routers || {})) {
-      if (!Array.isArray(router.actions)) continue;
-      const entries = router.actions.map((item, index) => [index, item]);
-      for (const [key, item] of entries) {
-        if (isObject(item)) validateAction(item, `scenes.${sceneId}.routers.${routerId}.actions.${key}`);
-      }
-    }
-  }
-
   for (const [characterId, character] of Object.entries(characters)) {
     for (const [index, move] of asArray(character?.moveList).entries()) {
       if (move?.scene_id && !Object.hasOwn(scenes, move.scene_id)) {
