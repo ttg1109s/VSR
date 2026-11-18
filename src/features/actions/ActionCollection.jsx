@@ -14,15 +14,15 @@ const CAROUSEL_OPTIONS={
 };
 
 const MESSAGES={
- action_hidden:'This action is currently hidden.',locked:'This action is locked.',
- permission_denied:'The current character is not allowed to perform this action.',not_read:'Read the description before performing this action.',
- cooldown:'This action is on cooldown.',requirement_failed:'Requirements not met.',
- target_locked:'Target is locked.',busy:'The engine is processing another action.',
- transitioning:'The engine is transitioning scenes. Please wait for it to finish.',
- challenge_active:'Complete or cancel the current password challenge first.',
- invalid_context:'No valid action context remains.',action_not_found:'This action is no longer part of the current game.',
- invalid_result:'The engine returned an invalid execution result.',cancelled:'The action was cancelled.',
- expired:'The challenge has expired.',exhausted:'You have used all available attempts.'
+ action_hidden:'Hành động này hiện đang bị ẩn.',locked:'Hành động này đã bị khóa.',
+ permission_denied:'Nhân vật hiện tại không được phép thực hiện hành động này.',not_read:'Hãy đọc mô tả trước khi thực hiện hành động này.',
+ cooldown:'Hành động này đang trong thời gian hồi chiêu.',requirement_failed:'Chưa đáp ứng điều kiện.',
+ target_locked:'Mục tiêu đã bị khóa.',busy:'Engine đang xử lý một hành động khác.',
+ transitioning:'Engine đang chuyển cảnh. Vui lòng chờ hoàn tất.',
+ challenge_active:'Hãy hoàn thành hoặc hủy thử thách mật khẩu hiện tại trước.',
+ invalid_context:'Không còn ngữ cảnh hành động hợp lệ.',action_not_found:'Hành động này không còn thuộc trò chơi hiện tại.',
+ invalid_result:'Engine trả về kết quả thực thi không hợp lệ.',cancelled:'Hành động đã bị hủy.',
+ expired:'Thử thách đã hết hạn.',exhausted:'Bạn đã sử dụng hết lượt thử.'
 };
 
 function shuffled(items){
@@ -89,8 +89,8 @@ export default function ActionCollection({actions=EMPTY_ACTIONS,client,passwordC
 
  const mark=useCallback((k,on)=>setPending(s=>{const n=new Set(s);on?n.add(k):n.delete(k);return n;}),[]);
  const report=useCallback(async(k,e)=>{
-  if(e?.code==='REVISION_CONFLICT'){try{await client.refreshSnapshot();setFeedback(s=>({...s,[k]:'The state changed. The snapshot has been synchronized; review it before retrying.'}));return true;}catch(x){e=x;}}
-  const m=e?.message||'Unable to complete the action.';setFeedback(s=>({...s,[k]:m}));onError?.(m);return false;
+  if(e?.code==='REVISION_CONFLICT'){try{await client.refreshSnapshot();setFeedback(s=>({...s,[k]:'Trạng thái đã thay đổi. Dữ liệu hiện tại đã được đồng bộ; hãy kiểm tra trước khi thử lại.'}));return true;}catch(x){e=x;}}
+  const m=e?.message||'Không thể hoàn thành hành động.';setFeedback(s=>({...s,[k]:m}));onError?.(m);return false;
  },[client,onError]);
  const trigger=useCallback(async a=>{
   if(!client)return;
@@ -101,7 +101,7 @@ export default function ActionCollection({actions=EMPTY_ACTIONS,client,passwordC
   setFeedback(s=>({...s,[k]:''}));
   try{
    const r=(await client.triggerAction(a.id,a.key))?.result;
-   if(r?.success===false)setFeedback(s=>({...s,[k]:MESSAGES[r.reason]||'The action was not performed.'}));
+   if(r?.success===false)setFeedback(s=>({...s,[k]:MESSAGES[r.reason]||'Hành động chưa được thực hiện.'}));
    return r;
   }catch(e){
    await report(k,e);
@@ -113,9 +113,9 @@ export default function ActionCollection({actions=EMPTY_ACTIONS,client,passwordC
   }
  },[client,mark,report]);
  const submit=useCallback(async(c,input)=>{
-  if(!client||!c?.challengeId)return{message:'No engine connection or invalid challenge.'};
-  try{return(await client.submitPassword(c.challengeId,input))?.result||{message:'The engine returned no authentication result.'};}
-  catch(e){const refreshed=await report(c.uniqueId,e);if(refreshed)return{reason:'revision_conflict',message:'The state changed. The snapshot has been synchronized; review the challenge again.'};return{reason:e?.code||'command_failed',message:e?.message||'Unable to submit the answer to the engine.'};}
+  if(!client||!c?.challengeId)return{message:'Không có kết nối Engine hoặc thử thách không hợp lệ.'};
+  try{return(await client.submitPassword(c.challengeId,input))?.result||{message:'Engine không trả về kết quả xác thực.'};}
+  catch(e){const refreshed=await report(c.uniqueId,e);if(refreshed)return{reason:'revision_conflict',message:'Trạng thái đã thay đổi. Dữ liệu hiện tại đã được đồng bộ; hãy kiểm tra lại thử thách.'};return{reason:e?.code||'command_failed',message:e?.message||'Không thể gửi câu trả lời đến Engine.'};}
  },[client,report]);
  const cancel=useCallback(async c=>{
   if(!client||!c?.challengeId)return;
@@ -124,18 +124,18 @@ export default function ActionCollection({actions=EMPTY_ACTIONS,client,passwordC
  const read=useCallback(async a=>{
   if(!client)return false;
   try{const acknowledgement=await client.markActionRead(a.key),result=acknowledgement?.result;
-   if(result?.success===false){setFeedback(s=>({...s,[a.key]:MESSAGES[result.reason]||'Unable to update the read status.'}));return false;}
+   if(result?.success===false){setFeedback(s=>({...s,[a.key]:MESSAGES[result.reason]||'Không thể cập nhật trạng thái đã đọc.'}));return false;}
    return true;
   }catch(e){await report(a.key,e);return false;}
  },[client,report]);
  const refresh=useCallback(async()=>{
   if(!client)return null;
-  try{return await client.refreshSnapshot();}catch(e){onError?.(e?.message||'Unable to refresh the action state.');return null;}
+  try{return await client.refreshSnapshot();}catch(e){onError?.(e?.message||'Không thể làm mới trạng thái hành động.');return null;}
  },[client,onError]);
 
- if(!ordered.length)return <section className="vsr-card" aria-label="Actions"><p>No actions in the current context.</p></section>;
- return <section className="vsr-stack vsr-stack--gap-4 vsr-action-carousel" aria-label="Actions">
-  <div ref={carouselRef} className="vsr-action-carousel__viewport" role="region" aria-roledescription="carousel" aria-label="Action list. Use the left and right arrow keys to navigate." tabIndex={0} onKeyDown={event=>{if(event.key==='ArrowRight'){event.preventDefault();scrollToIndex(activeIndex+1);}else if(event.key==='ArrowLeft'){event.preventDefault();scrollToIndex(activeIndex-1);}}}>
+ if(!ordered.length)return <section className="vsr-card" aria-label="Hành động"><p>Không có hành động nào trong ngữ cảnh hiện tại.</p></section>;
+ return <section className="vsr-stack vsr-stack--gap-4 vsr-action-carousel" aria-label="Hành động">
+  <div ref={carouselRef} className="vsr-action-carousel__viewport" role="region" aria-roledescription="carousel" aria-label="Danh sách hành động. Dùng phím mũi tên trái và phải để di chuyển." tabIndex={0} onKeyDown={event=>{if(event.key==='ArrowRight'){event.preventDefault();scrollToIndex(activeIndex+1);}else if(event.key==='ArrowLeft'){event.preventDefault();scrollToIndex(activeIndex-1);}}}>
    <div className="vsr-action-carousel__track">
     {ordered.map((a,index)=><div key={a.key||a.id} className="vsr-action-carousel__slide" role="group" aria-roledescription="slide" aria-label={`Action ${index+1} of ${ordered.length}`}>
      <ActionCard action={a} pending={pending.has(a.key)} interactionBlocked={pending.size>0||Boolean(passwordChallenge)} passwordChallenge={passwordChallenge} onTrigger={trigger} onMarkRead={read} onSubmitPassword={submit} onCancelPassword={cancel} onRefreshSnapshot={refresh} feedback={feedback[a.key]||''}/>
