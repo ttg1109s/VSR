@@ -1281,10 +1281,8 @@ export const DEMO_SCRIPT = {
             "blocked": false,
             "visited": false,
             "countVisited": 0
-          },
-          "actions": [
-            "action_read_blackboard",
-            "action_return_classroom_overview"
+          },"actions": [
+            "action_read_blackboard"
           ]
         },
         "router_classroom_erased": {
@@ -1298,9 +1296,6 @@ export const DEMO_SCRIPT = {
             "visited": false,
             "countVisited": 0
           },
-          "actions": [
-            "action_return_classroom_overview"
-          ]
         }
       }
     },
@@ -3278,26 +3273,7 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "action_return_classroom_overview": {
-      "meta": {
-        "title": "Trở lại lớp học",
-        "buttonLabel": "Quay lại",
-        "desc": "Bạn rời khu vực bảng đen và trở về lớp học số 3."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "goto",
-            "subtype": "scene",
-            "target": "scene_school_classroom_03"
-          }
-        ]
-      }
-    },
+    ,
     "action_inspect_student_seat": {
       "meta": {
         "title": "Dãy bàn học sinh",
