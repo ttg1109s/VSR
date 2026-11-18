@@ -133,7 +133,7 @@ export default function ActionCollection({actions=EMPTY_ACTIONS,client,passwordC
   try{return await client.refreshSnapshot();}catch(e){onError?.(e?.message||'Unable to refresh the action state.');return null;}
  },[client,onError]);
 
- if(!ordered.length)return <section className="vsr-card" aria-label="Actions"><p>Không có hành động trong ngữ cảnh hiện tại.</p></section>;
+ if(!ordered.length)return <section className="vsr-card" aria-label="Actions"><p>No actions in the current context.</p></section>;
  return <section className="vsr-stack vsr-stack--gap-4 vsr-action-carousel" aria-label="Actions">
   <div ref={carouselRef} className="vsr-action-carousel__viewport" role="region" aria-roledescription="carousel" aria-label="Action list. Use the left and right arrow keys to navigate." tabIndex={0} onKeyDown={event=>{if(event.key==='ArrowRight'){event.preventDefault();scrollToIndex(activeIndex+1);}else if(event.key==='ArrowLeft'){event.preventDefault();scrollToIndex(activeIndex-1);}}}>
    <div className="vsr-action-carousel__track">
