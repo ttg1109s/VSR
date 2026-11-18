@@ -33,7 +33,7 @@ export class TaskManager {
   * @param {Function} callback
   * @param {number} ms Must be a finite number greater than zero.
   * @param {string} [name] Optional stable task name.
-  * @returns {{name: string, kill: () => boolean}}
+  * @returns {{name: string, kill: () => boolean, unref: () => boolean}}
   */
  once(callback,ms,name){
   if(typeof callback!=='function')throw new TypeError('TaskManager once callback must be a function.');
@@ -55,13 +55,18 @@ export class TaskManager {
     callback();
    }
   });
-  const loop=this.plan[taskName];
+  loop=this.plan[taskName];
   this.operator(taskName,'enabled');
   return{
    name:taskName,
    kill:()=>{
     if(this.plan[taskName]!==loop)return false;
     this.kill(taskName);
+    return true;
+   },
+   unref:()=>{
+    if(this.plan[taskName]!==loop)return false;
+    loop.timerId?.unref?.();
     return true;
    }
   };
