@@ -1613,6 +1613,11 @@ export const DEMO_SCRIPT = {
             "target": "action_use_lantern",
             "property": "display",
             "value": "hide"
+          },
+          {
+            "type": "goto",
+            "subtype": "router",
+            "target": "router_well_bottom_revealed"
           }
         ],
         "fail": [
@@ -3134,10 +3139,11 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Phù hiệu dưới giếng",
         "buttonLabel": "Thu hồi",
-        "desc": "Một vật kim loại mắc trong hốc đá dưới mực nước cũ, chỉ lộ ra khi ánh sáng chiếu đúng góc. Mép phù hiệu bị bám cặn nhưng ký hiệu đội sơ tán vẫn còn nguyên, trùng với dấu niêm phong trên chiếc hộp chôn trong rừng."
+        "desc": "Một vật kim loại mắc trong hốc đá dưới mực nước cũ, chỉ lộ ra sau khi ánh đèn bão soi đúng góc và làm hiện đường viền của hốc. Mép phù hiệu bị bám cặn nhưng ký hiệu đội sơ tán vẫn còn nguyên, trùng với dấu niêm phong trên chiếc hộp chôn trong rừng."
       },
       "set": {
-        "display": "show"
+        "display": "show",
+        "requirement": true
       },
       "effect": {
         "normal": [],
@@ -3170,6 +3176,17 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "router",
             "target": "router_well_bottom_revealed"
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "clue_lantern",
+            "op": "==",
+            "value": true
           }
         ]
       }
