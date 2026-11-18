@@ -329,3 +329,33 @@
 .vsr-inventory-results > .vsr-inventory-items-grid {
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr));
 }
+
+
+/* Inventory filter controls live in the Drawer header popover to preserve list space. */
+.vsr-inventory-filter-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: min(360px, calc(100vw - 64px));
+  min-width: 0;
+  box-sizing: border-box;
+}
+.vsr-inventory-filter-group {
+  gap: 6px;
+}
+.vsr-inventory-filter-group__label {
+  font-size: 13px;
+  line-height: 18px;
+}
+.vsr-inventory-filter-options {
+  gap: 6px;
+}
+.vsr-inventory-filter-chip {
+  min-height: 30px;
+  padding-inline: 10px;
+  font-size: 11px;
+  line-height: 16px;
+}
+.vsr-inventory-filter-divider {
+  margin: 1px 0;
+}
