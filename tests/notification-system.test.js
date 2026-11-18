@@ -216,3 +216,37 @@ test('notification sound metadata defaults on and rejects invalid profiles', () 
     /sound must be a boolean/
   );
 });
+
+
+test('scenario notify strategy forwards presentation intent and sound metadata', async () => {
+  const { NotifyStrategies } = await import('../engine/modules/effect/Strategies.js');
+  const calls = [];
+  const engine = {
+    api: {
+      notifications: {
+        add: (...args) => calls.push({ method: 'add', args }),
+        alert: (...args) => calls.push({ method: 'alert', args })
+      }
+    }
+  };
+  NotifyStrategies.toast(engine, {
+    title: 'Quest updated',
+    text: 'A new objective is available.',
+    level: 'warning',
+    category: 'story.quest',
+    priority: 8,
+    durationMs: 6500,
+    sound: true,
+    soundProfile: 'warning',
+    dedupeKey: 'quest.updated'
+  });
+  assert.equal(calls[0].method, 'add');
+  assert.equal(calls[0].args[3].category, 'story.quest');
+  assert.equal(calls[0].args[3].priority, 8);
+  assert.equal(calls[0].args[3].duration, 6500);
+  assert.equal(calls[0].args[3].sound, true);
+  assert.equal(calls[0].args[3].soundProfile, 'warning');
+
+  NotifyStrategies.modal(engine, { title: 'Critical', text: 'Stop.', level: 'danger' });
+  assert.equal(calls[1].method, 'alert');
+});
