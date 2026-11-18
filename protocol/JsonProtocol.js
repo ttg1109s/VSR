@@ -94,10 +94,8 @@ export class JsonProtocol{
     if(engine.isTransitioning||engine.isActionProcessing)reason='busy';
     else if(engine.pendingPasswordAction)reason='challenge_active';
     else if(display==='locked')reason='locked';
-    else if(!permissionAllowed)reason='permission_denied';
     else if(readRequired&&!read)reason='not_read';
     else if(set.cooldown>0&&cooldownUntil!==null&&cooldownUntil>Date.now())reason='cooldown';
-    else if(set.requirement===true&&requirementPass===false)reason='requirement_failed';
     else if(set.password)reason='password_required';
     // An unevaluated random expression is not a denial. Let the Engine evaluate
     // it exactly once at execution time; the projection must remain deterministic.
