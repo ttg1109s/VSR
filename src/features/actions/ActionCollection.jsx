@@ -137,7 +137,7 @@ export default function ActionCollection({actions=EMPTY_ACTIONS,client,passwordC
  return <section className="vsr-stack vsr-stack--gap-4 vsr-action-carousel" aria-label="Hành động">
   <div ref={carouselRef} className="vsr-action-carousel__viewport" role="region" aria-roledescription="carousel" aria-label="Danh sách hành động. Dùng phím mũi tên trái và phải để di chuyển." tabIndex={0} onKeyDown={event=>{if(event.key==='ArrowRight'){event.preventDefault();scrollToIndex(activeIndex+1);}else if(event.key==='ArrowLeft'){event.preventDefault();scrollToIndex(activeIndex-1);}}}>
    <div className="vsr-action-carousel__track">
-    {ordered.map((a,index)=><div key={a.key||a.id} className="vsr-action-carousel__slide" role="group" aria-roledescription="slide" aria-label={`Action ${index+1} of ${ordered.length}`}>
+    {ordered.map((a,index)=><div key={a.key||a.id} className="vsr-action-carousel__slide" role="group" aria-roledescription="slide" aria-label={`Hành động ${index+1} trên ${ordered.length}`}>
      <ActionCard action={a} pending={pending.has(a.key)} interactionBlocked={pending.size>0||Boolean(passwordChallenge)} passwordChallenge={passwordChallenge} onTrigger={trigger} onMarkRead={read} onSubmitPassword={submit} onCancelPassword={cancel} onRefreshSnapshot={refresh} feedback={feedback[a.key]||''}/>
     </div>)}
    </div>
