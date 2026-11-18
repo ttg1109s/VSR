@@ -2,10 +2,14 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Badge, BottomNavigation, Breadcrumb, MediaFrame } from '../../design-system/index.js';
 import ActionCollection from '../../features/actions/ActionCollection.jsx';
 import ContactPanel from './ContactPanel.jsx';
+import NotificationCenter from '../../features/notifications/NotificationCenter.jsx';
 
-export default function PlayingPage({ snapshot, chatViewRequest = null, client, error = '', onNavigate }) {
+export default function PlayingPage({ snapshot, chatViewRequest = null, client, error = '', onNavigate, soundEnabled = true, onSoundChange, modalNotification = null, onModalClose }) {
   const [activeNavigation, setActiveNavigation] = useState('hand');
   const [contactOpen, setContactOpen] = useState(false);
+  const [notificationOpen, setNotificationOpen] = useState(false);
+  const notifications = snapshot?.session?.notifications?.history ?? [];
+  const unreadCount = snapshot?.session?.notifications?.unreadCount ?? notifications.filter(item => !item.read).length;
   const scene = snapshot?.presentation?.scene ?? null;
   const router = snapshot?.presentation?.router ?? null;
   const activeSceneId = snapshot?.game?.sceneId ?? null;
@@ -77,6 +81,13 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
       <BottomNavigation
         value={activeNavigation}
         onChange={value => {
+          if (value === 'notify') {
+            setNotificationOpen(current => !current);
+            setContactOpen(false);
+            setActiveNavigation(notificationOpen ? 'hand' : 'notify');
+            return;
+          }
+          setNotificationOpen(false);
           setActiveNavigation(value);
           if (value === 'contact') setContactOpen(true);
         }}
@@ -84,7 +95,7 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
           { value: 'hand', label: 'Hand', icon: 'front_hand' },
           { value: 'inventor', label: 'Inventor', icon: 'inventory_2' },
           { value: 'contact', label: 'Contact', icon: 'contacts' },
-          { value: 'notify', label: 'Notify', icon: 'notifications' }
+          { value: 'notify', label: 'Notify', icon: 'notifications', badge: unreadCount }
         ]}
       />
       <ContactPanel
@@ -99,6 +110,19 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
           setContactOpen(false);
           setActiveNavigation('hand');
         }}
+      />
+      <NotificationCenter
+        open={notificationOpen}
+        notifications={notifications}
+        client={client}
+        onClose={() => {
+          setNotificationOpen(false);
+          setActiveNavigation('hand');
+        }}
+        soundEnabled={soundEnabled}
+        onSoundChange={onSoundChange}
+        modalNotification={modalNotification}
+        onModalClose={onModalClose}
       />
     </main>
   );
