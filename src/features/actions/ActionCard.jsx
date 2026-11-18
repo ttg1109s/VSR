@@ -2,15 +2,15 @@ import React, { memo, useEffect, useRef, useState } from 'react';
 import { Badge, Button, Dialog, Grid, Input, MediaFrame, Popover, ProgressBar, Textarea } from '../../design-system/index.js';
 
 const REASONS = {
-  locked: 'Đã khóa',
-  permission_denied: 'Không được cấp quyền',
-  not_read: 'Đọc mô tả',
-  cooldown: 'Đang hồi chiêu',
-  requirement_failed: 'Chưa đáp ứng điều kiện',
-  requirement_unavailable: 'Không thể đánh giá điều kiện',
-  target_locked: 'Mục tiêu đã bị khóa',
-  password_required: 'Sẵn sàng',
-  challenge_active: 'Hoàn thành thử thách mật khẩu hiện tại',
+  locked: 'Locked',
+  permission_denied: 'Permission denied',
+  not_read: 'Read description',
+  cooldown: 'On cooldown',
+  requirement_failed: 'Requirements not met',
+  requirement_unavailable: 'Requirement evaluation unavailable',
+  target_locked: 'Target is locked',
+  password_required: 'Ready',
+  challenge_active: 'Complete the active password challenge',
 };
 const REASON_TONES = {
   locked: 'danger', permission_denied: 'danger', target_locked: 'danger',
@@ -44,7 +44,7 @@ function ActionCard({ action, pending = false, interactionBlocked = false, passw
   const deadline = seconds(passwordChallenge?.deadlineAt, clock);
   const thumbnail = meta.thumbnail || meta.cover;
   const ready = !coolingDown && (reason === 'available' || reason === 'password_required') && availability.canTrigger === true && !locked;
-  const statusLabel = locked ? 'Đã khóa' : coolingDown ? 'Chờ' : (ready ? 'Sẵn sàng' : (REASONS[reason] || 'Không xác định'));
+  const statusLabel = locked ? 'Locked' : coolingDown ? 'Wait' : (ready ? 'Ready' : (REASONS[reason] || 'Unknown'));
   const statusTone = locked ? 'danger' : (ready ? 'success' : (REASON_TONES[reason] || 'neutral'));
   const showStatus = reason !== 'busy';
 
@@ -83,16 +83,16 @@ function ActionCard({ action, pending = false, interactionBlocked = false, passw
     try {
       const result = await onSubmitPassword?.(passwordChallenge, input);
       if (result?.retry) {
-        setChallengeFeedback(result.remainingAttempts === null ? 'Câu trả lời chưa chính xác. Bạn có thể thử lại.' : `Câu trả lời chưa chính xác. Còn ${result.remainingAttempts} lần thử.`);
+        setChallengeFeedback(result.remainingAttempts === null ? 'Incorrect response. You can try again.' : `Incorrect response. ${result.remainingAttempts} attempts remaining.`);
         setInput('');
-      } else if (result?.reason === 'expired') setError('Thử thách đã hết hạn.');
-      else if (result?.reason === 'exhausted') setError('Đã hết lượt thử.');
-      else if (result?.reason === 'revision_conflict') setError(result.message || 'Trạng thái đã thay đổi. Vui lòng kiểm tra lại thử thách.');
-      else if (result?.error || result?.message) setError(result.message || 'Không thể xác minh thử thách.');
-      else if (result?.success === false && !result?.retry) setError('Engine từ chối câu trả lời. Vui lòng kiểm tra lại thử thách.');
-      else if (!result) setError('Không nhận được phản hồi xác minh từ Engine.');
+      } else if (result?.reason === 'expired') setError('The challenge has expired.');
+      else if (result?.reason === 'exhausted') setError('No attempts remaining.');
+      else if (result?.reason === 'revision_conflict') setError(result.message || 'The state has changed. Please review the challenge.');
+      else if (result?.error || result?.message) setError(result.message || 'Unable to verify the challenge.');
+      else if (result?.success === false && !result?.retry) setError('The Engine rejected the response. Please review the challenge.');
+      else if (!result) setError('No verification response was received from the Engine.');
     } catch (cause) {
-      setError(cause?.message || 'Không thể gửi câu trả lời.');
+      setError(cause?.message || 'Unable to submit the response.');
     } finally {
       setPasswordPending(false);
     }
@@ -106,7 +106,7 @@ function ActionCard({ action, pending = false, interactionBlocked = false, passw
       await onCancelPassword?.(passwordChallenge);
       setInput('');
     } catch (cause) {
-      setError(cause?.message || 'Không thể hủy thử thách.');
+      setError(cause?.message || 'Unable to cancel the challenge.');
     } finally {
       setPasswordPending(false);
     }
@@ -133,42 +133,42 @@ function ActionCard({ action, pending = false, interactionBlocked = false, passw
   const requirementPassed = checks.requirement === 'passed' || checks.requirement === 'not_required';
   const requirementFailed = checks.requirement === 'failed';
   const conditionText = requirementPassed
-    ? 'Đã đáp ứng điều kiện'
-    : requirementFailed ? 'Chưa đáp ứng điều kiện' : 'Chưa xác định trạng thái điều kiện';
+    ? 'Requirements satisfied'
+    : requirementFailed ? 'Requirements not satisfied' : 'Requirement status unknown';
   const permissionText = permissionPassed
-    ? 'Đã cấp quyền'
-    : permissionFailed ? 'Không được cấp quyền' : 'Chưa xác định quyền';
+    ? 'Permission granted'
+    : permissionFailed ? 'Permission denied' : 'Permission unknown';
 
   return <article className="vsr-card vsr-action-card" data-action-key={action.key}>
     <div className="vsr-action-card__heading">
       <h3 className="vsr-action-card__title">{meta.title || action.title || action.id}</h3>
-      <div className="vsr-action-card__status" aria-label="Trạng thái hành động">
+      <div className="vsr-action-card__status" aria-label="Action status">
         {showStatus && <Badge tone={statusTone}>{statusLabel}</Badge>}
       </div>
     </div>
 
-    <MediaFrame className="vsr-action-card__media" src={thumbnail?.url} type={thumbnail?.type || 'photo'} ratio={thumbnail?.ratio || '16:9'} alt={meta.title || action.title || 'Hình minh họa hành động'} />
+    <MediaFrame className="vsr-action-card__media" src={thumbnail?.url} type={thumbnail?.type || 'photo'} ratio={thumbnail?.ratio || '16:9'} alt={meta.title || action.title || 'Action illustration'} />
 
     <div className="vsr-action-card__section vsr-action-card__description-section">
       <div className="vsr-action-card__section-heading">
         <Popover
           align="start"
           onOpenChange={handleDescriptionOpen}
-          label="Thông tin mô tả"
-          trigger={<Button className="vsr-action-card__info-button" variant="tertiary" size="sm" aria-label="Thông tin mô tả"><span className="vsr-action-card__info-glyph" aria-hidden="true">info</span></Button>}
+          label="Description information"
+          trigger={<Button className="vsr-action-card__info-button" variant="tertiary" size="sm" aria-label="Description information"><span className="vsr-action-card__info-glyph" aria-hidden="true">info</span></Button>}
         >
           <div className="vsr-action-card__popover">
-            {description ? <p className="vsr-text-body">{description}</p> : <p className="vsr-text-secondary">Không có mô tả chi tiết.</p>}
+            {description ? <p className="vsr-text-body">{description}</p> : <p className="vsr-text-secondary">No detailed description available.</p>}
           </div>
         </Popover>
         {readRequired
-          ? <Badge tone={read ? 'success' : 'warning'}>{read ? 'Đã đọc' : 'Chưa đọc'}</Badge>
-          : <Badge tone="neutral">Không yêu cầu đọc trước</Badge>}
+          ? <Badge tone={read ? 'success' : 'warning'}>{read ? 'Read' : 'Unread'}</Badge>
+          : <Badge tone="neutral">Reading not required</Badge>}
       </div>
     </div>
 
     <div className="vsr-action-card__section vsr-action-card__requirements">
-      <h4>Điều kiện và quyền hạn</h4>
+      <h4>Requirements and permissions</h4>
       <div className="vsr-action-card__requirement-state">
         <span className={'vsr-action-card__state-icon ' + (requirementPassed ? 'is-success' : requirementFailed ? 'is-error' : 'is-muted')} aria-hidden="true">{requirementPassed ? 'check_circle' : requirementFailed ? 'cancel' : 'info'}</span>
         <span>{conditionText}</span>
@@ -177,27 +177,27 @@ function ActionCard({ action, pending = false, interactionBlocked = false, passw
         <span className={'vsr-action-card__state-icon vsr-action-card__permission-icon ' + (permissionPassed ? 'is-success' : permissionFailed ? 'is-error' : 'is-muted')} aria-hidden="true">{permissionPassed ? 'verified_user' : 'shield'}</span>
         <span>{permissionText}</span>
       </div>
-      {coolingDown && <div className="vsr-action-card__cooldown" role="timer">Thời gian còn lại: {cooldown}s</div>}
+      {coolingDown && <div className="vsr-action-card__cooldown" role="timer">Time remaining: {cooldown}s</div>}
     </div>
 
     {feedback && <p className="vsr-action-card__feedback" role="status">{feedback}</p>}
     <div className="vsr-action-card__actions">
-      <Button size="lg" leadingIcon={meta.buttonIcon} disabled={pending || interactionBlocked || coolingDown || !ready || availability.canTrigger !== true || locked} onClick={() => onTrigger?.(action)} aria-label={meta.buttonLabel || `Thực hiện ${meta.title || action.id}`}>{meta.buttonLabel || 'Thực hiện'}</Button>
+      <Button size="lg" leadingIcon={meta.buttonIcon} disabled={pending || interactionBlocked || coolingDown || !ready || availability.canTrigger !== true || locked} onClick={() => onTrigger?.(action)} aria-label={meta.buttonLabel || `Execute ${meta.title || action.id}`}>{meta.buttonLabel || 'Execute'}</Button>
     </div>
 
-    <Dialog open={challengeOpen} onClose={cancel} title="Xác minh hành động" description={passwordChallenge?.description || 'Hoàn thành thử thách do Engine cung cấp.'}>
+    <Dialog open={challengeOpen} onClose={cancel} title="Verify action" description={passwordChallenge?.description || 'Complete the challenge provided by the Engine.'}>
       <form className="vsr-stack vsr-stack--gap-3" onSubmit={submit}>
-        {passwordChallenge?.type === 'puzzle' && passwordChallenge.puzzle?.url && <MediaFrame src={passwordChallenge.puzzle.url} ratio="1:1" alt="Thử thách ghép hình" />}
-        {passwordChallenge?.type === 'find_way' && passwordChallenge.findWay && <div className="vsr-stack vsr-stack--gap-1"><p className="vsr-text-secondary">Lưới: {passwordChallenge.findWay.area?.join(' × ') || '—'}</p><p className="vsr-text-secondary">Điểm bắt đầu: {passwordChallenge.findWay.start?.join(', ') || '—'}</p><p className="vsr-text-secondary">Mục tiêu: {passwordChallenge.findWay.target?.join(', ') || '—'}</p></div>}
-        {structured ? <Textarea label={passwordChallenge.type === 'puzzle' ? 'Thứ tự mảnh ghép (JSON)' : 'Đường đi (tọa độ JSON)'} hint={passwordChallenge.type === 'puzzle' ? 'Nhập mảng chỉ số các mảnh ghép theo thứ tự từng hàng.' : 'Nhập mảng tọa độ [x,y], từ điểm bắt đầu đến đích.'} rows={4} value={input} onChange={event => setInput(event.target.value)} required /> : <Input label="Mật khẩu" type="password" autoComplete="current-password" value={input} onChange={event => setInput(event.target.value)} required />}
-        {Number.isFinite(passwordChallenge?.remainingAttempts) && <p className="vsr-text-secondary" role="status">Số lượt thử còn lại: {passwordChallenge.remainingAttempts}</p>}
-        {deadline > 0 && <p className="vsr-text-secondary" role="status">Thời gian còn lại: {deadline}s</p>}
+        {passwordChallenge?.type === 'puzzle' && passwordChallenge.puzzle?.url && <MediaFrame src={passwordChallenge.puzzle.url} ratio="1:1" alt="Puzzle challenge" />}
+        {passwordChallenge?.type === 'find_way' && passwordChallenge.findWay && <div className="vsr-stack vsr-stack--gap-1"><p className="vsr-text-secondary">Grid: {passwordChallenge.findWay.area?.join(' × ') || '—'}</p><p className="vsr-text-secondary">Start: {passwordChallenge.findWay.start?.join(', ') || '—'}</p><p className="vsr-text-secondary">Target: {passwordChallenge.findWay.target?.join(', ') || '—'}</p></div>}
+        {structured ? <Textarea label={passwordChallenge.type === 'puzzle' ? 'Piece order (JSON)' : 'Path (coordinate JSON)'} hint={passwordChallenge.type === 'puzzle' ? 'Enter the piece-index array in row order.' : 'Enter the coordinate array [x,y], from the start point to the destination.'} rows={4} value={input} onChange={event => setInput(event.target.value)} required /> : <Input label="Password" type="password" autoComplete="current-password" value={input} onChange={event => setInput(event.target.value)} required />}
+        {Number.isFinite(passwordChallenge?.remainingAttempts) && <p className="vsr-text-secondary" role="status">Attempts remaining: {passwordChallenge.remainingAttempts}</p>}
+        {deadline > 0 && <p className="vsr-text-secondary" role="status">Time remaining: {deadline}s</p>}
         {challengeFeedback && <p role="status">{challengeFeedback}</p>}
         {error && <p className="vsr-text-error" role="alert">{error}</p>}
-        <Grid columns="auto" gap="2"><Button size="lg" type="button" variant="secondary" disabled={passwordPending} onClick={cancel}>Hủy thử thách</Button><Button size="lg" type="submit" disabled={!input.trim() || passwordPending} loading={passwordPending}>Gửi câu trả lời</Button></Grid>
+        <Grid columns="auto" gap="2"><Button size="lg" type="button" variant="secondary" disabled={passwordPending} onClick={cancel}>Cancel challenge</Button><Button size="lg" type="submit" disabled={!input.trim() || passwordPending} loading={passwordPending}>Submit response</Button></Grid>
       </form>
     </Dialog>
-    {coolingDown && <div className="vsr-action-card__cooldown-progress"><ProgressBar status="determinate" value={Math.round(cooldownProgress * 100)} label="Tiến trình hồi chiêu" /></div>}
+    {coolingDown && <div className="vsr-action-card__cooldown-progress"><ProgressBar status="determinate" value={Math.round(cooldownProgress * 100)} label="Cooldown progress" /></div>}
   </article>;
 }
 
