@@ -3,6 +3,28 @@ import assert from 'node:assert/strict';
 import { LocalEngineHost } from '../engine/LocalEngineHost.js';
 import { JsonClient } from '../client/adapters/JsonClient.js';
 import { JsonProtocol } from '../protocol/JsonProtocol.js';
+async function waitForClientSnapshot(client, predicate, timeoutMs = 2000) {
+  if (predicate(client.getSnapshot())) return;
+  await new Promise((resolve, reject) => {
+    let unsubscribe = () => {};
+    const timeout = setTimeout(() => {
+      unsubscribe();
+      reject(new Error('Timed out waiting for the expected client snapshot.'));
+    }, timeoutMs);
+    unsubscribe = client.subscribe(message => {
+      if (message.type !== 'state' || !predicate(client.getSnapshot())) return;
+      clearTimeout(timeout);
+      unsubscribe();
+      resolve();
+    });
+    if (predicate(client.getSnapshot())) {
+      clearTimeout(timeout);
+      unsubscribe();
+      resolve();
+    }
+  });
+}
+
 
 test('scenario inspection returns validated metadata without initializing or mutating the Engine', async () => {
   const host = new LocalEngineHost();
@@ -380,7 +402,7 @@ test('chat action can finish and reopen as a read-only review without duplicatin
     await client.nextChat();
     assert.equal(client.getSnapshot().session.chat.waitingChoice, true);
     await client.selectChatChoice(0);
-    await new Promise(resolve => setTimeout(resolve, 600));
+    await waitForClientSnapshot(client, snapshot => snapshot.session.chat.active && !snapshot.session.chat.waitingChoice);
 
     assert.equal(client.getSnapshot().session.chat.active, true);
     assert.equal(client.getSnapshot().session.chat.waitingChoice, false);
@@ -390,7 +412,7 @@ test('chat action can finish and reopen as a read-only review without duplicatin
     assert.equal(client.getSnapshot().session.chat.waitingChoice, true);
     assert.equal(client.getSnapshot().session.chat.choices.length, 2);
     await client.selectChatChoice(0);
-    await new Promise(resolve => setTimeout(resolve, 600));
+    await waitForClientSnapshot(client, snapshot => snapshot.session.chat.active && !snapshot.session.chat.waitingChoice);
 
     assert.equal(client.getSnapshot().session.chat.active, true);
     assert.equal(client.getSnapshot().session.chat.waitingChoice, false);
