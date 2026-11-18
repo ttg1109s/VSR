@@ -353,18 +353,6 @@ export default function ContactPanel({ open, onClose, player, contacts = [], sys
   }, [allContacts, selectedId]);
 
   useEffect(() => {
-    const activeChat = session?.chat;
-    if (!open || activeChat?.active !== true || !activeChat.id || !activeChat.contactId) return;
-    if (!allContacts.some(contact => contact.id === activeChat.contactId)) return;
-    setSelectedId(activeChat.contactId);
-    setSelectedThreadId(activeChat.id);
-    setMobileView('detail');
-    setActiveArea('conversation');
-    setProfileOpen(false);
-    setChatError('');
-  }, [open, session?.chat?.active, session?.chat?.id, session?.chat?.contactId, allContacts]);
-
-  useEffect(() => {
     if (!open || !viewRequest?.requestId || !viewRequest.contactId || !viewRequest.chatId) return;
     // viewRequested is a one-shot navigation intent. Do not replay an old
     // request when Contact is closed and opened again.
@@ -382,10 +370,13 @@ export default function ContactPanel({ open, onClose, player, contacts = [], sys
 
   useEffect(() => {
     if (!open) {
+      setSelectedId(null);
+      setSelectedThreadId(null);
       setMobileView('list');
       setProfileOpen(false);
+      setIdentityOpen(false);
       setActiveArea('threads');
-      setSelectedThreadId(null);
+      setPendingThreadId(null);
       setChatError('');
     }
   }, [open]);
