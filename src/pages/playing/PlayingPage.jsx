@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Badge, BottomNavigation, Breadcrumb, MediaFrame } from '../../design-system/index.js';
 import ActionCollection from '../../features/actions/ActionCollection.jsx';
-import Liên hệPanel from './Liên hệPanel.jsx';
+import ContactPanel from './ContactPanel.jsx';
 
 export default function PlayingPage({ snapshot, chatViewRequest = null, client, error = '', onNavigate }) {
   const [activeNavigation, setActiveNavigation] = useState('hand');
@@ -40,7 +40,7 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
   const cover = routerCover?.url ? routerCover : sceneCover;
   const status = typeof router?.meta?.subTitleStatus === 'string' && router.meta.subTitleStatus.trim()
     ? router.meta.subTitleStatus.trim()
-    : 'Chưa thiết lập trạng thái';
+    : 'Status not set';
 
   return (
     <main className="vsr-page-shell vsr-page-shell--start vsr-page-shell--flush-top">
@@ -50,7 +50,7 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
         separator="›"
         scrollable
         sticky
-        aria-label="Đường dẫn cảnh"
+        aria-label="Scene breadcrumb"
       />
       <article className="vsr-page-shell__content vsr-page-shell__content--reading">
         {scene?.meta?.desc && (
@@ -81,13 +81,13 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
           if (value === 'contact') setContactOpen(true);
         }}
         items={[
-          { value: 'hand', label: 'Đồ đang cầm', icon: 'front_hand' },
-          { value: 'inventor', label: 'Vật phẩm', icon: 'inventory_2' },
-          { value: 'contact', label: 'Liên hệ', icon: 'contacts' },
-          { value: 'notify', label: 'Thông báo', icon: 'notifications' }
+          { value: 'hand', label: 'Hand', icon: 'front_hand' },
+          { value: 'inventor', label: 'Inventor', icon: 'inventory_2' },
+          { value: 'contact', label: 'Contact', icon: 'contacts' },
+          { value: 'notify', label: 'Notify', icon: 'notifications' }
         ]}
       />
-      <Liên hệPanel
+      <ContactPanel
         open={contactOpen}
         player={snapshot?.presentation?.player ?? null}
         contacts={snapshot?.presentation?.contacts ?? []}
