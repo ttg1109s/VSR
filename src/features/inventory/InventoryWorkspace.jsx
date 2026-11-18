@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import './inventory.css';
 import { Badge, Button, DataTable, DescriptionList, DescriptionListItem, Dialog, Grid, Input, Select, Drawer } from '../../design-system/index.js';
 
 const formatNumber = value => Number.isFinite(value) ? new Intl.NumberFormat('en-US').format(value) : '—';
@@ -30,7 +31,7 @@ export default function InventoryWorkspace({ snapshot, client, onClose, onError 
 
   async function run(itemId, action, task) {
     if (pending) return;
-    setPending(itemId);
+    setPending(itemId+'-'+action);
     try {
       await task();
     } catch (error) {
