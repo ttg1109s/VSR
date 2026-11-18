@@ -38,19 +38,6 @@ const formatRelativeTime = timestamp => {
   return formatter.format(Math.round(seconds / 86400), 'day');
 };
 
-const notificationIcon = (category, level) => {
-  const key = String(category || '').toLowerCase();
-  if (key.includes('inventory')) return 'inventory_2';
-  if (key.includes('quest')) return 'task_alt';
-  return ({
-    success: 'check_circle',
-    warning: 'warning',
-    danger: 'warning',
-    special: 'auto_awesome',
-    info: 'info'
-  }[level] || 'notifications');
-};
-
 export default function NotificationCenter({
   open,
   notifications = [],
@@ -226,15 +213,13 @@ export default function NotificationCenter({
                       tabIndex={!item.read ? 0 : undefined}
                       aria-label={!item.read ? 'Mark ' + (item.title || 'notification') + ' as read' : undefined}
                     >
-                      <div className={'vsr-notification-item__marker vsr-notification-item__marker--' + tone} aria-hidden="true">
-                        <span className="vsr-icon">{notificationIcon(item.category, item.level)}</span>
-                      </div>
                       <div className="vsr-notification-item__body">
                         <div className="vsr-notification-item__heading">
                           <strong>{item.title || 'Notification'}</strong>
                           {!item.read && <Badge tone={tone === 'danger' ? 'warning' : 'info'} size="lg">New</Badge>}
                         </div>
-                        <p>{item.message}{validTimestamp && <> <span className="vsr-notification-item__time-separator" aria-hidden="true">·</span> <time dateTime={timestamp.toISOString()}>{formatRelativeTime(timestamp)}</time></>}</p>
+                        <p>{item.message}</p>
+                        {validTimestamp && <time className="vsr-notification-item__timestamp" dateTime={timestamp.toISOString()}>{formatRelativeTime(timestamp)}</time>}
                       </div>
                     </article>
                   );
