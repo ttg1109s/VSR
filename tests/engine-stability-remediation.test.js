@@ -28,9 +28,9 @@ test('Action phase counters increment independently and preserve existing phases
   };
   const engine = Object.assign({}, ActionSystem, { api: { engine: { state } } });
   engine.incrementActionCount('action_01', 'normal');
-  engine.incrementActionCount('scene_router_action', 'fail');
-  engine.incrementActionCount('scene_router_action', 'pass');
-  engine.incrementActionCount('scene_router_action', 'pwFailed');
+  engine.incrementActionCount('action_01', 'fail');
+  engine.incrementActionCount('action_01', 'pass');
+  engine.incrementActionCount('action_01', 'pwFailed');
   assert.deepEqual(runtime.count, { normal: 3, pass: 2, fail: 1, pwFailed: 4 });
 });
 
@@ -166,7 +166,7 @@ test('Requirement action_count reads the global Action phase counter', () => {
       return path === 'actions.[id]' ? runtime[id] : undefined;
     }
   };
-  const engine = Object.assign({}, LogicSystem, { api: { engine: { state } } });
+  const engine = Object.assign({}, LogicSystem, { src: { actions: { action_01: {} } }, api: { engine: { state } } });
   const check = (phase, op, value) => engine.checkSingle({
     type: 'action_count', target: 'action_01', phase, op, value
   }).pass;
