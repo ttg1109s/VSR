@@ -21,6 +21,8 @@ test('ToastProvider unmount removes the toast portal and cleans up pending dismi
   await page.goto('tests/browser/toast-fixture.html');
   await page.evaluate(() => window.__showToast('Unmounted toast', { id: 'toast-unmount', duration: 1000 }));
   await expect(page.getByText('Unmounted toast')).toBeVisible();
+  expect(await page.evaluate(() => window.__activeToastTimers.size)).toBe(1);
   await page.evaluate(() => window.__unmountToastRoot());
   await expect(page.getByText('Unmounted toast')).toHaveCount(0);
+  expect(await page.evaluate(() => window.__activeToastTimers.size)).toBe(0);
 });
