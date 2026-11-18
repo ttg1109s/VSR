@@ -85,6 +85,7 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
           />
           {scene?.meta?.desc && <div className="vsr-text-body">{scene.meta.desc}</div>}
         </section>
+        {(routerDescription || status) && <div className="vsr-playing-divider" aria-hidden="true" />}
         {(routerDescription || status) && (
           <section className="vsr-playing-situation" aria-labelledby="playing-situation-title">
             <header className="vsr-playing-situation__header">
