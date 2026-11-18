@@ -37,8 +37,8 @@ export class NotificationSystem {
     if (input.sound !== undefined && typeof input.sound !== 'boolean') throw new TypeError('Notification sound must be a boolean.');
     const soundProfile = String(input.soundProfile || 'default');
     if (!['default', 'soft', 'success', 'warning', 'critical', 'special'].includes(soundProfile)) throw new TypeError('Unsupported notification sound profile: ' + soundProfile);
-    const category = String(input.category || `${input.source || 'engine'}.${title}`);
-    if (!category.trim() || category.length > 80) throw new TypeError('Notification category must contain 1 to 80 characters.');
+    const category = String(input.category || `${input.source || 'engine'}.${title}`).slice(0, 80);
+    if (!category.trim()) throw new TypeError('Notification category must contain at least 1 character.');
     const id = input.id || `${this.engineId}:notification:${++this.sequence}`;
     return {
       id: String(id), source: String(input.source || 'engine'),
