@@ -21,23 +21,40 @@
   font-size: 19px;
   line-height: 1.35;
   font-weight: 700;
-  overflow-wrap: anywhere;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.vsr-action-card__media-wrap {
+  position: relative;
+  width: 100%;
+  margin-bottom: 14px;
 }
 
 .vsr-action-card__status {
+  position: absolute;
+  z-index: 2;
+  top: 10px;
+  right: 10px;
   display: flex;
   align-items: center;
-  flex: 0 0 auto;
-  flex-wrap: wrap;
   justify-content: flex-end;
-  gap: 6px;
+  max-width: calc(100% - 20px);
+}
+
+.vsr-action-card__status .vsr-badge {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .vsr-action-card__media {
   width: 100%;
   max-height: 220px;
   aspect-ratio: 16 / 9;
-  margin-bottom: 14px;
+  margin-bottom: 0;
   border-radius: var(--vsr-radius-lg);
 }
 
@@ -241,9 +258,12 @@
     font-size: 17px;
   }
 
+  .vsr-action-card__media-wrap {
+    margin-bottom: 12px;
+  }
+
   .vsr-action-card__media {
     max-height: 190px;
-    margin-bottom: 12px;
   }
 
   .vsr-action-card__section {
