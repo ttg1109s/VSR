@@ -251,7 +251,9 @@ export default function InventoryWorkspace({ snapshot, client, open = false, onC
   const [category, setCategory] = useState('all');
   const [equipment, setEquipment] = useState('all');
   const [sort, setSort] = useState('name-asc');
-  const [page, setPage] = useState(1);\n  const [selectedItem, setSelectedItem] = useState(null);\n  const [pendingItemId, setPendingItemId] = useState(null);
+  const [page, setPage] = useState(1);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [pendingItemId, setPendingItemId] = useState(null);
 
   const categories = useMemo(() => {
     if (!items) return [];
