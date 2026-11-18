@@ -87,12 +87,13 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
         </section>
         {(routerDescription || status) && <div className="vsr-playing-divider" aria-hidden="true" />}
         {(routerDescription || status) && (
-          <section className="vsr-playing-situation" aria-labelledby="playing-situation-title">
-            <header className="vsr-playing-situation__header">
-              <h2 id="playing-situation-title" className="vsr-playing-situation__eyebrow">Current Situation</h2>
-              {status && <Badge tone="neutral">{status}</Badge>}
-            </header>
-            {routerDescription && <p className="vsr-text-body vsr-playing-situation__description">{routerDescription}</p>}
+          <section className="vsr-playing-situation" aria-label="Router description">
+            {(routerDescription || status) && (
+              <p className="vsr-text-body vsr-playing-situation__description">
+                {status && <><Badge tone="neutral">{status}</Badge>{routerDescription ? ' ' : null}</>}
+                {routerDescription}
+              </p>
+            )}
           </section>
         )}
         <ActionCollection
