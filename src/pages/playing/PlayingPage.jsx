@@ -56,7 +56,6 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
   })), [scenePath, onNavigate]);
 
   const sceneTitle = scene?.meta?.title || scenePath.find(item => item.id === activeSceneId)?.title || '';
-  const routerTitle = typeof router?.meta?.title === 'string' ? router.meta.title.trim() : '';
   const routerDescription = typeof router?.meta?.desc === 'string' ? router.meta.desc : '';
   const routerCover = router?.meta?.cover;
   const sceneCover = scene?.meta?.cover;
@@ -84,14 +83,14 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
             ratio={cover?.ratio || '16:9'}
             alt={sceneTitle ? `${sceneTitle} scene` : 'Scene media'}
           />
+          {scene?.meta?.desc && <div className="vsr-text-body">{scene.meta.desc}</div>}
         </section>
-        {(routerTitle || routerDescription || status) && (
+        {(routerDescription || status) && (
           <section className="vsr-playing-situation" aria-labelledby="playing-situation-title">
             <header className="vsr-playing-situation__header">
               <h2 id="playing-situation-title" className="vsr-playing-situation__eyebrow">Current Situation</h2>
               {status && <Badge tone="neutral">{status}</Badge>}
             </header>
-            {routerTitle && <h3 className="vsr-playing-situation__title">{routerTitle}</h3>}
             {routerDescription && <p className="vsr-playing-situation__description">{routerDescription}</p>}
           </section>
         )}
