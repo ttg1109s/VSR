@@ -941,8 +941,7 @@ export const DEMO_SCRIPT = {
           "actions": [
             "action_inspect_well",
             "action_use_lantern",
-            "action_return_square",
-            "action_retrieve_well_badge"
+            "action_return_square"
           ]
         },
         "router_well_bottom_revealed": {
@@ -960,6 +959,7 @@ export const DEMO_SCRIPT = {
             "action_inspect_well",
             "action_use_lantern",
             "action_return_square",
+            "action_retrieve_well_badge",
             "action_return_view_village_well"
           ]
         }
@@ -1632,6 +1632,12 @@ export const DEMO_SCRIPT = {
       "requirement": {
         "logic": "AND",
         "check": [
+          {
+            "type": "state",
+            "property": "clue_well",
+            "op": "==",
+            "value": true
+          },
           {
             "type": "state",
             "property": "clue_lantern",
@@ -3182,6 +3188,12 @@ export const DEMO_SCRIPT = {
       "requirement": {
         "logic": "AND",
         "check": [
+          {
+            "type": "state",
+            "property": "clue_well",
+            "op": "==",
+            "value": true
+          },
           {
             "type": "state",
             "property": "clue_lantern",
