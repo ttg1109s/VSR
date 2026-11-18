@@ -117,33 +117,22 @@ function Overlay({open,onClose,title,description,headerActions,headerContent,hea
     const locksPageScroll = open && lockScroll;
     if(!locksPageScroll || typeof document==='undefined')return;
     const body=document.body,html=document.documentElement;
-    const scrollY=window.scrollY||window.pageYOffset||0;
     const previous={
       bodyOverflow:body.style.overflow,
-      bodyPosition:body.style.position,
-      bodyTop:body.style.top,
-      bodyWidth:body.style.width,
       bodyPaddingRight:body.style.paddingRight,
       htmlOverflow:html.style.overflow,
       htmlOverscroll:html.style.overscrollBehavior
     };
     const scrollbarWidth=Math.max(0,window.innerWidth-html.clientWidth);
     body.style.overflow='hidden';
-    body.style.position='fixed';
-    body.style.top='-'+scrollY+'px';
-    body.style.width='100%';
     if(scrollbarWidth)body.style.paddingRight=scrollbarWidth+'px';
     html.style.overflow='hidden';
     html.style.overscrollBehavior='none';
     return()=>{
       body.style.overflow=previous.bodyOverflow;
-      body.style.position=previous.bodyPosition;
-      body.style.top=previous.bodyTop;
-      body.style.width=previous.bodyWidth;
       body.style.paddingRight=previous.bodyPaddingRight;
       html.style.overflow=previous.htmlOverflow;
       html.style.overscrollBehavior=previous.htmlOverscroll;
-      window.scrollTo(0,scrollY);
     };
   },[open,lockScroll]);
   if(!open||typeof document==='undefined')return null;
