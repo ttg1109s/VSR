@@ -1,7 +1,7 @@
 .vsr-playing-divider {
   width: 100%;
   height: 1px;
-  margin-bottom: 36px;
+  margin-bottom: 8px;
   background: var(--vsr-color-border-subtle);
 }
 
@@ -64,4 +64,14 @@
   .vsr-playing-situation__description {
     font-size: 17px;
   }
+}
+
+/* Playing breadcrumb: keep the current location readable without a filled chip. */
+.vsr-playing-breadcrumb [aria-current="page"] {
+  min-height: 0;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--vsr-color-text);
+  font-weight: 600;
 }
