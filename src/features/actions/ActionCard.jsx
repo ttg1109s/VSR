@@ -72,6 +72,7 @@ function ActionCard({ action, pending = false, interactionBlocked = false, passw
 
   useEffect(() => {
     setInput('');
+    setPasswordFeedback(null);
   }, [passwordChallenge?.challengeId]);
 
   const submit = async event => {
