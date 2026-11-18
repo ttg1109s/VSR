@@ -1183,9 +1183,11 @@
         "mode": {
           "type": "string",
           "enum": [
-            "add"
+            "set",
+            "add",
+            "full"
           ],
-          "description": "Counter update operation for set/action_count."
+          "description": "Stat operation supported by the runtime calculators."
         },
         "field": {
           "type": "string",
@@ -2577,9 +2579,11 @@
         "mode": {
           "type": "string",
           "enum": [
-            "add"
+            "set",
+            "add",
+            "full"
           ],
-          "description": "Counter update operation for set/action_count."
+          "description": "Stat operation supported by the runtime calculators."
         },
         "field": {
           "type": "string",
