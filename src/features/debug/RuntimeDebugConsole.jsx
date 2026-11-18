@@ -50,9 +50,39 @@ export default function RuntimeDebugConsole() {
     const patchedError = (...args) => { addEntry('error', formatArguments(args)); originalError.apply(console, args); };
     const patchedWarn = (...args) => { addEntry('warning', formatArguments(args)); originalWarn.apply(console, args); };
     const handleError = event => {
-      const message = event.message || event.error?.message || 'Uncaught runtime error';
-      const location = event.filename ? event.filename + (event.lineno ? ':' + event.lineno : '') + (event.colno ? ':' + event.colno : '') : '';
-      addEntry('error', message, [location, event.error?.stack].filter(Boolean).join('\n'));
+      const target = event.target && event.target !== window ? event.target : null;
+      const tagName = target?.tagName?.toLowerCase() || '';
+      const resourceUrl = target?.currentSrc || target?.src || target?.href || '';
+      const isResourceError = Boolean(target && (resourceUrl || tagName));
+      const runtimeError = event.error;
+      const message = event.message || runtimeError?.message || (
+        isResourceError
+          ? 'Resource failed to load' + (tagName ? ': <' + tagName + '>' : '')
+          : 'Uncaught runtime error (browser did not expose the error message)'
+      );
+      const location = event.filename
+        ? event.filename + (event.lineno ? ':' + event.lineno : '') + (event.colno ? ':' + event.colno : '')
+        : '';
+      const targetDetails = target ? [
+        'Target: ' + (tagName || 'unknown element'),
+        resourceUrl ? 'Resource URL: ' + resourceUrl : '',
+        target.id ? 'Element ID: ' + target.id : '',
+        typeof target.className === 'string' && target.className ? 'Class: ' + target.className : '',
+        target.outerHTML ? 'Element: ' + target.outerHTML.slice(0, 1000) : ''
+      ].filter(Boolean).join('\n') : '';
+      const errorDetails = runtimeError
+        ? describeValue(runtimeError)
+        : '';
+      const metadata = [
+        location ? 'Source: ' + location : '',
+        'Event type: ' + (event.type || 'error'),
+        event.message && runtimeError?.message && event.message !== runtimeError.message
+          ? 'Browser message: ' + event.message
+          : '',
+        targetDetails,
+        errorDetails
+      ].filter(Boolean).join('\n');
+      addEntry('error', message, metadata);
     };
     const handleAppDebugMessage = event => {
       const detail = event.detail || {};
