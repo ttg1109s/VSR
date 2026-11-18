@@ -29,16 +29,20 @@ export class NotificationSystem {
       ? 'modal'
       : 'toast';
     const now = this.clock();
-    const duration = input.duration === undefined
+    const requestedDuration = input.duration === undefined
       ? (effectivePresentation === 'modal' ? null : this.defaultDurationMs)
       : input.duration;
-    if (duration !== null && (!Number.isFinite(duration) || duration < 0)) throw new TypeError('Notification duration must be a non-negative number or null.');
-    const soundProfile = String(input.soundProfile || originalLevel || 'default');
-    if (!['default', 'soft', 'success', 'warning', 'critical', 'special', 'info', 'danger'].includes(soundProfile)) throw new TypeError('Unsupported notification sound profile: ' + soundProfile);
+    if (requestedDuration !== null && (!Number.isFinite(requestedDuration) || requestedDuration < 0)) throw new TypeError('Notification duration must be a non-negative number or null.');
+    const duration = requestedDuration === null ? null : Math.min(30000, requestedDuration);
+    if (input.sound !== undefined && typeof input.sound !== 'boolean') throw new TypeError('Notification sound must be a boolean.');
+    const soundProfile = String(input.soundProfile || 'default');
+    if (!['default', 'soft', 'success', 'warning', 'critical', 'special'].includes(soundProfile)) throw new TypeError('Unsupported notification sound profile: ' + soundProfile);
+    const category = String(input.category || `${input.source || 'engine'}.${title}`);
+    if (!category.trim() || category.length > 80) throw new TypeError('Notification category must contain 1 to 80 characters.');
     const id = input.id || `${this.engineId}:notification:${++this.sequence}`;
     return {
       id: String(id), source: String(input.source || 'engine'),
-      category: String(input.category || `${input.source || 'engine'}.${title}`),
+      category,
       title, message, severity, level: originalLevel,
       priority: Number.isFinite(input.priority) ? Math.min(10, Math.max(0, input.priority)) : PRIORITY[severity],
       requestedPresentation,
