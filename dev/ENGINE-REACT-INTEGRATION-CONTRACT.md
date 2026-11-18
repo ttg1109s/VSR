@@ -532,4 +532,8 @@ Tài liệu được xây dựng từ source branch `engine-only`, tập trung v
 - `dev/UI-ENGINEERING-PRINCIPLES.md`: nguyên tắc presentation layer và Design System.
 
 Khi protocol/schema thay đổi, cập nhật tài liệu này cùng thay đổi code tương ứng. Không dùng tài liệu làm lý do để giữ một contract đã lỗi thời so với implementation.
-\n\n### Inventory client projection\n\n`presentation.inventory` is the only supported item display contract. It exposes safe display metadata, usage and stats, evaluated requirement status, equip/use eligibility, and a roster of transfer targets. `state.itemInfo` is omitted from snapshots because item templates contain executable effect chains and requirement expressions. Inventory operations always act on the active `entryCharacter`; Faker identity does not implicitly switch ownership. `inventory.remove` and `inventory.transfer` are Engine-validated commands.\n
+
+
+### Inventory client projection
+
+`presentation.inventory` is the only supported item display contract. It exposes safe display metadata, usage and stats, evaluated requirement status, equip/use eligibility, and a roster of transfer targets. `state.itemInfo` is omitted from snapshots because item templates contain executable effect chains and requirement expressions. Inventory operations always act on the active `entryCharacter`; Faker identity does not implicitly switch ownership. `inventory.remove` and `inventory.transfer` are Engine-validated commands.
