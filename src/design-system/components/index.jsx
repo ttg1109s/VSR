@@ -214,7 +214,7 @@ const ToastContext=createContext(null);let toastId=0;
 export function ToastProvider({children,duration=5000,position='top-right'}){
   const [items,setItems]=useState([]),timers=useRef(new Map());
   const dismiss=useCallback(id=>{const t=timers.current.get(id);if(t)clearTimeout(t);timers.current.delete(id);setItems(v=>v.filter(x=>x.id!==id));},[]);
-  const toast=useCallback((message,options={})=>{const id=++toastId;setItems(v=>[...v,{id,message,tone:options.tone||'default',action:options.action}].slice(-5));const ms=options.duration??duration;if(ms>0)timers.current.set(id,setTimeout(()=>dismiss(id),ms));return id;},[dismiss,duration]);
+  const toast=useCallback((message,options={})=>{const id=++toastId;setItems(v=>[...v,{id,message,tone:options.tone||'default',action:options.action}].slice(-5));const ms=options.duration??duration;if(ms!==null&&Number.isFinite(ms)&&ms>=0)timers.current.set(id,setTimeout(()=>dismiss(id),ms));return id;},[dismiss,duration]);
   useEffect(()=>()=>timers.current.forEach(clearTimeout),[]);
   return <ToastContext.Provider value={toast}>{children}{typeof document!=='undefined'&&createPortal(<div className={'vsr-toasts vsr-toasts--'+position} aria-live="polite" aria-relevant="additions">{items.map(x=><div key={x.id} role={x.tone==='error'?'alert':'status'} className={cx('vsr-toast','vsr-toast--'+x.tone)}><span>{x.message}</span>{x.action&&<button type="button" onClick={()=>{x.action.onClick?.();dismiss(x.id);}}>{x.action.label}</button>}<button type="button" className="vsr-icon-button" aria-label="Dismiss notification" onClick={()=>dismiss(x.id)}>close</button></div>)}</div>,document.body)}</ToastContext.Provider>;
 }
