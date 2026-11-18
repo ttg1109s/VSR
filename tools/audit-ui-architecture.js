@@ -59,7 +59,7 @@ for(const root of roots)visit(root);
 // Browser fixtures are launched by HTML module entry points rather than JS imports.
 for(const htmlFile of htmlFiles){
   const content=fs.readFileSync(path.join(ROOT,htmlFile),'utf8');
-  const moduleSources=[...content.matchAll(/<script\\b[^>]*type=[\"']module[\"'][^>]*src=[\"']([^\"']+)[\"'][^>]*>/gi)].map(match=>match[1]);
+  const moduleSources=[...content.matchAll(/<script\b[^>]*type=["']module["'][^>]*src=["']([^"']+)["'][^>]*>/gi)].map(match=>match[1]);
   for(const specifier of moduleSources){const target=resolveImport(htmlFile,specifier);if(target)visit(target);}
 }
 const unreachable=files.filter(file=>/\.(js|jsx|mjs|cjs|css)$/.test(file)&&!reachable.has(file));
