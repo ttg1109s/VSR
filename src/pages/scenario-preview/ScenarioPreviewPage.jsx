@@ -55,7 +55,7 @@ function ScenarioDescription({ description }) {
           }
           aria-expanded={isExpanded}
         >
-          {isExpanded ? 'Show less' : 'Read full description'}
+          {isExpanded ? 'Thu gọn' : 'Đọc toàn bộ mô tả'}
         </Button>
       )}
     </div>
@@ -75,37 +75,37 @@ function formatDate(value) {
   return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString('en-US');
 }
 
-function formatLanguage(value) {
+function formatNgôn ngữ(value) {
   const languageNames = {
-    vi: 'Vietnamese',
-    en: 'English',
-    ja: 'Japanese',
-    ko: 'Korean',
-    zh: 'Chinese'
+    vi: 'Tiếng Việt',
+    en: 'Tiếng Anh',
+    ja: 'Tiếng Nhật',
+    ko: 'Tiếng Hàn',
+    zh: 'Tiếng Trung'
   };
   return languageNames[value] || value;
 }
 
-function formatDifficulty(value) {
-  const labels = { easy: 'Easy', normal: 'Medium', hard: 'Hard' };
+function formatĐộ khó(value) {
+  const labels = { easy: 'Dễ', normal: 'Trung bình', hard: 'Khó' };
   return labels[value] || value;
 }
 
 export default function ScenarioPreviewPage({ preview, onBack, onPlay }) {
   const metadata = preview?.metadata || {};
   const experienceItems = [
-    { label: 'Age rating', value: metadata.ageRating },
-    { label: 'Difficulty', value: formatDifficulty(metadata.difficulty) },
-    { label: 'Duration', value: formatPlayTime(metadata.estimatedPlayTime) }
+    { label: 'Độ tuổi', value: metadata.ageRating },
+    { label: 'Độ khó', value: formatĐộ khó(metadata.difficulty) },
+    { label: 'Thời lượng', value: formatPlayTime(metadata.estimatedPlayTime) }
   ].filter(item => item.value !== null && item.value !== undefined && item.value !== '');
 
   const publicationItems = [
-    { label: 'Author', value: metadata.writer },
-    { label: 'Studio', value: metadata.studio },
-    { label: 'Scenario version', value: metadata.version },
-    { label: 'Language', value: formatLanguage(metadata.language) },
-    { label: 'Created', value: formatDate(metadata.createdAt) },
-    { label: 'Last updated', value: formatDate(metadata.updatedAt) }
+    { label: 'Tác giả', value: metadata.writer },
+    { label: 'Hãng phát triển', value: metadata.studio },
+    { label: 'Phiên bản kịch bản', value: metadata.version },
+    { label: 'Ngôn ngữ', value: formatNgôn ngữ(metadata.language) },
+    { label: 'Ngày tạo', value: formatDate(metadata.createdAt) },
+    { label: 'Cập nhật lần cuối', value: formatDate(metadata.updatedAt) }
   ];
 
   const hasLegalInformation = Boolean(metadata.copyright || metadata.license);
@@ -116,7 +116,7 @@ export default function ScenarioPreviewPage({ preview, onBack, onPlay }) {
         <ScenarioCover url={metadata.cover?.url} ratio={metadata.cover?.ratio} title={metadata.title} />
 
         <header className="vsr-stack vsr-stack--gap-2">
-          <h1 className="vsr-heading-display">{metadata.title || 'Untitled scenario'}</h1>
+          <h1 className="vsr-heading-display">{metadata.title || 'Kịch bản chưa có tiêu đề'}</h1>
           {metadata.subtitle && (
             <p className="vsr-text-secondary vsr-text-body">{metadata.subtitle}</p>
           )}
@@ -141,7 +141,7 @@ export default function ScenarioPreviewPage({ preview, onBack, onPlay }) {
           )}
         </header>
 
-        <div className="vsr-grid vsr-grid--columns-2 vsr-grid--gap-3" aria-label="Scenario actions">
+        <div className="vsr-grid vsr-grid--columns-2 vsr-grid--gap-3" aria-label="Hành động kịch bản">
           <Button
             variant="secondary"
             size="md"
@@ -173,10 +173,10 @@ export default function ScenarioPreviewPage({ preview, onBack, onPlay }) {
 
         {hasLegalInformation && (
           <section className="vsr-stack vsr-stack--gap-3" aria-labelledby="scenario-legal-title">
-            <h2 id="scenario-legal-title">Copyright and license</h2>
+            <h2 id="scenario-legal-title">Bản quyền and license</h2>
             <DescriptionList layout="list" gap="comfortable" divided>
-              <DescriptionListItem label="Copyright" value={metadata.copyright} layout="inline" />
-              <DescriptionListItem label="License" value={metadata.license} layout="inline" />
+              <DescriptionListItem label="Bản quyền" value={metadata.copyright} layout="inline" />
+              <DescriptionListItem label="Giấy phép" value={metadata.license} layout="inline" />
             </DescriptionList>
           </section>
         )}
