@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Badge, BottomNavigation, Breadcrumb, MediaFrame } from '../../design-system/index.js';
+import { Badge, BottomNavigation, Breadcrumb, MediaFrame, useToast } from '../../design-system/index.js';
 import ActionCollection from '../../features/actions/ActionCollection.jsx';
 import ContactPanel from './ContactPanel.jsx';
 import NotificationCenter from '../../features/notifications/NotificationCenter.jsx';
 
 export default function PlayingPage({ snapshot, chatViewRequest = null, client, error = '', onNavigate, soundEnabled = true, onSoundChange, modalNotification = null, onModalClose }) {
+  const toast = useToast();
   const [activeNavigation, setActiveNavigation] = useState('hand');
   const [contactOpen, setContactOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
@@ -74,7 +75,7 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
           client={client}
           sceneId={activeSceneId}
           passwordChallenge={snapshot?.session?.passwordChallenge || null}
-          onError={() => {}}
+          onError={message => toast(message, { tone: 'warning' })}
         />
         {error && <p className="vsr-text-error" role="alert">{error}</p>}
       </article>
