@@ -21,7 +21,7 @@ test('Notification filters and mark-all-read use accessible shared controls', as
 });
 
 test('Notification Drawer fits compact and medium viewports without horizontal overflow', async ({ page }) => {
-  for (const viewport of [{ width: 360, height: 740 }, { width: 768, height: 900 }]) {
+  for (const viewport of [{ width: 360, height: 740 }, { width: 768, height: 900 }, { width: 1280, height: 900 }]) {
     await page.setViewportSize(viewport);
     await page.goto('tests/browser/notification-fixture.html');
     const dialog = page.getByRole('dialog', { name: 'Notifications' });
