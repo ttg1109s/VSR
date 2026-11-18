@@ -43,6 +43,10 @@ export default function RuntimeDebugConsole() {
       const location = event.filename ? event.filename + (event.lineno ? ':' + event.lineno : '') + (event.colno ? ':' + event.colno : '') : '';
       addEntry('error', message, [location, event.error?.stack].filter(Boolean).join('\n'));
     };
+    const handleAppDebugMessage = event => {
+      const detail = event.detail || {};
+      addEntry(detail.level === 'warning' ? 'warning' : 'error', detail.message || 'Application runtime error', detail.details || '');
+    };
     const handleRejection = event => {
       const reason = event.reason;
       addEntry('error', 'Unhandled Promise rejection: ' + describeValue(reason), reason?.stack || '');
@@ -51,11 +55,13 @@ export default function RuntimeDebugConsole() {
     console.warn = patchedWarn;
     window.addEventListener('error', handleError, true);
     window.addEventListener('unhandledrejection', handleRejection);
+    window.addEventListener('vsr:debug-message', handleAppDebugMessage);
     return () => {
       if (console.error === patchedError) console.error = originalError;
       if (console.warn === patchedWarn) console.warn = originalWarn;
       window.removeEventListener('error', handleError, true);
       window.removeEventListener('unhandledrejection', handleRejection);
+      window.removeEventListener('vsr:debug-message', handleAppDebugMessage);
     };
   }, [addEntry]);
 
