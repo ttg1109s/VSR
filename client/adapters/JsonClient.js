@@ -96,6 +96,8 @@ export class JsonClient {
   nextChat() { return this.dispatch('chat.next'); }
   selectChatChoice(index) { return this.dispatch('chat.selectChoice', { index }); }
   toggleHand(itemId) { return this.dispatch('inventory.toggleHand', { itemId }); }
+  removeInventoryItem(itemId) { return this.dispatch('inventory.remove', { itemId }); }
+  transferInventoryItem(itemId, targetCharacterId) { return this.dispatch('inventory.transfer', { itemId, targetCharacterId }); }
   useItem(itemId) { return this.dispatch('item.use', { itemId }); }
   enterScene(sceneId, skipTransition = false) { return this.dispatch('scene.enter', { sceneId, skipTransition }); }
   backParent() { return this.dispatch('scene.backParent'); }
