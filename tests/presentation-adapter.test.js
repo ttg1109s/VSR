@@ -233,7 +233,7 @@ test('Contact projects only the selected character relationship with entryCharac
     host.engine.api.engine.state.update('characters.[id]', current => ({
       ...current,
       relationship: [['Người quen', 'keeper']],
-      met: ['keeper:7']
+      met: [`${entryCharacterId}:99`, 'keeper:7']
     }), { id: 'mai' });
     host.engine.commitState('contact.relationship.cleared');
     await client.refreshSnapshot();
