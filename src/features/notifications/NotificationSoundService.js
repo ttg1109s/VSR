@@ -20,7 +20,7 @@ export class NotificationSoundService {
     if (!AudioContextClass) return false;
     try {
       if (!this.context || this.context.state === 'closed') this.context = new AudioContextClass();
-      if (this.context.state === 'suspended') {
+      if (this.context.state !== 'running') {
         this.context.resume().then(() => this.flush()).catch(() => {});
       } else {
         this.flush();
@@ -47,7 +47,7 @@ export class NotificationSoundService {
     if (!this.context || this.context.state !== 'running') {
       this.pending.push(normalized);
       this.pending = this.pending.slice(-5);
-      if (this.context?.state === 'suspended') {
+      if (this.context && this.context.state !== 'closed') {
         this.context.resume().then(() => this.flush()).catch(() => {});
       }
       return false;
