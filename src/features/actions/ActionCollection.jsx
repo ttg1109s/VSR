@@ -100,7 +100,7 @@ export default function ActionCollection({actions=EMPTY_ACTIONS,client,passwordC
   return false;
  },[client,onError]);
  const trigger=useCallback(async a=>{
-  if(!client)return;
+  if(!client){onError?.('The Engine connection is unavailable.');return null;}
   const k=a.key;
   const startedAt=Date.now();
   const minimumBusyMs=500;
@@ -120,23 +120,23 @@ export default function ActionCollection({actions=EMPTY_ACTIONS,client,passwordC
    finally{busyDelayControllers.current.delete(delayController);}
    if(!delayController.signal.aborted)mark(k,false);
   }
- },[client,mark,report]);
+ },[client,mark,report,onError]);
  const submit=useCallback(async(c,input)=>{
-  if(!client||!c?.challengeId)return{message:'No engine connection or invalid challenge.'};
+  if(!client||!c?.challengeId){onError?.('The Engine connection is unavailable or the password challenge is invalid.');return{reason:'command_unavailable',message:'The Engine connection is unavailable or the password challenge is invalid.'};}
   try{return(await client.submitPassword(c.challengeId,input))?.result||{message:'The engine returned no authentication result.'};}
   catch(e){const refreshed=await report(e);if(refreshed)return{reason:'revision_conflict',message:'The state changed. The snapshot has been synchronized; review the challenge again.'};return{reason:e?.code||'command_failed',message:e?.message||'Unable to submit the answer to the engine.'};}
- },[client,report]);
+ },[client,report,onError]);
  const cancel=useCallback(async c=>{
-  if(!client||!c?.challengeId)return;
+  if(!client||!c?.challengeId){onError?.('The Engine connection is unavailable or the password challenge is invalid.');return;}
   try{return await client.submitPassword(c.challengeId,null,true);}catch(e){await report(e);throw e;}
- },[client,report]);
+ },[client,report,onError]);
  const read=useCallback(async a=>{
-  if(!client)return false;
+  if(!client){onError?.('The Engine connection is unavailable.');return false;}
   try{const acknowledgement=await client.markActionRead(a.key),result=acknowledgement?.result;
    if(result?.success===false)return false;
    return true;
   }catch(e){await report(e);return false;}
- },[client,report]);
+ },[client,report,onError]);
  const refresh=useCallback(async()=>{
   if(!client)return null;
   try{return await client.refreshSnapshot();}catch(e){onError?.(e?.message||'Unable to refresh the action state.');return null;}
