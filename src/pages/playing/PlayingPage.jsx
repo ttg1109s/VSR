@@ -77,7 +77,6 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
             type={cover?.type || 'photo'}
             ratio={cover?.ratio || '16:9'}
             alt={sceneTitle ? `${sceneTitle} scene` : 'Scene media'}
-            overlay={status ? <Badge tone="neutral">{status}</Badge> : null}
           />
           {scene?.meta?.desc && (
             <div className="vsr-text-body">{scene.meta.desc}</div>
