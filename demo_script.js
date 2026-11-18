@@ -235,6 +235,12 @@ export const DEMO_SCRIPT = {
             "subtype": "inventory",
             "op": "has",
             "value": "tunnel_manifest"
+          },
+          {
+            "type": "state",
+            "property": "evidence_evacuation_film",
+            "op": "==",
+            "value": true
           }
         ]
       },
@@ -967,6 +973,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Nhà trọ Bà Hạnh",
         "desc": "Nhà trọ là nơi lưu giữ sổ khách và lời khai về những người chưa thể rời làng."
+        "parentScene": "scene_village_square"
       },
       "set": {
         "activeRouterId": "router_inn_unsettled"
@@ -1062,6 +1069,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Nhà nguyện",
         "desc": "Gian cầu nguyện lưu bản thánh ca chứa mật từ và lời giải về hồi chuông cuối."
+        "parentScene": "scene_village_square"
       },
       "set": {
         "activeRouterId": "router_chapel_silent"
@@ -1159,6 +1167,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Trường tiểu học bỏ hoang",
         "desc": "Trường học lưu sơ đồ lớp và dấu vết về học sinh thứ mười hai bị xóa khỏi hồ sơ."
+        "parentScene": "scene_village_square"
       },
       "set": {
         "activeRouterId": "router_classroom_erased"
@@ -1209,6 +1218,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Lối rừng phía Bắc",
         "desc": "Con đường xuyên rừng biến đổi, nhưng các dấu sơn giúp lần tới khu đất nghi lễ."
+        "parentScene": "scene_village_square"
       },
       "set": {
         "activeRouterId": "router_forest_path_shifting"
@@ -1385,7 +1395,7 @@ export const DEMO_SCRIPT = {
             "countVisited": 0
           },
           "actions": [
-            "action_enter_tunnel",
+            "action_inspect_tunnel_names",
             "action_open_archive",
             "action_return_mill",
             "action_reach_station",
@@ -1404,7 +1414,7 @@ export const DEMO_SCRIPT = {
             "countVisited": 0
           },
           "actions": [
-            "action_enter_tunnel",
+            "action_inspect_tunnel_names",
             "action_open_archive",
             "action_return_mill",
             "action_reach_station",
@@ -2620,11 +2630,11 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "action_enter_tunnel": {
+    "action_inspect_tunnel_names": {
       "meta": {
-        "title": "Đường hầm dưới đê",
-        "buttonLabel": "Khám phá",
-        "desc": "Đường hầm chạy dưới chân đê, hai bên tường phủ đầy tên người và ngày tháng. Các dòng chữ được sắp theo thứ tự biến mất chứ không theo họ tên, cho thấy nơi này từng được dùng để ghi nhận một cuộc di chuyển có tổ chức. Một số đoạn đã bị cạo sửa, đặc biệt ở phần cuối danh sách."
+        "title": "Danh sách tên trên tường đường hầm",
+        "buttonLabel": "Đọc dấu khắc",
+        "desc": "Các bức tường đường hầm phủ kín tên người và ngày tháng. Những dòng chữ được sắp theo thứ tự biến mất chứ không theo họ tên; một số đoạn đã bị cạo sửa, đặc biệt ở cuối danh sách. Đối chiếu các tên cho thấy có mười hai người, không phải mười một."
       },
       "set": {
         "display": "show"
@@ -2653,7 +2663,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "set",
             "subtype": "action",
-            "target": "action_enter_tunnel",
+            "target": "action_inspect_tunnel_names",
             "property": "display",
             "value": "hide"
           }
