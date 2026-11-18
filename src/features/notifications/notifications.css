@@ -1,5 +1,6 @@
 .vsr-notification-drawer.vsr-overlay-panel{width:min(100%,560px)}
 .vsr-notification-center__header{align-items:flex-start}
+.vsr-notification-center__header .vsr-overlay-header__custom{flex:1;min-width:0}
 .vsr-notification-center__header-content{display:flex;flex:1;min-width:0;align-items:center;justify-content:space-between;gap:16px}
 .vsr-notification-center__header-copy{min-width:0}
 .vsr-notification-center__header-copy h2{font-size:22px;font-weight:600;line-height:28px}
