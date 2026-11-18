@@ -15,6 +15,11 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
   const router = snapshot?.presentation?.router ?? null;
   const activeSceneId = snapshot?.game?.sceneId ?? null;
 
+  // Reset the document scroll whenever the active scene or router changes.
+  useEffect(() => {
+    if (typeof window !== 'undefined') window.scrollTo(0, 0);
+  }, [activeSceneId, router?.id]);
+
   const activeChat = snapshot?.session?.chat ?? null;
   useEffect(() => {
     if (activeChat?.active !== true || !activeChat.id || !activeChat.contactId) return;
