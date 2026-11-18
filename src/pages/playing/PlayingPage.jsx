@@ -95,7 +95,7 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
           { value: 'hand', label: 'Hand', icon: 'front_hand' },
           { value: 'inventor', label: 'Inventor', icon: 'inventory_2' },
           { value: 'contact', label: 'Contact', icon: 'contacts' },
-          { value: 'notify', label: 'Notify', icon: 'notifications', badge: unreadCount }
+          { value: 'notify', label: 'Notify', icon: 'notifications', badge: unreadCount, badgeLabel: 'unread notifications' }
         ]}
       />
       <ContactPanel
