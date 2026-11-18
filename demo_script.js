@@ -3273,7 +3273,6 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    ,
     "action_inspect_student_seat": {
       "meta": {
         "title": "Dãy bàn học sinh",
