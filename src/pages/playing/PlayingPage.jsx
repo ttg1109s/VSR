@@ -137,12 +137,14 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
         value={activeNavigation}
         onChange={value => {
           if (value === 'inventor') {\n            setInventoryOpen(current => !current);\n            setContactOpen(false);\n            setNotificationOpen(false);\n            setActiveNavigation(inventoryOpen ? 'hand' : 'inventor');\n            return;\n          }\n          if (value === 'notify') {
+            setInventoryOpen(false);
             setNotificationOpen(current => !current);
             setContactOpen(false);
             setActiveNavigation(notificationOpen ? 'hand' : 'notify');
             return;
           }
           setNotificationOpen(false);
+          setInventoryOpen(false);
           setActiveNavigation(value);
           if (value === 'contact') setContactOpen(true);
         }}
