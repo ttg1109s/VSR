@@ -176,19 +176,33 @@ export default function NotificationCenter({
                   const validTimestamp = Number.isFinite(timestamp.getTime());
                   const canDismiss = !['dismissed', 'expired', 'cleared'].includes(item.status);
                   const handlePointerDown = event => {
-                    if (event.pointerType === 'mouse' && event.button !== 0) return;
-                    swipeStart.current = { id: item.id, x: event.clientX, y: event.clientY };
+                    if (!event.isPrimary || (event.pointerType === 'mouse' && event.button !== 0)) return;
+                    swipeStart.current = {
+                      id: item.id,
+                      pointerId: event.pointerId,
+                      x: event.clientX,
+                      y: event.clientY
+                    };
+                    try {
+                      event.currentTarget.setPointerCapture(event.pointerId);
+                    } catch {
+                      swipeStart.current = null;
+                    }
                   };
                   const handlePointerUp = event => {
                     const start = swipeStart.current;
+                    if (!start || start.id !== item.id || start.pointerId !== event.pointerId) return;
                     swipeStart.current = null;
-                    if (!start || start.id !== item.id || !canDismiss || busyIds.includes(item.id)) return;
+                    if (!canDismiss || busyIds.includes(item.id)) return;
                     const dx = event.clientX - start.x;
                     const dy = event.clientY - start.y;
-                    if (Math.abs(dx) >= 72 && Math.abs(dx) > Math.abs(dy) * 1.3) {
-      swipeHandled.current = true;
-      dismiss(item.id);
-    }
+                    if (Math.abs(dx) >= 48 && Math.abs(dx) > Math.abs(dy) * 1.15) {
+                      swipeHandled.current = true;
+                      dismiss(item.id);
+                    }
+                  };
+                  const handlePointerCancel = event => {
+                    if (swipeStart.current?.pointerId === event.pointerId) swipeStart.current = null;
                   };
                   const handleItemClick = event => {
                     if (swipeHandled.current) { swipeHandled.current = false; return; }
@@ -201,7 +215,8 @@ export default function NotificationCenter({
                       key={item.id}
                       onPointerDown={handlePointerDown}
                       onPointerUp={handlePointerUp}
-                      onPointerCancel={() => { swipeStart.current = null; }}
+                      onPointerCancel={handlePointerCancel}
+                      onLostPointerCapture={handlePointerCancel}
                       onClick={handleItemClick}
                       onKeyDown={event => {
                         if ((event.key === 'Enter' || event.key === ' ') && !item.read) {
