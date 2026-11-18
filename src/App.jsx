@@ -21,11 +21,21 @@ function AppContent() {
   const [gameSnapshot, setGameSnapshot] = useState(null);
   const [chatViewRequest, setChatViewRequest] = useState(null);
   const [gameError, setGameError] = useState('');
-  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [soundEnabled, setSoundEnabled] = useState(() => {
+    try {
+      return typeof window === 'undefined' || window.localStorage.getItem('vsr.notification.sound') !== 'false';
+    } catch {
+      return true;
+    }
+  });
   const [modalNotification, setModalNotification] = useState(null);
   const soundEnabledRef = useRef(soundEnabled);
   const notificationEventIdsRef = useRef(new Set());
   soundEnabledRef.current = soundEnabled;
+
+  useEffect(() => {
+    try { window.localStorage.setItem('vsr.notification.sound', String(soundEnabled)); } catch {}
+  }, [soundEnabled]);
   const runtimeRef = useRef(null);
   const loadGenerationRef = useRef(0);
 
