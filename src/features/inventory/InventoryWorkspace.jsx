@@ -203,6 +203,7 @@ export default function InventoryWorkspace({ snapshot, open = false, onClose }) 
       size="lg"
       width="min(100vw, 760px)"
       lockScroll
+      contentClassName="vsr-inventory-drawer-content"
     >
       {!inventory || !items ? (
         <EmptyInventoryState
@@ -212,7 +213,7 @@ export default function InventoryWorkspace({ snapshot, open = false, onClose }) 
       ) : items.length === 0 ? (
         <EmptyInventoryState />
       ) : (
-        <div className="vsr-stack vsr-stack--gap-3">
+        <div className="vsr-inventory-layout">
           <InventoryControls
             search={search}
             onSearchChange={resetPage(setSearch)}
@@ -225,16 +226,17 @@ export default function InventoryWorkspace({ snapshot, open = false, onClose }) 
             onSortChange={resetPage(setSort)}
           />
 
-          <div className="vsr-stack vsr-stack--gap-1">
-            <p className="vsr-text-secondary" aria-live="polite">
-              {filteredItems.length} {filteredItems.length === 1 ? 'item' : 'items'} found
-            </p>
-            {filteredItems.length > 0 && (
-              <p className="vsr-text-secondary">
-                Showing {firstItem}–{lastItem} of {filteredItems.length}
+          <div className="vsr-inventory-results">
+            <div className="vsr-inventory-results__meta">
+              <p className="vsr-text-secondary" aria-live="polite">
+                {filteredItems.length} {filteredItems.length === 1 ? 'item' : 'items'} found
               </p>
-            )}
-          </div>
+              {filteredItems.length > 0 && (
+                <p className="vsr-text-secondary">
+                  Showing {firstItem}–{lastItem} of {filteredItems.length}
+                </p>
+              )}
+            </div>
 
           {filteredItems.length === 0 ? (
             <EmptyInventoryState
@@ -255,6 +257,7 @@ export default function InventoryWorkspace({ snapshot, open = false, onClose }) 
               />
             </>
           )}
+          </div>
         </div>
       )}
     </Drawer>
