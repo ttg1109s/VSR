@@ -43,4 +43,4 @@ The React layer uses Web Audio API and creates short synthesized tones; it does 
 
 ## Engineering constraints
 
-Use public Design System components for Drawer, Dialog, Button, Badge, Switch, and ToastProvider. Feature CSS is limited to Notification Center composition and consumes existing Design System tokens. Do not add page-level styling or direct safe-area environment reads. Keep Engine independent of React and browser APIs.
+Use public Design System components for Drawer, Dialog, Button, IconButton, SegmentedControl, Badge, Switch, and ToastProvider. Configure Drawer width, content and scroll locking through public props; never target Drawer internal DOM selectors or infer behavior from CSS class names. Notification item content remains feature-owned, but read and dismiss actions must be semantic buttons with visible labels and keyboard access. Feature CSS is limited to Notification Center composition and consumes existing Design System tokens. Do not add page-level styling or direct safe-area environment reads. Keep Engine independent of React and browser APIs.
