@@ -989,7 +989,17 @@ export const DEMO_SCRIPT = {
             "visited": false,
             "countVisited": 0
           },
-          "actions": ["action_question_hanh","action_question_hanh_guestbook","action_question_hanh_room","action_open_guestbook","action_return_square","action_travel_chapel","action_unlock_cellar","action_find_spare_key","action_talk_hanh_notice"]
+          "actions": [
+            "action_question_hanh",
+            "action_question_hanh_guestbook",
+            "action_question_hanh_room",
+            "action_open_guestbook",
+            "action_return_square",
+            "action_travel_chapel",
+            "action_unlock_cellar",
+            "action_find_spare_key",
+            "action_talk_hanh_notice"
+          ]
         },
         "router_inn_hidden_room": {
           "meta": {
@@ -1002,7 +1012,17 @@ export const DEMO_SCRIPT = {
             "visited": false,
             "countVisited": 0
           },
-          "actions": ["action_question_hanh","action_question_hanh_guestbook","action_question_hanh_room","action_open_guestbook","action_return_square","action_travel_chapel","action_unlock_cellar","action_return_view_inn","action_talk_hanh_notice"]
+          "actions": [
+            "action_question_hanh",
+            "action_question_hanh_guestbook",
+            "action_question_hanh_room",
+            "action_open_guestbook",
+            "action_return_square",
+            "action_travel_chapel",
+            "action_unlock_cellar",
+            "action_return_view_inn",
+            "action_talk_hanh_notice"
+          ]
         }
       }
     },
