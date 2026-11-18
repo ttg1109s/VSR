@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Button, Drawer, Grid, Input, Select } from '../../design-system/index.js';
+import { Button, Drawer, Grid, Input } from '../../design-system/index.js';
 
 const PAGE_SIZE = 24;
 
@@ -42,6 +42,30 @@ function InventoryItemCard({ item }) {
   );
 }
 
+function FilterGroup({ label, value, options, onChange, className = '' }) {
+  return (
+    <section className={`vsr-inventory-filter-group ${className}`}>
+      <h3 className="vsr-inventory-filter-group__label">{label}</h3>
+      <div className="vsr-inventory-filter-options" role="group" aria-label={label}>
+        {options.map(option => {
+          const selected = value === option.value;
+          return (
+            <button
+              key={option.value}
+              type="button"
+              className="vsr-inventory-filter-chip"
+              aria-pressed={selected}
+              onClick={() => onChange(option.value)}
+            >
+              {option.label}
+            </button>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
 function InventoryControls({
   search,
   onSearchChange,
@@ -56,47 +80,45 @@ function InventoryControls({
   return (
     <div className="vsr-inventory-controls">
       <Input
-        label="Search inventory"
-        placeholder="Search by item name or description"
+        placeholder="Search inventory..."
         leadingIcon="search"
         type="search"
         value={search}
         onChange={event => onSearchChange(event.target.value)}
       />
-      <Grid columns="responsive-cards" gap="3">
-        <Select
-          label="Category"
-          value={category}
-          onChange={event => onCategoryChange(event.target.value)}
-          options={[
-            { value: 'all', label: 'All categories' },
-            ...categories.map(value => ({ value, label: value }))
-          ]}
-          placeholder={null}
-        />
-        <Select
-          label="Equipment"
-          value={equipment}
-          onChange={event => onEquipmentChange(event.target.value)}
-          options={[
-            { value: 'all', label: 'All items' },
-            { value: 'equipped', label: 'Equipped' },
-            { value: 'unequipped', label: 'Not equipped' }
-          ]}
-          placeholder={null}
-        />
-        <Select
-          label="Sort by"
-          value={sort}
-          onChange={event => onSortChange(event.target.value)}
-          options={[
-            { value: 'name-asc', label: 'Name: A to Z' },
-            { value: 'name-desc', label: 'Name: Z to A' },
-            { value: 'category-asc', label: 'Category: A to Z' }
-          ]}
-          placeholder={null}
-        />
-      </Grid>
+      <FilterGroup
+        label="Category"
+        value={category}
+        onChange={onCategoryChange}
+        options={[
+          { value: 'all', label: 'All' },
+          ...categories.map(value => ({ value, label: value === 'uncategorized' ? 'Uncategorized' : value }))
+        ]}
+      />
+      <div className="vsr-inventory-filter-divider" aria-hidden="true" />
+      <FilterGroup
+        label="Equipment"
+        value={equipment}
+        onChange={onEquipmentChange}
+        options={[
+          { value: 'all', label: 'All items' },
+          { value: 'equipped', label: 'Equipped' },
+          { value: 'unequipped', label: 'Not equipped' }
+        ]}
+      />
+      <div className="vsr-inventory-filter-divider" aria-hidden="true" />
+      <FilterGroup
+        label="Sort"
+        className="vsr-inventory-filter-group--sort"
+        value={sort}
+        onChange={onSortChange}
+        options={[
+          { value: 'name-asc', label: 'A–Z' },
+          { value: 'name-desc', label: 'Z–A' },
+          { value: 'category-asc', label: 'Category' }
+        ]}
+      />
+      <div className="vsr-inventory-filter-divider" aria-hidden="true" />
     </div>
   );
 }
