@@ -73,10 +73,10 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
         scrollable
         sticky
         aria-label="Scene breadcrumb"
+        className="vsr-playing-breadcrumb"
       />
       <article className="vsr-page-shell__content vsr-page-shell__content--reading">
         <section className="vsr-stack vsr-stack--gap-3" aria-label="Scene context">
-          {sceneTitle && <h1 id="playing-scene-title" className="vsr-heading-display">{sceneTitle}</h1>}
           <MediaFrame
             src={cover?.url}
             type={cover?.type || 'photo'}
