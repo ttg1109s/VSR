@@ -16,14 +16,22 @@ function EmptyInventoryState({ title = 'Your inventory is empty', message = "You
 }
 
 function InventoryItemCard({ item }) {
+  const iconName = typeof item.icon === 'string'
+    && /^[a-z][a-z0-9_]*$/.test(item.icon)
+    ? item.icon
+    : 'inventory_2';
+  const categoryLabel = item.category === 'uncategorized'
+    ? 'Uncategorized'
+    : item.category;
+
   return (
     <article className="vsr-card vsr-stack vsr-stack--center vsr-stack--gap-2">
       <span className="material-symbols-rounded" aria-hidden="true">
-        {item.icon || 'inventory_2'}
+        {iconName}
       </span>
       <div className="vsr-stack vsr-stack--center vsr-stack--gap-1">
         <h3>{item.name}</h3>
-        {item.category && <p className="vsr-text-secondary">{item.category}</p>}
+        {categoryLabel && <p className="vsr-text-secondary">{categoryLabel}</p>}
       </div>
       {item.equipped && (
         <span className="vsr-tag" aria-label="Equipped">
@@ -235,7 +243,7 @@ export default function InventoryWorkspace({ snapshot, open = false, onClose }) 
             />
           ) : (
             <>
-              <Grid columns="responsive-dense" gap="3" aria-label="Inventory items">
+              <Grid columns="auto" gap="3" aria-label="Inventory items">
                 {pageItems.map(item => (
                   <InventoryItemCard key={item.id} item={item} />
                 ))}
