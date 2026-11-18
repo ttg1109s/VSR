@@ -3,6 +3,24 @@ import { createRoot } from 'react-dom/client';
 import { ToastProvider, useToast } from '../../src/design-system/index.js';
 import '../../src/design-system/index.css';
 
+const activeToastTimers = new Set();
+const nativeSetTimeout = window.setTimeout.bind(window);
+const nativeClearTimeout = window.clearTimeout.bind(window);
+window.setTimeout = (callback, delay, ...args) => {
+  let timer;
+  timer = nativeSetTimeout(() => {
+    activeToastTimers.delete(timer);
+    callback(...args);
+  }, delay);
+  if (delay === 1000) activeToastTimers.add(timer);
+  return timer;
+};
+window.clearTimeout = timer => {
+  activeToastTimers.delete(timer);
+  return nativeClearTimeout(timer);
+};
+window.__activeToastTimers = activeToastTimers;
+
 function Controls() {
   const toast = useToast();
   useEffect(() => {
