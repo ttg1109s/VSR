@@ -5,7 +5,7 @@ import Liên hệPanel from './Liên hệPanel.jsx';
 
 export default function PlayingPage({ snapshot, chatViewRequest = null, client, error = '', onNavigate }) {
   const [activeNavigation, setActiveNavigation] = useState('hand');
-  const [contactOpen, setLiên hệOpen] = useState(false);
+  const [contactOpen, setContactOpen] = useState(false);
   const scene = snapshot?.presentation?.scene ?? null;
   const router = snapshot?.presentation?.router ?? null;
   const activeSceneId = snapshot?.game?.sceneId ?? null;
@@ -13,13 +13,13 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
   const activeChat = snapshot?.session?.chat ?? null;
   useEffect(() => {
     if (activeChat?.active !== true || !activeChat.id || !activeChat.contactId) return;
-    setLiên hệOpen(true);
+    setContactOpen(true);
     setActiveNavigation('contact');
   }, [activeChat?.active, activeChat?.id, activeChat?.contactId]);
 
   useEffect(() => {
     if (!chatViewRequest?.requestId || !chatViewRequest.chatId || !chatViewRequest.contactId) return;
-    setLiên hệOpen(true);
+    setContactOpen(true);
     setActiveNavigation('contact');
   }, [chatViewRequest?.requestId, chatViewRequest?.chatId, chatViewRequest?.contactId]);
 
@@ -78,7 +78,7 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
         value={activeNavigation}
         onChange={value => {
           setActiveNavigation(value);
-          if (value === 'contact') setLiên hệOpen(true);
+          if (value === 'contact') setContactOpen(true);
         }}
         items={[
           { value: 'hand', label: 'Đồ đang cầm', icon: 'front_hand' },
@@ -91,12 +91,12 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
         open={contactOpen}
         player={snapshot?.presentation?.player ?? null}
         contacts={snapshot?.presentation?.contacts ?? []}
-        systemLiên hệs={snapshot?.presentation?.systemLiên hệs ?? []}
+        systemContacts={snapshot?.presentation?.systemContacts ?? []}
         session={snapshot?.session ?? null}
         viewRequest={chatViewRequest}
         client={client}
         onClose={() => {
-          setLiên hệOpen(false);
+          setContactOpen(false);
           setActiveNavigation('hand');
         }}
       />
