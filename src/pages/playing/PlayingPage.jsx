@@ -10,7 +10,8 @@ import './playing-page.css';
 export default function PlayingPage({ snapshot, chatViewRequest = null, client, error = '', onNavigate, soundEnabled = true, onSoundChange, modalNotification = null, onModalClose }) {
   const toast = useToast();
   const [activeNavigation, setActiveNavigation] = useState('hand');
-  const [contactOpen, setContactOpen] = useState(false);\n  const [inventoryOpen, setInventoryOpen] = useState(false);
+  const [contactOpen, setContactOpen] = useState(false);
+  const [inventoryOpen, setInventoryOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [backParentPending, setBackParentPending] = useState(false);
   const actionCollectionRef = useRef(null);
@@ -136,7 +137,14 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
       <BottomNavigation
         value={activeNavigation}
         onChange={value => {
-          if (value === 'inventor') {\n            setInventoryOpen(current => !current);\n            setContactOpen(false);\n            setNotificationOpen(false);\n            setActiveNavigation(inventoryOpen ? 'hand' : 'inventor');\n            return;\n          }\n          if (value === 'notify') {
+          if (value === 'inventor') {
+            setInventoryOpen(current => !current);
+            setContactOpen(false);
+            setNotificationOpen(false);
+            setActiveNavigation(inventoryOpen ? 'hand' : 'inventor');
+            return;
+          }
+          if (value === 'notify') {
             setInventoryOpen(false);
             setNotificationOpen(current => !current);
             setContactOpen(false);
@@ -154,6 +162,13 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
           { value: 'contact', label: 'Contact', icon: 'contacts' },
           { value: 'notify', label: 'Notify', icon: 'notifications', badge: unreadCount, badgeLabel: 'unread notifications' }
         ]}
+      />
+      <InventoryWorkspace
+        snapshot={snapshot}
+        client={client}
+        open={inventoryOpen}
+        onError={message => toast(message, { tone: 'warning' })}
+        onClose={() => { setInventoryOpen(false); setActiveNavigation('hand'); }}
       />
       <ContactPanel
         open={contactOpen}
