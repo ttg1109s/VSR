@@ -410,9 +410,9 @@ export default function ContactPanel({ open, onClose, player, contacts = [], sys
     return allContacts.find(contact => contact.id === id)?.name || id || 'Không xác định';
   }
 
-  function renderContactHeader() {
+  function renderContactHeader(inDrawer = false) {
     return (
-      <div className="vsr-contact-header vsr-contact-header--drawer">
+      <div className={'vsr-contact-header' + (inDrawer ? ' vsr-contact-header--drawer' : '')}>
         <Button
           className={profileOpen || activeArea === 'conversation' ? 'vsr-contact-back is-visible' : 'vsr-contact-back'}
           size="sm"
@@ -479,8 +479,8 @@ export default function ContactPanel({ open, onClose, player, contacts = [], sys
       onClose={close}
       title="Contact"
       ariaLabel={selected ? 'Hội thoại với ' + (selected.name || selected.id) : 'Contact'}
-      headerContent={selected && activeArea === 'conversation' ? renderContactHeader() : null}
-      headerClassName={selected && activeArea === 'conversation' ? 'vsr-overlay-header--contact-thread' : undefined}
+      headerContent={selected && activeArea === 'conversation' && selectedThreadId ? renderContactHeader(true) : null}
+      headerClassName={selected && activeArea === 'conversation' && selectedThreadId ? 'vsr-overlay-header--contact-thread' : undefined}
       headerActions={player && (
         <Button
           size="sm"
@@ -532,7 +532,7 @@ export default function ContactPanel({ open, onClose, player, contacts = [], sys
             </div>
           ) : (
             <>
-              {activeArea !== 'conversation' && renderContactHeader()}
+              {!(activeArea === 'conversation' && selectedThreadId) && renderContactHeader()}
 
               {profileOpen && (
                 <div className="vsr-contact-info-panel" role="region" aria-label="Thông tin liên hệ">
