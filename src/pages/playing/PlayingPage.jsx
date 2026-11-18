@@ -1,6 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Badge, BottomNavigation, Breadcrumb, MediaFrame, useToast } from '../../design-system/index.js';
 import ActionCollection from '../../features/actions/ActionCollection.jsx';
+import ActionNavigator from '../../features/actions/ActionNavigator.jsx';
 import ContactPanel from './ContactPanel.jsx';
 import NotificationCenter from '../../features/notifications/NotificationCenter.jsx';
 
@@ -9,6 +10,9 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
   const [activeNavigation, setActiveNavigation] = useState('hand');
   const [contactOpen, setContactOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
+  const actionCollectionRef = useRef(null);
+  const [actionNavigation, setActionNavigation] = useState({ activeIndex: 0, actionCount: 0, activeTitle: '' });
+  const handleActionNavigationStateChange = useCallback(next => setActionNavigation(next), []);
   const notifications = snapshot?.session?.notifications?.history ?? [];
   const unreadCount = snapshot?.session?.notifications?.unreadCount ?? notifications.filter(item => !item.read).length;
   const scene = snapshot?.presentation?.scene ?? null;
@@ -75,11 +79,21 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
         {router?.meta?.desc && (
           <div className="vsr-text-body">{router.meta.desc}</div>
         )}
+        {actionNavigation.actionCount > 0 && (
+          <ActionNavigator
+            activeIndex={actionNavigation.activeIndex}
+            actionCount={actionNavigation.actionCount}
+            activeTitle={actionNavigation.activeTitle}
+            onNavigate={index => actionCollectionRef.current?.scrollToIndex(index)}
+          />
+        )}
         <ActionCollection
+          ref={actionCollectionRef}
           actions={snapshot?.presentation?.actions || []}
           client={client}
           sceneId={activeSceneId}
           passwordChallenge={snapshot?.session?.passwordChallenge || null}
+          onNavigationStateChange={handleActionNavigationStateChange}
           onError={message => toast(message, { tone: 'warning' })}
         />
         {error && <p className="vsr-text-error" role="alert">{error}</p>}
