@@ -1174,9 +1174,36 @@ export const DEMO_SCRIPT = {
     },
     "scene_abandoned_school": {
       "meta": {
-        "title": "Trường tiểu học bỏ hoang",
-        "desc": "Trường học lưu sơ đồ lớp và dấu vết về học sinh thứ mười hai bị xóa khỏi hồ sơ.",
+        "title": "Tòa trường tiểu học bỏ hoang",
+        "desc": "Tòa trường nằm bên con đường có những dấu chân nhỏ dẫn từ cổng vào lớp học số 3. Hành lang tối và im lìm; những dấu vết trong tòa nhà cho thấy một lớp học đã bị xóa khỏi hồ sơ sơ tán.",
         "parentScene": "scene_village"
+      },
+      "set": {
+        "activeRouterId": "router_school_entry"
+      },
+      "routers": {
+        "router_school_entry": {
+          "meta": {
+            "sceneID": "scene_abandoned_school",
+            "subTitleStatus": "Hành lang tối",
+            "desc": "Cánh cửa trường mở hé. Bụi phủ trên nền hành lang, nhưng giữa lớp bụi có một hàng dấu chân nhỏ kéo dài về phía lớp học số 3. Từ bên trong vọng ra tiếng lật giấy rất khẽ."
+          },
+          "set": {
+            "blocked": false,
+            "visited": false,
+            "countVisited": 0
+          },
+          "actions": [
+            "action_enter_classroom_03"
+          ]
+        }
+      }
+    },
+    "scene_school_classroom_03": {
+      "meta": {
+        "title": "Lớp học số 3",
+        "desc": "Lớp học nằm sâu trong tòa trường bỏ hoang. Danh sách học sinh bị gạch xóa, bức ảnh tập thể bị xé và sơ đồ chỗ ngồi còn dấu vết của vị trí thứ mười hai. Đây là nơi lưu giữ bằng chứng trực tiếp về học sinh bị xóa khỏi hồ sơ.",
+        "parentScene": "scene_abandoned_school"
       },
       "set": {
         "activeRouterId": "router_classroom_erased"
@@ -1184,9 +1211,9 @@ export const DEMO_SCRIPT = {
       "routers": {
         "router_classroom_erased": {
           "meta": {
-            "sceneID": "scene_abandoned_school",
+            "sceneID": "scene_school_classroom_03",
             "subTitleStatus": "Bị xóa tên",
-            "desc": "Trong lớp học số 3, danh sách chỉ còn những cái tên bị gạch bỏ và bức ảnh tập thể bị xé. Sơ đồ chỗ ngồi có dấu vết của vị trí thứ mười hai, nhưng vị trí ấy đã bị xóa khỏi mọi bản sao."
+            "desc": "Danh sách trên bảng chỉ còn những cái tên bị gạch bỏ và bức ảnh tập thể bị xé. Sơ đồ chỗ ngồi có dấu vết của vị trí thứ mười hai, nhưng vị trí ấy đã bị xóa khỏi mọi bản sao."
           },
           "set": {
             "blocked": false,
@@ -1202,9 +1229,9 @@ export const DEMO_SCRIPT = {
         },
         "router_classroom_archive_open": {
           "meta": {
-            "sceneID": "scene_abandoned_school",
+            "sceneID": "scene_school_classroom_03",
             "subTitleStatus": "Đã khôi phục hồ sơ",
-            "desc": "Một ngăn bàn bị đóng đinh chứa bản sao sổ điểm danh. Tên học sinh thứ mười hai vẫn bị bôi đen, nhưng số thứ tự và ngày nghỉ học trùng với hồ sơ sơ tán."
+            "desc": "Một ngăn bàn cuối lớp bị đóng đinh chứa bản sao sổ điểm danh. Tên học sinh thứ mười hai vẫn bị bôi đen, nhưng số thứ tự và ngày nghỉ học trùng với hồ sơ sơ tán."
           },
           "set": {
             "blocked": false,
@@ -1214,7 +1241,7 @@ export const DEMO_SCRIPT = {
           "actions": [
             "action_check_desk",
             "action_talk_linh",
-            "action_decode_roster",
+            "action_decode_roster"
           ]
         }
       }
@@ -3102,6 +3129,27 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "scene",
             "target": "scene_abandoned_school"
+          }
+        ]
+      }
+    },
+    "action_enter_classroom_03": {
+      "meta": {
+        "title": "Lớp học số 3",
+        "buttonLabel": "Vào lớp",
+        "buttonIcon": "door-open",
+        "desc": "Theo dấu chân nhỏ dọc hành lang, bạn bước vào lớp học số 3. Những chiếc bàn phủ bụi vẫn được xếp thành hàng, nhưng sơ đồ chỗ ngồi trên tường có một vị trí bị cạo khỏi bản sao."
+      },
+      "set": {
+        "display": "show"
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "goto",
+            "subtype": "scene",
+            "target": "scene_school_classroom_03"
           }
         ]
       }
@@ -5676,12 +5724,12 @@ export const DEMO_SCRIPT = {
       "relationship": [],
       "met": [],
       "place": {
-        "scene_id": "scene_abandoned_school",
+        "scene_id": "scene_school_classroom_03",
         "currentIndex": 0
       },
       "moveList": [
         {
-          "scene_id": "scene_abandoned_school",
+          "scene_id": "scene_school_classroom_03",
           "countVisited": 0,
           "nextStep": 35
         }
