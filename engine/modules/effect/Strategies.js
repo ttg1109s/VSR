@@ -22,10 +22,6 @@ function resolveActionRuntimeKeys(engine, actionId) {
             });
         });
     });
-    const runtimeActions = engine.api.engine.state.getRuntimeSnapshot?.('actions') || {};
-    Object.keys(runtimeActions).forEach(key => {
-        if (key.endsWith(`_${actionId}`)) keys.add(key);
-    });
     return [...keys];
 }
 
