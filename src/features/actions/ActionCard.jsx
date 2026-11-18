@@ -18,7 +18,7 @@ const REASON_TONES = {
 };
 const seconds = (until, now) => Number.isFinite(until) ? Math.max(0, Math.ceil((until - now) / 1000)) : 0;
 
-function ActionCard({ action, pending = false, interactionBlocked = false, passwordChallenge = null, feedback = '', onTrigger, onMarkRead, onSubmitPassword, onCancelPassword, onRefreshSnapshot }) {
+function ActionCard({ action, pending = false, interactionBlocked = false, passwordChallenge = null, onTrigger, onMarkRead, onSubmitPassword, onCancelPassword, onRefreshSnapshot }) {
   const [input, setInput] = useState('');
   const [error, setError] = useState('');
   const [challengeFeedback, setChallengeFeedback] = useState('');
@@ -155,7 +155,6 @@ function ActionCard({ action, pending = false, interactionBlocked = false, passw
 
     {coolingDown && <div className="vsr-action-card__cooldown" role="timer">Time remaining: {cooldown}s</div>}
 
-    {feedback && <p className="vsr-action-card__feedback" role="status">{feedback}</p>}
     <div className="vsr-action-card__actions">
       <Button size="lg" leadingIcon={meta.buttonIcon} disabled={pending || interactionBlocked || coolingDown || !ready || availability.canTrigger !== true || locked} onClick={() => onTrigger?.(action)} aria-label={meta.buttonLabel || `Execute ${meta.title || action.id}`}>{meta.buttonLabel || 'Execute'}</Button>
     </div>
