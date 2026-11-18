@@ -153,7 +153,11 @@ test('Contact consumes the live, read-only character projection from Engine snap
   const host = new LocalEngineHost();
   const client = new JsonClient(host);
   try {
-    const snapshot = await client.initialize(JSON.parse(host.getDemoScenario()));
+    await client.initialize(JSON.parse(host.getDemoScenario()));
+    // Contact visibility and meeting counts are scoped to the current Player Entry.
+    host.engine.state.characters.player.met = ['mai:1'];
+    host.engine.commitState('test.contact.seeded');
+    const snapshot = client.getSnapshot();
     const player = snapshot.presentation.player;
     const mai = snapshot.presentation.contacts.find(contact => contact.id === 'mai');
 
