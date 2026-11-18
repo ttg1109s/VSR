@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Button, Drawer, Grid, Input } from '../../design-system/index.js';
+import { Button, Drawer, Grid, IconButton, Input, Popover } from '../../design-system/index.js';
 
 const PAGE_SIZE = 24;
 
@@ -66,9 +66,7 @@ function FilterGroup({ label, value, options, onChange, className = '' }) {
   );
 }
 
-function InventoryControls({
-  search,
-  onSearchChange,
+function InventoryFilters({
   category,
   onCategoryChange,
   categories,
@@ -78,14 +76,7 @@ function InventoryControls({
   onSortChange
 }) {
   return (
-    <div className="vsr-inventory-controls">
-      <Input
-        placeholder="Search inventory..."
-        leadingIcon="search"
-        type="search"
-        value={search}
-        onChange={event => onSearchChange(event.target.value)}
-      />
+    <div className="vsr-inventory-filter-panel">
       <FilterGroup
         label="Category"
         value={category}
@@ -118,7 +109,20 @@ function InventoryControls({
           { value: 'category-asc', label: 'Category' }
         ]}
       />
-      <div className="vsr-inventory-filter-divider" aria-hidden="true" />
+    </div>
+  );
+}
+
+function InventoryControls({ search, onSearchChange }) {
+  return (
+    <div className="vsr-inventory-controls">
+      <Input
+        placeholder="Search inventory..."
+        leadingIcon="search"
+        type="search"
+        value={search}
+        onChange={event => onSearchChange(event.target.value)}
+      />
     </div>
   );
 }
@@ -226,6 +230,23 @@ export default function InventoryWorkspace({ snapshot, open = false, onClose }) 
       width="min(100vw, 760px)"
       lockScroll
       contentClassName="vsr-inventory-drawer-content"
+      headerActions={
+        <Popover
+          align="end"
+          label="Inventory filters"
+          trigger={<IconButton icon="tune" label="Inventory filters" />}
+        >
+          <InventoryFilters
+            category={category}
+            onCategoryChange={resetPage(setCategory)}
+            categories={categories}
+            equipment={equipment}
+            onEquipmentChange={resetPage(setEquipment)}
+            sort={sort}
+            onSortChange={resetPage(setSort)}
+          />
+        </Popover>
+      }
     >
       {!inventory || !items ? (
         <EmptyInventoryState
@@ -239,13 +260,6 @@ export default function InventoryWorkspace({ snapshot, open = false, onClose }) 
           <InventoryControls
             search={search}
             onSearchChange={resetPage(setSearch)}
-            category={category}
-            onCategoryChange={resetPage(setCategory)}
-            categories={categories}
-            equipment={equipment}
-            onEquipmentChange={resetPage(setEquipment)}
-            sort={sort}
-            onSortChange={resetPage(setSort)}
           />
 
           <div className="vsr-inventory-results">
