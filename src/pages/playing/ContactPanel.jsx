@@ -525,6 +525,7 @@ export default function ContactPanel({ open, onClose, player, contacts = [], sys
       size="full"
       side="right"
       className="vsr-contact-drawer"
+      lockScroll
     >
       <ContactWorkspace>
         <ContactList className={mobileView === 'detail' ? 'is-hidden-compact' : ''}>
