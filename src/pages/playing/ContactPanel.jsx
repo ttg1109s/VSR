@@ -74,7 +74,7 @@ function RelationshipSummary({ relationshipWithPlayer, metCount = 0 }) {
         <strong className="vsr-contact-relationship-summary__type">
           {tag || (hasRelationship ? 'Recorded, unclassified' : 'No relationship')}
         </strong>
-        <span className="vsr-contact-relationship-summary__count">Times met: {metCount} lần</span>
+        <span className="vsr-contact-relationship-summary__count">Times met: {metCount} times</span>
       </div>
     </div>
   );
@@ -261,7 +261,7 @@ function IdentityDrawer({ open, onClose, player, contacts, onSelectContact }) {
           <section className="vsr-identity-section">
             <h3><span aria-hidden="true">groups</span>Relationships</h3>
             {context.relationshipOwner?.name && (
-              <p className="vsr-identity-section__source">Relationships của {context.relationshipOwner.name}</p>
+              <p className="vsr-identity-section__source">Relationships for {context.relationshipOwner.name}</p>
             )}
             <RelationshipList
               relationships={relationships}
