@@ -330,7 +330,7 @@ export class JsonProtocol{
    game:{initialized:!!engine.src,sceneId,routerId},
    presentation:{
     scenarioTitle:engine.src?.meta?.title||'VSR',
-    scene:sourceScene?{id:sceneId,meta:safeMeta(sourceScene.meta||{}),title:sourceScene.title||null}:null,
+    scene:sourceScene?{id:sceneId,meta:safeMeta(sourceScene.meta||{}),title:sourceScene.title||null,hasParentScene:!!(sourceScene.meta?.parentScene&&engine.src?.scenes?.[sourceScene.meta.parentScene])}:null,
     router:sourceRouter?{id:routerId,meta:safeMeta(sourceRouter.meta||{})}:null,
     scenePath:sceneId?(state.sceneTree?.[sceneId]||[]).map(node=>({id:node.id,title:node.title})):[],
     player:playerProjection,
