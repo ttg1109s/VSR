@@ -139,6 +139,34 @@ test('Save envelope accepts persisted Router timer tasks', () => {
   assert.deepEqual(save.pausedTasks, ['timer_end_scene_router', 'router_still_scene_router']);
 });
 
+test('legacy save migration moves identical Router Action records to the global ID', () => {
+  const record = { count: { normal: 2, pass: 1, fail: 0, pwFailed: 0 }, display: 'show' };
+  const save = normalizeSaveEnvelope({
+    protocol: 'vsr-save', saveVersion: 2,
+    scenario: { scenes: { start: { routers: { main: { actions: ['door'] } } } } },
+    state: { actions: { start_main_door: record } },
+    savedAt: new Date().toISOString()
+  });
+  assert.equal(save.saveVersion, 3);
+  assert.deepEqual(save.state.actions.door, record);
+  assert.equal(Object.hasOwn(save.state.actions, 'start_main_door'), false);
+});
+
+test('legacy save migration rejects divergent per-Router Action records', () => {
+  assert.throws(() => normalizeSaveEnvelope({
+    protocol: 'vsr-save', saveVersion: 2,
+    scenario: { scenes: {
+      start: { routers: { main: { actions: ['door'] } } },
+      other: { routers: { main2: { actions: ['door'] } } }
+    } },
+    state: { actions: {
+      start_main_door: { count: { normal: 1 } },
+      other_main2_door: { count: { normal: 2 } }
+    } },
+    savedAt: new Date().toISOString()
+  }), /legacy per-Router runtime records.*differ/);
+});
+
 test('Scenario validator rejects removed legacy Action fields with a migration diagnostic', () => {
   const host = new LocalEngineHost();
   try {
