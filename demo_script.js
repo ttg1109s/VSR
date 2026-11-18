@@ -4196,8 +4196,8 @@ export const DEMO_SCRIPT = {
   "characters": {
     "player": {
       "meta": {
-        "name": "Người chơi",
-        "desc": "Nhân vật trung tâm mà người chơi trực tiếp điều khiển. Bạn tỉnh dậy tại quảng trường làng mà không nhớ rõ mình đã đến đây bằng cách nào. Tên của bạn xuất hiện trong sổ khách với ngày đến ở tương lai; những người trong làng dường như nhận ra bạn, nhưng mỗi người nhớ một phiên bản khác nhau."
+        "name": "An",
+        "desc": "An tỉnh dậy tại quảng trường làng mà không nhớ rõ mình đã đến đây bằng cách nào. Tên An xuất hiện trong sổ khách với ngày đến ở tương lai; những người trong làng dường như nhận ra An, nhưng mỗi người nhớ một phiên bản khác nhau. Trong hồ sơ sơ tán và danh sách lớp, cái tên ấy lại bị cạo xóa, như thể An vừa là người đã đến sau mười bảy năm, vừa là người chưa từng được phép rời đi."
       },
       "set": {
         "linkEffect": false,
