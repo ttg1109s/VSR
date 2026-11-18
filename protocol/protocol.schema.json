@@ -1199,8 +1199,7 @@
       "additionalProperties": false,
       "required": [
         "enabled",
-        "ownerId",
-        "owners",
+        "ownerName",
         "items",
         "handCount",
         "handLimit",
@@ -1211,36 +1210,8 @@
         "enabled": {
           "type": "boolean"
         },
-        "ownerId": {
+        "ownerName": {
           "type": "string"
-        },
-        "owners": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": [
-              "id",
-              "name",
-              "isActive",
-              "itemCount"
-            ],
-            "properties": {
-              "id": {
-                "type": "string"
-              },
-              "name": {
-                "type": "string"
-              },
-              "isActive": {
-                "type": "boolean"
-              },
-              "itemCount": {
-                "type": "integer",
-                "minimum": 0
-              }
-            },
-            "additionalProperties": false
-          }
         },
         "items": {
           "type": "array",
