@@ -37,6 +37,13 @@ export const SceneSystem = {
         if (this.checkHardLock('scene', id)) {
             return { success: false, reason: 'target_locked' };
         }
+        const activeRouter = state.getRuntimeSnapshot('scenes.[id]', { id })?.activeRouterId;
+        if (!activeRouter || !this.src?.scenes?.[id]?.routers?.[activeRouter]) {
+            return { success: false, reason: 'invalid_target_router' };
+        }
+        if (this.checkHardLock('router', activeRouter)) {
+            return { success: false, reason: 'target_locked' };
+        }
 
         const currentS = state.get('sceneId');
         const faker = state.getRuntimeSnapshot('faker') || {};
@@ -71,6 +78,8 @@ export const SceneSystem = {
         const previousRouter = currentS
             ? state.getRuntimeSnapshot('scenes.[id]', { id: currentS })?.activeRouterId
             : undefined;
+        const previousEntryScene = state.getRuntimeSnapshot('characters.[id]', { id: entryChar })?.place?.scene_id;
+        const previousPrevRouter = state.get('prevRouter');
 
         // Apply these synchronous writes without yielding between them: leave effects
         // may still be running asynchronously and must not invalidate a queued transaction.
@@ -80,15 +89,21 @@ export const SceneSystem = {
             state.set('char.scene_id', id, { id: entryChar });
         }
 
-        let effectiveSkip = skipTransition;
-
-        const activeRouter = state.getRuntimeSnapshot('scenes.[id]', { id })?.activeRouterId;
-        if (!activeRouter || !this.src.scenes[id].routers[activeRouter]) {
-            console.error(`Active Router '${activeRouter}' in Scene '${id}' invalid.`);
-            return;
+        try {
+            const result = await this.enterRouter(activeRouter, true, true, skipTransition);
+            if (result?.success === false) {
+                state.set('sceneId', currentS || '');
+                state.set('prevRouter', previousPrevRouter ?? null);
+                if (state.getRuntimeSnapshot('characters.[id]', { id: entryChar })) state.set('char.scene_id', previousEntryScene, { id: entryChar });
+                return result;
+            }
+        } catch (error) {
+            state.set('sceneId', currentS || '');
+            state.set('prevRouter', previousPrevRouter ?? null);
+            if (state.getRuntimeSnapshot('characters.[id]', { id: entryChar })) state.set('char.scene_id', previousEntryScene, { id: entryChar });
+            if (currentS) this.render();
+            throw error;
         }
-
-        await this.enterRouter(activeRouter, true, true, effectiveSkip);
 
         // Character movement and entry effects are owned by each Character's moveList.
 
@@ -139,7 +154,7 @@ export const SceneSystem = {
         const timeOut = skipTransition ? 0 : totalTimeMs * 0.6;
 
         this.isTransitioning = true;
-
+        try {
         if (transType && transType !== 'none' && !skipTransition) {
             await this.api.presentation.scene.transition('start', transType, timeIn / 1000);
         }
@@ -190,8 +205,6 @@ export const SceneSystem = {
         if (transType && transType !== 'none' && !skipTransition) {
             await this.api.presentation.scene.transition('end', transType, timeOut / 1000);
         }
-
-        this.isTransitioning = false;
 
         if (rd.loop && rd.loop.enter) {
             this.processRunnables(rd.loop.enter, { sceneId: sId, routerId, hook: 'enter' }, true)
@@ -266,6 +279,9 @@ export const SceneSystem = {
             this.taskManager.operator(endTaskId, 'enabled');
             this.activeTimerTasks.push(endTaskId);
         }
+        } finally {
+            this.isTransitioning = false;
+        }
     },
 
     goBackParent() {
@@ -294,6 +310,68 @@ export const SceneSystem = {
             if (isSameScene) this.enterRouter(target);
             else this.enterScene(sId, false);
         }
+    },
+
+    rehydrateRouterTasks(remainingTimers = {}, pausedTasks = []) {
+        const state = this.api.engine.state;
+        const sceneId = state.get('sceneId');
+        const routerId = sceneId ? state.get('scene.activeRouterId', { id: sceneId }) : null;
+        const router = this.src?.scenes?.[sceneId]?.routers?.[routerId];
+        if (!router) return;
+        const runtime = state.getRuntimeSnapshot('routers.[id]', { id: `${sceneId}_${routerId}` }) || {};
+        const config = router.set || {};
+        const stillId = `router_still_${sceneId}_${routerId}`;
+        const stillSeconds = runtime.secondsStill !== undefined ? runtime.secondsStill : (config.secondsStill || 0);
+        if (router.loop?.still?.length && stillSeconds >= 5) {
+            const delay = Number.isFinite(remainingTimers[stillId]) ? remainingTimers[stillId] : stillSeconds * 1000;
+            this.currentStillTask = stillId;
+            this.taskManager.addNew(stillId, {
+                time: Math.max(1, delay), mode: 'interval',
+                exe: () => {
+                    if (state.get('sceneId') === sceneId && state.get('scene.activeRouterId', { id: sceneId }) === routerId) {
+                        this.processRunnables(router.loop.still, { sceneId, routerId, hook: 'still' }, true)
+                            .catch(error => console.error('Restored router still loop failed:', error));
+                    }
+                }
+            });
+            this.taskManager.operator(stillId, 'enabled');
+            if (pausedTasks.includes(stillId)) this.taskManager.pause(stillId);
+        }
+
+        const endId = `timer_end_${sceneId}_${routerId}`;
+        const uiId = `timer_ui_${sceneId}_${routerId}`;
+        if (!config.timer || !(config.timerSeconds >= 1.5) || !Number.isFinite(remainingTimers[endId])) return;
+        const maxSeconds = config.timerSeconds;
+        const mode = config.timerDisplay || 'dec';
+        const remainingMs = Math.max(1, remainingTimers[endId]);
+        const endAt = Date.now() + remainingMs;
+        const refresh = () => {
+            const seconds = Math.max(0, Math.ceil((endAt - Date.now()) / 1000));
+            this.updateTimerUI(seconds, mode, maxSeconds);
+        };
+        refresh();
+        this.taskManager.addNew(uiId, { time: Math.min(1000, Math.max(1, remainingMs)), mode: 'interval', exe: refresh });
+        this.taskManager.operator(uiId, 'enabled');
+        this.activeTimerTasks.push(uiId);
+        this.taskManager.addNew(endId, {
+            time: remainingMs, mode: 'timeout', count: 1,
+            exe: () => {
+                this.taskManager.kill(uiId);
+                this.taskManager.kill(endId);
+                this.timerState = null;
+                this.api.presentation.scene.hideTimer();
+                const endMode = config.timerEnd || 'out';
+                if (endMode === 'out') this.goBackTimerEnd();
+                else if (endMode === 'still' && router.timer?.end) {
+                    this.processRunnables(router.timer.end, { sceneId, routerId, hook: 't_end' }, true)
+                        .catch(error => console.error('Restored router timer end failed:', error));
+                }
+            }
+        });
+        this.taskManager.operator(endId, 'enabled');
+        this.activeTimerTasks.push(endId);
+        if (pausedTasks.includes(uiId)) this.taskManager.pause(uiId);
+        if (pausedTasks.includes(endId)) this.taskManager.pause(endId);
     },
 
     updateTimerUI(currentVal, mode, maxVal) {

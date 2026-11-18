@@ -9,6 +9,22 @@ import { NotifyStrategies } from './strategies/Notifications.js';
 import { EffectKeyStrategies, EffectScopeResolvers, StaticListResolvers, ManageSubtypeHandlers } from './strategies/Management.js';
 import { CmsStrategies } from './strategies/Cms.js';
 
+// Resolve every runtime instance of an Action ID, independent of the active Scene/Router.
+function resolveActionRuntimeKeys(engine, actionId) {
+    if (!actionId) return [];
+    const keys = new Set();
+    const scenes = engine.src?.scenes || {};
+    Object.entries(scenes).forEach(([sceneId, scene]) => {
+        Object.entries(scene?.routers || {}).forEach(([routerId, router]) => {
+            (Array.isArray(router?.actions) ? router.actions : []).forEach(entry => {
+                const id = typeof entry === 'string' ? entry : entry?.id;
+                if (id === actionId) keys.add(`${sceneId}_${routerId}_${actionId}`);
+            });
+        });
+    });
+    return [...keys];
+}
+
 // [REFACTOR] Wired SetStrategies with Handlers
 const WiredSetStrategies = {
     ...BaseSetStrategies,
@@ -44,18 +60,39 @@ const WiredSetStrategies = {
 
     action: (engine, eff) => {
         const state = engine.api.engine.state;
-        const sId = state.sceneId;
-        const rId = state.get('scene.activeRouterId', { id: sId });
-        const aId = resolveValue(eff.target, engine);
-        const actKey = `${sId}_${rId}_${aId}`;
-        const action = state.getRuntime('actions.[actionKey]', { actionKey: actKey });
+        const actionId = String(resolveValue(eff.target, engine) ?? '');
         const val = resolveValue(eff.value, engine);
         const prop = resolveValue(eff.property, engine);
+        const actionKeys = resolveActionRuntimeKeys(engine, actionId);
 
-        if (action) {
+        actionKeys.forEach(actionKey => {
+            const action = state.getRuntime('actions.[actionKey]', { actionKey });
+            if (!action) return;
             const handler = ActionPropertyHandlers[prop] || ActionPropertyHandlers.__default__;
-            handler(engine, action, val, actKey, prop);
+            handler(engine, action, val, actionKey, prop);
+        });
+    },
+
+    action_count: (engine, eff) => {
+        const state = engine.api.engine.state;
+        const actionId = String(resolveValue(eff.target, engine) ?? '');
+        const phase = resolveValue(eff.phase, engine);
+        const value = resolveValue(eff.value, engine);
+        if (!['normal', 'pass', 'fail', 'pwFailed'].includes(phase)) {
+            throw new TypeError(`Unsupported action counter phase: ${String(phase)}`);
         }
+        if (!Number.isSafeInteger(value) || value < 0) {
+            throw new TypeError('set/action_count requires a non-negative safe integer value.');
+        }
+
+        const actionKeys = resolveActionRuntimeKeys(engine, actionId);
+        if (actionKeys.length === 0) throw new Error(`Unknown Action ID: ${actionId}`);
+        actionKeys.forEach(actionKey => {
+            state.update('actions.[id]', current => {
+                const count = { normal: 0, pass: 0, fail: 0, pwFailed: 0, ...(current?.count || {}) };
+                return { ...(current || {}), count: { ...count, [phase]: value } };
+            }, { id: actionKey });
+        });
     },
 
     character: (engine, eff) => {
@@ -225,7 +262,8 @@ export const EffectHandlers = {
         if (typeof handler !== 'function') {
             throw new TypeError(`Unsupported goto subtype: ${String(eff.subtype)}`);
         }
-        if (!this.checkHardLock || !this.checkHardLock(eff.subtype, resolvedEff.target)) {
+        const isNavigationTarget = eff.subtype === 'scene' || eff.subtype === 'router';
+        if (!isNavigationTarget || !this.checkHardLock?.(eff.subtype, resolvedEff.target)) {
             await handler(this, resolvedEff);
         }
     }

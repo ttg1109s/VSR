@@ -1,10 +1,19 @@
 import { createServer } from 'node:http';
+import { timingSafeEqual } from 'node:crypto';
 import { GameEngine, DEMO_SCRIPT } from '../engine/index.js';
 
 const host = process.env.VSR_HOST || '127.0.0.1';
 const port = Number(process.env.VSR_PORT || 3001);
 const maxBodyBytes = 8 * 1024 * 1024;
-const engine = new GameEngine();
+const apiToken = process.env.VSR_API_TOKEN || null;
+const isLoopback = ['127.0.0.1', '::1', 'localhost'].includes(host);
+if (!isLoopback && !apiToken) {
+  throw new Error('VSR_API_TOKEN is required when VSR_HOST is not loopback.');
+}
+const engine = new GameEngine({
+  requireAuthorization: true,
+  authorizeCommand: ({ context }) => Boolean(context?.principal?.id)
+});
 const clients = new Set();
 
 function sendJson(response, status, value) {
@@ -14,6 +23,16 @@ function sendJson(response, status, value) {
     'x-content-type-options': 'nosniff'
   });
   response.end(JSON.stringify(value));
+}
+
+function authorizeRequest(request) {
+  if (!apiToken && isLoopback) return { id: 'loopback' };
+  const header = request.headers.authorization || '';
+  const supplied = header.startsWith('Bearer ') ? header.slice(7) : '';
+  const expected = Buffer.from(apiToken || '');
+  const actual = Buffer.from(supplied);
+  if (!supplied || actual.length !== expected.length || !timingSafeEqual(actual, expected)) return null;
+  return { id: 'http-token-client' };
 }
 
 function publishToClients(message) {
@@ -64,6 +83,10 @@ const server = createServer(async (request, response) => {
   if (request.method === 'GET' && url.pathname === '/api/health') {
     return sendJson(response, 200, { ok: true, protocolVersion: engine.protocol.protocolVersion });
   }
+  const principal = authorizeRequest(request);
+  if (!(request.method === 'GET' && url.pathname === '/api/health') && !principal) {
+    return sendJson(response, 401, { ok: false, error: 'UNAUTHORIZED' });
+  }
   if (request.method === 'GET' && url.pathname === '/api/demo-scenario') {
     return sendJson(response, 200, DEMO_SCRIPT);
   }
@@ -74,7 +97,7 @@ const server = createServer(async (request, response) => {
   if (request.method === 'POST' && url.pathname === '/api/command') {
     try {
       const command = await readJson(request);
-      const acknowledgement = await engine.dispatchProtocolCommand(command, {});
+      const acknowledgement = await engine.dispatchProtocolCommand(command, { principal });
       return sendJson(response, 200, acknowledgement);
     } catch (error) {
       return sendJson(response, error.statusCode || 400, {

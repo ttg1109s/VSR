@@ -34,7 +34,17 @@ export const ActionSystem = {
                 }
             });
         }
-        return actions;
+        return actions.map(action => {
+            const key = `${sId}_${rId}_${action.id}`;
+            const runtime = this.api.engine.state.getRuntimeSnapshot('actions.[id]', { id: key }) || {};
+            const count = runtime.count || {};
+            return { ...action, count: {
+                normal: Number.isSafeInteger(count.normal) && count.normal >= 0 ? count.normal : 0,
+                pass: Number.isSafeInteger(count.pass) && count.pass >= 0 ? count.pass : 0,
+                fail: Number.isSafeInteger(count.fail) && count.fail >= 0 ? count.fail : 0,
+                pwFailed: Number.isSafeInteger(count.pwFailed) && count.pwFailed >= 0 ? count.pwFailed : 0
+            }};
+        });
     },
 
     markAsRead(uniqueId) {
@@ -51,8 +61,7 @@ export const ActionSystem = {
         const current = state.getRuntimeSnapshot('actions.[id]', { id: uniqueId });
         if (current?.readDesc === true) return { success: true, alreadyRead: true };
         state.update('actions.[id]', value => ({
-            countClicks: 0,
-            countFails: 0,
+            count: { normal: 0, pass: 0, fail: 0, pwFailed: 0 },
             display: 'show',
             ...(value || {}),
             readDesc: true
@@ -93,12 +102,6 @@ export const ActionSystem = {
         console.log(`[Flow] >>> CLICK ACTION: ${actionKey}`);
 
         const set = actDef.set || {};
-        if (set.type === 'to_scene' && set.target && this.checkHardLock('scene', set.target)) {
-            return { success: false, reason: 'target_locked' };
-        }
-        if (set.type === 'swap_router' && set.target && this.checkHardLock('router', set.target)) {
-            return { success: false, reason: 'target_locked' };
-        }
 
         // --- Identity / Faker Logic ---
         // Determine Current Identity (Who is the player acting as?)
@@ -133,6 +136,7 @@ export const ActionSystem = {
         }
 
         if (!isAllowed) {
+            this.incrementActionCount(actStateKey, 'normal');
             if (actDef.effect?.normal) {
                 await this.processRunnables(actDef.effect.normal, { sceneId: sId, routerId: rId, actionId: actionKey, hook: 'normal' });
             }
@@ -180,16 +184,7 @@ export const ActionSystem = {
                 if (automations[autoId].active) this.stopAutomation(autoId);
             });
 
-            // Update the action counter without retaining a mutable state reference.
-            const actStateKey = `${sId}_${rId}_${actionKey}`;
-            state.update('actions.[id]', current => ({
-                countClicks: 0,
-                countFails: 0,
-                display: 'show',
-                ...(current || {}),
-                countClicks: ((current || {}).countClicks || 0) + 1
-            }), { id: actStateKey });
-            const actState = state.getRuntimeSnapshot('actions.[id]', { id: actStateKey });
+            this.incrementActionCount(actStateKey, 'normal');
 
             // Normal Effect (Always run if present)
             if (actDef.effect?.normal) {
@@ -216,7 +211,7 @@ export const ActionSystem = {
             }
 
             if (!checkPassed) {
-                state.update('actions.[id].countFails', current => (Number(current) || 0) + 1, { id: actStateKey });
+                this.incrementActionCount(actStateKey, 'fail');
                 this.api.presentation.effects.shake(uniqueId);
 
                 const failActions = {
@@ -305,6 +300,21 @@ export const ActionSystem = {
         return { success: true };
     },
 
+    incrementActionCount(actionStateKey, phase) {
+        if (!['normal', 'pass', 'fail', 'pwFailed'].includes(phase)) throw new TypeError(`Unsupported Action count phase: ${phase}`);
+        const state = this.api.engine.state;
+        state.update('actions.[id]', current => {
+            const count = current?.count || {};
+            return { ...(current || {}), count: {
+                normal: Number.isSafeInteger(count.normal) && count.normal >= 0 ? count.normal : 0,
+                pass: Number.isSafeInteger(count.pass) && count.pass >= 0 ? count.pass : 0,
+                fail: Number.isSafeInteger(count.fail) && count.fail >= 0 ? count.fail : 0,
+                pwFailed: Number.isSafeInteger(count.pwFailed) && count.pwFailed >= 0 ? count.pwFailed : 0,
+                [phase]: (Number.isSafeInteger(count[phase]) && count[phase] >= 0 ? count[phase] : 0) + 1
+            }};
+        }, { id: actionStateKey });
+    },
+
     async executeActionSuccess(actDef, sId, rId, actionKey, uniqueId) {
         const set = actDef.set || {};
         const state = this.api.engine.state;
@@ -319,9 +329,7 @@ export const ActionSystem = {
             }), { id: actStateKey });
         }
 
-        // Pass Effect
-        // Pass Effect
-        // [MOD] Allow pass effect to run if requirement is true OR if it's explicitly false (general success)
+        this.incrementActionCount(actStateKey, 'pass');
         if (actDef.effect?.pass) {
             // Logic for requirement === true or false (but success reached)
             if (set.requirement !== true && set.requirement !== false && typeof set.requirement !== 'undefined') {
@@ -356,10 +364,8 @@ export const ActionSystem = {
             }
             if (result === 'exhausted') {
                 const actStateKey = `${sId}_${rId}_${actionKey}`;
-                if (state.getRuntimeSnapshot('actions.[id]', { id: actStateKey })) {
-                    state.update('actions.[id].countFails', current => (Number(current) || 0) + 1, { id: actStateKey });
-                }
                 if (actDef.effect?.pwFailed) {
+                    this.incrementActionCount(actStateKey, 'pwFailed');
                     await this.processRunnables(actDef.effect.pwFailed, {
                         sceneId: sId, routerId: rId, actionId: actionKey, hook: 'pwFailed'
                     });

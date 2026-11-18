@@ -67,21 +67,21 @@ export const SetStrategies = {
 
 export const GotoStrategies = {
     scene: async (engine, eff) => {
-        if (engine.pauseBackgroundTasks) engine.pauseBackgroundTasks();
-        if (engine.clearEffectQueue) engine.clearEffectQueue('async');
-        await engine.enterScene(resolveValue(eff.target, engine));
-        if (engine.resumeBackgroundTasks) engine.resumeBackgroundTasks();
+        engine.pauseBackgroundTasks?.();
+        engine.clearEffectQueue?.('async');
+        try { return await engine.enterScene(resolveValue(eff.target, engine)); }
+        finally { engine.resumeBackgroundTasks?.(); }
     },
     router: async (engine, eff) => {
-        if (engine.pauseBackgroundTasks) engine.pauseBackgroundTasks();
-        if (engine.clearEffectQueue) engine.clearEffectQueue('async');
-        await engine.enterRouter(resolveValue(eff.target, engine));
-        if (engine.resumeBackgroundTasks) engine.resumeBackgroundTasks();
+        engine.pauseBackgroundTasks?.();
+        engine.clearEffectQueue?.('async');
+        try { return await engine.enterRouter(resolveValue(eff.target, engine)); }
+        finally { engine.resumeBackgroundTasks?.(); }
     },
     chat: async (engine, eff) => {
-        if (engine.pauseBackgroundTasks) engine.pauseBackgroundTasks();
-        await engine.startChat(resolveValue(eff.target, engine));
-        if (engine.resumeBackgroundTasks) engine.resumeBackgroundTasks();
+        engine.pauseBackgroundTasks?.();
+        try { return await engine.startChat(resolveValue(eff.target, engine)); }
+        finally { engine.resumeBackgroundTasks?.(); }
     },
     end: async (engine, eff) => {
         if (engine.pauseBackgroundTasks) engine.pauseBackgroundTasks();
@@ -95,14 +95,14 @@ export const GotoStrategies = {
         if (engine.api.presentation && engine.api.presentation.components) engine.api.presentation.components.ending(eff.target);
     },
     in_faker: async (engine, eff) => {
-        if (engine.pauseBackgroundTasks) engine.pauseBackgroundTasks();
-        await engine.enterFaker(resolveValue(eff.target, engine));
-        if (engine.resumeBackgroundTasks) engine.resumeBackgroundTasks();
+        engine.pauseBackgroundTasks?.();
+        try { return await engine.enterFaker(resolveValue(eff.target, engine)); }
+        finally { engine.resumeBackgroundTasks?.(); }
     },
     out_faker: async (engine, eff) => {
-        if (engine.pauseBackgroundTasks) engine.pauseBackgroundTasks();
-        await engine.exitFaker();
-        if (engine.resumeBackgroundTasks) engine.resumeBackgroundTasks();
+        engine.pauseBackgroundTasks?.();
+        try { return await engine.exitFaker(); }
+        finally { engine.resumeBackgroundTasks?.(); }
     }
 };
 

@@ -17,10 +17,12 @@ export const ScenePropertyHandlers = {
         stateOf(engine).set('scenes.[id].blocked', val, { id: sceneId });
         if (val === false) engine.resumeCharacterMovement();
     },
-    activeRouterId: (engine, scene, val, sceneId) => {
+    activeRouterId: async (engine, scene, val, sceneId) => {
+        if (typeof val !== 'string' || !engine.src?.scenes?.[sceneId]?.routers?.[val]) {
+            throw new Error(`Cannot activate unknown router '${String(val)}' in scene '${sceneId}'.`);
+        }
+        if (sceneId === stateOf(engine).get('sceneId')) return engine.enterRouter(val);
         stateOf(engine).set('scenes.[id].activeRouterId', val, { id: sceneId });
-        if (sceneId === stateOf(engine).sceneId) engine.enterRouter(val);
-        // StateAccess.set publishes the committed snapshot; no imperative render API is required.
     },
     __default__: (engine, scene, val, sceneId, prop) => {
         stateOf(engine).set('scenes.[id].[property]', val, { id: sceneId, property: prop });

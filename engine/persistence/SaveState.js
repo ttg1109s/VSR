@@ -10,7 +10,7 @@ export function createSaveEnvelope(engine) {
       engine.runtime?.effectQueue?.sync?.length || engine.runtime?.effectQueue?.async?.length) {
     throw new Error('Cannot save while an action, transition, or effect queue is active.');
   }
-  if (engine.taskManager?.hasBusyTasks?.(['auto_', 'move_char_', 'move_still_'])) {
+  if (engine.taskManager?.hasBusyTasks?.(['auto_', 'move_char_', 'move_still_', 'router_still_', 'timer_ui_', 'timer_end_'])) {
     throw new Error('Cannot save while a background task is executing.');
   }
   for (const [id, automation] of Object.entries(engine.state?.automations ?? {})) {
@@ -27,8 +27,8 @@ export function createSaveEnvelope(engine) {
     state,
     chatState: cloneJsonValue(engine.chatState),
     pendingPasswordAction: cloneJsonValue(engine.pendingPasswordAction),
-    taskRemainingMs: engine.taskManager?.snapshotRemaining?.(['auto_', 'move_char_', 'move_still_']) ?? {},
-    pausedTasks: engine.taskManager?.snapshotPaused?.(['auto_', 'move_char_', 'move_still_']) ?? [],
+    taskRemainingMs: engine.taskManager?.snapshotRemaining?.(['auto_', 'move_char_', 'move_still_', 'router_still_', 'timer_ui_', 'timer_end_']) ?? {},
+    pausedTasks: engine.taskManager?.snapshotPaused?.(['auto_', 'move_char_', 'move_still_', 'router_still_', 'timer_ui_', 'timer_end_']) ?? [],
     savedAt: new Date().toISOString()
   };
 }
@@ -71,7 +71,7 @@ function validateSaveShape(save) {
       (typeof save.pendingPasswordAction !== 'object' || Array.isArray(save.pendingPasswordAction))) {
     throw new TypeError('Save pendingPasswordAction must be an object or null.');
   }
-  if (save.pausedTasks !== undefined && (!Array.isArray(save.pausedTasks) || save.pausedTasks.some(name => typeof name !== 'string' || !/^(auto_|move_char_|move_still_)[^/]+$/.test(name)))) {
+  if (save.pausedTasks !== undefined && (!Array.isArray(save.pausedTasks) || save.pausedTasks.some(name => typeof name !== 'string' || !/^(auto_|move_char_|move_still_|router_still_|timer_ui_|timer_end_)[^/]+$/.test(name)))) {
     throw new TypeError('Save pausedTasks must contain valid task names.');
   }
   if (save.taskRemainingMs !== undefined) {
@@ -79,7 +79,7 @@ function validateSaveShape(save) {
       throw new TypeError('Save taskRemainingMs must be an object.');
     }
     for (const [name, value] of Object.entries(save.taskRemainingMs)) {
-      if (!/^(auto_|move_char_|move_still_)[^/]+$/.test(name) || !Number.isFinite(value) || value < 0) {
+      if (!/^(auto_|move_char_|move_still_|router_still_|timer_ui_|timer_end_)[^/]+$/.test(name) || !Number.isFinite(value) || value < 0) {
         throw new TypeError(`Invalid remaining timer entry: ${name}`);
       }
     }

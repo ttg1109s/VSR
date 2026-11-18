@@ -732,7 +732,10 @@
                     ],
                     "properties": {
                       "char_id": {
-                        "type": ["string", "null"],
+                        "type": [
+                          "string",
+                          "null"
+                        ],
                         "description": "Speaker character ID, `$communication`, the chat sender ID, or null for unknown/spam."
                       },
                       "text": {
@@ -1321,6 +1324,16 @@
         },
         "dedupeKey": {
           "type": "string"
+        },
+        "phase": {
+          "type": "string",
+          "enum": [
+            "normal",
+            "pass",
+            "fail",
+            "pwFailed"
+          ],
+          "description": "Action counter phase for set/action_count."
         }
       },
       "additionalProperties": false,
@@ -1809,7 +1822,8 @@
                   "router",
                   "automation",
                   "action",
-                  "character"
+                  "character",
+                  "action_count"
                 ]
               }
             },
@@ -1874,6 +1888,44 @@
                   "required": [
                     "property"
                   ]
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "const": "action_count"
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "target",
+                    "phase",
+                    "value"
+                  ],
+                  "properties": {
+                    "phase": {
+                      "enum": [
+                        "normal",
+                        "pass",
+                        "fail",
+                        "pwFailed"
+                      ]
+                    },
+                    "value": {
+                      "type": "integer",
+                      "minimum": 0
+                    }
+                  },
+                  "not": {
+                    "required": [
+                      "mode"
+                    ]
+                  }
                 }
               }
             ]
@@ -2675,6 +2727,16 @@
         },
         "dedupeKey": {
           "type": "string"
+        },
+        "phase": {
+          "type": "string",
+          "enum": [
+            "normal",
+            "pass",
+            "fail",
+            "pwFailed"
+          ],
+          "description": "Action counter phase for set/action_count."
         }
       },
       "additionalProperties": false,
@@ -3054,7 +3116,8 @@
                   "router",
                   "automation",
                   "action",
-                  "character"
+                  "character",
+                  "action_count"
                 ]
               }
             },
@@ -3119,6 +3182,44 @@
                   "required": [
                     "property"
                   ]
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "const": "action_count"
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "target",
+                    "phase",
+                    "value"
+                  ],
+                  "properties": {
+                    "phase": {
+                      "enum": [
+                        "normal",
+                        "pass",
+                        "fail",
+                        "pwFailed"
+                      ]
+                    },
+                    "value": {
+                      "type": "integer",
+                      "minimum": 0
+                    }
+                  },
+                  "not": {
+                    "required": [
+                      "mode"
+                    ]
+                  }
                 }
               }
             ]
@@ -3735,7 +3836,7 @@
     },
     "requirement_check": {
       "type": "object",
-      "description": "Một điều kiện đơn lẻ trong requirement.check[]; type=relationship kiểm tra một loại quan hệ giữa hai nhân vật.",
+      "description": "Một điều kiện đơn lẻ trong requirement.check[]; type=relationship kiểm tra một loại quan hệ giữa hai nhân vật. type=action_count -> so sánh bộ đếm runtime của Action theo phase.",
       "required": [
         "type",
         "op",
@@ -3749,7 +3850,8 @@
             "state",
             "stats",
             "set",
-            "relationship"
+            "relationship",
+            "action_count"
           ],
           "description": "[FIX] Enum trước đây ghi 'stat'/'character' — engine thật (engine/modules/Logic.js: CheckTypeHandlers) chỉ có 4 key này ('stats' số nhiều, không phải 'stat'; không có 'character'). Dùng 'stat' hoặc 'character' sẽ luôn fail âm thầm (checkSingle trả về pass:false khi không tìm thấy handler). type=item -> kiểm tra vật phẩm; type=state -> global state; type=stats -> chỉ số nhân vật/vật phẩm (subtype 'characters'|'item'); type=set -> field trong .set của scene/router/action/characters/chat/chat_choice/automation (subtype tương ứng)."
         },
@@ -3796,6 +3898,16 @@
           "type": "string",
           "minLength": 1,
           "description": "ID nhân vật có quan hệ với target; dùng cùng type=relationship."
+        },
+        "phase": {
+          "type": "string",
+          "enum": [
+            "normal",
+            "pass",
+            "fail",
+            "pwFailed"
+          ],
+          "description": "Phase của Action counter cần kiểm tra; chỉ dùng với type=action_count."
         }
       },
       "additionalProperties": false,
@@ -3989,10 +4101,50 @@
                   "characters",
                   "chat",
                   "chat_choice",
-                  "automation"
+                  "automation",
+                  "action_count"
                 ]
               }
-            }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "const": "action_count"
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "target",
+                    "phase",
+                    "mode",
+                    "value"
+                  ],
+                  "properties": {
+                    "phase": {
+                      "enum": [
+                        "normal",
+                        "pass",
+                        "fail",
+                        "pwFailed"
+                      ]
+                    },
+                    "mode": {
+                      "const": "add"
+                    },
+                    "value": {
+                      "type": "integer",
+                      "minimum": 1
+                    }
+                  }
+                }
+              }
+            ]
           }
         },
         {
@@ -4022,6 +4174,40 @@
                 "type": "string",
                 "minLength": 1,
                 "description": "Nhãn quan hệ, ví dụ friend, enemy, ally."
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "action_count"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "target",
+              "phase"
+            ],
+            "properties": {
+              "op": {
+                "enum": [
+                  "==",
+                  "!=",
+                  ">",
+                  ">=",
+                  "<",
+                  "<="
+                ]
+              },
+              "value": {
+                "type": "integer",
+                "minimum": 0
               }
             }
           }
@@ -4346,24 +4532,6 @@
         "set": {
           "type": "object",
           "properties": {
-            "type": {
-              "type": "string",
-              "enum": [
-                "none",
-                "to_scene",
-                "swap_router",
-                "get_item",
-                "faker"
-              ],
-              "default": "none"
-            },
-            "target": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "minLength": 1
-            },
             "requirement": {
               "type": "boolean",
               "default": false,
@@ -4375,18 +4543,6 @@
                 "null"
               ],
               "description": "Khoá mật khẩu bảo vệ action, định dạng '<passwordType>:<passwordId>' (vd 'number:num_keyboard')."
-            },
-            "countClicks": {
-              "type": [
-                "number",
-                "null"
-              ]
-            },
-            "countFails": {
-              "type": [
-                "number",
-                "null"
-              ]
             },
             "display": {
               "type": "string",
@@ -4465,6 +4621,40 @@
           "type": "string",
           "minLength": 1,
           "description": "Stable inline action identifier; generated deterministically when omitted."
+        },
+        "count": {
+          "type": "object",
+          "readOnly": true,
+          "description": "Runtime-owned execution counters for Action phases; generated by Engine, not authored in scenario.",
+          "properties": {
+            "normal": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            },
+            "pass": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            },
+            "fail": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            },
+            "pwFailed": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          "required": [
+            "normal",
+            "pass",
+            "fail",
+            "pwFailed"
+          ],
+          "additionalProperties": false
         }
       },
       "additionalProperties": false

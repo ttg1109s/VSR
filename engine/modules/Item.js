@@ -47,7 +47,8 @@ export const ItemSystem = {
         }
 
         const idx = (this.getHand() || []).indexOf(id);
-        const maxHand = (this.getConfig ? this.getConfig('maxHandOn') : state.get('maxHandOn')) || 10;
+        const configuredMaxHand = Number(this.getConfig ? this.getConfig('maxHandOn') : state.get('maxHandOn'));
+        const maxHand = Number.isFinite(configuredMaxHand) && configuredMaxHand > 0 ? configuredMaxHand : Infinity;
         if (idx < 0 && info.requirements) {
             const res = this.checkReq(info.requirements);
             if (!res.pass) {
@@ -104,8 +105,8 @@ export const ItemSystem = {
 
         if (info.usage) {
             const isBroken = this.isBroken(id);
-            const disableBrokenPenalty = this.getConfig ? this.getConfig('brokenDisable') : false;
-            if (isBroken && !disableBrokenPenalty) {
+            const disableBrokenUse = this.getConfig ? this.getConfig('brokenDisable') : false;
+            if (isBroken && disableBrokenUse) {
                 this.api.presentation.notification.add("Hỏng", "Vật phẩm đã hỏng hoặc hết lượt dùng.", "warning");
                 return;
             }

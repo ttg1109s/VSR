@@ -96,16 +96,13 @@ export const STATE_SCHEMA = Object.freeze({
   'action.buttonIcon': ['source', 'actions.[id].meta.buttonIcon'],
   'action.buttonLabel': ['source', 'actions.[id].meta.buttonLabel'],
   'action.cooldown': ['runtime', 'actions.[actionKey].cooldown'],
-  'action.countClicks': ['runtime', 'actions.[actionKey].countClicks'],
-  'action.countFails': ['runtime', 'actions.[actionKey].countFails'],
+  'action.count': ['runtime', 'actions.[actionKey].count'],
   'action.desc': ['source', 'actions.[id].meta.desc'],
   'action.display': ['runtime', 'actions.[actionKey].display'],
   'action.password': ['source', 'actions.[id].set.password'],
   'action.requirement': ['source', 'actions.[id].set.requirement'],
   'action.thumb': ['source', 'actions.[id].meta.thumb'],
   'action.title': ['source', 'actions.[id].meta.title'],
-  'action.type': ['source', 'actions.[id].set.type'],
-  'action.target': ['source', 'actions.[id].set.target'],
 
   // Chat definitions are in source.chat; runtime chat progress is state.chats.
   'chat.sender': ['source', 'chat.[id].meta.sender'],

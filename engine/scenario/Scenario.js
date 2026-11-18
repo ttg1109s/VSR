@@ -117,8 +117,10 @@ function validateReferences(scenario) {
     }
   }
 
+  const isDynamicExpression = value => typeof value === 'string' && /^\$[A-Za-z_][A-Za-z0-9_]*\(/.test(value);
+
   const validatePasswordRef = (reference, path) => {
-    if (typeof reference !== 'string' || reference.includes('$(')) return;
+    if (typeof reference !== 'string' || isDynamicExpression(reference)) return;
     const parts = reference.split(':');
     if (parts.length !== 2 || !parts[0] || !parts[1] || !Object.hasOwn(passwords[parts[0]] || {}, parts[1])) {
       add(path, `references invalid password '${reference}' (expected type:id)`);
@@ -230,20 +232,11 @@ function validateReferences(scenario) {
   const validateAction = (action, path) => {
     if (!isObject(action)) return;
     const set = action.set || {};
+    if (Object.hasOwn(set, 'type') || Object.hasOwn(set, 'target') ||
+        Object.hasOwn(set, 'countClicks') || Object.hasOwn(set, 'countFails')) {
+      add(`${path}.set`, 'uses removed Action fields (type/target/countClicks/countFails); move behavior into effect and use runtime count phases.');
+    }
     if (typeof set.password === 'string') validatePasswordRef(set.password, `${path}.set.password`);
-    if (set.type === 'to_scene' && typeof set.target === 'string' && !set.target.includes('$(') && !Object.hasOwn(scenes, set.target)) {
-      add(`${path}.set.target`, `references missing scene '${set.target}'`);
-    }
-    if (set.type === 'swap_router' && typeof set.target === 'string' && !set.target.includes('$(') && !routerExists(set.target)) {
-      add(`${path}.set.target`, `references missing router '${set.target}'`);
-    }
-    if (set.type === 'get_item' && typeof set.target === 'string' && !set.target.includes('$(') && !Object.hasOwn(items, set.target)) {
-      add(`${path}.set.target`, `references missing item '${set.target}'`);
-    }
-    if (set.type === 'faker' && typeof set.target === 'string' && !set.target.includes('$(')) {
-      const targetCharacter = set.target.includes(':') ? set.target.split(':').at(-1) : set.target;
-      if (!characterExists(targetCharacter)) add(`${path}.set.target`, `references missing faker character '${targetCharacter}'`);
-    }
     if (Array.isArray(set.charAllow)) {
       set.charAllow.forEach((id, index) => {
         if (!characterExists(id)) add(`${path}.set.charAllow[${index}]`, `references missing character '${id}'`);
@@ -254,7 +247,7 @@ function validateReferences(scenario) {
 
   const validateEffectPayload = (effect, path) => {
     if (!isObject(effect)) return;
-    const dynamicTarget = typeof effect.target === 'string' && effect.target.includes('$(');
+    const dynamicTarget = isDynamicExpression(effect.target);
     if (effect.type === 'goto' && !dynamicTarget) {
       if (effect.subtype === 'scene' && effect.target && !Object.hasOwn(scenes, effect.target)) {
         add(`${path}.target`, `references missing scene '${effect.target}'`);
@@ -277,7 +270,7 @@ function validateReferences(scenario) {
         add(`${path}.target`, 'must contain only the destination character ID; provide source in the separate source field');
       }
       if (!characterExists(effect.target)) add(`${path}.target`, `references missing character '${effect.target}'`);
-      if (['mng_stats', 'mng_items'].includes(effect.subtype) && typeof effect.source === 'string' && !effect.source.includes('$(') && !characterExists(effect.source)) {
+      if (['mng_stats', 'mng_items'].includes(effect.subtype) && typeof effect.source === 'string' && !isDynamicExpression(effect.source) && !characterExists(effect.source)) {
         add(`${path}.source`, `references missing source character '${effect.source}'`);
       }
     }
@@ -507,12 +500,24 @@ export function normalizeScenario(input) {
   // The single compiled validator also applies schema defaults (useDefaults: true).
   validateAgainstSchema(scenario);
 
+  const ensureActionCount = action => {
+    if (!isObject(action)) return;
+    action.count ??= {};
+    for (const phase of ['normal', 'pass', 'fail', 'pwFailed']) {
+      action.count[phase] ??= 0;
+    }
+  };
+  Object.values(isObject(scenario.actions) ? scenario.actions : {}).forEach(ensureActionCount);
+
   for (const [sceneId, scene] of Object.entries(isObject(scenario.scenes) ? scenario.scenes : {})) {
     for (const [routerId, router] of Object.entries(isObject(scene?.routers) ? scene.routers : {})) {
       if (Array.isArray(router?.actions)) {
         router.actions.forEach((action, index) => {
-          if (action && typeof action === 'object' && !Array.isArray(action) && !action.id) {
-            action.id = 'inline_' + sceneId + '_' + routerId + '_' + index;
+          if (action && typeof action === 'object' && !Array.isArray(action)) {
+            if (!action.id) action.id = 'inline_' + sceneId + '_' + routerId + '_' + index;
+            ensureActionCount(action);
+          } else if (typeof action === 'string') {
+            ensureActionCount(scenario.actions?.[action]);
           }
         });
       }
