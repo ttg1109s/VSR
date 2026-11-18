@@ -14,17 +14,7 @@ const CAROUSEL_OPTIONS={
  }
 };
 
-const MESSAGES={
- action_hidden:'This action is currently hidden.',locked:'This action is locked.',
- permission_denied:'The current character is not allowed to perform this action.',not_read:'Read the description before performing this action.',
- cooldown:'This action is on cooldown.',requirement_failed:'Requirements not met.',
- target_locked:'Target is locked.',busy:'The engine is processing another action.',
- transitioning:'The engine is transitioning scenes. Please wait for it to finish.',
- challenge_active:'Complete or cancel the current password challenge first.',
- invalid_context:'No valid action context remains.',action_not_found:'This action is no longer part of the current game.',
- invalid_result:'The engine returned an invalid execution result.',cancelled:'The action was cancelled.',
- expired:'The challenge has expired.',exhausted:'You have used all available attempts.'
-};
+
 
 function shuffled(items){
  const result=[...items];
@@ -91,7 +81,7 @@ export default function ActionCollection({actions=EMPTY_ACTIONS,client,passwordC
  },[activeIndex,ordered.length]);
 
  const mark=useCallback((k,on)=>setPending(s=>{const n=new Set(s);on?n.add(k):n.delete(k);return n;}),[]);
- const report=useCallback(async(k,e,{notify=true}={})=>{
+ const report=useCallback(async(e,{notify=true}={})=>{
   if(e?.code==='REVISION_CONFLICT'){try{await client.refreshSnapshot();onError?.('The state changed. The snapshot has been synchronized; review it before retrying.');return true;}catch(x){e=x;}}
   const m=e?.message||'Unable to complete the action.';if(notify)onError?.(m);return false;
  },[client,onError]);
@@ -107,7 +97,7 @@ export default function ActionCollection({actions=EMPTY_ACTIONS,client,passwordC
    const r=(await client.triggerAction(a.id,a.key))?.result;
    return r;
   }catch(e){
-   if(!delayController.signal.aborted)await report(k,e,{notify:false});
+   if(!delayController.signal.aborted)await report(e,{notify:false});
    return null;
   }finally{
    const remaining=Math.max(0,minimumBusyMs-(Date.now()-startedAt));
@@ -120,7 +110,7 @@ export default function ActionCollection({actions=EMPTY_ACTIONS,client,passwordC
  const submit=useCallback(async(c,input)=>{
   if(!client||!c?.challengeId)return{message:'No engine connection or invalid challenge.'};
   try{return(await client.submitPassword(c.challengeId,input))?.result||{message:'The engine returned no authentication result.'};}
-  catch(e){const refreshed=await report(c.uniqueId,e,{notify:false});if(refreshed)return{reason:'revision_conflict',message:'The state changed. The snapshot has been synchronized; review the challenge again.'};return{reason:e?.code||'command_failed',message:e?.message||'Unable to submit the answer to the engine.'};}
+  catch(e){const refreshed=await report(e,{notify:false});if(refreshed)return{reason:'revision_conflict',message:'The state changed. The snapshot has been synchronized; review the challenge again.'};return{reason:e?.code||'command_failed',message:e?.message||'Unable to submit the answer to the engine.'};}
  },[client,report]);
  const cancel=useCallback(async c=>{
   if(!client||!c?.challengeId)return;
@@ -131,7 +121,7 @@ export default function ActionCollection({actions=EMPTY_ACTIONS,client,passwordC
   try{const acknowledgement=await client.markActionRead(a.key),result=acknowledgement?.result;
    if(result?.success===false)return false;
    return true;
-  }catch(e){await report(a.key,e);return false;}
+  }catch(e){await report(e);return false;}
  },[client,report]);
  const refresh=useCallback(async()=>{
   if(!client)return null;
