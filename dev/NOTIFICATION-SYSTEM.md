@@ -23,10 +23,9 @@ Optional scenario intent fields:
 - category: category label used for filtering and grouping.
 - priority: requested priority, clamped by Engine to the supported range.
 - durationMs: requested Toast lifetime in milliseconds; Engine validates and clamps it.
-- sound: whether this notification requests a sound. Defaults to true.
 - soundProfile: default, soft, success, warning, critical, or special.
 
-The scenario can request presentation and sound profile. Engine policy remains authoritative and can downgrade presentation. A user-level sound-off preference always overrides scenario requests.
+The scenario can request presentation and sound profile. Engine policy remains authoritative and can downgrade presentation. Every accepted notification carries a sound cue by default; only the user-level sound-off preference can mute it.
 
 ## Sound behavior
 
