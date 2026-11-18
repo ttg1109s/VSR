@@ -1199,7 +1199,6 @@ test('loader rejects a configured entry character that is absent from scenario c
 test('Contact snapshot projects only characters met by the current Player Entry', async () => {
   const scenario = validScenario();
   scenario.meta.entryCharacter = 'hero';
-  scenario.characters.hero = { meta: { name: 'Hero' }, set: {}, stats: {}, inventory: [], relationship: [], place: { scene_id: 'start', currentIndex: 0 }, met: ['ally:3'], moveList: [] };
   scenario.actions.test_action.set.charAllow = ['ally'];
   const characterSet = { moving: false, alert: null, move: null, linkEffect: false };
   scenario.scenes.elsewhere = {
@@ -1214,7 +1213,7 @@ test('Contact snapshot projects only characters met by the current Player Entry'
     }
   };
   scenario.characters = {
-    hero: { meta: { name: 'Hero', desc: 'Current identity' }, set: { ...characterSet }, stats: { hp: { current: 8, max: 10, label: 'HP' } }, inventory: [], relationship: [], place: { scene_id: 'start', currentIndex: 0 }, met: [], moveList: [] },
+    hero: { meta: { name: 'Hero', desc: 'Current identity' }, set: { ...characterSet }, stats: { hp: { current: 8, max: 10, label: 'HP' } }, inventory: [], relationship: [], place: { scene_id: 'start', currentIndex: 0 }, met: ['ally:3'], moveList: [] },
     ally: { meta: { name: 'Ally', desc: 'Known ally' }, set: { ...characterSet }, stats: {}, inventory: [], relationship: [['friend', 'hero']], place: { scene_id: 'start', currentIndex: 0 }, met: ['hero:2'], moveList: [] },
     stranger: { meta: { name: 'Stranger', desc: 'Unknown stranger' }, set: { ...characterSet }, stats: {}, inventory: [], relationship: [], place: { scene_id: 'elsewhere', currentIndex: 0 }, met: [], moveList: [] },
     unseenPresent: { meta: { name: 'Unseen Present', desc: 'Not yet met, but in this scene' }, set: { ...characterSet }, stats: {}, inventory: [], relationship: [], place: { scene_id: 'start', currentIndex: 0 }, met: [], moveList: [] }
