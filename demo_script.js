@@ -4,7 +4,7 @@
 export const DEMO_SCRIPT = {
   "formatVersion": 1,
   "meta": {
-    "title": "THE SILENT VILLAGE — Ngôi Làng Không Tiếng Động",
+    "title": "NGÔI LÀNG KHÔNG TIẾNG ĐỘNG",
     "subtitle": "Một bí ẩn dân gian về ký ức, sự mất tích và cái giá của việc nhớ lại",
     "desc": "Bạn tỉnh dậy ở quảng trường của một ngôi làng bị mắc kẹt trong ký ức. Lần theo dấu vết qua giếng đá, nhà trọ, nhà nguyện, trường học, khu rừng, cối xay và đường hầm để tìm sân ga xuất hiện lúc 03:17; sự thật được ghép lại sẽ quyết định ai được giải thoát.",
     "writer": "Nhóm phát triển bản demo VSR",
