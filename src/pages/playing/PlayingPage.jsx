@@ -18,6 +18,16 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
   const scene = snapshot?.presentation?.scene ?? null;
   const router = snapshot?.presentation?.router ?? null;
   const activeSceneId = snapshot?.game?.sceneId ?? null;
+  const activeRouterId = router?.id ?? null;
+  const previousContextRef = useRef({ sceneId: activeSceneId, routerId: activeRouterId });
+
+  useEffect(() => {
+    const previous = previousContextRef.current;
+    const contextChanged = previous.sceneId !== activeSceneId || previous.routerId !== activeRouterId;
+    previousContextRef.current = { sceneId: activeSceneId, routerId: activeRouterId };
+
+    if (contextChanged && typeof window !== 'undefined') window.scrollTo(0, 0);
+  }, [activeSceneId, activeRouterId]);
 
   const activeChat = snapshot?.session?.chat ?? null;
   useEffect(() => {
