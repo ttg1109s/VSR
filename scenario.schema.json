@@ -1183,11 +1183,9 @@
         "mode": {
           "type": "string",
           "enum": [
-            "set",
-            "add",
-            "full"
+            "add"
           ],
-          "description": "Stat operation supported by the runtime calculators."
+          "description": "Counter update operation for set/action_count."
         },
         "field": {
           "type": "string",
@@ -1324,6 +1322,16 @@
         },
         "dedupeKey": {
           "type": "string"
+        },
+        "phase": {
+          "type": "string",
+          "enum": [
+            "normal",
+            "pass",
+            "fail",
+            "pwFailed"
+          ],
+          "description": "Action counter phase for set/action_count."
         }
       },
       "additionalProperties": false,
@@ -1812,7 +1820,8 @@
                   "router",
                   "automation",
                   "action",
-                  "character"
+                  "character",
+                  "action_count"
                 ]
               }
             },
@@ -1877,6 +1886,43 @@
                   "required": [
                     "property"
                   ]
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "const": "action_count"
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "target",
+                    "phase",
+                    "mode",
+                    "value"
+                  ],
+                  "properties": {
+                    "phase": {
+                      "enum": [
+                        "normal",
+                        "pass",
+                        "fail",
+                        "pwFailed"
+                      ]
+                    },
+                    "mode": {
+                      "const": "add"
+                    },
+                    "value": {
+                      "type": "integer",
+                      "minimum": 1
+                    }
+                  }
                 }
               }
             ]
@@ -2531,11 +2577,9 @@
         "mode": {
           "type": "string",
           "enum": [
-            "set",
-            "add",
-            "full"
+            "add"
           ],
-          "description": "Stat operation supported by the runtime calculators."
+          "description": "Counter update operation for set/action_count."
         },
         "field": {
           "type": "string",
@@ -2678,6 +2722,16 @@
         },
         "dedupeKey": {
           "type": "string"
+        },
+        "phase": {
+          "type": "string",
+          "enum": [
+            "normal",
+            "pass",
+            "fail",
+            "pwFailed"
+          ],
+          "description": "Action counter phase for set/action_count."
         }
       },
       "additionalProperties": false,
@@ -3057,7 +3111,8 @@
                   "router",
                   "automation",
                   "action",
-                  "character"
+                  "character",
+                  "action_count"
                 ]
               }
             },
@@ -3122,6 +3177,43 @@
                   "required": [
                     "property"
                   ]
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "const": "action_count"
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "target",
+                    "phase",
+                    "mode",
+                    "value"
+                  ],
+                  "properties": {
+                    "phase": {
+                      "enum": [
+                        "normal",
+                        "pass",
+                        "fail",
+                        "pwFailed"
+                      ]
+                    },
+                    "mode": {
+                      "const": "add"
+                    },
+                    "value": {
+                      "type": "integer",
+                      "minimum": 1
+                    }
+                  }
                 }
               }
             ]
@@ -3992,10 +4084,50 @@
                   "characters",
                   "chat",
                   "chat_choice",
-                  "automation"
+                  "automation",
+                  "action_count"
                 ]
               }
-            }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "const": "action_count"
+                    }
+                  },
+                  "required": [
+                    "subtype"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "target",
+                    "phase",
+                    "mode",
+                    "value"
+                  ],
+                  "properties": {
+                    "phase": {
+                      "enum": [
+                        "normal",
+                        "pass",
+                        "fail",
+                        "pwFailed"
+                      ]
+                    },
+                    "mode": {
+                      "const": "add"
+                    },
+                    "value": {
+                      "type": "integer",
+                      "minimum": 1
+                    }
+                  }
+                }
+              }
+            ]
           }
         },
         {

@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { ActionSystem } from '../engine/modules/Action.js';
+import { SetStrategies } from '../engine/modules/effect/Strategies.js';
 import { LogicSystem } from '../engine/modules/Logic.js';
 import { SceneSystem } from '../engine/modules/Scene.js';
 import { validateScenario } from '../engine/scenario/Scenario.js';
@@ -31,6 +32,39 @@ test('Action phase counters increment independently and preserve existing phases
   engine.incrementActionCount('scene_router_action', 'pass');
   engine.incrementActionCount('scene_router_action', 'pwFailed');
   assert.deepEqual(runtime.count, { normal: 3, pass: 2, fail: 1, pwFailed: 4 });
+});
+
+test('set/action and set/action_count resolve Action IDs across every Scene and Router', () => {
+  const updates = {};
+  const src = { scenes: {
+    scene_a: { routers: { router_1: { actions: ['action_01'] } } },
+    scene_b: { routers: { router_2: { actions: ['action_01'] } } }
+  }};
+  const state = {
+    getRuntimeSnapshot(path) { return path === 'actions' ? updates : undefined; },
+    getRuntime(path, { actionKey } = {}) { return updates[actionKey]; },
+    update(path, updater, { id }) { updates[id] = updater(structuredClone(updates[id] || {})); },
+    set(path, value, { actionKey, property }) {
+      updates[actionKey] = { ...(updates[actionKey] || {}), [property]: value };
+    },
+    getSession() { return null; },
+    setSession() {}
+  };
+  updates['scene_a_router_1_action_01'] = { count: { normal: 0, pass: 0, fail: 0, pwFailed: 0 } };
+  updates['scene_b_router_2_action_01'] = { count: { normal: 0, pass: 0, fail: 0, pwFailed: 0 } };
+  const engine = { src, api: { engine: { state } } };
+
+  SetStrategies.action_count(engine, {
+    target: 'action_01', phase: 'pass', mode: 'add', value: 1
+  });
+  assert.equal(updates['scene_a_router_1_action_01'].count.pass, 1);
+  assert.equal(updates['scene_b_router_2_action_01'].count.pass, 1);
+
+  SetStrategies.action(engine, {
+    target: 'action_01', property: 'display', value: 'hide'
+  });
+  assert.equal(updates['scene_a_router_1_action_01'].display, 'hide');
+  assert.equal(updates['scene_b_router_2_action_01'].display, 'hide');
 });
 
 test('Hard Lock ignores non-navigation goto subtypes', () => {
