@@ -54,7 +54,7 @@ function InventoryControls({
   onSortChange
 }) {
   return (
-    <div className="vsr-stack vsr-stack--gap-3">
+    <div className="vsr-inventory-controls">
       <Input
         label="Search inventory"
         placeholder="Search by item name or description"
