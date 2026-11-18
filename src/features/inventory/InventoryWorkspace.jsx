@@ -25,11 +25,11 @@ function InventoryItemCard({ item }) {
     : item.category;
 
   return (
-    <article className="vsr-card vsr-stack vsr-stack--center vsr-stack--gap-2">
-      <span className="material-symbols-rounded" aria-hidden="true">
+    <article className="vsr-card vsr-inventory-item">
+      <span className="material-symbols-rounded vsr-inventory-item__icon" aria-hidden="true">
         {iconName}
       </span>
-      <div className="vsr-stack vsr-stack--center vsr-stack--gap-1">
+      <div className="vsr-inventory-item__info">
         <h3>{item.name}</h3>
         {categoryLabel && <p className="vsr-text-secondary">{categoryLabel}</p>}
       </div>
