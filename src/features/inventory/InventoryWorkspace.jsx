@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Button, Drawer, Grid, IconButton, Input, Popover } from '../../design-system/index.js';
+import { Button, Dialog, Drawer, Grid, IconButton, Input, Menu, Popover } from '../../design-system/index.js';
 
 const PAGE_SIZE = 24;
 
@@ -15,7 +15,7 @@ function EmptyInventoryState({ title = 'Your inventory is empty', message = "You
   );
 }
 
-function InventoryItemCard({ item }) {
+function InventoryItemCard({ item, onViewDetails, onToggleEquipment, busy }) {
   const iconName = typeof item.icon === 'string'
     && /^[a-z][a-z0-9_]*$/.test(item.icon)
     ? item.icon
@@ -25,23 +25,105 @@ function InventoryItemCard({ item }) {
     : item.category;
 
   return (
-    <article className="vsr-card vsr-inventory-item">
-      <span className="material-symbols-rounded vsr-inventory-item__icon" aria-hidden="true">
-        {iconName}
-      </span>
-      <div className="vsr-inventory-item__info">
-        <h3>{item.name}</h3>
-        {categoryLabel && <p className="vsr-text-secondary">{categoryLabel}</p>}
-      </div>
-      {item.equipped && (
-        <span className="vsr-tag" aria-label="Equipped">
-          Equipped
-        </span>
-      )}
-    </article>
+    <Menu
+      className="vsr-inventory-item-menu"
+      label={`Actions for ${item.name || 'item'}`}
+      trigger={
+        <article
+          className="vsr-card vsr-inventory-item"
+          role="button"
+          tabIndex={0}
+          aria-label={`${item.name || 'Item'}${item.equipped ? ', equipped' : ''}. Open item actions`}
+          onKeyDown={event => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault();
+              event.currentTarget.click();
+            }
+          }}
+        >
+          <span className="material-symbols-rounded vsr-inventory-item__icon" aria-hidden="true">
+            {iconName}
+          </span>
+          <div className="vsr-inventory-item__info">
+            <h3 title={item.name || ''}>{item.name}</h3>
+            {categoryLabel && <p title={categoryLabel} className="vsr-text-secondary">{categoryLabel}</p>}
+          </div>
+          {item.equipped && (
+            <span className="vsr-tag" aria-label="Equipped">
+              Equipped
+            </span>
+          )}
+        </article>
+      }
+      items={[
+        {
+          key: 'details',
+          label: 'View Details',
+          icon: 'info',
+          onSelect: () => onViewDetails(item)
+        },
+        {
+          key: 'equipment',
+          label: item.equipped ? 'Unequip' : 'Equip',
+          icon: item.equipped ? 'remove_circle_outline' : 'check_circle_outline',
+          disabled: busy || (!item.equipped && item.canEquip === false),
+          onSelect: () => onToggleEquipment(item)
+        }
+      ]}
+    />
   );
 }
 
+function InventoryItemDetails({ item }) {
+  if (!item) return null;
+  const usage = item.usage;
+
+  return (
+    <div className="vsr-inventory-item-details">
+      <div className="vsr-inventory-item-details__status">
+        <span className="vsr-text-secondary">{item.category === 'uncategorized' ? 'Uncategorized' : item.category}</span>
+        <span className={item.equipped ? 'vsr-tag vsr-tag--success' : 'vsr-tag'}>
+          {item.equipped ? 'Equipped' : 'Not equipped'}
+        </span>
+      </div>
+      {item.description && (
+        <section className="vsr-inventory-item-details__section">
+          <h3>Description</h3>
+          <p>{item.description}</p>
+        </section>
+      )}
+      {usage && (
+        <section className="vsr-inventory-item-details__section">
+          <h3>Usage</h3>
+          <p>{usage.current} / {usage.max}</p>
+          {item.broken && <p className="vsr-inventory-item-details__warning">Broken</p>}
+        </section>
+      )}
+      {item.requirements?.hasRequirements && (
+        <section className="vsr-inventory-item-details__section">
+          <h3>Requirements</h3>
+          <p>{item.requirements.passed === false ? 'Requirements not met' : item.requirements.passed === true ? 'Requirements met' : 'Not evaluated'}</p>
+        </section>
+      )}
+      {Array.isArray(item.stats) && item.stats.length > 0 && (
+        <section className="vsr-inventory-item-details__section">
+          <h3>Stats</h3>
+          <dl className="vsr-inventory-item-details__stats">
+            {item.stats.map(stat => (
+              <div key={stat.id}>
+                <dt>{stat.label}</dt>
+                <dd>{stat.current === null ? '—' : stat.current}{stat.max !== null ? ` / ${stat.max}` : ''}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      )}
+      {!item.description && !usage && !item.requirements?.hasRequirements && !(item.stats?.length) && (
+        <p className="vsr-text-secondary">No additional details available.</p>
+      )}
+    </div>
+  );
+}
 function FilterGroup({ label, value, options, onChange, className = '' }) {
   return (
     <section className={`vsr-inventory-filter-group ${className}`}>
@@ -161,7 +243,7 @@ function InventoryPagination({ page, pageCount, onPageChange }) {
   );
 }
 
-export default function InventoryWorkspace({ snapshot, open = false, onClose }) {
+export default function InventoryWorkspace({ snapshot, client, open = false, onClose, onError }) {
   const inventory = snapshot?.presentation?.inventory;
   const items = Array.isArray(inventory?.items) ? inventory.items : null;
 
@@ -169,7 +251,7 @@ export default function InventoryWorkspace({ snapshot, open = false, onClose }) 
   const [category, setCategory] = useState('all');
   const [equipment, setEquipment] = useState('all');
   const [sort, setSort] = useState('name-asc');
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(1);\n  const [selectedItem, setSelectedItem] = useState(null);\n  const [pendingItemId, setPendingItemId] = useState(null);
 
   const categories = useMemo(() => {
     if (!items) return [];
@@ -220,6 +302,21 @@ export default function InventoryWorkspace({ snapshot, open = false, onClose }) 
     setter(value);
     setPage(1);
   };
+
+  async function toggleItemEquipment(item) {
+    if (!client?.toggleHand || pendingItemId) {
+      if (!client?.toggleHand) onError?.('Inventory actions are unavailable.');
+      return;
+    }
+    setPendingItemId(item.id);
+    try {
+      await client.toggleHand(item.id);
+    } catch (error) {
+      onError?.(error?.message || 'Unable to update this item.');
+    } finally {
+      setPendingItemId(null);
+    }
+  }
 
   return (
     <Drawer
@@ -297,5 +394,14 @@ export default function InventoryWorkspace({ snapshot, open = false, onClose }) 
         </div>
       )}
     </Drawer>
+      <Dialog
+        open={Boolean(selectedItem)}
+        title={selectedItem?.name || 'Item Details'}
+        onClose={() => setSelectedItem(null)}
+        size="sm"
+        ariaLabel={selectedItem ? `Details for ${selectedItem.name}` : 'Item Details'}
+      >
+        <InventoryItemDetails item={selectedItem} />
+      </Dialog>
   );
 }
