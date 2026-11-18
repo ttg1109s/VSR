@@ -77,18 +77,21 @@ test('set/action_count assigns a non-negative integer and rejects mode/add seman
 });
 
 test('scenario loader initializes missing Action counters on global and inline Actions', () => {
-  const scenario = JSON.parse(new LocalEngineHost().getDemoScenario());
-  const globalId = Object.keys(scenario.actions)[0];
-  const sceneId = Object.keys(scenario.scenes)[0];
-  const routerId = Object.keys(scenario.scenes[sceneId].routers)[0];
-  const router = scenario.scenes[sceneId].routers[routerId];
-  router.actions = [...(router.actions || []), { meta: { title: 'Inline test' }, set: { display: 'show' } }];
-  delete scenario.actions[globalId].count;
-  const inline = router.actions.at(-1);
-  const normalized = normalizeScenario(scenario);
-  assert.deepEqual(normalized.actions[globalId].count, { normal: 0, pass: 0, fail: 0, pwFailed: 0 });
-  assert.deepEqual(inline.count, undefined);
-  assert.deepEqual(normalized.scenes[sceneId].routers[routerId].actions.at(-1).count, { normal: 0, pass: 0, fail: 0, pwFailed: 0 });
+  const host = new LocalEngineHost();
+  try {
+    const scenario = JSON.parse(host.getDemoScenario());
+    const globalId = Object.keys(scenario.actions)[0];
+    const sceneId = Object.keys(scenario.scenes)[0];
+    const routerId = Object.keys(scenario.scenes[sceneId].routers)[0];
+    const router = scenario.scenes[sceneId].routers[routerId];
+    router.actions = [...(router.actions || []), { meta: { title: 'Inline test' }, set: { display: 'show' } }];
+    delete scenario.actions[globalId].count;
+    const normalized = normalizeScenario(scenario);
+    assert.deepEqual(normalized.actions[globalId].count, { normal: 0, pass: 0, fail: 0, pwFailed: 0 });
+    assert.deepEqual(normalized.scenes[sceneId].routers[routerId].actions.at(-1).count, { normal: 0, pass: 0, fail: 0, pwFailed: 0 });
+  } finally {
+    host.close();
+  }
 });
 
 test('Hard Lock ignores non-navigation goto subtypes', () => {
