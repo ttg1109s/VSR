@@ -18,10 +18,54 @@ export class Loop {
  resume(){if(!this.isRunning||!this.isPaused)return;this.isPaused=false;if(this.mode==='timeout')this.expected=this.#now()+this.remainingTime;this.#schedule(this.remainingTime);}
 }
 export class TaskManager {
- constructor(plan={},delayEnd=120,{clock=globalThis}={}){this.plan=plan;this.running={};this.delayEnd=delayEnd;this.clock=clock;}
+ constructor(plan={},delayEnd=120,{clock=globalThis}={}){this.plan=plan;this.running={};this.delayEnd=delayEnd;this.clock=clock;this.onceSequence=0;}
  #validate(name,config){if(typeof name!=='string'||!name.trim())throw new TypeError('Task name is required.');if(!config||typeof config!=='object')throw new TypeError('Task configuration is required.');if(this.plan[name])this.kill(name);if(typeof config.time!=='number'||!Number.isFinite(config.time)||config.time<=0)throw new TypeError(`Invalid time for task ${name}`);if(typeof config.exe!=='function')throw new TypeError('Task executor must be a function.');}
  operator(name,mode){const loop=this.plan[name];if(!loop)return;if(mode==='enabled'&&!this.running[name]){this.running[name]=true;loop.enabled();}else if(mode==='disabled'&&this.running[name]){this.running[name]=false;loop.disabled();}}
  addNew(name,config){this.#validate(name,config);this.plan[name]=new Loop(config.time,config.exe,config.mode||'interval',config.count??0,this.clock);this.running[name]=false;}
+ /**
+  * Schedule a callback to run once after `ms` milliseconds.
+  *
+  * Without a name, every call receives a unique task name. With a stable name,
+  * a new call replaces the previous task with that name (debounce semantics).
+  * The returned handle only cancels the exact task created by this call, so a
+  * stale handle cannot accidentally cancel a newer task that reused the name.
+  *
+  * @param {Function} callback
+  * @param {number} ms Must be a finite number greater than zero.
+  * @param {string} [name] Optional stable task name.
+  * @returns {{name: string, kill: () => boolean}}
+  */
+ once(callback,ms,name){
+  if(typeof callback!=='function')throw new TypeError('TaskManager once callback must be a function.');
+  if(typeof ms!=='number'||!Number.isFinite(ms)||ms<=0)throw new TypeError('TaskManager once delay must be a finite number greater than zero.');
+  if(name!==undefined&&(typeof name!=='string'||!name.trim()))throw new TypeError('TaskManager once name must be a non-empty string when provided.');
+  let taskName=name;
+  if(taskName===undefined){
+   do{taskName=`once_${++this.onceSequence}`;}while(this.plan[taskName]);
+  }
+  this.addNew(taskName,{
+   time:ms,
+   mode:'timeout',
+   count:1,
+   exe:()=>{
+    // Remove this task before user code runs. The callback may safely schedule
+    // another task using the same stable name.
+    const current=this.plan[taskName];
+    if(current===loop)this.kill(taskName);
+    callback();
+   }
+  });
+  const loop=this.plan[taskName];
+  this.operator(taskName,'enabled');
+  return{
+   name:taskName,
+   kill:()=>{
+    if(this.plan[taskName]!==loop)return false;
+    this.kill(taskName);
+    return true;
+   }
+  };
+ }
  kill(name){if(!this.plan[name])return;this.plan[name].disabled();delete this.plan[name];delete this.running[name];}
  killAll(){for(const name of Object.keys(this.plan))this.kill(name);}
  getRemaining(name){return this.plan[name]&&this.running[name]?this.plan[name].remaining():null;}
