@@ -106,10 +106,10 @@ export default function ActionCollection({actions=EMPTY_ACTIONS,client,passwordC
   setFeedback(s=>({...s,[k]:''}));
   try{
    const r=(await client.triggerAction(a.id,a.key))?.result;
-   if(r?.success===false)setFeedback(s=>({...s,[k]:MESSAGES[r.reason]||'The action was not performed.'}));
+   if(!delayController.signal.aborted&&r?.success===false)setFeedback(s=>({...s,[k]:MESSAGES[r.reason]||'The action was not performed.'}));
    return r;
   }catch(e){
-   await report(k,e);
+   if(!delayController.signal.aborted)await report(k,e);
    return null;
   }finally{
    const remaining=Math.max(0,minimumBusyMs-(Date.now()-startedAt));
