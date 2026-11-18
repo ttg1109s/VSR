@@ -18,7 +18,7 @@ export default function ScenarioCover({ url, ratio, title }) {
         <img
           className="vsr-scenario-cover__image"
           src={url}
-          alt={title ? `Cover image for ${title}` : 'Scenario cover image'}
+          alt={title ? `Ảnh bìa của ${title}` : 'Ảnh bìa kịch bản'}
           loading="lazy"
           decoding="async"
           onError={() => setHasImageError(true)}
@@ -27,7 +27,7 @@ export default function ScenarioCover({ url, ratio, title }) {
         <div
           className="vsr-scenario-cover__placeholder"
           role="img"
-          aria-label="No scenario cover image available"
+          aria-label="Không có ảnh bìa cho kịch bản"
         >
           <span className="vsr-icon" aria-hidden="true">image</span>
           <span>No cover image</span>
