@@ -8,7 +8,7 @@ const notificationOptions = eff => ({
     priority: eff.priority,
     duration: eff.durationMs,
     sound: eff.sound !== false,
-    soundProfile: eff.soundProfile || eff.level || 'default'
+    soundProfile: eff.soundProfile || ({ danger: 'critical', info: 'soft' }[eff.level] || eff.level || 'default')
 });
 
 const addToast = (engine, eff) => engine.api.notifications.add(
