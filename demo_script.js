@@ -923,10 +923,6 @@ export const DEMO_SCRIPT = {
             "action_read_notice",
             "action_talk_mai",
             "action_enter_well",
-            "action_travel_inn",
-            "action_travel_chapel",
-            "action_travel_school",
-            "action_travel_forest",
             "action_decode_broadcast"
           ]
         },
@@ -945,10 +941,6 @@ export const DEMO_SCRIPT = {
             "action_read_notice",
             "action_talk_mai",
             "action_enter_well",
-            "action_travel_inn",
-            "action_travel_chapel",
-            "action_travel_school",
-            "action_travel_forest",
           ]
         }
       }
@@ -977,7 +969,6 @@ export const DEMO_SCRIPT = {
           "actions": [
             "action_inspect_well",
             "action_use_lantern",
-            "action_return_square"
           ]
         },
         "router_well_bottom_revealed": {
@@ -994,7 +985,6 @@ export const DEMO_SCRIPT = {
           "actions": [
             "action_inspect_well",
             "action_use_lantern",
-            "action_return_square",
             "action_retrieve_well_badge",
           ]
         }
@@ -1024,7 +1014,6 @@ export const DEMO_SCRIPT = {
           "actions": [
             "action_talk_hanh",
             "action_open_guestbook",
-            "action_return_square",
             "action_travel_chapel",
             "action_unlock_cellar",
             "action_find_spare_key"
@@ -1044,7 +1033,6 @@ export const DEMO_SCRIPT = {
           "actions": [
             "action_talk_hanh",
             "action_open_guestbook",
-            "action_return_square",
             "action_travel_chapel",
             "action_unlock_cellar",
           ]
@@ -1074,7 +1062,6 @@ export const DEMO_SCRIPT = {
           },
           "actions": [
             "action_search_cellar",
-            "action_return_inn",
             "action_find_evacuation_film"
           ]
         },
@@ -1091,7 +1078,6 @@ export const DEMO_SCRIPT = {
           },
           "actions": [
             "action_search_cellar",
-            "action_return_inn",
           ]
         }
       }
@@ -1121,8 +1107,6 @@ export const DEMO_SCRIPT = {
             "action_read_hymn",
             "action_talk_keeper",
             "action_enter_tower",
-            "action_travel_inn",
-            "action_return_square",
             "action_travel_school",
             "action_find_hymn_note"
           ]
@@ -1142,8 +1126,6 @@ export const DEMO_SCRIPT = {
             "action_read_hymn",
             "action_talk_keeper",
             "action_enter_tower",
-            "action_return_square",
-            "action_travel_inn",
             "action_travel_school",
           ]
         }
@@ -1173,7 +1155,6 @@ export const DEMO_SCRIPT = {
           "actions": [
             "action_solve_bell",
             "action_ring_bell",
-            "action_return_chapel",
             "action_recover_bell_wire"
           ]
         },
@@ -1191,7 +1172,6 @@ export const DEMO_SCRIPT = {
           "actions": [
             "action_solve_bell",
             "action_ring_bell",
-            "action_return_chapel",
           ]
         }
       }
@@ -1221,9 +1201,6 @@ export const DEMO_SCRIPT = {
             "action_check_desk",
             "action_talk_linh",
             "action_decode_roster",
-            "action_travel_chapel",
-            "action_return_square",
-            "action_travel_forest",
             "action_recover_class_register"
           ]
         },
@@ -1242,9 +1219,6 @@ export const DEMO_SCRIPT = {
             "action_check_desk",
             "action_talk_linh",
             "action_decode_roster",
-            "action_return_square",
-            "action_travel_chapel",
-            "action_travel_forest",
           ]
         }
       }
@@ -1274,8 +1248,6 @@ export const DEMO_SCRIPT = {
             "action_follow_marks",
             "action_maze_path",
             "action_enter_clearing",
-            "action_travel_school",
-            "action_return_square",
             "action_collect_forest_compass"
           ]
         },
@@ -1294,8 +1266,6 @@ export const DEMO_SCRIPT = {
             "action_follow_marks",
             "action_maze_path",
             "action_enter_clearing",
-            "action_return_square",
-            "action_travel_school",
           ]
         }
       }
@@ -1324,8 +1294,6 @@ export const DEMO_SCRIPT = {
           "actions": [
             "action_inspect_stakes",
             "action_find_hidden_box",
-            "action_return_forest",
-            "action_travel_mill",
             "action_find_wooden_seal"
           ]
         },
@@ -1343,8 +1311,6 @@ export const DEMO_SCRIPT = {
           "actions": [
             "action_inspect_stakes",
             "action_find_hidden_box",
-            "action_return_forest",
-            "action_travel_mill",
           ]
         }
       }
@@ -1372,7 +1338,6 @@ export const DEMO_SCRIPT = {
           },
           "actions": [
             "action_repair_mill",
-            "action_return_forest",
             "action_find_gear_pin"
           ]
         },
@@ -1389,7 +1354,6 @@ export const DEMO_SCRIPT = {
           },
           "actions": [
             "action_descend_tunnel",
-            "action_return_forest"
           ]
         },
         "router_watermill_gear_inspected": {
@@ -1405,7 +1369,6 @@ export const DEMO_SCRIPT = {
           },
           "actions": [
             "action_repair_mill",
-            "action_return_forest",
           ]
         }
       }
@@ -1434,7 +1397,6 @@ export const DEMO_SCRIPT = {
           "actions": [
             "action_inspect_tunnel_names",
             "action_open_archive",
-            "action_return_mill",
             "action_reach_station",
             "action_recover_tunnel_manifest"
           ]
@@ -1453,7 +1415,6 @@ export const DEMO_SCRIPT = {
           "actions": [
             "action_inspect_tunnel_names",
             "action_open_archive",
-            "action_return_mill",
             "action_reach_station",
           ]
         }
@@ -3043,50 +3004,7 @@ export const DEMO_SCRIPT = {
           }
         ]
       }
-    },
-    "action_return_square": {
-      "meta": {
-        "title": "Quảng trường làng",
-        "buttonLabel": "Quay lại",
-        "buttonIcon": "arrow_back",
-        "desc": "Quảng trường là trung tâm của ngôi làng và là nơi các con đường tỏa về nhà trọ, nhà nguyện, trường học cùng khu rừng phía Bắc. Bảng thông báo và hộp loa nằm gần cổng, giữ lại những dấu vết đầu tiên về danh sách dân làng đã bị sửa."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "goto",
-            "subtype": "scene",
-            "target": "scene_village_square"
-          }
-        ]
-      }
-    },
-    "action_return_inn": {
-      "meta": {
-        "title": "Sảnh nhà trọ",
-        "buttonLabel": "Quay lại",
-        "buttonIcon": "arrow_back",
-        "desc": "Sảnh nhà trọ nằm phía trên căn hầm rượu và quầy lễ tân vẫn là nơi lưu cuốn sổ khách. Những lời khai của Bà Hạnh cùng căn phòng thứ bảy có thể giúp nối các vật chứng dưới hầm với đêm mất điện."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "goto",
-            "subtype": "scene",
-            "target": "scene_inn"
-          }
-        ]
-      }
-    },
-    "action_enter_tower": {
+    }        "action_enter_tower": {
       "meta": {
         "title": "Tháp chuông",
         "buttonLabel": "Lên tầng trên",
@@ -3106,29 +3024,7 @@ export const DEMO_SCRIPT = {
           }
         ]
       }
-    },
-    "action_return_chapel": {
-      "meta": {
-        "title": "Gian nhà nguyện",
-        "buttonLabel": "Quay lại",
-        "buttonIcon": "arrow_back",
-        "desc": "Gian nhà nguyện lưu bản thánh ca và những lời giải thích về ba hồi chuông. Trở xuống đây giúp đối chiếu ghi chú tìm được trong gáy sách với cơ cấu chuông trên tháp."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "goto",
-            "subtype": "scene",
-            "target": "scene_chapel"
-          }
-        ]
-      }
-    },
-    "action_enter_clearing": {
+    }    "action_enter_clearing": {
       "meta": {
         "title": "Khoảng đất trống",
         "buttonLabel": "Đi đến",
@@ -3148,29 +3044,7 @@ export const DEMO_SCRIPT = {
           }
         ]
       }
-    },
-    "action_return_forest": {
-      "meta": {
-        "title": "Lối mòn trong rừng",
-        "buttonLabel": "Quay lại",
-        "buttonIcon": "arrow_back",
-        "desc": "Lối mòn dưới tán thông là tuyến quay lại khu rừng phía Bắc. Các dấu sơn trên thân cây giúp nhận ra đường đi dù địa hình thường thay đổi, đồng thời hé lộ tuyến vận chuyển từng dẫn xuống bờ đê."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "goto",
-            "subtype": "scene",
-            "target": "scene_north_forest"
-          }
-        ]
-      }
-    },
-    "action_travel_inn": {
+    }    "action_travel_inn": {
       "meta": {
         "title": "Nhà trọ Bà Hạnh",
         "buttonLabel": "Di chuyển đến",
@@ -3253,50 +3127,7 @@ export const DEMO_SCRIPT = {
           }
         ]
       }
-    },
-    "action_travel_mill": {
-      "meta": {
-        "title": "Cối xay nước",
-        "buttonLabel": "Di chuyển đến",
-        "buttonIcon": "water",
-        "desc": "Cối xay nước nằm cạnh dòng suối đã cạn ở phía Bắc. Bánh xe dừng hoạt động che giấu một cửa sập dưới sàn, nối công trình cũ với đường hầm chạy dưới chân đê."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "goto",
-            "subtype": "scene",
-            "target": "scene_watermill"
-          }
-        ]
-      }
-    },
-    "action_return_mill": {
-      "meta": {
-        "title": "Phòng máy cối xay",
-        "buttonLabel": "Quay lại",
-        "buttonIcon": "arrow_back",
-        "desc": "Phòng máy dưới chân đê chứa hộp bánh răng và trục truyền động của cối xay. Chốt kim loại bị cong là nguyên nhân khiến bánh xe ngừng quay; khi sửa đúng cơ cấu, cửa sập dẫn xuống đường hầm sẽ hoạt động."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "goto",
-            "subtype": "scene",
-            "target": "scene_watermill"
-          }
-        ]
-      }
-    },
-    "action_reach_station": {
+    }"action_reach_station": {
       "meta": {
         "title": "Ga tàu 03:17",
         "buttonLabel": "Đi tới",
