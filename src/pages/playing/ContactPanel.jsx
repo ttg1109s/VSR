@@ -72,9 +72,9 @@ function RelationshipSummary({ relationshipWithPlayer, metCount = 0 }) {
       <span className="vsr-contact-relationship-summary__icon" aria-hidden="true">handshake</span>
       <div className="vsr-contact-relationship-summary__copy">
         <strong className="vsr-contact-relationship-summary__type">
-          {tag || (hasRelationship ? 'Recorded, unclassified' : 'No relationship')}
+          {tag || (hasRelationship ? 'Đã ghi nhận, chưa phân loại' : 'Không có mối quan hệ')}
         </strong>
-        <span className="vsr-contact-relationship-summary__count">Times met: {metCount} times</span>
+        <span className="vsr-contact-relationship-summary__count">Số lần gặp: {metCount}</span>
       </div>
     </div>
   );
@@ -86,7 +86,7 @@ function ContactProfile({ character }) {
     return (
       <div className="vsr-contact-profile">
         <section className="vsr-contact-profile__section">
-          <p className="vsr-contact-profile__description">{character.description || 'System information source.'}</p>
+          <p className="vsr-contact-profile__description">{character.description || 'Nguồn thông tin hệ thống.'}</p>
         </section>
       </div>
     );
@@ -96,7 +96,7 @@ function ContactProfile({ character }) {
     <div className="vsr-contact-profile">
       <section className="vsr-contact-profile__section">
         <p className="vsr-contact-profile__description">
-          {character.description || 'No character description available.'}
+          {character.description || 'Chưa có mô tả nhân vật.'}
         </p>
       </section>
 
@@ -138,31 +138,31 @@ function IdentityDrawer({ open, onClose, player, contacts, onSelectContact }) {
   const name = player.name || player.id;
   const modeContent = {
     soul: {
-      title: 'Possession',
-      badge: 'SOUL',
-      identityLabel: 'Original identity',
+      title: 'Chiếm hữu',
+      badge: 'LINH HỒN',
+      identityLabel: 'Danh tính gốc',
       description: context.currentBody?.name
-        ? `Your identity remains unchanged and currently inhabits the body of ${context.currentBody.name}.`
-        : 'Your identity remains unchanged in another body.'
+        ? `Danh tính của bạn không thay đổi và hiện đang ở trong cơ thể của ${context.currentBody.name}.`
+        : 'Danh tính của bạn không thay đổi dù đang ở trong cơ thể khác.'
     },
     mask: {
-      title: 'Disguise',
-      badge: 'MASK',
-      identityLabel: 'Active persona',
+      title: 'Cải trang',
+      badge: 'MẶT NẠ',
+      identityLabel: 'Nhân dạng hiện tại',
       description: context.activePersona?.name
-        ? `Your identity and original body remain unchanged, but you are appearing as ${context.activePersona.name}.`
-        : 'Your identity and original body remain unchanged, but you are using another persona.'
+        ? `Danh tính và cơ thể gốc của bạn không thay đổi, nhưng bạn đang xuất hiện dưới nhân dạng ${context.activePersona.name}.`
+        : 'Danh tính và cơ thể gốc của bạn không thay đổi, nhưng bạn đang sử dụng một nhân dạng khác.'
     },
     swap: {
-      title: 'Swap',
-      badge: 'SWAP',
-      identityLabel: 'Current identity',
-      description: `The currently controlling identity is ${name}.`
+      title: 'Hoán đổi',
+      badge: 'HOÁN ĐỔI',
+      identityLabel: 'Danh tính hiện tại',
+      description: `Danh tính đang điều khiển hiện tại là ${name}.`
     }
   }[mode] || {
     title: null,
     badge: null,
-    identityLabel: 'Your identity',
+    identityLabel: 'Danh tính của bạn',
     description: null
   };
 
@@ -178,13 +178,13 @@ function IdentityDrawer({ open, onClose, player, contacts, onSelectContact }) {
     <Drawer
       open={open}
       onClose={onClose}
-      title="Identity"
+      title="Danh tính"
       size="lg"
       side="right"
       className="vsr-identity-drawer"
     >
       <div className="vsr-identity-content">
-        <section className="vsr-identity-hero" aria-label="Active identity">
+        <section className="vsr-identity-hero" aria-label="Danh tính đang sử dụng">
           <span className="vsr-identity-hero__avatar-wrap">
             <ContactAvatar name={name} avatar={player.avatar} size="lg" />
             {modeContent.badge && (
@@ -200,7 +200,7 @@ function IdentityDrawer({ open, onClose, player, contacts, onSelectContact }) {
         </section>
 
         {modeContent.description && (
-          <section className="vsr-identity-mode" aria-label="Identity status">
+          <section className="vsr-identity-mode" aria-label="Trạng thái danh tính">
             <span className="vsr-identity-mode__icon" aria-hidden="true">
               {mode === 'soul' ? 'psychology_alt' : mode === 'mask' ? 'masks' : 'swap_horiz'}
             </span>
@@ -212,31 +212,31 @@ function IdentityDrawer({ open, onClose, player, contacts, onSelectContact }) {
         )}
 
         {mode === 'mask' && (
-          <section className="vsr-identity-facts" aria-label="Identity layers">
-            <IdentityFact label="Original identity" identity={originalIdentity} />
-            <IdentityFact label="Current body" identity={currentBody} />
-            <IdentityFact label="Active persona" identity={activePersona} emphasis />
+          <section className="vsr-identity-facts" aria-label="Các lớp danh tính">
+            <IdentityFact label="Danh tính gốc" identity={originalIdentity} />
+            <IdentityFact label="Cơ thể hiện tại" identity={currentBody} />
+            <IdentityFact label="Nhân dạng hiện tại" identity={activePersona} emphasis />
           </section>
         )}
 
         {mode === 'soul' && (
-          <section className="vsr-identity-facts" aria-label="Identity layers">
-            <IdentityFact label="Original identity" identity={originalIdentity} />
-            <IdentityFact label="Current body" identity={currentBody} emphasis />
+          <section className="vsr-identity-facts" aria-label="Các lớp danh tính">
+            <IdentityFact label="Danh tính gốc" identity={originalIdentity} />
+            <IdentityFact label="Cơ thể hiện tại" identity={currentBody} emphasis />
           </section>
         )}
 
         {mode === 'swap' && (
-          <section className="vsr-identity-facts" aria-label="Identity layers">
-            <IdentityFact label="Identity before swap" identity={originalIdentity} />
-            <IdentityFact label="Current identity" identity={activePersona} emphasis />
+          <section className="vsr-identity-facts" aria-label="Các lớp danh tính">
+            <IdentityFact label="Danh tính trước khi hoán đổi" identity={originalIdentity} />
+            <IdentityFact label="Danh tính hiện tại" identity={activePersona} emphasis />
           </section>
         )}
 
         {mode !== 'soul' && mode !== 'mask' && mode !== 'swap' && player.identityContext && (
-          <section className="vsr-identity-facts" aria-label="Identity layers">
-            <IdentityFact label="Original identity" identity={originalIdentity} />
-            <IdentityFact label="Current body" identity={currentBody} />
+          <section className="vsr-identity-facts" aria-label="Các lớp danh tính">
+            <IdentityFact label="Danh tính gốc" identity={originalIdentity} />
+            <IdentityFact label="Cơ thể hiện tại" identity={currentBody} />
           </section>
         )}
 
@@ -314,7 +314,7 @@ export default function ContactPanel({ open, onClose, player, contacts = [], sys
   const choices = isActiveThread && chatSession.waitingChoice === true && Array.isArray(chatSession.choices) ? chatSession.choices : [];
   const chatActionsDisabled = chatPending || chatSession.transitionPending === true || !client;
   // A selected contact owns the Drawer header in both its thread list and conversation.
-  // The generic "Contact" header is only shown while browsing the contact list.
+  // The generic "Liên hệ" header is only shown while browsing the contact list.
   const showContactThreadHeader = Boolean(selected);
 
   // Jump to the end when entering or switching threads; smoothly follow
@@ -415,7 +415,7 @@ export default function ContactPanel({ open, onClose, player, contacts = [], sys
       setSelectedThreadId(thread.id);
       setActiveArea('conversation');
     } catch (error) {
-      setChatError(error?.message || 'Unable to open this conversation.');
+      setChatError(error?.message || 'Không thể mở cuộc trò chuyện này.');
     } finally {
       setPendingThreadId(null);
     }
@@ -429,14 +429,14 @@ export default function ContactPanel({ open, onClose, player, contacts = [], sys
       if (choiceIndex === null) await client.nextChat();
       else await client.selectChatChoice(choiceIndex);
     } catch (error) {
-      setChatError(error?.message || 'The engine could not continue the conversation.');
+      setChatError(error?.message || 'Engine không thể tiếp tục cuộc trò chuyện.');
     } finally {
       setChatPending(false);
     }
   }
 
   function contactName(id) {
-    return allContacts.find(contact => contact.id === id)?.name || id || 'Unknown';
+    return allContacts.find(contact => contact.id === id)?.name || id || 'Không xác định';
   }
 
   function renderContactHeader(inDrawer = false) {
@@ -461,7 +461,7 @@ export default function ContactPanel({ open, onClose, player, contacts = [], sys
               setMobileView('list');
             }
           }}
-          aria-label={profileOpen ? 'Close details' : activeArea === 'conversation' ? 'Back to thread list' : 'Back to contacts'}
+          aria-label={profileOpen ? 'Đóng chi tiết' : activeArea === 'conversation' ? 'Quay lại danh sách chủ đề' : 'Quay lại danh sách liên hệ'}
         >
           ←
         </Button>
@@ -473,7 +473,7 @@ export default function ContactPanel({ open, onClose, player, contacts = [], sys
         >
           <strong>{selected.name || selected.id}</strong>
         </button>
-        <Button size="sm" variant="tertiary" className="vsr-contact-info-trigger" onClick={() => setProfileOpen(true)} aria-label="Information">
+        <Button size="sm" variant="tertiary" className="vsr-contact-info-trigger" onClick={() => setProfileOpen(true)} aria-label="Thông tin">
           <span className="vsr-contact-info-trigger__icon" aria-hidden="true">info</span>
         </Button>
       </div>
@@ -488,18 +488,18 @@ export default function ContactPanel({ open, onClose, player, contacts = [], sys
         key={contact.id}
         selected={selectedId === contact.id}
         onClick={() => selectContact(contact.id)}
-        aria-label={'Open ' + (contact.kind === 'system' ? 'source ' : 'contact ') + (contact.name || contact.id)}
+        aria-label={'Mở ' + (contact.kind === 'system' ? 'nguồn ' : 'liên hệ ') + (contact.name || contact.id)}
       >
         <span className="vsr-contact-avatar-wrap">
           <ContactAvatar name={contact.name || contact.id} avatar={contact.avatar} />
           {contact.presence === 'present' && (
-            <span className="vsr-contact-avatar__presence" role="img" aria-label="Present in the current scene" title="Present in the current scene" />
+            <span className="vsr-contact-avatar__presence" role="img" aria-label="Đang có mặt trong cảnh hiện tại" title="Đang có mặt trong cảnh hiện tại" />
           )}
         </span>
         <span className="vsr-contact-list-item__copy">
           <span className="vsr-contact-list-item__name">{contact.name || contact.id}</span>
           <span className="vsr-contact-list-item__preview">
-            {latestThread ? (latestThread.preview || 'Conversation available') : 'No messages or conversations yet.'}
+            {latestThread ? (latestThread.preview || 'Có cuộc trò chuyện') : 'Chưa có tin nhắn hoặc cuộc trò chuyện nào.'}
           </span>
         </span>
         {unreadCount > 0 && <Badge tone="danger">{unreadCount}</Badge>}
@@ -511,8 +511,8 @@ export default function ContactPanel({ open, onClose, player, contacts = [], sys
     <Drawer
       open={open}
       onClose={close}
-      title="Contact"
-      ariaLabel={selected ? 'Conversation with ' + (selected.name || selected.id) : 'Contact'}
+      title="Liên hệ"
+      ariaLabel={selected ? 'Cuộc trò chuyện với ' + (selected.name || selected.id) : 'Liên hệ'}
       headerContent={showContactThreadHeader ? renderContactHeader(true) : null}
       headerClassName={showContactThreadHeader ? 'vsr-overlay-header--contact-thread' : undefined}
       headerActions={player && (
@@ -521,8 +521,8 @@ export default function ContactPanel({ open, onClose, player, contacts = [], sys
           variant="tertiary"
           className="vsr-contact-identity-trigger"
           onClick={() => setIdentityOpen(true)}
-          aria-label="Open identity"
-          title="Identity"
+          aria-label="Mở danh tính"
+          title="Danh tính"
         >
           <svg className="vsr-contact-header-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <rect x="3.5" y="4.5" width="17" height="15" rx="2.5" />
@@ -537,16 +537,16 @@ export default function ContactPanel({ open, onClose, player, contacts = [], sys
     >
       <ContactWorkspace>
         <ContactList className={mobileView === 'detail' ? 'is-hidden-compact' : ''}>
-          <ContactScrollArea className="vsr-contact-list__items" aria-label="Contacts and system sources">
-            <h3 className="vsr-contact-list__section-heading">Characters</h3>
+          <ContactScrollArea className="vsr-contact-list__items" aria-label="Liên hệ và nguồn hệ thống">
+            <h3 className="vsr-contact-list__section-heading">Nhân vật</h3>
             {characterContacts.length ? characterContacts.map(renderContactItem) : (
               <div className="vsr-contact-list__empty" role="status">
                 <span className="vsr-contact-list__empty-icon" aria-hidden="true">contacts</span>
-                <strong>No character contacts yet</strong>
-                <p>Characters will appear here once encountered or a thread is activated.</p>
+                <strong>Chưa có liên hệ nhân vật</strong>
+                <p>Nhân vật sẽ xuất hiện tại đây khi bạn gặp họ hoặc khi một chủ đề trò chuyện được kích hoạt.</p>
               </div>
             )}
-            <h3 className="vsr-contact-list__section-heading">System</h3>
+            <h3 className="vsr-contact-list__section-heading">Hệ thống</h3>
             {systemContactEntries.map(renderContactItem)}
           </ContactScrollArea>
         </ContactList>
@@ -556,11 +556,11 @@ export default function ContactPanel({ open, onClose, player, contacts = [], sys
             <div className="vsr-contact-empty">
               <span className="vsr-contact-empty__icon" aria-hidden="true">{allContacts.length ? 'chat_bubble_outline' : 'contacts'}</span>
               {allContacts.length ? (
-                <p>Select a contact to view its conversation threads.</p>
+                <p>Chọn một liên hệ để xem các chủ đề trò chuyện.</p>
               ) : (
                 <>
-                  <strong>Your contact list is empty</strong>
-                  <p>Characters you encounter or have an activated conversation with will appear here.</p>
+                  <strong>Danh sách liên hệ của bạn đang trống</strong>
+                  <p>Các nhân vật bạn gặp hoặc đã bắt đầu trò chuyện sẽ xuất hiện tại đây.</p>
                 </>
               )}
             </div>
@@ -569,7 +569,7 @@ export default function ContactPanel({ open, onClose, player, contacts = [], sys
               {!showContactThreadHeader && renderContactHeader()}
 
               {profileOpen && (
-                <div className="vsr-contact-info-panel" role="region" aria-label="Contact details">
+                <div className="vsr-contact-info-panel" role="region" aria-label="Thông tin liên hệ">
                   <ContactScrollArea className="vsr-contact-info-panel__scroll">
                     <ContactProfile character={selected} />
                   </ContactScrollArea>
@@ -577,7 +577,7 @@ export default function ContactPanel({ open, onClose, player, contacts = [], sys
               )}
               <ContactScrollArea className="vsr-contact-detail-content" aria-hidden={profileOpen || undefined}>
                 {activeArea === 'threads' ? (
-                  <ContactTopicList aria-label={'Threads for ' + (selected.name || selected.id)}>
+                  <ContactTopicList aria-label={'Các chủ đề trò chuyện với ' + (selected.name || selected.id)}>
                     {threads.length ? threads.map(thread => (
                       <button
                         type="button"
@@ -585,7 +585,7 @@ export default function ContactPanel({ open, onClose, player, contacts = [], sys
                         key={thread.id}
                         onClick={() => openThread(thread)}
                         disabled={Boolean(pendingThreadId)}
-                        aria-label={'Open thread ' + thread.title}
+                        aria-label={'Mở chủ đề ' + thread.title}
                       >
                         <span className="vsr-contact-thread__icon" aria-hidden="true">
                           {thread.isUnread ? 'mark_chat_unread' : 'chat_bubble_outline'}
@@ -594,14 +594,14 @@ export default function ContactPanel({ open, onClose, player, contacts = [], sys
                           <span className="vsr-contact-thread__title">{thread.title}</span>
                           <span className="vsr-contact-thread__preview">{thread.preview}</span>
                         </span>
-                        {thread.isUnread && <span className="vsr-contact-thread__unread" aria-label="Unread" />}
-                        {pendingThreadId === thread.id && <span className="vsr-contact-thread__pending">Opening…</span>}
+                        {thread.isUnread && <span className="vsr-contact-thread__unread" aria-label="Chưa đọc" />}
+                        {pendingThreadId === thread.id && <span className="vsr-contact-thread__pending">Đang mở…</span>}
                       </button>
                     )) : (
                       <div className="vsr-contact-topic-list__empty">
                         <span className="vsr-contact-topic-list__empty-icon" aria-hidden="true">forum</span>
-                        <strong>{selected.kind === 'system' ? 'No content yet' : 'No conversations yet'}</strong>
-                        <p>{selected.kind === 'system' ? 'Messages from this source will appear here.' : 'Conversations with this character will appear here.'}</p>
+                        <strong>{selected.kind === 'system' ? 'Chưa có nội dung' : 'Chưa có cuộc trò chuyện'}</strong>
+                        <p>{selected.kind === 'system' ? 'Tin nhắn từ nguồn này sẽ xuất hiện tại đây.' : 'Cuộc trò chuyện với nhân vật này sẽ xuất hiện tại đây.'}</p>
                       </div>
                     )}
                   </ContactTopicList>
@@ -632,8 +632,8 @@ export default function ContactPanel({ open, onClose, player, contacts = [], sys
                         );
                       }) : (
                         <div className="vsr-contact-conversation__empty">
-                          <strong>{selectedThread?.title || 'Conversation'}</strong>
-                          <p>The engine returned no content for this thread.</p>
+                          <strong>{selectedThread?.title || 'Cuộc trò chuyện'}</strong>
+                          <p>Engine không trả về nội dung cho chủ đề này.</p>
                         </div>
                       )}
                     </div>
@@ -665,7 +665,7 @@ export default function ContactPanel({ open, onClose, player, contacts = [], sys
                         <Button className="vsr-contact-chat-next" disabled={chatActionsDisabled} onClick={() => progressChat()}>
                           <span className="vsr-contact-chat-next__label">
                             <span className="vsr-contact-chat-next__status" aria-hidden="true">●</span>
-                            {chatPending || chatSession.transitionPending === true ? 'Transitioning…' : 'Tap to continue…'}
+                            {chatPending || chatSession.transitionPending === true ? 'Đang chuyển cảnh…' : 'Chạm để tiếp tục…'}
                           </span>
                           <span className="vsr-contact-chat-next__icon" aria-hidden="true">➜</span>
                         </Button>
