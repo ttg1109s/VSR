@@ -368,7 +368,7 @@ export class JsonProtocol{
    };
   }).filter(Boolean);
   const inventoryProjection={
-   ownerId:inventoryOwnerId,owners:inventoryOwners,items:inventoryItems,
+   enabled:engine.getConfig?.('navInventory')!==false,ownerId:inventoryOwnerId,owners:inventoryOwners,items:inventoryItems,
    handCount:handIds.length,handLimit:maxHand>0?maxHand:null,
    itemCount:inventoryIds.length,inventoryLimit:ownerLimit>0?ownerLimit:null
   };
