@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import './runtime-debug-console.css';
 
 const MAX_ENTRIES = 250;
@@ -24,9 +25,19 @@ function describeValue(value) {
 function formatArguments(args) { return Array.from(args, describeValue).join(' '); }
 
 export default function RuntimeDebugConsole() {
+  const [portalRoot, setPortalRoot] = useState(null);
   const [open, setOpen] = useState(false);
   const [entries, setEntries] = useState([]);
   const [filter, setFilter] = useState('all');
+  useEffect(() => {
+    if (typeof document === 'undefined') return undefined;
+    const root = document.createElement('div');
+    root.setAttribute('data-vsr-runtime-debug-root', '');
+    document.body.appendChild(root);
+    setPortalRoot(root);
+    return () => root.remove();
+  }, []);
+
   const addEntry = useCallback((level, message, details = '') => {
     const entry = { id: Date.now().toString(36) + Math.random().toString(36).slice(2), level, message: String(message || 'Unknown error'), details: String(details || ''), time: new Date().toLocaleTimeString() };
     setEntries(current => [...current, entry].slice(-MAX_ENTRIES));
@@ -79,7 +90,9 @@ export default function RuntimeDebugConsole() {
     }
   };
 
-  return (
+  if (!portalRoot) return null;
+
+  return createPortal(
     <div className="vsr-runtime-debug" aria-live="polite">
       {open && (
         <section className="vsr-runtime-debug__panel" role="dialog" aria-label="Runtime debug console" aria-modal="false">
@@ -117,6 +130,7 @@ export default function RuntimeDebugConsole() {
       <button type="button" className="vsr-runtime-debug__launcher" onClick={() => setOpen(value => !value)} aria-expanded={open} aria-label={open ? 'Close runtime debug console' : 'Open runtime debug console'}>
         <span aria-hidden="true">⌘</span>DEBUG{errorCount > 0 && <b>{errorCount > 99 ? '99+' : errorCount}</b>}
       </button>
-    </div>
+    </div>,
+    portalRoot
   );
 }
