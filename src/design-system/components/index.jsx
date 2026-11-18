@@ -1,4 +1,4 @@
-import React, { cloneElement, isValidElement, createContext, forwardRef, useCallback, useContext, useEffect, useId, useRef, useState } from 'react';
+import React, { cloneElement, isValidElement, createContext, forwardRef, useCallback, useContext, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 const cx = (...v) => v.filter(Boolean).join(' ');
 
@@ -108,7 +108,7 @@ function Overlay({open,onClose,title,description,headerActions,headerContent,hea
   const ref=useRef(null),titleId=useId(),descId=useId();
   useLayer(open,onClose,ref);
   useEffect(()=>{
-    const locksPageScroll = open && className?.includes('vsr-contact-drawer');
+    const locksPageScroll = open && (className?.includes('vsr-contact-drawer') || className?.includes('vsr-notification-drawer'));
     if(!locksPageScroll || typeof document==='undefined')return;
     const body=document.body,html=document.documentElement;
     const scrollY=window.scrollY||window.pageYOffset||0;
@@ -214,8 +214,9 @@ const ToastContext=createContext(null);let toastId=0;
 export function ToastProvider({children,duration=4000,position='bottom-right'}){
   const [items,setItems]=useState([]),timers=useRef(new Map());
   const dismiss=useCallback(id=>{const t=timers.current.get(id);if(t)clearTimeout(t);timers.current.delete(id);setItems(v=>v.filter(x=>x.id!==id));},[]);
-  const toast=useCallback((message,options={})=>{const id=++toastId;setItems(v=>[...v,{id,message,tone:options.tone||'default',action:options.action}].slice(-5));const ms=options.duration??duration;if(ms>0)timers.current.set(id,setTimeout(()=>dismiss(id),ms));return id;},[dismiss,duration]);
+  const toast=useCallback((message,options={})=>{const id=options.id??++toastId;const existing=timers.current.get(id);if(existing)clearTimeout(existing);timers.current.delete(id);setItems(v=>[...v.filter(x=>x.id!==id),{id,message,tone:options.tone||'default',action:options.action}].slice(-5));const ms=options.duration??duration;if(ms!==null&&Number.isFinite(ms)&&ms>=0)timers.current.set(id,setTimeout(()=>dismiss(id),ms));return id;},[dismiss,duration]);
+  const toastApi=useMemo(()=>Object.assign((message,options)=>toast(message,options),{dismiss}),[toast,dismiss]);
   useEffect(()=>()=>timers.current.forEach(clearTimeout),[]);
-  return <ToastContext.Provider value={toast}>{children}{typeof document!=='undefined'&&createPortal(<div className={'vsr-toasts vsr-toasts--'+position} aria-live="polite" aria-relevant="additions">{items.map(x=><div key={x.id} role={x.tone==='error'?'alert':'status'} className={cx('vsr-toast','vsr-toast--'+x.tone)}><span>{x.message}</span>{x.action&&<button type="button" onClick={()=>{x.action.onClick?.();dismiss(x.id);}}>{x.action.label}</button>}<button type="button" className="vsr-icon-button" aria-label="Dismiss notification" onClick={()=>dismiss(x.id)}>close</button></div>)}</div>,document.body)}</ToastContext.Provider>;
+  return <ToastContext.Provider value={toastApi}>{children}{typeof document!=='undefined'&&createPortal(<div className={'vsr-toasts vsr-toasts--'+position} aria-live="polite" aria-relevant="additions">{items.map(x=><div key={x.id} role={x.tone==='error'?'alert':'status'} className={cx('vsr-toast','vsr-toast--'+x.tone)}><span>{x.message}</span>{x.action&&<button type="button" onClick={()=>{x.action.onClick?.();dismiss(x.id);}}>{x.action.label}</button>}<button type="button" className="vsr-icon-button" aria-label="Dismiss notification" onClick={()=>dismiss(x.id)}>close</button></div>)}</div>,document.body)}</ToastContext.Provider>;
 }
 export function useToast(){const toast=useContext(ToastContext);if(!toast)throw new Error('useToast must be used inside ToastProvider.');return toast;}

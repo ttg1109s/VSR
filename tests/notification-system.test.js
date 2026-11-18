@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import { NotificationSystem } from '../engine/modules/Notification.js';
 import { ActionSystem } from '../engine/modules/Action.js';
 import { GameEngine } from '../engine/GameEngine.js';
+import { normalizeScenario } from '../engine/scenario/Scenario.js';
+import { DEMO_SCRIPT } from '../demo_script.js';
 
 function makeProtocol() {
   const events = [];
@@ -138,7 +140,7 @@ test('action blocked by unread description emits a deduplicated not_read notific
   const result = await ActionSystem.handleAction.call(engine, 'inspect');
   assert.deepEqual(result, { success: false, reason: 'not_read' });
   assert.equal(calls.length, 1);
-  assert.equal(calls[0][0], 'Chưa đọc mô tả');
+  assert.equal(calls[0][0], 'Description not read');
   assert.equal(calls[0][2], 'warning');
   assert.equal(calls[0][3].category, 'action.not_read');
   assert.equal(calls[0][3].dedupeKey, 'action.not_read:inspect');
@@ -179,4 +181,101 @@ test('GameEngine exposes notifications only through the canonical API', () => {
   assert.throws(() => engine.api.presentation.notification, /engine\.api\.notifications/);
   assert.equal(engine.api.notifications.getHistory().length, 1);
   engine.dispose();
+});
+
+
+test('engine policy downgrades low-level scenario modals and bounds notification options', () => {
+  const protocol = makeProtocol();
+  const notifications = new NotificationSystem({ protocol, clock: () => 100 });
+  const downgraded = notifications.alert('Routine', 'A routine update.', 'info', {
+    source: 'scenario', sound: true, soundProfile: 'soft', priority: 99, duration: 45000
+  });
+  assert.equal(downgraded.notification.requestedPresentation, 'modal');
+  assert.equal(downgraded.notification.presentation, 'toast');
+  assert.equal(downgraded.notification.priority, 10);
+  assert.equal(downgraded.notification.duration, 30000);
+  assert.equal(downgraded.notification.sound, true);
+  assert.equal(protocol.events.at(-1).event, 'presentation.notification.add');
+
+  const approved = notifications.alert('Critical', 'An urgent event.', 'danger', {
+    source: 'scenario', soundProfile: 'critical'
+  });
+  assert.equal(approved.notification.presentation, 'modal');
+  assert.equal(protocol.events.at(-1).event, 'presentation.notification.alert');
+});
+
+test('notification sound metadata defaults on and rejects invalid profiles', () => {
+  const notifications = new NotificationSystem({ protocol: makeProtocol() });
+  const item = notifications.add('Notice', 'Message', 'info').notification;
+  assert.equal(item.sound, true);
+  assert.equal(item.soundProfile, 'default');
+  assert.throws(
+    () => notifications.add('Notice', 'Message', 'info', { soundProfile: 'untrusted-profile' }),
+    /Unsupported notification sound profile/
+  );
+});
+
+
+test('scenario notify strategy forwards presentation intent and sound metadata', async () => {
+  const { NotifyStrategies } = await import('../engine/modules/effect/Strategies.js');
+  const calls = [];
+  const engine = {
+    api: {
+      notifications: {
+        add: (...args) => calls.push({ method: 'add', args }),
+        alert: (...args) => calls.push({ method: 'alert', args })
+      }
+    }
+  };
+  NotifyStrategies.toast(engine, {
+    title: 'Quest updated',
+    text: 'A new objective is available.',
+    level: 'warning',
+    category: 'story.quest',
+    priority: 8,
+    durationMs: 6500,
+    sound: true,
+    soundProfile: 'warning',
+    dedupeKey: 'quest.updated'
+  });
+  assert.equal(calls[0].method, 'add');
+  assert.equal(calls[0].args[3].category, 'story.quest');
+  assert.equal(calls[0].args[3].priority, 8);
+  assert.equal(calls[0].args[3].duration, 6500);
+  assert.equal(calls[0].args[3].soundProfile, 'warning');
+
+  NotifyStrategies.modal(engine, { title: 'Critical', text: 'Stop.', level: 'danger' });
+  assert.equal(calls[1].method, 'alert');
+});
+
+
+test('notification manager marks all unread history entries as read', () => {
+  const protocol = makeProtocol();
+  const notifications = new NotificationSystem({ protocol, clock: () => 500 });
+  const first = notifications.add('One', 'First', 'info', { source: 'scenario' }).notification;
+  const second = notifications.add('Two', 'Second', 'info', { source: 'engine' }).notification;
+  notifications.markRead(first.id);
+  assert.equal(notifications.markAllRead(), 1);
+  assert.equal(notifications.getHistory({ unreadOnly: true }).length, 0);
+  assert.equal(notifications.getHistory().find(item => item.id === second.id).readAt, 500);
+});
+
+
+test('scenario schema applies notification defaults only to notify effects', () => {
+  const scenario = structuredClone(DEMO_SCRIPT);
+  const guestbookEffect = scenario.itemInfo.guestbook.effect.use.find(item => item.type === 'notify');
+  guestbookEffect.category = 'story.clue';
+  guestbookEffect.priority = 8;
+  guestbookEffect.durationMs = 6500;
+  guestbookEffect.soundProfile = 'success';
+  const normalized = normalizeScenario(scenario);
+  const normalizedNotify = normalized.itemInfo.guestbook.effect.use.find(item => item.type === 'notify');
+  const normalizedSet = normalized.itemInfo.lantern.effect.use.find(item => item.type === 'set');
+
+  assert.equal(normalizedNotify.soundProfile, 'success');
+  assert.equal(normalizedNotify.category, 'story.clue');
+  assert.equal(normalizedNotify.priority, 8);
+  assert.equal(normalizedNotify.durationMs, 6500);
+  assert.equal(Object.hasOwn(normalizedSet, 'sound'), false);
+  assert.equal(Object.hasOwn(normalizedSet, 'soundProfile'), false);
 });

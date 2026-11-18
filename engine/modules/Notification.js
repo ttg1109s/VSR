@@ -19,23 +19,35 @@ export class NotificationSystem {
   normalize(input = {}, presentation = 'toast') {
     if (!input || typeof input !== 'object' || Array.isArray(input)) throw new TypeError('Notification must be an object.');
     if (Object.hasOwn(input, 'severity')) throw new TypeError('Notification uses the level field; severity is not supported.');
-    const title = input.title == null ? 'Thông báo' : String(input.title);
+    const title = input.title == null ? 'Notification' : String(input.title);
     const message = input.message == null ? '' : String(input.message);
     const originalLevel = String(input.level ?? 'info').toLowerCase();
     if (!Object.hasOwn(PRIORITY, originalLevel)) throw new TypeError(`Unsupported notification level: ${originalLevel}`);
     const severity = originalLevel;
+    const requestedPresentation = presentation === 'modal' ? 'modal' : 'toast';
+    const effectivePresentation = requestedPresentation === 'modal' && ['danger', 'special'].includes(originalLevel)
+      ? 'modal'
+      : 'toast';
     const now = this.clock();
-    const duration = input.duration === undefined
-      ? (presentation === 'modal' ? null : this.defaultDurationMs)
+    const requestedDuration = input.duration === undefined
+      ? (effectivePresentation === 'modal' ? null : this.defaultDurationMs)
       : input.duration;
-    if (duration !== null && (!Number.isFinite(duration) || duration < 0)) throw new TypeError('Notification duration must be a non-negative number or null.');
+    if (requestedDuration !== null && (!Number.isFinite(requestedDuration) || requestedDuration < 0)) throw new TypeError('Notification duration must be a non-negative number or null.');
+    const duration = requestedDuration === null ? null : Math.min(30000, requestedDuration);
+    const soundProfile = String(input.soundProfile || 'default');
+    if (!['default', 'soft', 'success', 'warning', 'critical', 'special'].includes(soundProfile)) throw new TypeError('Unsupported notification sound profile: ' + soundProfile);
+    const category = String(input.category || `${input.source || 'engine'}.${title}`).slice(0, 80);
+    if (!category.trim()) throw new TypeError('Notification category must contain at least 1 character.');
     const id = input.id || `${this.engineId}:notification:${++this.sequence}`;
     return {
       id: String(id), source: String(input.source || 'engine'),
-      category: String(input.category || `${input.source || 'engine'}.${title}`),
+      category,
       title, message, severity, level: originalLevel,
-      priority: Number.isFinite(input.priority) ? input.priority : PRIORITY[severity],
-      presentation: presentation === 'modal' ? 'modal' : 'toast',
+      priority: Number.isFinite(input.priority) ? Math.min(10, Math.max(0, input.priority)) : PRIORITY[severity],
+      requestedPresentation,
+      presentation: effectivePresentation,
+      sound: true,
+      soundProfile,
       createdAt: now, updatedAt: now,
       expiresAt: duration === null ? null : now + duration,
       duration, dedupeKey: input.dedupe === false ? null : (input.dedupeKey == null ? `${input.source || 'engine'}:${input.category || title}:${title}:${message}` : `${input.source || 'engine'}:${input.category || title}:${String(input.dedupeKey)}`),
@@ -93,6 +105,9 @@ export class NotificationSystem {
         previous.severity = candidate.severity;
         previous.level = candidate.level;
         previous.priority = candidate.priority;
+        previous.presentation = candidate.presentation;
+        previous.sound = candidate.sound;
+        previous.soundProfile = candidate.soundProfile;
         previous.updatedAt = now;
         previous.expiresAt = candidate.expiresAt;
         previous.duration = candidate.duration;
@@ -133,7 +148,7 @@ export class NotificationSystem {
       this.pending = this.pending.filter(id => id !== removed.id);
       if (removed.dedupeKey && this.dedupe.get(removed.dedupeKey) === removed.id) this.dedupe.delete(removed.dedupeKey);
     }
-    this.publish(presentation === 'modal' ? 'alert' : 'add', candidate);
+    this.publish(candidate.presentation === 'modal' ? 'alert' : 'add', candidate);
     this.scheduleExpiry(candidate);
     while (this.pending.length > this.maxQueue) {
       const droppedId = this.pending.pop();
@@ -150,7 +165,7 @@ export class NotificationSystem {
   }
 
   alert(title, message, level = 'info', options = {}) {
-    return this.add(title, message, level, { ...options, presentation: 'modal', duration: options.duration === undefined ? null : options.duration });
+    return this.add(title, message, level, { ...options, presentation: 'modal', duration: options.duration });
   }
 
   notify(input) {
@@ -185,6 +200,19 @@ export class NotificationSystem {
     notification.readAt = this.clock();
     this.protocol.publish('presentation.notification.read', { notification: { ...notification } });
     return true;
+  }
+
+  markAllRead({ source } = {}) {
+    const targets = this.history.filter(item =>
+      !item.read && (source === undefined || item.source === source)
+    );
+    const readAt = this.clock();
+    for (const notification of targets) {
+      notification.read = true;
+      notification.readAt = readAt;
+      this.protocol.publish('presentation.notification.read', { notification: { ...notification } });
+    }
+    return targets.length;
   }
 
   clear({ source, includeRead = true } = {}) {

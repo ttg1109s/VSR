@@ -110,3 +110,6 @@
 .vsr-overlay--drawer .vsr-overlay-header p{margin:4px 0 0;color:var(--vsr-color-text-secondary);font-size:13px;line-height:18px}
 .vsr-overlay--drawer .vsr-overlay-header__actions{display:inline-flex;flex:none;align-items:center;gap:8px}
 .vsr-overlay--drawer .vsr-overlay-header>.vsr-icon-button{flex:none;width:44px;height:44px;margin:0;font-size:22px}
+
+.vsr-bottom-navigation__icon-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center}
+.vsr-bottom-navigation__badge{position:absolute;top:-7px;right:-13px;display:inline-flex;min-width:16px;height:16px;align-items:center;justify-content:center;padding:0 4px;border:1px solid white;border-radius:var(--vsr-radius-full);background:var(--vsr-color-error);color:white;font-size:10px;font-weight:600;line-height:14px}

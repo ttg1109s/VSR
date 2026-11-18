@@ -160,7 +160,11 @@ export const EffectHandlers = {
         const resolvedEff = {
             ...eff,
             title: resolveValue(eff.title, this),
-            text: resolveValue(eff.text, this)
+            text: resolveValue(eff.text, this),
+            category: resolveValue(eff.category, this),
+            priority: resolveValue(eff.priority, this),
+            durationMs: resolveValue(eff.durationMs, this),
+            soundProfile: resolveValue(eff.soundProfile, this)
         };
         handler(this, resolvedEff);
     },

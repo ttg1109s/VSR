@@ -47,6 +47,7 @@ Commands are allow-listed and serialized per Engine. Command idempotency is keye
 | `save.export` | `{}` | Export the Engine save envelope |
 | `save.restore` | `{ save }` | Restore a validated save envelope |
 | `notification.read` | `{ notificationId }` | Mark a notification as read |
+| `notification.readAll` | `{ source? }` | Mark all matching notifications as read |
 | `notification.dismiss` | `{ notificationId }` | Dismiss a pending notification |
 
 An `authorizeCommand` hook can enforce authorization using trusted transport context. It is not an authentication mechanism. For network-facing deployments, construct the Engine with `authorizeCommand` and `requireAuthorization: true`. The transport authenticates the caller and sets a stable principal ID in `context.principal.id` or `context.principalId`; never accept identity from command payloads.
