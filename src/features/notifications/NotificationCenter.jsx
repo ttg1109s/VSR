@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useState } from 'react';
-import { Badge, Button, Dialog, Drawer, Input, Popover, Switch } from '../../design-system/index.js';
+import { Badge, Button, Dialog, Drawer, IconButton, Input, Popover, SegmentedControl, Switch } from '../../design-system/index.js';
 import './notifications.css';
 import { filterNotifications } from './notificationFilters.js';
 
@@ -53,6 +53,7 @@ export default function NotificationCenter({
   const [searchOpen, setSearchOpen] = useState(false);
   const [busyIds, setBusyIds] = useState([]);
   const [actionError, setActionError] = useState('');
+  const [markAllBusy, setMarkAllBusy] = useState(false);
   const swipeStart = useRef(null);
   const swipeHandled = useRef(false);
   const history = useMemo(() => [...notifications].sort((a, b) =>
@@ -61,7 +62,7 @@ export default function NotificationCenter({
   const unreadCount = history.filter(item => !item.read).length;
   const visible = filterNotifications(history, filter).filter(item => {
     const searchText = (item.title || '') + ' ' + (item.message || '') + ' ' + (item.category || '');
-    return !query.trim() || searchText.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase());
+    return !query.trim() || searchText.toLowerCase().includes(query.trim().toLowerCase());
   });
   const groups = ['Today', 'Earlier'].map(label => ({
     label,
@@ -75,7 +76,7 @@ export default function NotificationCenter({
       setActionError('');
       await client.markNotificationRead(id);
     } catch (error) {
-      setActionError(error?.message || 'Unable to update the notification.');
+      setActionError('Unable to update the notification. Please try again.');
     } finally {
       setBusyIds(current => current.filter(value => value !== id));
     }
@@ -88,19 +89,22 @@ export default function NotificationCenter({
       setActionError('');
       await client.dismissNotification(id);
     } catch (error) {
-      setActionError(error?.message || 'Unable to dismiss the notification.');
+      setActionError('Unable to dismiss the notification. Please try again.');
     } finally {
       setBusyIds(current => current.filter(value => value !== id));
     }
   };
 
   const markAllRead = async () => {
-    if (!client || !unreadCount) return;
+    if (!client || !unreadCount || markAllBusy) return;
+    setMarkAllBusy(true);
     try {
       setActionError('');
       await client.markAllNotificationsRead();
     } catch (error) {
-      setActionError(error?.message || 'Unable to mark notifications as read.');
+      setActionError('Unable to mark notifications as read. Please try again.');
+    } finally {
+      setMarkAllBusy(false);
     }
   };
 
@@ -120,7 +124,9 @@ export default function NotificationCenter({
         onClose={onClose}
         side="right"
         size="lg"
-        className="vsr-notification-drawer"
+        width="560px"
+        lockScroll
+        contentClassName="vsr-notification-drawer__content"
         ariaLabel="Notifications"
         headerClassName="vsr-notification-center__header"
         headerContent={
@@ -133,7 +139,7 @@ export default function NotificationCenter({
               <Popover
                 align="end"
                 label="Notification settings"
-                trigger={<button type="button" className="vsr-icon-button vsr-notification-settings-trigger" aria-label="Notification settings">tune</button>}
+                trigger={<IconButton icon="tune" label="Notification settings" />}
               >
                 <div className="vsr-notification-center__settings">{settings}</div>
               </Popover>
@@ -142,20 +148,14 @@ export default function NotificationCenter({
         }
       >
         <div className="vsr-notification-center">
-          <div className="vsr-notification-center__filters" role="group" aria-label="Filter notifications">
-            {FILTERS.map(option => (
-              <button
-                key={option.value}
-                type="button"
-                className={'vsr-notification-filter' + (filter === option.value ? ' is-active' : '')}
-                aria-pressed={filter === option.value}
-                onClick={() => setFilter(option.value)}
-              >
-                {option.label}
-                {option.value === 'unread' && unreadCount > 0 && <span>{unreadCount}</span>}
-              </button>
-            ))}
-            <button type="button" className="vsr-icon-button vsr-notification-search-trigger" aria-label={searchOpen ? 'Close notification search' : 'Search notifications'} aria-expanded={searchOpen} onClick={() => { setSearchOpen(value => !value); setQuery(''); }}>{searchOpen ? 'close' : 'search'}</button>
+          <div className="vsr-notification-center__filters">
+            <SegmentedControl
+              label="Filter notifications"
+              value={filter}
+              onChange={setFilter}
+              options={FILTERS.map(option => ({...option,count:option.value==='unread'?unreadCount:0}))}
+            />
+            <IconButton icon={searchOpen ? 'close' : 'search'} label={searchOpen ? 'Close notification search' : 'Search notifications'} aria-expanded={searchOpen} onClick={() => { setSearchOpen(value => !value); setQuery(''); }} />
           </div>
           {searchOpen && <Input aria-label="Search notifications" placeholder="Search notifications" value={query} onChange={event => setQuery(event.target.value)} />}
           {actionError && <p className="vsr-notification-center__error" role="alert">{actionError}</p>}
@@ -217,16 +217,6 @@ export default function NotificationCenter({
                       onPointerUp={handlePointerUp}
                       onPointerCancel={handlePointerCancel}
                       onLostPointerCapture={handlePointerCancel}
-                      onClick={handleItemClick}
-                      onKeyDown={event => {
-                        if ((event.key === 'Enter' || event.key === ' ') && !item.read) {
-                          event.preventDefault();
-                          markRead(item.id);
-                        }
-                      }}
-                      role={!item.read ? 'button' : undefined}
-                      tabIndex={!item.read ? 0 : undefined}
-                      aria-label={!item.read ? 'Mark ' + (item.title || 'notification') + ' as read' : undefined}
                     >
                       <div className="vsr-notification-item__body">
                         <div className="vsr-notification-item__heading">
@@ -236,6 +226,10 @@ export default function NotificationCenter({
                         <p>{item.message}</p>
                         {validTimestamp && <time className="vsr-notification-item__timestamp" dateTime={timestamp.toISOString()}>{formatRelativeTime(timestamp)}</time>}
                       </div>
+                      <div className="vsr-notification-item__actions">
+                        {!item.read && <Button size="sm" variant="tertiary" disabled={busyIds.includes(item.id)} onClick={() => markRead(item.id)} aria-label={'Mark ' + (item.title || 'notification') + ' as read'}>Mark read</Button>}
+                        {canDismiss && <IconButton size="sm" icon="close" label={'Dismiss ' + (item.title || 'notification')} disabled={busyIds.includes(item.id)} onClick={() => dismiss(item.id)} />}
+                      </div>
                     </article>
                   );
                 })}
@@ -244,7 +238,7 @@ export default function NotificationCenter({
           </div>
           <div className="vsr-notification-center__footer">
             <span>Showing recent notifications</span>
-            <Button variant="tertiary" disabled={!unreadCount} onClick={markAllRead}>Mark all as read</Button>
+            <Button variant="tertiary" loading={markAllBusy} disabled={!unreadCount || markAllBusy} onClick={markAllRead}>Mark all as read</Button>
           </div>
         </div>
       </Drawer>
