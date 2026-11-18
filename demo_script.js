@@ -848,7 +848,7 @@ export const DEMO_SCRIPT = {
         "retryMax": 3
       }
     },
-    "Giải đố": {
+    "puzzle": {
       "pw_photo": {
         "desc": "Ghép lại bức ảnh gia đình bị xé.",
         "url": "assets/puzzles/silent-village-family.jpg",
