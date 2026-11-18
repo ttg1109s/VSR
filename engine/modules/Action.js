@@ -111,7 +111,7 @@ export const ActionSystem = {
         const actingIds = getFakerActingIds(entryChar, faker, fakerMode);
 
         let isAllowed = true;
-        let blockReason = "Danh tính hiện tại không thể thực hiện hành động này.";
+        let blockReason = "The current identity cannot perform this action.";
 
         // Normalize charAllow
         const charAllow = Array.isArray(set.charAllow) ? set.charAllow : [];
@@ -125,9 +125,9 @@ export const ActionSystem = {
                 isAllowed = false;
                 // Determine sensible block reason
                 if (faker.active) {
-                    blockReason = `Bạn đang ở dạng ${fakerMode} và không có quyền của nhân vật này.`;
+                    blockReason = `You are in ${fakerMode} form and do not have this character's permissions.`;
                 } else {
-                    blockReason = `Cần phải là ${charAllow.map(id => state.getRuntimeSnapshot('characters.[id]', { id })?.set?.name || id).join(', ')} mới thực hiện được.`;
+                    blockReason = `You must be ${charAllow.map(id => state.getRuntimeSnapshot('characters.[id]', { id })?.set?.name || id).join(', ')} mới thực hiện được.`;
                 }
             }
         } else {
@@ -140,7 +140,7 @@ export const ActionSystem = {
                 await this.processRunnables(actDef.effect.normal, { sceneId: sId, routerId: rId, actionId: actionKey, hook: 'normal' });
             }
             this.api.presentation.effects.shake(uniqueId);
-            this.api.notifications.add("Bị chặn", blockReason, "warning");
+            this.api.notifications.add("Blocked", blockReason, "warning");
             this.commitState('action.changed'); // Re-render to update UI states if needed
             return { success: false, reason: 'permission_denied' };
         }
@@ -156,8 +156,8 @@ export const ActionSystem = {
 
         if (requiresRead && !hasBeenRead) {
             this.api.notifications.add(
-                'Chưa đọc mô tả',
-                'Vui lòng đọc mô tả trước khi thực hiện thao tác này.',
+                'Description not read',
+                'Please read the description before performing this action.',
                 'warning',
                 { source: 'action', category: 'action.not_read', dedupeKey: `action.not_read:${actStateKey}`, duration: 4000 }
             );
@@ -169,7 +169,7 @@ export const ActionSystem = {
         if (set.cooldown > 0 && Number.isFinite(cooldownUntil) && cooldownUntil > Date.now()) {
             const remainingSeconds = Math.ceil((cooldownUntil - Date.now()) / 1000);
             this.api.presentation.effects.shake(uniqueId);
-            this.api.notifications.add('Thao tác thất bại', `Vui lòng đợi ${remainingSeconds}s`, 'warning');
+            this.api.notifications.add('Action failed', `Please wait ${remainingSeconds}s`, 'warning');
             return { success: false, reason: 'cooldown', remainingSeconds };
         }
 
@@ -214,14 +214,14 @@ export const ActionSystem = {
                 this.api.presentation.effects.shake(uniqueId);
 
                 const failActions = {
-                    item_surplus: () => this.api.notifications.add("Cảnh báo", "Bạn đang cầm thừa vật phẩm!", "warning"),
-                    item_missing: () => this.api.notifications.add("Cảnh báo", "Thiếu vật phẩm yêu cầu!", "warning"),
-                    item_order: () => this.api.notifications.add("Cảnh báo", "Sai thứ tự vật phẩm!", "warning")
+                    item_surplus: () => this.api.notifications.add("Warning", "You are carrying too many items!", "warning"),
+                    item_missing: () => this.api.notifications.add("Warning", "Required item missing!", "warning"),
+                    item_order: () => this.api.notifications.add("Warning", "Incorrect item order!", "warning")
                 };
                 if (failType && failActions[failType]) {
                     failActions[failType]();
                 } else if (this.getConfig && this.getConfig('defaultNotice')) {
-                    this.api.notifications.add("Thất bại", "Chưa đủ điều kiện thực hiện.", "warning");
+                    this.api.notifications.add("Failed", "Requirements not met.", "warning");
                 }
 
                 // Fail Effect
