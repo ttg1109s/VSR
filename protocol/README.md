@@ -76,7 +76,7 @@ Do not send scenario source or password answer values to an untrusted client. Th
 
 ## Inventory projection
 
-The snapshot exposes `presentation.inventory` with the active owner ID, a read-only roster of scenario characters, item display metadata, category, usage, stats, evaluated requirement status, broken state, and Engine-computed equip/use eligibility. The raw `state.itemInfo` map is intentionally omitted because item templates may contain executable effect chains and requirement expressions. The projection never includes those executable definitions.
+The snapshot exposes `presentation.inventory` for the scenario's single `entryCharacter` only, with that character's display name, item display metadata, category, usage, stats, evaluated requirement status, broken state, and Engine-computed equip/use eligibility. It does not expose a roster of inventory owners or any other character's inventory. The raw `state.itemInfo` map is intentionally omitted because item templates may contain executable effect chains and requirement expressions. The projection never includes those executable definitions.
 
-Inventory ownership follows `ItemSystem.getOwnerId()` (the runtime `entryCharacter`), not the Faker display identity. Other characters are listed as transfer destinations; their item contents are not exposed in this projection. `inventory.transfer` validates both characters, source ownership, duplicate ownership, and the target's configured capacity inside the Engine.
+Inventory ownership is the scenario's `entryCharacter`, matching `ItemSystem.getOwnerId()`; Faker display identity does not switch the inventory owner. The Playing inventory is a player-facing bag/equipment UI, not a character inventory administration or transfer screen. Engine-side transfer support, where used by other integrations, remains separate from this UI.
 
