@@ -912,7 +912,6 @@ export const DEMO_SCRIPT = {
             "action_travel_chapel",
             "action_travel_school",
             "action_travel_forest",
-            "action_return_view_village_square"
           ]
         }
       }
@@ -960,7 +959,6 @@ export const DEMO_SCRIPT = {
             "action_use_lantern",
             "action_return_square",
             "action_retrieve_well_badge",
-            "action_return_view_village_well"
           ]
         }
       }
@@ -1011,7 +1009,6 @@ export const DEMO_SCRIPT = {
             "action_return_square",
             "action_travel_chapel",
             "action_unlock_cellar",
-            "action_return_view_inn"
           ]
         }
       }
@@ -1057,7 +1054,6 @@ export const DEMO_SCRIPT = {
           "actions": [
             "action_search_cellar",
             "action_return_inn",
-            "action_return_view_inn_cellar"
           ]
         }
       }
@@ -1108,7 +1104,6 @@ export const DEMO_SCRIPT = {
             "action_enter_tower",
             "action_return_square",
             "action_travel_school",
-            "action_return_view_chapel"
           ]
         }
       }
@@ -1156,7 +1151,6 @@ export const DEMO_SCRIPT = {
             "action_solve_bell",
             "action_ring_bell",
             "action_return_chapel",
-            "action_return_view_chapel_tower"
           ]
         }
       }
@@ -1207,7 +1201,6 @@ export const DEMO_SCRIPT = {
             "action_decode_roster",
             "action_return_square",
             "action_travel_forest",
-            "action_return_view_abandoned_school"
           ]
         }
       }
@@ -1256,7 +1249,6 @@ export const DEMO_SCRIPT = {
             "action_maze_path",
             "action_enter_clearing",
             "action_return_square",
-            "action_return_view_north_forest"
           ]
         }
       }
@@ -1306,7 +1298,6 @@ export const DEMO_SCRIPT = {
             "action_find_hidden_box",
             "action_return_forest",
             "action_travel_mill",
-            "action_return_view_forest_clearing"
           ]
         }
       }
@@ -1367,7 +1358,6 @@ export const DEMO_SCRIPT = {
           "actions": [
             "action_repair_mill",
             "action_return_forest",
-            "action_return_view_watermill"
           ]
         }
       }
@@ -1417,7 +1407,6 @@ export const DEMO_SCRIPT = {
             "action_open_archive",
             "action_return_mill",
             "action_reach_station",
-            "action_return_view_levee_tunnel"
           ]
         }
       }
@@ -1472,7 +1461,6 @@ export const DEMO_SCRIPT = {
             "action_ending_bury",
             "action_ending_echo",
             "action_ending_depart",
-            "action_return_view_ghost_station"
           ]
         }
       }
@@ -3335,26 +3323,6 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "action_return_view_village_square": {
-      "meta": {
-        "title": "Quảng trường — góc nhìn tổng thể",
-        "buttonLabel": "Trở về",
-        "desc": "Từ góc nhìn tổng thể, quảng trường hiện ra cùng bảng thông báo, hộp loa và những con đường tỏa về các khu vực khác. Lùi lại giúp quan sát cách các dấu vết nằm trong cùng một không gian, thay vì chỉ tập trung vào một vật thể riêng lẻ."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "goto",
-            "subtype": "router",
-            "target": "router_square_fogbound"
-          }
-        ]
-      }
-    },
     "action_retrieve_well_badge": {
       "meta": {
         "title": "Phù hiệu dưới giếng",
@@ -3411,26 +3379,6 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "action_return_view_village_well": {
-      "meta": {
-        "title": "Giếng đá — góc nhìn tổng thể",
-        "buttonLabel": "Trở về",
-        "desc": "Từ góc nhìn tổng thể, giếng đá nằm sát quảng trường và phần thành có bốn vạch khắc mới. Vết cào kim loại, hốc đá dưới mực nước cũ và mặt giếng tạo thành một chuỗi dấu vết liên quan đến vật bị giấu bên dưới."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "goto",
-            "subtype": "router",
-            "target": "router_well_echoes"
-          }
-        ]
-      }
-    },
     "action_find_spare_key": {
       "meta": {
         "title": "Ngăn kéo sau quầy lễ tân",
@@ -3465,26 +3413,6 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "router",
             "target": "router_inn_hidden_room"
-          }
-        ]
-      }
-    },
-    "action_return_view_inn": {
-      "meta": {
-        "title": "Nhà trọ — góc nhìn tổng thể",
-        "buttonLabel": "Trở về",
-        "desc": "Từ góc nhìn tổng thể, quầy lễ tân, hành lang và những cánh cửa phòng hiện rõ trong cùng một bố cục. Có bảy cửa dọc hành lang dù lời Bà Hạnh chỉ thừa nhận sáu phòng; ngăn kéo sau quầy là nơi giữ chìa khóa cho phần bị bỏ sót."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "goto",
-            "subtype": "router",
-            "target": "router_inn_unsettled"
           }
         ]
       }
@@ -3527,26 +3455,6 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "action_return_view_inn_cellar": {
-      "meta": {
-        "title": "Hầm rượu — góc nhìn tổng thể",
-        "buttonLabel": "Trở về",
-        "desc": "Từ góc nhìn tổng thể, căn hầm hiện ra với các thùng rượu, kệ gỗ và lối cầu thang dẫn lên nhà trọ. Những vật được giấu ở đây không phải đồ dự trữ thông thường: cuộn băng và hộp thiếc chứa phim đều liên quan đến đêm sơ tán."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "goto",
-            "subtype": "router",
-            "target": "router_cellar_open"
-          }
-        ]
-      }
-    },
     "action_find_hymn_note": {
       "meta": {
         "title": "Trang ghi chú trong thánh ca",
@@ -3581,26 +3489,6 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "router",
             "target": "router_chapel_cryptic_note"
-          }
-        ]
-      }
-    },
-    "action_return_view_chapel": {
-      "meta": {
-        "title": "Nhà nguyện — góc nhìn tổng thể",
-        "buttonLabel": "Trở về",
-        "desc": "Từ góc nhìn tổng thể, gian cầu nguyện vẫn giữ nguyên những hàng ghế và giá sách phủ bụi. Bản thánh ca nằm ở vị trí dễ thấy, nhưng phần ghi chú quan trọng lại bị giấu trong gáy sách, cạnh những dòng nhắc đến ba hồi chuông."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "goto",
-            "subtype": "router",
-            "target": "router_chapel_silent"
           }
         ]
       }
@@ -3643,26 +3531,6 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "action_return_view_chapel_tower": {
-      "meta": {
-        "title": "Tháp chuông — góc nhìn tổng thể",
-        "buttonLabel": "Trở về",
-        "desc": "Từ góc nhìn tổng thể, quả chuông treo trên xà gỗ phía trên mặt đồng hồ đã dừng. Trục bánh răng, dây đồng bị tháo và vị trí trống của quả lắc cho thấy cơ cấu bị vô hiệu hóa theo từng bộ phận."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "goto",
-            "subtype": "router",
-            "target": "router_bell_chamber"
-          }
-        ]
-      }
-    },
     "action_recover_class_register": {
       "meta": {
         "title": "Ngăn bàn cuối lớp",
@@ -3697,26 +3565,6 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "router",
             "target": "router_classroom_archive_open"
-          }
-        ]
-      }
-    },
-    "action_return_view_abandoned_school": {
-      "meta": {
-        "title": "Trường học — góc nhìn tổng thể",
-        "buttonLabel": "Trở về",
-        "desc": "Từ góc nhìn tổng thể, lớp học số 3 hiện ra với dãy bàn, bảng đen và ngăn bàn giáo viên bị bỏ ngỏ. Sơ đồ chỗ ngồi không khớp với số học sinh trong bản sao sổ điểm danh; bức ảnh tập thể bị xé nằm ngay cạnh khoảng trống ấy."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "goto",
-            "subtype": "router",
-            "target": "router_classroom_erased"
           }
         ]
       }
@@ -3759,26 +3607,6 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "action_return_view_north_forest": {
-      "meta": {
-        "title": "Rừng thông — góc nhìn tổng thể",
-        "buttonLabel": "Trở về",
-        "desc": "Từ góc nhìn tổng thể, lối mòn xuyên rừng và các dấu sơn trên thân thông tạo thành một tuyến không liên tục. Những dấu mốc này vừa giúp định hướng qua mê cung, vừa đánh dấu con đường vận chuyển về phía bờ đê."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "goto",
-            "subtype": "router",
-            "target": "router_forest_path_shifting"
-          }
-        ]
-      }
-    },
     "action_find_wooden_seal": {
       "meta": {
         "title": "Con dấu đội sơ tán",
@@ -3813,26 +3641,6 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "router",
             "target": "router_clearing_ritual_trace"
-          }
-        ]
-      }
-    },
-    "action_return_view_forest_clearing": {
-      "meta": {
-        "title": "Khoảng đất trống — góc nhìn tổng thể",
-        "buttonLabel": "Trở về",
-        "desc": "Từ góc nhìn tổng thể, mười hai cọc gỗ tạo thành vòng cung quanh khoảng đất giữa rừng. Hộp chôn nằm lệch khỏi tâm vòng, còn phiến đá có con dấu ở vị trí trung tâm; hai nơi cất giữ vật chứng của cùng một cuộc sơ tán."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "goto",
-            "subtype": "router",
-            "target": "router_forest_clearing"
           }
         ]
       }
@@ -3875,26 +3683,6 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "action_return_view_watermill": {
-      "meta": {
-        "title": "Cối xay nước — góc nhìn tổng thể",
-        "buttonLabel": "Trở về",
-        "desc": "Từ góc nhìn tổng thể, bánh xe, trục truyền động và tấm che hộp số cho thấy cối xay đã ngừng hoạt động từ lâu. Dấu nước cạn dưới chân máy và chốt bị cong trong hộp bánh răng giải thích vì sao cơ cấu không còn đủ lực vận hành cửa sập."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "goto",
-            "subtype": "router",
-            "target": "router_watermill_stalled"
-          }
-        ]
-      }
-    },
     "action_recover_tunnel_manifest": {
       "meta": {
         "title": "Ống tài liệu trong đường hầm",
@@ -3929,26 +3717,6 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "router",
             "target": "router_tunnel_manifest_found"
-          }
-        ]
-      }
-    },
-    "action_return_view_levee_tunnel": {
-      "meta": {
-        "title": "Đường hầm dưới đê — góc nhìn tổng thể",
-        "buttonLabel": "Trở về",
-        "desc": "Từ góc nhìn tổng thể, đường hầm kéo dài dưới chân đê với những cái tên và ngày tháng khắc dọc hai bên tường. Một đoạn tường mới được trám vữa che vị trí ống tài liệu, còn lối sâu hơn dẫn về phía sân ga 03:17."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "goto",
-            "subtype": "router",
-            "target": "router_tunnel_names"
           }
         ]
       }
@@ -3991,29 +3759,6 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "action_return_view_ghost_station": {
-      "meta": {
-        "title": "Ga tàu ma — góc nhìn tổng thể",
-        "buttonLabel": "Trở về",
-        "desc": "Từ góc nhìn tổng thể, sân ga vắng người nằm dưới bảng giờ dừng ở 03:17. Hàng ghế chờ, đường ray và lối vào đường hầm đều hướng về cùng một điểm; nơi này giống một ga tập kết bị xóa khỏi bản đồ hơn là một nhà ga đang hoạt động."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "goto",
-            "subtype": "router",
-            "target": "router_station_0317"
-          }
-        ]
-      }
-    },
-    
-    
-    
     "action_talk_linh": {
       "meta": {
         "title": "Linh",
