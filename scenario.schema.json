@@ -1353,10 +1353,6 @@
           "maximum": 30000,
           "description": "Requested toast lifetime in milliseconds; Engine applies its duration policy."
         },
-        "sound": {
-          "type": "boolean",
-          "description": "Whether this notification requests an audio cue. User preference may override it."
-        },
         "soundProfile": {
           "type": "string",
           "enum": [
@@ -2487,10 +2483,6 @@
                 ],
                 "default": "info"
               },
-              "sound": {
-                "type": "boolean",
-                "default": true
-              },
               "soundProfile": {
                 "type": "string",
                 "enum": [
@@ -2804,10 +2796,6 @@
           "minimum": 0,
           "maximum": 30000,
           "description": "Requested toast lifetime in milliseconds; Engine applies its duration policy."
-        },
-        "sound": {
-          "type": "boolean",
-          "description": "Whether this notification requests an audio cue. User preference may override it."
         },
         "soundProfile": {
           "type": "string",
@@ -3829,10 +3817,6 @@
                   "special"
                 ],
                 "default": "info"
-              },
-              "sound": {
-                "type": "boolean",
-                "default": true
               },
               "soundProfile": {
                 "type": "string",
