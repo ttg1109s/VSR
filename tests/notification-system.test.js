@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { NotificationSystem } from '../engine/modules/Notification.js';
 import { ActionSystem } from '../engine/modules/Action.js';
 import { GameEngine } from '../engine/GameEngine.js';
+import { TaskManager } from '../engine/runtime/TaskManager.js';
 import { normalizeScenario } from '../engine/scenario/Scenario.js';
 import { DEMO_SCRIPT } from '../demo_script.js';
 
@@ -278,4 +279,57 @@ test('scenario schema applies notification defaults only to notify effects', () 
   assert.equal(normalizedNotify.durationMs, 6500);
   assert.equal(Object.hasOwn(normalizedSet, 'sound'), false);
   assert.equal(Object.hasOwn(normalizedSet, 'soundProfile'), false);
+});
+
+class NotificationFakeClock {
+  constructor() { this.time = 100; this.nextId = 0; this.timers = new Map(); }
+  now = () => this.time;
+  setTimeout = (callback, delay) => {
+    const timer = { id: ++this.nextId, at: this.time + delay, callback, unrefCalled: false, unref() { this.unrefCalled = true; } };
+    this.timers.set(timer.id, timer);
+    return timer;
+  };
+  clearTimeout = timer => { if (timer) this.timers.delete(timer.id); };
+  async advance(ms) {
+    const target = this.time + ms;
+    while (true) {
+      const next = [...this.timers.values()].filter(timer => timer.at <= target).sort((a, b) => a.at - b.at)[0];
+      if (!next) break;
+      this.timers.delete(next.id);
+      this.time = next.at;
+      next.callback();
+      await Promise.resolve();
+      await Promise.resolve();
+    }
+    this.time = target;
+    await Promise.resolve();
+    await Promise.resolve();
+  }
+}
+
+test('GameEngine schedules notification expiry through TaskManager and preserves unref', async () => {
+  const clock = new NotificationFakeClock();
+  const taskManager = new TaskManager({}, 120, { clock });
+  const engine = new GameEngine({ engineId: 'notification-task-manager-test', taskManager, clock: clock.now });
+  const created = engine.api.notifications.add('Expiry', 'Managed by TaskManager', 'info', { duration: 25 }).notification;
+  const taskName = `notification_expiry_${created.id}`;
+  assert.ok(taskManager.plan[taskName]);
+  assert.equal(clock.timers.get(1).unrefCalled, true);
+  await clock.advance(25);
+  assert.equal(engine.api.notifications.getHistory().find(item => item.id === created.id).status, 'expired');
+  assert.equal(taskManager.plan[taskName], undefined);
+  engine.dispose();
+});
+
+test('GameEngine notification reset cancels expiry tasks', () => {
+  const clock = new NotificationFakeClock();
+  const taskManager = new TaskManager({}, 120, { clock });
+  const engine = new GameEngine({ engineId: 'notification-reset-test', taskManager, clock: clock.now });
+  const created = engine.api.notifications.add('Reset', 'Cancel expiry', 'info', { duration: 100 }).notification;
+  const taskName = `notification_expiry_${created.id}`;
+  assert.ok(taskManager.plan[taskName]);
+  engine.notifications.reset();
+  assert.equal(taskManager.plan[taskName], undefined);
+  assert.equal(clock.timers.size, 0);
+  engine.dispose();
 });
