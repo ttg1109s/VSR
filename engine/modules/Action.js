@@ -127,7 +127,7 @@ export const ActionSystem = {
                 if (faker.active) {
                     blockReason = `You are in ${fakerMode} form and do not have this character's permissions.`;
                 } else {
-                    blockReason = `You must be ${charAllow.map(id => state.getRuntimeSnapshot('characters.[id]', { id })?.set?.name || id).join(', ')} mới thực hiện được.`;
+                    blockReason = `You must be ${charAllow.map(id => state.getRuntimeSnapshot('characters.[id]', { id })?.set?.name || id).join(', ')} to perform this action.`;
                 }
             }
         } else {
