@@ -34,11 +34,8 @@ const ObjectRetrievers = {
         return state.getRuntime('routers.[routerKey]', { routerKey: key });
     },
     action: (engine, target) => {
-        const state = engine.api.engine.state;
-        const sceneId = state.sceneId;
-        const routerId = state.get('scene.activeRouterId', { id: sceneId });
-        const key = `${sceneId}_${routerId}_${target}`;
-        return state.getRuntime('actions.[actionKey]', { actionKey: key });
+        if (!Object.prototype.hasOwnProperty.call(engine.src?.actions || {}, target)) return null;
+        return engine.api.engine.state.getRuntime('actions.[id]', { id: target });
     },
     characters: (engine, target) => engine.api.engine.state.getRuntime('characters.[id]', { id: engine.redirectTarget(target) }),
     chat: (engine, target) => engine.api.engine.state.getRuntime('chats.[id]', { id: target }),
