@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Badge, BottomNavigation, Breadcrumb, MediaFrame, useToast } from '../../design-system/index.js';
+import { Badge, BottomNavigation, Breadcrumb, Button, MediaFrame, useToast } from '../../design-system/index.js';
 import ActionCollection from '../../features/actions/ActionCollection.jsx';
 import ActionNavigator from '../../features/actions/ActionNavigator.jsx';
 import ContactPanel from './ContactPanel.jsx';
@@ -11,6 +11,7 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
   const [activeNavigation, setActiveNavigation] = useState('hand');
   const [contactOpen, setContactOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
+  const [backParentPending, setBackParentPending] = useState(false);
   const actionCollectionRef = useRef(null);
   const [actionNavigation, setActionNavigation] = useState({ activeIndex: 0, actionCount: 0, activeTitle: '' });
   const handleActionNavigationStateChange = useCallback(next => setActionNavigation(next), []);
@@ -55,6 +56,22 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
     onClick: () => onNavigate?.(item.id)
   })), [scenePath, onNavigate]);
 
+  const handleBackParent = useCallback(async () => {
+    if (backParentPending || !scene?.hasParentScene || typeof client?.backParent !== 'function') return;
+    setBackParentPending(true);
+    try {
+      const acknowledgement = await client.backParent();
+      if (acknowledgement.result?.success === false) {
+        if (acknowledgement.result.reason === 'no_parent') return;
+        throw new Error('Unable to return to the parent scene.');
+      }
+    } catch (commandError) {
+      toast(commandError.message || 'Unable to return to the parent scene.', { tone: 'warning' });
+    } finally {
+      setBackParentPending(false);
+    }
+  }, [backParentPending, scene?.hasParentScene, client, toast]);
+
   const sceneTitle = scene?.meta?.title || scenePath.find(item => item.id === activeSceneId)?.title || '';
   const routerDescription = typeof router?.meta?.desc === 'string' ? router.meta.desc : '';
   const routerCover = router?.meta?.cover;
@@ -84,6 +101,7 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
             alt={sceneTitle ? `${sceneTitle} scene` : 'Scene media'}
           />
           {scene?.meta?.desc && <div className="vsr-text-body">{scene.meta.desc}</div>}
+          {scene?.hasParentScene && <div><Button variant="secondary" size="md" leadingIcon="arrow_back" onClick={handleBackParent} loading={backParentPending}>Back to parent</Button></div>}
         </section>
         {(routerDescription || status) && <div className="vsr-playing-divider" aria-hidden="true" />}
         {(routerDescription || status) && (
