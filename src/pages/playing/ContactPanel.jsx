@@ -411,6 +411,42 @@ export default function ContactPanel({ open, onClose, player, contacts = [], sys
     return allContacts.find(contact => contact.id === id)?.name || id || 'Không xác định';
   }
 
+  function renderContactHeader() {
+    return (
+      <ContactHeader className={activeArea === 'conversation' ? 'vsr-contact-header--drawer' : undefined}>
+        <Button
+          className={profileOpen || activeArea === 'conversation' ? 'vsr-contact-back is-visible' : 'vsr-contact-back'}
+          size="sm"
+          variant="tertiary"
+          onClick={() => {
+            if (profileOpen) {
+              setProfileOpen(false);
+            } else if (activeArea === 'conversation') {
+              setActiveArea('threads');
+              setChatError('');
+            } else {
+              setMobileView('list');
+            }
+          }}
+          aria-label={profileOpen ? 'Đóng thông tin' : activeArea === 'conversation' ? 'Quay lại danh sách thread' : 'Quay lại danh sách liên hệ'}
+        >
+          ←
+        </Button>
+        <ContactAvatar name={selected.name || selected.id} avatar={selected.avatar} />
+        <button
+          type="button"
+          className="vsr-contact-header__identity"
+          onClick={() => setProfileOpen(true)}
+        >
+          <strong>{selected.name || selected.id}</strong>
+        </button>
+        <Button size="sm" variant="tertiary" className="vsr-contact-info-trigger" onClick={() => setProfileOpen(true)} aria-label="Thông tin">
+          <span className="vsr-contact-info-trigger__icon" aria-hidden="true">info</span>
+        </Button>
+      </ContactHeader>
+    );
+  }
+
   function renderContactItem(contact) {
     const unreadCount = contact.threads.filter(thread => thread.isUnread).length;
     const latestThread = contact.threads[0];
@@ -443,6 +479,9 @@ export default function ContactPanel({ open, onClose, player, contacts = [], sys
       open={open}
       onClose={close}
       title="Contact"
+      ariaLabel={selected ? 'Hội thoại với ' + (selected.name || selected.id) : 'Contact'}
+      headerContent={selected && activeArea === 'conversation' ? renderContactHeader() : null}
+      headerClassName={selected && activeArea === 'conversation' ? 'vsr-overlay-header--contact-thread' : undefined}
       headerActions={player && (
         <Button
           size="sm"
@@ -494,37 +533,7 @@ export default function ContactPanel({ open, onClose, player, contacts = [], sys
             </div>
           ) : (
             <>
-              <ContactHeader>
-                <Button
-                  className={profileOpen || activeArea === 'conversation' ? 'vsr-contact-back is-visible' : 'vsr-contact-back'}
-                  size="sm"
-                  variant="tertiary"
-                  onClick={() => {
-                    if (profileOpen) {
-                      setProfileOpen(false);
-                    } else if (activeArea === 'conversation') {
-                      setActiveArea('threads');
-                      setChatError('');
-                    } else {
-                      setMobileView('list');
-                    }
-                  }}
-                  aria-label={profileOpen ? 'Đóng thông tin' : activeArea === 'conversation' ? 'Quay lại danh sách thread' : 'Quay lại danh sách liên hệ'}
-                >
-                  ←
-                </Button>
-                <ContactAvatar name={selected.name || selected.id} avatar={selected.avatar} />
-                <button
-                  type="button"
-                  className="vsr-contact-header__identity"
-                  onClick={() => setProfileOpen(true)}
-                >
-                  <strong>{selected.name || selected.id}</strong>
-                </button>
-                <Button size="sm" variant="tertiary" className="vsr-contact-info-trigger" onClick={() => setProfileOpen(true)} aria-label="Thông tin">
-                  <span className="vsr-contact-info-trigger__icon" aria-hidden="true">info</span>
-                </Button>
-              </ContactHeader>
+              {activeArea !== 'conversation' && renderContactHeader()}
 
               {profileOpen && (
                 <div className="vsr-contact-info-panel" role="region" aria-label="Thông tin liên hệ">
