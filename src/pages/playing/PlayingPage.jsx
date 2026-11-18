@@ -5,7 +5,7 @@ import ActionNavigator from '../../features/actions/ActionNavigator.jsx';
 import ContactPanel from './ContactPanel.jsx';
 import NotificationCenter from '../../features/notifications/NotificationCenter.jsx';
 import InventoryWorkspace from '../../features/inventory/InventoryWorkspace.jsx';
-import './playing-page.css';
+import PlayingPageStyles from '../../features/playing/PlayingPageStyles.jsx';
 
 export default function PlayingPage({ snapshot, chatViewRequest = null, client, error = '', onNavigate, soundEnabled = true, onSoundChange, modalNotification = null, onModalClose }) {
   const toast = useToast();
@@ -85,6 +85,7 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
 
   return (
     <main className="vsr-page-shell vsr-page-shell--start vsr-page-shell--flush-top">
+      <PlayingPageStyles/>
       <Breadcrumb
         items={breadcrumbItems}
         activeKey={activeSceneId}
