@@ -1090,6 +1090,7 @@ export const DEMO_SCRIPT = {
             "action_read_hymn",
             "action_talk_keeper",
             "action_enter_tower",
+            "action_travel_inn",
             "action_return_square",
             "action_travel_school",
             "action_find_hymn_note"
@@ -1188,6 +1189,7 @@ export const DEMO_SCRIPT = {
             "action_check_desk",
             "action_talk_linh",
             "action_decode_roster",
+            "action_travel_chapel",
             "action_return_square",
             "action_travel_forest",
             "action_recover_class_register"
@@ -1239,6 +1241,7 @@ export const DEMO_SCRIPT = {
             "action_follow_marks",
             "action_maze_path",
             "action_enter_clearing",
+            "action_travel_school",
             "action_return_square",
             "action_collect_forest_compass"
           ]
@@ -1942,6 +1945,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Cửa hầm rượu",
         "buttonLabel": "Mở khóa",
+        "buttonIcon": "lock_open",
         "desc": "Ổ khóa phụ dưới quầy không dẫn ra cửa chính mà mở lối xuống hầm rượu, nơi nhà trọ cất những thứ không muốn khách nhìn thấy. Trên thân khóa có vết khắc của căn phòng thứ bảy; cơ cấu chỉ nhận đúng mật từ trong thánh ca và cần đối chiếu với sổ khách cùng chìa khóa dự phòng."
       },
       "set": {
@@ -2968,6 +2972,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Giếng đá",
         "buttonLabel": "Đi đến",
+        "buttonIcon": "water_drop",
         "desc": "Giếng đá nằm sát quảng trường, phủ rêu và có những vết khắc mới trên thành. Từ mặt nước vọng lên tiếng gõ đều đặn, dù không thấy ai ở dưới. Con đường ngắn từ bảng thông báo dẫn thẳng đến nơi dấu vết của người thứ mười hai bị che giấu."
       },
       "set": {
@@ -2988,6 +2993,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Quảng trường làng",
         "buttonLabel": "Quay lại",
+        "buttonIcon": "arrow_back",
         "desc": "Quảng trường là trung tâm của ngôi làng và là nơi các con đường tỏa về nhà trọ, nhà nguyện, trường học cùng khu rừng phía Bắc. Bảng thông báo và hộp loa nằm gần cổng, giữ lại những dấu vết đầu tiên về danh sách dân làng đã bị sửa."
       },
       "set": {
@@ -3008,6 +3014,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Sảnh nhà trọ",
         "buttonLabel": "Quay lại",
+        "buttonIcon": "arrow_back",
         "desc": "Sảnh nhà trọ nằm phía trên căn hầm rượu và quầy lễ tân vẫn là nơi lưu cuốn sổ khách. Những lời khai của Bà Hạnh cùng căn phòng thứ bảy có thể giúp nối các vật chứng dưới hầm với đêm mất điện."
       },
       "set": {
@@ -3028,6 +3035,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Tháp chuông",
         "buttonLabel": "Lên tầng trên",
+        "buttonIcon": "stairs",
         "desc": "Cầu thang hẹp dẫn từ gian cầu nguyện lên tháp chuông. Trên đó treo quả chuông đã câm lặng suốt mười bảy năm, bên cạnh là mặt đồng hồ dừng ở thời điểm liên quan đến vụ mất tích. Cơ cấu bên trong vẫn còn dấu vết của lần tháo dỡ có chủ ý."
       },
       "set": {
@@ -3048,6 +3056,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Gian nhà nguyện",
         "buttonLabel": "Quay lại",
+        "buttonIcon": "arrow_back",
         "desc": "Gian nhà nguyện lưu bản thánh ca và những lời giải thích về ba hồi chuông. Trở xuống đây giúp đối chiếu ghi chú tìm được trong gáy sách với cơ cấu chuông trên tháp."
       },
       "set": {
@@ -3068,6 +3077,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Khoảng đất trống",
         "buttonLabel": "Đi đến",
+        "buttonIcon": "park",
         "desc": "Khoảng đất trống nằm sâu trong rừng, nơi các vệt sơn hội tụ thành một vòng cọc gỗ. Mười hai cọc được dựng thành hình cung, cạnh đó là dấu đất mới xới cho thấy có vật chứng bị chôn xuống."
       },
       "set": {
@@ -3088,6 +3098,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Lối mòn trong rừng",
         "buttonLabel": "Quay lại",
+        "buttonIcon": "arrow_back",
         "desc": "Lối mòn dưới tán thông là tuyến quay lại khu rừng phía Bắc. Các dấu sơn trên thân cây giúp nhận ra đường đi dù địa hình thường thay đổi, đồng thời hé lộ tuyến vận chuyển từng dẫn xuống bờ đê."
       },
       "set": {
@@ -3108,6 +3119,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Nhà trọ Bà Hạnh",
         "buttonLabel": "Di chuyển đến",
+        "buttonIcon": "hotel",
         "desc": "Nhà trọ Bà Hạnh nằm trên con đường lát đá rời quảng trường. Đây là nơi lưu cuốn sổ khách, lời khai về căn phòng thứ bảy và lối xuống hầm rượu bị giấu sau quầy lễ tân."
       },
       "set": {
@@ -3128,6 +3140,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Nhà nguyện",
         "buttonLabel": "Di chuyển đến",
+        "buttonIcon": "church",
         "desc": "Nhà nguyện nằm cuối con đường nơi tiếng chuông đã im bặt từ mười bảy năm trước. Bản thánh ca trong gian cầu nguyện giữ mật từ và quy tắc ba hồi chuông cần thiết để hiểu chuyện gì đã xảy ra."
       },
       "set": {
@@ -3148,6 +3161,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Trường học bỏ hoang",
         "buttonLabel": "Di chuyển đến",
+        "buttonIcon": "school",
         "desc": "Trường tiểu học bỏ hoang nằm bên con đường có những dấu chân nhỏ dẫn vào lớp số 3. Hồ sơ lớp học và bức ảnh bị xé là những bằng chứng quan trọng về người thứ mười hai."
       },
       "set": {
@@ -3168,6 +3182,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Rừng thông phía Bắc",
         "buttonLabel": "Di chuyển đến",
+        "buttonIcon": "forest",
         "desc": "Rừng thông phía Bắc bắt đầu ở rìa làng, nơi những vệt sơn lặp lại trên thân cây. Con đường ở đây không ổn định, nhưng các dấu mốc dẫn đến khoảng đất nghi lễ và tuyến xuống chân đê."
       },
       "set": {
@@ -3188,6 +3203,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Cối xay nước",
         "buttonLabel": "Di chuyển đến",
+        "buttonIcon": "water",
         "desc": "Cối xay nước nằm cạnh dòng suối đã cạn ở phía Bắc. Bánh xe dừng hoạt động che giấu một cửa sập dưới sàn, nối công trình cũ với đường hầm chạy dưới chân đê."
       },
       "set": {
@@ -3208,6 +3224,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Phòng máy cối xay",
         "buttonLabel": "Quay lại",
+        "buttonIcon": "arrow_back",
         "desc": "Phòng máy dưới chân đê chứa hộp bánh răng và trục truyền động của cối xay. Chốt kim loại bị cong là nguyên nhân khiến bánh xe ngừng quay; khi sửa đúng cơ cấu, cửa sập dẫn xuống đường hầm sẽ hoạt động."
       },
       "set": {
@@ -3228,6 +3245,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Ga tàu 03:17",
         "buttonLabel": "Đi tới",
+        "buttonIcon": "train",
         "desc": "Ga tàu 03:17 không xuất hiện trên bản đồ làng và chỉ hiện ra ở cuối tuyến đường hầm. Những manh mối về cuộc sơ tán, danh sách vận chuyển và kho hồ sơ phải được ghép lại trước khi có thể tìm thấy sân ga."
       },
       "set": {
@@ -3260,6 +3278,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Cửa sập cối xay",
         "buttonLabel": "Mở",
+        "buttonIcon": "south",
         "desc": "Cửa sập nằm dưới sàn cối xay, nối phòng máy với đường hầm dưới chân đê. Một hệ đối trọng giữ cánh cửa khóa chặt khi bánh xe đứng yên; khi trục truyền động hoạt động, sức kéo mới đủ nâng cửa và để lộ bậc thang đi xuống."
       },
       "set": {
