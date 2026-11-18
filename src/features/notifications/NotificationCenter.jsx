@@ -55,7 +55,6 @@ export default function NotificationCenter({
   const [actionError, setActionError] = useState('');
   const [markAllBusy, setMarkAllBusy] = useState(false);
   const swipeStart = useRef(null);
-  const swipeHandled = useRef(false);
   const history = useMemo(() => [...notifications].sort((a, b) =>
     (b.createdAt || 0) - (a.createdAt || 0)
   ).slice(0, 200), [notifications]);
@@ -129,8 +128,9 @@ export default function NotificationCenter({
         contentClassName="vsr-notification-drawer__content"
         ariaLabel="Notifications"
         headerClassName="vsr-notification-center__header"
+        headerContentClassName="vsr-notification-center__header-content"
         headerContent={
-          <div className="vsr-notification-center__header-content">
+          <>
             <div className="vsr-notification-center__header-copy">
               <h2>Notifications</h2>
             </div>
@@ -144,7 +144,7 @@ export default function NotificationCenter({
                 <div className="vsr-notification-center__settings">{settings}</div>
               </Popover>
             </div>
-          </div>
+          </>
         }
       >
         <div className="vsr-notification-center">
@@ -197,18 +197,13 @@ export default function NotificationCenter({
                     const dx = event.clientX - start.x;
                     const dy = event.clientY - start.y;
                     if (Math.abs(dx) >= 48 && Math.abs(dx) > Math.abs(dy) * 1.15) {
-                      swipeHandled.current = true;
                       dismiss(item.id);
                     }
                   };
                   const handlePointerCancel = event => {
                     if (swipeStart.current?.pointerId === event.pointerId) swipeStart.current = null;
                   };
-                  const handleItemClick = event => {
-                    if (swipeHandled.current) { swipeHandled.current = false; return; }
-                    if (event.target.closest('button, a, input, [role="menu"], .vsr-popover')) return;
-                    if (!item.read) markRead(item.id);
-                  };
+
                   return (
                     <article
                       className={'vsr-notification-item' + (item.read ? '' : ' is-unread')}
@@ -227,7 +222,7 @@ export default function NotificationCenter({
                         {validTimestamp && <time className="vsr-notification-item__timestamp" dateTime={timestamp.toISOString()}>{formatRelativeTime(timestamp)}</time>}
                       </div>
                       <div className="vsr-notification-item__actions">
-                        {!item.read && <Button size="sm" variant="tertiary" disabled={busyIds.includes(item.id)} onClick={() => markRead(item.id)} aria-label={'Mark ' + (item.title || 'notification') + ' as read'}>Mark read</Button>}
+                        {!item.read && <Button variant="tertiary" disabled={busyIds.includes(item.id)} onClick={() => markRead(item.id)} aria-label={'Mark ' + (item.title || 'notification') + ' as read'}>Mark read</Button>}
                         {canDismiss && <IconButton size="sm" icon="close" label={'Dismiss ' + (item.title || 'notification')} disabled={busyIds.includes(item.id)} onClick={() => dismiss(item.id)} />}
                       </div>
                     </article>
