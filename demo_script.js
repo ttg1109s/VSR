@@ -986,15 +986,12 @@ export const DEMO_SCRIPT = {
             "countVisited": 0
           },
           "actions": [
-            "action_question_hanh",
-            "action_question_hanh_guestbook",
-            "action_question_hanh_room",
+            "action_talk_hanh",
             "action_open_guestbook",
             "action_return_square",
             "action_travel_chapel",
             "action_unlock_cellar",
-            "action_find_spare_key",
-            "action_talk_hanh_notice"
+            "action_find_spare_key"
           ]
         },
         "router_inn_hidden_room": {
@@ -1009,15 +1006,12 @@ export const DEMO_SCRIPT = {
             "countVisited": 0
           },
           "actions": [
-            "action_question_hanh",
-            "action_question_hanh_guestbook",
-            "action_question_hanh_room",
+            "action_talk_hanh",
             "action_open_guestbook",
             "action_return_square",
             "action_travel_chapel",
             "action_unlock_cellar",
-            "action_return_view_inn",
-            "action_talk_hanh_notice"
+            "action_return_view_inn"
           ]
         }
       }
@@ -1621,25 +1615,6 @@ export const DEMO_SCRIPT = {
             }
           },
           {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_talk_hanh_notice",
-            "property": "display",
-            "value": "show",
-            "req": {
-              "logic": "AND",
-              "check": [
-                {
-                  "type": "action_count",
-                  "target": "action_read_notice",
-                  "phase": "normal",
-                  "op": "==",
-                  "value": 1
-                }
-              ]
-            }
-          },
-          {
             "type": "goto",
             "subtype": "chat",
             "target": "chat_notice_history",
@@ -1855,24 +1830,68 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "action_question_hanh": {
+    "action_talk_hanh": {
       "meta": {
         "title": "Bà Hạnh",
-        "buttonLabel": "Thẩm vấn",
+        "buttonLabel": "Trò chuyện",
         "desc": "Bà Hạnh quản lý nhà trọ và nắm giữ cuốn sổ ghi khách đến, khách đi. Bà khẳng định nơi này chỉ có sáu phòng, nhưng hành lang phía sau quầy lại có bảy cánh cửa. Sự chênh lệch ấy không giống một nhầm lẫn trong cách đếm; nó giống một căn phòng đã bị cố tình xóa khỏi lời kể."
       },
       "set": {
         "display": "show"
       },
       "effect": {
-        "normal": [],
-        "pass": [
+        "normal": [
           {
             "type": "goto",
             "subtype": "chat",
-            "target": "chat_hanh"
+            "target": "chat_hanh_room",
+            "req": {
+              "logic": "AND",
+              "check": [
+                { "type": "state", "property": "evidence_hidden_room", "op": "==", "value": true }
+              ]
+            }
+          },
+          {
+            "type": "goto",
+            "subtype": "chat",
+            "target": "chat_hanh_guestbook",
+            "req": {
+              "logic": "AND",
+              "check": [
+                { "type": "state", "property": "evidence_hidden_room", "op": "!=", "value": true },
+                { "type": "state", "property": "found_guestbook", "op": "==", "value": true }
+              ]
+            }
+          },
+          {
+            "type": "goto",
+            "subtype": "chat",
+            "target": "chat_hanh_notice",
+            "req": {
+              "logic": "AND",
+              "check": [
+                { "type": "state", "property": "evidence_hidden_room", "op": "!=", "value": true },
+                { "type": "state", "property": "found_guestbook", "op": "!=", "value": true },
+                { "type": "state", "property": "clue_notice", "op": "==", "value": true }
+              ]
+            }
+          },
+          {
+            "type": "goto",
+            "subtype": "chat",
+            "target": "chat_hanh",
+            "req": {
+              "logic": "AND",
+              "check": [
+                { "type": "state", "property": "evidence_hidden_room", "op": "!=", "value": true },
+                { "type": "state", "property": "found_guestbook", "op": "!=", "value": true },
+                { "type": "state", "property": "clue_notice", "op": "!=", "value": true }
+              ]
+            }
           }
-        ]
+        ],
+        "pass": []
       }
     },
     "action_open_guestbook": {
@@ -4148,100 +4167,9 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "action_talk_hanh_notice": {
-        "meta": {
-          "title": "Bà Hạnh — Bản thông báo cũ",
-          "buttonLabel": "Hỏi về thông báo",
-          "desc": "Sau khi đọc bản lưu phát thanh ở quảng trường, bạn muốn hỏi Bà Hạnh về một bản thông báo khác mà bà từng giữ lại."
-        },
-        "set": {
-          "display": "hide",
-          "requirement": true
-        },
-        "requirement": {
-          "logic": "AND",
-          "check": [
-            {
-              "type": "state",
-              "property": "clue_notice",
-              "op": "==",
-              "value": true
-            }
-          ]
-        },
-        "effect": {
-          "normal": [],
-          "pass": [
-            {
-              "type": "goto",
-              "subtype": "chat",
-              "target": "chat_hanh_notice"
-            }
-          ]
-        }
-      },
-    "action_question_hanh_guestbook": {
-      "meta": {
-        "title": "Bà Hạnh — Đối chiếu sổ khách",
-        "buttonLabel": "Hỏi về sổ ghi chép",
-        "desc": "Sau khi xem sổ khách, bạn quay lại hỏi Bà Hạnh về những dòng tên không thể bị xóa và căn phòng thứ bảy."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "goto",
-            "subtype": "chat",
-            "target": "chat_hanh_guestbook"
-          }
-        ]
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "state",
-            "property": "found_guestbook",
-            "op": "==",
-            "value": true
-          }
-        ]
-      }
-    },
-    "action_question_hanh_room": {
-      "meta": {
-        "title": "Bà Hạnh — Hỏi về phòng thứ bảy",
-        "buttonLabel": "Thẩm vấn",
-        "desc": "Sau khi tìm được vật chứng trong căn phòng bị giấu, bạn yêu cầu Bà Hạnh giải thích bức ảnh hành lang và những đồ vật được đặt sẵn."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "goto",
-            "subtype": "chat",
-            "target": "chat_hanh_room"
-          }
-        ]
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "state",
-            "property": "evidence_hidden_room",
-            "op": "==",
-            "value": true
-          }
-        ]
-      }
-    },
+    
+    
+    
     "action_talk_linh": {
       "meta": {
         "title": "Linh",
@@ -5829,13 +5757,7 @@ export const DEMO_SCRIPT = {
                   "property": "display",
                   "value": "show"
                 },
-                {
-                  "type": "set",
-                  "subtype": "action",
-                  "target": "action_talk_hanh_notice",
-                  "property": "display",
-                  "value": "hide"
-                }
+
               ]
             },
             {
@@ -5850,13 +5772,7 @@ export const DEMO_SCRIPT = {
                   "property": "display",
                   "value": "show"
                 },
-                {
-                  "type": "set",
-                  "subtype": "action",
-                  "target": "action_talk_hanh_notice",
-                  "property": "display",
-                  "value": "hide"
-                }
+
               ]
             }
           ]
