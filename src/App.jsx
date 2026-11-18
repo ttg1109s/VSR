@@ -8,6 +8,7 @@ import LoadingPage from './pages/loading/LoadingPage.jsx';
 import PlayingPage from './pages/playing/PlayingPage.jsx';
 import { ToastProvider, useToast } from './design-system/index.js';
 import { notificationSoundService } from './features/notifications/NotificationSoundService.js';
+import RuntimeDebugConsole from './features/debug/RuntimeDebugConsole.jsx';
 
 function AppContent() {
   const toast = useToast();
@@ -265,5 +266,5 @@ function AppContent() {
 
 
 export default function App() {
-  return <ToastProvider duration={5000} position="top-right"><AppContent /></ToastProvider>;
+  return <ToastProvider duration={5000} position="top-right"><AppContent /><RuntimeDebugConsole /></ToastProvider>;
 }
