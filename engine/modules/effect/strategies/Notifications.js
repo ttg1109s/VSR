@@ -7,7 +7,6 @@ const notificationOptions = eff => ({
     dedupeKey: eff.dedupeKey,
     priority: eff.priority,
     duration: eff.durationMs,
-    sound: eff.sound !== false,
     soundProfile: eff.soundProfile || ({ danger: 'critical', info: 'soft' }[eff.level] || eff.level || 'default')
 });
 
