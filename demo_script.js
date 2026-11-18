@@ -1562,7 +1562,7 @@ export const DEMO_SCRIPT = {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Bạn nhặt được đèn bão. Ánh sáng của nó có thể làm lộ dấu vết trong sương.",
+            "text": "Ánh sáng của đèn bão có thể làm lộ những dấu vết ẩn trong sương.",
             "req": {
               "logic": "AND",
               "check": [
@@ -1927,7 +1927,7 @@ export const DEMO_SCRIPT = {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Bạn nhận được sổ khách. Trang cuối có dấu mực còn ướt."
+            "text": "Trang cuối cuốn sổ khách vẫn còn vết mực ướt."
           },
           {
             "type": "set",
@@ -2037,7 +2037,7 @@ export const DEMO_SCRIPT = {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Bạn tìm thấy cuộn băng ghi âm đêm mất điện."
+            "text": "Trong hầm vang lên tiếng máy chiếu cũ; cuộn băng ghi âm đêm mất điện hé lộ điều đã xảy ra trước khi làng chìm vào im lặng."
           },
           {
             "type": "set",
@@ -2143,7 +2143,7 @@ export const DEMO_SCRIPT = {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Bạn tìm thấy quả lắc chuông bị tháo rời. Mã 0417 đã được xác nhận."
+            "text": "Mã 0417 dưới mặt đồng hồ khớp với thời điểm dân làng biến mất."
           },
           {
             "type": "set",
@@ -2271,7 +2271,7 @@ export const DEMO_SCRIPT = {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Bạn tìm thấy ảnh lớp bị xé và ghi chú về học sinh thứ mười hai."
+            "text": "Bức ảnh lớp bị xé để lộ vị trí của học sinh thứ mười hai."
           },
           {
             "type": "set",
@@ -2423,7 +2423,7 @@ export const DEMO_SCRIPT = {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Bạn vượt qua mê cung và nhặt được chìa khóa kho hồ sơ."
+            "text": "Bạn vượt qua mê cung; lối ra dẫn về phía kho hồ sơ."
           },
           {
             "type": "set",
@@ -3321,12 +3321,6 @@ export const DEMO_SCRIPT = {
             "value": true
           },
           {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Bạn thu được: Cuộn tinh thể thu sóng."
-          },
-          {
             "type": "set",
             "subtype": "action",
             "target": "action_decode_broadcast",
@@ -3351,14 +3345,7 @@ export const DEMO_SCRIPT = {
         "display": "show"
       },
       "effect": {
-        "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Bạn lùi lại để quan sát toàn bộ địa điểm."
-          }
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "goto",
@@ -3391,12 +3378,6 @@ export const DEMO_SCRIPT = {
             "subtype": "state",
             "target": "evidence_well_badge",
             "value": true
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Bạn thu được: Phù hiệu đội sơ tán."
           },
           {
             "type": "set",
@@ -3440,14 +3421,7 @@ export const DEMO_SCRIPT = {
         "display": "show"
       },
       "effect": {
-        "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Bạn lùi lại để quan sát toàn bộ địa điểm."
-          }
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "goto",
@@ -3481,12 +3455,6 @@ export const DEMO_SCRIPT = {
             "value": true
           },
           {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Bạn thu được: Chìa khóa phòng thứ bảy."
-          },
-          {
             "type": "set",
             "subtype": "action",
             "target": "action_find_spare_key",
@@ -3511,14 +3479,7 @@ export const DEMO_SCRIPT = {
         "display": "show"
       },
       "effect": {
-        "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Bạn lùi lại để quan sát toàn bộ địa điểm."
-          }
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "goto",
@@ -3552,12 +3513,6 @@ export const DEMO_SCRIPT = {
             "value": true
           },
           {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Bạn thu được: Cuộn phim sơ tán."
-          },
-          {
             "type": "set",
             "subtype": "action",
             "target": "action_find_evacuation_film",
@@ -3582,14 +3537,7 @@ export const DEMO_SCRIPT = {
         "display": "show"
       },
       "effect": {
-        "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Bạn lùi lại để quan sát toàn bộ địa điểm."
-          }
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "goto",
@@ -3623,12 +3571,6 @@ export const DEMO_SCRIPT = {
             "value": true
           },
           {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Bạn thu được: Trang ghi chú trong thánh ca."
-          },
-          {
             "type": "set",
             "subtype": "action",
             "target": "action_find_hymn_note",
@@ -3653,14 +3595,7 @@ export const DEMO_SCRIPT = {
         "display": "show"
       },
       "effect": {
-        "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Bạn lùi lại để quan sát toàn bộ địa điểm."
-          }
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "goto",
@@ -3694,12 +3629,6 @@ export const DEMO_SCRIPT = {
             "value": true
           },
           {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Bạn thu được: Dây đồng chuông."
-          },
-          {
             "type": "set",
             "subtype": "action",
             "target": "action_recover_bell_wire",
@@ -3724,14 +3653,7 @@ export const DEMO_SCRIPT = {
         "display": "show"
       },
       "effect": {
-        "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Bạn lùi lại để quan sát toàn bộ địa điểm."
-          }
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "goto",
@@ -3765,12 +3687,6 @@ export const DEMO_SCRIPT = {
             "value": true
           },
           {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Bạn thu được: Bản sao sổ điểm danh."
-          },
-          {
             "type": "set",
             "subtype": "action",
             "target": "action_recover_class_register",
@@ -3795,14 +3711,7 @@ export const DEMO_SCRIPT = {
         "display": "show"
       },
       "effect": {
-        "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Bạn lùi lại để quan sát toàn bộ địa điểm."
-          }
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "goto",
@@ -3836,12 +3745,6 @@ export const DEMO_SCRIPT = {
             "value": true
           },
           {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Bạn thu được: La bàn người dẫn đường."
-          },
-          {
             "type": "set",
             "subtype": "action",
             "target": "action_collect_forest_compass",
@@ -3866,14 +3769,7 @@ export const DEMO_SCRIPT = {
         "display": "show"
       },
       "effect": {
-        "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Bạn lùi lại để quan sát toàn bộ địa điểm."
-          }
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "goto",
@@ -3907,12 +3803,6 @@ export const DEMO_SCRIPT = {
             "value": true
           },
           {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Bạn thu được: Con dấu đội sơ tán."
-          },
-          {
             "type": "set",
             "subtype": "action",
             "target": "action_find_wooden_seal",
@@ -3937,14 +3827,7 @@ export const DEMO_SCRIPT = {
         "display": "show"
       },
       "effect": {
-        "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Bạn lùi lại để quan sát toàn bộ địa điểm."
-          }
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "goto",
@@ -3978,12 +3861,6 @@ export const DEMO_SCRIPT = {
             "value": true
           },
           {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Bạn thu được: Chốt truyền động."
-          },
-          {
             "type": "set",
             "subtype": "action",
             "target": "action_find_gear_pin",
@@ -4008,14 +3885,7 @@ export const DEMO_SCRIPT = {
         "display": "show"
       },
       "effect": {
-        "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Bạn lùi lại để quan sát toàn bộ địa điểm."
-          }
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "goto",
@@ -4049,12 +3919,6 @@ export const DEMO_SCRIPT = {
             "value": true
           },
           {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Bạn thu được: Danh sách vận chuyển."
-          },
-          {
             "type": "set",
             "subtype": "action",
             "target": "action_recover_tunnel_manifest",
@@ -4079,14 +3943,7 @@ export const DEMO_SCRIPT = {
         "display": "show"
       },
       "effect": {
-        "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Bạn lùi lại để quan sát toàn bộ địa điểm."
-          }
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "goto",
@@ -4120,12 +3977,6 @@ export const DEMO_SCRIPT = {
             "value": true
           },
           {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Bạn thu được: Vé tàu chưa xé."
-          },
-          {
             "type": "set",
             "subtype": "action",
             "target": "action_find_station_ticket",
@@ -4150,14 +4001,7 @@ export const DEMO_SCRIPT = {
         "display": "show"
       },
       "effect": {
-        "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Bạn lùi lại để quan sát toàn bộ địa điểm."
-          }
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "goto",
