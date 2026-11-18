@@ -51,10 +51,10 @@ export const ItemStrategies = {
     // Helper: Hide Action if requested
     _tryHideAction: (engine, eff, context, succeeded) => {
         if (succeeded === true && eff.hide === true && context && context.actionId && context.sceneId && context.routerId) {
-            const actStateKey = `${context.sceneId}_${context.routerId}_${context.actionId}`;
+            const actionId = context.actionId;
             const state = engine.api.engine.state;
-            if (state.getRuntimeSnapshot('actions.[id]', { id: actStateKey })) {
-                state.update('actions.[id].display', () => 'hide', { id: actStateKey });
+            if (state.getRuntimeSnapshot('actions.[id]', { id: actionId })) {
+                state.update('actions.[id].display', () => 'hide', { id: actionId });
             }
         }
     },
