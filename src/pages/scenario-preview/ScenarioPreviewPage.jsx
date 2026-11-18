@@ -148,7 +148,7 @@ export default function ScenarioPreviewPage({ preview, onBack, onPlay }) {
             onClick={onBack}
             leadingIcon={<span className="vsr-icon" aria-hidden="true">arrow_back</span>}
           >
-            Back
+            Quay lại
           </Button>
           <Button
             variant="primary"
@@ -156,7 +156,7 @@ export default function ScenarioPreviewPage({ preview, onBack, onPlay }) {
             onClick={onPlay}
             leadingIcon={<span className="vsr-icon" aria-hidden="true">play_arrow</span>}
           >
-            Play
+            Bắt đầu
           </Button>
         </div>
 
