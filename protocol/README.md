@@ -73,3 +73,10 @@ Scenario JSON is separate from save data. Save data uses a versioned `vsr-save` 
 ## Trust boundary
 
 Do not send scenario source or password answer values to an untrusted client. The local HTTP/SSE server binds to localhost for development and is not an authoritative production deployment. For production, run the Engine and password verification on a trusted server and expose only the client-safe projection.
+
+## Inventory projection
+
+The snapshot exposes `presentation.inventory` with the active owner ID, a read-only roster of scenario characters, item display metadata, category, usage, stats, evaluated requirement status, broken state, and Engine-computed equip/use eligibility. The raw `state.itemInfo` map is intentionally omitted because item templates may contain executable effect chains and requirement expressions. The projection never includes those executable definitions.
+
+Inventory ownership follows `ItemSystem.getOwnerId()` (the runtime `entryCharacter`), not the Faker display identity. Other characters are listed as transfer destinations; their item contents are not exposed in this projection. `inventory.transfer` validates both characters, source ownership, duplicate ownership, and the target's configured capacity inside the Engine.
+
