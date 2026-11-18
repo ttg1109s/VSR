@@ -285,3 +285,57 @@
 .vsr-action-card__cooldown-progress .vsr-progress--determinate{height:3px;border-radius:0;background:var(--vsr-color-border-subtle)}
 .vsr-action-card__cooldown-progress .vsr-progress--determinate::-webkit-progress-value{background:var(--vsr-color-warning)}
 .vsr-action-card__cooldown-progress .vsr-progress--determinate::-moz-progress-bar{background:var(--vsr-color-warning)}
+
+
+/* Action execution feedback: short, state-specific motion using the shared motion tokens. */
+.vsr-action-card--feedback-success {
+  animation: vsr-action-card-success var(--vsr-motion-medium) var(--vsr-motion-easing);
+}
+
+.vsr-action-card__execute-button--feedback-requirement,
+.vsr-action-card__execute-button--feedback-permission {
+  animation: vsr-action-button-rejected var(--vsr-motion-medium) var(--vsr-motion-easing);
+}
+
+.vsr-action-card__password-field--retry {
+  animation: vsr-action-password-retry var(--vsr-motion-medium) var(--vsr-motion-easing);
+  outline: 1px solid var(--vsr-color-error);
+  outline-offset: 3px;
+  border-radius: var(--vsr-radius-sm);
+}
+
+.vsr-action-card__password-field--expired,
+.vsr-action-card__password-field--exhausted {
+  outline: 1px solid var(--vsr-color-error);
+  outline-offset: 3px;
+  border-radius: var(--vsr-radius-sm);
+}
+
+@keyframes vsr-action-card-success {
+  0% { transform: translateY(0); outline: 0 solid transparent; }
+  45% { transform: translateY(-1px); outline: 2px solid var(--vsr-color-success); outline-offset: 2px; }
+  100% { transform: translateY(0); outline: 0 solid transparent; }
+}
+
+@keyframes vsr-action-button-rejected {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-1px); }
+  50% { transform: translateX(1px); }
+  75% { transform: translateX(-1px); }
+}
+
+@keyframes vsr-action-password-retry {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-2px); }
+  50% { transform: translateX(2px); }
+  75% { transform: translateX(-1px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vsr-action-card--feedback-success,
+  .vsr-action-card__execute-button--feedback-requirement,
+  .vsr-action-card__execute-button--feedback-permission,
+  .vsr-action-card__password-field--retry {
+    animation: none;
+  }
+}
