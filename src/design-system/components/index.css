@@ -173,3 +173,67 @@
   line-height: 16px;
 }
 .vsr-inventory-item > .vsr-tag { margin-top: 2px; }
+
+
+/* Inventory Drawer layout: fixed header with one independently scrollable content region. */
+.vsr-overlay--drawer .vsr-inventory-drawer-content {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 16px;
+}
+.vsr-inventory-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+.vsr-inventory-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+.vsr-inventory-controls > .vsr-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.vsr-inventory-results {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+.vsr-inventory-results__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 12px;
+  min-width: 0;
+}
+.vsr-inventory-results__meta p {
+  margin: 0;
+}
+.vsr-inventory-results > .vsr-grid {
+  width: 100%;
+}
+.vsr-inventory-results > nav {
+  margin-top: 4px;
+}
+@media (min-width: 840px) {
+  .vsr-inventory-controls > .vsr-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 359px) {
+  .vsr-overlay--drawer .vsr-inventory-drawer-content {
+    padding: 12px;
+  }
+  .vsr-inventory-controls > .vsr-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
