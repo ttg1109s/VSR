@@ -103,6 +103,8 @@ export class JsonClient {
   resume() { return this.dispatch('engine.resume'); }
   exportSave() { return this.dispatch('save.export'); }
   restoreSave(save) { return this.dispatch('save.restore', { save }); }
+  markNotificationRead(notificationId) { return this.dispatch('notification.read', { notificationId }); }
+  dismissNotification(notificationId) { return this.dispatch('notification.dismiss', { notificationId }); }
 
   dispose() {
     this.unsubscribeTransport?.();
