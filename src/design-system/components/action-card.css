@@ -292,9 +292,12 @@
   animation: vsr-action-card-success var(--vsr-motion-medium) var(--vsr-motion-easing);
 }
 
-.vsr-action-card__execute-button--feedback-requirement,
+.vsr-action-card__execute-button--feedback-requirement {
+  animation: vsr-action-button-requirement var(--vsr-motion-medium) var(--vsr-motion-easing);
+}
+
 .vsr-action-card__execute-button--feedback-permission {
-  animation: vsr-action-button-rejected var(--vsr-motion-medium) var(--vsr-motion-easing);
+  animation: vsr-action-button-permission var(--vsr-motion-medium) var(--vsr-motion-easing);
 }
 
 .vsr-action-card__password-field--retry {
@@ -317,11 +320,18 @@
   100% { transform: translateY(0); outline: 0 solid transparent; }
 }
 
-@keyframes vsr-action-button-rejected {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-1px); }
-  50% { transform: translateX(1px); }
-  75% { transform: translateX(-1px); }
+@keyframes vsr-action-button-requirement {
+  0%, 100% { transform: translateX(0); box-shadow: none; }
+  25% { transform: translateX(-1px); box-shadow: 0 0 0 2px var(--vsr-color-warning); }
+  50% { transform: translateX(1px); box-shadow: 0 0 0 2px var(--vsr-color-warning); }
+  75% { transform: translateX(-1px); box-shadow: none; }
+}
+
+@keyframes vsr-action-button-permission {
+  0%, 100% { transform: translateX(0); box-shadow: none; }
+  25% { transform: translateX(-1px); box-shadow: 0 0 0 2px var(--vsr-color-error); }
+  50% { transform: translateX(1px); box-shadow: 0 0 0 2px var(--vsr-color-error); }
+  75% { transform: translateX(-1px); box-shadow: none; }
 }
 
 @keyframes vsr-action-password-retry {
