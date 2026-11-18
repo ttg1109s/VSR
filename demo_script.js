@@ -885,8 +885,6 @@ export const DEMO_SCRIPT = {
           "actions": [
             "action_read_notice",
             "action_talk_mai",
-            "action_talk_mai_well",
-            "action_talk_mai_umbrella",
             "action_enter_well",
             "action_travel_inn",
             "action_travel_chapel",
@@ -909,8 +907,6 @@ export const DEMO_SCRIPT = {
           "actions": [
             "action_read_notice",
             "action_talk_mai",
-            "action_talk_mai_well",
-            "action_talk_mai_umbrella",
             "action_enter_well",
             "action_travel_inn",
             "action_travel_chapel",
@@ -1694,20 +1690,64 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Mai",
         "buttonLabel": "Hỏi chuyện",
-        "desc": "Mai đứng gần quảng trường nhưng luôn giữ khoảng cách với giếng đá. Mỗi lần loa phát thanh gọi tên một người mất tích, cô lại ngừng nói và nhìn về phía mặt nước. Cô dường như biết nhiều hơn những gì đang kể, nhưng cần được hỏi đúng cách để chịu nhắc lại đêm hôm ấy."
+        "desc": "Mai đứng gần quảng trường nhưng luôn giữ khoảng cách với giếng đá. Những gì cô sẵn sàng kể thay đổi theo các manh mối bạn đã tìm được."
       },
       "set": {
         "display": "show"
       },
       "effect": {
-        "normal": [],
-        "pass": [
+        "normal": [
           {
             "type": "goto",
             "subtype": "chat",
-            "target": "chat_mai"
+            "target": "chat_mai",
+            "req": {
+              "logic": "AND",
+              "check": [
+                { "type": "state", "property": "knows_twelve", "op": "!=", "value": true },
+                { "type": "state", "property": "clue_well", "op": "!=", "value": true }
+              ]
+            }
+          },
+          {
+            "type": "goto",
+            "subtype": "chat",
+            "target": "chat_mai",
+            "req": {
+              "logic": "AND",
+              "check": [
+                { "type": "state", "property": "knows_twelve", "op": "!=", "value": true },
+                { "type": "state", "property": "clue_well", "op": "==", "value": true },
+                { "type": "state", "property": "clue_lantern", "op": "!=", "value": true }
+              ]
+            }
+          },
+          {
+            "type": "goto",
+            "subtype": "chat",
+            "target": "chat_mai_well",
+            "req": {
+              "logic": "AND",
+              "check": [
+                { "type": "state", "property": "knows_twelve", "op": "!=", "value": true },
+                { "type": "state", "property": "clue_well", "op": "==", "value": true },
+                { "type": "state", "property": "clue_lantern", "op": "==", "value": true }
+              ]
+            }
+          },
+          {
+            "type": "goto",
+            "subtype": "chat",
+            "target": "chat_mai_umbrella",
+            "req": {
+              "logic": "AND",
+              "check": [
+                { "type": "state", "property": "knows_twelve", "op": "==", "value": true }
+              ]
+            }
           }
-        ]
+        ],
+        "pass": []
       }
     },
     "action_inspect_well": {
@@ -4104,74 +4144,6 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "router",
             "target": "router_station_0317"
-          }
-        ]
-      }
-    },
-    "action_talk_mai_well": {
-      "meta": {
-        "title": "Mai — Hỏi về phù hiệu",
-        "buttonLabel": "Hỏi tiếp",
-        "desc": "Sau khi tìm thấy phù hiệu dưới giếng, bạn quay lại hỏi Mai về ký hiệu của đội sơ tán và ký ức bị đứt đoạn của cô."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "goto",
-            "subtype": "chat",
-            "target": "chat_mai_well"
-          }
-        ]
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "state",
-            "property": "clue_well",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "state",
-            "property": "clue_lantern",
-            "op": "==",
-            "value": true
-          }
-        ]
-      }
-    },
-    "action_talk_mai_umbrella": {
-      "meta": {
-        "title": "Mai — Hỏi về chiếc ô đỏ",
-        "buttonLabel": "Đối chiếu",
-        "desc": "Khi đã biết chiếc ô đỏ mang dấu vết của người thứ mười hai, bạn hỏi Mai về cái tên bị khắc và ký ức mâu thuẫn của cô."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "goto",
-            "subtype": "chat",
-            "target": "chat_mai_umbrella"
-          }
-        ]
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "state",
-            "property": "knows_twelve",
-            "op": "==",
-            "value": true
           }
         ]
       }
