@@ -19,11 +19,11 @@ const REASON_TONES = {
 };
 const seconds = (until, now) => Number.isFinite(until) ? Math.max(0, Math.ceil((until - now) / 1000)) : 0;
 
-function ActionCard({ action, pending = false, interactionBlocked = false, passwordChallenge = null, feedback = '', onTrigger, onMarkĐã đọc, onSubmitMật khẩu, onCancelMật khẩu, onRefreshSnapshot }) {
+function ActionCard({ action, pending = false, interactionBlocked = false, passwordChallenge = null, feedback = '', onTrigger, onMarkRead, onSubmitPassword, onCancelPassword, onRefreshSnapshot }) {
   const [input, setInput] = useState('');
   const [error, setError] = useState('');
   const [challengeFeedback, setChallengeFeedback] = useState('');
-  const [passwordPending, setMật khẩuPending] = useState(false);
+  const [passwordPending, setPasswordPending] = useState(false);
   const [clock, setClock] = useState(Date.now());
   const readRequestRef = useRef(false);
   const meta = action.meta || {};
@@ -77,11 +77,11 @@ function ActionCard({ action, pending = false, interactionBlocked = false, passw
   const submit = async event => {
     event.preventDefault();
     if (!input.trim() || passwordPending) return;
-    setMật khẩuPending(true);
+    setPasswordPending(true);
     setError('');
     setChallengeFeedback('');
     try {
-      const result = await onSubmitMật khẩu?.(passwordChallenge, input);
+      const result = await onSubmitPassword?.(passwordChallenge, input);
       if (result?.retry) {
         setChallengeFeedback(result.remainingAttempts === null ? 'Câu trả lời chưa chính xác. Bạn có thể thử lại.' : `Câu trả lời chưa chính xác. Còn ${result.remainingAttempts} lần thử.`);
         setInput('');
@@ -94,29 +94,29 @@ function ActionCard({ action, pending = false, interactionBlocked = false, passw
     } catch (cause) {
       setError(cause?.message || 'Không thể gửi câu trả lời.');
     } finally {
-      setMật khẩuPending(false);
+      setPasswordPending(false);
     }
   };
 
   const cancel = async () => {
     if (passwordPending || !passwordChallenge?.challengeId) return;
-    setMật khẩuPending(true);
+    setPasswordPending(true);
     setError('');
     try {
-      await onCancelMật khẩu?.(passwordChallenge);
+      await onCancelPassword?.(passwordChallenge);
       setInput('');
     } catch (cause) {
       setError(cause?.message || 'Không thể hủy thử thách.');
     } finally {
-      setMật khẩuPending(false);
+      setPasswordPending(false);
     }
   };
 
   const handleDescriptionOpen = async open => {
-    if (!open || !readRequired || read || !onMarkĐã đọc || pending || readRequestRef.current) return;
+    if (!open || !readRequired || read || !onMarkRead || pending || readRequestRef.current) return;
     readRequestRef.current = true;
     try {
-      const succeeded = await onMarkĐã đọc(action);
+      const succeeded = await onMarkRead(action);
       if (succeeded === false) readRequestRef.current = false;
     } catch (_) {
       readRequestRef.current = false;
@@ -163,7 +163,7 @@ function ActionCard({ action, pending = false, interactionBlocked = false, passw
         </Popover>
         {readRequired
           ? <Badge tone={read ? 'success' : 'warning'}>{read ? 'Đã đọc' : 'Chưa đọc'}</Badge>
-          : <Badge tone="neutral">Đã đọcing not required</Badge>}
+          : <Badge tone="neutral">Không yêu cầu đọc trước</Badge>}
       </div>
     </div>
 
