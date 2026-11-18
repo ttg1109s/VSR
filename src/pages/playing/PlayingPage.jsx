@@ -9,7 +9,7 @@ import PlayingPageStyles from '../../features/playing/PlayingPageStyles.jsx';
 
 export default function PlayingPage({ snapshot, chatViewRequest = null, client, error = '', onNavigate, soundEnabled = true, onSoundChange, modalNotification = null, onModalClose }) {
   const toast = useToast();
-  const [activeNavigation, setActiveNavigation] = useState('hand');
+  const [activeNavigation, setActiveNavigation] = useState(null);
   const [contactOpen, setContactOpen] = useState(false);
   const [inventoryOpen, setInventoryOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
@@ -142,14 +142,14 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
             setInventoryOpen(current => !current);
             setContactOpen(false);
             setNotificationOpen(false);
-            setActiveNavigation(inventoryOpen ? 'hand' : 'inventor');
+            setActiveNavigation(inventoryOpen ? null : 'inventor');
             return;
           }
           if (value === 'notify') {
             setInventoryOpen(false);
             setNotificationOpen(current => !current);
             setContactOpen(false);
-            setActiveNavigation(notificationOpen ? 'hand' : 'notify');
+            setActiveNavigation(notificationOpen ? null : 'notify');
             return;
           }
           setNotificationOpen(false);
@@ -158,7 +158,6 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
           if (value === 'contact') setContactOpen(true);
         }}
         items={[
-          { value: 'hand', label: 'Hand', icon: 'front_hand' },
           ...(snapshot?.presentation?.inventory?.enabled !== false ? [{ value: 'inventor', label: 'Inventory', icon: 'inventory_2' }] : []),
           { value: 'contact', label: 'Contact', icon: 'contacts' },
           { value: 'notify', label: 'Notify', icon: 'notifications', badge: unreadCount, badgeLabel: 'unread notifications' }
@@ -169,7 +168,7 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
         client={client}
         open={inventoryOpen}
         onError={message => toast(message, { tone: 'warning' })}
-        onClose={() => { setInventoryOpen(false); setActiveNavigation('hand'); }}
+        onClose={() => { setInventoryOpen(false); setActiveNavigation(null); }}
       />
       <ContactPanel
         open={contactOpen}
@@ -181,7 +180,7 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
         client={client}
         onClose={() => {
           setContactOpen(false);
-          setActiveNavigation('hand');
+          setActiveNavigation(null);
         }}
       />
       <NotificationCenter
