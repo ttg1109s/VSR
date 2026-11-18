@@ -402,7 +402,7 @@ test('chat action can finish and reopen as a read-only review without duplicatin
     await client.nextChat();
     assert.equal(client.getSnapshot().session.chat.waitingChoice, true);
     await client.selectChatChoice(0);
-    await waitForClientSnapshot(client, snapshot => snapshot.session.chat.active && !snapshot.session.chat.waitingChoice);
+    await waitForClientSnapshot(client, snapshot => snapshot.session.chat.active && !snapshot.session.chat.waitingChoice && !snapshot.session.chat.transitionPending);
 
     assert.equal(client.getSnapshot().session.chat.active, true);
     assert.equal(client.getSnapshot().session.chat.waitingChoice, false);
@@ -412,7 +412,7 @@ test('chat action can finish and reopen as a read-only review without duplicatin
     assert.equal(client.getSnapshot().session.chat.waitingChoice, true);
     assert.equal(client.getSnapshot().session.chat.choices.length, 2);
     await client.selectChatChoice(0);
-    await waitForClientSnapshot(client, snapshot => snapshot.session.chat.active && !snapshot.session.chat.waitingChoice);
+    await waitForClientSnapshot(client, snapshot => snapshot.session.chat.active && !snapshot.session.chat.waitingChoice && !snapshot.session.chat.transitionPending);
 
     assert.equal(client.getSnapshot().session.chat.active, true);
     assert.equal(client.getSnapshot().session.chat.waitingChoice, false);
