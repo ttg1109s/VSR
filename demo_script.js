@@ -1305,7 +1305,8 @@ export const DEMO_SCRIPT = {
     "scene_watermill": {
       "meta": {
         "title": "Cối xay nước",
-        "desc": "Cối xay cũ là nút cơ giới dẫn xuống đường hầm dưới chân đê."
+        "desc": "Cối xay cũ là nút cơ giới dẫn xuống đường hầm dưới chân đê.",
+        "parentScene": "scene_north_forest"
       },
       "set": {
         "activeRouterId": "router_watermill_stalled"
