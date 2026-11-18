@@ -94,14 +94,6 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
             {routerDescription && <p className="vsr-text-body">{routerDescription}</p>}
           </section>
         )}
-        {actionNavigation.actionCount > 0 && (
-          <ActionNavigator
-            activeIndex={actionNavigation.activeIndex}
-            actionCount={actionNavigation.actionCount}
-            activeTitle={actionNavigation.activeTitle}
-            onNavigate={index => actionCollectionRef.current?.scrollToIndex(index)}
-          />
-        )}
         <ActionCollection
           ref={actionCollectionRef}
           actions={snapshot?.presentation?.actions || []}
@@ -111,6 +103,14 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
           onNavigationStateChange={handleActionNavigationStateChange}
           onError={message => toast(message, { tone: 'warning' })}
         />
+        {actionNavigation.actionCount > 0 && (
+          <ActionNavigator
+            activeIndex={actionNavigation.activeIndex}
+            actionCount={actionNavigation.actionCount}
+            activeTitle={actionNavigation.activeTitle}
+            onNavigate={index => actionCollectionRef.current?.scrollToIndex(index)}
+          />
+        )}
         {error && <p className="vsr-text-error" role="alert">{error}</p>}
       </article>
       <BottomNavigation
