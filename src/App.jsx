@@ -58,6 +58,7 @@ function AppContent() {
     return () => {
       window.removeEventListener('pointerdown', unlock, true);
       window.removeEventListener('keydown', unlock, true);
+      notificationSoundService.dispose();
     };
   }, []);
 
