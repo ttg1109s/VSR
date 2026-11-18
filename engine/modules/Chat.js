@@ -230,7 +230,8 @@ export const ChatSystem = {
             requestId: `chat-view-${Date.now()}-${this.chatViewRequestSequence}`,
             contactId: ownerId,
             chatId: id,
-            mode: shouldProcessBlock ? 'active' : 'review'
+            mode: shouldProcessBlock ? 'active' : 'review',
+            headerMode: 'contact'
         });
 
         if (shouldProcessBlock) {
