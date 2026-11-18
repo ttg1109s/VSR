@@ -22,7 +22,7 @@ function StatList({ stats = {}, hideUnknown = false }) {
     return (
       <div className="vsr-contact-profile__empty-state">
         <span className="vsr-contact-profile__empty-icon" aria-hidden="true">insights</span>
-        <span>This character has no stats.</span>
+        <span>Nhân vật này chưa có chỉ số.</span>
       </div>
     );
   }
@@ -52,7 +52,7 @@ function StatList({ stats = {}, hideUnknown = false }) {
                 <ProgressBar status="determinate" value={Math.min(max, Math.max(0, current))} max={max} label={stat?.label || key} />
               </div>
             ) : (
-              <span className="vsr-contact-stat-card__no-scale">No scale defined</span>
+              <span className="vsr-contact-stat-card__no-scale">Chưa xác định thang đo</span>
             )}
           </div>
         );
@@ -242,14 +242,14 @@ function IdentityDrawer({ open, onClose, player, contacts, onSelectContact }) {
 
         {player.description && (
           <section className="vsr-identity-section">
-            <h3><span aria-hidden="true">description</span>Overview</h3>
+            <h3><span aria-hidden="true">description</span>Tổng quan</h3>
             <p className="vsr-contact-profile__description">{player.description}</p>
           </section>
         )}
 
         {hasStats && (
           <section className="vsr-identity-section">
-            <h3><span aria-hidden="true">bar_chart</span>Stats</h3>
+            <h3><span aria-hidden="true">bar_chart</span>Chỉ số</h3>
             {context.statsOwner?.name && (
               <p className="vsr-identity-section__source">Stats for {context.statsOwner.name}</p>
             )}
@@ -259,7 +259,7 @@ function IdentityDrawer({ open, onClose, player, contacts, onSelectContact }) {
 
         {hasRelationships && (
           <section className="vsr-identity-section">
-            <h3><span aria-hidden="true">groups</span>Relationships</h3>
+            <h3><span aria-hidden="true">groups</span>Mối quan hệ</h3>
             {context.relationshipOwner?.name && (
               <p className="vsr-identity-section__source">Relationships for {context.relationshipOwner.name}</p>
             )}
