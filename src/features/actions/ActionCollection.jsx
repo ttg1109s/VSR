@@ -36,7 +36,7 @@ function shuffled(items){
 }
 
 export default function ActionCollection({actions=EMPTY_ACTIONS,client,passwordChallenge=null,onError,sceneId=null}){
- const[pending,setPending]=useState(()=>new Set()),[feedback,setFeedback]=useState({}),cache=useRef(new Map());
+ const[pending,setPending]=useState(()=>new Set()),cache=useRef(new Map());
  const busyDelayControllers=useRef(new Set());
  useEffect(()=>()=>{for(const controller of busyDelayControllers.current)controller.abort();busyDelayControllers.current.clear();},[]);
  const [order,setOrder]=useState({sceneId:null,keys:[]});
@@ -92,8 +92,8 @@ export default function ActionCollection({actions=EMPTY_ACTIONS,client,passwordC
 
  const mark=useCallback((k,on)=>setPending(s=>{const n=new Set(s);on?n.add(k):n.delete(k);return n;}),[]);
  const report=useCallback(async(k,e)=>{
-  if(e?.code==='REVISION_CONFLICT'){try{await client.refreshSnapshot();setFeedback(s=>({...s,[k]:'The state changed. The snapshot has been synchronized; review it before retrying.'}));return true;}catch(x){e=x;}}
-  const m=e?.message||'Unable to complete the action.';setFeedback(s=>({...s,[k]:m}));onError?.(m);return false;
+  if(e?.code==='REVISION_CONFLICT'){try{await client.refreshSnapshot();onError?.('The state changed. The snapshot has been synchronized; review it before retrying.');return true;}catch(x){e=x;}}
+  const m=e?.message||'Unable to complete the action.';onError?.(m);return false;
  },[client,onError]);
  const trigger=useCallback(async a=>{
   if(!client)return;
@@ -103,10 +103,8 @@ export default function ActionCollection({actions=EMPTY_ACTIONS,client,passwordC
   const delayController=new AbortController();
   busyDelayControllers.current.add(delayController);
   mark(k,true);
-  setFeedback(s=>({...s,[k]:''}));
   try{
    const r=(await client.triggerAction(a.id,a.key))?.result;
-   if(!delayController.signal.aborted&&r?.success===false)setFeedback(s=>({...s,[k]:MESSAGES[r.reason]||'The action was not performed.'}));
    return r;
   }catch(e){
    if(!delayController.signal.aborted)await report(k,e);
@@ -131,7 +129,7 @@ export default function ActionCollection({actions=EMPTY_ACTIONS,client,passwordC
  const read=useCallback(async a=>{
   if(!client)return false;
   try{const acknowledgement=await client.markActionRead(a.key),result=acknowledgement?.result;
-   if(result?.success===false){setFeedback(s=>({...s,[a.key]:MESSAGES[result.reason]||'Unable to update the read status.'}));return false;}
+   if(result?.success===false){onError?.(MESSAGES[result.reason]||'Unable to update the read status.');return false;}
    return true;
   }catch(e){await report(a.key,e);return false;}
  },[client,report]);
@@ -145,7 +143,7 @@ export default function ActionCollection({actions=EMPTY_ACTIONS,client,passwordC
   <div ref={carouselRef} className="vsr-action-carousel__viewport" role="region" aria-roledescription="carousel" aria-label="Action list. Use the left and right arrow keys to navigate." tabIndex={0} onKeyDown={event=>{if(event.key==='ArrowRight'){event.preventDefault();scrollToIndex(activeIndex+1);}else if(event.key==='ArrowLeft'){event.preventDefault();scrollToIndex(activeIndex-1);}}}>
    <div className="vsr-action-carousel__track">
     {ordered.map((a,index)=><div key={a.key||a.id} className="vsr-action-carousel__slide" role="group" aria-roledescription="slide" aria-label={`Action ${index+1} of ${ordered.length}`}>
-     <ActionCard action={a} pending={pending.has(a.key)} interactionBlocked={pending.size>0||Boolean(passwordChallenge)} passwordChallenge={passwordChallenge} onTrigger={trigger} onMarkRead={read} onSubmitPassword={submit} onCancelPassword={cancel} onRefreshSnapshot={refresh} feedback={feedback[a.key]||''}/>
+     <ActionCard action={a} pending={pending.has(a.key)} interactionBlocked={pending.size>0||Boolean(passwordChallenge)} passwordChallenge={passwordChallenge} onTrigger={trigger} onMarkRead={read} onSubmitPassword={submit} onCancelPassword={cancel} onRefreshSnapshot={refresh}/>
     </div>)}
    </div>
   </div>
