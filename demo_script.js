@@ -3941,7 +3941,7 @@ export const DEMO_SCRIPT = {
       }
     }
   },
-  "chat":   {
+  "chat": {
     "chat_mai": {
       "meta": {
         "title": "Mai — Quảng trường",
