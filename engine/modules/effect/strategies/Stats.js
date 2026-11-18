@@ -114,7 +114,7 @@ export const StatsHelpers = {
             const type = diff > 0 ? "success" : diff < 0 ? "danger" : "info";
             const sign = diff > 0 ? "+" : "";
             engine.api.notifications.add(
-                isChar ? "Chỉ số" : "Vật phẩm",
+                isChar ? "Stats" : "Items",
                 `${name} (${label}): ${sign}${diff}`,
                 type,
                 { source: 'scenario', category: 'scenario.stats.changed' }
