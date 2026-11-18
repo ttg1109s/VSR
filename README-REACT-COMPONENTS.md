@@ -7,12 +7,12 @@ Presentation-only React components. This layer does not import the engine, proto
 Import from src/design-system/index.js:
 
 \`\`\`jsx
-import { Button, Input, Textarea, Select, Checkbox, Switch, RadioGroup, Label, Separator, Grid, DescriptionList, DescriptionListItem, Dialog, Drawer, Menu, Popover, Tooltip, ToastProvider, useToast } from './design-system/index.js';
+import { Button, IconButton, SegmentedControl, Input, Textarea, Select, Checkbox, Switch, RadioGroup, Label, Separator, Grid, DescriptionList, DescriptionListItem, Dialog, Drawer, Menu, Popover, Tooltip, ToastProvider, useToast } from './design-system/index.js';
 \`\`\`
 
-Core primitives: Button supports primary, secondary, tertiary and danger variants, three sizes, loading and icon slots. Its `layout="card"` variant provides a shared icon-and-copy action-card layout. ProgressBar supports indeterminate, complete and determinate native progress states. Input, Textarea and Select support labels, hints, validation errors, required state and forwarded refs. Select accepts options as value/label objects or native option children. Checkbox and Switch retain native input semantics. RadioGroup supports controlled and uncontrolled values plus vertical/horizontal orientation. Label and Separator provide semantic helpers.
+Core primitives: IconButton provides a shared 44px icon-action target. SegmentedControl provides a single-selection control with `aria-pressed` semantics and optional counts. Button supports primary, secondary, tertiary and danger variants, three sizes, loading and icon slots. Its `layout="card"` variant provides a shared icon-and-copy action-card layout. ProgressBar supports indeterminate, complete and determinate native progress states. Input, Textarea and Select support labels, hints, validation errors, required state and forwarded refs. Select accepts options as value/label objects or native option children. Checkbox and Switch retain native input semantics. RadioGroup supports controlled and uncontrolled values plus vertical/horizontal orientation. Label and Separator provide semantic helpers.
 
-Overlay and feedback: Dialog and Drawer are controlled by open/onClose. Drawer supports right, left and bottom placement. Menu accepts a trigger and item descriptors, supports Escape and arrow-key navigation. Popover is a lightweight click-triggered disclosure. Tooltip appears on hover and keyboard focus. Wrap the application once in ToastProvider; useToast returns a toast(message, options) function. Toast tones are default, success, warning and error; action and duration are optional. The application configures ToastProvider for a five-second lifetime and keeps at most five visible Toasts; the standalone provider retains its four-second default.
+Overlay and feedback: Dialog and Drawer are controlled by open/onClose. Drawer supports right, left and bottom placement, an explicit `lockScroll` behavior, a `width` constraint, and header/content class hooks for owned composition. Menu accepts a trigger and item descriptors, supports Escape and arrow-key navigation. Popover is a lightweight click-triggered disclosure. Tooltip appears on hover and keyboard focus. Wrap the application once in ToastProvider; useToast returns a toast(message, options) function. Toast tones are default, success, warning and error; action and duration are optional. The application configures ToastProvider for a five-second lifetime and keeps at most five visible Toasts; the standalone provider retains its four-second default.
 
 
 ## Layout primitives and data patterns
@@ -31,7 +31,7 @@ Example:
 </DescriptionList>
 ~~~
 
-Pages choose composition and variants; the shared primitives own responsive behavior and visual styling.
+Pages choose composition and variants; the shared primitives own responsive behavior and visual styling. Use `IconButton` instead of feature-local icon button CSS, and `SegmentedControl` for mutually exclusive filter modes. Drawer behavior must be configured with explicit props such as `lockScroll`; CSS class names are not behavior switches.
 
 ## Accessibility and limitations
 
