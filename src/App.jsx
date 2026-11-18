@@ -135,8 +135,16 @@ function AppContent() {
         }
       } else if (message.type === 'event') {
         const eventName = message.event?.event;
-        if (eventName !== 'presentation.notification.add' && eventName !== 'presentation.notification.alert') return;
         const notification = message.event?.payload?.notification;
+        if (['presentation.notification.dismiss', 'presentation.notification.expired', 'presentation.notification.dropped', 'presentation.notification.cleared'].includes(eventName)) {
+          if (notification?.id) setModalNotifications(current => current.filter(item => item.id !== notification.id));
+          return;
+        }
+        if (eventName === 'presentation.notification.updated') {
+          if (notification?.id) setModalNotifications(current => current.map(item => item.id === notification.id ? notification : item));
+          return;
+        }
+        if (eventName !== 'presentation.notification.add' && eventName !== 'presentation.notification.alert') return;
         if (!notification?.id || notificationEventIdsRef.current.has(notification.id)) return;
         notificationEventIdsRef.current.add(notification.id);
         if (notificationEventIdsRef.current.size > 500) {
