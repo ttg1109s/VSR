@@ -73,6 +73,14 @@ export const DEMO_SCRIPT = {
       "type": "boolean",
       "value": false
     },
+    "clue_seat_mark": {
+      "type": "boolean",
+      "value": false
+    },
+    "clue_class_clock": {
+      "type": "boolean",
+      "value": false
+    },
     "cellar_open": {
       "type": "boolean",
       "value": false
@@ -1202,18 +1210,19 @@ export const DEMO_SCRIPT = {
     "scene_school_classroom_03": {
       "meta": {
         "title": "Lớp học số 3",
-        "desc": "Lớp học nằm sâu trong tòa trường bỏ hoang. Danh sách học sinh bị gạch xóa, bức ảnh tập thể bị xé và sơ đồ chỗ ngồi còn dấu vết của vị trí thứ mười hai. Đây là nơi lưu giữ bằng chứng trực tiếp về học sinh bị xóa khỏi hồ sơ.",
+        "desc": "Một lớp học tiểu học bỏ hoang vẫn còn nguyên những dãy bàn thấp, bục giảng, tủ đồ, cửa sổ và chiếc đồng hồ treo tường đã ngừng chạy. Bụi phủ kín mặt bàn; vài trang thông báo sơ tán còn ghim cạnh cửa. Căn phòng chưa tự tiết lộ điều gì — người chơi phải tự chọn nơi quan sát và lần theo các dấu vết.",
         "parentScene": "scene_abandoned_school"
       },
       "set": {
-        "activeRouterId": "router_classroom_erased"
+        "activeRouterId": "router_classroom_overview"
       },
       "routers": {
-        "router_classroom_erased": {
+        "router_classroom_overview": {
           "meta": {
             "sceneID": "scene_school_classroom_03",
-            "subTitleStatus": "Bị xóa tên",
-            "desc": "Danh sách trên bảng chỉ còn những cái tên bị gạch bỏ và bức ảnh tập thể bị xé. Sơ đồ chỗ ngồi có dấu vết của vị trí thứ mười hai, nhưng vị trí ấy đã bị xóa khỏi mọi bản sao."
+            "subTitleStatus": "Toàn cảnh lớp học",
+            "desc": "Bạn vừa bước vào lớp học số 3. Bàn ghế phủ bụi được xếp thành ba dãy; bục giảng nằm dưới bảng đen, một chiếc đồng hồ chết máy treo gần cửa sổ và tờ thông báo sơ tán đã ngả vàng vẫn còn trên bảng tin. Chưa có dấu hiệu nào đủ rõ để kết luận chuyện gì đã xảy ra.",
+            "view": "overview"
           },
           "set": {
             "blocked": false,
@@ -1221,17 +1230,62 @@ export const DEMO_SCRIPT = {
             "countVisited": 0
           },
           "actions": [
+            "action_examine_blackboard",
+            "action_inspect_student_seat",
+            "action_inspect_class_clock",
+            "action_inspect_evacuation_notice",
+            "action_check_desk",
+            "action_talk_linh"
+          ]
+        },
+        "router_classroom_blackboard": {
+          "meta": {
+            "sceneID": "scene_school_classroom_03",
+            "subTitleStatus": "Cận cảnh bảng đen",
+            "desc": "Góc nhìn tập trung vào bảng đen. Dưới lớp bụi phấn là những vệt lau không đều, các nét chữ bị cạo mạnh đến xước mặt bảng và một dãy tên chỉ còn sót lại vài nét cuối. Có vẻ ai đó đã cố xóa cả một phần danh sách lớp.",
+            "view": "closeup",
+            "focus": "blackboard"
+          },
+          "set": {
+            "blocked": false,
+            "visited": false,
+            "countVisited": 0
+          },
+          "actions": [
+            "action_read_blackboard",
+            "action_return_classroom_overview"
+          ]
+        },
+        "router_classroom_erased": {
+          "meta": {
+            "sceneID": "scene_school_classroom_03",
+            "subTitleStatus": "Bị xóa tên",
+            "desc": "Sau khi quan sát kỹ bảng đen, bạn nhận ra đây không phải vết lau bảng thông thường. Một số tên học sinh đã bị xóa có chủ ý; những nét phấn còn sót lại khớp với khoảng trống trên sơ đồ chỗ ngồi. Bức ảnh tập thể cũng bị xé đúng tại vị trí của một học sinh.",
+            "view": "investigation",
+            "focus": "blackboard"
+          },
+          "set": {
+            "blocked": false,
+            "visited": false,
+            "countVisited": 0
+          },
+          "actions": [
+            "action_inspect_student_seat",
+            "action_inspect_class_clock",
+            "action_inspect_evacuation_notice",
             "action_check_desk",
             "action_talk_linh",
             "action_decode_roster",
-            "action_recover_class_register"
+            "action_recover_class_register",
+            "action_return_classroom_overview"
           ]
         },
         "router_classroom_archive_open": {
           "meta": {
             "sceneID": "scene_school_classroom_03",
             "subTitleStatus": "Đã khôi phục hồ sơ",
-            "desc": "Một ngăn bàn cuối lớp bị đóng đinh chứa bản sao sổ điểm danh. Tên học sinh thứ mười hai vẫn bị bôi đen, nhưng số thứ tự và ngày nghỉ học trùng với hồ sơ sơ tán."
+            "desc": "Một ngăn bàn cuối lớp bị đóng đinh chứa bản sao sổ điểm danh. Tên học sinh thứ mười hai vẫn bị bôi đen, nhưng số thứ tự và ngày nghỉ học trùng với hồ sơ sơ tán. Sĩ số mười hai người vì thế vẫn được xác nhận, dù danh tính một học sinh đã bị xóa khỏi những tài liệu khác.",
+            "view": "investigation"
           },
           "set": {
             "blocked": false,
@@ -1239,9 +1293,13 @@ export const DEMO_SCRIPT = {
             "countVisited": 0
           },
           "actions": [
+            "action_inspect_student_seat",
+            "action_inspect_class_clock",
+            "action_inspect_evacuation_notice",
             "action_check_desk",
             "action_talk_linh",
-            "action_decode_roster"
+            "action_decode_roster",
+            "action_return_classroom_overview"
           ]
         }
       }
@@ -3138,7 +3196,7 @@ export const DEMO_SCRIPT = {
         "title": "Lớp học số 3",
         "buttonLabel": "Vào lớp",
         "buttonIcon": "door_open",
-        "desc": "Theo dấu chân nhỏ dọc hành lang, bạn bước vào lớp học số 3. Những chiếc bàn phủ bụi vẫn được xếp thành hàng, nhưng sơ đồ chỗ ngồi trên tường có một vị trí bị cạo khỏi bản sao."
+        "desc": "Theo dấu chân nhỏ dọc hành lang, bạn bước vào lớp học số 3. Những dãy bàn thấp phủ bụi vẫn được xếp ngay ngắn. Bục giảng, bảng đen, cửa sổ và chiếc đồng hồ đứng im hiện ra trong ánh sáng xám lọt qua rèm cửa."
       },
       "set": {
         "display": "show"
@@ -3150,6 +3208,186 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "scene",
             "target": "scene_school_classroom_03"
+          }
+        ]
+      }
+    },
+    "action_examine_blackboard": {
+      "meta": {
+        "title": "Bảng đen",
+        "buttonLabel": "Quan sát",
+        "desc": "Bạn tiến lại gần bảng đen. Những vệt phấn mờ nằm dưới lớp bụi, nhưng từ khoảng cách này chưa thể đọc được nội dung. Tập trung quan sát bảng để nhìn rõ các dấu vết."
+      },
+      "set": {
+        "display": "show"
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "goto",
+            "subtype": "router",
+            "target": "router_classroom_blackboard"
+          }
+        ]
+      }
+    },
+    "action_read_blackboard": {
+      "meta": {
+        "title": "Những dòng chữ bị cạo",
+        "buttonLabel": "Đọc dấu phấn",
+        "desc": "Bạn nghiêng người nhìn sát mặt bảng. Dưới những vệt lau chồng lên nhau vẫn còn nét phấn của một danh sách học sinh. Một vị trí bị cạo mạnh đến mức mặt bảng xước thành những đường trắng. Đây là hành động xóa dấu vết có chủ ý, không phải bụi thời gian.",
+        "set": {
+          "display": "show"
+        },
+        "effect": {
+          "normal": [],
+          "pass": [
+            {
+              "type": "set",
+              "subtype": "state",
+              "target": "clue_roster",
+              "value": true
+            },
+            {
+              "type": "set",
+              "subtype": "state",
+              "target": "knows_twelve",
+              "value": true
+            },
+            {
+              "type": "notify",
+              "subtype": "toast",
+              "level": "success",
+              "text": "Bạn phát hiện danh sách lớp đã bị xóa có chủ ý."
+            },
+            {
+              "type": "goto",
+              "subtype": "router",
+              "target": "router_classroom_erased"
+            }
+          ]
+        }
+      }
+    },
+    "action_return_classroom_overview": {
+      "meta": {
+        "title": "Quan sát toàn bộ lớp",
+        "buttonLabel": "Lùi lại",
+        "desc": "Bạn lùi khỏi điểm quan sát và nhìn lại toàn bộ căn phòng."
+      },
+      "set": {
+        "display": "show"
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "goto",
+            "subtype": "router",
+            "target": "router_classroom_overview"
+          }
+        ]
+      }
+    },
+    "action_inspect_student_seat": {
+      "meta": {
+        "title": "Dãy bàn học sinh",
+        "buttonLabel": "Kiểm tra",
+        "desc": "Ở dãy bàn gần cuối lớp, một chiếc ghế bị kéo lệch khỏi hàng. Mặt bàn phía trước có những vết khắc nhỏ, trong đó số mười hai bị cào đi nhiều lần. Bụi quanh chân ghế cho thấy nó từng được di chuyển sau khi lớp học đã bỏ trống.",
+      },
+      "set": {
+        "display": "show"
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_seat_mark",
+            "value": true
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Dấu khắc số mười hai cho thấy từng có một chỗ ngồi bị loại khỏi sơ đồ."
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_inspect_student_seat",
+            "property": "display",
+            "value": "hide"
+          }
+        ]
+      }
+    },
+    "action_inspect_class_clock": {
+      "meta": {
+        "title": "Đồng hồ treo tường",
+        "buttonLabel": "Kiểm tra",
+        "desc": "Chiếc đồng hồ tròn đã ngừng chạy. Kim phút dừng ở số mười bảy, còn kim giờ nằm sát số ba. Mặt kính không vỡ và bộ kim không bị cong; đồng hồ có vẻ đã bị dừng đúng vào 03:17.",
+      },
+      "set": {
+        "display": "show"
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_class_clock",
+            "value": true
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Đồng hồ trong lớp cũng dừng ở 03:17 — cùng thời điểm với chuyến tàu trong lời đồn."
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_inspect_class_clock",
+            "property": "display",
+            "value": "hide"
+          }
+        ]
+      }
+    },
+    "action_inspect_evacuation_notice": {
+      "meta": {
+        "title": "Thông báo sơ tán",
+        "buttonLabel": "Đọc",
+        "desc": "Tờ thông báo cũ ghim cạnh cửa sổ ghi ngày sơ tán của trường. Phần danh sách lớp đã nhòe nước, nhưng dòng tổng sĩ số vẫn đọc được: mười hai học sinh. Mép giấy có dấu ghim thứ hai, như thể từng có một phụ lục bị tháo đi.",
+      },
+      "set": {
+        "display": "show"
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_notice",
+            "value": true
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Thông báo sơ tán xác nhận lớp có mười hai học sinh, nhưng phụ lục danh sách đã bị tháo mất."
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_inspect_evacuation_notice",
+            "property": "display",
+            "value": "hide"
           }
         ]
       }
