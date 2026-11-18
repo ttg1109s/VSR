@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
   Badge,
   Button,
@@ -286,6 +286,7 @@ export default function ContactPanel({ open, onClose, player, contacts = [], sys
   const [chatPending, setChatPending] = useState(false);
   const [chatError, setChatError] = useState('');
   const handledViewRequestIdRef = useRef(null);
+  const conversationHistoryRef = useRef(null);
 
   const allContacts = useMemo(() => [
     ...contacts.map(contact => ({
@@ -315,6 +316,14 @@ export default function ContactPanel({ open, onClose, player, contacts = [], sys
   // A selected contact owns the Drawer header in both its thread list and conversation.
   // The generic "Contact" header is only shown while browsing the contact list.
   const showContactThreadHeader = Boolean(selected);
+
+  // New chat lines are appended to history; keep the newest line in view.
+  useLayoutEffect(() => {
+    if (activeArea !== 'conversation' || !selectedThreadId) return;
+    const historyElement = conversationHistoryRef.current;
+    if (!historyElement) return;
+    historyElement.scrollTop = historyElement.scrollHeight;
+  }, [activeArea, selectedThreadId, history.length]);
 
   useEffect(() => {
     if (selectedId && !allContacts.some(contact => contact.id === selectedId)) {
@@ -581,7 +590,7 @@ export default function ContactPanel({ open, onClose, player, contacts = [], sys
                   </ContactTopicList>
                 ) : (
                   <ContactConversation>
-                    <div className="vsr-contact-conversation__history" aria-live="polite">
+                    <div ref={conversationHistoryRef} className="vsr-contact-conversation__history" aria-live="polite">
                       {history.length ? history.map((line, index) => {
                         const senderId = line.nameID || line.char_id;
                         const isPlayer = senderId === player?.id;
