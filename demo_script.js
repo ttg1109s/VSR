@@ -909,6 +909,8 @@ export const DEMO_SCRIPT = {
           "actions": [
             "action_read_notice",
             "action_talk_mai",
+            "action_talk_mai_well",
+            "action_talk_mai_umbrella",
             "action_enter_well",
             "action_travel_inn",
             "action_travel_chapel",
@@ -1011,6 +1013,8 @@ export const DEMO_SCRIPT = {
           },
           "actions": [
             "action_question_hanh",
+            "action_question_hanh_guestbook",
+            "action_question_hanh_room",
             "action_open_guestbook",
             "action_return_square",
             "action_travel_chapel",
@@ -1207,6 +1211,7 @@ export const DEMO_SCRIPT = {
           },
           "actions": [
             "action_check_desk",
+            "action_talk_linh",
             "action_decode_roster",
             "action_return_square",
             "action_travel_forest",
