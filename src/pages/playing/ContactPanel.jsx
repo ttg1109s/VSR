@@ -2,22 +2,22 @@ import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 're
 import {
   Badge,
   Button,
-  Liên hệAvatar,
-  Liên hệComposer,
-  Liên hệCuộc trò chuyện,
-  Liên hệDetail,
-  Liên hệList,
-  Liên hệListItem,
-  Liên hệScrollArea,
-  Liên hệTopicList,
-  Liên hệWorkspace,
+  ContactAvatar,
+  ContactComposer,
+  ContactConversation,
+  ContactDetail,
+  ContactList,
+  ContactListItem,
+  ContactScrollArea,
+  ContactTopicList,
+  ContactWorkspace,
   Drawer,
   ProgressBar,
 } from '../../design-system/index.js';
 
-function StatList({ stats = {}, hideKhông xác định = false }) {
-  const entries = Object.entries(stats || {}).filter(([, stat]) => !hideKhông xác định || stat?.unknown !== true);
-  if (hideKhông xác định && entries.length === 0) return null;
+function StatList({ stats = {}, hideUnknown = false }) {
+  const entries = Object.entries(stats || {}).filter(([, stat]) => !hideUnknown || stat?.unknown !== true);
+  if (hideUnknown && entries.length === 0) return null;
   if (!entries.length) {
     return (
       <div className="vsr-contact-profile__empty-state">
@@ -72,7 +72,7 @@ function RelationshipSummary({ relationshipWithPlayer, metCount = 0 }) {
       <span className="vsr-contact-relationship-summary__icon" aria-hidden="true">handshake</span>
       <div className="vsr-contact-relationship-summary__copy">
         <strong className="vsr-contact-relationship-summary__type">
-          {tag || (hasRelationship ? 'Đã ghi nhận, chưa phân loại' : 'Không có mối quan hệ')}
+          {tag || (hasRelationship ? 'Recorded, unclassified' : 'No relationship')}
         </strong>
         <span className="vsr-contact-relationship-summary__count">Times met: {metCount} times</span>
       </div>
@@ -80,13 +80,13 @@ function RelationshipSummary({ relationshipWithPlayer, metCount = 0 }) {
   );
 }
 
-function Liên hệProfile({ character }) {
+function ContactProfile({ character }) {
   if (!character) return null;
   if (character.kind === 'system') {
     return (
       <div className="vsr-contact-profile">
         <section className="vsr-contact-profile__section">
-          <p className="vsr-contact-profile__description">{character.description || 'Nguồn thông tin hệ thống.'}</p>
+          <p className="vsr-contact-profile__description">{character.description || 'System information source.'}</p>
         </section>
       </div>
     );
@@ -96,7 +96,7 @@ function Liên hệProfile({ character }) {
     <div className="vsr-contact-profile">
       <section className="vsr-contact-profile__section">
         <p className="vsr-contact-profile__description">
-          {character.description || 'Chưa có mô tả nhân vật.'}
+          {character.description || 'No character description available.'}
         </p>
       </section>
 
@@ -109,7 +109,7 @@ function Liên hệProfile({ character }) {
 
       {visibleStats.length > 0 && (
         <section className="vsr-contact-profile__section">
-          <StatList stats={character.stats} hideKhông xác định />
+          <StatList stats={character.stats} hideUnknown />
         </section>
       )}
     </div>
@@ -117,20 +117,20 @@ function Liên hệProfile({ character }) {
 }
 
 
-function Danh tínhFact({ label, identity, emphasis = false }) {
+function IdentityFact({ label, identity, emphasis = false }) {
   if (!identity?.id) return null;
   return (
     <div className={`vsr-identity-fact${emphasis ? ' is-emphasized' : ''}`}>
       <span className="vsr-identity-fact__label">{label}</span>
       <span className="vsr-identity-fact__value">
-        <Liên hệAvatar name={identity.name || identity.id} avatar={identity.avatar} />
+        <ContactAvatar name={identity.name || identity.id} avatar={identity.avatar} />
         <strong>{identity.name || identity.id}</strong>
       </span>
     </div>
   );
 }
 
-function Danh tínhDrawer({ open, onClose, player, contacts, onSelectLiên hệ }) {
+function IdentityDrawer({ open, onClose, player, contacts, onSelectContact }) {
   if (!player) return null;
   const mode = player.identityMode;
   const context = player.identityContext || {};
@@ -138,35 +138,35 @@ function Danh tínhDrawer({ open, onClose, player, contacts, onSelectLiên hệ 
   const name = player.name || player.id;
   const modeContent = {
     soul: {
-      title: 'Chiếm hữu',
-      badge: 'LINH HỒN',
-      identityLabel: 'Danh tính gốc',
+      title: 'Possession',
+      badge: 'SOUL',
+      identityLabel: 'Original identity',
       description: context.currentBody?.name
-        ? `Danh tính của bạn remains unchanged and currently inhabits the body of ${context.currentBody.name}.`
-        : 'Danh tính của bạn không thay đổi dù đang ở trong cơ thể khác.'
+        ? `Your identity remains unchanged and currently inhabits the body of ${context.currentBody.name}.`
+        : 'Your identity remains unchanged in another body.'
     },
     mask: {
-      title: 'Cải trang',
-      badge: 'MẶT NẠ',
-      identityLabel: 'Nhân dạng hiện tại',
+      title: 'Disguise',
+      badge: 'MASK',
+      identityLabel: 'Active persona',
       description: context.activePersona?.name
-        ? `Danh tính của bạn and original body remain unchanged, but you are appearing as ${context.activePersona.name}.`
-        : 'Danh tính và cơ thể gốc của bạn không thay đổi, nhưng bạn đang sử dụng một nhân dạng khác.'
+        ? `Your identity and original body remain unchanged, but you are appearing as ${context.activePersona.name}.`
+        : 'Your identity and original body remain unchanged, but you are using another persona.'
     },
     swap: {
-      title: 'Hoán đổi',
-      badge: 'HOÁN ĐỔI',
-      identityLabel: 'Danh tính hiện tại',
+      title: 'Swap',
+      badge: 'SWAP',
+      identityLabel: 'Current identity',
       description: `The currently controlling identity is ${name}.`
     }
   }[mode] || {
     title: null,
     badge: null,
-    identityLabel: 'Danh tính của bạn',
+    identityLabel: 'Your identity',
     description: null
   };
 
-  const originalDanh tính = context.originalDanh tính || player;
+  const originalIdentity = context.originalIdentity || player;
   const currentBody = context.currentBody || (mode === 'soul' ? target : player);
   const activePersona = context.activePersona || (mode === 'mask' ? target : player);
   const relationships = Array.isArray(player.relationship) ? player.relationship : [];
@@ -178,15 +178,15 @@ function Danh tínhDrawer({ open, onClose, player, contacts, onSelectLiên hệ 
     <Drawer
       open={open}
       onClose={onClose}
-      title="Danh tính"
+      title="Identity"
       size="lg"
       side="right"
       className="vsr-identity-drawer"
     >
       <div className="vsr-identity-content">
-        <section className="vsr-identity-hero" aria-label="Danh tính đang sử dụng">
+        <section className="vsr-identity-hero" aria-label="Active identity">
           <span className="vsr-identity-hero__avatar-wrap">
-            <Liên hệAvatar name={name} avatar={player.avatar} size="lg" />
+            <ContactAvatar name={name} avatar={player.avatar} size="lg" />
             {modeContent.badge && (
               <span className="vsr-contact-me__mode-badge" aria-label={modeContent.badge}>
                 {modeContent.badge}
@@ -200,7 +200,7 @@ function Danh tínhDrawer({ open, onClose, player, contacts, onSelectLiên hệ 
         </section>
 
         {modeContent.description && (
-          <section className="vsr-identity-mode" aria-label="Danh tính status">
+          <section className="vsr-identity-mode" aria-label="Identity status">
             <span className="vsr-identity-mode__icon" aria-hidden="true">
               {mode === 'soul' ? 'psychology_alt' : mode === 'mask' ? 'masks' : 'swap_horiz'}
             </span>
@@ -212,31 +212,31 @@ function Danh tínhDrawer({ open, onClose, player, contacts, onSelectLiên hệ 
         )}
 
         {mode === 'mask' && (
-          <section className="vsr-identity-facts" aria-label="Danh tính layers">
-            <Danh tínhFact label="Danh tính gốc" identity={originalDanh tính} />
-            <Danh tínhFact label="Cơ thể hiện tại" identity={currentBody} />
-            <Danh tínhFact label="Nhân dạng hiện tại" identity={activePersona} emphasis />
+          <section className="vsr-identity-facts" aria-label="Identity layers">
+            <IdentityFact label="Original identity" identity={originalIdentity} />
+            <IdentityFact label="Current body" identity={currentBody} />
+            <IdentityFact label="Active persona" identity={activePersona} emphasis />
           </section>
         )}
 
         {mode === 'soul' && (
-          <section className="vsr-identity-facts" aria-label="Danh tính layers">
-            <Danh tínhFact label="Danh tính gốc" identity={originalDanh tính} />
-            <Danh tínhFact label="Cơ thể hiện tại" identity={currentBody} emphasis />
+          <section className="vsr-identity-facts" aria-label="Identity layers">
+            <IdentityFact label="Original identity" identity={originalIdentity} />
+            <IdentityFact label="Current body" identity={currentBody} emphasis />
           </section>
         )}
 
         {mode === 'swap' && (
-          <section className="vsr-identity-facts" aria-label="Danh tính layers">
-            <Danh tínhFact label="Danh tính before swap" identity={originalDanh tính} />
-            <Danh tínhFact label="Danh tính hiện tại" identity={activePersona} emphasis />
+          <section className="vsr-identity-facts" aria-label="Identity layers">
+            <IdentityFact label="Identity before swap" identity={originalIdentity} />
+            <IdentityFact label="Current identity" identity={activePersona} emphasis />
           </section>
         )}
 
         {mode !== 'soul' && mode !== 'mask' && mode !== 'swap' && player.identityContext && (
-          <section className="vsr-identity-facts" aria-label="Danh tính layers">
-            <Danh tínhFact label="Danh tính gốc" identity={originalDanh tính} />
-            <Danh tínhFact label="Cơ thể hiện tại" identity={currentBody} />
+          <section className="vsr-identity-facts" aria-label="Identity layers">
+            <IdentityFact label="Original identity" identity={originalIdentity} />
+            <IdentityFact label="Current body" identity={currentBody} />
           </section>
         )}
 
@@ -266,7 +266,7 @@ function Danh tínhDrawer({ open, onClose, player, contacts, onSelectLiên hệ 
             <RelationshipList
               relationships={relationships}
               contacts={contacts}
-              onSelect={onSelectLiên hệ}
+              onSelect={onSelectContact}
             />
           </section>
         )}
@@ -275,35 +275,35 @@ function Danh tínhDrawer({ open, onClose, player, contacts, onSelectLiên hệ 
   );
 }
 
-export default function Liên hệPanel({ open, onClose, player, contacts = [], systemLiên hệs = [], session = null, viewRequest = null, client }) {
+export default function ContactPanel({ open, onClose, player, contacts = [], systemContacts = [], session = null, viewRequest = null, client }) {
   const [selectedId, setSelectedId] = useState(null);
   const [mobileView, setMobileView] = useState('list');
   const [activeArea, setActiveArea] = useState('threads');
   const [selectedThreadId, setSelectedThreadId] = useState(null);
   const [profileOpen, setProfileOpen] = useState(false);
-  const [identityOpen, setDanh tínhOpen] = useState(false);
+  const [identityOpen, setIdentityOpen] = useState(false);
   const [pendingThreadId, setPendingThreadId] = useState(null);
   const [chatPending, setChatPending] = useState(false);
   const [chatError, setChatError] = useState('');
   const handledViewRequestIdRef = useRef(null);
   const conversationHistoryRef = useRef(null);
 
-  const allLiên hệs = useMemo(() => [
-    ...contacts.map(liên hệ => ({
+  const allContacts = useMemo(() => [
+    ...contacts.map(contact => ({
       ...contact,
       kind: 'character',
       threads: Array.isArray(contact.threads) ? contact.threads : []
     })),
-    ...systemLiên hệs.map(liên hệ => ({
+    ...systemContacts.map(contact => ({
       ...contact,
       kind: 'system',
       threads: Array.isArray(contact.threads) ? contact.threads : []
     }))
-  ], [contacts, systemLiên hệs]);
-  const characterLiên hệs = allLiên hệs.filter(liên hệ => contact.kind === 'character');
-  const systemLiên hệEntries = allLiên hệs.filter(liên hệ => contact.kind === 'system');
+  ], [contacts, systemContacts]);
+  const characterContacts = allContacts.filter(contact => contact.kind === 'character');
+  const systemContactEntries = allContacts.filter(contact => contact.kind === 'system');
 
-  const selected = allLiên hệs.find(liên hệ => contact.id === selectedId) || null;
+  const selected = allContacts.find(contact => contact.id === selectedId) || null;
   const threads = selected?.threads || [];
   const selectedThread = threads.find(thread => thread.id === selectedThreadId) || null;
   const chatSession = session?.chat || {};
@@ -313,9 +313,9 @@ export default function Liên hệPanel({ open, onClose, player, contacts = [], 
     : [];
   const choices = isActiveThread && chatSession.waitingChoice === true && Array.isArray(chatSession.choices) ? chatSession.choices : [];
   const chatActionsDisabled = chatPending || chatSession.transitionPending === true || !client;
-  // A selected liên hệ owns the Drawer header in both its thread list and conversation.
-  // The generic "Liên hệ" header is only shown while browsing the liên hệ list.
-  const showLiên hệThreadHeader = Boolean(selected);
+  // A selected contact owns the Drawer header in both its thread list and conversation.
+  // The generic "Contact" header is only shown while browsing the contact list.
+  const showContactThreadHeader = Boolean(selected);
 
   // Jump to the end when entering or switching threads; smoothly follow
   // newly appended lines while the same conversation remains open.
@@ -343,33 +343,33 @@ export default function Liên hệPanel({ open, onClose, player, contacts = [], 
   }, [activeArea, selectedThreadId, history.length]);
 
   useEffect(() => {
-    if (selectedId && !allLiên hệs.some(liên hệ => contact.id === selectedId)) {
+    if (selectedId && !allContacts.some(contact => contact.id === selectedId)) {
       setSelectedId(null);
       setSelectedThreadId(null);
       setMobileView('list');
       setProfileOpen(false);
       setActiveArea('threads');
     }
-  }, [allLiên hệs, selectedId]);
+  }, [allContacts, selectedId]);
 
   useEffect(() => {
     const activeChat = session?.chat;
     if (!open || activeChat?.active !== true || !activeChat.id || !activeChat.contactId) return;
-    if (!allLiên hệs.some(liên hệ => contact.id === activeChat.contactId)) return;
+    if (!allContacts.some(contact => contact.id === activeChat.contactId)) return;
     setSelectedId(activeChat.contactId);
     setSelectedThreadId(activeChat.id);
     setMobileView('detail');
     setActiveArea('conversation');
     setProfileOpen(false);
     setChatError('');
-  }, [open, session?.chat?.active, session?.chat?.id, session?.chat?.contactId, allLiên hệs]);
+  }, [open, session?.chat?.active, session?.chat?.id, session?.chat?.contactId, allContacts]);
 
   useEffect(() => {
     if (!open || !viewRequest?.requestId || !viewRequest.contactId || !viewRequest.chatId) return;
     // viewRequested is a one-shot navigation intent. Do not replay an old
-    // request when Liên hệ is closed and opened again.
+    // request when Contact is closed and opened again.
     if (handledViewRequestIdRef.current === viewRequest.requestId) return;
-    const liên hệ = allLiên hệs.find(item => item.id === viewRequest.contactId);
+    const contact = allContacts.find(item => item.id === viewRequest.contactId);
     if (!contact?.threads.some(thread => thread.id === viewRequest.chatId)) return;
     handledViewRequestIdRef.current = viewRequest.requestId;
     setSelectedId(viewRequest.contactId);
@@ -378,7 +378,7 @@ export default function Liên hệPanel({ open, onClose, player, contacts = [], 
     setActiveArea('conversation');
     setProfileOpen(false);
     setChatError('');
-  }, [open, viewRequest?.requestId, viewRequest?.contactId, viewRequest?.chatId, allLiên hệs]);
+  }, [open, viewRequest?.requestId, viewRequest?.contactId, viewRequest?.chatId, allContacts]);
 
   useEffect(() => {
     if (!open) {
@@ -390,8 +390,8 @@ export default function Liên hệPanel({ open, onClose, player, contacts = [], 
     }
   }, [open]);
 
-  function selectLiên hệ(id) {
-    if (!allLiên hệs.some(liên hệ => contact.id === id)) return;
+  function selectContact(id) {
+    if (!allContacts.some(contact => contact.id === id)) return;
     setSelectedId(id);
     setSelectedThreadId(null);
     setMobileView('detail');
@@ -402,7 +402,7 @@ export default function Liên hệPanel({ open, onClose, player, contacts = [], 
 
   function close() {
     setProfileOpen(false);
-    setDanh tínhOpen(false);
+    setIdentityOpen(false);
     onClose?.();
   }
 
@@ -415,7 +415,7 @@ export default function Liên hệPanel({ open, onClose, player, contacts = [], 
       setSelectedThreadId(thread.id);
       setActiveArea('conversation');
     } catch (error) {
-      setChatError(error?.message || 'Không thể mở cuộc trò chuyện này.');
+      setChatError(error?.message || 'Unable to open this conversation.');
     } finally {
       setPendingThreadId(null);
     }
@@ -429,21 +429,21 @@ export default function Liên hệPanel({ open, onClose, player, contacts = [], 
       if (choiceIndex === null) await client.nextChat();
       else await client.selectChatChoice(choiceIndex);
     } catch (error) {
-      setChatError(error?.message || 'Engine không thể tiếp tục cuộc trò chuyện.');
+      setChatError(error?.message || 'The engine could not continue the conversation.');
     } finally {
       setChatPending(false);
     }
   }
 
   function contactName(id) {
-    return allLiên hệs.find(liên hệ => contact.id === id)?.name || id || 'Không xác định';
+    return allContacts.find(contact => contact.id === id)?.name || id || 'Unknown';
   }
 
-  function renderLiên hệHeader(inDrawer = false) {
+  function renderContactHeader(inDrawer = false) {
     return (
       <div className={'vsr-contact-header' + (inDrawer ? ' vsr-contact-header--drawer' : '')}>
         <Button
-          className={inDrawer || profileMở || activeArea === 'conversation' ? 'vsr-contact-back is-visible' : 'vsr-contact-back'}
+          className={inDrawer || profileOpen || activeArea === 'conversation' ? 'vsr-contact-back is-visible' : 'vsr-contact-back'}
           size="sm"
           variant="tertiary"
           onClick={() => {
@@ -461,11 +461,11 @@ export default function Liên hệPanel({ open, onClose, player, contacts = [], 
               setMobileView('list');
             }
           }}
-          aria-label={profileMở ? 'Đóng chi tiết' : activeArea === 'conversation' ? 'Quay lại danh sách chủ đề' : 'Quay lại danh sách liên hệ'}
+          aria-label={profileOpen ? 'Close details' : activeArea === 'conversation' ? 'Back to thread list' : 'Back to contacts'}
         >
           ←
         </Button>
-        <Liên hệAvatar name={selected.name || selected.id} avatar={selected.avatar} />
+        <ContactAvatar name={selected.name || selected.id} avatar={selected.avatar} />
         <button
           type="button"
           className="vsr-contact-header__identity"
@@ -473,37 +473,37 @@ export default function Liên hệPanel({ open, onClose, player, contacts = [], 
         >
           <strong>{selected.name || selected.id}</strong>
         </button>
-        <Button size="sm" variant="tertiary" className="vsr-contact-info-trigger" onClick={() => setProfileOpen(true)} aria-label="Thông tin">
+        <Button size="sm" variant="tertiary" className="vsr-contact-info-trigger" onClick={() => setProfileOpen(true)} aria-label="Information">
           <span className="vsr-contact-info-trigger__icon" aria-hidden="true">info</span>
         </Button>
       </div>
     );
   }
 
-  function renderLiên hệItem(contact) {
-    const unreadCount = contact.threads.filter(thread => thread.isChưa đọc).length;
+  function renderContactItem(contact) {
+    const unreadCount = contact.threads.filter(thread => thread.isUnread).length;
     const latestThread = contact.threads[0];
     return (
-      <Liên hệListItem
+      <ContactListItem
         key={contact.id}
         selected={selectedId === contact.id}
-        onClick={() => selectLiên hệ(contact.id)}
-        aria-label={'Mở ' + (contact.kind === 'system' ? 'nguồn ' : 'liên hệ ') + (contact.name || contact.id)}
+        onClick={() => selectContact(contact.id)}
+        aria-label={'Open ' + (contact.kind === 'system' ? 'source ' : 'contact ') + (contact.name || contact.id)}
       >
         <span className="vsr-contact-avatar-wrap">
-          <Liên hệAvatar name={contact.name || contact.id} avatar={contact.avatar} />
+          <ContactAvatar name={contact.name || contact.id} avatar={contact.avatar} />
           {contact.presence === 'present' && (
-            <span className="vsr-contact-avatar__presence" role="img" aria-label="Đang có mặt trong cảnh hiện tại" title="Đang có mặt trong cảnh hiện tại" />
+            <span className="vsr-contact-avatar__presence" role="img" aria-label="Present in the current scene" title="Present in the current scene" />
           )}
         </span>
         <span className="vsr-contact-list-item__copy">
           <span className="vsr-contact-list-item__name">{contact.name || contact.id}</span>
           <span className="vsr-contact-list-item__preview">
-            {latestThread ? (latestThread.preview || 'Có cuộc trò chuyện') : 'Chưa có tin nhắn hoặc cuộc trò chuyện nào.'}
+            {latestThread ? (latestThread.preview || 'Conversation available') : 'No messages or conversations yet.'}
           </span>
         </span>
         {unreadCount > 0 && <Badge tone="danger">{unreadCount}</Badge>}
-      </Liên hệListItem>
+      </ContactListItem>
     );
   }
 
@@ -511,18 +511,18 @@ export default function Liên hệPanel({ open, onClose, player, contacts = [], 
     <Drawer
       open={open}
       onClose={close}
-      title="Liên hệ"
-      ariaLabel={selected ? 'Cuộc trò chuyện với ' + (selected.name || selected.id) : 'Liên hệ'}
-      headerContent={showLiên hệThreadHeader ? renderLiên hệHeader(true) : null}
-      headerClassName={showLiên hệThreadHeader ? 'vsr-overlay-header--contact-thread' : undefined}
+      title="Contact"
+      ariaLabel={selected ? 'Conversation with ' + (selected.name || selected.id) : 'Contact'}
+      headerContent={showContactThreadHeader ? renderContactHeader(true) : null}
+      headerClassName={showContactThreadHeader ? 'vsr-overlay-header--contact-thread' : undefined}
       headerActions={player && (
         <Button
           size="sm"
           variant="tertiary"
           className="vsr-contact-identity-trigger"
-          onClick={() => setDanh tínhOpen(true)}
-          aria-label="Mở identity"
-          title="Danh tính"
+          onClick={() => setIdentityOpen(true)}
+          aria-label="Open identity"
+          title="Identity"
         >
           <svg className="vsr-contact-header-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <rect x="3.5" y="4.5" width="17" height="15" rx="2.5" />
@@ -535,83 +535,83 @@ export default function Liên hệPanel({ open, onClose, player, contacts = [], 
       side="right"
       className="vsr-contact-drawer"
     >
-      <Liên hệWorkspace>
-        <Liên hệList className={mobileView === 'detail' ? 'is-hidden-compact' : ''}>
-          <Liên hệScrollArea className="vsr-contact-list__items" aria-label="Liên hệs and system sources">
-            <h3 className="vsr-contact-list__section-heading">Nhân vật</h3>
-            {characterLiên hệs.length ? characterLiên hệs.map(renderLiên hệItem) : (
+      <ContactWorkspace>
+        <ContactList className={mobileView === 'detail' ? 'is-hidden-compact' : ''}>
+          <ContactScrollArea className="vsr-contact-list__items" aria-label="Contacts and system sources">
+            <h3 className="vsr-contact-list__section-heading">Characters</h3>
+            {characterContacts.length ? characterContacts.map(renderContactItem) : (
               <div className="vsr-contact-list__empty" role="status">
                 <span className="vsr-contact-list__empty-icon" aria-hidden="true">contacts</span>
-                <strong>Chưa có liên hệ nhân vật</strong>
-                <p>Nhân vật will appear here once encountered or a thread is activated.</p>
+                <strong>No character contacts yet</strong>
+                <p>Characters will appear here once encountered or a thread is activated.</p>
               </div>
             )}
-            <h3 className="vsr-contact-list__section-heading">Hệ thống</h3>
-            {systemLiên hệEntries.map(renderLiên hệItem)}
-          </Liên hệScrollArea>
-        </Liên hệList>
+            <h3 className="vsr-contact-list__section-heading">System</h3>
+            {systemContactEntries.map(renderContactItem)}
+          </ContactScrollArea>
+        </ContactList>
 
-        <Liên hệDetail className={!selected || mobileView === 'list' ? 'is-hidden-compact' : ''}>
+        <ContactDetail className={!selected || mobileView === 'list' ? 'is-hidden-compact' : ''}>
           {!selected ? (
             <div className="vsr-contact-empty">
-              <span className="vsr-contact-empty__icon" aria-hidden="true">{allLiên hệs.length ? 'chat_bubble_outline' : 'contacts'}</span>
-              {allLiên hệs.length ? (
-                <p>Select a liên hệ to view its conversation threads.</p>
+              <span className="vsr-contact-empty__icon" aria-hidden="true">{allContacts.length ? 'chat_bubble_outline' : 'contacts'}</span>
+              {allContacts.length ? (
+                <p>Select a contact to view its conversation threads.</p>
               ) : (
                 <>
-                  <strong>Your liên hệ list is empty</strong>
-                  <p>Nhân vật you encounter or have an activated conversation with will appear here.</p>
+                  <strong>Your contact list is empty</strong>
+                  <p>Characters you encounter or have an activated conversation with will appear here.</p>
                 </>
               )}
             </div>
           ) : (
             <>
-              {!showLiên hệThreadHeader && renderLiên hệHeader()}
+              {!showContactThreadHeader && renderContactHeader()}
 
-              {profileMở && (
-                <div className="vsr-contact-info-panel" role="region" aria-label="Liên hệ details">
-                  <Liên hệScrollArea className="vsr-contact-info-panel__scroll">
-                    <Liên hệProfile character={selected} />
-                  </Liên hệScrollArea>
+              {profileOpen && (
+                <div className="vsr-contact-info-panel" role="region" aria-label="Contact details">
+                  <ContactScrollArea className="vsr-contact-info-panel__scroll">
+                    <ContactProfile character={selected} />
+                  </ContactScrollArea>
                 </div>
               )}
-              <Liên hệScrollArea className="vsr-contact-detail-content" aria-hidden={profileMở || undefined}>
+              <ContactScrollArea className="vsr-contact-detail-content" aria-hidden={profileOpen || undefined}>
                 {activeArea === 'threads' ? (
-                  <Liên hệTopicList aria-label={'Các chủ đề trò chuyện với ' + (selected.name || selected.id)}>
+                  <ContactTopicList aria-label={'Threads for ' + (selected.name || selected.id)}>
                     {threads.length ? threads.map(thread => (
                       <button
                         type="button"
-                        className={'vsr-contact-thread' + (thread.isChưa đọc ? ' is-unread' : '')}
+                        className={'vsr-contact-thread' + (thread.isUnread ? ' is-unread' : '')}
                         key={thread.id}
                         onClick={() => openThread(thread)}
                         disabled={Boolean(pendingThreadId)}
-                        aria-label={'Mở thread ' + thread.title}
+                        aria-label={'Open thread ' + thread.title}
                       >
                         <span className="vsr-contact-thread__icon" aria-hidden="true">
-                          {thread.isChưa đọc ? 'mark_chat_unread' : 'chat_bubble_outline'}
+                          {thread.isUnread ? 'mark_chat_unread' : 'chat_bubble_outline'}
                         </span>
                         <span className="vsr-contact-thread__copy">
                           <span className="vsr-contact-thread__title">{thread.title}</span>
                           <span className="vsr-contact-thread__preview">{thread.preview}</span>
                         </span>
-                        {thread.isChưa đọc && <span className="vsr-contact-thread__unread" aria-label="Chưa đọc" />}
+                        {thread.isUnread && <span className="vsr-contact-thread__unread" aria-label="Unread" />}
                         {pendingThreadId === thread.id && <span className="vsr-contact-thread__pending">Opening…</span>}
                       </button>
                     )) : (
                       <div className="vsr-contact-topic-list__empty">
                         <span className="vsr-contact-topic-list__empty-icon" aria-hidden="true">forum</span>
-                        <strong>{selected.kind === 'system' ? 'Chưa có nội dung' : 'Chưa có cuộc trò chuyện'}</strong>
-                        <p>{selected.kind === 'system' ? 'Messages from this nguồn will appear here.' : 'Cuộc trò chuyện với nhân vật này sẽ xuất hiện tại đây.'}</p>
+                        <strong>{selected.kind === 'system' ? 'No content yet' : 'No conversations yet'}</strong>
+                        <p>{selected.kind === 'system' ? 'Messages from this source will appear here.' : 'Conversations with this character will appear here.'}</p>
                       </div>
                     )}
-                  </Liên hệTopicList>
+                  </ContactTopicList>
                 ) : (
-                  <Liên hệCuộc trò chuyện>
+                  <ContactConversation>
                     <div ref={conversationHistoryRef} className="vsr-contact-conversation__history" aria-live="polite">
                       {history.length ? history.map((line, index) => {
                         const senderId = line.nameID || line.char_id;
                         const isPlayer = senderId === player?.id;
-                        const sender = allLiên hệs.find(liên hệ => contact.id === senderId);
+                        const sender = allContacts.find(contact => contact.id === senderId);
                         const senderName = sender?.name || (selected.kind === 'system' ? selected.name : contactName(senderId));
                         return isPlayer ? (
                           <div className="vsr-contact-message is-player" key={selectedThreadId + ':' + index}>
@@ -619,7 +619,7 @@ export default function Liên hệPanel({ open, onClose, player, contacts = [], 
                           </div>
                         ) : (
                           <div className="vsr-contact-message-row" key={selectedThreadId + ':' + index}>
-                            <Liên hệAvatar
+                            <ContactAvatar
                               name={senderName}
                               avatar={sender?.avatar}
                               size="sm"
@@ -632,12 +632,12 @@ export default function Liên hệPanel({ open, onClose, player, contacts = [], 
                         );
                       }) : (
                         <div className="vsr-contact-conversation__empty">
-                          <strong>{selectedThread?.title || 'Cuộc trò chuyện'}</strong>
-                          <p>Engine không trả về nội dung cho chủ đề này.</p>
+                          <strong>{selectedThread?.title || 'Conversation'}</strong>
+                          <p>The engine returned no content for this thread.</p>
                         </div>
                       )}
                     </div>
-                    <Liên hệComposer>
+                    <ContactComposer>
                       {chatError && <p className="vsr-contact-chat-error" role="alert">{chatError}</p>}
                       {isActiveThread && choices.length > 0 ? (
                         <div className="vsr-contact-chat-choice-panel">
@@ -665,28 +665,28 @@ export default function Liên hệPanel({ open, onClose, player, contacts = [], 
                         <Button className="vsr-contact-chat-next" disabled={chatActionsDisabled} onClick={() => progressChat()}>
                           <span className="vsr-contact-chat-next__label">
                             <span className="vsr-contact-chat-next__status" aria-hidden="true">●</span>
-                            {chatPending || chatSession.transitionPending === true ? 'Đang chuyển tiếp…' : 'Chạm để tiếp tục…'}
+                            {chatPending || chatSession.transitionPending === true ? 'Transitioning…' : 'Tap to continue…'}
                           </span>
                           <span className="vsr-contact-chat-next__icon" aria-hidden="true">➜</span>
                         </Button>
                       ) : null}
-                    </Liên hệComposer>
-                  </Liên hệCuộc trò chuyện>
+                    </ContactComposer>
+                  </ContactConversation>
                 )}
-              </Liên hệScrollArea>
+              </ContactScrollArea>
               {activeArea === 'threads' && chatError && <p className="vsr-contact-chat-error" role="alert">{chatError}</p>}
             </>
           )}
-        </Liên hệDetail>
-      </Liên hệWorkspace>
-      <Danh tínhDrawer
+        </ContactDetail>
+      </ContactWorkspace>
+      <IdentityDrawer
         open={identityOpen}
-        onClose={() => setDanh tínhOpen(false)}
+        onClose={() => setIdentityOpen(false)}
         player={player}
-        contacts={allLiên hệs}
-        onSelectLiên hệ={id => {
-          setDanh tínhOpen(false);
-          selectLiên hệ(id);
+        contacts={allContacts}
+        onSelectContact={id => {
+          setIdentityOpen(false);
+          selectContact(id);
         }}
       />
     </Drawer>
