@@ -885,6 +885,8 @@ export const DEMO_SCRIPT = {
           "actions": [
             "action_read_notice",
             "action_talk_mai",
+            "action_talk_mai_well",
+            "action_talk_mai_umbrella",
             "action_enter_well",
             "action_travel_inn",
             "action_travel_chapel",
@@ -987,6 +989,8 @@ export const DEMO_SCRIPT = {
           },
           "actions": [
             "action_question_hanh",
+            "action_question_hanh_guestbook",
+            "action_question_hanh_room",
             "action_open_guestbook",
             "action_return_square",
             "action_travel_chapel",
@@ -1183,6 +1187,7 @@ export const DEMO_SCRIPT = {
           },
           "actions": [
             "action_check_desk",
+            "action_talk_linh",
             "action_decode_roster",
             "action_return_square",
             "action_travel_forest",
@@ -3939,6 +3944,173 @@ export const DEMO_SCRIPT = {
           }
         ]
       }
+    },
+    "action_talk_mai_well": {
+      "meta": {
+        "title": "Mai — Hỏi về phù hiệu",
+        "buttonLabel": "Hỏi tiếp",
+        "desc": "Sau khi tìm thấy phù hiệu dưới giếng, bạn quay lại hỏi Mai về ký hiệu của đội sơ tán và ký ức bị đứt đoạn của cô."
+      },
+      "set": {
+        "display": "show"
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "goto",
+            "subtype": "chat",
+            "target": "chat_mai_well"
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "clue_well",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "clue_lantern",
+            "op": "==",
+            "value": true
+          }
+        ]
+      }
+    },
+    "action_talk_mai_umbrella": {
+      "meta": {
+        "title": "Mai — Hỏi về chiếc ô đỏ",
+        "buttonLabel": "Đối chiếu",
+        "desc": "Khi đã biết chiếc ô đỏ mang dấu vết của người thứ mười hai, bạn hỏi Mai về cái tên bị khắc và ký ức mâu thuẫn của cô."
+      },
+      "set": {
+        "display": "show"
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "goto",
+            "subtype": "chat",
+            "target": "chat_mai_umbrella"
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "knows_twelve",
+            "op": "==",
+            "value": true
+          }
+        ]
+      }
+    },
+    "action_question_hanh_guestbook": {
+      "meta": {
+        "title": "Bà Hạnh — Đối chiếu sổ khách",
+        "buttonLabel": "Hỏi về sổ",
+        "desc": "Sau khi xem sổ khách, bạn quay lại hỏi Bà Hạnh về những dòng tên không thể bị xóa và căn phòng thứ bảy."
+      },
+      "set": {
+        "display": "show"
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "goto",
+            "subtype": "chat",
+            "target": "chat_hanh_guestbook"
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "found_guestbook",
+            "op": "==",
+            "value": true
+          }
+        ]
+      }
+    },
+    "action_question_hanh_room": {
+      "meta": {
+        "title": "Bà Hạnh — Hỏi về phòng thứ bảy",
+        "buttonLabel": "Chất vấn",
+        "desc": "Sau khi tìm được vật chứng trong căn phòng bị giấu, bạn yêu cầu Bà Hạnh giải thích bức ảnh hành lang và những đồ vật được đặt sẵn."
+      },
+      "set": {
+        "display": "show"
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "goto",
+            "subtype": "chat",
+            "target": "chat_hanh_room"
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "evidence_hidden_room",
+            "op": "==",
+            "value": true
+          }
+        ]
+      }
+    },
+    "action_talk_linh": {
+      "meta": {
+        "title": "Linh",
+        "buttonLabel": "Trò chuyện",
+        "desc": "Bức ảnh lớp và dấu vết trong sổ điểm danh khiến Linh chịu nói về chiếc ghế thứ mười hai, cái tên bị xóa và ngày sơ tán."
+      },
+      "set": {
+        "display": "show"
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "goto",
+            "subtype": "chat",
+            "target": "chat_linh"
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "OR",
+        "check": [
+          {
+            "type": "state",
+            "property": "clue_photo",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "clue_roster",
+            "op": "==",
+            "value": true
+          }
+        ]
+      }
     }
   },
   "chat": {
@@ -4689,6 +4861,826 @@ export const DEMO_SCRIPT = {
             "id": "voice_village_question",
             "text": "Nếu ký ức có thể nói dối, làm sao tôi biết đâu là sự thật?",
             "jump": "village_question"
+          }
+        ]
+      }
+    },
+    "chat_mai_well": {
+      "meta": {
+        "title": "Mai — Dấu vết dưới giếng",
+        "loop": false,
+        "sender": "mai",
+        "entry": "start",
+        "to": [
+          "player"
+        ]
+      },
+      "block": {
+        "start": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Cậu đã nhìn thấy phù hiệu dưới đáy giếng rồi phải không?"
+            },
+            {
+              "char_id": "mai",
+              "text": "Tôi cứ nghĩ nếu không ai tìm thấy nó, chuyện đêm ấy sẽ tiếp tục nằm yên."
+            }
+          ],
+          "choice_id": "well_ask",
+          "choiced": false
+        },
+        "badge": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Phù hiệu ấy thuộc đội sơ tán. Tôi nhận ra vết khắc, nhưng không nhớ ai đã đeo nó. Có những ký ức chỉ trở lại dưới dạng một vật vô tri."
+            }
+          ],
+          "choice_id": "well_badge_follow",
+          "choiced": false
+        },
+        "self": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Tôi từng đứng sát miệng giếng. Có người nắm cổ tay tôi, nhưng khi quay lại, tôi chỉ thấy chiếc ô đỏ nằm trên đất."
+            }
+          ],
+          "choice_id": "well_self_follow",
+          "choiced": false
+        },
+        "silence": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Tôi im lặng vì mỗi lần kể, một chi tiết lại biến mất. Lần gần nhất, tôi không còn nhớ khuôn mặt người đã gọi tên mình."
+            }
+          ],
+          "choice_id": "well_silence_follow",
+          "choiced": false
+        },
+        "badge_mark": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Vết khắc trên phù hiệu trùng với dấu ở bờ đê. Nó chứng minh người mang phù hiệu đã tham gia cuộc sơ tán, không chứng minh người đó là ai."
+            }
+          ],
+          "choiced": false
+        },
+        "badge_memory": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Tôi nhớ tiếng kim loại va vào thành giếng. Sau đó là ba hồi chuông, rồi một khoảng lặng dài đến mức tôi tưởng cả làng đã ngừng thở."
+            }
+          ],
+          "choiced": false
+        },
+        "self_wrist": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Trên cổ tay tôi từng có một vệt hằn hình dây buộc. Tôi không biết đó là dấu bị kéo đi hay chỉ là vết thương từ trước."
+            }
+          ],
+          "choiced": false
+        },
+        "self_doubt": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Nếu ký ức ấy thuộc về người khác, có lẽ tôi đã mang nó suốt mười bảy năm mà không nhận ra."
+            }
+          ],
+          "choiced": false
+        },
+        "silence_reason": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Tôi sợ nếu kể hết, mọi người sẽ nhớ lại cùng một lúc. Tôi không biết điều gì sẽ xảy ra khi cả làng cùng nhớ."
+            }
+          ],
+          "choiced": false
+        },
+        "silence_help": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Nếu muốn giúp, hãy đối chiếu phù hiệu với danh sách vận chuyển. Đừng dùng lời tôi làm bằng chứng duy nhất."
+            }
+          ],
+          "choiced": false
+        }
+      },
+      "choice": {
+        "well_ask": [
+          {
+            "id": "mai_well_badge",
+            "text": "Tôi tìm thấy phù hiệu dưới giếng. Cô nhận ra nó chứ?",
+            "jump": "badge"
+          },
+          {
+            "id": "mai_well_self",
+            "text": "Cô nói từng đứng bên giếng. Chuyện gì đã xảy ra với cô?",
+            "jump": "self"
+          },
+          {
+            "id": "mai_well_silence",
+            "text": "Vì sao cô không kể chuyện này từ trước?",
+            "jump": "silence"
+          }
+        ],
+        "well_badge_follow": [
+          {
+            "id": "mai_badge_mark",
+            "text": "Vết khắc trên phù hiệu có ý nghĩa gì?",
+            "jump": "badge_mark"
+          },
+          {
+            "id": "mai_badge_memory",
+            "text": "Cô nhớ điều gì xảy ra ngay sau đó?",
+            "jump": "badge_memory"
+          }
+        ],
+        "well_self_follow": [
+          {
+            "id": "mai_self_wrist",
+            "text": "Vết hằn trên cổ tay cô có liên quan đến người kéo cô đi không?",
+            "jump": "self_wrist"
+          },
+          {
+            "id": "mai_self_doubt",
+            "text": "Cô có chắc ký ức ấy là của mình?",
+            "jump": "self_doubt"
+          }
+        ],
+        "well_silence_follow": [
+          {
+            "id": "mai_silence_reason",
+            "text": "Cô sợ điều gì sẽ xảy ra nếu mọi người nhớ lại?",
+            "jump": "silence_reason"
+          },
+          {
+            "id": "mai_silence_help",
+            "text": "Tôi có thể kiểm chứng lời cô bằng cách nào?",
+            "jump": "silence_help"
+          }
+        ]
+      }
+    },
+    "chat_mai_umbrella": {
+      "meta": {
+        "title": "Mai — Cái tên trên cán ô",
+        "loop": false,
+        "sender": "mai",
+        "entry": "start",
+        "to": [
+          "player"
+        ]
+      },
+      "block": {
+        "start": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Cậu đã đọc cái tên khắc bên trong cán ô đỏ chưa?"
+            },
+            {
+              "char_id": "mai",
+              "text": "Đừng vội cho rằng cái tên ấy giải thích được người thứ mười hai. Có thể nó chỉ cho biết ai đã cầm chiếc ô."
+            }
+          ],
+          "choice_id": "umbrella_ask",
+          "choiced": false
+        },
+        "name": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Nét khắc bị cào lại nhiều lần. Tôi nhận ra chữ đầu tiên, nhưng phần còn lại giống tên của một người mà cả làng đều bảo chưa từng tồn tại."
+            }
+          ],
+          "choice_id": "name_follow",
+          "choiced": false
+        },
+        "owner": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Chiếc ô từng ở quầy hàng của tôi. Nhưng có những ngày tôi nhớ mình đã đưa nó cho một đứa trẻ, có ngày lại nhớ chính mình cầm nó đi xuống giếng."
+            }
+          ],
+          "choice_id": "owner_follow",
+          "choiced": false
+        },
+        "accuse": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Nếu cậu muốn hỏi tôi có phải người thứ mười hai không, câu trả lời là tôi không biết. Tôi chỉ biết ký ức của mình có một khoảng trống mang hình dáng của người đó."
+            }
+          ],
+          "choice_id": "accuse_follow",
+          "choiced": false
+        },
+        "first_letter": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Chữ đầu tiên có thể là L. Nhưng trên những bản ghi cũ, tên ấy bị sửa thành một vết mực đen."
+            }
+          ],
+          "choiced": false
+        },
+        "other_names": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Tôi từng nghe ba cách đọc khác nhau cho cùng một cái tên. Mỗi người đều tin cách của mình là đúng."
+            }
+          ],
+          "choiced": false
+        },
+        "child": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Tôi nhớ bàn tay nhỏ nắm cán ô. Không nhớ mặt, không nhớ giọng. Chỉ nhớ đứa trẻ hỏi liệu chuyến tàu có chờ đủ mười hai người không."
+            }
+          ],
+          "choiced": false
+        },
+        "memory": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Nếu ký ức ấy là của tôi, tôi đã quên một người. Nếu là của người khác, tôi đang nhớ thay họ."
+            }
+          ],
+          "choiced": false
+        },
+        "doubt": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Cậu nên hỏi Linh về bức ảnh lớp. Một cái tên có thể bị sửa, nhưng vị trí của một người trong bức ảnh khó biến mất hoàn toàn."
+            }
+          ],
+          "choiced": false
+        },
+        "leave": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Tôi không thể đưa cậu câu trả lời chắc chắn. Hãy giữ chiếc ô và đối chiếu nó với hồ sơ."
+            }
+          ],
+          "choiced": false
+        }
+      },
+      "choice": {
+        "umbrella_ask": [
+          {
+            "id": "mai_umbrella_name",
+            "text": "Cô có nhận ra cái tên được khắc trên cán ô không?",
+            "jump": "name"
+          },
+          {
+            "id": "mai_umbrella_owner",
+            "text": "Chiếc ô này vốn thuộc về ai?",
+            "jump": "owner"
+          },
+          {
+            "id": "mai_umbrella_accuse",
+            "text": "Cô có phải người thứ mười hai không?",
+            "jump": "accuse"
+          }
+        ],
+        "name_follow": [
+          {
+            "id": "mai_name_letter",
+            "text": "Cô đọc được chữ nào đầu tiên?",
+            "jump": "first_letter"
+          },
+          {
+            "id": "mai_name_versions",
+            "text": "Vì sao mỗi người lại đọc cái tên ấy khác nhau?",
+            "jump": "other_names"
+          }
+        ],
+        "owner_follow": [
+          {
+            "id": "mai_owner_child",
+            "text": "Cô có nhớ đứa trẻ đã cầm chiếc ô không?",
+            "jump": "child"
+          },
+          {
+            "id": "mai_owner_memory",
+            "text": "Cô nghĩ ký ức đó thuộc về ai?",
+            "jump": "memory"
+          }
+        ],
+        "accuse_follow": [
+          {
+            "id": "mai_accuse_doubt",
+            "text": "Cô có nghĩ mình đang nhớ thay một người khác?",
+            "jump": "doubt"
+          },
+          {
+            "id": "mai_accuse_leave",
+            "text": "Tôi sẽ đối chiếu chiếc ô với hồ sơ trước.",
+            "jump": "leave"
+          }
+        ]
+      }
+    },
+    "chat_hanh_guestbook": {
+      "meta": {
+        "title": "Bà Hạnh — Những dòng cuối sổ khách",
+        "loop": false,
+        "sender": "hanh",
+        "entry": "start",
+        "to": [
+          "player"
+        ]
+      },
+      "block": {
+        "start": {
+          "line": [
+            {
+              "char_id": "hanh",
+              "text": "Cậu đã xem trang cuối rồi. Tôi biết cậu sẽ quay lại hỏi về nó."
+            },
+            {
+              "char_id": "hanh",
+              "text": "Có những cái tên được viết vào sổ sau khi người mang tên ấy đã rời khỏi làng. Cũng có tên không bao giờ được gạch đi."
+            }
+          ],
+          "choice_id": "guestbook_ask",
+          "choiced": false
+        },
+        "writer": {
+          "line": [
+            {
+              "char_id": "hanh",
+              "text": "Tôi không nhận ra nét chữ. Nhưng mực và giấy đều thuộc loại nhà trọ chỉ dùng từ mười bảy năm trước. Ai đó đã viết tên cậu bằng một cây bút không còn được sản xuất."
+            }
+          ],
+          "choice_id": "writer_follow",
+          "choiced": false
+        },
+        "departure": {
+          "line": [
+            {
+              "char_id": "hanh",
+              "text": "Tôi từng gạch tên khách khi họ trả chìa khóa. Riêng một số dòng, sáng hôm sau lại hiện ra nguyên vẹn, dù tôi nhớ rõ mình đã xóa."
+            }
+          ],
+          "choice_id": "departure_follow",
+          "choiced": false
+        },
+        "duplicate": {
+          "line": [
+            {
+              "char_id": "hanh",
+              "text": "Có hai trang ghi cùng một ngày đến, cùng một căn phòng, nhưng tên người thuê khác nhau. Một trang mang tên cậu."
+            }
+          ],
+          "choice_id": "duplicate_follow",
+          "choiced": false
+        },
+        "ink": {
+          "line": [
+            {
+              "char_id": "hanh",
+              "text": "Mực không mới. Nó chỉ chưa khô trong ký ức của tôi. Nếu nhìn bằng mắt, trang giấy đã cũ; nếu nhớ lại, tôi vừa mới viết nó."
+            }
+          ],
+          "choiced": false
+        },
+        "room": {
+          "line": [
+            {
+              "char_id": "hanh",
+              "text": "Căn phòng ấy được ghi là phòng số bảy. Nhưng sơ đồ nhà trọ chỉ có sáu phòng, và tôi không còn giữ bản vẽ cũ."
+            }
+          ],
+          "choiced": false
+        },
+        "key": {
+          "line": [
+            {
+              "char_id": "hanh",
+              "text": "Chìa khóa dự phòng từng treo sau quầy. Tôi không nhớ ai lấy nó, chỉ biết ổ khóa ở cuối hành lang vẫn còn dấu mới."
+            }
+          ],
+          "choiced": false
+        },
+        "erase": {
+          "line": [
+            {
+              "char_id": "hanh",
+              "text": "Tôi đã thử xé trang giấy. Sáng hôm sau, cuốn sổ trở lại nguyên vẹn, chỉ có ngón tay tôi dính mực đen."
+            }
+          ],
+          "choiced": false
+        },
+        "proof": {
+          "line": [
+            {
+              "char_id": "hanh",
+              "text": "Hãy tìm căn phòng bị thiếu. Nếu trong đó còn vật gì, nó có thể cho biết ai đã viết tên cậu và vì sao."
+            }
+          ],
+          "choiced": false
+        }
+      },
+      "choice": {
+        "guestbook_ask": [
+          {
+            "id": "hanh_guestbook_writer",
+            "text": "Ai đã viết tên tôi vào trang cuối?",
+            "jump": "writer"
+          },
+          {
+            "id": "hanh_guestbook_departure",
+            "text": "Vì sao tên những người đã rời đi vẫn còn trong sổ?",
+            "jump": "departure"
+          },
+          {
+            "id": "hanh_guestbook_duplicate",
+            "text": "Có phải sổ khách ghi nhiều phiên bản của cùng một người?",
+            "jump": "duplicate"
+          }
+        ],
+        "writer_follow": [
+          {
+            "id": "hanh_writer_ink",
+            "text": "Mực trên trang ấy có thật sự mới không?",
+            "jump": "ink"
+          },
+          {
+            "id": "hanh_writer_room",
+            "text": "Tên tôi được ghi cạnh căn phòng nào?",
+            "jump": "room"
+          }
+        ],
+        "departure_follow": [
+          {
+            "id": "hanh_departure_key",
+            "text": "Bà còn giữ chìa khóa của những người đó không?",
+            "jump": "key"
+          },
+          {
+            "id": "hanh_departure_erase",
+            "text": "Bà từng thử xóa hẳn những cái tên ấy chưa?",
+            "jump": "erase"
+          }
+        ],
+        "duplicate_follow": [
+          {
+            "id": "hanh_duplicate_room",
+            "text": "Hai dòng đó có cùng chỉ đến phòng thứ bảy không?",
+            "jump": "room"
+          },
+          {
+            "id": "hanh_duplicate_proof",
+            "text": "Tôi nên tìm bằng chứng ở đâu?",
+            "jump": "proof"
+          }
+        ]
+      }
+    },
+    "chat_hanh_room": {
+      "meta": {
+        "title": "Bà Hạnh — Căn phòng thứ bảy",
+        "loop": false,
+        "sender": "hanh",
+        "entry": "start",
+        "to": [
+          "player"
+        ]
+      },
+      "block": {
+        "start": {
+          "line": [
+            {
+              "char_id": "hanh",
+              "text": "Cậu đã mở được căn phòng đó. Vậy là điều tôi cố quên vẫn còn ở đây."
+            },
+            {
+              "char_id": "hanh",
+              "text": "Tôi không định ngăn cậu vào. Tôi chỉ không muốn cậu nghĩ mọi thứ trong phòng đều thuộc về người mang tên mình."
+            }
+          ],
+          "choice_id": "room_ask",
+          "choiced": false
+        },
+        "belongings": {
+          "line": [
+            {
+              "char_id": "hanh",
+              "text": "Trong phòng có một chiếc cốc, một tấm ảnh bị úp xuống và dấu bụi hình chữ nhật trên bàn. Tôi không biết món nào được đặt ở đó đầu tiên."
+            }
+          ],
+          "choice_id": "belongings_follow",
+          "choiced": false
+        },
+        "photo": {
+          "line": [
+            {
+              "char_id": "hanh",
+              "text": "Tấm ảnh chụp hành lang nhà trọ. Có bảy cánh cửa, nhưng người đứng trước cánh cửa cuối cùng đã bị cắt khỏi ảnh."
+            }
+          ],
+          "choice_id": "photo_follow",
+          "choiced": false
+        },
+        "waiting": {
+          "line": [
+            {
+              "char_id": "hanh",
+              "text": "Tôi từng đặt một chiếc cốc thứ hai mỗi tối. Khi nhận ra mình làm vậy, tôi đã cất nó đi. Sáng hôm sau nó lại nằm trên bàn."
+            }
+          ],
+          "choice_id": "waiting_follow",
+          "choiced": false
+        },
+        "back_photo": {
+          "line": [
+            {
+              "char_id": "hanh",
+              "text": "Mặt sau ảnh có dòng chữ: “Đừng khóa cửa khi đủ mười hai”. Không có chữ ký."
+            }
+          ],
+          "choiced": false
+        },
+        "identity": {
+          "line": [
+            {
+              "char_id": "hanh",
+              "text": "Tôi không thể nói người trong ảnh là cậu. Khuôn mặt đã bị cắt, và phần còn lại không đủ để nhận dạng."
+            }
+          ],
+          "choiced": false
+        },
+        "cup": {
+          "line": [
+            {
+              "char_id": "hanh",
+              "text": "Chiếc cốc có vết son môi ở miệng, nhưng tôi sống một mình. Có lẽ căn phòng này từng có người ở cùng tôi."
+            }
+          ],
+          "choiced": false
+        },
+        "night": {
+          "line": [
+            {
+              "char_id": "hanh",
+              "text": "Tôi nghe tiếng chìa khóa xoay vào lúc 03:17. Khi mở cửa, hành lang trống không, nhưng chiếc cốc thứ hai đã được rót đầy."
+            }
+          ],
+          "choiced": false
+        },
+        "truth": {
+          "line": [
+            {
+              "char_id": "hanh",
+              "text": "Tôi sẽ không yêu cầu cậu tin tôi. Hãy giữ tấm ảnh và so sánh nó với ảnh lớp ở trường."
+            }
+          ],
+          "choiced": false
+        }
+      },
+      "choice": {
+        "room_ask": [
+          {
+            "id": "hanh_room_belongings",
+            "text": "Những món đồ trong phòng thuộc về ai?",
+            "jump": "belongings"
+          },
+          {
+            "id": "hanh_room_photo",
+            "text": "Bức ảnh hành lang có gì bất thường?",
+            "jump": "photo"
+          },
+          {
+            "id": "hanh_room_waiting",
+            "text": "Bà đã từng chờ ai trong căn phòng này?",
+            "jump": "waiting"
+          }
+        ],
+        "belongings_follow": [
+          {
+            "id": "hanh_belongings_photo",
+            "text": "Tấm ảnh có manh mối gì ở mặt sau?",
+            "jump": "back_photo"
+          },
+          {
+            "id": "hanh_belongings_identity",
+            "text": "Bà có nhận ra người từng ở đây không?",
+            "jump": "identity"
+          }
+        ],
+        "photo_follow": [
+          {
+            "id": "hanh_photo_cup",
+            "text": "Chiếc cốc thứ hai có liên quan đến căn phòng không?",
+            "jump": "cup"
+          },
+          {
+            "id": "hanh_photo_night",
+            "text": "Bà có nghe thấy ai trở lại vào ban đêm?",
+            "jump": "night"
+          }
+        ],
+        "waiting_follow": [
+          {
+            "id": "hanh_waiting_cup",
+            "text": "Vì sao bà vẫn đặt hai chiếc cốc?",
+            "jump": "cup"
+          },
+          {
+            "id": "hanh_waiting_truth",
+            "text": "Tôi nên làm gì với những gì tìm thấy ở đây?",
+            "jump": "truth"
+          }
+        ]
+      }
+    },
+    "chat_linh": {
+      "meta": {
+        "title": "Linh — Chỗ ngồi bị xóa",
+        "loop": false,
+        "sender": "linh",
+        "entry": "start",
+        "to": [
+          "player"
+        ]
+      },
+      "block": {
+        "start": {
+          "line": [
+            {
+              "char_id": "linh",
+              "text": "Anh tìm thấy bức ảnh rồi à? Đừng nhìn vào chỗ bị xé trước. Hãy đếm những chiếc ghế."
+            },
+            {
+              "char_id": "linh",
+              "text": "Trong lớp hôm đó có mười hai chỗ ngồi. Cô giáo chỉ gọi tên mười một người."
+            }
+          ],
+          "choice_id": "linh_ask",
+          "choiced": false
+        },
+        "photo": {
+          "line": [
+            {
+              "char_id": "linh",
+              "text": "Em đứng ở hàng thứ hai. Chỗ bên cạnh em luôn có một chiếc cặp màu xanh, nhưng trong ảnh nó bị cắt mất cùng một người."
+            }
+          ],
+          "choice_id": "photo_follow",
+          "choiced": false
+        },
+        "name": {
+          "line": [
+            {
+              "char_id": "linh",
+              "text": "Em nhớ tên người đó bắt đầu bằng chữ L. Nhưng mỗi lần viết ra, nét cuối cùng lại biến thành một vệt đen."
+            }
+          ],
+          "choice_id": "name_follow",
+          "choiced": false
+        },
+        "teacher": {
+          "line": [
+            {
+              "char_id": "linh",
+              "text": "Cô giáo dừng ở số thứ mười một. Cô nhìn xuống sổ, rồi nhìn vào chiếc ghế trống. Sau đó cô bảo cả lớp đọc lại từ đầu."
+            }
+          ],
+          "choice_id": "teacher_follow",
+          "choiced": false
+        },
+        "color": {
+          "line": [
+            {
+              "char_id": "linh",
+              "text": "Chiếc cặp màu xanh có một miếng vá hình ngôi sao. Em đã khâu nó vào hôm trước ngày sơ tán."
+            }
+          ],
+          "choiced": false
+        },
+        "seat": {
+          "line": [
+            {
+              "char_id": "linh",
+              "text": "Chỗ ngồi ấy không trống. Có người ngồi đó, nhưng khi chụp ảnh mọi người đều quay mặt về phía máy ảnh như thể không thấy."
+            }
+          ],
+          "choiced": false
+        },
+        "letters": {
+          "line": [
+            {
+              "char_id": "linh",
+              "text": "Em từng viết tên ấy lên bảng. Khi quay lại, chữ đã bị lau sạch, nhưng bụi phấn vẫn còn vết lõm."
+            }
+          ],
+          "choiced": false
+        },
+        "roll": {
+          "line": [
+            {
+              "char_id": "linh",
+              "text": "Sổ điểm danh có mười hai dòng. Dòng cuối không bị xé; nó bị phủ một lớp mực dày đến mức giấy gần thủng."
+            }
+          ],
+          "choiced": false
+        },
+        "fear": {
+          "line": [
+            {
+              "char_id": "linh",
+              "text": "Em sợ nếu đọc đúng tên, người đó sẽ phải quay lại. Nhưng em cũng sợ nếu không ai đọc, người đó sẽ biến mất lần nữa."
+            }
+          ],
+          "choiced": false
+        },
+        "proof": {
+          "line": [
+            {
+              "char_id": "linh",
+              "text": "Hãy lấy bản sao sổ điểm danh và so với tấm ảnh. Đừng chỉ dựa vào điều em nhớ."
+            }
+          ],
+          "choiced": false
+        }
+      },
+      "choice": {
+        "linh_ask": [
+          {
+            "id": "linh_photo",
+            "text": "Em nhớ gì về người bị cắt khỏi bức ảnh?",
+            "jump": "photo"
+          },
+          {
+            "id": "linh_name",
+            "text": "Em có nhớ tên người đó không?",
+            "jump": "name"
+          },
+          {
+            "id": "linh_teacher",
+            "text": "Cô giáo đã làm gì khi đến dòng cuối?",
+            "jump": "teacher"
+          }
+        ],
+        "photo_follow": [
+          {
+            "id": "linh_photo_color",
+            "text": "Chiếc cặp màu xanh có đặc điểm gì?",
+            "jump": "color"
+          },
+          {
+            "id": "linh_photo_seat",
+            "text": "Em có chắc đã có người ngồi ở đó?",
+            "jump": "seat"
+          }
+        ],
+        "name_follow": [
+          {
+            "id": "linh_name_letters",
+            "text": "Em đã từng viết cái tên ấy ở đâu?",
+            "jump": "letters"
+          },
+          {
+            "id": "linh_name_roll",
+            "text": "Sổ điểm danh có ghi tên đó không?",
+            "jump": "roll",
+            "effect": [
+              {
+                "type": "set",
+                "subtype": "state",
+                "target": "truth_fragments",
+                "value": 1
+              }
+            ]
+          }
+        ],
+        "teacher_follow": [
+          {
+            "id": "linh_teacher_fear",
+            "text": "Em sợ điều gì nếu đọc đúng tên?",
+            "jump": "fear"
+          },
+          {
+            "id": "linh_teacher_proof",
+            "text": "Làm sao kiểm chứng ký ức của em?",
+            "jump": "proof"
           }
         ]
       }
