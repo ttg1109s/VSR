@@ -34,7 +34,6 @@ export class NotificationSystem {
       : input.duration;
     if (requestedDuration !== null && (!Number.isFinite(requestedDuration) || requestedDuration < 0)) throw new TypeError('Notification duration must be a non-negative number or null.');
     const duration = requestedDuration === null ? null : Math.min(30000, requestedDuration);
-    if (input.sound !== undefined && typeof input.sound !== 'boolean') throw new TypeError('Notification sound must be a boolean.');
     const soundProfile = String(input.soundProfile || 'default');
     if (!['default', 'soft', 'success', 'warning', 'critical', 'special'].includes(soundProfile)) throw new TypeError('Unsupported notification sound profile: ' + soundProfile);
     const category = String(input.category || `${input.source || 'engine'}.${title}`).slice(0, 80);
@@ -47,7 +46,7 @@ export class NotificationSystem {
       priority: Number.isFinite(input.priority) ? Math.min(10, Math.max(0, input.priority)) : PRIORITY[severity],
       requestedPresentation,
       presentation: effectivePresentation,
-      sound: input.sound !== false,
+      sound: true,
       soundProfile,
       createdAt: now, updatedAt: now,
       expiresAt: duration === null ? null : now + duration,
