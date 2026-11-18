@@ -1,4 +1,6 @@
 .vsr-notification-drawer.vsr-overlay-panel{width:min(100%,560px)}
+.vsr-overlay--drawer.vsr-overlay{padding:0}
+.vsr-notification-drawer.vsr-overlay-panel .vsr-overlay-content{padding:0 0 16px}
 .vsr-notification-center__header{align-items:flex-start}
 .vsr-notification-center__header .vsr-overlay-header__custom{flex:1;min-width:0}
 .vsr-notification-center__header-content{display:flex;flex:1;min-width:0;align-items:center;justify-content:space-between;gap:16px}
@@ -18,8 +20,8 @@
 .vsr-notification-center__history{display:flex;flex:1;flex-direction:column;gap:24px}
 .vsr-notification-group{display:flex;flex-direction:column;gap:0}
 .vsr-notification-group h3{margin:0 0 8px;padding-top:12px;color:var(--vsr-color-text-secondary);font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
-.vsr-notification-item{display:flex;align-items:stretch;padding:16px 0;border-bottom:1px solid var(--vsr-color-border-subtle)}
-.vsr-notification-item.is-unread{background:transparent;cursor:pointer;touch-action:pan-y}
+.vsr-notification-item{display:flex;width:100%;box-sizing:border-box;align-items:stretch;padding:16px 0;border-bottom:1px solid var(--vsr-color-border-subtle);touch-action:pan-y;-webkit-user-select:none;user-select:none}
+.vsr-notification-item.is-unread{background:transparent;cursor:pointer}
 .vsr-notification-item__body{display:flex;flex:1;min-width:0;flex-direction:column;gap:6px}
 .vsr-notification-item__heading{display:flex;align-items:center;gap:8px;min-width:0}
 .vsr-notification-item__heading strong{overflow-wrap:anywhere;font-size:16px;font-weight:600;line-height:22px}
@@ -37,6 +39,7 @@
 .vsr-notification-center__error{margin:0;padding:8px 10px;border-left:3px solid var(--vsr-color-error);color:var(--vsr-color-error);font-size:12px}
 @media(max-width:599px){
   .vsr-notification-drawer.vsr-overlay-panel{width:100%}
+  .vsr-notification-drawer.vsr-overlay-panel .vsr-overlay-content{padding:0 0 16px}
   .vsr-notification-center__header{gap:8px;padding:16px 16px 12px}
   .vsr-notification-center__header-copy h2{font-size:20px}
   .vsr-notification-center__header-actions{gap:4px}
