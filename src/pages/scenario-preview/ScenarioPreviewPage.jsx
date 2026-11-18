@@ -65,14 +65,14 @@ function ScenarioDescription({ description }) {
 function formatPlayTime(minutes) {
   if (typeof minutes !== 'number' || !Number.isFinite(minutes)) return null;
   return minutes < 60
-    ? `${minutes} min`
-    : `${Math.floor(minutes / 60)} hr${minutes % 60 ? ` ${minutes % 60} min` : ''}`;
+    ? `${minutes} phút`
+    : `${Math.floor(minutes / 60)} giờ${minutes % 60 ? ` ${minutes % 60} phút` : ''}`;
 }
 
 function formatDate(value) {
   if (!value) return null;
   const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString('en-US');
+  return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString('vi-VN');
 }
 
 function formatLanguage(value) {
@@ -162,7 +162,7 @@ export default function ScenarioPreviewPage({ preview, onBack, onPlay }) {
 
         {publicationItems.some(item => item.value !== null && item.value !== undefined && item.value !== '') && (
           <section className="vsr-stack vsr-stack--gap-3" aria-labelledby="scenario-publication-title">
-            <h2 id="scenario-publication-title">Publication</h2>
+            <h2 id="scenario-publication-title">Thông tin xuất bản</h2>
             <DescriptionList layout="list" gap="comfortable" divided>
               {publicationItems.map(item => (
                 <DescriptionListItem key={item.label} label={item.label} value={item.value} layout="inline" />
@@ -173,7 +173,7 @@ export default function ScenarioPreviewPage({ preview, onBack, onPlay }) {
 
         {hasLegalInformation && (
           <section className="vsr-stack vsr-stack--gap-3" aria-labelledby="scenario-legal-title">
-            <h2 id="scenario-legal-title">Bản quyền and license</h2>
+            <h2 id="scenario-legal-title">Bản quyền và giấy phép</h2>
             <DescriptionList layout="list" gap="comfortable" divided>
               <DescriptionListItem label="Bản quyền" value={metadata.copyright} layout="inline" />
               <DescriptionListItem label="Giấy phép" value={metadata.license} layout="inline" />
