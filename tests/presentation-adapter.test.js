@@ -385,7 +385,7 @@ test('Contact exposes Engine-owned thread summaries and opens only a thread belo
 });
 
 
-test('chat action can finish and reopen as a read-only review without duplicating history', async () => {
+test('chat action starts the umbrella follow-up without duplicating completed thread history', async () => {
   const host = new LocalEngineHost();
   const client = new JsonClient(host);
   try {
@@ -431,7 +431,7 @@ test('chat action can finish and reopen as a read-only review without duplicatin
     ]);
     assert.equal(host.engine.state.chats.chat_mai.set.read, true);
 
-    // The same reusable action reopens the completed thread as review, not a new run.
+    // The reusable action advances to the scenario's umbrella follow-up thread.
     const viewEvents = [];
     const unsubscribe = client.subscribe(message => {
       if (message.type === 'event' && message.event?.event === 'presentation.chat.viewRequested') {
@@ -443,23 +443,15 @@ test('chat action can finish and reopen as a read-only review without duplicatin
     const reviewRequest = viewEvents.at(-1);
     assert.equal(reviewRequest?.contactId, 'mai');
     assert.equal(reviewRequest?.chatId, 'chat_mai_umbrella');
-    assert.equal(reviewRequest?.mode, 'review');
+    assert.equal(reviewRequest?.mode, 'active');
     assert.ok(reviewRequest?.requestId);
     unsubscribe();
-    // The Engine review session ends immediately; the independent view request
-    // keeps the React history view open without pretending gameplay is active.
-    assert.equal(reopened.session.chat.active, false);
-    assert.equal(reopened.session.chat.mode, 'idle');
+    // The follow-up is active independently; the completed earlier thread remains unchanged.
+    assert.equal(reopened.session.chat.active, true);
+    assert.equal(reopened.session.chat.mode, 'active');
     assert.equal(reopened.session.chat.isReview, false);
     assert.equal(reopened.session.chat.waitingChoice, false);
     assert.deepEqual(reopened.session.chat.history.chat_mai, completedHistory);
-
-    // A progression command cannot advance or mutate a completed read-only thread.
-    await client.nextChat();
-    assert.equal(client.getSnapshot().session.chat.active, false);
-    assert.equal(client.getSnapshot().session.chat.mode, 'idle');
-    assert.equal(client.getSnapshot().session.chat.isReview, false);
-    assert.deepEqual(client.getSnapshot().session.chat.history.chat_mai, completedHistory);
   } finally {
     client.dispose();
     host.close();
