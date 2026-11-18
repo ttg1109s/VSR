@@ -7,11 +7,6 @@ export const ActionSystem = {
         if (!Array.isArray(router.actions)) {
             throw new TypeError(`Router '${sId}.${rId}' actions must be an array of global Action IDs.`);
         }
-        const ensureThumb = action => {
-            const meta = { ...(action.meta || {}) };
-            if (!meta.thumb) meta.thumb = 'assets/images/thumbnail.jpg';
-            return { ...action, meta, source: 'global' };
-        };
         return router.actions.map(actionId => {
             if (typeof actionId !== 'string' || !actionId.trim()) {
                 throw new TypeError(`Router '${sId}.${rId}' contains an invalid Action reference; inline Actions are not supported.`);
@@ -22,7 +17,7 @@ export const ActionSystem = {
             }
             const runtime = this.api.engine.state.getRuntimeSnapshot('actions.[id]', { id: actionId }) || {};
             const count = runtime.count || {};
-            const effectiveAction = ensureThumb({ ...definition, id: actionId });
+            const effectiveAction = { ...definition, id: actionId, source: 'global' };
 
             // Requirement is a runtime-mutable Action property. Project an explicit
             // runtime override into the effective definition so handleAction reads
