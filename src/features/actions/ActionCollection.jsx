@@ -1,6 +1,7 @@
 import React,{useCallback,useEffect,useMemo,useRef,useState}from'react';
 import useEmblaCarousel from'embla-carousel-react';
 import ActionCard from'./ActionCard.jsx';
+import { delay } from './abortableDelay.js';
 import './action-carousel.css';
 
 const EMPTY_ACTIONS=[];
@@ -36,6 +37,8 @@ function shuffled(items){
 
 export default function ActionCollection({actions=EMPTY_ACTIONS,client,passwordChallenge=null,onError,sceneId=null}){
  const[pending,setPending]=useState(()=>new Set()),[feedback,setFeedback]=useState({}),cache=useRef(new Map());
+ const busyDelayControllers=useRef(new Set());
+ useEffect(()=>()=>{for(const controller of busyDelayControllers.current)controller.abort();busyDelayControllers.current.clear();},[]);
  const [order,setOrder]=useState({sceneId:null,keys:[]});
  const [carouselRef,emblaApi]=useEmblaCarousel(CAROUSEL_OPTIONS);
  const [activeIndex,setActiveIndex]=useState(0);
@@ -97,6 +100,8 @@ export default function ActionCollection({actions=EMPTY_ACTIONS,client,passwordC
   const k=a.key;
   const startedAt=Date.now();
   const minimumBusyMs=500;
+  const delayController=new AbortController();
+  busyDelayControllers.current.add(delayController);
   mark(k,true);
   setFeedback(s=>({...s,[k]:''}));
   try{
@@ -108,8 +113,10 @@ export default function ActionCollection({actions=EMPTY_ACTIONS,client,passwordC
    return null;
   }finally{
    const remaining=Math.max(0,minimumBusyMs-(Date.now()-startedAt));
-   if(remaining>0)await new Promise(resolve=>setTimeout(resolve,remaining));
-   mark(k,false);
+   try{if(remaining>0)await delay(remaining,{signal:delayController.signal});}
+   catch(error){if(error?.name!=='AbortError')throw error;}
+   finally{busyDelayControllers.current.delete(delayController);}
+   if(!delayController.signal.aborted)mark(k,false);
   }
  },[client,mark,report]);
  const submit=useCallback(async(c,input)=>{
