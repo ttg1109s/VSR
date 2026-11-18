@@ -114,7 +114,7 @@ export default function ActionCollection({actions=EMPTY_ACTIONS,client,passwordC
  },[client,report]);
  const cancel=useCallback(async c=>{
   if(!client||!c?.challengeId)return;
-  try{return await client.submitPassword(c.challengeId,null,true);}catch(e){await report(c.uniqueId,e,{notify:false});throw e;}
+  try{return await client.submitPassword(c.challengeId,null,true);}catch(e){await report(e,{notify:false});throw e;}
  },[client,report]);
  const read=useCallback(async a=>{
   if(!client)return false;
