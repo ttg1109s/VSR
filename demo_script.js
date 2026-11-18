@@ -1296,7 +1296,10 @@ export const DEMO_SCRIPT = {
             "visited": false,
             "countVisited": 0
           },
-          "actions": []
+          "actions": [
+            "action_decode_roster",
+            "action_recover_class_register"
+          ]
         }
       }
     },
