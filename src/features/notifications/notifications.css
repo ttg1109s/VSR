@@ -23,7 +23,7 @@
 .vsr-notification-item__marker .vsr-icon{font-size:25px}
 .vsr-notification-item__marker--success{background:#E6F4EA;color:#188038}
 .vsr-notification-item__marker--warning{background:#FEF7E0;color:#A56A00}
-.vsr-notification-item__marker--error{background:#FCE8E6;color:#B3261E}
+.vsr-notification-item__marker--danger{background:#FCE8E6;color:#B3261E}
 .vsr-notification-item__marker--info{background:#E8F0FE;color:#1967D2}
 .vsr-notification-item__marker--neutral{background:var(--vsr-color-surface-muted);color:var(--vsr-color-text-secondary)}
 .vsr-notification-item__body{display:flex;flex:1;min-width:0;flex-direction:column;gap:6px}
