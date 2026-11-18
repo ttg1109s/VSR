@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Badge, Button, Dialog, Drawer, Input, Menu, Popover, Switch } from '../../design-system/index.js';
 import './notifications.css';
+import { filterNotifications } from './notificationFilters.js';
 
 const FILTERS = [
   { value: 'all', label: 'All' },
@@ -69,10 +70,7 @@ export default function NotificationCenter({
     (b.createdAt || 0) - (a.createdAt || 0)
   ).slice(0, 200), [notifications]);
   const unreadCount = history.filter(item => !item.read).length;
-  const visible = history.filter(item => {
-    if (filter === 'unread' && item.read) return false;
-    if (filter === 'story' && item.source !== 'scenario') return false;
-    if (filter === 'system' && item.source === 'scenario') return false;
+  const visible = filterNotifications(history, filter).filter(item => {
     const searchText = (item.title || '') + ' ' + (item.message || '') + ' ' + (item.category || '');
     return !query.trim() || searchText.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase());
   });
