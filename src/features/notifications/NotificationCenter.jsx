@@ -37,15 +37,18 @@ const formatRelativeTime = timestamp => {
   return formatter.format(Math.round(seconds / 86400), 'day');
 };
 
-const notificationIcon = level => ({
-  success: 'check_circle',
-  warning: 'warning',
-  danger: 'warning',
-  special: 'auto_awesome',
-  info: 'info',
-  inventory: 'inventory_2',
-  quest: 'task_alt'
-}[level] || 'notifications');
+const notificationIcon = (category, level) => {
+  const key = String(category || '').toLowerCase();
+  if (key.includes('inventory')) return 'inventory_2';
+  if (key.includes('quest')) return 'task_alt';
+  return ({
+    success: 'check_circle',
+    warning: 'warning',
+    danger: 'warning',
+    special: 'auto_awesome',
+    info: 'info'
+  }[level] || 'notifications');
+};
 
 export default function NotificationCenter({
   open,
@@ -187,7 +190,7 @@ export default function NotificationCenter({
                   return (
                     <article className={'vsr-notification-item' + (item.read ? '' : ' is-unread')} key={item.id}>
                       <div className={'vsr-notification-item__marker vsr-notification-item__marker--' + tone} aria-hidden="true">
-                        <span className="vsr-icon">{notificationIcon(item.category || item.level)}</span>
+                        <span className="vsr-icon">{notificationIcon(item.category, item.level)}</span>
                       </div>
                       <div className="vsr-notification-item__body">
                         <div className="vsr-notification-item__heading">
