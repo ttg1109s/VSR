@@ -96,6 +96,13 @@
 }
 
 
+/* Engine-opened Contact threads reuse the Drawer header row for contact identity. */
+.vsr-overlay-header__custom{display:flex;flex:1;align-items:center;min-width:0}
+.vsr-overlay-header--contact-thread{gap:8px;padding:0 16px}
+.vsr-contact-drawer .vsr-overlay-header--contact-thread .vsr-overlay-header__custom{min-width:0}
+.vsr-contact-drawer .vsr-contact-header--drawer{flex:1 1 auto;min-width:0;min-height:64px;height:64px;padding:8px 12px 8px 0;border:0;background:transparent}
+@media(max-width:599px){.vsr-contact-drawer .vsr-overlay-header--contact-thread{padding:0 16px}}
+
 /* Shared Drawer header contract: features provide title and optional actions only. */
 .vsr-overlay--drawer .vsr-overlay-header{display:flex;flex:none;align-items:center;min-height:64px;gap:12px;box-sizing:border-box;padding:12px 16px;border-bottom:1px solid var(--vsr-color-border-subtle);background:var(--vsr-color-surface)}
 .vsr-overlay--drawer .vsr-overlay-header__copy{flex:1;min-width:0}
