@@ -71,7 +71,35 @@ export class GameEngine {
    };
   });
   this.protocol.registerCommand('snapshot.get',()=>this.protocol.createSnapshot(this));
-  this.protocol.registerCommand('action.trigger',payload=>{if(typeof payload.actionId!=='string'||!payload.actionId)throw new TypeError('action.trigger requires actionId.');return this.handleAction(payload.actionId,payload.uniqueId||payload.actionId);});
+  this.protocol.registerCommand('action.trigger',async payload=>{
+   if(typeof payload.actionId!=='string'||!payload.actionId)throw new TypeError('action.trigger requires actionId.');
+   try {
+    const result=await this.handleAction(payload.actionId,payload.uniqueId||payload.actionId);
+    if(result?.success===false&&!this.notifications.getPending().some(item=>item.category?.startsWith('action.')&&item.dedupeKey===`action.result:${payload.actionId}:${result.reason}`)) {
+     const messages={
+      action_hidden:['Action unavailable','This action is currently hidden.'],
+      locked:['Action locked','This action is locked.'],
+      permission_denied:['Blocked','The current character is not allowed to perform this action.'],
+      not_read:['Description not read','Please read the description before performing this action.'],
+      cooldown:['Action on cooldown','This action is on cooldown.'],
+      requirement_failed:['Action failed','Requirements not met.'],
+      target_locked:['Target locked','The target is locked.'],
+      busy:['Action unavailable','The Engine is processing another action.'],
+      transitioning:['Action unavailable','The Engine is transitioning scenes. Please wait for it to finish.'],
+      challenge_active:['Action unavailable','Complete or cancel the current password challenge first.'],
+      invalid_context:['Action unavailable','No valid action context remains.'],
+      action_not_found:['Action unavailable','This action is no longer part of the current game.'],
+      invalid_result:['Action failed','The Engine returned an invalid execution result.']
+     };
+     const [title,message]=messages[result.reason]||['Action failed','The action was not performed.'];
+     this.notifications.add(title,message,'warning',{source:'engine',category:`action.${result.reason||'failed'}`,dedupeKey:`action.result:${payload.actionId}:${result.reason||'failed'}`});
+    }
+    return result;
+   } catch(error) {
+    this.notifications.add('Action failed',error?.message||'Unable to complete the action.','danger',{source:'engine',category:'action.execution_error'});
+    throw error;
+   }
+  });
   this.protocol.registerCommand('chat.open',payload=>{
    if(typeof payload.contactId!=='string'||!payload.contactId||typeof payload.chatId!=='string'||!payload.chatId)throw new TypeError('chat.open requires contactId and chatId.');
    const runtimeState=this.api.engine.state;
