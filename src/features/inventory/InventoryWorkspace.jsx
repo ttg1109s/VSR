@@ -21,7 +21,7 @@ export default function InventoryWorkspace({ snapshot, client, open = false, onC
     const q = query.trim().toLocaleLowerCase('en-US');
     return items.filter(item =>
       (category === 'all' || item.category === category) &&
-      (!q || item.name.toLocaleLowerCase('en-US').includes(q) || item.description.toLocaleLowerCase('en-US').includes(q))
+      (!q || String(item.name || '').toLocaleLowerCase('en-US').includes(q) || String(item.description || '').toLocaleLowerCase('en-US').includes(q))
     ).sort((a,b) => sort === 'category'
       ? a.category.localeCompare(b.category) || a.name.localeCompare(b.name)
       : sort === 'usage'
@@ -46,7 +46,7 @@ export default function InventoryWorkspace({ snapshot, client, open = false, onC
   </Drawer>;
 
   return <>
-    <Drawer open title="Inventory" description="Items owned by the active player character." onClose={onClose} size="lg">
+    <Drawer open={open} title="Inventory" description="Items owned by the active player character." onClose={onClose} size="lg">
       <div className="vsr-inventory">
         <div className="vsr-inventory__summary" aria-label="Inventory capacity">
           <div><span>Items</span><strong>{formatNumber(inventory.itemCount)}</strong>{inventory.inventoryLimit && <small>of {formatNumber(inventory.inventoryLimit)}</small>}</div>
@@ -80,7 +80,7 @@ export default function InventoryWorkspace({ snapshot, client, open = false, onC
         </section>}
       </div>
     </Drawer>
-    <Drawer open={!!selected} title={selected?.name || 'Item details'} description={selected?.category || ''} onClose={()=>{setSelectedId(null);setTransferOpen(false);}} size="md">
+    <Drawer open={open && !!selected} title={selected?.name || 'Item details'} description={selected?.category || ''} onClose={()=>{setSelectedId(null);setTransferOpen(false);}} size="md">
       {selected && <div className="vsr-inventory__detail">
         <div className="vsr-inventory__hero"><span aria-hidden="true">{selected.icon || 'inventory_2'}</span><div><h3>{selected.name}</h3><Badge tone={selected.equipped?'success':'neutral'}>{selected.equipped?'Equipped':'Owned'}</Badge></div></div>
         {selected.description && <p>{selected.description}</p>}
