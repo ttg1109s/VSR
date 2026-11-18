@@ -82,8 +82,22 @@ export default function ActionCollection({actions=EMPTY_ACTIONS,client,passwordC
 
  const mark=useCallback((k,on)=>setPending(s=>{const n=new Set(s);on?n.add(k):n.delete(k);return n;}),[]);
  const report=useCallback(async(e,{notify=true}={})=>{
-  if(e?.code==='REVISION_CONFLICT'){try{await client.refreshSnapshot();onError?.('The state changed. The snapshot has been synchronized; review it before retrying.');return true;}catch(x){e=x;}}
-  const m=e?.message||'Unable to complete the action.';if(notify)onError?.(m);return false;
+  if(e?.code==='REVISION_CONFLICT'){
+   try{
+    await client.refreshSnapshot();
+    if(notify)onError?.('The state changed. The snapshot has been synchronized; review it before retrying.');
+    return true;
+   }catch(refreshError){
+    e=refreshError;
+   }
+  }
+  // An Engine acknowledgement means the command reached the Engine. Action and
+  // password commands own their failure notifications there; only transport-
+  // level failures need a client-side fallback.
+  const acknowledged=Boolean(e?.acknowledgement);
+  const message=e?.message||'Unable to complete the action.';
+  if(notify&&!acknowledged)onError?.(message);
+  return false;
  },[client,onError]);
  const trigger=useCallback(async a=>{
   if(!client)return;
@@ -97,7 +111,7 @@ export default function ActionCollection({actions=EMPTY_ACTIONS,client,passwordC
    const r=(await client.triggerAction(a.id,a.key))?.result;
    return r;
   }catch(e){
-   if(!delayController.signal.aborted)await report(e,{notify:false});
+   if(!delayController.signal.aborted)await report(e);
    return null;
   }finally{
    const remaining=Math.max(0,minimumBusyMs-(Date.now()-startedAt));
@@ -110,11 +124,11 @@ export default function ActionCollection({actions=EMPTY_ACTIONS,client,passwordC
  const submit=useCallback(async(c,input)=>{
   if(!client||!c?.challengeId)return{message:'No engine connection or invalid challenge.'};
   try{return(await client.submitPassword(c.challengeId,input))?.result||{message:'The engine returned no authentication result.'};}
-  catch(e){const refreshed=await report(e,{notify:false});if(refreshed)return{reason:'revision_conflict',message:'The state changed. The snapshot has been synchronized; review the challenge again.'};return{reason:e?.code||'command_failed',message:e?.message||'Unable to submit the answer to the engine.'};}
+  catch(e){const refreshed=await report(e);if(refreshed)return{reason:'revision_conflict',message:'The state changed. The snapshot has been synchronized; review the challenge again.'};return{reason:e?.code||'command_failed',message:e?.message||'Unable to submit the answer to the engine.'};}
  },[client,report]);
  const cancel=useCallback(async c=>{
   if(!client||!c?.challengeId)return;
-  try{return await client.submitPassword(c.challengeId,null,true);}catch(e){await report(e,{notify:false});throw e;}
+  try{return await client.submitPassword(c.challengeId,null,true);}catch(e){await report(e);throw e;}
  },[client,report]);
  const read=useCallback(async a=>{
   if(!client)return false;
