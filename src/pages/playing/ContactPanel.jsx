@@ -312,6 +312,9 @@ export default function ContactPanel({ open, onClose, player, contacts = [], sys
     : [];
   const choices = isActiveThread && chatSession.waitingChoice === true && Array.isArray(chatSession.choices) ? chatSession.choices : [];
   const chatActionsDisabled = chatPending || chatSession.transitionPending === true || !client;
+  const showContactThreadHeader = Boolean(
+    selected && activeArea === 'conversation' && (viewRequest?.headerMode === 'contact' || selectedThreadId)
+  );
 
   useEffect(() => {
     if (selectedId && !allContacts.some(contact => contact.id === selectedId)) {
@@ -479,8 +482,8 @@ export default function ContactPanel({ open, onClose, player, contacts = [], sys
       onClose={close}
       title="Contact"
       ariaLabel={selected ? 'Hội thoại với ' + (selected.name || selected.id) : 'Contact'}
-      headerContent={selected && activeArea === 'conversation' && selectedThreadId ? renderContactHeader(true) : null}
-      headerClassName={selected && activeArea === 'conversation' && selectedThreadId ? 'vsr-overlay-header--contact-thread' : undefined}
+      headerContent={showContactThreadHeader ? renderContactHeader(true) : null}
+      headerClassName={showContactThreadHeader ? 'vsr-overlay-header--contact-thread' : undefined}
       headerActions={player && (
         <Button
           size="sm"
@@ -532,7 +535,7 @@ export default function ContactPanel({ open, onClose, player, contacts = [], sys
             </div>
           ) : (
             <>
-              {!(activeArea === 'conversation' && selectedThreadId) && renderContactHeader()}
+              {!showContactThreadHeader && renderContactHeader()}
 
               {profileOpen && (
                 <div className="vsr-contact-info-panel" role="region" aria-label="Thông tin liên hệ">
