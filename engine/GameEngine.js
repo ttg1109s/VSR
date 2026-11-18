@@ -75,20 +75,10 @@ export class GameEngine {
    if(typeof payload.actionId!=='string'||!payload.actionId)throw new TypeError('action.trigger requires actionId.');
    try {
     const result=await this.handleAction(payload.actionId,payload.uniqueId||payload.actionId);
-    if(result?.success===false&&!this.notifications.getPending().some(item=>item.category?.startsWith('action.')&&item.dedupeKey===`action.result:${payload.actionId}:${result.reason}`)) {
+    if(result?.success===false&&!['action_hidden','locked','permission_denied','not_read','cooldown','busy','transitioning','challenge_active','invalid_context','action_not_found'].includes(result.reason)) {
      const messages={
-      action_hidden:['Action unavailable','This action is currently hidden.'],
-      locked:['Action locked','This action is locked.'],
-      permission_denied:['Blocked','The current character is not allowed to perform this action.'],
-      not_read:['Description not read','Please read the description before performing this action.'],
-      cooldown:['Action on cooldown','This action is on cooldown.'],
       requirement_failed:['Action failed','Requirements not met.'],
       target_locked:['Target locked','The target is locked.'],
-      busy:['Action unavailable','The Engine is processing another action.'],
-      transitioning:['Action unavailable','The Engine is transitioning scenes. Please wait for it to finish.'],
-      challenge_active:['Action unavailable','Complete or cancel the current password challenge first.'],
-      invalid_context:['Action unavailable','No valid action context remains.'],
-      action_not_found:['Action unavailable','This action is no longer part of the current game.'],
       invalid_result:['Action failed','The Engine returned an invalid execution result.']
      };
      const [title,message]=messages[result.reason]||['Action failed','The action was not performed.'];
