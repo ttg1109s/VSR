@@ -112,7 +112,23 @@ export class GameEngine {
   this.protocol.registerCommand('chat.selectChoice',payload=>{if(!Number.isInteger(payload.index))throw new TypeError('chat.selectChoice requires index.');return this.selectChatChoice(payload.index);});
   this.protocol.registerCommand('inventory.toggleHand',payload=>{if(typeof payload.itemId!=='string'||!payload.itemId)throw new TypeError('inventory.toggleHand requires itemId.');return this.toggleHand(payload.itemId);});
   this.protocol.registerCommand('scene.enter',payload=>{if(typeof payload.sceneId!=='string'||!payload.sceneId)throw new TypeError('scene.enter requires sceneId.');return this.enterScene(payload.sceneId,payload.skipTransition===true);});
-  this.protocol.registerCommand('password.submit',payload=>this.submitPassword(payload));
+  this.protocol.registerCommand('password.submit',async payload=>{
+   try {
+    const result=await this.submitPassword(payload);
+    if(result?.retry) {
+     const message=result.remainingAttempts===null?'Incorrect response. You can try again.':`Incorrect response. ${result.remainingAttempts} attempts remaining.`;
+     this.notifications.add('Incorrect response',message,'warning',{source:'engine',category:'action.password_retry'});
+    } else if(result?.reason==='expired') {
+     this.notifications.add('Challenge expired','The password challenge has expired.','warning',{source:'engine',category:'action.password_expired'});
+    } else if(result?.reason==='exhausted') {
+     this.notifications.add('Challenge failed','No attempts remaining.','danger',{source:'engine',category:'action.password_exhausted'});
+    }
+    return result;
+   } catch(error) {
+    this.notifications.add('Challenge error',error?.message||'Unable to process the password challenge.','danger',{source:'engine',category:'action.password_error'});
+    throw error;
+   }
+  });
   this.protocol.registerCommand('action.markAsRead',payload=>{
    if(typeof payload.uniqueId!=='string'||!payload.uniqueId)throw new TypeError('action.markAsRead requires uniqueId.');
    return this.markAsRead(payload.uniqueId);
