@@ -118,6 +118,10 @@ export class GameEngine {
    if(typeof payload.notificationId!=='string'||!payload.notificationId)throw new TypeError('notification.dismiss requires notificationId.');
    return{updated:this.notifications.dismiss(payload.notificationId)};
   });
+  this.protocol.registerCommand('notification.readAll',payload=>{
+   const source=typeof payload.source==='string'&&payload.source.trim()?payload.source:undefined;
+   return{updated:this.notifications.markAllRead({source})};
+  });
  }
  async submitPassword(payload={}) {
   if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
