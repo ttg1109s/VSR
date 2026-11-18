@@ -55,7 +55,7 @@ function ScenarioDescription({ description }) {
           }
           aria-expanded={isExpanded}
         >
-          {isExpanded ? 'Thu gọn' : 'Đọc toàn bộ mô tả'}
+          {isExpanded ? 'Show less' : 'Read full description'}
         </Button>
       )}
     </div>
@@ -65,47 +65,47 @@ function ScenarioDescription({ description }) {
 function formatPlayTime(minutes) {
   if (typeof minutes !== 'number' || !Number.isFinite(minutes)) return null;
   return minutes < 60
-    ? `${minutes} phút`
-    : `${Math.floor(minutes / 60)} giờ${minutes % 60 ? ` ${minutes % 60} phút` : ''}`;
+    ? `${minutes} min`
+    : `${Math.floor(minutes / 60)} hr${minutes % 60 ? ` ${minutes % 60} min` : ''}`;
 }
 
 function formatDate(value) {
   if (!value) return null;
   const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString('vi-VN');
+  return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString('en-US');
 }
 
 function formatLanguage(value) {
   const languageNames = {
-    vi: 'Tiếng Việt',
-    en: 'Tiếng Anh',
-    ja: 'Tiếng Nhật',
-    ko: 'Tiếng Hàn',
-    zh: 'Tiếng Trung'
+    vi: 'Vietnamese',
+    en: 'English',
+    ja: 'Japanese',
+    ko: 'Korean',
+    zh: 'Chinese'
   };
   return languageNames[value] || value;
 }
 
 function formatDifficulty(value) {
-  const labels = { easy: 'Dễ', normal: 'Trung bình', hard: 'Khó' };
+  const labels = { easy: 'Easy', normal: 'Medium', hard: 'Hard' };
   return labels[value] || value;
 }
 
 export default function ScenarioPreviewPage({ preview, onBack, onPlay }) {
   const metadata = preview?.metadata || {};
   const experienceItems = [
-    { label: 'Độ tuổi', value: metadata.ageRating },
-    { label: 'Độ khó', value: formatDifficulty(metadata.difficulty) },
-    { label: 'Thời lượng', value: formatPlayTime(metadata.estimatedPlayTime) }
+    { label: 'Age rating', value: metadata.ageRating },
+    { label: 'Difficulty', value: formatDifficulty(metadata.difficulty) },
+    { label: 'Duration', value: formatPlayTime(metadata.estimatedPlayTime) }
   ].filter(item => item.value !== null && item.value !== undefined && item.value !== '');
 
   const publicationItems = [
-    { label: 'Tác giả', value: metadata.writer },
-    { label: 'Hãng phát triển', value: metadata.studio },
-    { label: 'Phiên bản kịch bản', value: metadata.version },
-    { label: 'Ngôn ngữ', value: formatLanguage(metadata.language) },
-    { label: 'Ngày tạo', value: formatDate(metadata.createdAt) },
-    { label: 'Cập nhật lần cuối', value: formatDate(metadata.updatedAt) }
+    { label: 'Author', value: metadata.writer },
+    { label: 'Studio', value: metadata.studio },
+    { label: 'Scenario version', value: metadata.version },
+    { label: 'Language', value: formatLanguage(metadata.language) },
+    { label: 'Created', value: formatDate(metadata.createdAt) },
+    { label: 'Last updated', value: formatDate(metadata.updatedAt) }
   ];
 
   const hasLegalInformation = Boolean(metadata.copyright || metadata.license);
@@ -116,7 +116,7 @@ export default function ScenarioPreviewPage({ preview, onBack, onPlay }) {
         <ScenarioCover url={metadata.cover?.url} ratio={metadata.cover?.ratio} title={metadata.title} />
 
         <header className="vsr-stack vsr-stack--gap-2">
-          <h1 className="vsr-heading-display">{metadata.title || 'Kịch bản chưa có tiêu đề'}</h1>
+          <h1 className="vsr-heading-display">{metadata.title || 'Untitled scenario'}</h1>
           {metadata.subtitle && (
             <p className="vsr-text-secondary vsr-text-body">{metadata.subtitle}</p>
           )}
@@ -141,14 +141,14 @@ export default function ScenarioPreviewPage({ preview, onBack, onPlay }) {
           )}
         </header>
 
-        <div className="vsr-grid vsr-grid--columns-2 vsr-grid--gap-3" aria-label="Hành động kịch bản">
+        <div className="vsr-grid vsr-grid--columns-2 vsr-grid--gap-3" aria-label="Scenario actions">
           <Button
             variant="secondary"
             size="md"
             onClick={onBack}
             leadingIcon={<span className="vsr-icon" aria-hidden="true">arrow_back</span>}
           >
-            Quay lại
+            Back
           </Button>
           <Button
             variant="primary"
@@ -156,13 +156,13 @@ export default function ScenarioPreviewPage({ preview, onBack, onPlay }) {
             onClick={onPlay}
             leadingIcon={<span className="vsr-icon" aria-hidden="true">play_arrow</span>}
           >
-            Bắt đầu
+            Play
           </Button>
         </div>
 
         {publicationItems.some(item => item.value !== null && item.value !== undefined && item.value !== '') && (
           <section className="vsr-stack vsr-stack--gap-3" aria-labelledby="scenario-publication-title">
-            <h2 id="scenario-publication-title">Thông tin xuất bản</h2>
+            <h2 id="scenario-publication-title">Publication</h2>
             <DescriptionList layout="list" gap="comfortable" divided>
               {publicationItems.map(item => (
                 <DescriptionListItem key={item.label} label={item.label} value={item.value} layout="inline" />
@@ -173,10 +173,10 @@ export default function ScenarioPreviewPage({ preview, onBack, onPlay }) {
 
         {hasLegalInformation && (
           <section className="vsr-stack vsr-stack--gap-3" aria-labelledby="scenario-legal-title">
-            <h2 id="scenario-legal-title">Bản quyền và giấy phép</h2>
+            <h2 id="scenario-legal-title">Copyright and license</h2>
             <DescriptionList layout="list" gap="comfortable" divided>
-              <DescriptionListItem label="Bản quyền" value={metadata.copyright} layout="inline" />
-              <DescriptionListItem label="Giấy phép" value={metadata.license} layout="inline" />
+              <DescriptionListItem label="Copyright" value={metadata.copyright} layout="inline" />
+              <DescriptionListItem label="License" value={metadata.license} layout="inline" />
             </DescriptionList>
           </section>
         )}
