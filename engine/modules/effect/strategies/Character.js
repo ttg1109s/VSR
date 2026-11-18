@@ -134,7 +134,7 @@ const ItemTransferLogic = {
             'Item transferred',
             `Transferred ${itemInfo.name || itemId} from ${sourceId} to ${targetId}.`,
             'info',
-            { source: 'scenario', category: 'scenario.character.item_transfer' }
+            { source: 'engine', category: 'character.item_transfer' }
         );
     }
 };
@@ -157,7 +157,7 @@ const StatsLogic = {
                 return characters;
             });
             if (idA === entryChar || idB === entryChar) engine.api.presentation.components.updatePlayerCard();
-            engine.api.notifications.add("Swap", `Stats between ${charA.set.name} and ${charB.set.name} have changed.`, "info", { source: 'scenario', category: 'scenario.character.stats_swap' });
+            engine.api.notifications.add("Swap", `Stats between ${charA.set.name} and ${charB.set.name} have changed.`, "info", { source: 'engine', category: 'character.stats_swap' });
         }
     },
     copy_to: (engine, eff) => {
