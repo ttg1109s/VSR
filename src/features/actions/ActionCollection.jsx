@@ -91,9 +91,9 @@ export default function ActionCollection({actions=EMPTY_ACTIONS,client,passwordC
  },[activeIndex,ordered.length]);
 
  const mark=useCallback((k,on)=>setPending(s=>{const n=new Set(s);on?n.add(k):n.delete(k);return n;}),[]);
- const report=useCallback(async(k,e)=>{
+ const report=useCallback(async(k,e,{notify=true}={})=>{
   if(e?.code==='REVISION_CONFLICT'){try{await client.refreshSnapshot();onError?.('The state changed. The snapshot has been synchronized; review it before retrying.');return true;}catch(x){e=x;}}
-  const m=e?.message||'Unable to complete the action.';onError?.(m);return false;
+  const m=e?.message||'Unable to complete the action.';if(notify)onError?.(m);return false;
  },[client,onError]);
  const trigger=useCallback(async a=>{
   if(!client)return;
@@ -107,7 +107,7 @@ export default function ActionCollection({actions=EMPTY_ACTIONS,client,passwordC
    const r=(await client.triggerAction(a.id,a.key))?.result;
    return r;
   }catch(e){
-   if(!delayController.signal.aborted)await report(k,e);
+   if(!delayController.signal.aborted)await report(k,e,{notify:false});
    return null;
   }finally{
    const remaining=Math.max(0,minimumBusyMs-(Date.now()-startedAt));
