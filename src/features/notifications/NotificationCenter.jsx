@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useState } from 'react';
-import { Badge, Button, Dialog, Drawer, Input, Menu, Popover, Switch } from '../../design-system/index.js';
+import { Badge, Button, Dialog, Drawer, Input, Popover, Switch } from '../../design-system/index.js';
 import './notifications.css';
 import { filterNotifications } from './notificationFilters.js';
 
@@ -67,6 +67,7 @@ export default function NotificationCenter({
   const [busyIds, setBusyIds] = useState([]);
   const [actionError, setActionError] = useState('');
   const swipeStart = useRef(null);
+  const swipeHandled = useRef(false);
   const history = useMemo(() => [...notifications].sort((a, b) =>
     (b.createdAt || 0) - (a.createdAt || 0)
   ).slice(0, 200), [notifications]);
@@ -197,9 +198,13 @@ export default function NotificationCenter({
                     if (!start || start.id !== item.id || !canDismiss || busyIds.includes(item.id)) return;
                     const dx = event.clientX - start.x;
                     const dy = event.clientY - start.y;
-                    if (Math.abs(dx) >= 72 && Math.abs(dx) > Math.abs(dy) * 1.3) dismiss(item.id);
+                    if (Math.abs(dx) >= 72 && Math.abs(dx) > Math.abs(dy) * 1.3) {
+      swipeHandled.current = true;
+      dismiss(item.id);
+    }
                   };
                   const handleItemClick = event => {
+                    if (swipeHandled.current) { swipeHandled.current = false; return; }
                     if (event.target.closest('button, a, input, [role="menu"], .vsr-popover')) return;
                     if (!item.read) markRead(item.id);
                   };
