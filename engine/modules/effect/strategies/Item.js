@@ -64,7 +64,7 @@ export const ItemStrategies = {
         const added = engine.addItem(eff.target);
         if (added) {
             succeeded = true;
-            engine.api.notifications.add("Nhận vật phẩm", engine.api.engine.state.getRuntimeSnapshot('itemInfo.[id].name', { id: eff.target }) || eff.target, "success", { source: 'scenario', category: 'scenario.inventory.added' });
+            engine.api.notifications.add("Item received", engine.api.engine.state.getRuntimeSnapshot('itemInfo.[id].name', { id: eff.target }) || eff.target, "success", { source: 'scenario', category: 'scenario.inventory.added' });
             engine.api.presentation.components.explorer();
         }
         ItemStrategies._tryHideAction(engine, eff, context, succeeded);
@@ -120,7 +120,7 @@ export const ItemStrategies = {
         const inventory = char.inventory || [];
         if (!hand.includes(eff.target) && inventory.includes(eff.target)) {
             if (hand.length >= maxHand) {
-                engine.api.notifications.add("Không thể cầm", "Tay đã đầy.", "warning", { source: 'scenario', category: 'scenario.inventory.hand_full' });
+                engine.api.notifications.add("Cannot hold item", "Hands are full.", "warning", { source: 'scenario', category: 'scenario.inventory.hand_full' });
                 return;
             }
             const ownerId = ItemStrategies._getOwnerId(engine);
