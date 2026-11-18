@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Badge, Button, Dialog, Drawer, Switch } from '../../design-system/index.js';
+import { Badge, Button, Dialog, Drawer, Input, Switch } from '../../design-system/index.js';
 import './notifications.css';
 
 const FILTERS = [
@@ -45,16 +45,18 @@ export default function NotificationCenter({
   onModalClose
 }) {
   const [filter, setFilter] = useState('all');
+  const [query, setQuery] = useState('');
   const [busyIds, setBusyIds] = useState([]);
   const history = useMemo(() => [...notifications].sort((a, b) =>
     (b.createdAt || 0) - (a.createdAt || 0)
   ), [notifications]);
   const unreadCount = history.filter(item => !item.read).length;
   const visible = history.filter(item => {
-    if (filter === 'unread') return !item.read;
-    if (filter === 'scenario') return item.source === 'scenario';
-    if (filter === 'system') return item.source !== 'scenario';
-    return true;
+    if (filter === 'unread' && item.read) return false;
+    if (filter === 'scenario' && item.source !== 'scenario') return false;
+    if (filter === 'system' && item.source === 'scenario') return false;
+    const searchText = (item.title || '') + ' ' + (item.message || '') + ' ' + (item.category || '');
+    return !query.trim() || searchText.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase());
   });
   const groups = ['Today', 'Yesterday', 'Earlier'].map(label => ({
     label,
@@ -113,6 +115,12 @@ export default function NotificationCenter({
               onChange={event => onSoundChange?.(event.target.checked)}
             />
           </div>
+          <Input
+            aria-label="Search notifications"
+            placeholder="Search notifications"
+            value={query}
+            onChange={event => setQuery(event.target.value)}
+          />
           <div className="vsr-notification-center__filters" role="group" aria-label="Filter notifications">
             {FILTERS.map(option => (
               <button
