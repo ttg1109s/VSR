@@ -25,7 +25,10 @@ export function BottomNavigation({ items=[], value, defaultValue, onChange, aria
       <ul>
         {items.map(item=><li key={item.value}>
           <button type="button" className={cx('vsr-bottom-navigation__item',selected===item.value&&'is-active')} aria-current={selected===item.value?'page':undefined} aria-label={item.label} onClick={()=>select(item.value)}>
-            <span className="vsr-bottom-navigation__icon vsr-icon" aria-hidden="true">{item.icon}</span>
+            <span className="vsr-bottom-navigation__icon-wrap">
+              <span className="vsr-bottom-navigation__icon vsr-icon" aria-hidden="true">{item.icon}</span>
+              {Number(item.badge) > 0 && <span className="vsr-bottom-navigation__badge">{Number(item.badge) > 99 ? '99+' : item.badge}</span>}
+            </span>
             <span className="vsr-bottom-navigation__label">{item.label}</span>
           </button>
         </li>)}
