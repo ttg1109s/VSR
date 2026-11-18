@@ -1,20 +1,36 @@
 import { test, expect } from '@playwright/test';
 
-test('Notification Center exposes semantic mark-read and dismiss actions', async ({ page }) => {
+test('Tapping a notification marks it read without showing per-item action buttons', async ({ page }) => {
   await page.goto('tests/browser/notification-fixture.html');
   await expect(page.getByRole('dialog', { name: 'Notifications' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Mark Unread system notice as read' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Dismiss Unread system notice' })).toBeVisible();
-  await page.getByRole('button', { name: 'Mark Unread system notice as read' }).click();
+  const item = page.locator('.vsr-notification-item').filter({ hasText: 'Unread system notice' });
+  await expect(item.getByRole('button')).toHaveCount(0);
+  await item.click();
   await expect.poll(() => page.evaluate(() => window.__notifyCalls)).toContainEqual(['read', 'n1']);
 });
 
-test('Notification filters and mark-all-read use accessible shared controls', async ({ page }) => {
+test('Swiping a notification dismisses it', async ({ page }) => {
+  await page.goto('tests/browser/notification-fixture.html');
+  const item = page.locator('.vsr-notification-item').filter({ hasText: 'Unread system notice' });
+  const bounds = await item.boundingBox();
+  await page.mouse.move(bounds.x + bounds.width - 24, bounds.y + bounds.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(bounds.x + 24, bounds.y + bounds.height / 2, { steps: 6 });
+  await page.mouse.up();
+  await expect.poll(() => page.evaluate(() => window.__notifyCalls)).toContainEqual(['dismiss', 'n1']);
+});
+
+test('Notification filters use trusted source, not category metadata', async ({ page }) => {
   await page.goto('tests/browser/notification-fixture.html');
   const filters = page.getByRole('group', { name: 'Filter notifications' });
   await filters.getByRole('button', { name: 'Story' }).click();
   await expect(page.getByText('Story update')).toBeVisible();
+  await expect(page.getByText('Engine notice with Story category')).toHaveCount(0);
   await expect(page.getByText('Unread system notice')).toHaveCount(0);
+  await filters.getByRole('button', { name: 'System' }).click();
+  await expect(page.getByText('Unread system notice')).toBeVisible();
+  await expect(page.getByText('Engine notice with Story category')).toBeVisible();
+  await expect(page.getByText('Story update')).toHaveCount(0);
   await filters.getByRole('button', { name: 'All' }).click();
   await page.getByRole('button', { name: 'Mark all as read' }).click();
   await expect.poll(() => page.evaluate(() => window.__notifyCalls)).toContainEqual(['read-all']);

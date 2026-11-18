@@ -1,10 +1,16 @@
+const STORY_GROUP_VALUES = new Set(['story', 'scenario']);
+
+function isStorySource(value) {
+  const normalized = String(value ?? '').trim().toLowerCase();
+  if (!normalized) return false;
+  const namespace = normalized.split('.', 1)[0];
+  return STORY_GROUP_VALUES.has(namespace);
+}
+
 export function getNotificationGroup(notification) {
-  const source = String(notification?.source || '').trim().toLowerCase();
-  const category = String(notification?.category || '').trim().toLowerCase();
-  const storySource = source === 'scenario' || source === 'story'
-    || source.startsWith('scenario.') || source.startsWith('story.');
-  const storyCategory = category.startsWith('scenario.') || category.startsWith('story.');
-  return storySource || storyCategory ? 'story' : 'system';
+  // Source is the trusted emitter identity. Category is descriptive metadata
+  // and must never promote an Engine notification into the Story group.
+  return isStorySource(notification?.source) ? 'story' : 'system';
 }
 
 export function filterNotifications(notifications, filter) {
