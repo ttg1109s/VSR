@@ -129,7 +129,7 @@ export default function ActionCollection({actions=EMPTY_ACTIONS,client,passwordC
  const read=useCallback(async a=>{
   if(!client)return false;
   try{const acknowledgement=await client.markActionRead(a.key),result=acknowledgement?.result;
-   if(result?.success===false){onError?.(MESSAGES[result.reason]||'Unable to update the read status.');return false;}
+   if(result?.success===false)return false;
    return true;
   }catch(e){await report(a.key,e);return false;}
  },[client,report]);
