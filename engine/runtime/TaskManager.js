@@ -43,6 +43,7 @@ export class TaskManager {
   if(taskName===undefined){
    do{taskName=`once_${++this.onceSequence}`;}while(this.plan[taskName]);
   }
+  let loop;
   this.addNew(taskName,{
    time:ms,
    mode:'timeout',
