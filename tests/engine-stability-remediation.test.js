@@ -27,44 +27,42 @@ test('Action phase counters increment independently and preserve existing phases
     }
   };
   const engine = Object.assign({}, ActionSystem, { api: { engine: { state } } });
-  engine.incrementActionCount('scene_router_action', 'normal');
+  engine.incrementActionCount('action_01', 'normal');
   engine.incrementActionCount('scene_router_action', 'fail');
   engine.incrementActionCount('scene_router_action', 'pass');
   engine.incrementActionCount('scene_router_action', 'pwFailed');
   assert.deepEqual(runtime.count, { normal: 3, pass: 2, fail: 1, pwFailed: 4 });
 });
 
-test('set/action and set/action_count resolve Action IDs across every Scene and Router', () => {
+test('set/action and set/action_count mutate one global Action runtime record', () => {
   const updates = {};
-  const src = { scenes: {
+  const src = { actions: { action_01: {} }, scenes: {
     scene_a: { routers: { router_1: { actions: ['action_01'] } } },
     scene_b: { routers: { router_2: { actions: ['action_01'] } } }
   }};
   const state = {
     getRuntimeSnapshot(path) { return path === 'actions' ? updates : undefined; },
-    getRuntime(path, { actionKey } = {}) { return updates[actionKey]; },
+    getRuntime(path, { id } = {}) { return updates[id]; },
     update(path, updater, { id }) { updates[id] = updater(structuredClone(updates[id] || {})); },
-    set(path, value, { actionKey, property }) {
-      updates[actionKey] = { ...(updates[actionKey] || {}), [property]: value };
+    set(path, value, { id, property }) {
+      updates[id] = { ...(updates[id] || {}), [property]: value };
     },
     getSession() { return null; },
     setSession() {}
   };
-  updates['scene_a_router_1_action_01'] = { count: { normal: 0, pass: 0, fail: 0, pwFailed: 0 } };
-  updates['scene_b_router_2_action_01'] = { count: { normal: 0, pass: 0, fail: 0, pwFailed: 0 } };
+  updates.action_01 = { count: { normal: 0, pass: 0, fail: 0, pwFailed: 0 } };
   const engine = { src, api: { engine: { state } } };
 
   SetStrategies.action_count(engine, {
     target: 'action_01', phase: 'pass', value: 7
   });
-  assert.equal(updates['scene_a_router_1_action_01'].count.pass, 7);
-  assert.equal(updates['scene_b_router_2_action_01'].count.pass, 7);
+  assert.equal(updates.action_01.count.pass, 7);
+  assert.equal(Object.keys(updates).length, 1);
 
   SetStrategies.action(engine, {
     target: 'action_01', property: 'display', value: 'hide'
   });
-  assert.equal(updates['scene_a_router_1_action_01'].display, 'hide');
-  assert.equal(updates['scene_b_router_2_action_01'].display, 'hide');
+  assert.equal(updates.action_01.display, 'hide');
 });
 
 test('set/action_count assigns a non-negative integer and rejects mode/add semantics', () => {
@@ -79,7 +77,7 @@ test('set/action_count assigns a non-negative integer and rejects mode/add seman
   }
 });
 
-test('scenario loader initializes missing Action counters on global and inline Actions', () => {
+test('scenario normalization initializes counters only on global Actions', () => {
   const host = new LocalEngineHost();
   try {
     const scenario = JSON.parse(host.getDemoScenario());
@@ -87,11 +85,11 @@ test('scenario loader initializes missing Action counters on global and inline A
     const sceneId = Object.keys(scenario.scenes)[0];
     const routerId = Object.keys(scenario.scenes[sceneId].routers)[0];
     const router = scenario.scenes[sceneId].routers[routerId];
-    router.actions = [...(router.actions || []), { meta: { title: 'Inline test' }, set: { display: 'show' } }];
+    router.actions = [globalId];
     delete scenario.actions[globalId].count;
     const normalized = normalizeScenario(scenario);
     assert.deepEqual(normalized.actions[globalId].count, { normal: 0, pass: 0, fail: 0, pwFailed: 0 });
-    assert.deepEqual(normalized.scenes[sceneId].routers[routerId].actions.at(-1).count, { normal: 0, pass: 0, fail: 0, pwFailed: 0 });
+    assert.deepEqual(normalized.scenes[sceneId].routers[routerId].actions, [globalId]);
   } finally {
     host.close();
   }
@@ -156,19 +154,16 @@ test('Scenario validator rejects removed legacy Action fields with a migration d
   }
 });
 
-test('Requirement action_count compares the selected Action phase counter in the active Router', () => {
-  const runtime = {
-    scene_a_router_1_action_01: { count: { normal: 3, pass: 5, fail: 1, pwFailed: 0 } },
-    scene_a_router_2_action_01: { count: { normal: 99, pass: 99, fail: 99, pwFailed: 99 } }
-  };
+test('Requirement action_count reads the global Action phase counter', () => {
+  const runtime = { action_01: { count: { normal: 3, pass: 5, fail: 1, pwFailed: 0 } } };
   const state = {
     sceneId: 'scene_a',
     get(path, { id } = {}) {
       if (path === 'scene.activeRouterId' && id === 'scene_a') return 'router_1';
       return undefined;
     },
-    getRuntime(path, { actionKey } = {}) {
-      return path === 'actions.[actionKey]' ? runtime[actionKey] : undefined;
+    getRuntime(path, { id } = {}) {
+      return path === 'actions.[id]' ? runtime[id] : undefined;
     }
   };
   const engine = Object.assign({}, LogicSystem, { api: { engine: { state } } });
