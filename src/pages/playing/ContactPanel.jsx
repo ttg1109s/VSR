@@ -317,12 +317,29 @@ export default function ContactPanel({ open, onClose, player, contacts = [], sys
   // The generic "Contact" header is only shown while browsing the contact list.
   const showContactThreadHeader = Boolean(selected);
 
-  // New chat lines are appended to history; keep the newest line in view.
+  // Jump to the end when entering or switching threads; smoothly follow
+  // newly appended lines while the same conversation remains open.
+  const conversationScrollStateRef = useRef({ threadId: null, historyLength: 0 });
   useLayoutEffect(() => {
     if (activeArea !== 'conversation' || !selectedThreadId) return;
     const historyElement = conversationHistoryRef.current;
     if (!historyElement) return;
-    historyElement.scrollTop = historyElement.scrollHeight;
+
+    const previous = conversationScrollStateRef.current;
+    const sameThread = previous.threadId === selectedThreadId;
+    const appendedLines = sameThread && history.length > previous.historyLength;
+    const bottom = historyElement.scrollHeight;
+
+    if (appendedLines) {
+      historyElement.scrollTo({ top: bottom, behavior: 'smooth' });
+    } else {
+      historyElement.scrollTop = bottom;
+    }
+
+    conversationScrollStateRef.current = {
+      threadId: selectedThreadId,
+      historyLength: history.length
+    };
   }, [activeArea, selectedThreadId, history.length]);
 
   useEffect(() => {
