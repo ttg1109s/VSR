@@ -3126,7 +3126,8 @@ export const DEMO_SCRIPT = {
           }
         ]
       }
-    }"action_reach_station": {
+    },
+    "action_reach_station": {
       "meta": {
         "title": "Ga tàu 03:17",
         "buttonLabel": "Đi tới",
