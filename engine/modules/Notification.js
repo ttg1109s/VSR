@@ -203,6 +203,19 @@ export class NotificationSystem {
     return true;
   }
 
+  markAllRead({ source } = {}) {
+    const targets = this.history.filter(item =>
+      !item.read && (source === undefined || item.source === source)
+    );
+    const readAt = this.clock();
+    for (const notification of targets) {
+      notification.read = true;
+      notification.readAt = readAt;
+      this.protocol.publish('presentation.notification.read', { notification: { ...notification } });
+    }
+    return targets.length;
+  }
+
   clear({ source, includeRead = true } = {}) {
     const targets = this.pending.map(id => this.byId.get(id)).filter(item =>
       item && (source === undefined || item.source === source) && (includeRead || !item.read)
