@@ -17,11 +17,11 @@ function EmptyInventoryState() {
 
 function InventoryItemCard({ item }) {
   return (
-    <article className="vsr-card vsr-stack vsr-stack--gap-2">
+    <article className="vsr-card vsr-stack vsr-stack--center vsr-stack--gap-2">
       <span className="material-symbols-rounded" aria-hidden="true">
         {item.icon || 'inventory_2'}
       </span>
-      <div className="vsr-stack vsr-stack--gap-1">
+      <div className="vsr-stack vsr-stack--center vsr-stack--gap-1">
         <h3>{item.name}</h3>
         <p className="vsr-text-secondary">{item.category}</p>
       </div>
@@ -62,7 +62,7 @@ export default function InventoryWorkspace({ snapshot, open = false, onClose }) 
           <p className="vsr-text-secondary" aria-label="Item count">
             {items.length} {items.length === 1 ? 'item' : 'items'}
           </p>
-          <Grid columns="responsive-cards" gap="3" aria-label="Inventory items">
+          <Grid columns="responsive-dense" gap="3" aria-label="Inventory items">
             {items.map(item => (
               <InventoryItemCard key={item.id} item={item} />
             ))}
