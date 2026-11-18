@@ -12,7 +12,7 @@ const FILTERS = [
 const levelTone = level => ({
   success: 'success',
   warning: 'warning',
-  danger: 'error',
+  danger: 'danger',
   special: 'info',
   info: 'neutral'
 }[level] || 'neutral');
@@ -192,7 +192,7 @@ export default function NotificationCenter({
                       <div className="vsr-notification-item__body">
                         <div className="vsr-notification-item__heading">
                           <strong>{item.title || 'Notification'}</strong>
-                          {!item.read && <Badge tone={tone === 'error' ? 'warning' : 'info'} size="lg">New</Badge>}
+                          {!item.read && <Badge tone={tone === 'danger' ? 'warning' : 'info'} size="lg">New</Badge>}
                         </div>
                         <p>{item.message}</p>
                         {validTimestamp && <time dateTime={timestamp.toISOString()}>{formatRelativeTime(timestamp)}</time>}
