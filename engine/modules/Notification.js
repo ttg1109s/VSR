@@ -65,7 +65,7 @@ export class NotificationSystem {
       if (!this.expire(notification.id) && this.byId.get(notification.id)?.status === 'pending') {
         this.scheduleExpiry(notification);
       }
-    }, delay);
+    }, Math.max(1, delay), `notification_expiry_${notification.id}`);
     timer?.unref?.();
     this.timers.set(notification.id, timer);
   }
