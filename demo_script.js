@@ -1222,7 +1222,6 @@ export const DEMO_SCRIPT = {
             "sceneID": "scene_school_classroom_03",
             "subTitleStatus": "Toàn cảnh lớp học",
             "desc": "Bạn vừa bước vào lớp học số 3. Bàn ghế phủ bụi được xếp thành ba dãy; bục giảng nằm dưới bảng đen, một chiếc đồng hồ chết máy treo gần cửa sổ và tờ thông báo sơ tán đã ngả vàng vẫn còn trên bảng tin. Chưa có dấu hiệu nào đủ rõ để kết luận chuyện gì đã xảy ra.",
-            "view": "overview"
           },
           "set": {
             "blocked": false,
@@ -1243,8 +1242,6 @@ export const DEMO_SCRIPT = {
             "sceneID": "scene_school_classroom_03",
             "subTitleStatus": "Cận cảnh bảng đen",
             "desc": "Góc nhìn tập trung vào bảng đen. Dưới lớp bụi phấn là những vệt lau không đều, các nét chữ bị cạo mạnh đến xước mặt bảng và một dãy tên chỉ còn sót lại vài nét cuối. Có vẻ ai đó đã cố xóa cả một phần danh sách lớp.",
-            "view": "closeup",
-            "focus": "blackboard"
           },
           "set": {
             "blocked": false,
@@ -1261,8 +1258,6 @@ export const DEMO_SCRIPT = {
             "sceneID": "scene_school_classroom_03",
             "subTitleStatus": "Bị xóa tên",
             "desc": "Sau khi quan sát kỹ bảng đen, bạn nhận ra đây không phải vết lau bảng thông thường. Một số tên học sinh đã bị xóa có chủ ý; những nét phấn còn sót lại khớp với khoảng trống trên sơ đồ chỗ ngồi. Bức ảnh tập thể cũng bị xé đúng tại vị trí của một học sinh.",
-            "view": "investigation",
-            "focus": "blackboard"
           },
           "set": {
             "blocked": false,
@@ -1285,7 +1280,6 @@ export const DEMO_SCRIPT = {
             "sceneID": "scene_school_classroom_03",
             "subTitleStatus": "Đã khôi phục hồ sơ",
             "desc": "Một ngăn bàn cuối lớp bị đóng đinh chứa bản sao sổ điểm danh. Tên học sinh thứ mười hai vẫn bị bôi đen, nhưng số thứ tự và ngày nghỉ học trùng với hồ sơ sơ tán. Sĩ số mười hai người vì thế vẫn được xác nhận, dù danh tính một học sinh đã bị xóa khỏi những tài liệu khác.",
-            "view": "investigation"
           },
           "set": {
             "blocked": false,
@@ -3236,38 +3230,32 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Những dòng chữ bị cạo",
         "buttonLabel": "Đọc dấu phấn",
-        "desc": "Bạn nghiêng người nhìn sát mặt bảng. Dưới những vệt lau chồng lên nhau vẫn còn nét phấn của một danh sách học sinh. Một vị trí bị cạo mạnh đến mức mặt bảng xước thành những đường trắng. Đây là hành động xóa dấu vết có chủ ý, không phải bụi thời gian.",
-        "set": {
-          "display": "show"
-        },
-        "effect": {
-          "normal": [],
-          "pass": [
-            {
-              "type": "set",
-              "subtype": "state",
-              "target": "clue_roster",
-              "value": true
-            },
-            {
-              "type": "set",
-              "subtype": "state",
-              "target": "knows_twelve",
-              "value": true
-            },
-            {
-              "type": "notify",
-              "subtype": "toast",
-              "level": "success",
-              "text": "Bạn phát hiện danh sách lớp đã bị xóa có chủ ý."
-            },
-            {
-              "type": "goto",
-              "subtype": "router",
-              "target": "router_classroom_erased"
-            }
-          ]
-        }
+        "desc": "Bạn nghiêng người nhìn sát mặt bảng. Dưới những vệt lau chồng lên nhau vẫn còn nét phấn của một danh sách học sinh. Một vị trí bị cạo mạnh đến mức mặt bảng xước thành những đường trắng. Đây là hành động xóa dấu vết có chủ ý, không phải bụi thời gian."
+      },
+      "set": {
+        "display": "show"
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_roster",
+            "value": true
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Bạn phát hiện danh sách lớp đã bị xóa có chủ ý."
+          },
+          {
+            "type": "goto",
+            "subtype": "router",
+            "target": "router_classroom_erased"
+          }
+        ]
       }
     },
     "action_return_classroom_overview": {
