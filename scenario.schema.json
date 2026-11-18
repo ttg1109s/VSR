@@ -1355,7 +1355,6 @@
         },
         "sound": {
           "type": "boolean",
-          "default": true,
           "description": "Whether this notification requests an audio cue. User preference may override it."
         },
         "soundProfile": {
@@ -1368,7 +1367,6 @@
             "critical",
             "special"
           ],
-          "default": "default",
           "description": "Requested synthesized Web Audio profile."
         }
       },
@@ -2809,7 +2807,6 @@
         },
         "sound": {
           "type": "boolean",
-          "default": true,
           "description": "Whether this notification requests an audio cue. User preference may override it."
         },
         "soundProfile": {
@@ -2822,7 +2819,6 @@
             "critical",
             "special"
           ],
-          "default": "default",
           "description": "Requested synthesized Web Audio profile."
         }
       },
