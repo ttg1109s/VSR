@@ -140,7 +140,6 @@ export default function NotificationCenter({
           <div className="vsr-notification-center__header-content">
             <div className="vsr-notification-center__header-copy">
               <h2>Notifications</h2>
-              <p>Stay updated on what happens in your world.</p>
             </div>
             <div className="vsr-notification-center__header-actions">
               <Badge tone="info" size="lg" aria-label={unreadCount + ' unread notifications'}>{unreadCount} unread</Badge>
@@ -190,7 +189,7 @@ export default function NotificationCenter({
                   const validTimestamp = Number.isFinite(timestamp.getTime());
                   const menuItems = [
                     !item.read && { key: 'read', label: 'Mark as read', icon: 'done', disabled: busyIds.includes(item.id), onSelect: () => markRead(item.id) },
-                    item.status === 'pending' && { key: 'dismiss', label: 'Dismiss', icon: 'close', danger: true, disabled: busyIds.includes(item.id), onSelect: () => dismiss(item.id) }
+                    !['dismissed', 'expired', 'cleared'].includes(item.status) && { key: 'dismiss', label: 'Dismiss', icon: 'close', danger: true, disabled: busyIds.includes(item.id), onSelect: () => dismiss(item.id) }
                   ].filter(Boolean);
                   return (
                     <article className={'vsr-notification-item' + (item.read ? '' : ' is-unread')} key={item.id}>
@@ -202,8 +201,7 @@ export default function NotificationCenter({
                           <strong>{item.title || 'Notification'}</strong>
                           {!item.read && <Badge tone={tone === 'danger' ? 'warning' : 'info'} size="lg">New</Badge>}
                         </div>
-                        <p>{item.message}</p>
-                        {validTimestamp && <time dateTime={timestamp.toISOString()}>{formatRelativeTime(timestamp)}</time>}
+                        <p>{item.message}{validTimestamp && <> <span className="vsr-notification-item__time-separator" aria-hidden="true">·</span> <time dateTime={timestamp.toISOString()}>{formatRelativeTime(timestamp)}</time></>}</p>
                       </div>
                       {menuItems.length > 0 && (
                         <Menu
