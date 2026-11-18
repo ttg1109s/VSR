@@ -108,7 +108,7 @@ function Overlay({open,onClose,title,description,headerActions,headerContent,hea
   const ref=useRef(null),titleId=useId(),descId=useId();
   useLayer(open,onClose,ref);
   useEffect(()=>{
-    const locksPageScroll = open && className?.includes('vsr-contact-drawer');
+    const locksPageScroll = open && (className?.includes('vsr-contact-drawer') || className?.includes('vsr-notification-drawer'));
     if(!locksPageScroll || typeof document==='undefined')return;
     const body=document.body,html=document.documentElement;
     const scrollY=window.scrollY||window.pageYOffset||0;
