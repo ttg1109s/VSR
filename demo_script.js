@@ -3137,7 +3137,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Lớp học số 3",
         "buttonLabel": "Vào lớp",
-        "buttonIcon": "door-open",
+        "buttonIcon": "door_open",
         "desc": "Theo dấu chân nhỏ dọc hành lang, bạn bước vào lớp học số 3. Những chiếc bàn phủ bụi vẫn được xếp thành hàng, nhưng sơ đồ chỗ ngồi trên tường có một vị trí bị cạo khỏi bản sao."
       },
       "set": {
