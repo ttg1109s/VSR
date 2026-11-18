@@ -145,7 +145,12 @@ function ActionCard({ action, pending = false, interactionBlocked = false, passw
 
     <div className="vsr-action-card__media-wrap">
       <MediaFrame className="vsr-action-card__media" src={thumbnail?.url} type={thumbnail?.type || 'photo'} ratio={thumbnail?.ratio || '16:9'} alt={meta.title || action.title || 'Action illustration'} />
-      {showStatus && <div className="vsr-action-card__status" aria-label="Action status"><Badge tone={statusTone}>{statusLabel}</Badge></div>}
+      <div className="vsr-action-card__status" aria-label="Action status">
+        {showStatus && <Badge tone={statusTone}>{statusLabel}</Badge>}
+        {readRequired
+          ? <Badge tone={read ? 'success' : 'warning'}>{read ? 'Read' : 'Unread'}</Badge>
+          : <Badge tone="neutral">Reading not required</Badge>}
+      </div>
     </div>
 
     {coolingDown && <div className="vsr-action-card__cooldown" role="timer">Time remaining: {cooldown}s</div>}
