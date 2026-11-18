@@ -131,8 +131,8 @@ const ItemTransferLogic = {
         }
         engine.commitState?.('inventory.changed');
         engine.api.notifications?.add?.(
-            'Chuyển vật phẩm',
-            `Đã chuyển ${itemInfo.name || itemId} từ ${sourceId} sang ${targetId}.`,
+            'Item transferred',
+            `Transferred ${itemInfo.name || itemId} from ${sourceId} to ${targetId}.`,
             'info',
             { source: 'scenario', category: 'scenario.character.item_transfer' }
         );
@@ -157,7 +157,7 @@ const StatsLogic = {
                 return characters;
             });
             if (idA === entryChar || idB === entryChar) engine.api.presentation.components.updatePlayerCard();
-            engine.api.notifications.add("Hoán đổi", `Chỉ số giữa ${charA.set.name} và ${charB.set.name} đã thay đổi.`, "info", { source: 'scenario', category: 'scenario.character.stats_swap' });
+            engine.api.notifications.add("Swap", `Stats between ${charA.set.name} and ${charB.set.name} have changed.`, "info", { source: 'scenario', category: 'scenario.character.stats_swap' });
         }
     },
     copy_to: (engine, eff) => {
