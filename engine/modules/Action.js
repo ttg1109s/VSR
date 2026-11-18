@@ -22,8 +22,20 @@ export const ActionSystem = {
             }
             const runtime = this.api.engine.state.getRuntimeSnapshot('actions.[id]', { id: actionId }) || {};
             const count = runtime.count || {};
+            const effectiveAction = ensureThumb({ ...definition, id: actionId });
+
+            // Requirement is a runtime-mutable Action property. Project an explicit
+            // runtime override into the effective definition so handleAction reads
+            // the updated gate on the next click without changing the source script.
+            if (typeof runtime.requirement === 'boolean') {
+                effectiveAction.set = {
+                    ...(effectiveAction.set || {}),
+                    requirement: runtime.requirement
+                };
+            }
+
             return {
-                ...ensureThumb({ ...definition, id: actionId }),
+                ...effectiveAction,
                 count: {
                     normal: Number.isSafeInteger(count.normal) && count.normal >= 0 ? count.normal : 0,
                     pass: Number.isSafeInteger(count.pass) && count.pass >= 0 ? count.pass : 0,
