@@ -20,7 +20,7 @@ export const DEMO_SCRIPT = {
     ],
     "difficulty": "normal",
     "estimatedPlayTime": 55,
-    "entryScene": "scene_village_square",
+    "entryScene": "scene_village",
     "entryCharacter": "player",
     "createdAt": "2026-11-15T00:00:00.000Z",
     "updatedAt": "2026-11-16T00:00:00.000Z",
@@ -868,10 +868,41 @@ export const DEMO_SCRIPT = {
     }
   },
   "scenes": {
+    "scene_village": {
+      "meta": {
+        "title": "Ngôi làng",
+        "desc": "Cả ngôi làng chìm trong một màn đêm đặc quánh. Những mái nhà đen sì chỉ còn là đường viền sau lớp sương thấp; vài ô cửa sổ le lói ánh đèn vàng nhưng không có bóng người phía sau. Gió luồn qua những con ngõ hẹp, kéo theo tiếng cửa gỗ va đập và tiếng loa phát thanh rè rè từ quảng trường. Không một con chó sủa, không một côn trùng kêu. Cảm giác như cả làng đang nín thở, chờ bạn bước vào một nơi mà mọi lối đi đều dẫn về một ký ức chưa chịu yên nghỉ."
+      },
+      "set": {
+        "activeRouterId": "router_village_night"
+      },
+      "routers": {
+        "router_village_night": {
+          "meta": {
+            "sceneID": "scene_village",
+            "subTitleStatus": "Đêm tối",
+            "desc": "Màn đêm phủ kín ngôi làng. Sương bò sát mặt đường, che khuất những khúc quanh chỉ cách vài bước chân. Từ xa, loa phát thanh gọi tên từng người bằng giọng đọc méo mó; mỗi lần âm thanh tắt đi, bóng tối lại dày thêm. Những căn nhà im lìm như đã bị bỏ hoang từ lâu, nhưng sau một vài ô cửa, có thứ gì đó vừa lùi khỏi ánh sáng. Bạn có thể nhận ra các địa điểm trong làng, song không thể chắc rằng con đường giữa chúng vẫn còn nguyên như ban ngày."
+          },
+          "set": {
+            "blocked": false,
+            "visited": false,
+            "countVisited": 0
+          },
+          "actions": [
+            "action_village_square",
+            "action_travel_inn",
+            "action_travel_chapel",
+            "action_travel_school",
+            "action_travel_forest"
+          ]
+        }
+      }
+    },
     "scene_village_square": {
       "meta": {
         "title": "Quảng trường làng",
-        "desc": "Không gian công cộng ở trung tâm làng; bảng thông báo và loa phát thanh là hai nguồn manh mối đầu tiên."
+        "desc": "Không gian công cộng ở trung tâm làng; bảng thông báo và loa phát thanh là hai nguồn manh mối đầu tiên.",
+        "parentScene": "scene_village"
       },
       "set": {
         "activeRouterId": "router_square_fogbound"
@@ -973,7 +1004,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Nhà trọ Bà Hạnh",
         "desc": "Nhà trọ là nơi lưu giữ sổ khách và lời khai về những người chưa thể rời làng.",
-        "parentScene": "scene_village_square"
+        "parentScene": "scene_village"
       },
       "set": {
         "activeRouterId": "router_inn_unsettled"
@@ -1069,7 +1100,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Nhà nguyện",
         "desc": "Gian cầu nguyện lưu bản thánh ca chứa mật từ và lời giải về hồi chuông cuối.",
-        "parentScene": "scene_village_square"
+        "parentScene": "scene_village"
       },
       "set": {
         "activeRouterId": "router_chapel_silent"
@@ -1112,7 +1143,7 @@ export const DEMO_SCRIPT = {
             "action_talk_keeper",
             "action_enter_tower",
             "action_return_square",
-            ""action_travel_inn"",
+            "action_travel_inn",
             "action_travel_school",
           ]
         }
@@ -1169,7 +1200,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Trường tiểu học bỏ hoang",
         "desc": "Trường học lưu sơ đồ lớp và dấu vết về học sinh thứ mười hai bị xóa khỏi hồ sơ.",
-        "parentScene": "scene_village_square"
+        "parentScene": "scene_village"
       },
       "set": {
         "activeRouterId": "router_classroom_erased"
@@ -1212,7 +1243,7 @@ export const DEMO_SCRIPT = {
             "action_talk_linh",
             "action_decode_roster",
             "action_return_square",
-            ""action_travel_chapel"",
+            "action_travel_chapel",
             "action_travel_forest",
           ]
         }
@@ -1222,7 +1253,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Lối rừng phía Bắc",
         "desc": "Con đường xuyên rừng biến đổi, nhưng các dấu sơn giúp lần tới khu đất nghi lễ.",
-        "parentScene": "scene_village_square"
+        "parentScene": "scene_village"
       },
       "set": {
         "activeRouterId": "router_forest_path_shifting"
@@ -1264,7 +1295,7 @@ export const DEMO_SCRIPT = {
             "action_maze_path",
             "action_enter_clearing",
             "action_return_square",
-            ""action_travel_school"",
+            "action_travel_school",
           ]
         }
       }
@@ -2967,6 +2998,27 @@ export const DEMO_SCRIPT = {
             "subtype": "inventory",
             "op": "has",
             "value": "unpunched_ticket"
+          }
+        ]
+      }
+    },
+    "action_village_square": {
+      "meta": {
+        "title": "Quảng trường làng",
+        "buttonLabel": "Đi đến",
+        "buttonIcon": "location_city",
+        "desc": "Quảng trường nằm giữa ngôi làng, nơi bảng thông báo và chiếc loa phát thanh vẫn hoạt động dù không còn ai tụ tập. Ánh đèn vàng yếu ớt hắt xuống nền đá ướt, còn những cái tên bị đọc lên từ loa dường như đang vọng ra từ chính các ngôi nhà quanh quảng trường."
+      },
+      "set": {
+        "display": "show"
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "goto",
+            "subtype": "scene",
+            "target": "scene_village_square"
           }
         ]
       }
