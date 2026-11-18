@@ -343,7 +343,9 @@ export class JsonProtocol{
    if(!item)return null;
    let requirementsPass=null;
    if(item.requirements){
-    try{requirementsPass=engine.checkReq?.(item.requirements)?.pass===true;}catch(_){requirementsPass=null;}
+    if(!hasSnapshotUnsafeExpression(item.requirements)){
+     try{requirementsPass=engine.checkReq?.(item.requirements)?.pass===true;}catch(_){requirementsPass=null;}
+    }
    }else requirementsPass=true;
    const current=Number(item.usage?.current),max=Number(item.usage?.max);
    const hasUsage=Number.isFinite(current)&&Number.isFinite(max);
@@ -359,9 +361,9 @@ export class JsonProtocol{
     category:typeof item.category==='string'&&item.category.trim()?item.category:'uncategorized',
     equipped:handIds.includes(itemId),
     requirements:{hasRequirements:!!item.requirements,passed:requirementsPass},
-    usage:hasUsage?{current,max,autoInc:item.usage.autoInc!==false}:null,
-    broken,canEquip:requirementsPass===true&&(handIds.includes(itemId)||maxHand<=0||handIds.length<maxHand),
-    canUse:requirementsPass===true&&!(broken&&engine.getConfig?.('brokenDisable')===true),
+    usage:hasUsage?{current,max,autoInc:item.usage.autoInc!==false,status:Array.isArray(item.usage.status)?cloneJsonValue(item.usage.status):[]}:null,
+    broken,canEquip:requirementsPass!==false&&(handIds.includes(itemId)||maxHand<=0||handIds.length<maxHand),
+    canUse:requirementsPass!==false&&!(broken&&engine.getConfig?.('brokenDisable')===true),
     stats
    };
   }).filter(Boolean);
