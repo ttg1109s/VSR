@@ -126,4 +126,3 @@
 .vsr-segmented-control__count{font-variant-numeric:tabular-nums}
 .vsr-overlay-panel{width:min(100%,var(--vsr-overlay-panel-width,520px))}
 .vsr-drawer.vsr-overlay-panel{width:min(100%,var(--vsr-overlay-panel-width,480px))}
-.vsr-overlay-content{display:flex;flex:1;min-height:0;flex-direction:column;overflow:auto}
