@@ -4494,7 +4494,7 @@
     },
     "action": {
       "type": "object",
-      "description": "Định nghĩa một hành động (được tham chiếu bởi router.actions[] qua ID, hoặc định nghĩa inline).",
+      "description": "Global Action definition stored in the root-level actions map and referenced by Router through its Action ID.",
       "required": [
         "meta",
         "set"
@@ -4616,11 +4616,6 @@
             }
           },
           "additionalProperties": false
-        },
-        "id": {
-          "type": "string",
-          "minLength": 1,
-          "description": "Stable inline action identifier; generated deterministically when omitted."
         },
         "count": {
           "type": "object",
