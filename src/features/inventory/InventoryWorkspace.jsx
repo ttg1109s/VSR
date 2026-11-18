@@ -82,7 +82,7 @@ function InventoryItemDetails({ item }) {
     <div className="vsr-inventory-item-details">
       <div className="vsr-inventory-item-details__status">
         <span className="vsr-text-secondary">{item.category === 'uncategorized' ? 'Uncategorized' : item.category}</span>
-        <span className={item.equipped ? 'vsr-tag vsr-tag--success' : 'vsr-tag'}>
+        <span className="vsr-tag">
           {item.equipped ? 'Equipped' : 'Not equipped'}
         </span>
       </div>
@@ -319,6 +319,7 @@ export default function InventoryWorkspace({ snapshot, client, open = false, onC
   }
 
   return (
+    <>
     <Drawer
       open={open}
       title="Inventory"
@@ -380,7 +381,13 @@ export default function InventoryWorkspace({ snapshot, client, open = false, onC
             <>
               <Grid columns="auto" gap="3" className="vsr-inventory-items-grid" aria-label="Inventory items">
                 {pageItems.map(item => (
-                  <InventoryItemCard key={item.id} item={item} />
+                  <InventoryItemCard
+                    key={item.id}
+                    item={item}
+                    busy={pendingItemId === item.id}
+                    onViewDetails={setSelectedItem}
+                    onToggleEquipment={toggleItemEquipment}
+                  />
                 ))}
               </Grid>
               <InventoryPagination
@@ -403,5 +410,6 @@ export default function InventoryWorkspace({ snapshot, client, open = false, onC
       >
         <InventoryItemDetails item={selectedItem} />
       </Dialog>
+    </>
   );
 }
