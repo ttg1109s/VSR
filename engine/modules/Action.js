@@ -50,12 +50,18 @@ export const ActionSystem = {
         const state = this.api.engine.state;
         const sceneId = state.get('sceneId');
         const routerId = sceneId ? state.get('scene.activeRouterId', { id: sceneId }) : null;
-        if (!sceneId || !routerId) return { success: false, reason: 'invalid_context' };
+        if (!sceneId || !routerId) {
+            this.notifyActionFailure('Action unavailable', 'No valid action context remains.', 'action.invalid_context');
+            return { success: false, reason: 'invalid_context' };
+        }
 
         // Only the active router may mutate an action's read state.
         const action = this.getEffectiveActions(sceneId, routerId)
             .find(item => `${sceneId}_${routerId}_${item.id}` === uniqueId);
-        if (!action) return { success: false, reason: 'action_not_found' };
+        if (!action) {
+            this.notifyActionFailure('Action unavailable', 'This action is no longer part of the current game.', 'action.not_found');
+            return { success: false, reason: 'action_not_found' };
+        }
 
         const current = state.getRuntimeSnapshot('actions.[id]', { id: action.id });
         if (current?.readDesc === true) return { success: true, alreadyRead: true };
