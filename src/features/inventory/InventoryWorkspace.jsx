@@ -1,28 +1,16 @@
 import React, { useMemo, useState } from 'react';
 import { Drawer, Input } from '../../design-system/index.js';
+import './inventory-workspace.css';
 
 function EmptyInventoryState() {
   return (
-    <section className="vsr-stack vsr-stack--center vsr-stack--gap-3" aria-live="polite">
-      <div
-        className="vsr-card vsr-stack vsr-stack--center vsr-stack--gap-3"
-        style={{ width: '100%', padding: '40px 24px', textAlign: 'center' }}
-      >
-        <span
-          className="material-symbols-rounded"
-          aria-hidden="true"
-          style={{ fontSize: '48px', color: 'var(--vsr-text-secondary, #5F6368)' }}
-        >
-          backpack
-        </span>
-        <div className="vsr-stack vsr-stack--gap-1">
-          <h2 className="vsr-heading-medium">Your inventory is empty</h2>
-          <p className="vsr-text-secondary">
-            You haven't collected any items yet. Explore the world and collect items to see them here.
-          </p>
-        </div>
+    <section className="vsr-inventory-empty" aria-live="polite">
+      <div className="vsr-inventory-empty__icon" aria-hidden="true">
+        <span className="material-symbols-rounded">backpack</span>
       </div>
-      <p className="vsr-text-secondary vsr-text-small" role="note">
+      <h2>Your inventory is empty</h2>
+      <p>You haven't collected any items yet. Explore the world and collect items to see them here.</p>
+      <p className="vsr-inventory-empty__hint">
         Items you collect during your adventure will automatically appear here.
       </p>
     </section>
@@ -31,12 +19,12 @@ function EmptyInventoryState() {
 
 function NoSearchResults({ onClear }) {
   return (
-    <section className="vsr-stack vsr-stack--center vsr-stack--gap-2" aria-live="polite">
-      <span className="material-symbols-rounded" aria-hidden="true" style={{ fontSize: '40px' }}>
+    <section className="vsr-inventory-empty vsr-inventory-empty--compact" aria-live="polite">
+      <span className="material-symbols-rounded vsr-inventory-empty__secondary-icon" aria-hidden="true">
         search_off
       </span>
-      <h2 className="vsr-heading-medium">No items found</h2>
-      <p className="vsr-text-secondary">Try another search term or clear your search.</p>
+      <h2>No items found</h2>
+      <p>Try another search term or clear your search.</p>
       <button type="button" className="vsr-button vsr-button--tertiary" onClick={onClear}>
         Clear search
       </button>
@@ -74,17 +62,17 @@ export default function InventoryWorkspace({ snapshot, open = false, onClose }) 
       lockScroll
     >
       {!inventory || !items ? (
-        <section className="vsr-stack vsr-stack--center vsr-stack--gap-2" aria-live="polite">
-          <span className="material-symbols-rounded" aria-hidden="true" style={{ fontSize: '40px' }}>
+        <section className="vsr-inventory-empty vsr-inventory-empty--compact" aria-live="polite">
+          <span className="material-symbols-rounded vsr-inventory-empty__secondary-icon" aria-hidden="true">
             inventory_2
           </span>
-          <h2 className="vsr-heading-medium">Inventory unavailable</h2>
-          <p className="vsr-text-secondary">Inventory data is not available yet.</p>
+          <h2>Inventory unavailable</h2>
+          <p>Inventory data is not available yet.</p>
         </section>
       ) : items.length === 0 ? (
         <div className="vsr-stack vsr-stack--gap-3">
           <EmptyInventoryState />
-          <p className="vsr-text-secondary vsr-text-small" aria-label="Item count">0 items</p>
+          <p className="vsr-text-secondary vsr-inventory-count" aria-label="Item count">0 items</p>
         </div>
       ) : (
         <div className="vsr-stack vsr-stack--gap-3">
@@ -100,14 +88,14 @@ export default function InventoryWorkspace({ snapshot, open = false, onClose }) 
             <NoSearchResults onClear={() => setQuery('')} />
           ) : (
             <section className="vsr-stack vsr-stack--gap-2" aria-label="Inventory items">
-              <p className="vsr-text-secondary vsr-text-small" aria-live="polite">
+              <p className="vsr-text-secondary vsr-inventory-count" aria-live="polite">
                 {filteredItems.length} {filteredItems.length === 1 ? 'item' : 'items'}
               </p>
               {filteredItems.map(item => (
                 <article className="vsr-card vsr-stack vsr-stack--gap-1" key={item.id}>
                   <div className="vsr-stack vsr-stack--gap-1">
-                    <h2 className="vsr-heading-small">{item.name}</h2>
-                    <p className="vsr-text-secondary vsr-text-small">{item.category}</p>
+                    <h2>{item.name}</h2>
+                    <p className="vsr-text-secondary">{item.category}</p>
                     {item.description && <p className="vsr-text-body">{item.description}</p>}
                     {item.equipped && <span className="vsr-badge vsr-badge--success">Equipped</span>}
                   </div>
