@@ -46,10 +46,13 @@ export const ItemSystem = {
         });
         if (result === 'missing') throw new Error('Inventory owner does not exist.');
         if (result === 'not_owned') throw new Error('Item is not in the active inventory.');
-        if (result === 'removed_equipped' && info.effect?.unequip) {
-            await this.processRunnables(info.effect.unequip, { itemId, hook: 'unequip' });
+        try {
+            if (result === 'removed_equipped' && info.effect?.unequip) {
+                await this.processRunnables(info.effect.unequip, { itemId, hook: 'unequip' });
+            }
+        } finally {
+            this.commitState('inventory.changed');
         }
-        this.commitState('inventory.changed');
         return { removed: true, itemId, ownerId };
     },
 
@@ -83,10 +86,13 @@ export const ItemSystem = {
         if (result === 'not_owned') throw new Error('Item is not in the active inventory.');
         if (result === 'duplicate') throw new Error('Target already owns this item.');
         if (result === 'full') throw new Error('Target inventory is full.');
-        if (result === 'transferred_equipped' && info.effect?.unequip) {
-            await this.processRunnables(info.effect.unequip, { itemId, hook: 'unequip' });
+        try {
+            if (result === 'transferred_equipped' && info.effect?.unequip) {
+                await this.processRunnables(info.effect.unequip, { itemId, hook: 'unequip' });
+            }
+        } finally {
+            this.commitState('inventory.transferred');
         }
-        this.commitState('inventory.transferred');
         return { transferred: true, itemId, sourceCharacterId, targetCharacterId };
     },
 
