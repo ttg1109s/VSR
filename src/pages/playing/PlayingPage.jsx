@@ -4,12 +4,14 @@ import ActionCollection from '../../features/actions/ActionCollection.jsx';
 import ActionNavigator from '../../features/actions/ActionNavigator.jsx';
 import ContactPanel from './ContactPanel.jsx';
 import NotificationCenter from '../../features/notifications/NotificationCenter.jsx';
-import './playing-page.css';
+import InventoryWorkspace from '../../features/inventory/InventoryWorkspace.jsx';
+import PlayingPageStyles from '../../features/playing/PlayingPageStyles.jsx';
 
 export default function PlayingPage({ snapshot, chatViewRequest = null, client, error = '', onNavigate, soundEnabled = true, onSoundChange, modalNotification = null, onModalClose }) {
   const toast = useToast();
   const [activeNavigation, setActiveNavigation] = useState('hand');
   const [contactOpen, setContactOpen] = useState(false);
+  const [inventoryOpen, setInventoryOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [backParentPending, setBackParentPending] = useState(false);
   const actionCollectionRef = useRef(null);
@@ -83,6 +85,7 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
 
   return (
     <main className="vsr-page-shell vsr-page-shell--start vsr-page-shell--flush-top">
+      <PlayingPageStyles/>
       <Breadcrumb
         items={breadcrumbItems}
         activeKey={activeSceneId}
@@ -135,22 +138,38 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
       <BottomNavigation
         value={activeNavigation}
         onChange={value => {
+          if (value === 'inventor') {
+            setInventoryOpen(current => !current);
+            setContactOpen(false);
+            setNotificationOpen(false);
+            setActiveNavigation(inventoryOpen ? 'hand' : 'inventor');
+            return;
+          }
           if (value === 'notify') {
+            setInventoryOpen(false);
             setNotificationOpen(current => !current);
             setContactOpen(false);
             setActiveNavigation(notificationOpen ? 'hand' : 'notify');
             return;
           }
           setNotificationOpen(false);
+          setInventoryOpen(false);
           setActiveNavigation(value);
           if (value === 'contact') setContactOpen(true);
         }}
         items={[
           { value: 'hand', label: 'Hand', icon: 'front_hand' },
-          { value: 'inventor', label: 'Inventor', icon: 'inventory_2' },
+          ...(snapshot?.presentation?.inventory?.enabled !== false ? [{ value: 'inventor', label: 'Inventory', icon: 'inventory_2' }] : []),
           { value: 'contact', label: 'Contact', icon: 'contacts' },
           { value: 'notify', label: 'Notify', icon: 'notifications', badge: unreadCount, badgeLabel: 'unread notifications' }
         ]}
+      />
+      <InventoryWorkspace
+        snapshot={snapshot}
+        client={client}
+        open={inventoryOpen}
+        onError={message => toast(message, { tone: 'warning' })}
+        onClose={() => { setInventoryOpen(false); setActiveNavigation('hand'); }}
       />
       <ContactPanel
         open={contactOpen}

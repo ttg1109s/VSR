@@ -37,7 +37,9 @@ export class JsonProtocol{
    if(RUNTIME_ONLY_STATE_KEYS.has(k))continue;
    const v=cloneJsonValue(engine.state[k]);if(v!==undefined)state[k]=v;
   }
-  // Session secrets and engine-only internals never cross the client boundary.
+  // Item templates contain executable effects and requirement expressions. Keep them
+  // inside the Engine; clients receive only the explicit inventory projection below.
+  delete state.itemInfo;
   if(state.session)delete state.session.passwordChallenge;
   const sceneId=engine.state.sceneId||null;
   const routerId=sceneId?(engine.state.scenes?.[sceneId]?.activeRouterId||null):null;
@@ -323,6 +325,53 @@ export class JsonProtocol{
     };
    })
    .sort((a,b)=>a.name.localeCompare(b.name,undefined,{sensitivity:'base'}));
+  const inventoryOwnerId=engine.getOwnerId?.()||engine.state.entryCharacter||'player';
+  const inventoryOwners=Object.entries(engine.state.characters||{}).map(([characterId,character])=>({
+   id:characterId,name:character?.meta?.name||characterId,
+   isActive:characterId===inventoryOwnerId,
+   itemCount:Array.isArray(character?.inventory)?character.inventory.length:0
+  }));
+  const inventoryCharacter=engine.state.characters?.[inventoryOwnerId]||null;
+  const inventoryIds=Array.isArray(inventoryCharacter?.inventory)?inventoryCharacter.inventory:[];
+  const handIds=Array.isArray(inventoryCharacter?.hand)?inventoryCharacter.hand:[];
+  const maxInventoryConfig=engine.getConfig?.('maxInventory')||[];
+  const ownerLimit=Array.isArray(maxInventoryConfig)
+   ?maxInventoryConfig.find(pair=>Array.isArray(pair)&&pair[1]===inventoryOwnerId)?.[0]||0:0;
+  const maxHand=Number(engine.getConfig?.('maxHandOn'))||0;
+  const inventoryItems=inventoryIds.map(itemId=>{
+   const item=engine.state.itemInfo?.[itemId];
+   if(!item)return null;
+   let requirementsPass=null;
+   if(item.requirements){
+    if(!hasSnapshotUnsafeExpression(item.requirements)){
+     try{requirementsPass=engine.checkReq?.(item.requirements)?.pass===true;}catch(_){requirementsPass=null;}
+    }
+   }else requirementsPass=true;
+   const current=Number(item.usage?.current),max=Number(item.usage?.max);
+   const hasUsage=Number.isFinite(current)&&Number.isFinite(max);
+   const broken=hasUsage&&max>0&&current>=max;
+   const stats=Object.entries(item.stats||{}).map(([id,stat])=>({
+    id,label:typeof stat?.label==='string'?stat.label:id,
+    current:Number.isFinite(stat?.current)?stat.current:null,
+    max:Number.isFinite(stat?.max)?stat.max:null,
+    color:typeof stat?.color==='string'?stat.color:null
+   }));
+   return{
+    id:itemId,name:item.name||itemId,icon:item.icon||null,description:item.desc||'',
+    category:typeof item.category==='string'&&item.category.trim()?item.category:'uncategorized',
+    equipped:handIds.includes(itemId),
+    requirements:{hasRequirements:!!item.requirements,passed:requirementsPass},
+    usage:hasUsage?{current,max,autoInc:item.usage.autoInc!==false,status:Array.isArray(item.usage.status)?cloneJsonValue(item.usage.status):[]}:null,
+    broken,canEquip:requirementsPass!==false&&(handIds.includes(itemId)||maxHand<=0||handIds.length<maxHand),
+    canUse:requirementsPass!==false&&!(broken&&engine.getConfig?.('brokenDisable')===true),
+    stats
+   };
+  }).filter(Boolean);
+  const inventoryProjection={
+   enabled:engine.getConfig?.('navInventory')!==false,ownerId:inventoryOwnerId,owners:inventoryOwners,items:inventoryItems,
+   handCount:handIds.length,handLimit:maxHand>0?maxHand:null,
+   itemCount:inventoryIds.length,inventoryLimit:ownerLimit>0?ownerLimit:null
+  };
   const snapshot={
    protocol:'vsr',protocolVersion:this.protocolVersion,type:'snapshot',engineId:this.engineId,
    revision:this.stateRevision,stateRevision:this.stateRevision,eventSequence:this.eventSequence,
@@ -336,6 +385,7 @@ export class JsonProtocol{
     player:playerProjection,
     contacts,
     systemContacts,
+    inventory:inventoryProjection,
     actions
    },
    session,state

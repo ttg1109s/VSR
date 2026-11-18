@@ -30,6 +30,72 @@ export const ItemSystem = {
         return true;
     },
 
+    async removeFromInventory(itemId) {
+        const state = this.api.engine.state;
+        const ownerId = this.getOwnerId();
+        const info = state.getRuntimeSnapshot('itemInfo.[id]', { id: itemId });
+        if (!info) throw new Error('Item does not exist.');
+        const result = await state.transaction(tx => {
+            const character = tx.get('characters.[id]', { id: ownerId });
+            if (!character) return 'missing';
+            const inventory = character.inventory || [];
+            if (!inventory.includes(itemId)) return 'not_owned';
+            tx.set('characters.[id].inventory', inventory.filter(id => id !== itemId), { id: ownerId });
+            tx.set('characters.[id].hand', (character.hand || []).filter(id => id !== itemId), { id: ownerId });
+            return (character.hand || []).includes(itemId) ? 'removed_equipped' : 'removed';
+        });
+        if (result === 'missing') throw new Error('Inventory owner does not exist.');
+        if (result === 'not_owned') throw new Error('Item is not in the active inventory.');
+        try {
+            if (result === 'removed_equipped' && info.effect?.unequip) {
+                await this.processRunnables(info.effect.unequip, { itemId, hook: 'unequip' });
+            }
+        } finally {
+            this.commitState('inventory.changed');
+        }
+        return { removed: true, itemId, ownerId };
+    },
+
+    async transferItem(itemId, targetCharacterId) {
+        const state = this.api.engine.state;
+        const sourceCharacterId = this.getOwnerId();
+        if (typeof targetCharacterId !== 'string' || !targetCharacterId || targetCharacterId === sourceCharacterId) {
+            throw new TypeError('A different target character is required.');
+        }
+        const info = state.getRuntimeSnapshot('itemInfo.[id]', { id: itemId });
+        if (!info) throw new Error('Item does not exist.');
+        const limits = this.getConfig?.('maxInventory') || [];
+        const targetLimit = Array.isArray(limits)
+            ? (limits.find(pair => Array.isArray(pair) && pair[1] === targetCharacterId)?.[0] || 0)
+            : 0;
+        const result = await state.transaction(tx => {
+            const source = tx.get('characters.[id]', { id: sourceCharacterId });
+            const target = tx.get('characters.[id]', { id: targetCharacterId });
+            if (!source || !target) return 'missing';
+            const sourceInventory = source.inventory || [];
+            const targetInventory = target.inventory || [];
+            if (!sourceInventory.includes(itemId)) return 'not_owned';
+            if (targetInventory.includes(itemId)) return 'duplicate';
+            if (targetLimit > 0 && targetInventory.length >= targetLimit) return 'full';
+            tx.set('characters.[id].inventory', sourceInventory.filter(id => id !== itemId), { id: sourceCharacterId });
+            tx.set('characters.[id].hand', (source.hand || []).filter(id => id !== itemId), { id: sourceCharacterId });
+            tx.set('characters.[id].inventory', [...targetInventory, itemId], { id: targetCharacterId });
+            return (source.hand || []).includes(itemId) ? 'transferred_equipped' : 'transferred';
+        });
+        if (result === 'missing') throw new Error('Source or target character does not exist.');
+        if (result === 'not_owned') throw new Error('Item is not in the active inventory.');
+        if (result === 'duplicate') throw new Error('Target already owns this item.');
+        if (result === 'full') throw new Error('Target inventory is full.');
+        try {
+            if (result === 'transferred_equipped' && info.effect?.unequip) {
+                await this.processRunnables(info.effect.unequip, { itemId, hook: 'unequip' });
+            }
+        } finally {
+            this.commitState('inventory.transferred');
+        }
+        return { transferred: true, itemId, sourceCharacterId, targetCharacterId };
+    },
+
     isBroken(itemId) {
         const current = this.api.engine.state.get('item.current', { id: itemId });
         const max = this.api.engine.state.get('item.max', { id: itemId });

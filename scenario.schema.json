@@ -448,6 +448,11 @@
             "type": "string",
             "description": "Display icon (Emoji or text Metarial Icon of Google)."
           },
+          "category": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Optional item category used for inventory grouping and filtering."
+          },
           "desc": {
             "type": "string",
             "description": "Item description."
