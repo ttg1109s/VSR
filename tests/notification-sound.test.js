@@ -21,7 +21,7 @@ class FakeNode {
 
 class FakeAudioContext {
   constructor() {
-    this.state = 'running';
+    Object.defineProperty(this, 'state', { get: () => 'running' });
     this.currentTime = 1;
     this.destination = {};
     this.nodes = [];
@@ -35,7 +35,6 @@ class FakeAudioContext {
     return new FakeNode();
   }
   resume() {
-    this.state = 'running';
     return Promise.resolve();
   }
 }
