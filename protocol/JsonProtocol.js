@@ -64,7 +64,7 @@ export class JsonProtocol{
   const actions=sourceScene&&sourceRouter&&typeof engine.getEffectiveActions==='function'
    ?engine.getEffectiveActions(sceneId,routerId).map(action=>{
     const key=`${sceneId}_${routerId}_${action.id}`;
-    const runtime=engine.state.actions?.[key]||{};
+    const runtime=engine.state.actions?.[action.id]||{};
     const display=runtime.display??action.set?.display??'show';
     const readRequired=!!((engine.getConfig?.('allDescRead')||action.set?.readDesc===true)&&(action.meta?.desc??action.meta?.description));
     const read=runtime.readDesc===true;
