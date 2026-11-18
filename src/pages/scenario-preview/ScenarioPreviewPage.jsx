@@ -75,7 +75,7 @@ function formatDate(value) {
   return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString('en-US');
 }
 
-function formatNgôn ngữ(value) {
+function formatLanguage(value) {
   const languageNames = {
     vi: 'Tiếng Việt',
     en: 'Tiếng Anh',
@@ -86,7 +86,7 @@ function formatNgôn ngữ(value) {
   return languageNames[value] || value;
 }
 
-function formatĐộ khó(value) {
+function formatDifficulty(value) {
   const labels = { easy: 'Dễ', normal: 'Trung bình', hard: 'Khó' };
   return labels[value] || value;
 }
@@ -95,7 +95,7 @@ export default function ScenarioPreviewPage({ preview, onBack, onPlay }) {
   const metadata = preview?.metadata || {};
   const experienceItems = [
     { label: 'Độ tuổi', value: metadata.ageRating },
-    { label: 'Độ khó', value: formatĐộ khó(metadata.difficulty) },
+    { label: 'Độ khó', value: formatDifficulty(metadata.difficulty) },
     { label: 'Thời lượng', value: formatPlayTime(metadata.estimatedPlayTime) }
   ].filter(item => item.value !== null && item.value !== undefined && item.value !== '');
 
@@ -103,7 +103,7 @@ export default function ScenarioPreviewPage({ preview, onBack, onPlay }) {
     { label: 'Tác giả', value: metadata.writer },
     { label: 'Hãng phát triển', value: metadata.studio },
     { label: 'Phiên bản kịch bản', value: metadata.version },
-    { label: 'Ngôn ngữ', value: formatNgôn ngữ(metadata.language) },
+    { label: 'Ngôn ngữ', value: formatLanguage(metadata.language) },
     { label: 'Ngày tạo', value: formatDate(metadata.createdAt) },
     { label: 'Cập nhật lần cuối', value: formatDate(metadata.updatedAt) }
   ];
