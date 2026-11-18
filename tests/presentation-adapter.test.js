@@ -201,22 +201,20 @@ test('Contact projects only the selected character relationship with entryCharac
   try {
     const initial = await client.initialize(JSON.parse(host.getDemoScenario()));
     const entryCharacterId = initial.state.entryCharacter;
-    const mai = host.engine.state.characters.mai;
-    const entryCharacter = host.engine.state.characters[entryCharacterId];
-    mai.relationship = [
-      ['Người quen', 'keeper'],
-      ['Đồng minh', entryCharacterId]
-    ];
     // Contact Profile counts meetings recorded by entryCharacter about Mai,
-    // not meetings recorded by Mai about entryCharacter.
-    entryCharacter.met = [
-      'mai:3',
-      'keeper:7'
-    ];
-    mai.met = [
-      `${entryCharacterId}:99`,
-      'keeper:7'
-    ];
+    // while visibility is established by Mai's record of meeting entryCharacter.
+    host.engine.api.engine.state.update('characters.[id]', current => ({
+      ...current,
+      met: ['mai:3', 'keeper:7']
+    }), { id: entryCharacterId });
+    host.engine.api.engine.state.update('characters.[id]', current => ({
+      ...current,
+      relationship: [
+        ['Người quen', 'keeper'],
+        ['Đồng minh', entryCharacterId]
+      ],
+      met: [`${entryCharacterId}:99`, 'keeper:7']
+    }), { id: 'mai' });
     host.engine.commitState('contact.relationship.updated');
     await client.refreshSnapshot();
 
