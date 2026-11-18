@@ -92,7 +92,7 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
               <h2 id="playing-situation-title" className="vsr-playing-situation__eyebrow">Current Situation</h2>
               {status && <Badge tone="neutral">{status}</Badge>}
             </header>
-            {routerDescription && <p className="vsr-playing-situation__description">{routerDescription}</p>}
+            {routerDescription && <p className="vsr-text-body vsr-playing-situation__description">{routerDescription}</p>}
           </section>
         )}
         <ActionCollection
