@@ -9,20 +9,10 @@ import { NotifyStrategies } from './strategies/Notifications.js';
 import { EffectKeyStrategies, EffectScopeResolvers, StaticListResolvers, ManageSubtypeHandlers } from './strategies/Management.js';
 import { CmsStrategies } from './strategies/Cms.js';
 
-// Resolve every runtime instance of an Action ID, independent of the active Scene/Router.
-function resolveActionRuntimeKeys(engine, actionId) {
-    if (!actionId) return [];
-    const keys = new Set();
-    const scenes = engine.src?.scenes || {};
-    Object.entries(scenes).forEach(([sceneId, scene]) => {
-        Object.entries(scene?.routers || {}).forEach(([routerId, router]) => {
-            (Array.isArray(router?.actions) ? router.actions : []).forEach(entry => {
-                const id = typeof entry === 'string' ? entry : entry?.id;
-                if (id === actionId) keys.add(`${sceneId}_${routerId}_${actionId}`);
-            });
-        });
-    });
-    return [...keys];
+// Action definitions and runtime state share one global ID namespace.
+function resolveActionRuntime(engine, actionId) {
+    if (!actionId || !Object.prototype.hasOwnProperty.call(engine.src?.actions || {}, actionId)) return null;
+    return engine.api.engine.state.getRuntime('actions.[id]', { id: actionId });
 }
 
 // [REFACTOR] Wired SetStrategies with Handlers
@@ -63,14 +53,10 @@ const WiredSetStrategies = {
         const actionId = String(resolveValue(eff.target, engine) ?? '');
         const val = resolveValue(eff.value, engine);
         const prop = resolveValue(eff.property, engine);
-        const actionKeys = resolveActionRuntimeKeys(engine, actionId);
-
-        actionKeys.forEach(actionKey => {
-            const action = state.getRuntime('actions.[actionKey]', { actionKey });
-            if (!action) return;
-            const handler = ActionPropertyHandlers[prop] || ActionPropertyHandlers.__default__;
-            handler(engine, action, val, actionKey, prop);
-        });
+        const action = resolveActionRuntime(engine, actionId);
+        if (!action) throw new Error(`Unknown Action ID: ${actionId}`);
+        const handler = ActionPropertyHandlers[prop] || ActionPropertyHandlers.__default__;
+        handler(engine, action, val, actionId, prop);
     },
 
     action_count: (engine, eff) => {
@@ -85,14 +71,11 @@ const WiredSetStrategies = {
             throw new TypeError('set/action_count requires a non-negative safe integer value.');
         }
 
-        const actionKeys = resolveActionRuntimeKeys(engine, actionId);
-        if (actionKeys.length === 0) throw new Error(`Unknown Action ID: ${actionId}`);
-        actionKeys.forEach(actionKey => {
-            state.update('actions.[id]', current => {
-                const count = { normal: 0, pass: 0, fail: 0, pwFailed: 0, ...(current?.count || {}) };
-                return { ...(current || {}), count: { ...count, [phase]: value } };
-            }, { id: actionKey });
-        });
+        if (!resolveActionRuntime(engine, actionId)) throw new Error(`Unknown Action ID: ${actionId}`);
+        state.update('actions.[id]', current => {
+            const count = { normal: 0, pass: 0, fail: 0, pwFailed: 0, ...(current?.count || {}) };
+            return { ...(current || {}), count: { ...count, [phase]: value } };
+        }, { id: actionId });
     },
 
     character: (engine, eff) => {
