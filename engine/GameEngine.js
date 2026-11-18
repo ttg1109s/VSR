@@ -75,7 +75,7 @@ export class GameEngine {
    if(typeof payload.actionId!=='string'||!payload.actionId)throw new TypeError('action.trigger requires actionId.');
    try {
     const result=await this.handleAction(payload.actionId,payload.uniqueId||payload.actionId);
-    if(result?.success===false&&!['action_hidden','locked','permission_denied','not_read','cooldown','busy','transitioning','challenge_active','invalid_context','action_not_found'].includes(result.reason)) {
+    if(result?.success===false&&!result.notificationEmitted&&!['action_hidden','locked','permission_denied','not_read','cooldown','busy','transitioning','challenge_active','invalid_context','action_not_found'].includes(result.reason)) {
      const messages={
       requirement_failed:['Action failed','Requirements not met.'],
       target_locked:['Target locked','The target is locked.'],
