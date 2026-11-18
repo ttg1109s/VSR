@@ -26,6 +26,12 @@ export const Textarea=forwardRef(function Textarea({id:given,label,hint,error,re
 export const Select=forwardRef(function Select({id:given,label,hint,error,required,className,options=[],placeholder='Select an option',children,...props},ref){
   const uid=useId(),id=given||uid; return <Field id={id} label={label} hint={hint} error={error} required={required} className={className}>{a=><div className="vsr-select-wrap"><select ref={ref} id={id} className={cx('vsr-control','vsr-select',error&&'is-invalid')} required={required} {...a} {...props}>{placeholder&&<option value="" disabled>{placeholder}</option>}{children||options.map(o=><option key={o.value} value={o.value} disabled={o.disabled}>{o.label}</option>)}</select><span className="vsr-select-chevron" aria-hidden="true">expand_more</span></div>}</Field>;
 });
+export const IconButton=forwardRef(function IconButton({icon,label,className,variant='tertiary',size='md',...props},ref){
+  return <Button ref={ref} variant={variant} size={size} className={cx('vsr-icon-button','vsr-icon-button--'+size,className)} aria-label={label} {...props}>{icon}</Button>;
+});
+export function SegmentedControl({options,value,onChange,label,className,disabled=false}){
+  return <div className={cx('vsr-segmented-control',className)} role="group" aria-label={label}>{options.map(option=><button key={option.value} type="button" className="vsr-segmented-control__item" aria-pressed={value===option.value} disabled={disabled||option.disabled} onClick={()=>onChange?.(option.value)}>{option.label}{option.count>0&&<span className="vsr-segmented-control__count">{option.count}</span>}</button>)}</div>;
+}
 export const Checkbox=forwardRef(function Checkbox({label,description,className,...props},ref){
   return <label className={cx('vsr-check-row',className)}><input ref={ref} type="checkbox" className="vsr-check-native" {...props}/><span className="vsr-check-box" aria-hidden="true">check</span><span className="vsr-check-copy"><span>{label}</span>{description&&<small>{description}</small>}</span></label>;
 });
@@ -104,11 +110,11 @@ function useLayer(open,onClose,ref){
     };
   },[open,ref]);
 }
-function Overlay({open,onClose,title,description,headerActions,headerContent,headerClassName,ariaLabel,children,size='md',side='right',className}){
+function Overlay({open,onClose,title,description,headerActions,headerContent,headerClassName,contentClassName,ariaLabel,children,size='md',side='right',className,lockScroll=false,width}){
   const ref=useRef(null),titleId=useId(),descId=useId();
   useLayer(open,onClose,ref);
   useEffect(()=>{
-    const locksPageScroll = open && (className?.includes('vsr-contact-drawer') || className?.includes('vsr-notification-drawer'));
+    const locksPageScroll = open && lockScroll;
     if(!locksPageScroll || typeof document==='undefined')return;
     const body=document.body,html=document.documentElement;
     const scrollY=window.scrollY||window.pageYOffset||0;
@@ -139,9 +145,9 @@ function Overlay({open,onClose,title,description,headerActions,headerContent,hea
       html.style.overscrollBehavior=previous.htmlOverscroll;
       window.scrollTo(0,scrollY);
     };
-  },[open,className]);
+  },[open,lockScroll]);
   if(!open||typeof document==='undefined')return null;
-  return createPortal(<div className={cx("vsr-overlay",className?.includes("vsr-drawer")&&"vsr-overlay--drawer")} onMouseDown={e=>{if(e.target===e.currentTarget)onClose&&onClose();}}><section ref={ref} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby={headerContent?undefined:titleId} aria-label={headerContent?(ariaLabel||title||'Dialog'):undefined} aria-describedby={description&&!headerContent?descId:undefined} className={cx('vsr-overlay-panel','vsr-overlay-panel--'+size,'vsr-overlay-panel--'+side,className)}><header className={cx('vsr-overlay-header',headerClassName)}>{headerContent?<div className="vsr-overlay-header__custom">{headerContent}</div>:<><div className="vsr-overlay-header__copy">{title&&<h2 id={titleId}>{title}</h2>}{description&&<p id={descId}>{description}</p>}</div>{headerActions&&<div className="vsr-overlay-header__actions">{headerActions}</div>}</>}<button type="button" className="vsr-icon-button" aria-label="Close" onClick={onClose}>close</button></header><div className="vsr-overlay-content">{children}</div></section></div>,document.body);
+  return createPortal(<div className={cx("vsr-overlay",className?.includes("vsr-drawer")&&"vsr-overlay--drawer")} onMouseDown={e=>{if(e.target===e.currentTarget)onClose&&onClose();}}><section ref={ref} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby={headerContent?undefined:titleId} aria-label={headerContent?(ariaLabel||title||'Dialog'):undefined} aria-describedby={description&&!headerContent?descId:undefined} style={width?{'--vsr-overlay-panel-width':typeof width==='number'?width+'px':width}:undefined} className={cx('vsr-overlay-panel','vsr-overlay-panel--'+size,'vsr-overlay-panel--'+side,className)}><header className={cx('vsr-overlay-header',headerClassName)}>{headerContent?<div className="vsr-overlay-header__custom">{headerContent}</div>:<><div className="vsr-overlay-header__copy">{title&&<h2 id={titleId}>{title}</h2>}{description&&<p id={descId}>{description}</p>}</div>{headerActions&&<div className="vsr-overlay-header__actions">{headerActions}</div>}</>}<button type="button" className="vsr-icon-button" aria-label="Close" onClick={onClose}>close</button></header><div className={cx('vsr-overlay-content',contentClassName)}>{children}</div></section></div>,document.body);
 }
 export function Dialog(props){return <Overlay {...props}/>;}
 export function Drawer({className,...props}){return <Overlay {...props} className={cx('vsr-drawer',className)}/>;}
