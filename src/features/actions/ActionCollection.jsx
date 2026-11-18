@@ -1,4 +1,4 @@
-import React,{useCallback,useEffect,useMemo,useRef,useState}from'react';
+import React,{forwardRef,useCallback,useEffect,useImperativeHandle,useMemo,useRef,useState}from'react';
 import useEmblaCarousel from'embla-carousel-react';
 import ActionCard from'./ActionCard.jsx';
 import { delay } from './abortableDelay.js';
@@ -25,7 +25,7 @@ function shuffled(items){
  return result;
 }
 
-export default function ActionCollection({actions=EMPTY_ACTIONS,client,passwordChallenge=null,onError,sceneId=null}){
+const ActionCollection=forwardRef(function ActionCollection({actions=EMPTY_ACTIONS,client,passwordChallenge=null,onError,sceneId=null,onNavigationStateChange},ref){
  const[pending,setPending]=useState(()=>new Set()),cache=useRef(new Map());
  const busyDelayControllers=useRef(new Set());
  useEffect(()=>()=>{for(const controller of busyDelayControllers.current)controller.abort();busyDelayControllers.current.clear();},[]);
@@ -56,10 +56,11 @@ export default function ActionCollection({actions=EMPTY_ACTIONS,client,passwordC
   return order.keys.map(k=>byKey.get(k)).filter(Boolean);
  },[stable,order]);
  const scrollToIndex=useCallback((index)=>{
-  if(!ordered.length||!emblaApi)return;
+  if(!ordered.length||!emblaApi||!Number.isFinite(index))return;
   const next=(index+ordered.length)%ordered.length;
   emblaApi.scrollTo(next);
  },[emblaApi,ordered.length]);
+ useImperativeHandle(ref,()=>({scrollToIndex}),[scrollToIndex]);
  useEffect(()=>{
   if(!emblaApi)return;
   const updateActiveIndex=()=>setActiveIndex(emblaApi.selectedScrollSnap());
@@ -79,6 +80,14 @@ export default function ActionCollection({actions=EMPTY_ACTIONS,client,passwordC
  useEffect(()=>{
   if(activeIndex>=ordered.length)setActiveIndex(Math.max(0,ordered.length-1));
  },[activeIndex,ordered.length]);
+ useEffect(()=>{
+  const activeAction=ordered[activeIndex];
+  onNavigationStateChange?.({
+   activeIndex:ordered.length?activeIndex:0,
+   actionCount:ordered.length,
+   activeTitle:activeAction?.meta?.title||activeAction?.title||activeAction?.id||''
+  });
+ },[activeIndex,ordered,onNavigationStateChange]);
 
  const mark=useCallback((k,on)=>setPending(s=>{const n=new Set(s);on?n.add(k):n.delete(k);return n;}),[]);
  const report=useCallback(async(e,{notify=true}={})=>{
@@ -152,4 +161,5 @@ export default function ActionCollection({actions=EMPTY_ACTIONS,client,passwordC
    </div>
   </div>
  </section>;
-}
+});
+export default ActionCollection;
