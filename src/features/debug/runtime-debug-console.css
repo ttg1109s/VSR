@@ -1,4 +1,4 @@
-.vsr-runtime-debug{position:fixed;right:16px;bottom:16px;z-index:2147483000;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;color:#e8eaed}
+.vsr-runtime-debug{position:fixed;right:16px;bottom:16px;z-index:2147483647;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;color:#e8eaed}
 .vsr-runtime-debug button{font:inherit;cursor:pointer}
 .vsr-runtime-debug__launcher{display:flex;align-items:center;gap:7px;min-height:38px;padding:0 13px;border:1px solid #5f6368;border-radius:999px;background:#202124;color:#f8f9fa;font-size:11px;font-weight:800;letter-spacing:.08em;box-shadow:0 3px 14px #0005}
 .vsr-runtime-debug__launcher>span{font-size:15px}
