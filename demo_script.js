@@ -4194,10 +4194,51 @@ export const DEMO_SCRIPT = {
     }
   },
   "characters": {
+    "player": {
+      "meta": {
+        "name": "Người chơi",
+        "desc": "Nhân vật trung tâm mà người chơi trực tiếp điều khiển. Bạn tỉnh dậy tại quảng trường làng mà không nhớ rõ mình đã đến đây bằng cách nào. Tên của bạn xuất hiện trong sổ khách với ngày đến ở tương lai; những người trong làng dường như nhận ra bạn, nhưng mỗi người nhớ một phiên bản khác nhau."
+      },
+      "set": {
+        "linkEffect": false,
+        "alert": null,
+        "moving": false,
+        "move": null
+      },
+      "stats": {
+        "memory": {
+          "current": 0,
+          "max": 5,
+          "label": "Ký ức"
+        },
+        "composure": {
+          "current": 3,
+          "max": 5,
+          "label": "Bình tĩnh"
+        },
+        "resolve": {
+          "current": 2,
+          "max": 5,
+          "label": "Ý chí"
+        }
+      },
+      "inventory": [],
+      "hand": [],
+      "relationship": [],
+      "met": [],
+      "place": {
+        "scene_id": "scene_village_square",
+        "currentIndex": 0
+      },
+      "moveList": [],
+      "effect": {
+        "leave": {}
+      }
+    },
     "mai": {
       "meta": {
         "name": "Mai",
-        "desc": "Người bán hàng trẻ, luôn tránh nhìn về phía giếng."
+        "desc": "Người bán hàng trẻ ở quảng trường. Cô thường giữ quầy đóng cửa mỗi khi loa phát thanh đọc tên người mất tích, và luôn đứng cách miệng giếng một khoảng vừa đủ để không phải nhìn xuống. Mai nhớ rõ đêm có mười hai người biến mất, nhưng ký ức của cô bị đứt đoạn đúng lúc người thứ mười hai xuất hiện. Cô không nói dối hoàn toàn; điều cô kể là phần sự thật mà cô có thể chịu đựng."
       },
       "set": {
         "linkEffect": false,
@@ -4215,9 +4256,24 @@ export const DEMO_SCRIPT = {
           "current": 2,
           "max": 5,
           "label": "Sợ hãi"
+        },
+        "guilt": {
+          "current": 3,
+          "max": 5,
+          "label": "Mặc cảm",
+          "unknown": true
+        },
+        "memory": {
+          "current": 2,
+          "max": 5,
+          "label": "Ký ức",
+          "unknown": true
         }
       },
       "inventory": [],
+      "hand": [],
+      "relationship": [],
+      "met": [],
       "place": {
         "scene_id": "scene_village_square",
         "currentIndex": 0
@@ -4233,7 +4289,7 @@ export const DEMO_SCRIPT = {
     "hanh": {
       "meta": {
         "name": "Bà Hạnh",
-        "desc": "Chủ nhà trọ, nhớ mọi vị khách nhưng phủ nhận từng gặp bạn."
+        "desc": "Chủ nhà trọ, người quản lý chìa khóa và sổ ghi khách đến – khách đi. Bà có thói quen kiểm tra phòng trống trước khi trời tối, dù luôn khẳng định nhà trọ chỉ có sáu phòng. Bà nhớ chính xác những người từng ở lại nhưng không thể nhớ ai đã đặt phòng cho bạn. Sự bình thản của bà giống một quy tắc tự vệ đã được lặp lại quá lâu, hơn là thái độ của người không biết chuyện."
       },
       "set": {
         "linkEffect": false,
@@ -4246,9 +4302,24 @@ export const DEMO_SCRIPT = {
           "current": 1,
           "max": 5,
           "label": "Tin tưởng"
+        },
+        "guilt": {
+          "current": 3,
+          "max": 5,
+          "label": "Mặc cảm",
+          "unknown": true
+        },
+        "knowledge": {
+          "current": 4,
+          "max": 5,
+          "label": "Hiểu biết",
+          "unknown": true
         }
       },
       "inventory": [],
+      "hand": [],
+      "relationship": [],
+      "met": [],
       "place": {
         "scene_id": "scene_inn",
         "currentIndex": 0
@@ -4264,7 +4335,7 @@ export const DEMO_SCRIPT = {
     "keeper": {
       "meta": {
         "name": "Người giữ nhà nguyện",
-        "desc": "Một người đàn ông không có bóng dưới ánh nến."
+        "desc": "Người đàn ông trông coi nhà nguyện và tháp chuông. Ông nói chuông không dùng để báo giờ mà để gọi những người còn nhớ; vì thế ông không bao giờ rung chuông nếu chưa biết chính xác mình đang gọi ai. Ông hiểu cơ cấu chuông đã bị tháo rời và biết ý nghĩa của ba hồi ngân trong đêm sơ tán. Niềm tin của ông không đem lại sự thanh thản: nó buộc ông phải tiếp tục canh giữ một lời hứa đã quá hạn."
       },
       "set": {
         "linkEffect": false,
@@ -4277,9 +4348,23 @@ export const DEMO_SCRIPT = {
           "current": 3,
           "max": 5,
           "label": "Đức tin"
+        },
+        "remorse": {
+          "current": 2,
+          "max": 5,
+          "label": "Day dứt",
+          "unknown": true
+        },
+        "duty": {
+          "current": 5,
+          "max": 5,
+          "label": "Bổn phận"
         }
       },
       "inventory": [],
+      "hand": [],
+      "relationship": [],
+      "met": [],
       "place": {
         "scene_id": "scene_chapel",
         "currentIndex": 0
@@ -4295,7 +4380,7 @@ export const DEMO_SCRIPT = {
     "linh": {
       "meta": {
         "name": "Linh",
-        "desc": "Đứa trẻ trong bức ảnh cũ, xuất hiện ở nơi không có ai."
+        "desc": "Đứa trẻ xuất hiện trong bức ảnh lớp cũ và trong những hành lang tưởng như đã bỏ hoang. Hồ sơ nhà trường không còn tên Linh, nhưng số chỗ ngồi trong ảnh cho thấy từng có một học sinh bị cắt khỏi khung. Linh thường trả lời câu hỏi bằng những chi tiết rất nhỏ – màu phấn, tiếng trống, vị trí chiếc cặp – như thể ký ức lớn hơn đã bị ai đó lấy mất. Không rõ Linh là một nhân chứng còn sống, một ký ức bị giữ lại hay hình ảnh mà ngôi làng tạo ra để lấp chỗ trống."
       },
       "set": {
         "linkEffect": false,
@@ -4308,9 +4393,23 @@ export const DEMO_SCRIPT = {
           "current": 1,
           "max": 5,
           "label": "Ký ức"
+        },
+        "fear": {
+          "current": 4,
+          "max": 5,
+          "label": "Sợ hãi",
+          "unknown": true
+        },
+        "trust": {
+          "current": 0,
+          "max": 5,
+          "label": "Tin tưởng"
         }
       },
       "inventory": [],
+      "hand": [],
+      "relationship": [],
+      "met": [],
       "place": {
         "scene_id": "scene_abandoned_school",
         "currentIndex": 0
@@ -4326,7 +4425,7 @@ export const DEMO_SCRIPT = {
     "voice": {
       "meta": {
         "name": "Giọng nói dưới ga",
-        "desc": "Không rõ là người thân, người lạ hay chính bạn."
+        "desc": "Một giọng nói phát ra từ đường ray tại sân ga chỉ xuất hiện lúc 03:17. Tín hiệu bị nhiễu, lúc gần như giọng của người thân, lúc giống giọng của chính bạn. Nó biết bạn đã đến muộn mười bảy năm và gọi sự kiện năm ấy là một cuộc sơ tán chưa bao giờ kết thúc. Giọng nói không yêu cầu được cứu ngay; nó muốn bạn xác định ai đã bị xóa khỏi danh sách và liệu sự thật có nên được phát lại cho tất cả những người còn nhớ."
       },
       "set": {
         "linkEffect": false,
@@ -4339,9 +4438,24 @@ export const DEMO_SCRIPT = {
           "current": 4,
           "max": 5,
           "label": "Dư âm"
+        },
+        "identity": {
+          "current": 1,
+          "max": 5,
+          "label": "Danh tính",
+          "unknown": true
+        },
+        "memory": {
+          "current": 5,
+          "max": 5,
+          "label": "Ký ức",
+          "unknown": true
         }
       },
       "inventory": [],
+      "hand": [],
+      "relationship": [],
+      "met": [],
       "place": {
         "scene_id": "scene_ghost_station",
         "currentIndex": 0
