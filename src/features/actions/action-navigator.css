@@ -59,8 +59,9 @@
  display:flex;
  align-items:center;
  justify-content:center;
- flex-wrap:wrap;
+ flex-wrap:nowrap;
  min-width:0;
+ overflow:hidden;
 }
 .vsr-action-navigator__page{
  display:grid;
