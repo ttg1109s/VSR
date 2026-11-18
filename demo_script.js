@@ -1112,6 +1112,7 @@ export const DEMO_SCRIPT = {
             "action_talk_keeper",
             "action_enter_tower",
             "action_return_square",
+            ""action_travel_inn"",
             "action_travel_school",
           ]
         }
@@ -1211,6 +1212,7 @@ export const DEMO_SCRIPT = {
             "action_talk_linh",
             "action_decode_roster",
             "action_return_square",
+            ""action_travel_chapel"",
             "action_travel_forest",
           ]
         }
@@ -1262,6 +1264,7 @@ export const DEMO_SCRIPT = {
             "action_maze_path",
             "action_enter_clearing",
             "action_return_square",
+            ""action_travel_school"",
           ]
         }
       }
