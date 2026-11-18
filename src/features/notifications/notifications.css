@@ -26,6 +26,5 @@
 .vsr-notification-center__footer{padding:12px 0;color:var(--vsr-color-text-secondary);font-size:12px;text-align:center}
 .vsr-notification-modal__content{display:flex;flex-direction:column;gap:20px}
 .vsr-notification-modal__actions{display:flex;justify-content:flex-end}
-@media(max-width:599px){.vsr-notification-drawer.vsr-overlay-panel{width:100%}.vsr-notification-item{gap:8px}}
 
 .vsr-notification-center__error{margin:0;padding:8px 10px;border-left:3px solid var(--vsr-color-error);color:var(--vsr-color-error);font-size:12px}
