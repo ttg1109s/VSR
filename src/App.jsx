@@ -137,11 +137,26 @@ function AppContent() {
         const eventName = message.event?.event;
         const notification = message.event?.payload?.notification;
         if (['presentation.notification.dismiss', 'presentation.notification.expired', 'presentation.notification.dropped', 'presentation.notification.cleared'].includes(eventName)) {
-          if (notification?.id) setModalNotifications(current => current.filter(item => item.id !== notification.id));
+          if (notification?.id) {
+            toast.dismiss(notification.id);
+            setModalNotifications(current => current.filter(item => item.id !== notification.id));
+          }
           return;
         }
         if (eventName === 'presentation.notification.updated') {
-          if (notification?.id) setModalNotifications(current => current.map(item => item.id === notification.id ? notification : item));
+          if (notification?.id) {
+            if (notification.presentation === 'modal') {
+              toast.dismiss(notification.id);
+              setModalNotifications(current => current.some(item => item.id === notification.id)
+                ? current.map(item => item.id === notification.id ? notification : item)
+                : [...current, notification]);
+            } else {
+              setModalNotifications(current => current.filter(item => item.id !== notification.id));
+              const content = [notification.title, notification.message].filter(Boolean).join(': ') || 'New notification';
+              const tone = notification.level === 'danger' ? 'error' : notification.level === 'warning' ? 'warning' : notification.level === 'success' ? 'success' : 'default';
+              toast(content, { id: notification.id, tone, duration: notification.duration ?? 5000 });
+            }
+          }
           return;
         }
         if (eventName !== 'presentation.notification.add' && eventName !== 'presentation.notification.alert') return;
@@ -151,11 +166,12 @@ function AppContent() {
           notificationEventIdsRef.current.delete(notificationEventIdsRef.current.values().next().value);
         }
         if (eventName === 'presentation.notification.alert') {
+          toast.dismiss(notification.id);
           setModalNotifications(current => [...current, notification]);
         } else {
           const content = [notification.title, notification.message].filter(Boolean).join(': ') || 'New notification';
           const tone = notification.level === 'danger' ? 'error' : notification.level === 'warning' ? 'warning' : notification.level === 'success' ? 'success' : 'default';
-          toast(content, { tone, duration: notification.duration ?? 5000 });
+          toast(content, { id: notification.id, tone, duration: notification.duration ?? 5000 });
         }
         if (soundEnabledRef.current && notification.sound !== false) {
           notificationSoundService.play(notification.soundProfile || notification.level || 'default');
