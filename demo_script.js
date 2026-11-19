@@ -305,11 +305,12 @@ export const DEMO_SCRIPT = {
   "itemInfo": {
     "lantern": {
       "name": "Đèn bão",
-      "icon": "light",
+      
+      "category": "tool","icon": "light",
       "desc": "Chiếu sáng những dấu vết chỉ xuất hiện trong sương.",
       "usage": {
-        "current": 10,
-        "max": 10,
+        "current":  0,
+        "max":  10,
         "autoInc": false
       },
       "effect": {
@@ -325,11 +326,12 @@ export const DEMO_SCRIPT = {
     },
     "guestbook": {
       "name": "Sổ khách",
-      "icon": "menu_book",
+      
+      "category": "document","icon": "menu_book",
       "desc": "Cuốn sổ ghi lại những người chưa rời khỏi làng.",
       "usage": {
-        "current": 10,
-        "max": 10,
+        "current":  0,
+        "max":  10,
         "autoInc": false
       },
       "effect": {
@@ -351,11 +353,12 @@ export const DEMO_SCRIPT = {
     },
     "tape": {
       "name": "Cuộn băng",
-      "icon": "audio_file",
+      
+      "category": "media","icon": "audio_file",
       "desc": "Bản ghi âm đêm mất điện.",
       "usage": {
-        "current": 10,
-        "max": 10,
+        "current":  0,
+        "max":  10,
         "autoInc": false
       },
       "effect": {
@@ -377,11 +380,12 @@ export const DEMO_SCRIPT = {
     },
     "red_umbrella": {
       "name": "Ô đỏ",
-      "icon": "rainy",
+      
+      "category": "evidence","icon": "rainy",
       "desc": "Vật chứng xuất hiện trong lời kể của Mai.",
       "usage": {
-        "current": 10,
-        "max": 10,
+        "current":  0,
+        "max":  10,
         "autoInc": false
       },
       "effect": {
@@ -403,11 +407,12 @@ export const DEMO_SCRIPT = {
     },
     "bell_clapper": {
       "name": "Quả lắc chuông",
-      "icon": "notifications",
+      
+      "category": "mechanism","icon": "notifications",
       "desc": "Bộ phận bị tháo khỏi tháp chuông.",
       "usage": {
-        "current": 10,
-        "max": 10,
+        "current":  0,
+        "max":  10,
         "autoInc": false
       },
       "effect": {
@@ -423,11 +428,12 @@ export const DEMO_SCRIPT = {
     },
     "class_photo": {
       "name": "Ảnh lớp",
-      "icon": "photo",
+      
+      "category": "evidence","icon": "photo",
       "desc": "Bức ảnh có một học sinh bị cắt khỏi khung.",
       "usage": {
-        "current": 10,
-        "max": 10,
+        "current":  0,
+        "max":  10,
         "autoInc": false
       },
       "effect": {
@@ -443,11 +449,12 @@ export const DEMO_SCRIPT = {
     },
     "archive_key": {
       "name": "Chìa khóa kho hồ sơ",
-      "icon": "key",
+      
+      "category": "key","icon": "key",
       "desc": "Chìa khóa mở tủ hồ sơ dưới đê.",
       "usage": {
-        "current": 5,
-        "max": 5,
+        "current":  0,
+        "max":  10,
         "autoInc": false
       },
       "effect": {
@@ -463,11 +470,12 @@ export const DEMO_SCRIPT = {
     },
     "map_fragment": {
       "name": "Mảnh bản đồ",
-      "icon": "map",
+      
+      "category": "document","icon": "map",
       "desc": "Mảnh giấy vẽ lối xuống đường hầm.",
       "usage": {
-        "current": 10,
-        "max": 10,
+        "current":  0,
+        "max":  10,
         "autoInc": false
       },
       "effect": {
@@ -475,7 +483,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "set",
             "subtype": "state",
-            "target": "clue_roster",
+            "target": "clue_tunnel",
             "value": true
           }
         ]
@@ -483,11 +491,12 @@ export const DEMO_SCRIPT = {
     },
     "radio_crystal": {
       "name": "Cuộn tinh thể thu sóng",
-      "icon": "radio",
+      
+      "category": "mechanism","icon": "radio",
       "desc": "Linh kiện lấy từ hộp loa, có thể dò lại tần số phát thanh.",
       "usage": {
-        "current": 1,
-        "max": 1,
+        "current":  0,
+        "max":  10,
         "autoInc": false
       },
       "effect": {
@@ -509,11 +518,12 @@ export const DEMO_SCRIPT = {
     },
     "well_badge": {
       "name": "Phù hiệu đội sơ tán",
-      "icon": "badge",
+      
+      "category": "evidence","icon": "badge",
       "desc": "Phù hiệu kim loại có khắc ký hiệu của đội sơ tán năm ấy.",
       "usage": {
-        "current": 1,
-        "max": 1,
+        "current":  0,
+        "max":  10,
         "autoInc": false
       },
       "effect": {
@@ -535,11 +545,12 @@ export const DEMO_SCRIPT = {
     },
     "spare_room_key": {
       "name": "Chìa khóa phòng thứ bảy",
-      "icon": "key",
+      
+      "category": "key","icon": "key",
       "desc": "Chìa khóa đồng mở căn phòng bị xóa khỏi sơ đồ nhà trọ.",
       "usage": {
-        "current": 1,
-        "max": 1,
+        "current":  0,
+        "max":  10,
         "autoInc": false
       },
       "effect": {
@@ -561,11 +572,12 @@ export const DEMO_SCRIPT = {
     },
     "evacuation_film": {
       "name": "Cuộn phim sơ tán",
-      "icon": "movie",
+      
+      "category": "media","icon": "movie",
       "desc": "Cuộn phim ghi lại đám đông ở bờ đê trong đêm mất tích.",
       "usage": {
-        "current": 1,
-        "max": 1,
+        "current":  0,
+        "max":  10,
         "autoInc": false
       },
       "effect": {
@@ -587,11 +599,12 @@ export const DEMO_SCRIPT = {
     },
     "hymn_note": {
       "name": "Trang ghi chú trong thánh ca",
-      "icon": "description",
+      
+      "category": "document","icon": "description",
       "desc": "Mảnh giấy giải thích ý nghĩa của ba hồi chuông trong đêm sơ tán.",
       "usage": {
-        "current": 1,
-        "max": 1,
+        "current":  0,
+        "max":  10,
         "autoInc": false
       },
       "effect": {
@@ -613,11 +626,12 @@ export const DEMO_SCRIPT = {
     },
     "bell_copper_wire": {
       "name": "Dây đồng chuông",
-      "icon": "cable",
+      
+      "category": "mechanism","icon": "cable",
       "desc": "Đoạn dây đồng dùng để nối lại cơ cấu truyền lực của chuông.",
       "usage": {
-        "current": 1,
-        "max": 1,
+        "current":  0,
+        "max":  10,
         "autoInc": false
       },
       "effect": {
@@ -639,11 +653,12 @@ export const DEMO_SCRIPT = {
     },
     "class_register_copy": {
       "name": "Bản sao sổ điểm danh",
-      "icon": "menu_book",
+      
+      "category": "document","icon": "menu_book",
       "desc": "Bản ghi xác nhận có mười hai học sinh trong lớp vào ngày sơ tán.",
       "usage": {
-        "current": 1,
-        "max": 1,
+        "current":  0,
+        "max":  10,
         "autoInc": false
       },
       "effect": {
@@ -665,11 +680,12 @@ export const DEMO_SCRIPT = {
     },
     "guide_compass": {
       "name": "La bàn người dẫn đường",
-      "icon": "explore",
+      
+      "category": "tool","icon": "explore",
       "desc": "La bàn cũ có khắc tuyến đường từ rừng xuống chân đê.",
       "usage": {
-        "current": 1,
-        "max": 1,
+        "current":  0,
+        "max":  10,
         "autoInc": false
       },
       "effect": {
@@ -691,11 +707,12 @@ export const DEMO_SCRIPT = {
     },
     "evacuation_seal": {
       "name": "Con dấu đội sơ tán",
-      "icon": "approval",
+      
+      "category": "evidence","icon": "approval",
       "desc": "Con dấu gỗ dùng để xác nhận danh sách sơ tán chính thức.",
       "usage": {
-        "current": 1,
-        "max": 1,
+        "current":  0,
+        "max":  10,
         "autoInc": false
       },
       "effect": {
@@ -717,11 +734,12 @@ export const DEMO_SCRIPT = {
     },
     "mill_gear_pin": {
       "name": "Chốt truyền động",
-      "icon": "settings",
+      
+      "category": "mechanism","icon": "settings",
       "desc": "Chốt kim loại thay thế cho bộ truyền động của cối xay nước.",
       "usage": {
-        "current": 1,
-        "max": 1,
+        "current":  0,
+        "max":  10,
         "autoInc": false
       },
       "effect": {
@@ -743,11 +761,12 @@ export const DEMO_SCRIPT = {
     },
     "tunnel_manifest": {
       "name": "Danh sách vận chuyển",
-      "icon": "description",
+      
+      "category": "document","icon": "description",
       "desc": "Danh sách ghi tên những người được đưa qua đường hầm trong đêm sơ tán.",
       "usage": {
-        "current": 1,
-        "max": 1,
+        "current":  0,
+        "max":  10,
         "autoInc": false
       },
       "effect": {
@@ -769,11 +788,12 @@ export const DEMO_SCRIPT = {
     },
     "unpunched_ticket": {
       "name": "Vé tàu chưa xé",
-      "icon": "confirmation_number",
+      
+      "category": "evidence","icon": "confirmation_number",
       "desc": "Vé của chuyến 03:17, còn nguyên phần kiểm soát.",
       "usage": {
-        "current": 1,
-        "max": 1,
+        "current":  0,
+        "max":  10,
         "autoInc": false
       },
       "effect": {
