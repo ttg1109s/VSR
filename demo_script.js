@@ -1269,7 +1269,6 @@ export const DEMO_SCRIPT = {
             "action_inspect_evacuation_notice",
             "action_check_desk",
             "action_talk_linh",
-            "action_recover_class_register",
             "action_find_radio_toolkit","action_find_tracing_paper","action_find_inspection_loupe","action_overlay_map"
           ]
         },
