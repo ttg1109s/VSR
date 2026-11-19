@@ -1476,3 +1476,44 @@ test('all truth-fragment granting actions are one-shot and hide themselves', () 
     assert.equal(hidesSelf, true, actionId);
   }
 });
+
+
+test('school optional map puzzle consumes all intended clue/tool prerequisites', () => {
+  const overlay = DEMO_SCRIPT.actions.action_overlay_map;
+  const requiredItems = overlay.requirement.check
+    .filter(check => check.type === 'item' && check.op === 'has')
+    .map(check => check.value);
+  const requiredStates = overlay.requirement.check
+    .filter(check => check.type === 'state' && check.op === '==')
+    .map(check => check.property);
+  assert.deepEqual(requiredItems, ['map_fragment', 'tracing_paper', 'inspection_loupe']);
+  assert.deepEqual(requiredStates, ['clue_seat_mark', 'clue_class_clock']);
+  assert.equal(overlay.effect.pass.some(effect =>
+    effect.type === 'set' && effect.subtype === 'state' && effect.target === 'clue_tunnel' && effect.value === true
+  ), true);
+});
+
+test('school Linh conversation action is one-shot to prevent repeated chat rewards', () => {
+  const talk = DEMO_SCRIPT.actions.action_talk_linh;
+  assert.equal(talk.set.display, 'show');
+  assert.equal(talk.set.requirement, true);
+  assert.equal(talk.effect.pass.some(effect =>
+    effect.type === 'set' && effect.subtype === 'action' &&
+    effect.target === 'action_talk_linh' && effect.property === 'display' && effect.value === 'hide'
+  ), true);
+});
+
+test('village notice and school evacuation notice use separate clue states', () => {
+  assert.ok(DEMO_SCRIPT.globalStates.clue_village_notice);
+  assert.ok(DEMO_SCRIPT.globalStates.clue_school_evacuation_notice);
+  assert.equal(DEMO_SCRIPT.globalStates.clue_notice, undefined);
+  assert.equal(DEMO_SCRIPT.actions.action_read_notice.effect.pass.some(effect =>
+    effect.type === 'set' && effect.subtype === 'state' && effect.target === 'clue_village_notice'
+  ), true);
+  assert.equal(DEMO_SCRIPT.actions.action_inspect_evacuation_notice.effect.pass.some(effect =>
+    effect.type === 'set' && effect.subtype === 'state' && effect.target === 'clue_school_evacuation_notice'
+  ), true);
+  assert.equal(DEMO_SCRIPT.actions.action_find_inspection_loupe.effect.pass.some(effect =>
+    effect.type === 'item' && effect.subtype === 'add' && effect.target === 'inspection_loupe'
+  ), true);
+});
