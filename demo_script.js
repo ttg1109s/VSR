@@ -253,19 +253,23 @@ export const DEMO_SCRIPT = {
       "station_ready": {
         "logic": "AND",
         "check": [
-          {"type": "state", "property": "truth_fragments", "op": ">=", "value": 3},
           {"type": "state", "property": "archive_open", "op": "==", "value": true},
           {"type": "item", "subtype": "inventory", "op": "has", "value": "tunnel_manifest"},
-          {"type": "state", "property": "evidence_evacuation_film", "op": "==", "value": true}
+          {"type": "state", "property": "evidence_evacuation_film", "op": "==", "value": true},
+          {"type": "state", "property": "clue_hymn", "op": "==", "value": true},
+          {"type": "state", "property": "clue_stakes", "op": "==", "value": true},
+          {"type": "state", "property": "clue_tunnel", "op": "==", "value": true}
         ]
       },
       "release_ready": {
         "logic": "AND",
         "check": [
-          {"type": "state", "property": "truth_fragments", "op": ">=", "value": 3},
           {"type": "state", "property": "bell_rung", "op": "==", "value": true},
           {"type": "state", "property": "archive_open", "op": "==", "value": true},
-          {"type": "state", "property": "evidence_evacuation_seal", "op": "==", "value": true}
+          {"type": "state", "property": "evidence_evacuation_seal", "op": "==", "value": true},
+          {"type": "state", "property": "clue_hymn", "op": "==", "value": true},
+          {"type": "state", "property": "clue_stakes", "op": "==", "value": true},
+          {"type": "state", "property": "clue_tunnel", "op": "==", "value": true}
         ]
       }
     },
@@ -2740,7 +2744,7 @@ export const DEMO_SCRIPT = {
         "type": "notify",
         "subtype": "toast",
         "level": "warning",
-        "text": "Tuyến Memory cần ba mảnh ký ức, rung chuông, mở kho hồ sơ và khôi phục dấu đường hầm."
+        "text": "Tuyến Memory cần rung chuông, mở kho hồ sơ và khôi phục dấu đường hầm, thánh ca cùng vòng cọc."
       }
     ]
   },
@@ -2752,12 +2756,6 @@ export const DEMO_SCRIPT = {
         "property": "school_choice",
         "op": "==",
         "value": "memory"
-      },
-      {
-        "type": "state",
-        "property": "truth_fragments",
-        "op": ">=",
-        "value": 3
       },
       {
         "type": "state",
@@ -2774,6 +2772,18 @@ export const DEMO_SCRIPT = {
       {
         "type": "state",
         "property": "clue_tunnel",
+        "op": "==",
+        "value": true
+      },
+      {
+        "type": "state",
+        "property": "clue_hymn",
+        "op": "==",
+        "value": true
+      },
+      {
+        "type": "state",
+        "property": "clue_stakes",
         "op": "==",
         "value": true
       }
@@ -3339,7 +3349,7 @@ export const DEMO_SCRIPT = {
         "type": "notify",
         "subtype": "toast",
         "level": "warning",
-        "text": "Tuyến Memory cần ba mảnh ký ức, kho hồ sơ đã mở và dấu đường hầm được khôi phục."
+        "text": "Tuyến Memory cần mở kho hồ sơ, khôi phục dấu đường hầm, đọc thánh ca và xác định vòng cọc thứ mười hai."
       }
     ]
   },
@@ -3354,12 +3364,6 @@ export const DEMO_SCRIPT = {
       },
       {
         "type": "state",
-        "property": "truth_fragments",
-        "op": ">=",
-        "value": 3
-      },
-      {
-        "type": "state",
         "property": "archive_open",
         "op": "==",
         "value": true
@@ -3367,6 +3371,18 @@ export const DEMO_SCRIPT = {
       {
         "type": "state",
         "property": "clue_tunnel",
+        "op": "==",
+        "value": true
+      },
+      {
+        "type": "state",
+        "property": "clue_hymn",
+        "op": "==",
+        "value": true
+      },
+      {
+        "type": "state",
+        "property": "clue_stakes",
         "op": "==",
         "value": true
       }
