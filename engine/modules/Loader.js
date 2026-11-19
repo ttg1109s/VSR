@@ -131,6 +131,12 @@ export const LoaderSystem = {
         });
 
         state.itemInfo = JSON.parse(JSON.stringify(script.itemInfo || {}));
+        Object.values(state.itemInfo).forEach(item => {
+            if (item?.usage && typeof item.usage === 'object' && !Array.isArray(item.usage)
+                && !Object.prototype.hasOwnProperty.call(item.usage, 'status')) {
+                item.usage.status = [[0, 'Normal'], [100, 'Broken']];
+            }
+        });
         state.chats = JSON.parse(JSON.stringify(script.chat || {}));
 
         Object.keys(state.chats).forEach(chatId => {
