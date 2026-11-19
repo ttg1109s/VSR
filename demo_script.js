@@ -57,7 +57,11 @@ export const DEMO_SCRIPT = {
       "type": "string",
       "value": "undecided"
     },
-    "clue_notice": {
+    "clue_village_notice": {
+      "type": "boolean",
+      "value": false
+    },
+    "clue_school_evacuation_notice": {
       "type": "boolean",
       "value": false
     },
@@ -1585,7 +1589,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "set",
             "subtype": "state",
-            "target": "clue_notice",
+            "target": "clue_village_notice",
             "value": true,
             "req": {
               "logic": "AND",
@@ -1938,7 +1942,7 @@ export const DEMO_SCRIPT = {
               "check": [
                 { "type": "state", "property": "evidence_hidden_room", "op": "!=", "value": true },
                 { "type": "state", "property": "found_guestbook", "op": "!=", "value": true },
-                { "type": "state", "property": "clue_notice", "op": "==", "value": true }
+                { "type": "state", "property": "clue_village_notice", "op": "==", "value": true }
               ]
             }
           },
@@ -1951,7 +1955,7 @@ export const DEMO_SCRIPT = {
               "check": [
                 { "type": "state", "property": "evidence_hidden_room", "op": "!=", "value": true },
                 { "type": "state", "property": "found_guestbook", "op": "!=", "value": true },
-                { "type": "state", "property": "clue_notice", "op": "!=", "value": true }
+                { "type": "state", "property": "clue_village_notice", "op": "!=", "value": true }
               ]
             }
           }
@@ -3340,7 +3344,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "set",
             "subtype": "state",
-            "target": "clue_notice",
+            "target": "clue_school_evacuation_notice",
             "value": true
           },
           {
@@ -3461,7 +3465,7 @@ export const DEMO_SCRIPT = {
 "action_find_spare_fuse":{"meta":{"title":"Hộp linh kiện trong hầm","buttonLabel":"Lấy cầu chì","desc":"Hộp linh kiện cũ chứa cầu chì sứ dự phòng còn nguyên, được giữ riêng khỏi dây dẫn đã hỏng."},"set":{"display":"show"},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"spare_fuse"},{"type":"set","subtype":"action","target":"action_find_spare_fuse","property":"display","value":"hide"}]}},
 "action_find_clockwork_spring":{"meta":{"title":"Hộp bảo trì cối xay","buttonLabel":"Lấy lò xo","desc":"Hộp bảo trì có lò xo thép còn đàn hồi; cần bộ dụng cụ để mở hộp và lấy linh kiện."},"set":{"display":"show","requirement":true},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"radio_toolkit"}]},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"clockwork_spring"},{"type":"set","subtype":"action","target":"action_find_clockwork_spring","property":"display","value":"hide"}]}},
 "action_restore_radio_signal":{"meta":{"title":"Phục hồi mạch phát thanh (tùy chọn)","buttonLabel":"Sửa mạch","desc":"Puzzle phụ tùy chọn: dùng bộ dụng cụ thay đoạn dây hỏng và cầu chì, rồi kiểm tra tiếp điểm của cuộn tinh thể để phục hồi tín hiệu. Việc sửa mạch không khóa tiến trình chính; cuộn tinh thể vẫn đủ để dò tín hiệu dưới ga."},"set":{"display":"show","requirement":true},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"radio_toolkit"},{"type":"item","subtype":"inventory","op":"has","value":"radio_crystal"},{"type":"item","subtype":"inventory","op":"has","value":"insulated_wire"},{"type":"item","subtype":"inventory","op":"has","value":"spare_fuse"}]},"effect":{"normal":[],"pass":[{"type":"set","subtype":"state","target":"radio_signal_restored","value":true},{"type":"set","subtype":"action","target":"action_restore_radio_signal","property":"display","value":"hide"},{"type":"notify","subtype":"toast","level":"success","text":"Mạch phát thanh được phục hồi; tín hiệu trong tinh thể có thể dò lại."}]}},
-"action_overlay_map":{"meta":{"title":"Đối chiếu bản đồ","buttonLabel":"Chồng giấy can","desc":"Chồng giấy can lên mảnh bản đồ. Các đường mờ khớp thành tuyến phụ dẫn đến khu vực dưới chân đê."},"set":{"display":"show","requirement":true},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"map_fragment"},{"type":"item","subtype":"inventory","op":"has","value":"tracing_paper"}]},"effect":{"normal":[],"pass":[{"type":"set","subtype":"state","target":"clue_tunnel","value":true},{"type":"set","subtype":"action","target":"action_overlay_map","property":"display","value":"hide"},{"type":"notify","subtype":"toast","level":"success","text":"Các ký hiệu khớp nhau; tuyến đường phụ đã được ghi nhận."}]}},
+"action_overlay_map":{"meta":{"title":"Đối chiếu bản đồ","buttonLabel":"Chồng giấy can","desc":"Chồng giấy can lên mảnh bản đồ. Các đường mờ khớp thành tuyến phụ dẫn đến khu vực dưới chân đê."},"set":{"display":"show","requirement":true},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"map_fragment"},{"type":"item","subtype":"inventory","op":"has","value":"tracing_paper"},{"type":"item","subtype":"inventory","op":"has","value":"inspection_loupe"},{"type":"state","property":"clue_seat_mark","op":"==","value":true},{"type":"state","property":"clue_class_clock","op":"==","value":true}]},"effect":{"normal":[],"pass":[{"type":"set","subtype":"state","target":"clue_tunnel","value":true},{"type":"set","subtype":"action","target":"action_overlay_map","property":"display","value":"hide"},{"type":"notify","subtype":"toast","level":"success","text":"Các ký hiệu khớp nhau; tuyến đường phụ đã được ghi nhận."}]}},
 "action_decode_broadcast":{"meta":{"title":"Hộp loa phát thanh","buttonLabel":"Gỡ bỏ","desc":"Hộp loa gắn sau bảng thông báo. Tiếng gọi tên dân làng phát đều đặn; sau bảng mạch là cuộn tinh thể lưu tần số. Cần bộ dụng cụ sửa chữa để mở mạch và lấy linh kiện an toàn."},"set":{"display":"show","requirement":true},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"radio_toolkit"}]},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"radio_crystal"},{"type":"set","subtype":"state","target":"evidence_broadcast","value":true},{"type":"set","subtype":"action","target":"action_decode_broadcast","property":"display","value":"hide"},{"type":"goto","subtype":"router","target":"router_square_broadcast_decoded"}]}},"action_retrieve_well_badge": {
       "meta": {
         "title": "Phù hiệu dưới giếng",
@@ -3687,12 +3691,7 @@ export const DEMO_SCRIPT = {
             "subtype": "add",
             "target": "class_register_copy"
           },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "evidence_class_register",
-            "value": true
-          },
+          
           {
             "type": "set",
             "subtype": "action",
@@ -3877,6 +3876,13 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "chat",
             "target": "chat_linh"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_talk_linh",
+            "property": "display",
+            "value": "hide"
           }
         ]
       },
