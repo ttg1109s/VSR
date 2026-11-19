@@ -117,6 +117,7 @@ export const DEMO_SCRIPT = {
       "type": "boolean",
       "value": false
     },
+    "radio_signal_restored":{"type":"boolean","value":false},
     "evidence_broadcast": {
       "type": "boolean",
       "value": false
@@ -485,7 +486,12 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "radio_crystal": {
+    "radio_toolkit":{"name":"Bộ dụng cụ sửa radio","category":"tool","icon":"build","desc":"Bộ tua vít cách điện, kìm nhỏ và đầu dò mạch trong hộp vải ở lớp học. Dùng mở thiết bị, kiểm tra tiếp điểm và tháo linh kiện an toàn.","usage":{"current":0,"max":10,"autoInc":false},"effect":{"use":[{"type":"notify","subtype":"toast","level":"info","text":"Dùng bộ dụng cụ tại Action tháo lắp hoặc sửa chữa phù hợp."}]}},
+"insulated_wire":{"name":"Dây điện cách nhiệt","category":"material","icon":"cable","desc":"Cuộn dây còn lớp cách điện, tìm thấy trong hầm rượu; có thể thay dây đứt hoặc nối tạm tiếp điểm.","usage":{"current":0,"max":10,"autoInc":false},"effect":{"use":[{"type":"notify","subtype":"toast","level":"info","text":"Dây điện phối hợp với cầu chì và bộ dụng cụ trong Action sửa mạch."}]}},
+"spare_fuse":{"name":"Cầu chì dự phòng","category":"material","icon":"electrical_services","desc":"Cầu chì sứ còn nguyên trong hộp linh kiện cũ ở hầm rượu, dùng thay cầu chì cháy.","usage":{"current":0,"max":10,"autoInc":false},"effect":{"use":[{"type":"notify","subtype":"toast","level":"info","text":"Cầu chì cần lắp tại thiết bị qua Action phối hợp vật liệu."}]}},
+"clockwork_spring":{"name":"Lò xo cơ khí","category":"material","icon":"settings","desc":"Lò xo thép còn đàn hồi lấy từ hộp bảo trì cối xay, có thể thay bộ phận hồi lực bị mất.","usage":{"current":0,"max":10,"autoInc":false},"effect":{"use":[{"type":"notify","subtype":"toast","level":"info","text":"Lò xo dùng cùng chốt truyền động và bộ dụng cụ để sửa cơ cấu cối xay."}]}},
+"tracing_paper":{"name":"Giấy can","category":"material","icon":"description","desc":"Giấy can mỏng trong ngăn bàn giáo viên, dùng chép chồng ký hiệu để đối chiếu bản đồ và hướng cơ cấu.","usage":{"current":0,"max":10,"autoInc":false},"effect":{"use":[{"type":"notify","subtype":"toast","level":"info","text":"Phối hợp giấy can với mảnh bản đồ tại Action đối chiếu."}]}},
+"inspection_loupe":{"name":"Kính kiểm tra","category":"tool","icon":"search","desc":"Kính phóng đại nhỏ trong hộp dụng cụ giáo viên, dùng phát hiện nét khắc, dấu sửa và chi tiết nhỏ trên vật chứng.","usage":{"current":0,"max":10,"autoInc":false},"effect":{"use":[{"type":"notify","subtype":"toast","level":"info","text":"Dùng kính tại Action kiểm tra vật chứng phù hợp."}]}}},"radio_crystal": {
       "name": "Cuộn tinh thể thu sóng",
       
       "category": "mechanism",
@@ -887,6 +893,7 @@ export const DEMO_SCRIPT = {
             "action_read_notice",
             "action_talk_mai",
             "action_enter_well",
+            "action_restore_radio_signal",
             "action_decode_broadcast"
           ]
         },
@@ -1024,7 +1031,8 @@ export const DEMO_SCRIPT = {
           },
           "actions": [
             "action_search_cellar",
-            "action_find_evacuation_film"
+            "action_find_evacuation_film",
+            "action_find_insulated_wire","action_find_spare_fuse"
           ]
         },
         "router_cellar_recording_found": {
@@ -1192,7 +1200,8 @@ export const DEMO_SCRIPT = {
             "action_check_desk",
             "action_talk_linh",
             "action_decode_roster",
-            "action_recover_class_register"
+            "action_recover_class_register",
+            "action_find_radio_toolkit","action_find_tracing_paper","action_find_inspection_loupe","action_overlay_map"
           ]
         },
         "router_classroom_archive_open": {
@@ -1374,7 +1383,8 @@ export const DEMO_SCRIPT = {
           },
           "actions": [
             "action_repair_mill",
-            "action_find_gear_pin"
+            "action_find_gear_pin",
+            "action_find_clockwork_spring"
           ]
         },
         "router_watermill_running": {
@@ -2656,18 +2666,10 @@ export const DEMO_SCRIPT = {
       "requirement": {
         "logic": "AND",
         "check": [
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "map_fragment"
-          },
-          {
-            "type": "item",
-            "subtype": "hand",
-            "op": "==",
-            "value": ["mill_gear_pin"]
-          }
+          { "type": "item", "subtype": "inventory", "op": "has", "value": "map_fragment" },
+          { "type": "item", "subtype": "inventory", "op": "has", "value": "clockwork_spring" },
+          { "type": "item", "subtype": "inventory", "op": "has", "value": "radio_toolkit" },
+          { "type": "item", "subtype": "hand", "op": "==", "value": ["mill_gear_pin"] }
         ]
       }
     },
@@ -3436,45 +3438,15 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "action_decode_broadcast": {
-      "meta": {
-        "title": "Hộp loa phát thanh",
-        "buttonLabel": "Gỡ bỏ",
-        "desc": "Hộp loa phát thanh được gắn sau bảng thông báo ở quảng trường. Tiếng gọi tên dân làng phát ra đều đặn nhưng không có dấu hiệu của người điều khiển trực tiếp; phía sau bảng mạch là một cuộn tinh thể có thể lưu và dò lại tần số của bản ghi."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "item",
-            "subtype": "add",
-            "target": "radio_crystal"
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "evidence_broadcast",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_decode_broadcast",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "goto",
-            "subtype": "router",
-            "target": "router_square_broadcast_decoded"
-          }
-        ]
-      }
-    },
-    "action_retrieve_well_badge": {
+    "action_find_radio_toolkit":{"meta":{"title":"Hộp dụng cụ trong lớp","buttonLabel":"Lấy dụng cụ","desc":"Trong ngăn tủ giáo viên có bộ tua vít cách điện, kìm và đầu dò mạch, đủ để tháo thiết bị mà không làm hỏng linh kiện."},"set":{"display":"show"},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"radio_toolkit"},{"type":"set","subtype":"action","target":"action_find_radio_toolkit","property":"display","value":"hide"}]}},
+"action_find_tracing_paper":{"meta":{"title":"Ngăn bàn giáo viên","buttonLabel":"Lấy giấy can","desc":"Tờ giấy can sạch được kẹp cạnh bản vẽ sơ đồ cũ, có thể chép chồng ký hiệu để đối chiếu bản đồ."},"set":{"display":"show"},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"tracing_paper"},{"type":"set","subtype":"action","target":"action_find_tracing_paper","property":"display","value":"hide"}]}},
+"action_find_inspection_loupe":{"meta":{"title":"Hộp dụng cụ giáo viên","buttonLabel":"Lấy kính","desc":"Kính phóng đại nhỏ trong hộp bảo quản dụng cụ có thể giúp đọc dấu khắc và nét sửa trên vật chứng."},"set":{"display":"show"},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"inspection_loupe"},{"type":"set","subtype":"action","target":"action_find_inspection_loupe","property":"display","value":"hide"}]}},
+"action_find_insulated_wire":{"meta":{"title":"Cuộn dây trong hầm","buttonLabel":"Lấy dây","desc":"Sau thùng rượu rỗng là cuộn dây cách nhiệt còn dùng được, có thể thay đoạn dây đứt trong thiết bị cũ."},"set":{"display":"show"},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"insulated_wire"},{"type":"set","subtype":"action","target":"action_find_insulated_wire","property":"display","value":"hide"}]}},
+"action_find_spare_fuse":{"meta":{"title":"Hộp linh kiện trong hầm","buttonLabel":"Lấy cầu chì","desc":"Hộp linh kiện cũ chứa cầu chì sứ dự phòng còn nguyên, được giữ riêng khỏi dây dẫn đã hỏng."},"set":{"display":"show"},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"spare_fuse"},{"type":"set","subtype":"action","target":"action_find_spare_fuse","property":"display","value":"hide"}]}},
+"action_find_clockwork_spring":{"meta":{"title":"Hộp bảo trì cối xay","buttonLabel":"Lấy lò xo","desc":"Hộp bảo trì có lò xo thép còn đàn hồi; cần bộ dụng cụ để mở hộp và lấy linh kiện."},"set":{"display":"show","requirement":true},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"radio_toolkit"}]},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"clockwork_spring"},{"type":"set","subtype":"action","target":"action_find_clockwork_spring","property":"display","value":"hide"}]}},
+"action_restore_radio_signal":{"meta":{"title":"Phục hồi mạch phát thanh","buttonLabel":"Sửa mạch","desc":"Dùng bộ dụng cụ thay đoạn dây hỏng và cầu chì, rồi kiểm tra tiếp điểm của cuộn tinh thể để phục hồi tín hiệu."},"set":{"display":"show","requirement":true},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"radio_toolkit"},{"type":"item","subtype":"inventory","op":"has","value":"radio_crystal"},{"type":"item","subtype":"inventory","op":"has","value":"insulated_wire"},{"type":"item","subtype":"inventory","op":"has","value":"spare_fuse"}]},"effect":{"normal":[],"pass":[{"type":"set","subtype":"state","target":"radio_signal_restored","value":true},{"type":"set","subtype":"action","target":"action_restore_radio_signal","property":"display","value":"hide"},{"type":"notify","subtype":"toast","level":"success","text":"Mạch phát thanh được phục hồi; tín hiệu trong tinh thể có thể dò lại."}]}},
+"action_overlay_map":{"meta":{"title":"Đối chiếu bản đồ","buttonLabel":"Chồng giấy can","desc":"Chồng giấy can lên mảnh bản đồ. Các đường mờ khớp thành tuyến phụ dẫn đến khu vực dưới chân đê."},"set":{"display":"show","requirement":true},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"map_fragment"},{"type":"item","subtype":"inventory","op":"has","value":"tracing_paper"}]},"effect":{"normal":[],"pass":[{"type":"set","subtype":"state","target":"clue_tunnel","value":true},{"type":"set","subtype":"action","target":"action_overlay_map","property":"display","value":"hide"},{"type":"notify","subtype":"toast","level":"success","text":"Các ký hiệu khớp nhau; tuyến đường phụ đã được ghi nhận."}]}},
+"action_decode_broadcast":{"meta":{"title":"Hộp loa phát thanh","buttonLabel":"Gỡ bỏ","desc":"Hộp loa gắn sau bảng thông báo. Tiếng gọi tên dân làng phát đều đặn; sau bảng mạch là cuộn tinh thể lưu tần số. Cần bộ dụng cụ sửa chữa để mở mạch và lấy linh kiện an toàn."},"set":{"display":"show","requirement":true},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"radio_toolkit"}]},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"radio_crystal"},{"type":"set","subtype":"state","target":"evidence_broadcast","value":true},{"type":"set","subtype":"action","target":"action_decode_broadcast","property":"display","value":"hide"},{"type":"goto","subtype":"router","target":"router_square_broadcast_decoded"}]}},"action_retrieve_well_badge": {
       "meta": {
         "title": "Phù hiệu dưới giếng",
         "buttonLabel": "Lấy lại",
@@ -3796,45 +3768,7 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "action_find_gear_pin": {
-      "meta": {
-        "title": "Hộp bánh răng cối xay",
-        "buttonLabel": "Tìm chốt cửa",
-        "desc": "Hộp bánh răng dưới sàn cối xay có nắp bị kẹt và dấu dầu khô quanh bản lề. Bên trong là chốt truyền động bị cong, đúng bộ phận còn thiếu trên trục máy; nếu không thay chốt, bánh xe không thể truyền lực để nâng cửa sập."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "item",
-            "subtype": "add",
-            "target": "mill_gear_pin"
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "evidence_gear_pin",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_find_gear_pin",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "goto",
-            "subtype": "router",
-            "target": "router_watermill_gear_inspected"
-          }
-        ]
-      }
-    },
-    "action_recover_tunnel_manifest": {
+    "action_find_gear_pin":{"meta":{"title":"Hộp bánh răng cối xay","buttonLabel":"Tìm chốt cửa","desc":"Hộp bánh răng dưới sàn cối xay bị kẹt. Bộ dụng cụ cần thiết để mở nắp và lấy chốt truyền động bị cong."},"set":{"display":"show","requirement":true},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"radio_toolkit"}]},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"mill_gear_pin"},{"type":"set","subtype":"state","target":"evidence_gear_pin","value":true},{"type":"set","subtype":"action","target":"action_find_gear_pin","property":"display","value":"hide"},{"type":"goto","subtype":"router","target":"router_watermill_gear_inspected"}]}},"action_recover_tunnel_manifest": {
       "meta": {
         "title": "Ống tài liệu trong đường hầm",
         "buttonLabel": "Lấy danh sách",
