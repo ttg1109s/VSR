@@ -181,9 +181,13 @@ export const LoaderSystem = {
             requirement: false, password: null, readDesc: false
         };
         for (const [actionId, action] of Object.entries(script.actions || {})) {
+            // Scenario set.readDesc is a requirement ("must read"), not the
+            // runtime state ("has read"). Keep the runtime flag false on load.
+            const { readDesc: _readDescRequirement, ...(runtimeActionSet) } = action?.set || {};
             state.actions[actionId] = JSON.parse(JSON.stringify({
                 ...defActionSet,
-                ...(action?.set || {}),
+                ...runtimeActionSet,
+                readDesc: false,
                 count: { ...defActionSet.count, ...(action?.count || {}) }
             }));
         }
