@@ -49,8 +49,8 @@ function InventoryItemCard({ item, onViewDetails, onToggleEquipment, busy }) {
             {categoryLabel && <p title={categoryLabel} className="vsr-text-secondary">{categoryLabel}</p>}
           </div>
           {item.equipped && (
-            <span className="vsr-tag" aria-label="Equipped">
-              Equipped
+            <span className="vsr-inventory-item__equipped-badge" aria-label="Equipped" title="Equipped">
+              E
             </span>
           )}
         </article>
