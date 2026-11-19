@@ -154,12 +154,6 @@ function InventoryItemDetails({ item, onBack, onToggleEquipment, busy }) {
         </section>
       )}
 
-      <section className="vsr-inventory-item-details__section vsr-inventory-item-details__equipment">
-        <h3><span className="material-symbols-rounded" aria-hidden="true">checkroom</span>Equipment Status</h3>
-        <p>{item.equipped ? 'Currently equipped.' : 'Currently not equipped.'}</p>
-      </section>
-
-
     </div>
   );
 }
