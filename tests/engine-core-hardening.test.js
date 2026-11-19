@@ -1491,6 +1491,9 @@ test('school optional map puzzle consumes all intended clue/tool prerequisites',
   assert.equal(overlay.effect.pass.some(effect =>
     effect.type === 'set' && effect.subtype === 'state' && effect.target === 'clue_tunnel' && effect.value === true
   ), true);
+  const tunnelEntry = DEMO_SCRIPT.actions.action_descend_tunnel;
+  assert.equal(tunnelEntry.requirement.logic, 'OR');
+  assert.deepEqual(tunnelEntry.requirement.check.map(check => check.property), ['mill_powered', 'clue_tunnel']);
 });
 
 test('school Linh conversation action is one-shot to prevent repeated chat rewards', () => {
