@@ -141,11 +141,7 @@ function InventoryItemDetails({ item, onBack, onToggleEquipment, busy }) {
         <p>{item.equipped ? 'Currently equipped.' : 'Currently not equipped.'}</p>
       </section>
 
-      <div className="vsr-inventory-item-details__actions">
-        <Button block variant={equipDisabled ? 'secondary' : 'primary'} disabled={equipDisabled} onClick={() => onToggleEquipment(item)}>
-          {busy ? 'Updating…' : equipDisabled && item.broken ? 'Equip unavailable · item broken' : item.equipped ? 'Unequip' : 'Equip'}
-        </Button>
-      </div>
+
     </div>
   );
 }
