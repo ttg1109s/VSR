@@ -3014,7 +3014,7 @@ export const DEMO_SCRIPT = {
     "desc": "Dựa trên ký ức nhân chứng, dấu đường hầm và những gì đã khôi phục, bạn chọn giải phóng người bị mắc kẹt."
   },
   "set": {
-    "display": "show",
+    "display": "hide",
     "requirement": true
   },
   "effect": {
@@ -3625,7 +3625,7 @@ export const DEMO_SCRIPT = {
     "desc": "Tuyến Memory dùng lời khai và dấu đường hầm thay cho danh sách vận chuyển và cuộn phim."
   },
   "set": {
-    "display": "show",
+    "display": "hide",
     "requirement": true
   },
   "effect": {
@@ -3946,33 +3946,128 @@ export const DEMO_SCRIPT = {
       }
     },
     "action_recover_class_register": {
-      "meta": {
-        "title": "Ngăn bàn cuối lớp",
-        "buttonLabel": "Bảo toàn hồ sơ",
-        "desc": "Bạn quyết định giữ bản sao sổ điểm danh như bằng chứng có thể đối chiếu, dù việc này khiến Linh không còn muốn chia sẻ toàn bộ ký ức riêng."
+  "meta": {
+    "title": "Ngăn bàn cuối lớp",
+    "buttonLabel": "Bảo toàn hồ sơ",
+    "desc": "Bạn quyết định giữ bản sao sổ điểm danh như bằng chứng có thể đối chiếu, dù việc này khiến Linh không còn muốn chia sẻ toàn bộ ký ức riêng."
+  },
+  "set": {
+    "display": "show",
+    "requirement": true
+  },
+  "effect": {
+    "normal": [],
+    "pass": [
+      {
+        "type": "set",
+        "subtype": "state",
+        "target": "school_choice",
+        "value": "evidence"
       },
-      "set": {"display": "show", "requirement": true},
-      "effect": {
-        "normal": [],
-        "pass": [
-          {"type": "set", "subtype": "state", "target": "school_choice", "value": "evidence"},
-          {"type": "item", "subtype": "add", "target": "class_register_copy"},
-          {"type": "set", "subtype": "state", "target": "evidence_class_register", "value": true},
-          {"type": "set", "subtype": "state", "target": "clue_roster", "value": true},
-          {"type": "set", "subtype": "state", "target": "truth_fragments", "value": 1},
-          {"type": "set", "subtype": "action", "target": "action_recover_class_register", "property": "display", "value": "hide"},
-          {"type": "set", "subtype": "action", "target": "action_talk_linh", "property": "display", "value": "hide"},
-          {"type": "goto", "subtype": "router", "target": "router_classroom_archive_open"}
-        ]
+      {
+        "type": "item",
+        "subtype": "add",
+        "target": "class_register_copy"
       },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {"type": "state", "property": "clue_photo", "op": "==", "value": true},
-          {"type": "state", "property": "school_choice", "op": "==", "value": "undecided"}
-        ]
+      {
+        "type": "set",
+        "subtype": "state",
+        "target": "evidence_class_register",
+        "value": true
+      },
+      {
+        "type": "set",
+        "subtype": "state",
+        "target": "clue_roster",
+        "value": true
+      },
+      {
+        "type": "set",
+        "subtype": "state",
+        "target": "truth_fragments",
+        "value": 1
+      },
+      {
+        "type": "set",
+        "subtype": "action",
+        "target": "action_recover_class_register",
+        "property": "display",
+        "value": "hide"
+      },
+      {
+        "type": "set",
+        "subtype": "action",
+        "target": "action_talk_linh",
+        "property": "display",
+        "value": "hide"
+      },
+      {
+        "type": "set",
+        "subtype": "action",
+        "target": "action_reach_station",
+        "property": "display",
+        "value": "show"
+      },
+      {
+        "type": "set",
+        "subtype": "action",
+        "target": "action_choose_fate",
+        "property": "display",
+        "value": "show"
+      },
+      {
+        "type": "set",
+        "subtype": "action",
+        "target": "action_decode_roster",
+        "property": "display",
+        "value": "show"
+      },
+      {
+        "type": "set",
+        "subtype": "action",
+        "target": "action_overlay_map",
+        "property": "display",
+        "value": "show"
+      },
+      {
+        "type": "set",
+        "subtype": "action",
+        "target": "action_reach_station_memory",
+        "property": "display",
+        "value": "hide"
+      },
+      {
+        "type": "set",
+        "subtype": "action",
+        "target": "action_choose_fate_memory",
+        "property": "display",
+        "value": "hide"
+      },
+      {
+        "type": "goto",
+        "subtype": "router",
+        "target": "router_classroom_archive_open"
       }
-    },
+    ]
+  },
+  "requirement": {
+    "logic": "AND",
+    "check": [
+      {
+        "type": "state",
+        "property": "clue_photo",
+        "op": "==",
+        "value": true
+      },
+      {
+        "type": "state",
+        "property": "school_choice",
+        "op": "==",
+        "value": "undecided"
+      }
+    ]
+  }
+},
     "action_collect_forest_compass": {
       "meta": {
         "title": "La bàn người dẫn đường",
@@ -4126,32 +4221,123 @@ export const DEMO_SCRIPT = {
       }
     },
     "action_talk_linh": {
-      "meta": {
-        "title": "Linh",
-        "buttonLabel": "Bảo vệ lời khai",
-        "desc": "Bạn quyết định không biến ký ức của Linh thành vật chứng công khai. Lời khai riêng và những chi tiết em nhớ sẽ là con đường tiếp tục điều tra."
+  "meta": {
+    "title": "Linh",
+    "buttonLabel": "Bảo vệ lời khai",
+    "desc": "Bạn quyết định không biến ký ức của Linh thành vật chứng công khai. Lời khai riêng và những chi tiết em nhớ sẽ là con đường tiếp tục điều tra."
+  },
+  "set": {
+    "display": "show",
+    "requirement": true
+  },
+  "effect": {
+    "normal": [],
+    "pass": [
+      {
+        "type": "set",
+        "subtype": "state",
+        "target": "school_choice",
+        "value": "memory"
       },
-      "set": {"display": "show", "requirement": true},
-      "effect": {
-        "normal": [],
-        "pass": [
-          {"type": "set", "subtype": "state", "target": "school_choice", "value": "memory"},
-          {"type": "set", "subtype": "state", "target": "knows_twelve", "value": true},
-          {"type": "set", "subtype": "state", "target": "truth_fragments", "value": 1},
-          {"type": "set", "subtype": "state", "target": "clue_tunnel", "value": true},
-          {"type": "set", "subtype": "action", "target": "action_talk_linh", "property": "display", "value": "hide"},
-          {"type": "set", "subtype": "action", "target": "action_recover_class_register", "property": "display", "value": "hide"},
-          {"type": "goto", "subtype": "chat", "target": "chat_linh"}
-        ]
+      {
+        "type": "set",
+        "subtype": "state",
+        "target": "knows_twelve",
+        "value": true
       },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {"type": "state", "property": "clue_photo", "op": "==", "value": true},
-          {"type": "state", "property": "school_choice", "op": "==", "value": "undecided"}
-        ]
+      {
+        "type": "set",
+        "subtype": "state",
+        "target": "truth_fragments",
+        "value": 1
+      },
+      {
+        "type": "set",
+        "subtype": "state",
+        "target": "clue_tunnel",
+        "value": true
+      },
+      {
+        "type": "set",
+        "subtype": "action",
+        "target": "action_talk_linh",
+        "property": "display",
+        "value": "hide"
+      },
+      {
+        "type": "set",
+        "subtype": "action",
+        "target": "action_recover_class_register",
+        "property": "display",
+        "value": "hide"
+      },
+      {
+        "type": "set",
+        "subtype": "action",
+        "target": "action_reach_station",
+        "property": "display",
+        "value": "hide"
+      },
+      {
+        "type": "set",
+        "subtype": "action",
+        "target": "action_choose_fate",
+        "property": "display",
+        "value": "hide"
+      },
+      {
+        "type": "set",
+        "subtype": "action",
+        "target": "action_decode_roster",
+        "property": "display",
+        "value": "hide"
+      },
+      {
+        "type": "set",
+        "subtype": "action",
+        "target": "action_overlay_map",
+        "property": "display",
+        "value": "hide"
+      },
+      {
+        "type": "set",
+        "subtype": "action",
+        "target": "action_reach_station_memory",
+        "property": "display",
+        "value": "show"
+      },
+      {
+        "type": "set",
+        "subtype": "action",
+        "target": "action_choose_fate_memory",
+        "property": "display",
+        "value": "show"
+      },
+      {
+        "type": "goto",
+        "subtype": "chat",
+        "target": "chat_linh"
       }
-    }
+    ]
+  },
+  "requirement": {
+    "logic": "AND",
+    "check": [
+      {
+        "type": "state",
+        "property": "clue_photo",
+        "op": "==",
+        "value": true
+      },
+      {
+        "type": "state",
+        "property": "school_choice",
+        "op": "==",
+        "value": "undecided"
+      }
+    ]
+  }
+}
   },
   "chat": {
     "chat_mai": {
