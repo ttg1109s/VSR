@@ -305,6 +305,14 @@ export const DEMO_SCRIPT = {
         "max":  10,
         "autoInc": false
       },
+      "stats": {
+        "light": {
+          "current": 4,
+          "max": 5,
+          "label": "Độ sáng",
+          "color": "#F5C451"
+        }
+      },
       "effect": {
         "use": [
           {
@@ -326,6 +334,14 @@ export const DEMO_SCRIPT = {
         "current":  0,
         "max":  10,
         "autoInc": false
+      },
+      "stats": {
+        "legibility": {
+          "current": 3,
+          "max": 5,
+          "label": "Độ đọc được",
+          "color": "#8BC5FF"
+        }
       },
       "effect": {
         "use": [
@@ -349,6 +365,14 @@ export const DEMO_SCRIPT = {
         "max":  10,
         "autoInc": false
       },
+      "stats": {
+        "clarity": {
+          "current": 3,
+          "max": 5,
+          "label": "Độ rõ âm thanh",
+          "color": "#8BC5FF"
+        }
+      },
       "effect": {
         "use": [
           {
@@ -370,6 +394,14 @@ export const DEMO_SCRIPT = {
         "current":  0,
         "max":  10,
         "autoInc": false
+      },
+      "stats": {
+        "identification": {
+          "current": 4,
+          "max": 5,
+          "label": "Khả năng nhận dạng",
+          "color": "#A78BFA"
+        }
       },
       "effect": {
         "use": [
@@ -399,6 +431,14 @@ export const DEMO_SCRIPT = {
         "max":  10,
         "autoInc": false
       },
+      "stats": {
+        "integrity": {
+          "current": 3,
+          "max": 5,
+          "label": "Độ nguyên vẹn",
+          "color": "#F5C451"
+        }
+      },
       "effect": {
         "use": [
           {
@@ -420,6 +460,14 @@ export const DEMO_SCRIPT = {
         "current":  0,
         "max":  10,
         "autoInc": false
+      },
+      "stats": {
+        "completeness": {
+          "current": 3,
+          "max": 5,
+          "label": "Độ hoàn chỉnh",
+          "color": "#8BC5FF"
+        }
       },
       "effect": {
         "use": [
@@ -465,6 +513,14 @@ export const DEMO_SCRIPT = {
         "max":  10,
         "autoInc": false
       },
+      "stats": {
+        "coverage": {
+          "current": 4,
+          "max": 5,
+          "label": "Mức bao phủ",
+          "color": "#8BC5FF"
+        }
+      },
       "effect": {
         "use": [
           {
@@ -476,12 +532,60 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "radio_toolkit":{"name":"Bộ dụng cụ sửa radio","category":"tool","icon":"build","desc":"Bộ tua vít cách điện, kìm nhỏ và đầu dò mạch trong hộp vải ở lớp học. Dùng mở thiết bị, kiểm tra tiếp điểm và tháo linh kiện an toàn.","usage":{"current":0,"max":10,"autoInc":false},"effect":{"use":[{"type":"notify","subtype":"toast","level":"info","text":"Dùng bộ dụng cụ tại Action tháo lắp hoặc sửa chữa phù hợp."}]}},
-"insulated_wire":{"name":"Dây điện cách nhiệt","category":"material","icon":"cable","desc":"Cuộn dây còn lớp cách điện, tìm thấy trong hầm rượu; có thể thay dây đứt hoặc nối tạm tiếp điểm.","usage":{"current":0,"max":10,"autoInc":false},"effect":{"use":[{"type":"notify","subtype":"toast","level":"info","text":"Dây điện phối hợp với cầu chì và bộ dụng cụ trong Action sửa mạch."}]}},
-"spare_fuse":{"name":"Cầu chì dự phòng","category":"material","icon":"electrical_services","desc":"Cầu chì sứ còn nguyên trong hộp linh kiện cũ ở hầm rượu, dùng thay cầu chì cháy.","usage":{"current":0,"max":10,"autoInc":false},"effect":{"use":[{"type":"notify","subtype":"toast","level":"info","text":"Cầu chì cần lắp tại thiết bị qua Action phối hợp vật liệu."}]}},
-"clockwork_spring":{"name":"Lò xo cơ khí","category":"material","icon":"settings","desc":"Lò xo thép còn đàn hồi lấy từ hộp bảo trì cối xay, có thể thay bộ phận hồi lực bị mất.","usage":{"current":0,"max":10,"autoInc":false},"effect":{"use":[{"type":"notify","subtype":"toast","level":"info","text":"Lò xo dùng cùng chốt truyền động và bộ dụng cụ để sửa cơ cấu cối xay."}]}},
-"tracing_paper":{"name":"Giấy can","category":"material","icon":"description","desc":"Giấy can mỏng trong ngăn bàn giáo viên, dùng chép chồng ký hiệu để đối chiếu bản đồ và hướng cơ cấu.","usage":{"current":0,"max":10,"autoInc":false},"effect":{"use":[{"type":"notify","subtype":"toast","level":"info","text":"Phối hợp giấy can với mảnh bản đồ tại Action đối chiếu."}]}},
-"inspection_loupe":{"name":"Kính kiểm tra","category":"tool","icon":"search","desc":"Kính phóng đại nhỏ trong hộp dụng cụ giáo viên, dùng phát hiện nét khắc, dấu sửa và chi tiết nhỏ trên vật chứng.","usage":{"current":0,"max":10,"autoInc":false},"effect":{"use":[{"type":"notify","subtype":"toast","level":"info","text":"Dùng kính tại Action kiểm tra vật chứng phù hợp."}]}},"radio_crystal": {
+    "radio_toolkit":{"name":"Bộ dụng cụ sửa radio","category":"tool","icon":"build","desc":"Bộ tua vít cách điện, kìm nhỏ và đầu dò mạch trong hộp vải ở lớp học. Dùng mở thiết bị, kiểm tra tiếp điểm và tháo linh kiện an toàn.","usage":{"current":0,"max":10,"autoInc":false},
+      "stats": {
+        "condition": {
+          "current": 4,
+          "max": 5,
+          "label": "Tình trạng dụng cụ",
+          "color": "#67D6A0"
+        }
+      },"effect":{"use":[{"type":"notify","subtype":"toast","level":"info","text":"Dùng bộ dụng cụ tại Action tháo lắp hoặc sửa chữa phù hợp."}]}},
+"insulated_wire":{"name":"Dây điện cách nhiệt","category":"material","icon":"cable","desc":"Cuộn dây còn lớp cách điện, tìm thấy trong hầm rượu; có thể thay dây đứt hoặc nối tạm tiếp điểm.","usage":{"current":0,"max":10,"autoInc":false},
+      "stats": {
+        "condition": {
+          "current": 4,
+          "max": 5,
+          "label": "Tình trạng dây",
+          "color": "#67D6A0"
+        }
+      },"effect":{"use":[{"type":"notify","subtype":"toast","level":"info","text":"Dây điện phối hợp với cầu chì và bộ dụng cụ trong Action sửa mạch."}]}},
+"spare_fuse":{"name":"Cầu chì dự phòng","category":"material","icon":"electrical_services","desc":"Cầu chì sứ còn nguyên trong hộp linh kiện cũ ở hầm rượu, dùng thay cầu chì cháy.","usage":{"current":0,"max":10,"autoInc":false},
+      "stats": {
+        "capacity": {
+          "current": 4,
+          "max": 5,
+          "label": "Khả năng chịu tải",
+          "color": "#67D6A0"
+        }
+      },"effect":{"use":[{"type":"notify","subtype":"toast","level":"info","text":"Cầu chì cần lắp tại thiết bị qua Action phối hợp vật liệu."}]}},
+"clockwork_spring":{"name":"Lò xo cơ khí","category":"material","icon":"settings","desc":"Lò xo thép còn đàn hồi lấy từ hộp bảo trì cối xay, có thể thay bộ phận hồi lực bị mất.","usage":{"current":0,"max":10,"autoInc":false},
+      "stats": {
+        "tension": {
+          "current": 4,
+          "max": 5,
+          "label": "Lực hồi",
+          "color": "#67D6A0"
+        }
+      },"effect":{"use":[{"type":"notify","subtype":"toast","level":"info","text":"Lò xo dùng cùng chốt truyền động và bộ dụng cụ để sửa cơ cấu cối xay."}]}},
+"tracing_paper":{"name":"Giấy can","category":"material","icon":"description","desc":"Giấy can mỏng trong ngăn bàn giáo viên, dùng chép chồng ký hiệu để đối chiếu bản đồ và hướng cơ cấu.","usage":{"current":0,"max":10,"autoInc":false},
+      "stats": {
+        "precision": {
+          "current": 4,
+          "max": 5,
+          "label": "Độ chính xác đối chiếu",
+          "color": "#8BC5FF"
+        }
+      },"effect":{"use":[{"type":"notify","subtype":"toast","level":"info","text":"Phối hợp giấy can với mảnh bản đồ tại Action đối chiếu."}]}},
+"inspection_loupe":{"name":"Kính kiểm tra","category":"tool","icon":"search","desc":"Kính phóng đại nhỏ trong hộp dụng cụ giáo viên, dùng phát hiện nét khắc, dấu sửa và chi tiết nhỏ trên vật chứng.","usage":{"current":0,"max":10,"autoInc":false},
+      "stats": {
+        "precision": {
+          "current": 4,
+          "max": 5,
+          "label": "Độ chính xác kiểm tra",
+          "color": "#8BC5FF"
+        }
+      },"effect":{"use":[{"type":"notify","subtype":"toast","level":"info","text":"Dùng kính tại Action kiểm tra vật chứng phù hợp."}]}},"radio_crystal": {
       "name": "Cuộn tinh thể thu sóng",
       
       "category": "mechanism",
@@ -491,6 +595,14 @@ export const DEMO_SCRIPT = {
         "current":  0,
         "max":  10,
         "autoInc": false
+      },
+      "stats": {
+        "signal": {
+          "current": 3,
+          "max": 5,
+          "label": "Chất lượng tín hiệu",
+          "color": "#8BC5FF"
+        }
       },
       "effect": {
         "use": [
@@ -513,6 +625,14 @@ export const DEMO_SCRIPT = {
         "current":  0,
         "max":  10,
         "autoInc": false
+      },
+      "stats": {
+        "authenticity": {
+          "current": 4,
+          "max": 5,
+          "label": "Tính xác thực",
+          "color": "#A78BFA"
+        }
       },
       "effect": {
         "use": [
@@ -558,6 +678,14 @@ export const DEMO_SCRIPT = {
         "max":  10,
         "autoInc": false
       },
+      "stats": {
+        "clarity": {
+          "current": 3,
+          "max": 5,
+          "label": "Độ rõ hình ảnh",
+          "color": "#8BC5FF"
+        }
+      },
       "effect": {
         "use": [
           {
@@ -579,6 +707,14 @@ export const DEMO_SCRIPT = {
         "current":  0,
         "max":  10,
         "autoInc": false
+      },
+      "stats": {
+        "completeness": {
+          "current": 3,
+          "max": 5,
+          "label": "Độ đầy đủ",
+          "color": "#8BC5FF"
+        }
       },
       "effect": {
         "use": [
@@ -602,6 +738,14 @@ export const DEMO_SCRIPT = {
         "max":  10,
         "autoInc": false
       },
+      "stats": {
+        "conductivity": {
+          "current": 4,
+          "max": 5,
+          "label": "Khả năng dẫn truyền",
+          "color": "#67D6A0"
+        }
+      },
       "effect": {
         "use": [
           {
@@ -623,6 +767,14 @@ export const DEMO_SCRIPT = {
         "current":  0,
         "max":  10,
         "autoInc": false
+      },
+      "stats": {
+        "verification": {
+          "current": 4,
+          "max": 5,
+          "label": "Mức xác minh",
+          "color": "#A78BFA"
+        }
       },
       "effect": {
         "use": [
@@ -646,6 +798,14 @@ export const DEMO_SCRIPT = {
         "max":  10,
         "autoInc": false
       },
+      "stats": {
+        "accuracy": {
+          "current": 4,
+          "max": 5,
+          "label": "Độ chính xác",
+          "color": "#8BC5FF"
+        }
+      },
       "effect": {
         "use": [
           {
@@ -667,6 +827,14 @@ export const DEMO_SCRIPT = {
         "current":  0,
         "max":  10,
         "autoInc": false
+      },
+      "stats": {
+        "authenticity": {
+          "current": 4,
+          "max": 5,
+          "label": "Tính xác thực",
+          "color": "#A78BFA"
+        }
       },
       "effect": {
         "use": [
@@ -690,6 +858,14 @@ export const DEMO_SCRIPT = {
         "max":  10,
         "autoInc": false
       },
+      "stats": {
+        "integrity": {
+          "current": 3,
+          "max": 5,
+          "label": "Độ nguyên vẹn",
+          "color": "#67D6A0"
+        }
+      },
       "effect": {
         "use": [
           {
@@ -712,6 +888,14 @@ export const DEMO_SCRIPT = {
         "max":  10,
         "autoInc": false
       },
+      "stats": {
+        "completeness": {
+          "current": 4,
+          "max": 5,
+          "label": "Độ đầy đủ",
+          "color": "#A78BFA"
+        }
+      },
       "effect": {
         "use": [
           {
@@ -733,6 +917,14 @@ export const DEMO_SCRIPT = {
         "current":  0,
         "max":  10,
         "autoInc": false
+      },
+      "stats": {
+        "verification": {
+          "current": 4,
+          "max": 5,
+          "label": "Mức xác minh",
+          "color": "#A78BFA"
+        }
       },
       "effect": {
         "use": [
@@ -2807,7 +2999,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Cối xay nước",
         "buttonLabel": "Bắt đầu",
-        "desc": "Cối xay cần chốt truyền động, lò xo và bộ dụng cụ. Dấu đường hầm từ Memory hoặc mảnh bản đồ từ Evidence đều cung cấp hướng dẫn."
+        "desc": "Cối xay cần chốt truyền động, lò xo và bộ dụng cụ. Chất lượng các linh kiện phải đạt mức tối thiểu; dấu đường hầm từ Memory hoặc mảnh bản đồ từ Evidence đều cung cấp hướng dẫn."
       },
       "set": {"display": "show", "requirement": true},
       "effect": {
@@ -2827,7 +3019,10 @@ export const DEMO_SCRIPT = {
           {"type": "item", "subtype": "inventory", "op": "has", "value": "radio_toolkit"},
           {"type": "item", "subtype": "hand", "op": "==", "value": ["mill_gear_pin"]},
           {"type": "state", "property": "clue_tunnel", "op": "==", "value": true}
-        ]
+        ,
+          {"type":"stats","subtype":"item","target":"radio_toolkit","property":"condition","field":"current","op":">=","value":3},
+          {"type":"stats","subtype":"item","target":"clockwork_spring","property":"tension","field":"current","op":">=","value":3},
+          {"type":"stats","subtype":"item","target":"mill_gear_pin","property":"integrity","field":"current","op":">=","value":3}]
       }
     },
     "action_inspect_tunnel_names": {
@@ -3735,8 +3930,15 @@ export const DEMO_SCRIPT = {
 "action_find_insulated_wire":{"meta":{"title":"Cuộn dây trong hầm","buttonLabel":"Lấy dây","desc":"Sau thùng rượu rỗng là cuộn dây cách nhiệt còn dùng được, có thể thay đoạn dây đứt trong thiết bị cũ."},"set":{"display":"show"},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"insulated_wire"},{"type":"set","subtype":"action","target":"action_find_insulated_wire","property":"display","value":"hide"}]}},
 "action_find_spare_fuse":{"meta":{"title":"Hộp linh kiện trong hầm","buttonLabel":"Lấy cầu chì","desc":"Hộp linh kiện cũ chứa cầu chì sứ dự phòng còn nguyên, được giữ riêng khỏi dây dẫn đã hỏng."},"set":{"display":"show"},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"spare_fuse"},{"type":"set","subtype":"action","target":"action_find_spare_fuse","property":"display","value":"hide"}]}},
 "action_find_clockwork_spring":{"meta":{"title":"Hộp bảo trì cối xay","buttonLabel":"Lấy lò xo","desc":"Hộp bảo trì có lò xo thép còn đàn hồi; cần bộ dụng cụ để mở hộp và lấy linh kiện."},"set":{"display":"show","requirement":true},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"radio_toolkit"}]},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"clockwork_spring"},{"type":"set","subtype":"action","target":"action_find_clockwork_spring","property":"display","value":"hide"}]}},
-"action_restore_radio_signal":{"meta":{"title":"Phục hồi mạch phát thanh (tùy chọn)","buttonLabel":"Sửa mạch","desc":"Puzzle phụ tùy chọn: dùng bộ dụng cụ thay đoạn dây hỏng và cầu chì, rồi kiểm tra tiếp điểm của cuộn tinh thể để phục hồi tín hiệu. Việc sửa mạch không khóa tiến trình chính; cuộn tinh thể vẫn đủ để dò tín hiệu dưới ga."},"set":{"display":"show","requirement":true},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"radio_toolkit"},{"type":"item","subtype":"inventory","op":"has","value":"radio_crystal"},{"type":"item","subtype":"inventory","op":"has","value":"insulated_wire"},{"type":"item","subtype":"inventory","op":"has","value":"spare_fuse"}]},"effect":{"normal":[],"pass":[{"type":"set","subtype":"state","target":"radio_signal_restored","value":true},{"type":"set","subtype":"action","target":"action_restore_radio_signal","property":"display","value":"hide"},{"type":"notify","subtype":"toast","level":"success","text":"Mạch phát thanh được phục hồi; tín hiệu trong tinh thể có thể dò lại."}]}},
-"action_overlay_map":{"meta":{"title":"Đối chiếu bản đồ","buttonLabel":"Chồng giấy can","desc":"Chồng giấy can lên mảnh bản đồ. Các đường mờ khớp thành tuyến phụ dẫn đến khu vực dưới chân đê."},"set":{"display":"show","requirement":true},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"map_fragment"},{"type":"item","subtype":"inventory","op":"has","value":"tracing_paper"},{"type":"item","subtype":"inventory","op":"has","value":"inspection_loupe"},{"type":"state","property":"clue_seat_mark","op":"==","value":true},{"type":"state","property":"clue_class_clock","op":"==","value":true}]},"effect":{"normal":[],"pass":[{"type":"set","subtype":"state","target":"clue_tunnel","value":true},{"type":"set","subtype":"action","target":"action_overlay_map","property":"display","value":"hide"},{"type":"notify","subtype":"toast","level":"success","text":"Các ký hiệu khớp nhau; tuyến đường phụ đã được ghi nhận."}]}},
+"action_restore_radio_signal":{"meta":{"title":"Phục hồi mạch phát thanh (tùy chọn)","buttonLabel":"Sửa mạch","desc":"Puzzle phụ tùy chọn: dùng bộ dụng cụ, dây, cầu chì và tinh thể có chất lượng tối thiểu để phục hồi tín hiệu. Việc sửa mạch không khóa tiến trình chính; cuộn tinh thể vẫn đủ để dò tín hiệu dưới ga."},"set":{"display":"show","requirement":true},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"radio_toolkit"},{"type":"item","subtype":"inventory","op":"has","value":"radio_crystal"},{"type":"item","subtype":"inventory","op":"has","value":"insulated_wire"},{"type":"item","subtype":"inventory","op":"has","value":"spare_fuse"},
+          {"type":"stats","subtype":"item","target":"radio_toolkit","property":"condition","field":"current","op":">=","value":3},
+          {"type":"stats","subtype":"item","target":"insulated_wire","property":"condition","field":"current","op":">=","value":3},
+          {"type":"stats","subtype":"item","target":"spare_fuse","property":"capacity","field":"current","op":">=","value":3},
+          {"type":"stats","subtype":"item","target":"radio_crystal","property":"signal","field":"current","op":">=","value":3}]},"effect":{"normal":[],"pass":[{"type":"set","subtype":"state","target":"radio_signal_restored","value":true},{"type":"set","subtype":"action","target":"action_restore_radio_signal","property":"display","value":"hide"},{"type":"notify","subtype":"toast","level":"success","text":"Mạch phát thanh được phục hồi; tín hiệu trong tinh thể có thể dò lại."}]}},
+"action_overlay_map":{"meta":{"title":"Đối chiếu bản đồ","buttonLabel":"Chồng giấy can","desc":"Chồng giấy can lên mảnh bản đồ và kiểm tra các ký hiệu. Độ bao phủ bản đồ, độ chính xác giấy can và kính phải đạt mức tối thiểu để xác nhận tuyến phụ dẫn đến khu vực dưới chân đê."},"set":{"display":"show","requirement":true},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"map_fragment"},{"type":"item","subtype":"inventory","op":"has","value":"tracing_paper"},{"type":"item","subtype":"inventory","op":"has","value":"inspection_loupe"},{"type":"state","property":"clue_seat_mark","op":"==","value":true},{"type":"state","property":"clue_class_clock","op":"==","value":true},
+          {"type":"stats","subtype":"item","target":"map_fragment","property":"coverage","field":"current","op":">=","value":3},
+          {"type":"stats","subtype":"item","target":"tracing_paper","property":"precision","field":"current","op":">=","value":3},
+          {"type":"stats","subtype":"item","target":"inspection_loupe","property":"precision","field":"current","op":">=","value":3}]},"effect":{"normal":[],"pass":[{"type":"set","subtype":"state","target":"clue_tunnel","value":true},{"type":"set","subtype":"action","target":"action_overlay_map","property":"display","value":"hide"},{"type":"notify","subtype":"toast","level":"success","text":"Các ký hiệu khớp nhau; tuyến đường phụ đã được ghi nhận."}]}},
 "action_decode_broadcast":{"meta":{"title":"Hộp loa phát thanh","buttonLabel":"Gỡ bỏ","desc":"Hộp loa gắn sau bảng thông báo. Tiếng gọi tên dân làng phát đều đặn; sau bảng mạch là cuộn tinh thể lưu tần số. Cần bộ dụng cụ sửa chữa để mở mạch và lấy linh kiện an toàn."},"set":{"display":"show","requirement":true},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"radio_toolkit"}]},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"radio_crystal"},{"type":"set","subtype":"state","target":"evidence_broadcast","value":true},{"type":"set","subtype":"action","target":"action_decode_broadcast","property":"display","value":"hide"},{"type":"goto","subtype":"router","target":"router_square_broadcast_decoded"}]}},"action_retrieve_well_badge": {
       "meta": {
         "title": "Phù hiệu dưới giếng",
