@@ -361,6 +361,7 @@ export class JsonProtocol{
     usage:hasUsage?{current,max,autoInc:item.usage.autoInc!==false,status:Array.isArray(item.usage.status)?cloneJsonValue(item.usage.status):[]}:null,
     broken,canEquip:requirementsPass!==false&&(handIds.includes(itemId)||maxHand<=0||handIds.length<maxHand),
     canUse:requirementsPass!==false&&!(broken&&engine.getConfig?.('brokenDisable')===true),
+    hasUseEffect:Array.isArray(item.effect?.use)&&item.effect.use.length>0,
     stats
    };
   }).filter(Boolean);
