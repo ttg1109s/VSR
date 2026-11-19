@@ -23,7 +23,7 @@ export const ItemSystem = {
         const ownerLimitPair = Array.isArray(maxInvList) ? maxInvList.find(pair => Array.isArray(pair) && pair[1] === ownerId) : null;
         const limit = ownerLimitPair ? ownerLimitPair[0] : 0;
         if (limit > 0 && inventory.length >= limit) {
-            this.api.presentation.notification.add("Cannot pick up item", "Inventory is full.", "warning");
+            this.api.notifications.add("Cannot pick up item", "Inventory is full.", "warning", { source: "engine", category: "inventory.full" });
             return false;
         }
         state.set('characters.[id].inventory', [...inventory, itemId], { id: ownerId });
@@ -164,7 +164,7 @@ export const ItemSystem = {
         if (info.requirements) {
             const res = this.checkReq(info.requirements);
             if (!res.pass) {
-                this.api.presentation.notification.add("Cannot use item", "Requirements not met.", "danger");
+                this.api.notifications.add("Cannot use item", "Requirements not met.", "danger", { source: "engine", category: "inventory.use_failed" });
                 return;
             }
         }
@@ -173,7 +173,7 @@ export const ItemSystem = {
             const isBroken = this.isBroken(id);
             const disableBrokenUse = this.getConfig ? this.getConfig('brokenDisable') : false;
             if (isBroken && disableBrokenUse) {
-                this.api.presentation.notification.add("Broken", "The item is broken or has no uses remaining.", "warning");
+                this.api.notifications.add("Broken", "The item is broken or has no uses remaining.", "warning", { source: "engine", category: "inventory.use_broken" });
                 return;
             }
             const autoInc = info.usage.autoInc !== false;
@@ -183,10 +183,10 @@ export const ItemSystem = {
         }
 
         if (info.effect?.use) {
-            this.api.presentation.notification.add("Used", `Used ${info.name}`, "info");
+            this.api.notifications.add("Used", `Used ${info.name}`, "info", { source: "engine", category: "inventory.used" });
             await this.processRunnables(info.effect.use, { itemId: id, hook: 'use' });
         } else {
-            this.api.presentation.notification.add("Notice", "This item has no effect when used directly.", "info");
+            this.api.notifications.add("Notice", "This item has no effect when used directly.", "info", { source: "engine", category: "inventory.use_no_effect" });
         }
 
         this.api.presentation.components.updateItemModal(id);
