@@ -104,3 +104,17 @@ test('Memory ending Action is available in station routers', () => {
   assert.ok(actions.action_talk_hanh.effect.normal.some(e => e.target === 'chat_hanh_memory' && e.req?.check?.some(c => c.property === 'school_choice' && c.value === 'memory')));
   assert.ok(actions.action_talk_hanh.effect.normal.some(e => e.target === 'chat_hanh_evidence' && e.req?.check?.some(c => c.property === 'school_choice' && c.value === 'evidence')));
 });
+
+test('commitment updates branch Action visibility in both directions', () => {
+  const memory = actions.action_talk_linh.effect.pass;
+  const evidence = actions.action_recover_class_register.effect.pass;
+  const hasDisplay = (list, id, value) => list.some(e => e.type === 'set' && e.subtype === 'action' && e.target === id && e.property === 'display' && e.value === value);
+  assert.ok(hasDisplay(memory, 'action_reach_station', 'hide'));
+  assert.ok(hasDisplay(memory, 'action_choose_fate', 'hide'));
+  assert.ok(hasDisplay(memory, 'action_reach_station_memory', 'show'));
+  assert.ok(hasDisplay(memory, 'action_choose_fate_memory', 'show'));
+  assert.ok(hasDisplay(evidence, 'action_reach_station_memory', 'hide'));
+  assert.ok(hasDisplay(evidence, 'action_choose_fate_memory', 'hide'));
+  assert.ok(hasDisplay(evidence, 'action_reach_station', 'show'));
+  assert.ok(hasDisplay(evidence, 'action_choose_fate', 'show'));
+});
