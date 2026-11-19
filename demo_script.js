@@ -2300,45 +2300,79 @@ export const DEMO_SCRIPT = {
       }
     },
     "action_read_hymn": {
-      "meta": {
-        "title": "Bản thánh ca",
-        "buttonLabel": "Giải mã",
-        "desc": "Bản thánh ca nằm trên giá gỗ trong gian cầu nguyện. Mực ở vài dòng đã nhạt, nhưng chữ cái đầu mỗi dòng vẫn được viết đậm bất thường; ghép chúng lại thành cụm “IM LANG”. Một dòng khác bị gạch dưới nhiều lần, nhắc đến ba hồi chuông và sự im lặng sau đó."
+  "meta": {
+    "title": "Bản thánh ca",
+    "buttonLabel": "Giải mã",
+    "desc": "Bản thánh ca nằm trên giá gỗ trong gian cầu nguyện. Mực ở vài dòng đã nhạt, nhưng chữ cái đầu mỗi dòng vẫn được viết đậm bất thường; ghép chúng lại thành cụm “IM LANG”. Một dòng khác bị gạch dưới nhiều lần, nhắc đến ba hồi chuông và sự im lặng sau đó."
+  },
+  "set": {
+    "display": "show"
+  },
+  "effect": {
+    "normal": [],
+    "pass": [
+      {
+        "type": "set",
+        "subtype": "state",
+        "target": "truth_fragments",
+        "value": 1
       },
-      "set": {
-        "display": "show"
+      {
+        "type": "set",
+        "subtype": "state",
+        "target": "clue_hymn",
+        "value": true
       },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "truth_fragments",
-            "value": 1
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "clue_hymn",
-            "value": true
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Bạn ghi nhớ mật từ IM LANG và quy tắc ba hồi chuông."
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_read_hymn",
-            "property": "display",
-            "value": "hide"
-          }
-        ]
+      {
+        "type": "notify",
+        "subtype": "toast",
+        "level": "success",
+        "text": "Bạn ghi nhớ mật từ IM LANG và quy tắc ba hồi chuông."
+      },
+      {
+        "type": "set",
+        "subtype": "action",
+        "target": "action_read_hymn",
+        "property": "display",
+        "value": "hide"
+      },
+      {
+        "type": "notify",
+        "subtype": "toast",
+        "level": "info",
+        "text": "Linh đã bảo vệ ký ức riêng; bạn đọc thánh ca như một dấu hiệu, không phải lời khai thay em.",
+        "req": {
+          "logic": "AND",
+          "check": [
+            {
+              "type": "state",
+              "property": "school_choice",
+              "op": "==",
+              "value": "memory"
+            }
+          ]
+        }
+      },
+      {
+        "type": "notify",
+        "subtype": "toast",
+        "level": "info",
+        "text": "Bạn đối chiếu mật từ trong thánh ca với hồ sơ đã bảo toàn; chữ viết xác nhận một nghi thức bị che giấu.",
+        "req": {
+          "logic": "AND",
+          "check": [
+            {
+              "type": "state",
+              "property": "school_choice",
+              "op": "==",
+              "value": "evidence"
+            }
+          ]
+        }
       }
-    },
+    ]
+  }
+},
     "action_talk_keeper": {
       "meta": {
         "title": "Người giữ nhà nguyện",
@@ -2530,45 +2564,79 @@ export const DEMO_SCRIPT = {
       }
     },
     "action_follow_marks": {
-      "meta": {
-        "title": "Dấu sơn trong rừng",
-        "buttonLabel": "Theo dấu",
-        "desc": "Các vệt sơn trên thân thông xuất hiện theo cặp, có chỗ bị rêu che gần hết. Chúng không phải dấu đánh dấu đường đi thông thường: khoảng cách giữa các vệt thay đổi theo hướng rẽ và dẫn đến một khoảng đất trống khuất sau sườn dốc. Từ đó có thể nhìn thấy vòng cọc gỗ giữa rừng."
+  "meta": {
+    "title": "Dấu sơn trong rừng",
+    "buttonLabel": "Theo dấu",
+    "desc": "Các vệt sơn trên thân thông xuất hiện theo cặp, có chỗ bị rêu che gần hết. Chúng không phải dấu đánh dấu đường đi thông thường: khoảng cách giữa các vệt thay đổi theo hướng rẽ và dẫn đến một khoảng đất trống khuất sau sườn dốc. Từ đó có thể nhìn thấy vòng cọc gỗ giữa rừng."
+  },
+  "set": {
+    "display": "show"
+  },
+  "effect": {
+    "normal": [],
+    "pass": [
+      {
+        "type": "set",
+        "subtype": "state",
+        "target": "truth_fragments",
+        "value": 1
       },
-      "set": {
-        "display": "show"
+      {
+        "type": "set",
+        "subtype": "state",
+        "target": "clue_stakes",
+        "value": true
       },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "truth_fragments",
-            "value": 1
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "clue_stakes",
-            "value": true
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Bạn xác định được hướng đi an toàn qua rừng."
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_follow_marks",
-            "property": "display",
-            "value": "hide"
-          }
-        ]
+      {
+        "type": "notify",
+        "subtype": "toast",
+        "level": "success",
+        "text": "Bạn xác định được hướng đi an toàn qua rừng."
+      },
+      {
+        "type": "set",
+        "subtype": "action",
+        "target": "action_follow_marks",
+        "property": "display",
+        "value": "hide"
+      },
+      {
+        "type": "notify",
+        "subtype": "toast",
+        "level": "info",
+        "text": "Bạn lần theo dấu sơn như lời khai của người sống: tuyến đường không cần hồ sơ chính thức để tồn tại.",
+        "req": {
+          "logic": "AND",
+          "check": [
+            {
+              "type": "state",
+              "property": "school_choice",
+              "op": "==",
+              "value": "memory"
+            }
+          ]
+        }
+      },
+      {
+        "type": "notify",
+        "subtype": "toast",
+        "level": "info",
+        "text": "Bạn đối chiếu các dấu sơn với tuyến sơ tán trong hồ sơ; một đoạn đường đã bị bỏ khỏi bản đồ chính thức.",
+        "req": {
+          "logic": "AND",
+          "check": [
+            {
+              "type": "state",
+              "property": "school_choice",
+              "op": "==",
+              "value": "evidence"
+            }
+          ]
+        }
       }
-    },
+    ]
+  }
+},
     "action_maze_path": {
       "meta": {
         "title": "Mê cung trong rừng",
@@ -2763,45 +2831,79 @@ export const DEMO_SCRIPT = {
       }
     },
     "action_inspect_tunnel_names": {
-      "meta": {
-        "title": "Danh sách tên trên tường đường hầm",
-        "buttonLabel": "Đọc dấu khắc",
-        "desc": "Các bức tường đường hầm phủ kín tên người và ngày tháng. Những dòng chữ được sắp theo thứ tự biến mất chứ không theo họ tên; một số đoạn đã bị cạo sửa, đặc biệt ở cuối danh sách. Đối chiếu các tên cho thấy có mười hai người, không phải mười một."
+  "meta": {
+    "title": "Danh sách tên trên tường đường hầm",
+    "buttonLabel": "Đọc dấu khắc",
+    "desc": "Các bức tường đường hầm phủ kín tên người và ngày tháng. Những dòng chữ được sắp theo thứ tự biến mất chứ không theo họ tên; một số đoạn đã bị cạo sửa, đặc biệt ở cuối danh sách. Đối chiếu các tên cho thấy có mười hai người, không phải mười một."
+  },
+  "set": {
+    "display": "show"
+  },
+  "effect": {
+    "normal": [],
+    "pass": [
+      {
+        "type": "set",
+        "subtype": "state",
+        "target": "truth_fragments",
+        "value": 1
       },
-      "set": {
-        "display": "show"
+      {
+        "type": "set",
+        "subtype": "state",
+        "target": "clue_tunnel",
+        "value": true
       },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "truth_fragments",
-            "value": 1
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "clue_tunnel",
-            "value": true
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Bạn phát hiện danh sách sơ tán bị sửa. Có mười hai cái tên, không phải mười một."
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_inspect_tunnel_names",
-            "property": "display",
-            "value": "hide"
-          }
-        ]
+      {
+        "type": "notify",
+        "subtype": "toast",
+        "level": "success",
+        "text": "Bạn phát hiện danh sách sơ tán bị sửa. Có mười hai cái tên, không phải mười một."
+      },
+      {
+        "type": "set",
+        "subtype": "action",
+        "target": "action_inspect_tunnel_names",
+        "property": "display",
+        "value": "hide"
+      },
+      {
+        "type": "notify",
+        "subtype": "toast",
+        "level": "info",
+        "text": "Những cái tên trên tường là dấu vết được giữ lại ngoài hồ sơ; bạn không chép chúng thành danh sách công khai.",
+        "req": {
+          "logic": "AND",
+          "check": [
+            {
+              "type": "state",
+              "property": "school_choice",
+              "op": "==",
+              "value": "memory"
+            }
+          ]
+        }
+      },
+      {
+        "type": "notify",
+        "subtype": "toast",
+        "level": "info",
+        "text": "Danh sách khắc trên tường xác nhận hồ sơ đã bỏ sót một người; đây là đối chứng vật lý cho bản ghi.",
+        "req": {
+          "logic": "AND",
+          "check": [
+            {
+              "type": "state",
+              "property": "school_choice",
+              "op": "==",
+              "value": "evidence"
+            }
+          ]
+        }
       }
-    },
+    ]
+  }
+},
     "action_open_archive": {
       "meta": {
         "title": "Tủ hồ sơ dưới đê",
