@@ -56,6 +56,13 @@ function InventoryItemCard({ item, onViewDetails, onToggleEquipment, onUseItem, 
         </article>
       }
       items={[
+        ...(item.hasUseEffect ? [{
+          key: 'use',
+          label: 'Use',
+          icon: 'play_arrow',
+          disabled: busy || item.canUse === false,
+          onSelect: () => onUseItem(item)
+        }] : []),
         {
           key: 'details',
           label: 'View Details',
