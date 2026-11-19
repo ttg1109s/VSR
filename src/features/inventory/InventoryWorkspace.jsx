@@ -77,61 +77,23 @@ function InventoryItemCard({ item, onViewDetails, onToggleEquipment, busy }) {
 function InventoryItemDetails({ item, onBack, onToggleEquipment, busy }) {
   if (!item) return null;
   const usage = item.usage;
-
+  const iconName = typeof item.icon === 'string' && /^[a-z][a-z0-9_]*$/.test(item.icon) ? item.icon : 'inventory_2';
   return (
     <div className="vsr-inventory-item-details">
-      <div className="vsr-inventory-item-details__status">
-        <span className="vsr-text-secondary">{item.category === 'uncategorized' ? 'Uncategorized' : item.category}</span>
-        <span className="vsr-tag">
-          {item.equipped ? 'Equipped' : 'Not equipped'}
-        </span>
+      <div className="vsr-inventory-item-details__navigation">
+        <Button variant="secondary" size="sm" onClick={onBack}><span className="material-symbols-rounded" aria-hidden="true">arrow_back</span>Back to Inventory</Button>
       </div>
+      <div className="vsr-inventory-item-details__hero">
+        <span className="material-symbols-rounded vsr-inventory-item-details__icon" aria-hidden="true">{iconName}</span>
+        <h2>{item.name || 'Item'}</h2>
+        <div className="vsr-inventory-item-details__status"><span className="vsr-text-secondary">{item.category === 'uncategorized' ? 'Uncategorized' : item.category}</span><span className="vsr-tag">{item.equipped ? 'Equipped' : 'Not equipped'}</span></div>
       </div>
-      {item.description && (
-        <section className="vsr-inventory-item-details__section">
-          <h3>Description</h3>
-          <p>{item.description}</p>
-        </section>
-      )}
-      {usage && (
-        <section className="vsr-inventory-item-details__section">
-          <h3>Usage</h3>
-          <p>{usage.current} / {usage.max}</p>
-          {item.broken && <p className="vsr-inventory-item-details__warning">Broken</p>}
-        </section>
-      )}
-      {item.requirements?.hasRequirements && (
-        <section className="vsr-inventory-item-details__section">
-          <h3>Requirements</h3>
-          <p>{item.requirements.passed === false ? 'Requirements not met' : item.requirements.passed === true ? 'Requirements met' : 'Not evaluated'}</p>
-        </section>
-      )}
-      {Array.isArray(item.stats) && item.stats.length > 0 && (
-        <section className="vsr-inventory-item-details__section">
-          <h3>Stats</h3>
-          <dl className="vsr-inventory-item-details__stats">
-            {item.stats.map(stat => (
-              <div key={stat.id}>
-                <dt>{stat.label}</dt>
-                <dd>{stat.current === null ? '—' : stat.current}{stat.max !== null ? ` / ${stat.max}` : ''}</dd>
-              </div>
-            ))}
-          </dl>
-        </section>
-      )}
-      {!item.description && !usage && !item.requirements?.hasRequirements && !(item.stats?.length) && (
-        <p className="vsr-text-secondary">No additional details available.</p>
-      )}
-      <div className="vsr-inventory-item-details__actions">
-        <Button
-          block
-          variant="primary"
-          disabled={busy || (!item.equipped && item.canEquip === false)}
-          onClick={() => onToggleEquipment(item)}
-        >
-          {busy ? 'Updating…' : item.equipped ? 'Unequip' : 'Equip'}
-        </Button>
-      </div>
+      {item.description && <section className="vsr-inventory-item-details__section"><h3>Description</h3><p>{item.description}</p></section>}
+      {usage && <section className="vsr-inventory-item-details__section"><h3>Usage</h3><p>{usage.current} / {usage.max}</p>{item.broken && <p className="vsr-inventory-item-details__warning">Broken</p>}</section>}
+      {item.requirements?.hasRequirements && <section className="vsr-inventory-item-details__section"><h3>Requirements</h3><p>{item.requirements.passed === false ? 'Requirements not met' : item.requirements.passed === true ? 'Requirements met' : 'Not evaluated'}</p></section>}
+      {Array.isArray(item.stats) && item.stats.length > 0 && <section className="vsr-inventory-item-details__section"><h3>Stats</h3><dl className="vsr-inventory-item-details__stats">{item.stats.map(stat => <div key={stat.id}><dt>{stat.label}</dt><dd>{stat.current === null ? '—' : stat.current}{stat.max !== null ? ` / ${stat.max}` : ''}</dd></div>)}</dl></section>}
+      {!item.description && !usage && !item.requirements?.hasRequirements && !(item.stats?.length) && <p className="vsr-text-secondary">No additional details available.</p>}
+      <div className="vsr-inventory-item-details__actions"><Button block variant="primary" disabled={busy || (!item.equipped && item.canEquip === false)} onClick={() => onToggleEquipment(item)}>{busy ? 'Updating…' : item.equipped ? 'Unequip' : 'Equip'}</Button></div>
     </div>
   );
 }
@@ -341,12 +303,395 @@ export default function InventoryWorkspace({ snapshot, client, open = false, onC
       width="min(100vw, 760px)"
       lockScroll
       contentClassName="vsr-inventory-drawer-content"
-      headerActions={
-        <Popover
-          align="end"
-          label="Inventory filters"
-          trigger={<IconButton icon="tune" label="Inventory filters" />}
+      headerActions={!detailItem && (
+        <Popover align="end" label="Inventory filters" trigger={<IconButton icon="tune" label="Inventory filters" />}>
+          <InventoryFilters category={category} onCategoryChange={resetPage(setCategory)} categories={categories} equipment={equipment} onEquipmentChange={resetPage(setEquipment)} sort={sort} onSortChange={resetPage(setSort)} />
+        </Popover>
+      )}
+    >
+          <InventoryFilters
+            category={category}
+            onCategoryChange={resetPage(setCategory)}
+            categories={categories}
+            equipment={equipment}
+            onEquipmentChange={resetPage(setEquipment)}
+            sort={sort}
+            onSortChange={resetPage(setSort)}
+          />
+        </Popover>
+      }
+    >
+      {detailItem ? (\n        <InventoryItemDetails\n          item={detailItem}\n          onBack={() => setDetailItem(null)}\n          onToggleEquipment={toggleItemEquipment}\n          busy={pendingItemId === detailItem.id}\n        />\n      ) : !inventory || !items ? (
+        <EmptyInventoryState
+          title="Inventory unavailable"
+          message="Inventory data is not available yet."
+        />
+      ) : items.length === 0 ? (
+        <EmptyInventoryState />
+      ) : (
+        <div className="vsr-inventory-layout">
+          <InventoryControls
+            search={search}
+            onSearchChange={resetPage(setSearch)}
+          />
+
+          <div className="vsr-inventory-results">
+            <div className="vsr-inventory-results__meta">
+              <p className="vsr-text-secondary" aria-live="polite">
+                {filteredItems.length} {filteredItems.length === 1 ? 'item' : 'items'} found
+              </p>
+              {filteredItems.length > 0 && (
+                <p className="vsr-text-secondary">
+                  Showing {firstItem}–{lastItem} of {filteredItems.length}
+                </p>
+              )}
+            </div>
+
+          {filteredItems.length === 0 ? (
+            <EmptyInventoryState
+              title="No matching items"
+              message="Try changing your search or filters."
+            />
+          ) : (
+            <>
+              <Grid columns="auto" gap="3" className="vsr-inventory-items-grid" aria-label="Inventory items">
+                {pageItems.map(item => (
+                  <InventoryItemCard
+                    key={item.id}
+                    item={item}
+                    busy={pendingItemId === item.id}
+                    onViewDetails={setDetailItem}
+                    onToggleEquipment={toggleItemEquipment}
+                  />
+                ))}
+              </Grid>
+              <InventoryPagination
+                page={currentPage}
+                pageCount={pageCount}
+                onPageChange={setPage}
+              />
+            </>
+          )}
+          </div>
+        </div>
+      )}
+    </Drawer>
+
+    </>
+  );
+      {detailItem ? (
+        <InventoryItemDetails item={detailItem} onBack={() => setDetailItem(null)} onToggleEquipment={toggleItemEquipment} busy={pendingItemId === detailItem.id} />
+      ) : !inventory || !items ? (State } from 'react';
+import { Button, Drawer, Grid, IconButton, Input, Menu, Popover } from '../../design-system/index.js';
+
+const PAGE_SIZE = 24;
+
+function EmptyInventoryState({ title = 'Your inventory is empty', message = "You haven't collected any items yet. Explore the world and collect items to see them here." }) {
+  return (
+    <section className="vsr-stack vsr-stack--center vsr-stack--gap-3" aria-live="polite">
+      <span className="material-symbols-rounded vsr-text-secondary" aria-hidden="true">
+        backpack
+      </span>
+      <h2>{title}</h2>
+      <p className="vsr-text-secondary">{message}</p>
+    </section>
+  );
+}
+
+function InventoryItemCard({ item, onViewDetails, onToggleEquipment, busy }) {
+  const iconName = typeof item.icon === 'string'
+    && /^[a-z][a-z0-9_]*$/.test(item.icon)
+    ? item.icon
+    : 'inventory_2';
+  const categoryLabel = item.category === 'uncategorized'
+    ? 'Uncategorized'
+    : item.category;
+
+  return (
+    <Menu
+      className="vsr-inventory-item-menu"
+      label={`Actions for ${item.name || 'item'}`}
+      trigger={
+        <article
+          className="vsr-card vsr-inventory-item"
+          role="button"
+          tabIndex={0}
+          aria-label={`${item.name || 'Item'}${item.equipped ? ', equipped' : ''}. Open item actions`}
+          onKeyDown={event => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault();
+              event.currentTarget.click();
+            }
+          }}
         >
+          <span className="material-symbols-rounded vsr-inventory-item__icon" aria-hidden="true">
+            {iconName}
+          </span>
+          <div className="vsr-inventory-item__info">
+            <h3 title={item.name || ''}>{item.name}</h3>
+            {categoryLabel && <p title={categoryLabel} className="vsr-text-secondary">{categoryLabel}</p>}
+          </div>
+          {item.equipped && (
+            <span className="vsr-inventory-item__equipped-badge" aria-label="Equipped" title="Equipped">
+              E
+            </span>
+          )}
+        </article>
+      }
+      items={[
+        {
+          key: 'details',
+          label: 'View Details',
+          icon: 'info',
+          onSelect: () => onViewDetails(item)
+        },
+        {
+          key: 'equipment',
+          label: item.equipped ? 'Unequip' : 'Equip',
+          icon: item.equipped ? 'remove_circle_outline' : 'check_circle_outline',
+          disabled: busy || (!item.equipped && item.canEquip === false),
+          onSelect: () => onToggleEquipment(item)
+        }
+      ]}
+    />
+  );
+}
+
+function InventoryItemDetails({ item, onBack, onToggleEquipment, busy }) {
+  if (!item) return null;
+  const usage = item.usage;
+  const iconName = typeof item.icon === 'string' && /^[a-z][a-z0-9_]*$/.test(item.icon) ? item.icon : 'inventory_2';
+  return (
+    <div className="vsr-inventory-item-details">
+      <div className="vsr-inventory-item-details__navigation">
+        <Button variant="secondary" size="sm" onClick={onBack}><span className="material-symbols-rounded" aria-hidden="true">arrow_back</span>Back to Inventory</Button>
+      </div>
+      <div className="vsr-inventory-item-details__hero">
+        <span className="material-symbols-rounded vsr-inventory-item-details__icon" aria-hidden="true">{iconName}</span>
+        <h2>{item.name || 'Item'}</h2>
+        <div className="vsr-inventory-item-details__status"><span className="vsr-text-secondary">{item.category === 'uncategorized' ? 'Uncategorized' : item.category}</span><span className="vsr-tag">{item.equipped ? 'Equipped' : 'Not equipped'}</span></div>
+      </div>
+      {item.description && <section className="vsr-inventory-item-details__section"><h3>Description</h3><p>{item.description}</p></section>}
+      {usage && <section className="vsr-inventory-item-details__section"><h3>Usage</h3><p>{usage.current} / {usage.max}</p>{item.broken && <p className="vsr-inventory-item-details__warning">Broken</p>}</section>}
+      {item.requirements?.hasRequirements && <section className="vsr-inventory-item-details__section"><h3>Requirements</h3><p>{item.requirements.passed === false ? 'Requirements not met' : item.requirements.passed === true ? 'Requirements met' : 'Not evaluated'}</p></section>}
+      {Array.isArray(item.stats) && item.stats.length > 0 && <section className="vsr-inventory-item-details__section"><h3>Stats</h3><dl className="vsr-inventory-item-details__stats">{item.stats.map(stat => <div key={stat.id}><dt>{stat.label}</dt><dd>{stat.current === null ? '—' : stat.current}{stat.max !== null ? ` / ${stat.max}` : ''}</dd></div>)}</dl></section>}
+      {!item.description && !usage && !item.requirements?.hasRequirements && !(item.stats?.length) && <p className="vsr-text-secondary">No additional details available.</p>}
+      <div className="vsr-inventory-item-details__actions"><Button block variant="primary" disabled={busy || (!item.equipped && item.canEquip === false)} onClick={() => onToggleEquipment(item)}>{busy ? 'Updating…' : item.equipped ? 'Unequip' : 'Equip'}</Button></div>
+    </div>
+  );
+}
+function FilterGroup({ label, value, options, onChange, className = '' }) {
+  return (
+    <section className={`vsr-inventory-filter-group ${className}`}>
+      <h3 className="vsr-inventory-filter-group__label">{label}</h3>
+      <div className="vsr-inventory-filter-options" role="group" aria-label={label}>
+        {options.map(option => {
+          const selected = value === option.value;
+          return (
+            <button
+              key={option.value}
+              type="button"
+              className="vsr-inventory-filter-chip"
+              aria-pressed={selected}
+              onClick={() => onChange(option.value)}
+            >
+              {option.label}
+            </button>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function InventoryFilters({
+  category,
+  onCategoryChange,
+  categories,
+  equipment,
+  onEquipmentChange,
+  sort,
+  onSortChange
+}) {
+  return (
+    <div className="vsr-inventory-filter-panel">
+      <FilterGroup
+        label="Category"
+        value={category}
+        onChange={onCategoryChange}
+        options={[
+          { value: 'all', label: 'All' },
+          ...categories.map(value => ({ value, label: value === 'uncategorized' ? 'Uncategorized' : value }))
+        ]}
+      />
+      <div className="vsr-inventory-filter-divider" aria-hidden="true" />
+      <FilterGroup
+        label="Equipment"
+        value={equipment}
+        onChange={onEquipmentChange}
+        options={[
+          { value: 'all', label: 'All items' },
+          { value: 'equipped', label: 'Equipped' },
+          { value: 'unequipped', label: 'Not equipped' }
+        ]}
+      />
+      <div className="vsr-inventory-filter-divider" aria-hidden="true" />
+      <FilterGroup
+        label="Sort"
+        className="vsr-inventory-filter-group--sort"
+        value={sort}
+        onChange={onSortChange}
+        options={[
+          { value: 'name-asc', label: 'A–Z' },
+          { value: 'name-desc', label: 'Z–A' },
+          { value: 'category-asc', label: 'Category' }
+        ]}
+      />
+    </div>
+  );
+}
+
+function InventoryControls({ search, onSearchChange }) {
+  return (
+    <div className="vsr-inventory-controls">
+      <Input
+        placeholder="Search inventory..."
+        leadingIcon="search"
+        type="search"
+        value={search}
+        onChange={event => onSearchChange(event.target.value)}
+      />
+    </div>
+  );
+}
+
+function InventoryPagination({ page, pageCount, onPageChange }) {
+  if (pageCount <= 1) return null;
+
+  return (
+    <nav className="vsr-stack vsr-stack--gap-2" aria-label="Inventory pages">
+      <div className="vsr-stack vsr-stack--center vsr-stack--gap-1">
+        <p className="vsr-text-secondary" aria-live="polite">
+          Page {page} of {pageCount}
+        </p>
+      </div>
+      <div className="vsr-stack vsr-stack--gap-2">
+        <Grid columns="2" gap="2">
+          <Button
+            variant="secondary"
+            size="md"
+            disabled={page <= 1}
+            onClick={() => onPageChange(page - 1)}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="secondary"
+            size="md"
+            disabled={page >= pageCount}
+            onClick={() => onPageChange(page + 1)}
+          >
+            Next
+          </Button>
+        </Grid>
+      </div>
+    </nav>
+  );
+}
+
+export default function InventoryWorkspace({ snapshot, client, open = false, onClose, onError }) {
+  const inventory = snapshot?.presentation?.inventory;
+  const items = Array.isArray(inventory?.items) ? inventory.items : null;
+
+  const [search, setSearch] = useState('');
+  const [category, setCategory] = useState('all');
+  const [equipment, setEquipment] = useState('all');
+  const [sort, setSort] = useState('name-asc');
+  const [page, setPage] = useState(1);
+
+  const [pendingItemId, setPendingItemId] = useState(null);\n  const [detailItem, setDetailItem] = useState(null);
+
+  const categories = useMemo(() => {
+    if (!items) return [];
+    return [...new Set(items.map(item => item.category).filter(Boolean))]
+      .sort((a, b) => String(a).localeCompare(String(b)));
+  }, [items]);
+
+  const filteredItems = useMemo(() => {
+    if (!items) return [];
+
+    const query = search.trim().toLocaleLowerCase();
+    const result = items.filter(item => {
+      const searchableText = [
+        item.name,
+        item.category,
+        item.description
+      ].filter(Boolean).join(' ').toLocaleLowerCase();
+
+      if (query && !searchableText.includes(query)) return false;
+      if (category !== 'all' && item.category !== category) return false;
+      if (equipment === 'equipped' && !item.equipped) return false;
+      if (equipment === 'unequipped' && item.equipped) return false;
+      return true;
+    });
+
+    return result.sort((a, b) => {
+      if (sort === 'name-desc') {
+        return String(b.name || '').localeCompare(String(a.name || ''));
+      }
+      if (sort === 'category-asc') {
+        const categoryOrder = String(a.category || '').localeCompare(String(b.category || ''));
+        return categoryOrder || String(a.name || '').localeCompare(String(b.name || ''));
+      }
+      return String(a.name || '').localeCompare(String(b.name || ''));
+    });
+  }, [items, search, category, equipment, sort]);
+
+  const pageCount = Math.ceil(filteredItems.length / PAGE_SIZE);
+  const currentPage = Math.min(page, Math.max(1, pageCount));
+  const pageItems = filteredItems.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE
+  );
+  const firstItem = filteredItems.length === 0 ? 0 : (currentPage - 1) * PAGE_SIZE + 1;
+  const lastItem = Math.min(currentPage * PAGE_SIZE, filteredItems.length);
+
+  const resetPage = setter => value => {
+    setter(value);
+    setPage(1);
+  };
+
+  async function toggleItemEquipment(item) {
+    if (!client?.toggleHand || pendingItemId) {
+      if (!client?.toggleHand) onError?.('Inventory actions are unavailable.');
+      return;
+    }
+    setPendingItemId(item.id);
+    try {
+      await client.toggleHand(item.id);
+    } catch (error) {
+      onError?.(error?.message || 'Unable to update this item.');
+    } finally {
+      setPendingItemId(null);
+    }
+  }
+
+  return (
+    <>
+    <Drawer
+      open={open}
+      title={detailItem ? (detailItem.name || "Item Details") : "Inventory"}
+      onClose={onClose}
+      size="lg"
+      width="min(100vw, 760px)"
+      lockScroll
+      contentClassName="vsr-inventory-drawer-content"
+      headerActions={!detailItem && (
+        <Popover align="end" label="Inventory filters" trigger={<IconButton icon="tune" label="Inventory filters" />}>
+          <InventoryFilters category={category} onCategoryChange={resetPage(setCategory)} categories={categories} equipment={equipment} onEquipmentChange={resetPage(setEquipment)} sort={sort} onSortChange={resetPage(setSort)} />
+        </Popover>
+      )}
+    >
           <InventoryFilters
             category={category}
             onCategoryChange={resetPage(setCategory)}
