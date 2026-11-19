@@ -251,60 +251,49 @@ export const DEMO_SCRIPT = {
         ]
       },
       "station_ready": {
-        "logic": "AND",
+        "logic": "OR",
         "check": [
           {
-            "type": "state",
-            "property": "truth_fragments",
-            "op": ">=",
-            "value": 3
+            "logic": "AND",
+            "check": [
+              {"type": "state", "property": "truth_fragments", "op": ">=", "value": 3},
+              {"type": "state", "property": "archive_open", "op": "==", "value": true},
+              {"type": "item", "subtype": "inventory", "op": "has", "value": "tunnel_manifest"},
+              {"type": "state", "property": "evidence_evacuation_film", "op": "==", "value": true}
+            ]
           },
           {
-            "type": "state",
-            "property": "archive_open",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "tunnel_manifest"
-          },
-          {
-            "type": "state",
-            "property": "evidence_evacuation_film",
-            "op": "==",
-            "value": true
+            "logic": "AND",
+            "check": [
+              {"type": "state", "property": "school_choice", "op": "==", "value": "memory"},
+              {"type": "state", "property": "truth_fragments", "op": ">=", "value": 3},
+              {"type": "state", "property": "archive_open", "op": "==", "value": true},
+              {"type": "state", "property": "clue_tunnel", "op": "==", "value": true}
+            ]
           }
         ]
       },
       "release_ready": {
-        "logic": "AND",
+        "logic": "OR",
         "check": [
           {
-            "type": "state",
-            "property": "truth_fragments",
-            "op": ">=",
-            "value": 3
+            "logic": "AND",
+            "check": [
+              {"type": "state", "property": "truth_fragments", "op": ">=", "value": 3},
+              {"type": "state", "property": "bell_rung", "op": "==", "value": true},
+              {"type": "state", "property": "archive_open", "op": "==", "value": true},
+              {"type": "state", "property": "evidence_evacuation_seal", "op": "==", "value": true}
+            ]
           },
           {
-            "type": "state",
-            "property": "bell_rung",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "state",
-            "property": "archive_open",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "evacuation_seal"
+            "logic": "AND",
+            "check": [
+              {"type": "state", "property": "school_choice", "op": "==", "value": "memory"},
+              {"type": "state", "property": "truth_fragments", "op": ">=", "value": 3},
+              {"type": "state", "property": "bell_rung", "op": "==", "value": true},
+              {"type": "state", "property": "archive_open", "op": "==", "value": true},
+              {"type": "state", "property": "clue_tunnel", "op": "==", "value": true}
+            ]
           }
         ]
       }
@@ -2581,62 +2570,36 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Cối xay nước",
         "buttonLabel": "Bắt đầu",
-        "desc": "Cối xay nước đã ngừng hoạt động từ lâu; bánh xe mục kẹt trên trục và cơ cấu truyền động thiếu một chốt kim loại. Hộp bánh răng dưới sàn còn giữ đúng bộ phận thay thế, trong khi mảnh bản đồ ở trường học ghi chú chiều xoay ngược để nhả chốt cửa sập. Đây là lối cơ giới duy nhất nối cối xay với đường hầm dưới đê."
+        "desc": "Cối xay cần chốt truyền động, lò xo và bộ dụng cụ. Tuyến Evidence dùng mảnh bản đồ để xác định chiều xoay; tuyến Memory dựa vào lời khai và dấu vết đường hầm để tìm cách khởi động."
       },
-      "set": {
-        "display": "show",
-        "requirement": true
-      },
+      "set": {"display": "show", "requirement": true},
       "effect": {
         "normal": [],
         "pass": [
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "mill_powered",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "truth_fragments",
-            "value": 1
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Cối xay dừng lại. Cửa sập dưới sàn mở ra lối xuống đường hầm."
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_repair_mill",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "goto",
-            "subtype": "router",
-            "target": "router_watermill_running"
-          }
+          {"type": "set", "subtype": "state", "target": "mill_powered", "value": true},
+          {"type": "set", "subtype": "state", "target": "truth_fragments", "value": 1},
+          {"type": "notify", "subtype": "toast", "level": "success", "text": "Cối xay hoạt động; cửa sập mở lối xuống đường hầm."},
+          {"type": "set", "subtype": "action", "target": "action_repair_mill", "property": "display", "value": "hide"},
+          {"type": "goto", "subtype": "router", "target": "router_watermill_running"}
         ],
         "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warning",
-            "text": "Cối xay chưa thể khởi động: cần cả mảnh bản đồ chỉ chiều xoay và chốt truyền động thay thế."
-          }
+          {"type": "notify", "subtype": "toast", "level": "warning", "text": "Cần chốt truyền động, lò xo và bộ dụng cụ. Mảnh bản đồ hoặc clue đường hầm cung cấp hướng dẫn."}
         ]
       },
       "requirement": {
         "logic": "AND",
         "check": [
-          { "type": "item", "subtype": "inventory", "op": "has", "value": "map_fragment" },
-          { "type": "item", "subtype": "inventory", "op": "has", "value": "clockwork_spring" },
-          { "type": "item", "subtype": "inventory", "op": "has", "value": "radio_toolkit" },
-          { "type": "item", "subtype": "hand", "op": "==", "value": ["mill_gear_pin"] }
+          {"type": "item", "subtype": "inventory", "op": "has", "value": "clockwork_spring"},
+          {"type": "item", "subtype": "inventory", "op": "has", "value": "radio_toolkit"},
+          {"type": "item", "subtype": "hand", "op": "==", "value": ["mill_gear_pin"]},
+          {
+            "logic": "OR",
+            "check": [
+              {"type": "item", "subtype": "inventory", "op": "has", "value": "map_fragment"},
+              {"type": "state", "property": "school_choice", "op": "==", "value": "memory"},
+              {"type": "state", "property": "clue_tunnel", "op": "==", "value": true}
+            ]
+          }
         ]
       }
     },
@@ -2684,70 +2647,37 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Tủ hồ sơ dưới đê",
         "buttonLabel": "Mở khóa",
-        "desc": "Tủ hồ sơ được đặt trong hốc bê tông dưới đê, khóa bằng loại ổ chỉ có thể mở bằng chìa chuyên dụng. Bên trong là hồ sơ vận chuyển, danh sách người qua đường hầm và cuộn phim ghi lại đêm sơ tán. Ba nguồn tư liệu phải được đặt cạnh nhau để xác định bản ghi nào đã bị sửa và điều gì thực sự xảy ra mười bảy năm trước."
+        "desc": "Tủ hồ sơ dưới đê lưu bản ghi sơ tán. Tuyến Evidence cần đối chiếu hồ sơ, danh sách vận chuyển và cuộn phim; tuyến Memory có thể mở tủ bằng chìa khóa và thông tin lối hầm đã khôi phục mà không lấy hồ sơ làm vật chứng trung tâm."
       },
-      "set": {
-        "display": "show",
-        "requirement": true
-      },
+      "set": {"display": "show", "requirement": true},
       "effect": {
         "normal": [],
         "pass": [
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "archive_open",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "truth_fragments",
-            "value": 1
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Hồ sơ xác nhận ngôi làng đã bị sơ tán từ mười bảy năm trước."
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_open_archive",
-            "property": "display",
-            "value": "hide"
-          }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warning",
-            "text": "Chưa thể mở tủ hồ sơ. Cần chìa khóa kho, danh sách vận chuyển lấy từ đường hầm và cuộn phim sơ tán để đối chiếu."
-          }
+          {"type": "set", "subtype": "state", "target": "archive_open", "value": true},
+          {"type": "set", "subtype": "state", "target": "truth_fragments", "value": 1},
+          {"type": "notify", "subtype": "toast", "level": "success", "text": "Tủ hồ sơ mở. Bên trong xác nhận cuộc sơ tán, nhưng cách bạn tiếp cận tài liệu quyết định ý nghĩa của nó."},
+          {"type": "set", "subtype": "action", "target": "action_open_archive", "property": "display", "value": "hide"}
         ]
       },
       "requirement": {
-        "logic": "AND",
+        "logic": "OR",
         "check": [
           {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "archive_key"
+            "logic": "AND",
+            "check": [
+              {"type": "item", "subtype": "inventory", "op": "has", "value": "archive_key"},
+              {"type": "item", "subtype": "inventory", "op": "has", "value": "tunnel_manifest"},
+              {"type": "item", "subtype": "inventory", "op": "has", "value": "evacuation_film"},
+              {"type": "state", "property": "school_choice", "op": "==", "value": "evidence"}
+            ]
           },
           {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "tunnel_manifest"
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "evacuation_film"
+            "logic": "AND",
+            "check": [
+              {"type": "item", "subtype": "inventory", "op": "has", "value": "archive_key"},
+              {"type": "state", "property": "school_choice", "op": "==", "value": "memory"},
+              {"type": "state", "property": "clue_tunnel", "op": "==", "value": true}
+            ]
           }
         ]
       }
