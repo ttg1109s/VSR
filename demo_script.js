@@ -1540,16 +1540,25 @@ export const DEMO_SCRIPT = {
         "requirement": false
       },
       "requirement": {
-        "logic": "AND",
+        "logic": "OR",
         "check": [
           {
-            "type": "stats",
-            "subtype": "characters",
-            "target": "player",
-            "property": "memory",
-            "field": "current",
-            "op": ">=",
-            "value": 5
+            "type": "state",
+            "property": "clue_photo",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "clue_roster",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "clue_tape",
+            "op": "==",
+            "value": true
           }
         ]
       },
@@ -3451,7 +3460,7 @@ export const DEMO_SCRIPT = {
 "action_find_insulated_wire":{"meta":{"title":"Cuộn dây trong hầm","buttonLabel":"Lấy dây","desc":"Sau thùng rượu rỗng là cuộn dây cách nhiệt còn dùng được, có thể thay đoạn dây đứt trong thiết bị cũ."},"set":{"display":"show"},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"insulated_wire"},{"type":"set","subtype":"action","target":"action_find_insulated_wire","property":"display","value":"hide"}]}},
 "action_find_spare_fuse":{"meta":{"title":"Hộp linh kiện trong hầm","buttonLabel":"Lấy cầu chì","desc":"Hộp linh kiện cũ chứa cầu chì sứ dự phòng còn nguyên, được giữ riêng khỏi dây dẫn đã hỏng."},"set":{"display":"show"},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"spare_fuse"},{"type":"set","subtype":"action","target":"action_find_spare_fuse","property":"display","value":"hide"}]}},
 "action_find_clockwork_spring":{"meta":{"title":"Hộp bảo trì cối xay","buttonLabel":"Lấy lò xo","desc":"Hộp bảo trì có lò xo thép còn đàn hồi; cần bộ dụng cụ để mở hộp và lấy linh kiện."},"set":{"display":"show","requirement":true},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"radio_toolkit"}]},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"clockwork_spring"},{"type":"set","subtype":"action","target":"action_find_clockwork_spring","property":"display","value":"hide"}]}},
-"action_restore_radio_signal":{"meta":{"title":"Phục hồi mạch phát thanh","buttonLabel":"Sửa mạch","desc":"Dùng bộ dụng cụ thay đoạn dây hỏng và cầu chì, rồi kiểm tra tiếp điểm của cuộn tinh thể để phục hồi tín hiệu."},"set":{"display":"show","requirement":true},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"radio_toolkit"},{"type":"item","subtype":"inventory","op":"has","value":"radio_crystal"},{"type":"item","subtype":"inventory","op":"has","value":"insulated_wire"},{"type":"item","subtype":"inventory","op":"has","value":"spare_fuse"}]},"effect":{"normal":[],"pass":[{"type":"set","subtype":"state","target":"radio_signal_restored","value":true},{"type":"set","subtype":"action","target":"action_restore_radio_signal","property":"display","value":"hide"},{"type":"notify","subtype":"toast","level":"success","text":"Mạch phát thanh được phục hồi; tín hiệu trong tinh thể có thể dò lại."}]}},
+"action_restore_radio_signal":{"meta":{"title":"Phục hồi mạch phát thanh (tùy chọn)","buttonLabel":"Sửa mạch","desc":"Puzzle phụ tùy chọn: dùng bộ dụng cụ thay đoạn dây hỏng và cầu chì, rồi kiểm tra tiếp điểm của cuộn tinh thể để phục hồi tín hiệu. Việc sửa mạch không khóa tiến trình chính; cuộn tinh thể vẫn đủ để dò tín hiệu dưới ga."},"set":{"display":"show","requirement":true},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"radio_toolkit"},{"type":"item","subtype":"inventory","op":"has","value":"radio_crystal"},{"type":"item","subtype":"inventory","op":"has","value":"insulated_wire"},{"type":"item","subtype":"inventory","op":"has","value":"spare_fuse"}]},"effect":{"normal":[],"pass":[{"type":"set","subtype":"state","target":"radio_signal_restored","value":true},{"type":"set","subtype":"action","target":"action_restore_radio_signal","property":"display","value":"hide"},{"type":"notify","subtype":"toast","level":"success","text":"Mạch phát thanh được phục hồi; tín hiệu trong tinh thể có thể dò lại."}]}},
 "action_overlay_map":{"meta":{"title":"Đối chiếu bản đồ","buttonLabel":"Chồng giấy can","desc":"Chồng giấy can lên mảnh bản đồ. Các đường mờ khớp thành tuyến phụ dẫn đến khu vực dưới chân đê."},"set":{"display":"show","requirement":true},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"map_fragment"},{"type":"item","subtype":"inventory","op":"has","value":"tracing_paper"}]},"effect":{"normal":[],"pass":[{"type":"set","subtype":"state","target":"clue_tunnel","value":true},{"type":"set","subtype":"action","target":"action_overlay_map","property":"display","value":"hide"},{"type":"notify","subtype":"toast","level":"success","text":"Các ký hiệu khớp nhau; tuyến đường phụ đã được ghi nhận."}]}},
 "action_decode_broadcast":{"meta":{"title":"Hộp loa phát thanh","buttonLabel":"Gỡ bỏ","desc":"Hộp loa gắn sau bảng thông báo. Tiếng gọi tên dân làng phát đều đặn; sau bảng mạch là cuộn tinh thể lưu tần số. Cần bộ dụng cụ sửa chữa để mở mạch và lấy linh kiện an toàn."},"set":{"display":"show","requirement":true},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"radio_toolkit"}]},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"radio_crystal"},{"type":"set","subtype":"state","target":"evidence_broadcast","value":true},{"type":"set","subtype":"action","target":"action_decode_broadcast","property":"display","value":"hide"},{"type":"goto","subtype":"router","target":"router_square_broadcast_decoded"}]}},"action_retrieve_well_badge": {
       "meta": {
@@ -3858,7 +3867,8 @@ export const DEMO_SCRIPT = {
         "desc": "Bức ảnh lớp và dấu vết trong sổ điểm danh khiến Linh chịu nói về chiếc ghế thứ mười hai, cái tên bị xóa và ngày sơ tán."
       },
       "set": {
-        "display": "show"
+        "display": "show",
+        "requirement": true
       },
       "effect": {
         "normal": [],
