@@ -1718,7 +1718,7 @@ export const DEMO_SCRIPT = {
     "action_read_notice": {
       "meta": {
         "title": "Bảng thông báo",
-        "buttonLabel": "Đọc",
+        "buttonLabel": "Đọc thông báo",
         "desc": "Bảng thông báo dựng cạnh lối vào quảng trường, nơi dân làng từng xem tin và lịch sơ tán. Danh sách vẫn còn nguyên các dòng chữ, chỉ riêng một cái tên bị cạo sâu đến rách mặt giấy. Dưới chân bảng là chiếc đèn bão phủ bụi, như thể người cuối cùng đọc thông báo đã vội bỏ nó lại giữa chừng."
       },
       "set": {
@@ -1909,7 +1909,7 @@ export const DEMO_SCRIPT = {
     "action_talk_mai": {
   "meta": {
     "title": "Mai",
-    "buttonLabel": "Trò chuyện",
+    "buttonLabel": "Nói chuyện với Mai",
     "desc": "Mai đứng gần quảng trường nhưng luôn giữ khoảng cách với giếng đá. Những gì cô sẵn sàng kể thay đổi theo các manh mối bạn đã tìm được."
   },
   "set": {
@@ -2068,7 +2068,7 @@ export const DEMO_SCRIPT = {
     "action_inspect_well": {
       "meta": {
         "title": "Giếng đá",
-        "buttonLabel": "Quan sát",
+        "buttonLabel": "Kiểm tra giếng",
         "desc": "Giếng đá nằm ở rìa quảng trường, phủ rêu nhưng phần thành phía đông có dấu mới bị cạo sạch. Bốn vạch khắc thẳng hàng giống ký hiệu đo đạc hơn là vết xước ngẫu nhiên; bên cạnh là một rãnh kim loại mảnh, như thể có vật gì từng được móc khỏi hốc đá."
       },
       "set": {
@@ -2107,8 +2107,8 @@ export const DEMO_SCRIPT = {
     },
     "action_use_lantern": {
       "meta": {
-        "title": "Đáy giếng",
-        "buttonLabel": "Rọi đèn",
+        "title": "Ký hiệu dưới đáy giếng",
+        "buttonLabel": "Soi đáy giếng",
         "desc": "Đáy giếng chìm trong lớp nước cũ và bóng tối, nơi mắt thường không thể phân biệt ký hiệu trên thành đá. Những dấu khắc chỉ hiện rõ khi ánh sáng được chiếu đúng góc; chiếc đèn bão nhặt ở quảng trường có thể giúp soi ra phần chữ bị che khuất."
       },
       "set": {
@@ -2179,7 +2179,7 @@ export const DEMO_SCRIPT = {
     "action_talk_hanh": {
   "meta": {
     "title": "Bà Hạnh",
-    "buttonLabel": "Trò chuyện",
+    "buttonLabel": "Nói chuyện với bà Hạnh",
     "desc": "Bà Hạnh quản lý nhà trọ và nắm giữ cuốn sổ ghi khách đến, khách đi. Bà khẳng định nơi này chỉ có sáu phòng, nhưng hành lang phía sau quầy lại có bảy cánh cửa. Sự chênh lệch ấy không giống một nhầm lẫn trong cách đếm; nó giống một căn phòng đã bị cố tình xóa khỏi lời kể."
   },
   "set": {
@@ -2338,7 +2338,7 @@ export const DEMO_SCRIPT = {
     "action_open_guestbook": {
       "meta": {
         "title": "Sổ khách",
-        "buttonLabel": "Mở sổ ghi chép",
+        "buttonLabel": "Đọc sổ khách",
         "desc": "Cuốn sổ khách nằm sau quầy lễ tân, giấy đã ngả vàng và nhiều trang bị nhòe bởi hơi ẩm. Những dòng ghi chép cũ cho thấy khách thường rời đi ngay sau đêm mất điện. Ở trang cuối, tên bạn xuất hiện cạnh ngày đến là ngày mai, nét mực vẫn còn mới dù cuốn sổ đã bị bỏ quên."
       },
       "set": {
@@ -2383,7 +2383,7 @@ export const DEMO_SCRIPT = {
     "action_unlock_cellar": {
       "meta": {
         "title": "Cửa hầm rượu",
-        "buttonLabel": "Mở khóa",
+        "buttonLabel": "Mở khóa hầm",
         "buttonIcon": "lock_open",
         "desc": "Ổ khóa phụ dưới quầy không dẫn ra cửa chính mà mở lối xuống hầm rượu, nơi nhà trọ cất những thứ không muốn khách nhìn thấy. Trên thân khóa có vết khắc của căn phòng thứ bảy; cơ cấu chỉ nhận đúng mật từ trong thánh ca và cần đối chiếu với sổ khách cùng chìa khóa dự phòng."
       },
@@ -2449,7 +2449,7 @@ export const DEMO_SCRIPT = {
     "action_search_cellar": {
       "meta": {
         "title": "Hầm rượu",
-        "buttonLabel": "Tìm kiếm",
+        "buttonLabel": "Khám xét hầm",
         "desc": "Hầm rượu lạnh và gần như trống rỗng, ngoại trừ những thùng gỗ xếp sát tường. Một thùng rỗng có vết kéo lê mới trên nền bụi, phía sau nó là cuộn băng được bọc trong giấy dầu. Ngày ghi trên nhãn trùng với đêm mất điện mà các nhân chứng đều né tránh nhắc đến."
       },
       "set": {
@@ -2494,7 +2494,7 @@ export const DEMO_SCRIPT = {
     "action_read_hymn": {
   "meta": {
     "title": "Bản thánh ca",
-    "buttonLabel": "Giải mã",
+    "buttonLabel": "Đọc thánh ca",
     "desc": "Bản thánh ca nằm trên giá gỗ trong gian cầu nguyện. Mực ở vài dòng đã nhạt, nhưng chữ cái đầu mỗi dòng vẫn được viết đậm bất thường; ghép chúng lại thành cụm “IM LANG”. Một dòng khác bị gạch dưới nhiều lần, nhắc đến ba hồi chuông và sự im lặng sau đó."
   },
   "set": {
@@ -2568,7 +2568,7 @@ export const DEMO_SCRIPT = {
     "action_talk_keeper": {
       "meta": {
         "title": "Người giữ nhà nguyện",
-        "buttonLabel": "Trò chuyện",
+        "buttonLabel": "Nói chuyện với người giữ nhà nguyện",
         "desc": "Người giữ nhà nguyện đã ở đây từ trước khi chuông ngừng ngân. Ông không phủ nhận việc cơ cấu chuông bị tháo rời, nhưng luôn nói rằng tiếng chuông không chỉ để báo giờ. Theo ông, người giữ chuông phải chấp nhận điều đã xảy ra trước khi có thể đánh thức những ký ức bị chôn vùi."
       },
       "set": {
@@ -2587,7 +2587,7 @@ export const DEMO_SCRIPT = {
     },
     "action_solve_bell": {
       "meta": {
-        "title": "Mặt đồng hồ",
+        "title": "Mã trên mặt đồng hồ",
         "buttonLabel": "Giải mã",
         "desc": "Mặt đồng hồ trên tháp đã dừng ở một thời điểm không khớp với bất kỳ chiếc đồng hồ nào trong làng. Dưới lớp bụi có mã bốn chữ số được khắc sâu, ngay cạnh dấu vít cho thấy quả lắc từng bị tháo khỏi cơ cấu. Con số này liên hệ trực tiếp đến thời khắc dân làng biến mất."
       },
@@ -2634,7 +2634,7 @@ export const DEMO_SCRIPT = {
     "action_ring_bell": {
       "meta": {
         "title": "Chuông nhà nguyện",
-        "buttonLabel": "Rung chuông ba lần",
+        "buttonLabel": "Rung chuông ba hồi",
         "desc": "Quả chuông lớn vẫn treo trên tháp, nhưng cơ cấu truyền lực đã bị tháo rời và để lại những đầu dây đồng trơ ra. Quả lắc được cất riêng, còn trang ghi chú trong thánh ca mô tả thứ tự tín hiệu: ba hồi để báo kết thúc sơ tán, tuyệt đối không có hồi thứ tư. Chỉ khi các bộ phận được lắp đúng, chuông mới có thể vang trở lại."
       },
       "set": {
@@ -2717,7 +2717,7 @@ export const DEMO_SCRIPT = {
     "action_check_desk": {
       "meta": {
         "title": "Ngăn bàn giáo viên",
-        "buttonLabel": "Kiểm tra",
+        "buttonLabel": "Kiểm tra ngăn bàn",
         "desc": "Ngăn bàn giáo viên chứa một danh sách lớp đã bị sửa bằng mực đen. Bên cạnh là bức ảnh tập thể bị xé khỏi phần giữa. Danh sách và ảnh mâu thuẫn: một thứ có thể chứng minh sĩ số, thứ còn lại chỉ giữ dấu vết về người đã bị xóa."
       },
       "set": {"display": "show"},
@@ -2733,7 +2733,7 @@ export const DEMO_SCRIPT = {
     "action_decode_roster": {
       "meta": {
         "title": "Sơ đồ chỗ ngồi",
-        "buttonLabel": "Đối chiếu",
+        "buttonLabel": "Đối chiếu sơ đồ",
         "desc": "Đối chiếu sơ đồ chỗ ngồi với bản sao sổ điểm danh được bảo toàn. Khoảng trống giữa các dãy bàn trùng với vị trí học sinh thứ mười hai."
       },
       "set": {"display": "show", "requirement": true},
@@ -2758,7 +2758,7 @@ export const DEMO_SCRIPT = {
     "action_follow_marks": {
   "meta": {
     "title": "Dấu sơn trong rừng",
-    "buttonLabel": "Theo dấu",
+    "buttonLabel": "Lần theo dấu sơn",
     "desc": "Các vệt sơn trên thân thông xuất hiện theo cặp, có chỗ bị rêu che gần hết. Chúng không phải dấu đánh dấu đường đi thông thường: khoảng cách giữa các vệt thay đổi theo hướng rẽ và dẫn đến một khoảng đất trống khuất sau sườn dốc. Từ đó có thể nhìn thấy vòng cọc gỗ giữa rừng."
   },
   "set": {
@@ -2832,7 +2832,7 @@ export const DEMO_SCRIPT = {
     "action_maze_path": {
       "meta": {
         "title": "Mê cung trong rừng",
-        "buttonLabel": "Tìm đường",
+        "buttonLabel": "Giải mê cung",
         "desc": "Lối mòn trong rừng thay đổi vị trí mỗi khi bạn quay đi, khiến các dấu cây quen thuộc không còn đáng tin. La bàn của người dẫn đường có khắc một tuyến ô vuông cố định; đường đúng phải nối các ô liền kề từ cổng rừng đến khoảng đất trống, không được tự ý cắt qua những ô không có dấu."
       },
       "set": {
@@ -2892,7 +2892,7 @@ export const DEMO_SCRIPT = {
     "action_inspect_stakes": {
       "meta": {
         "title": "Vòng cọc gỗ",
-        "buttonLabel": "Đếm cọc",
+        "buttonLabel": "Kiểm tra vòng cọc",
         "desc": "Mười hai cọc gỗ cắm thành một vòng cung trên nền đất cứng. Ánh sáng chỉ tạo ra mười một chiếc bóng, dù không có cọc nào bị gãy hay nghiêng khỏi mặt đất. Khoảng trống không bóng nằm đúng vị trí trung tâm của vòng cung, như thể nơi đó dành cho một người mà ngôi làng không còn nhớ."
       },
       "set": {
@@ -2932,7 +2932,7 @@ export const DEMO_SCRIPT = {
     "action_find_hidden_box": {
       "meta": {
         "title": "Hộp chôn dưới đất",
-        "buttonLabel": "Mở hộp",
+        "buttonLabel": "Đào và mở hộp",
         "desc": "Một hộp gỗ được chôn gần vòng cọc, nắp đóng kín và trên mặt có dấu niêm phong của đội sơ tán. Phù hiệu kim loại tìm thấy dưới giếng mang cùng ký hiệu, cho biết đây là vật chứng được chôn có chủ ý chứ không phải đồ thất lạc. Bên trong hộp là những mảnh ảnh gia đình bị xé rời, cần ghép lại để nhận diện đứa trẻ."
       },
       "set": {
@@ -2998,7 +2998,7 @@ export const DEMO_SCRIPT = {
     "action_repair_mill": {
       "meta": {
         "title": "Cối xay nước",
-        "buttonLabel": "Bắt đầu",
+        "buttonLabel": "Sửa cối xay",
         "desc": "Cối xay cần chốt truyền động, lò xo và bộ dụng cụ. Chất lượng các linh kiện phải đạt mức tối thiểu; dấu đường hầm từ Memory hoặc mảnh bản đồ từ Evidence đều cung cấp hướng dẫn."
       },
       "set": {"display": "show", "requirement": true},
@@ -3028,7 +3028,7 @@ export const DEMO_SCRIPT = {
     "action_inspect_tunnel_names": {
   "meta": {
     "title": "Danh sách tên trên tường đường hầm",
-    "buttonLabel": "Đọc dấu khắc",
+    "buttonLabel": "Đọc tên trên tường",
     "desc": "Các bức tường đường hầm phủ kín tên người và ngày tháng. Những dòng chữ được sắp theo thứ tự biến mất chứ không theo họ tên; một số đoạn đã bị cạo sửa, đặc biệt ở cuối danh sách. Đối chiếu các tên cho thấy có mười hai người, không phải mười một."
   },
   "set": {
@@ -3102,7 +3102,7 @@ export const DEMO_SCRIPT = {
     "action_open_archive": {
       "meta": {
         "title": "Tủ hồ sơ dưới đê",
-        "buttonLabel": "Mở khóa",
+        "buttonLabel": "Mở tủ hồ sơ",
         "desc": "Tủ hồ sơ dưới đê lưu bản ghi sơ tán. Sau khi chọn phương thức điều tra và khôi phục dấu đường hầm, chìa khóa cho phép tiếp cận kho tư liệu."
       },
       "set": {"display": "show", "requirement": true},
@@ -3127,7 +3127,7 @@ export const DEMO_SCRIPT = {
     "action_confront_voice": {
       "meta": {
         "title": "Tín hiệu dưới ga",
-        "buttonLabel": "Đối thoại",
+        "buttonLabel": "Đối thoại với tín hiệu",
         "desc": "Từ đường ray vang lên một tín hiệu méo tiếng, lặp lại nhịp phát thanh từng phát ở quảng trường. Cuộn tinh thể thu sóng lấy từ hộp loa có thể dò lại đúng tần số để tách giọng nói khỏi nhiễu. Đằng sau tín hiệu là một câu hỏi không chỉ về việc ai được cứu, mà còn về ký ức nào sẽ được giữ lại."
       },
       "set": {
@@ -3166,8 +3166,8 @@ export const DEMO_SCRIPT = {
     },
     "action_choose_fate": {
       "meta": {
-        "title": "Sự giải thoát",
-        "buttonLabel": "Chọn kết thúc",
+        "title": "Quyết định số phận",
+        "buttonLabel": "Chọn kết cục",
         "desc": "Sân ga 03:17 là điểm cuối của tuyến sơ tán và cũng là nơi những lời kể rời rạc hội tụ. Những gì được tìm thấy trong giếng, nhà nguyện, trường học và kho hồ sơ cho thấy ký ức của làng đã bị thay đổi có chủ đích. Quyết định ở đây không đơn thuần là chọn một lối ra; nó xác định liệu sự thật được trả lại, bị chôn vùi hay tiếp tục tồn tại như một tiếng vọng."
       },
       "set": {
@@ -3204,7 +3204,7 @@ export const DEMO_SCRIPT = {
     },
     "action_choose_fate_memory": {
   "meta": {
-    "title": "Sự giải thoát — tuyến ký ức",
+    "title": "Giải thoát — tuyến ký ức",
     "buttonLabel": "Giải phóng",
     "desc": "Dựa trên ký ức nhân chứng, dấu đường hầm và những gì đã khôi phục, bạn chọn giải phóng người bị mắc kẹt."
   },
@@ -3281,7 +3281,7 @@ export const DEMO_SCRIPT = {
     "action_ending_bury": {
       "meta": {
         "title": "Hồ sơ sơ tán",
-        "buttonLabel": "Phá hủy",
+        "buttonLabel": "Phá hủy hồ sơ",
         "desc": "Hồ sơ sơ tán nằm trước mặt bạn, ghi lại những cái tên mà ngôi làng đã cố quên. Đốt hoặc phá hủy chúng sẽ giữ nguyên sự yên ổn giả tạo hiện tại, nhưng cũng xóa đi cơ hội để những người bị loại khỏi ký ức được thừa nhận. Đây là lựa chọn khép lại sự việc bằng cách chôn sự thật thêm một lần nữa."
       },
       "set": {
@@ -3327,7 +3327,7 @@ export const DEMO_SCRIPT = {
     "action_ending_echo": {
       "meta": {
         "title": "Tiếng vọng thứ mười hai",
-        "buttonLabel": "Ở lại",
+        "buttonLabel": "Ở lại và lắng nghe",
         "desc": "Tiếng vọng thứ mười hai không thuộc về bản ghi phát thanh thông thường. Nó gắn với người đã bị xóa khỏi danh sách và vẫn còn hiện diện trong ký ức của một số nhân chứng. Ở lại đồng nghĩa với việc chấp nhận nghe hết câu chuyện, kể cả khi ranh giới giữa người sống và ký ức không còn rõ ràng."
       },
       "set": {
@@ -3446,7 +3446,7 @@ export const DEMO_SCRIPT = {
     "action_enter_well": {
       "meta": {
         "title": "Giếng đá",
-        "buttonLabel": "Đi đến",
+        "buttonLabel": "Đi đến giếng",
         "buttonIcon": "water_drop",
         "desc": "Giếng đá nằm sát quảng trường, phủ rêu và có những vết khắc mới trên thành. Từ mặt nước vọng lên tiếng gõ đều đặn, dù không thấy ai ở dưới. Con đường ngắn từ bảng thông báo dẫn thẳng đến nơi dấu vết của người thứ mười hai bị che giấu."
       },
@@ -3467,7 +3467,7 @@ export const DEMO_SCRIPT = {
     "action_enter_tower": {
       "meta": {
         "title": "Tháp chuông",
-        "buttonLabel": "Lên tầng trên",
+        "buttonLabel": "Lên tháp chuông",
         "buttonIcon": "stairs",
         "desc": "Cầu thang hẹp dẫn từ gian cầu nguyện lên tháp chuông. Trên đó treo quả chuông đã câm lặng suốt mười bảy năm, bên cạnh là mặt đồng hồ dừng ở thời điểm liên quan đến vụ mất tích. Cơ cấu bên trong vẫn còn dấu vết của lần tháo dỡ có chủ ý."
       },
@@ -3488,7 +3488,7 @@ export const DEMO_SCRIPT = {
     "action_enter_clearing": {
       "meta": {
         "title": "Khoảng đất trống",
-        "buttonLabel": "Đi đến",
+        "buttonLabel": "Đi đến khoảng đất trống",
         "buttonIcon": "park",
         "desc": "Khoảng đất trống nằm sâu trong rừng, nơi các vệt sơn hội tụ thành một vòng cọc gỗ. Mười hai cọc được dựng thành hình cung, cạnh đó là dấu đất mới xới cho thấy có vật chứng bị chôn xuống."
       },
@@ -3509,7 +3509,7 @@ export const DEMO_SCRIPT = {
     "action_travel_inn": {
       "meta": {
         "title": "Nhà trọ Bà Hạnh",
-        "buttonLabel": "Di chuyển đến",
+        "buttonLabel": "Đi đến nhà trọ",
         "buttonIcon": "hotel",
         "desc": "Nhà trọ Bà Hạnh nằm trên con đường lát đá rời quảng trường. Đây là nơi lưu cuốn sổ khách, lời khai về căn phòng thứ bảy và lối xuống hầm rượu bị giấu sau quầy lễ tân."
       },
@@ -3530,7 +3530,7 @@ export const DEMO_SCRIPT = {
     "action_travel_chapel": {
       "meta": {
         "title": "Nhà nguyện",
-        "buttonLabel": "Di chuyển đến",
+        "buttonLabel": "Đi đến nhà nguyện",
         "buttonIcon": "church",
         "desc": "Nhà nguyện nằm cuối con đường nơi tiếng chuông đã im bặt từ mười bảy năm trước. Bản thánh ca trong gian cầu nguyện giữ mật từ và quy tắc ba hồi chuông cần thiết để hiểu chuyện gì đã xảy ra."
       },
@@ -3551,7 +3551,7 @@ export const DEMO_SCRIPT = {
     "action_travel_school": {
       "meta": {
         "title": "Trường học bỏ hoang",
-        "buttonLabel": "Di chuyển đến",
+        "buttonLabel": "Đi đến trường học",
         "buttonIcon": "school",
         "desc": "Trường tiểu học bỏ hoang nằm bên con đường có những dấu chân nhỏ dẫn vào lớp số 3. Hồ sơ lớp học và bức ảnh bị xé là những bằng chứng quan trọng về người thứ mười hai."
       },
@@ -3572,7 +3572,7 @@ export const DEMO_SCRIPT = {
     "action_enter_classroom_03": {
       "meta": {
         "title": "Lớp học số 3",
-        "buttonLabel": "Vào lớp",
+        "buttonLabel": "Vào lớp học",
         "buttonIcon": "door_open",
         "desc": "Theo dấu chân nhỏ dọc hành lang, bạn bước vào lớp học số 3. Những dãy bàn thấp phủ bụi vẫn được xếp ngay ngắn. Bục giảng, bảng đen, cửa sổ và chiếc đồng hồ đứng im hiện ra trong ánh sáng xám lọt qua rèm cửa."
       },
@@ -3593,7 +3593,7 @@ export const DEMO_SCRIPT = {
     "action_examine_blackboard": {
       "meta": {
         "title": "Bảng đen",
-        "buttonLabel": "Quan sát",
+        "buttonLabel": "Kiểm tra bảng đen",
         "desc": "Bạn tiến lại gần bảng đen. Những vệt phấn mờ nằm dưới lớp bụi, nhưng từ khoảng cách này chưa thể đọc được nội dung. Tập trung quan sát bảng để nhìn rõ các dấu vết."
       },
       "set": {
@@ -3613,7 +3613,7 @@ export const DEMO_SCRIPT = {
     "action_read_blackboard": {
       "meta": {
         "title": "Những dòng chữ bị cạo",
-        "buttonLabel": "Đọc dấu phấn",
+        "buttonLabel": "Đọc dòng chữ",
         "desc": "Bạn nghiêng người nhìn sát mặt bảng. Dưới những vệt lau chồng lên nhau vẫn còn nét phấn của một danh sách học sinh. Một vị trí bị cạo mạnh đến mức mặt bảng xước thành những đường trắng. Đây là hành động xóa dấu vết có chủ ý, không phải bụi thời gian."
       },
       "set": {
@@ -3659,7 +3659,7 @@ export const DEMO_SCRIPT = {
     "action_inspect_student_seat": {
       "meta": {
         "title": "Dãy bàn học sinh",
-        "buttonLabel": "Kiểm tra",
+        "buttonLabel": "Kiểm tra bàn học",
         "desc": "Ở dãy bàn gần cuối lớp, một chiếc ghế bị kéo lệch khỏi hàng. Mặt bàn phía trước có những vết khắc nhỏ, trong đó số mười hai bị cào đi nhiều lần. Bụi quanh chân ghế cho thấy nó từng được di chuyển sau khi lớp học đã bỏ trống.",
       },
       "set": {
@@ -3693,7 +3693,7 @@ export const DEMO_SCRIPT = {
     "action_inspect_class_clock": {
       "meta": {
         "title": "Đồng hồ treo tường",
-        "buttonLabel": "Kiểm tra",
+        "buttonLabel": "Kiểm tra đồng hồ",
         "desc": "Chiếc đồng hồ tròn đã ngừng chạy. Kim phút dừng ở số mười bảy, còn kim giờ nằm sát số ba. Mặt kính không vỡ và bộ kim không bị cong; đồng hồ có vẻ đã bị dừng đúng vào 03:17.",
       },
       "set": {
@@ -3727,7 +3727,7 @@ export const DEMO_SCRIPT = {
     "action_inspect_evacuation_notice": {
       "meta": {
         "title": "Thông báo sơ tán",
-        "buttonLabel": "Đọc",
+        "buttonLabel": "Đọc thông báo",
         "desc": "Tờ thông báo cũ ghim cạnh cửa sổ ghi ngày sơ tán của trường. Phần danh sách lớp đã nhòe nước, nhưng dòng tổng sĩ số vẫn đọc được: mười hai học sinh. Mép giấy có dấu ghim thứ hai, như thể từng có một phụ lục bị tháo đi.",
       },
       "set": {
@@ -3761,7 +3761,7 @@ export const DEMO_SCRIPT = {
     "action_travel_forest": {
       "meta": {
         "title": "Rừng thông phía Bắc",
-        "buttonLabel": "Di chuyển đến",
+        "buttonLabel": "Đi đến rừng",
         "buttonIcon": "forest",
         "desc": "Rừng thông phía Bắc bắt đầu ở rìa làng, nơi những vệt sơn lặp lại trên thân cây. Con đường ở đây không ổn định, nhưng các dấu mốc dẫn đến khoảng đất nghi lễ và tuyến xuống chân đê."
       },
@@ -3782,7 +3782,7 @@ export const DEMO_SCRIPT = {
     "action_reach_station": {
       "meta": {
         "title": "Ga tàu 03:17",
-        "buttonLabel": "Đi tới",
+        "buttonLabel": "Đi đến ga tàu",
         "buttonIcon": "train",
         "desc": "Ga tàu 03:17 không xuất hiện trên bản đồ làng và chỉ hiện ra ở cuối tuyến đường hầm. Những manh mối về cuộc sơ tán, danh sách vận chuyển và kho hồ sơ phải được ghép lại trước khi có thể tìm thấy sân ga."
       },
@@ -3814,7 +3814,7 @@ export const DEMO_SCRIPT = {
     },
     "action_reach_station_memory": {
   "meta": {
-    "title": "Ga tàu 03:17 — tuyến ký ức",
+    "title": "Ga tàu 03:17 — ký ức",
     "buttonLabel": "Theo dấu ký ức",
     "buttonIcon": "train",
     "desc": "Tuyến Memory dùng lời khai và dấu đường hầm thay cho danh sách vận chuyển và cuộn phim."
@@ -3879,8 +3879,8 @@ export const DEMO_SCRIPT = {
 },
     "action_descend_tunnel": {
       "meta": {
-        "title": "Cửa sập cối xay",
-        "buttonLabel": "Mở",
+        "title": "Đường hầm dưới cối xay",
+        "buttonLabel": "Mở cửa sập",
         "buttonIcon": "south",
         "desc": "Cửa sập nằm dưới sàn cối xay, nối phòng máy với đường hầm dưới chân đê. Một hệ đối trọng giữ cánh cửa khóa chặt khi bánh xe đứng yên; khi trục truyền động hoạt động, sức kéo mới đủ nâng cửa và để lộ bậc thang đi xuống."
       },
@@ -3924,25 +3924,25 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "action_find_radio_toolkit":{"meta":{"title":"Hộp dụng cụ trong lớp","buttonLabel":"Lấy dụng cụ","desc":"Trong ngăn tủ giáo viên có bộ tua vít cách điện, kìm và đầu dò mạch, đủ để tháo thiết bị mà không làm hỏng linh kiện."},"set":{"display":"show"},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"radio_toolkit"},{"type":"set","subtype":"action","target":"action_find_radio_toolkit","property":"display","value":"hide"}]}},
-"action_find_tracing_paper":{"meta":{"title":"Ngăn bàn giáo viên","buttonLabel":"Lấy giấy can","desc":"Tờ giấy can sạch được kẹp cạnh bản vẽ sơ đồ cũ, có thể chép chồng ký hiệu để đối chiếu bản đồ."},"set":{"display":"show"},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"tracing_paper"},{"type":"set","subtype":"action","target":"action_find_tracing_paper","property":"display","value":"hide"}]}},
-"action_find_inspection_loupe":{"meta":{"title":"Hộp dụng cụ giáo viên","buttonLabel":"Lấy kính","desc":"Kính phóng đại nhỏ trong hộp bảo quản dụng cụ có thể giúp đọc dấu khắc và nét sửa trên vật chứng."},"set":{"display":"show"},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"inspection_loupe"},{"type":"set","subtype":"action","target":"action_find_inspection_loupe","property":"display","value":"hide"}]}},
-"action_find_insulated_wire":{"meta":{"title":"Cuộn dây trong hầm","buttonLabel":"Lấy dây","desc":"Sau thùng rượu rỗng là cuộn dây cách nhiệt còn dùng được, có thể thay đoạn dây đứt trong thiết bị cũ."},"set":{"display":"show"},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"insulated_wire"},{"type":"set","subtype":"action","target":"action_find_insulated_wire","property":"display","value":"hide"}]}},
-"action_find_spare_fuse":{"meta":{"title":"Hộp linh kiện trong hầm","buttonLabel":"Lấy cầu chì","desc":"Hộp linh kiện cũ chứa cầu chì sứ dự phòng còn nguyên, được giữ riêng khỏi dây dẫn đã hỏng."},"set":{"display":"show"},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"spare_fuse"},{"type":"set","subtype":"action","target":"action_find_spare_fuse","property":"display","value":"hide"}]}},
-"action_find_clockwork_spring":{"meta":{"title":"Hộp bảo trì cối xay","buttonLabel":"Lấy lò xo","desc":"Hộp bảo trì có lò xo thép còn đàn hồi; cần bộ dụng cụ để mở hộp và lấy linh kiện."},"set":{"display":"show","requirement":true},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"radio_toolkit"}]},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"clockwork_spring"},{"type":"set","subtype":"action","target":"action_find_clockwork_spring","property":"display","value":"hide"}]}},
-"action_restore_radio_signal":{"meta":{"title":"Phục hồi mạch phát thanh (tùy chọn)","buttonLabel":"Sửa mạch","desc":"Puzzle phụ tùy chọn: dùng bộ dụng cụ, dây, cầu chì và tinh thể có chất lượng tối thiểu để phục hồi tín hiệu. Việc sửa mạch không khóa tiến trình chính; cuộn tinh thể vẫn đủ để dò tín hiệu dưới ga."},"set":{"display":"show","requirement":true},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"radio_toolkit"},{"type":"item","subtype":"inventory","op":"has","value":"radio_crystal"},{"type":"item","subtype":"inventory","op":"has","value":"insulated_wire"},{"type":"item","subtype":"inventory","op":"has","value":"spare_fuse"},
+    "action_find_radio_toolkit":{"meta":{"title":"Bộ dụng cụ sửa chữa","buttonLabel":"Lấy bộ dụng cụ","desc":"Trong ngăn tủ giáo viên có bộ tua vít cách điện, kìm và đầu dò mạch, đủ để tháo thiết bị mà không làm hỏng linh kiện."},"set":{"display":"show"},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"radio_toolkit"},{"type":"set","subtype":"action","target":"action_find_radio_toolkit","property":"display","value":"hide"}]}},
+"action_find_tracing_paper":{"meta":{"title":"Giấy can","buttonLabel":"Lấy giấy can","desc":"Tờ giấy can sạch được kẹp cạnh bản vẽ sơ đồ cũ, có thể chép chồng ký hiệu để đối chiếu bản đồ."},"set":{"display":"show"},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"tracing_paper"},{"type":"set","subtype":"action","target":"action_find_tracing_paper","property":"display","value":"hide"}]}},
+"action_find_inspection_loupe":{"meta":{"title":"Kính phóng đại","buttonLabel":"Lấy kính phóng đại","desc":"Kính phóng đại nhỏ trong hộp bảo quản dụng cụ có thể giúp đọc dấu khắc và nét sửa trên vật chứng."},"set":{"display":"show"},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"inspection_loupe"},{"type":"set","subtype":"action","target":"action_find_inspection_loupe","property":"display","value":"hide"}]}},
+"action_find_insulated_wire":{"meta":{"title":"Cuộn dây cách nhiệt","buttonLabel":"Lấy cuộn dây","desc":"Sau thùng rượu rỗng là cuộn dây cách nhiệt còn dùng được, có thể thay đoạn dây đứt trong thiết bị cũ."},"set":{"display":"show"},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"insulated_wire"},{"type":"set","subtype":"action","target":"action_find_insulated_wire","property":"display","value":"hide"}]}},
+"action_find_spare_fuse":{"meta":{"title":"Cầu chì dự phòng","buttonLabel":"Lấy cầu chì","desc":"Hộp linh kiện cũ chứa cầu chì sứ dự phòng còn nguyên, được giữ riêng khỏi dây dẫn đã hỏng."},"set":{"display":"show"},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"spare_fuse"},{"type":"set","subtype":"action","target":"action_find_spare_fuse","property":"display","value":"hide"}]}},
+"action_find_clockwork_spring":{"meta":{"title":"Lò xo cơ khí","buttonLabel":"Lấy lò xo","desc":"Hộp bảo trì có lò xo thép còn đàn hồi; cần bộ dụng cụ để mở hộp và lấy linh kiện."},"set":{"display":"show","requirement":true},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"radio_toolkit"}]},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"clockwork_spring"},{"type":"set","subtype":"action","target":"action_find_clockwork_spring","property":"display","value":"hide"}]}},
+"action_restore_radio_signal":{"meta":{"title":"Khôi phục tín hiệu phát thanh (tùy chọn)","buttonLabel":"Khôi phục tín hiệu","desc":"Puzzle phụ tùy chọn: dùng bộ dụng cụ, dây, cầu chì và tinh thể có chất lượng tối thiểu để phục hồi tín hiệu. Việc sửa mạch không khóa tiến trình chính; cuộn tinh thể vẫn đủ để dò tín hiệu dưới ga."},"set":{"display":"show","requirement":true},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"radio_toolkit"},{"type":"item","subtype":"inventory","op":"has","value":"radio_crystal"},{"type":"item","subtype":"inventory","op":"has","value":"insulated_wire"},{"type":"item","subtype":"inventory","op":"has","value":"spare_fuse"},
           {"type":"stats","subtype":"item","target":"radio_toolkit","property":"condition","field":"current","op":">=","value":3},
           {"type":"stats","subtype":"item","target":"insulated_wire","property":"condition","field":"current","op":">=","value":3},
           {"type":"stats","subtype":"item","target":"spare_fuse","property":"capacity","field":"current","op":">=","value":3},
           {"type":"stats","subtype":"item","target":"radio_crystal","property":"signal","field":"current","op":">=","value":3}]},"effect":{"normal":[],"pass":[{"type":"set","subtype":"state","target":"radio_signal_restored","value":true},{"type":"set","subtype":"action","target":"action_restore_radio_signal","property":"display","value":"hide"},{"type":"notify","subtype":"toast","level":"success","text":"Mạch phát thanh được phục hồi; tín hiệu trong tinh thể có thể dò lại."}]}},
-"action_overlay_map":{"meta":{"title":"Đối chiếu bản đồ","buttonLabel":"Chồng giấy can","desc":"Chồng giấy can lên mảnh bản đồ và kiểm tra các ký hiệu. Độ bao phủ bản đồ, độ chính xác giấy can và kính phải đạt mức tối thiểu để xác nhận tuyến phụ dẫn đến khu vực dưới chân đê."},"set":{"display":"show","requirement":true},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"map_fragment"},{"type":"item","subtype":"inventory","op":"has","value":"tracing_paper"},{"type":"item","subtype":"inventory","op":"has","value":"inspection_loupe"},{"type":"state","property":"clue_seat_mark","op":"==","value":true},{"type":"state","property":"clue_class_clock","op":"==","value":true},
+"action_overlay_map":{"meta":{"title":"Đối chiếu bản đồ","buttonLabel":"Đối chiếu bản đồ","desc":"Chồng giấy can lên mảnh bản đồ và kiểm tra các ký hiệu. Độ bao phủ bản đồ, độ chính xác giấy can và kính phải đạt mức tối thiểu để xác nhận tuyến phụ dẫn đến khu vực dưới chân đê."},"set":{"display":"show","requirement":true},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"map_fragment"},{"type":"item","subtype":"inventory","op":"has","value":"tracing_paper"},{"type":"item","subtype":"inventory","op":"has","value":"inspection_loupe"},{"type":"state","property":"clue_seat_mark","op":"==","value":true},{"type":"state","property":"clue_class_clock","op":"==","value":true},
           {"type":"stats","subtype":"item","target":"map_fragment","property":"coverage","field":"current","op":">=","value":3},
           {"type":"stats","subtype":"item","target":"tracing_paper","property":"precision","field":"current","op":">=","value":3},
           {"type":"stats","subtype":"item","target":"inspection_loupe","property":"precision","field":"current","op":">=","value":3}]},"effect":{"normal":[],"pass":[{"type":"set","subtype":"state","target":"clue_tunnel","value":true},{"type":"set","subtype":"action","target":"action_overlay_map","property":"display","value":"hide"},{"type":"notify","subtype":"toast","level":"success","text":"Các ký hiệu khớp nhau; tuyến đường phụ đã được ghi nhận."}]}},
-"action_decode_broadcast":{"meta":{"title":"Hộp loa phát thanh","buttonLabel":"Gỡ bỏ","desc":"Hộp loa gắn sau bảng thông báo. Tiếng gọi tên dân làng phát đều đặn; sau bảng mạch là cuộn tinh thể lưu tần số. Cần bộ dụng cụ sửa chữa để mở mạch và lấy linh kiện an toàn."},"set":{"display":"show","requirement":true},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"radio_toolkit"}]},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"radio_crystal"},{"type":"set","subtype":"state","target":"evidence_broadcast","value":true},{"type":"set","subtype":"action","target":"action_decode_broadcast","property":"display","value":"hide"},{"type":"goto","subtype":"router","target":"router_square_broadcast_decoded"}]}},"action_retrieve_well_badge": {
+"action_decode_broadcast":{"meta":{"title":"Mạch phát thanh","buttonLabel":"Lấy tinh thể","desc":"Hộp loa gắn sau bảng thông báo. Tiếng gọi tên dân làng phát đều đặn; sau bảng mạch là cuộn tinh thể lưu tần số. Cần bộ dụng cụ sửa chữa để mở mạch và lấy linh kiện an toàn."},"set":{"display":"show","requirement":true},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"radio_toolkit"}]},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"radio_crystal"},{"type":"set","subtype":"state","target":"evidence_broadcast","value":true},{"type":"set","subtype":"action","target":"action_decode_broadcast","property":"display","value":"hide"},{"type":"goto","subtype":"router","target":"router_square_broadcast_decoded"}]}},"action_retrieve_well_badge": {
       "meta": {
-        "title": "Phù hiệu dưới giếng",
-        "buttonLabel": "Lấy lại",
+        "title": "Phù hiệu đội sơ tán",
+        "buttonLabel": "Lấy phù hiệu",
         "desc": "Một vật kim loại mắc trong hốc đá dưới mực nước cũ, chỉ lộ ra sau khi ánh đèn bão soi đúng góc và làm hiện đường viền của hốc. Mép phù hiệu bị bám cặn nhưng ký hiệu đội sơ tán vẫn còn nguyên, trùng với dấu niêm phong trên chiếc hộp chôn trong rừng."
       },
       "set": {
@@ -3997,8 +3997,8 @@ export const DEMO_SCRIPT = {
     },
     "action_find_spare_key": {
       "meta": {
-        "title": "Ngăn kéo sau quầy lễ tân",
-        "buttonLabel": "Tìm chìa khóa",
+        "title": "Chìa khóa phòng thứ bảy",
+        "buttonLabel": "Lấy chìa khóa",
         "desc": "Ngăn kéo sau quầy lễ tân bị khóa riêng, khác với các ngăn chứa sổ sách thông thường. Bên trong có một chìa khóa đồng mang số bảy; nó mở cánh cửa không xuất hiện trên sơ đồ nhà trọ và giải thích vì sao Bà Hạnh luôn khẳng định chỉ có sáu phòng."
       },
       "set": {
@@ -4035,7 +4035,7 @@ export const DEMO_SCRIPT = {
     },
     "action_find_evacuation_film": {
       "meta": {
-        "title": "Hộp thiếc trong hầm rượu",
+        "title": "Cuộn phim sơ tán",
         "buttonLabel": "Lấy cuộn phim",
         "desc": "Hộp thiếc nằm khuất sau kệ rượu, được bọc để tránh ẩm và bụi. Cuộn phim bên trong ghi lại đám đông tập trung ở bờ đê trước đêm mất điện, cung cấp hình ảnh đối chứng cho danh sách vận chuyển và lời kể trong cuộn băng."
       },
@@ -4073,8 +4073,8 @@ export const DEMO_SCRIPT = {
     },
     "action_find_hymn_note": {
       "meta": {
-        "title": "Trang ghi chú trong thánh ca",
-        "buttonLabel": "Tìm kiếm",
+        "title": "Ghi chú trong thánh ca",
+        "buttonLabel": "Tìm ghi chú",
         "desc": "Phần gáy bản thánh ca dày hơn các trang còn lại và có đường chỉ khâu không đồng màu. Bên trong là một trang ghi chú được gấp nhỏ, giải thích ý nghĩa của ba hồi chuông và vì sao hồi thứ tư không được vang lên."
       },
       "set": {
@@ -4112,7 +4112,7 @@ export const DEMO_SCRIPT = {
     "action_recover_bell_wire": {
       "meta": {
         "title": "Dây đồng chuông",
-        "buttonLabel": "Lấy lại",
+        "buttonLabel": "Thu hồi dây đồng",
         "desc": "Đoạn dây đồng còn mắc quanh bánh răng của cơ cấu chuông, một đầu bị tuột khỏi trục truyền lực. Dấu xoắn trên dây cho thấy nó từng được tháo ra chứ không tự đứt; đoạn dây này có thể nối lại bộ phận truyền động trên tháp."
       },
       "set": {
@@ -4149,7 +4149,7 @@ export const DEMO_SCRIPT = {
     },
     "action_recover_class_register": {
   "meta": {
-    "title": "Ngăn bàn cuối lớp",
+    "title": "Sổ điểm danh",
     "buttonLabel": "Bảo toàn hồ sơ",
     "desc": "Bạn quyết định giữ bản sao sổ điểm danh như bằng chứng có thể đối chiếu, dù việc này khiến Linh không còn muốn chia sẻ toàn bộ ký ức riêng."
   },
@@ -4273,7 +4273,7 @@ export const DEMO_SCRIPT = {
     "action_collect_forest_compass": {
       "meta": {
         "title": "La bàn người dẫn đường",
-        "buttonLabel": "Nhặt",
+        "buttonLabel": "Lấy la bàn",
         "desc": "La bàn cũ mắc dưới gốc cây có hai vệt sơn song song. Mặt sau khắc tuyến đường từ rừng xuống chân đê, cho thấy người dẫn đường từng dùng nó để đưa người qua địa hình thay đổi mà không phụ thuộc vào lối mòn."
       },
       "set": {
@@ -4311,7 +4311,7 @@ export const DEMO_SCRIPT = {
     "action_find_wooden_seal": {
       "meta": {
         "title": "Con dấu đội sơ tán",
-        "buttonLabel": "Tìm kiếm",
+        "buttonLabel": "Lấy con dấu",
         "desc": "Phiến đá nằm giữa vòng cọc có mép bị xê dịch, để lộ một hốc đất nhỏ bên dưới. Trong hốc là con dấu gỗ của đội sơ tán, vật từng dùng để xác nhận danh sách chính thức trước khi niêm phong hồ sơ."
       },
       "set": {
@@ -4346,9 +4346,9 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "action_find_gear_pin":{"meta":{"title":"Hộp bánh răng cối xay","buttonLabel":"Tìm chốt cửa","desc":"Hộp bánh răng dưới sàn cối xay bị kẹt. Bộ dụng cụ cần thiết để mở nắp và lấy chốt truyền động bị cong."},"set":{"display":"show","requirement":true},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"radio_toolkit"}]},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"mill_gear_pin"},{"type":"set","subtype":"state","target":"evidence_gear_pin","value":true},{"type":"set","subtype":"action","target":"action_find_gear_pin","property":"display","value":"hide"},{"type":"goto","subtype":"router","target":"router_watermill_gear_inspected"}]}},"action_recover_tunnel_manifest": {
+    "action_find_gear_pin":{"meta":{"title":"Chốt bánh răng cối xay","buttonLabel":"Lấy chốt truyền động","desc":"Hộp bánh răng dưới sàn cối xay bị kẹt. Bộ dụng cụ cần thiết để mở nắp và lấy chốt truyền động bị cong."},"set":{"display":"show","requirement":true},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"radio_toolkit"}]},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"mill_gear_pin"},{"type":"set","subtype":"state","target":"evidence_gear_pin","value":true},{"type":"set","subtype":"action","target":"action_find_gear_pin","property":"display","value":"hide"},{"type":"goto","subtype":"router","target":"router_watermill_gear_inspected"}]}},"action_recover_tunnel_manifest": {
       "meta": {
-        "title": "Ống tài liệu trong đường hầm",
+        "title": "Danh sách vận chuyển",
         "buttonLabel": "Lấy danh sách",
         "desc": "Ống tài liệu được giấu sau một viên gạch rỗng trong đường hầm và có lớp bọc chống ẩm. Danh sách bên trong ghi tên những người được vận chuyển qua đây theo từng lượt, cung cấp bằng chứng trực tiếp về tuyến sơ tán mà hồ sơ làng đã phủ nhận."
       },
@@ -4386,8 +4386,8 @@ export const DEMO_SCRIPT = {
     },
     "action_find_station_ticket": {
       "meta": {
-        "title": "Khe dưới hàng ghế chờ",
-        "buttonLabel": "Tìm vé",
+        "title": "Vé tàu 03:17",
+        "buttonLabel": "Lấy vé tàu",
         "desc": "Dưới hàng ghế chờ có một khe gỗ bị bung khỏi khung, đủ rộng để giấu một tấm vé. Vé tàu bên trong vẫn còn nguyên phần kiểm soát, mang giờ khởi hành 03:17 và là bằng chứng rằng sân ga từng phục vụ một chuyến tàu thực sự."
       },
       "set": {
