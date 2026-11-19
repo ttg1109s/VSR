@@ -1984,69 +1984,164 @@ export const DEMO_SCRIPT = {
       }
     },
     "action_talk_hanh": {
-      "meta": {
-        "title": "Bà Hạnh",
-        "buttonLabel": "Trò chuyện",
-        "desc": "Bà Hạnh quản lý nhà trọ và nắm giữ cuốn sổ ghi khách đến, khách đi. Bà khẳng định nơi này chỉ có sáu phòng, nhưng hành lang phía sau quầy lại có bảy cánh cửa. Sự chênh lệch ấy không giống một nhầm lẫn trong cách đếm; nó giống một căn phòng đã bị cố tình xóa khỏi lời kể."
+  "meta": {
+    "title": "Bà Hạnh",
+    "buttonLabel": "Trò chuyện",
+    "desc": "Bà Hạnh quản lý nhà trọ và nắm giữ cuốn sổ ghi khách đến, khách đi. Bà khẳng định nơi này chỉ có sáu phòng, nhưng hành lang phía sau quầy lại có bảy cánh cửa. Sự chênh lệch ấy không giống một nhầm lẫn trong cách đếm; nó giống một căn phòng đã bị cố tình xóa khỏi lời kể."
+  },
+  "set": {
+    "display": "show"
+  },
+  "effect": {
+    "normal": [
+      {
+        "type": "goto",
+        "subtype": "chat",
+        "target": "chat_hanh_memory",
+        "req": {
+          "logic": "AND",
+          "check": [
+            {
+              "type": "state",
+              "property": "evidence_hidden_room",
+              "op": "==",
+              "value": true
+            },
+            {
+              "type": "state",
+              "property": "school_choice",
+              "op": "==",
+              "value": "memory"
+            }
+          ]
+        }
       },
-      "set": {
-        "display": "show"
+      {
+        "type": "goto",
+        "subtype": "chat",
+        "target": "chat_hanh_evidence",
+        "req": {
+          "logic": "AND",
+          "check": [
+            {
+              "type": "state",
+              "property": "evidence_hidden_room",
+              "op": "==",
+              "value": true
+            },
+            {
+              "type": "state",
+              "property": "school_choice",
+              "op": "==",
+              "value": "evidence"
+            }
+          ]
+        }
       },
-      "effect": {
-        "normal": [
-          {
-            "type": "goto",
-            "subtype": "chat",
-            "target": "chat_hanh_room",
-            "req": {
-              "logic": "AND",
-              "check": [
-                { "type": "state", "property": "evidence_hidden_room", "op": "==", "value": true }
-              ]
+      {
+        "type": "goto",
+        "subtype": "chat",
+        "target": "chat_hanh_room",
+        "req": {
+          "logic": "AND",
+          "check": [
+            {
+              "type": "state",
+              "property": "evidence_hidden_room",
+              "op": "==",
+              "value": true
+            },
+            {
+              "type": "state",
+              "property": "school_choice",
+              "op": "==",
+              "value": "undecided"
             }
-          },
-          {
-            "type": "goto",
-            "subtype": "chat",
-            "target": "chat_hanh_guestbook",
-            "req": {
-              "logic": "AND",
-              "check": [
-                { "type": "state", "property": "evidence_hidden_room", "op": "!=", "value": true },
-                { "type": "state", "property": "found_guestbook", "op": "==", "value": true }
-              ]
+          ]
+        }
+      },
+      {
+        "type": "goto",
+        "subtype": "chat",
+        "target": "chat_hanh_guestbook",
+        "req": {
+          "logic": "AND",
+          "check": [
+            {
+              "type": "state",
+              "property": "evidence_hidden_room",
+              "op": "!=",
+              "value": true
+            },
+            {
+              "type": "state",
+              "property": "found_guestbook",
+              "op": "==",
+              "value": true
             }
-          },
-          {
-            "type": "goto",
-            "subtype": "chat",
-            "target": "chat_hanh_notice",
-            "req": {
-              "logic": "AND",
-              "check": [
-                { "type": "state", "property": "evidence_hidden_room", "op": "!=", "value": true },
-                { "type": "state", "property": "found_guestbook", "op": "!=", "value": true },
-                { "type": "state", "property": "clue_village_notice", "op": "==", "value": true }
-              ]
+          ]
+        }
+      },
+      {
+        "type": "goto",
+        "subtype": "chat",
+        "target": "chat_hanh_notice",
+        "req": {
+          "logic": "AND",
+          "check": [
+            {
+              "type": "state",
+              "property": "evidence_hidden_room",
+              "op": "!=",
+              "value": true
+            },
+            {
+              "type": "state",
+              "property": "found_guestbook",
+              "op": "!=",
+              "value": true
+            },
+            {
+              "type": "state",
+              "property": "clue_village_notice",
+              "op": "==",
+              "value": true
             }
-          },
-          {
-            "type": "goto",
-            "subtype": "chat",
-            "target": "chat_hanh",
-            "req": {
-              "logic": "AND",
-              "check": [
-                { "type": "state", "property": "evidence_hidden_room", "op": "!=", "value": true },
-                { "type": "state", "property": "found_guestbook", "op": "!=", "value": true },
-                { "type": "state", "property": "clue_village_notice", "op": "!=", "value": true }
-              ]
+          ]
+        }
+      },
+      {
+        "type": "goto",
+        "subtype": "chat",
+        "target": "chat_hanh",
+        "req": {
+          "logic": "AND",
+          "check": [
+            {
+              "type": "state",
+              "property": "evidence_hidden_room",
+              "op": "!=",
+              "value": true
+            },
+            {
+              "type": "state",
+              "property": "found_guestbook",
+              "op": "!=",
+              "value": true
+            },
+            {
+              "type": "state",
+              "property": "clue_village_notice",
+              "op": "!=",
+              "value": true
             }
-          }
-        ],
-        "pass": []
+          ]
+        }
       }
-    },
+    ],
+    "pass": []
+  }
+},
     "action_open_guestbook": {
       "meta": {
         "title": "Sổ khách",
@@ -5528,6 +5623,320 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
+    "chat_hanh_memory": {
+  "meta": {
+    "title": "Bà Hạnh — Lời kể được bảo vệ",
+    "loop": false,
+    "sender": "hanh",
+    "entry": "start",
+    "to": [
+      "player"
+    ]
+  },
+  "block": {
+    "start": {
+      "line": [
+        {
+          "char_id": "hanh",
+          "text": "Cậu đã chọn giữ lời khai của Linh riêng tư. Tôi tôn trọng điều đó; có những ký ức chỉ nên được kể khi người mang chúng thấy an toàn."
+        },
+        {
+          "char_id": "hanh",
+          "text": "Căn phòng thứ bảy không phải một hồ sơ. Nó là nơi một người từng chờ được gọi tên."
+        }
+      ],
+      "choice_id": "room_ask",
+      "choiced": false
+    },
+    "belongings": {
+      "line": [
+        {
+          "char_id": "hanh",
+          "text": "Trong phòng có một chiếc cốc, một tấm ảnh bị úp xuống và dấu bụi hình chữ nhật trên bàn. Tôi không biết món nào được đặt ở đó đầu tiên."
+        }
+      ],
+      "choice_id": "belongings_follow",
+      "choiced": false
+    },
+    "photo": {
+      "line": [
+        {
+          "char_id": "hanh",
+          "text": "Tấm ảnh chụp hành lang nhà trọ. Có bảy cánh cửa, nhưng người đứng trước cánh cửa cuối cùng đã bị cắt khỏi ảnh."
+        }
+      ],
+      "choice_id": "photo_follow",
+      "choiced": false
+    },
+    "waiting": {
+      "line": [
+        {
+          "char_id": "hanh",
+          "text": "Tôi từng đặt một chiếc cốc thứ hai mỗi tối. Khi nhận ra mình làm vậy, tôi đã cất nó đi. Sáng hôm sau nó lại nằm trên bàn."
+        }
+      ],
+      "choice_id": "waiting_follow",
+      "choiced": false
+    },
+    "back_photo": {
+      "line": [
+        {
+          "char_id": "hanh",
+          "text": "Mặt sau ảnh có dòng chữ: “Đừng khóa cửa khi đủ mười hai”. Không có chữ ký."
+        }
+      ],
+      "choiced": false
+    },
+    "identity": {
+      "line": [
+        {
+          "char_id": "hanh",
+          "text": "Tôi không thể nói người trong ảnh là cậu. Khuôn mặt đã bị cắt, và phần còn lại không đủ để nhận dạng."
+        }
+      ],
+      "choiced": false
+    },
+    "cup": {
+      "line": [
+        {
+          "char_id": "hanh",
+          "text": "Chiếc cốc có vết son môi ở miệng, nhưng tôi sống một mình. Có lẽ căn phòng này từng có người ở cùng tôi."
+        }
+      ],
+      "choiced": false
+    },
+    "night": {
+      "line": [
+        {
+          "char_id": "hanh",
+          "text": "Tôi nghe tiếng chìa khóa xoay vào lúc 03:17. Khi mở cửa, hành lang trống không, nhưng chiếc cốc thứ hai đã được rót đầy."
+        }
+      ],
+      "choiced": false
+    },
+    "truth": {
+      "line": [
+        {
+          "char_id": "hanh",
+          "text": "Tôi sẽ không yêu cầu cậu tin tôi. Hãy giữ tấm ảnh và so sánh nó với ảnh lớp ở trường."
+        }
+      ],
+      "choiced": false
+    }
+  },
+  "choice": {
+    "room_ask": [
+      {
+        "id": "hanh_room_belongings",
+        "text": "Những món đồ trong phòng thuộc về ai?",
+        "jump": "belongings"
+      },
+      {
+        "id": "hanh_room_photo",
+        "text": "Bức ảnh hành lang có gì bất thường?",
+        "jump": "photo"
+      },
+      {
+        "id": "hanh_room_waiting",
+        "text": "Bà đã từng chờ ai trong căn phòng này?",
+        "jump": "waiting"
+      }
+    ],
+    "belongings_follow": [
+      {
+        "id": "hanh_belongings_photo",
+        "text": "Tấm ảnh có manh mối gì ở mặt sau?",
+        "jump": "back_photo"
+      },
+      {
+        "id": "hanh_belongings_identity",
+        "text": "Bà có nhận ra người từng ở đây không?",
+        "jump": "identity"
+      }
+    ],
+    "photo_follow": [
+      {
+        "id": "hanh_photo_cup",
+        "text": "Chiếc cốc thứ hai có liên quan đến căn phòng không?",
+        "jump": "cup"
+      },
+      {
+        "id": "hanh_photo_night",
+        "text": "Bà có nghe thấy ai trở lại vào ban đêm?",
+        "jump": "night"
+      }
+    ],
+    "waiting_follow": [
+      {
+        "id": "hanh_waiting_cup",
+        "text": "Vì sao bà vẫn đặt hai chiếc cốc?",
+        "jump": "cup"
+      },
+      {
+        "id": "hanh_waiting_truth",
+        "text": "Tôi nên làm gì với những gì tìm thấy ở đây?",
+        "jump": "truth"
+      }
+    ]
+  }
+},
+    "chat_hanh_evidence": {
+  "meta": {
+    "title": "Bà Hạnh — Hồ sơ đối chiếu",
+    "loop": false,
+    "sender": "hanh",
+    "entry": "start",
+    "to": [
+      "player"
+    ]
+  },
+  "block": {
+    "start": {
+      "line": [
+        {
+          "char_id": "hanh",
+          "text": "Cậu đã giữ sổ ở trường. Tôi có thể đối chiếu căn phòng này với bản ghi, nhưng đừng nghĩ tài liệu sẽ khiến người ta thôi sợ."
+        },
+        {
+          "char_id": "hanh",
+          "text": "Nếu cậu công khai nó, hãy nhớ người sống vẫn phải ở lại trong ngôi làng này sau khi sự thật được ghi ra."
+        }
+      ],
+      "choice_id": "room_ask",
+      "choiced": false
+    },
+    "belongings": {
+      "line": [
+        {
+          "char_id": "hanh",
+          "text": "Trong phòng có một chiếc cốc, một tấm ảnh bị úp xuống và dấu bụi hình chữ nhật trên bàn. Tôi không biết món nào được đặt ở đó đầu tiên."
+        }
+      ],
+      "choice_id": "belongings_follow",
+      "choiced": false
+    },
+    "photo": {
+      "line": [
+        {
+          "char_id": "hanh",
+          "text": "Tấm ảnh chụp hành lang nhà trọ. Có bảy cánh cửa, nhưng người đứng trước cánh cửa cuối cùng đã bị cắt khỏi ảnh."
+        }
+      ],
+      "choice_id": "photo_follow",
+      "choiced": false
+    },
+    "waiting": {
+      "line": [
+        {
+          "char_id": "hanh",
+          "text": "Tôi từng đặt một chiếc cốc thứ hai mỗi tối. Khi nhận ra mình làm vậy, tôi đã cất nó đi. Sáng hôm sau nó lại nằm trên bàn."
+        }
+      ],
+      "choice_id": "waiting_follow",
+      "choiced": false
+    },
+    "back_photo": {
+      "line": [
+        {
+          "char_id": "hanh",
+          "text": "Mặt sau ảnh có dòng chữ: “Đừng khóa cửa khi đủ mười hai”. Không có chữ ký."
+        }
+      ],
+      "choiced": false
+    },
+    "identity": {
+      "line": [
+        {
+          "char_id": "hanh",
+          "text": "Tôi không thể nói người trong ảnh là cậu. Khuôn mặt đã bị cắt, và phần còn lại không đủ để nhận dạng."
+        }
+      ],
+      "choiced": false
+    },
+    "cup": {
+      "line": [
+        {
+          "char_id": "hanh",
+          "text": "Chiếc cốc có vết son môi ở miệng, nhưng tôi sống một mình. Có lẽ căn phòng này từng có người ở cùng tôi."
+        }
+      ],
+      "choiced": false
+    },
+    "night": {
+      "line": [
+        {
+          "char_id": "hanh",
+          "text": "Tôi nghe tiếng chìa khóa xoay vào lúc 03:17. Khi mở cửa, hành lang trống không, nhưng chiếc cốc thứ hai đã được rót đầy."
+        }
+      ],
+      "choiced": false
+    },
+    "truth": {
+      "line": [
+        {
+          "char_id": "hanh",
+          "text": "Tôi sẽ không yêu cầu cậu tin tôi. Hãy giữ tấm ảnh và so sánh nó với ảnh lớp ở trường."
+        }
+      ],
+      "choiced": false
+    }
+  },
+  "choice": {
+    "room_ask": [
+      {
+        "id": "hanh_room_belongings",
+        "text": "Những món đồ trong phòng thuộc về ai?",
+        "jump": "belongings"
+      },
+      {
+        "id": "hanh_room_photo",
+        "text": "Bức ảnh hành lang có gì bất thường?",
+        "jump": "photo"
+      },
+      {
+        "id": "hanh_room_waiting",
+        "text": "Bà đã từng chờ ai trong căn phòng này?",
+        "jump": "waiting"
+      }
+    ],
+    "belongings_follow": [
+      {
+        "id": "hanh_belongings_photo",
+        "text": "Tấm ảnh có manh mối gì ở mặt sau?",
+        "jump": "back_photo"
+      },
+      {
+        "id": "hanh_belongings_identity",
+        "text": "Bà có nhận ra người từng ở đây không?",
+        "jump": "identity"
+      }
+    ],
+    "photo_follow": [
+      {
+        "id": "hanh_photo_cup",
+        "text": "Chiếc cốc thứ hai có liên quan đến căn phòng không?",
+        "jump": "cup"
+      },
+      {
+        "id": "hanh_photo_night",
+        "text": "Bà có nghe thấy ai trở lại vào ban đêm?",
+        "jump": "night"
+      }
+    ],
+    "waiting_follow": [
+      {
+        "id": "hanh_waiting_cup",
+        "text": "Vì sao bà vẫn đặt hai chiếc cốc?",
+        "jump": "cup"
+      },
+      {
+        "id": "hanh_waiting_truth",
+        "text": "Tôi nên làm gì với những gì tìm thấy ở đây?",
+        "jump": "truth"
+      }
+    ]
+  }
+},
     "chat_hanh_room": {
       "meta": {
         "title": "Bà Hạnh — Căn phòng thứ bảy",
