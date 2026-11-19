@@ -3447,11 +3447,17 @@ export const DEMO_SCRIPT = {
         ]
       },
       "requirement": {
-        "logic": "AND",
+        "logic": "OR",
         "check": [
           {
             "type": "state",
             "property": "mill_powered",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "clue_tunnel",
             "op": "==",
             "value": true
           }
