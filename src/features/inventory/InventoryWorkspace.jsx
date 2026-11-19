@@ -128,12 +128,12 @@ function InventoryItemDetails({ item, onBack, onToggleEquipment, busy }) {
 
       {usage && (
         <section className="vsr-inventory-item-details__section">
-          <h3><span className="material-symbols-rounded" aria-hidden="true">bar_chart</span>Item Status</h3>
+          <h3><span className="material-symbols-rounded" aria-hidden="true">bar_chart</span>status</h3>
           <div className="vsr-inventory-item-details__metric">
             <span className="vsr-text-secondary">{usageStatus || 'Normal'}</span>
             <strong>{usage.current} / {usage.max}</strong>
           </div>
-          {usageRatio !== null && <div className="vsr-inventory-item-details__progress" role="progressbar" aria-valuenow={usageRatio} aria-valuemin="0" aria-valuemax="100" aria-label="Item status"><span className={item.broken ? 'is-broken' : ''} style={{ width: `${usageRatio}%` }} /></div>}
+          {usageRatio !== null && <div className="vsr-inventory-item-details__progress" role="progressbar" aria-valuenow={usageRatio} aria-valuemin="0" aria-valuemax="100" aria-label="status"><span className={item.broken ? 'is-broken' : ''} style={{ width: `${usageRatio}%` }} /></div>}
           {item.broken && <p className="vsr-inventory-item-details__warning"><span className="material-symbols-rounded" aria-hidden="true">error</span>Broken</p>}
 
         </section>
