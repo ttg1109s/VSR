@@ -1714,69 +1714,164 @@ export const DEMO_SCRIPT = {
       }
     },
     "action_talk_mai": {
-      "meta": {
-        "title": "Mai",
-        "buttonLabel": "Trò chuyện",
-        "desc": "Mai đứng gần quảng trường nhưng luôn giữ khoảng cách với giếng đá. Những gì cô sẵn sàng kể thay đổi theo các manh mối bạn đã tìm được."
+  "meta": {
+    "title": "Mai",
+    "buttonLabel": "Trò chuyện",
+    "desc": "Mai đứng gần quảng trường nhưng luôn giữ khoảng cách với giếng đá. Những gì cô sẵn sàng kể thay đổi theo các manh mối bạn đã tìm được."
+  },
+  "set": {
+    "display": "show"
+  },
+  "effect": {
+    "normal": [
+      {
+        "type": "goto",
+        "subtype": "chat",
+        "target": "chat_mai_memory",
+        "req": {
+          "logic": "AND",
+          "check": [
+            {
+              "type": "state",
+              "property": "knows_twelve",
+              "op": "==",
+              "value": true
+            },
+            {
+              "type": "state",
+              "property": "school_choice",
+              "op": "==",
+              "value": "memory"
+            }
+          ]
+        }
       },
-      "set": {
-        "display": "show"
+      {
+        "type": "goto",
+        "subtype": "chat",
+        "target": "chat_mai_evidence",
+        "req": {
+          "logic": "AND",
+          "check": [
+            {
+              "type": "state",
+              "property": "knows_twelve",
+              "op": "==",
+              "value": true
+            },
+            {
+              "type": "state",
+              "property": "school_choice",
+              "op": "==",
+              "value": "evidence"
+            }
+          ]
+        }
       },
-      "effect": {
-        "normal": [
-          {
-            "type": "goto",
-            "subtype": "chat",
-            "target": "chat_mai",
-            "req": {
-              "logic": "AND",
-              "check": [
-                { "type": "state", "property": "knows_twelve", "op": "!=", "value": true },
-                { "type": "state", "property": "clue_well", "op": "!=", "value": true }
-              ]
+      {
+        "type": "goto",
+        "subtype": "chat",
+        "target": "chat_mai",
+        "req": {
+          "logic": "AND",
+          "check": [
+            {
+              "type": "state",
+              "property": "knows_twelve",
+              "op": "!=",
+              "value": true
+            },
+            {
+              "type": "state",
+              "property": "clue_well",
+              "op": "!=",
+              "value": true
             }
-          },
-          {
-            "type": "goto",
-            "subtype": "chat",
-            "target": "chat_mai",
-            "req": {
-              "logic": "AND",
-              "check": [
-                { "type": "state", "property": "knows_twelve", "op": "!=", "value": true },
-                { "type": "state", "property": "clue_well", "op": "==", "value": true },
-                { "type": "state", "property": "clue_lantern", "op": "!=", "value": true }
-              ]
+          ]
+        }
+      },
+      {
+        "type": "goto",
+        "subtype": "chat",
+        "target": "chat_mai",
+        "req": {
+          "logic": "AND",
+          "check": [
+            {
+              "type": "state",
+              "property": "knows_twelve",
+              "op": "!=",
+              "value": true
+            },
+            {
+              "type": "state",
+              "property": "clue_well",
+              "op": "==",
+              "value": true
+            },
+            {
+              "type": "state",
+              "property": "clue_lantern",
+              "op": "!=",
+              "value": true
             }
-          },
-          {
-            "type": "goto",
-            "subtype": "chat",
-            "target": "chat_mai_well",
-            "req": {
-              "logic": "AND",
-              "check": [
-                { "type": "state", "property": "knows_twelve", "op": "!=", "value": true },
-                { "type": "state", "property": "clue_well", "op": "==", "value": true },
-                { "type": "state", "property": "clue_lantern", "op": "==", "value": true }
-              ]
+          ]
+        }
+      },
+      {
+        "type": "goto",
+        "subtype": "chat",
+        "target": "chat_mai_well",
+        "req": {
+          "logic": "AND",
+          "check": [
+            {
+              "type": "state",
+              "property": "knows_twelve",
+              "op": "!=",
+              "value": true
+            },
+            {
+              "type": "state",
+              "property": "clue_well",
+              "op": "==",
+              "value": true
+            },
+            {
+              "type": "state",
+              "property": "clue_lantern",
+              "op": "==",
+              "value": true
             }
-          },
-          {
-            "type": "goto",
-            "subtype": "chat",
-            "target": "chat_mai_umbrella",
-            "req": {
-              "logic": "AND",
-              "check": [
-                { "type": "state", "property": "knows_twelve", "op": "==", "value": true }
-              ]
+          ]
+        }
+      },
+      {
+        "type": "goto",
+        "subtype": "chat",
+        "target": "chat_mai_umbrella",
+        "req": {
+          "logic": "AND",
+          "check": [
+            {
+              "type": "state",
+              "property": "knows_twelve",
+              "op": "==",
+              "value": true
+            },
+            {
+              "type": "state",
+              "property": "school_choice",
+              "op": "==",
+              "value": "undecided"
             }
-          }
-        ],
-        "pass": []
+          ]
+        }
       }
-    },
+    ],
+    "pass": []
+  }
+},
     "action_inspect_well": {
       "meta": {
         "title": "Giếng đá",
@@ -4778,6 +4873,338 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
+    "chat_mai_memory": {
+  "meta": {
+    "title": "Mai — Bảo vệ ký ức",
+    "loop": false,
+    "sender": "mai",
+    "entry": "start",
+    "to": [
+      "player"
+    ]
+  },
+  "block": {
+    "start": {
+      "line": [
+        {
+          "char_id": "mai",
+          "text": "Cậu đã chọn bảo vệ Linh. Tôi không biết đó là cách đúng, nhưng tôi hiểu vì sao cậu không muốn biến ký ức của em ấy thành hồ sơ."
+        },
+        {
+          "char_id": "mai",
+          "text": "Có những điều tôi chỉ dám kể khi biết chúng sẽ không bị dùng để buộc người khác phải chứng minh mình tồn tại."
+        }
+      ],
+      "choice_id": "umbrella_ask",
+      "choiced": false
+    },
+    "name": {
+      "line": [
+        {
+          "char_id": "mai",
+          "text": "Nét khắc bị cào lại nhiều lần. Tôi nhận ra chữ đầu tiên, nhưng phần còn lại giống tên của một người mà cả làng đều bảo chưa từng tồn tại."
+        }
+      ],
+      "choice_id": "name_follow",
+      "choiced": false
+    },
+    "owner": {
+      "line": [
+        {
+          "char_id": "mai",
+          "text": "Chiếc ô từng ở quầy hàng của tôi. Nhưng có những ngày tôi nhớ mình đã đưa nó cho một đứa trẻ, có ngày lại nhớ chính mình cầm nó đi xuống giếng."
+        }
+      ],
+      "choice_id": "owner_follow",
+      "choiced": false
+    },
+    "accuse": {
+      "line": [
+        {
+          "char_id": "mai",
+          "text": "Nếu cậu muốn hỏi tôi có phải người thứ mười hai không, câu trả lời là tôi không biết. Tôi chỉ biết ký ức của mình có một khoảng trống mang hình dáng của người đó."
+        }
+      ],
+      "choice_id": "accuse_follow",
+      "choiced": false
+    },
+    "first_letter": {
+      "line": [
+        {
+          "char_id": "mai",
+          "text": "Chữ đầu tiên có thể là L. Nhưng trên những bản ghi cũ, tên ấy bị sửa thành một vết mực đen."
+        }
+      ],
+      "choiced": false
+    },
+    "other_names": {
+      "line": [
+        {
+          "char_id": "mai",
+          "text": "Tôi từng nghe ba cách đọc khác nhau cho cùng một cái tên. Mỗi người đều tin cách của mình là đúng."
+        }
+      ],
+      "choiced": false
+    },
+    "child": {
+      "line": [
+        {
+          "char_id": "mai",
+          "text": "Tôi nhớ bàn tay nhỏ nắm cán ô. Không nhớ mặt, không nhớ giọng. Chỉ nhớ đứa trẻ hỏi liệu chuyến tàu có chờ đủ mười hai người không."
+        }
+      ],
+      "choiced": false
+    },
+    "memory": {
+      "line": [
+        {
+          "char_id": "mai",
+          "text": "Nếu ký ức ấy là của tôi, tôi đã quên một người. Nếu là của người khác, tôi đang nhớ thay họ."
+        }
+      ],
+      "choiced": false
+    },
+    "doubt": {
+      "line": [
+        {
+          "char_id": "mai",
+          "text": "Cậu nên hỏi Linh về bức ảnh lớp. Một cái tên có thể bị sửa, nhưng vị trí của một người trong bức ảnh khó biến mất hoàn toàn."
+        }
+      ],
+      "choiced": false
+    },
+    "leave": {
+      "line": [
+        {
+          "char_id": "mai",
+          "text": "Tôi không thể đưa cậu câu trả lời chắc chắn. Hãy giữ chiếc ô và đối chiếu nó với hồ sơ."
+        }
+      ],
+      "choiced": false
+    }
+  },
+  "choice": {
+    "umbrella_ask": [
+      {
+        "id": "mai_umbrella_name",
+        "text": "Cô có nhận ra cái tên được khắc trên cán ô không?",
+        "jump": "name"
+      },
+      {
+        "id": "mai_umbrella_owner",
+        "text": "Chiếc ô này vốn thuộc về ai?",
+        "jump": "owner"
+      },
+      {
+        "id": "mai_umbrella_accuse",
+        "text": "Cô có phải người thứ mười hai không?",
+        "jump": "accuse"
+      }
+    ],
+    "name_follow": [
+      {
+        "id": "mai_name_letter",
+        "text": "Cô đọc được chữ nào đầu tiên?",
+        "jump": "first_letter"
+      },
+      {
+        "id": "mai_name_versions",
+        "text": "Vì sao mỗi người lại đọc cái tên ấy khác nhau?",
+        "jump": "other_names"
+      }
+    ],
+    "owner_follow": [
+      {
+        "id": "mai_owner_child",
+        "text": "Cô có nhớ đứa trẻ đã cầm chiếc ô không?",
+        "jump": "child"
+      },
+      {
+        "id": "mai_owner_memory",
+        "text": "Cô nghĩ ký ức đó thuộc về ai?",
+        "jump": "memory"
+      }
+    ],
+    "accuse_follow": [
+      {
+        "id": "mai_accuse_doubt",
+        "text": "Cô có nghĩ mình đang nhớ thay một người khác?",
+        "jump": "doubt"
+      },
+      {
+        "id": "mai_accuse_leave",
+        "text": "Tôi sẽ đối chiếu chiếc ô với hồ sơ trước.",
+        "jump": "leave"
+      }
+    ]
+  }
+},
+    "chat_mai_evidence": {
+  "meta": {
+    "title": "Mai — Hồ sơ được giữ lại",
+    "loop": false,
+    "sender": "mai",
+    "entry": "start",
+    "to": [
+      "player"
+    ]
+  },
+  "block": {
+    "start": {
+      "line": [
+        {
+          "char_id": "mai",
+          "text": "Cậu đã giữ bản ghi ở trường. Nếu hồ sơ còn nguyên, tôi có thể giúp đối chiếu những cái tên mà làng đã sửa."
+        },
+        {
+          "char_id": "mai",
+          "text": "Nhưng đừng để giấy tờ thay thế lời người sống. Bản ghi có thể xác nhận một sự kiện, không thể nói hết một người."
+        }
+      ],
+      "choice_id": "umbrella_ask",
+      "choiced": false
+    },
+    "name": {
+      "line": [
+        {
+          "char_id": "mai",
+          "text": "Nét khắc bị cào lại nhiều lần. Tôi nhận ra chữ đầu tiên, nhưng phần còn lại giống tên của một người mà cả làng đều bảo chưa từng tồn tại."
+        }
+      ],
+      "choice_id": "name_follow",
+      "choiced": false
+    },
+    "owner": {
+      "line": [
+        {
+          "char_id": "mai",
+          "text": "Chiếc ô từng ở quầy hàng của tôi. Nhưng có những ngày tôi nhớ mình đã đưa nó cho một đứa trẻ, có ngày lại nhớ chính mình cầm nó đi xuống giếng."
+        }
+      ],
+      "choice_id": "owner_follow",
+      "choiced": false
+    },
+    "accuse": {
+      "line": [
+        {
+          "char_id": "mai",
+          "text": "Nếu cậu muốn hỏi tôi có phải người thứ mười hai không, câu trả lời là tôi không biết. Tôi chỉ biết ký ức của mình có một khoảng trống mang hình dáng của người đó."
+        }
+      ],
+      "choice_id": "accuse_follow",
+      "choiced": false
+    },
+    "first_letter": {
+      "line": [
+        {
+          "char_id": "mai",
+          "text": "Chữ đầu tiên có thể là L. Nhưng trên những bản ghi cũ, tên ấy bị sửa thành một vết mực đen."
+        }
+      ],
+      "choiced": false
+    },
+    "other_names": {
+      "line": [
+        {
+          "char_id": "mai",
+          "text": "Tôi từng nghe ba cách đọc khác nhau cho cùng một cái tên. Mỗi người đều tin cách của mình là đúng."
+        }
+      ],
+      "choiced": false
+    },
+    "child": {
+      "line": [
+        {
+          "char_id": "mai",
+          "text": "Tôi nhớ bàn tay nhỏ nắm cán ô. Không nhớ mặt, không nhớ giọng. Chỉ nhớ đứa trẻ hỏi liệu chuyến tàu có chờ đủ mười hai người không."
+        }
+      ],
+      "choiced": false
+    },
+    "memory": {
+      "line": [
+        {
+          "char_id": "mai",
+          "text": "Nếu ký ức ấy là của tôi, tôi đã quên một người. Nếu là của người khác, tôi đang nhớ thay họ."
+        }
+      ],
+      "choiced": false
+    },
+    "doubt": {
+      "line": [
+        {
+          "char_id": "mai",
+          "text": "Cậu nên hỏi Linh về bức ảnh lớp. Một cái tên có thể bị sửa, nhưng vị trí của một người trong bức ảnh khó biến mất hoàn toàn."
+        }
+      ],
+      "choiced": false
+    },
+    "leave": {
+      "line": [
+        {
+          "char_id": "mai",
+          "text": "Tôi không thể đưa cậu câu trả lời chắc chắn. Hãy giữ chiếc ô và đối chiếu nó với hồ sơ."
+        }
+      ],
+      "choiced": false
+    }
+  },
+  "choice": {
+    "umbrella_ask": [
+      {
+        "id": "mai_umbrella_name",
+        "text": "Cô có nhận ra cái tên được khắc trên cán ô không?",
+        "jump": "name"
+      },
+      {
+        "id": "mai_umbrella_owner",
+        "text": "Chiếc ô này vốn thuộc về ai?",
+        "jump": "owner"
+      },
+      {
+        "id": "mai_umbrella_accuse",
+        "text": "Cô có phải người thứ mười hai không?",
+        "jump": "accuse"
+      }
+    ],
+    "name_follow": [
+      {
+        "id": "mai_name_letter",
+        "text": "Cô đọc được chữ nào đầu tiên?",
+        "jump": "first_letter"
+      },
+      {
+        "id": "mai_name_versions",
+        "text": "Vì sao mỗi người lại đọc cái tên ấy khác nhau?",
+        "jump": "other_names"
+      }
+    ],
+    "owner_follow": [
+      {
+        "id": "mai_owner_child",
+        "text": "Cô có nhớ đứa trẻ đã cầm chiếc ô không?",
+        "jump": "child"
+      },
+      {
+        "id": "mai_owner_memory",
+        "text": "Cô nghĩ ký ức đó thuộc về ai?",
+        "jump": "memory"
+      }
+    ],
+    "accuse_follow": [
+      {
+        "id": "mai_accuse_doubt",
+        "text": "Cô có nghĩ mình đang nhớ thay một người khác?",
+        "jump": "doubt"
+      },
+      {
+        "id": "mai_accuse_leave",
+        "text": "Tôi sẽ đối chiếu chiếc ô với hồ sơ trước.",
+        "jump": "leave"
+      }
+    ]
+  }
+},
     "chat_mai_umbrella": {
       "meta": {
         "title": "Mai — Cái tên trên cán ô",
