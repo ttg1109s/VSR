@@ -1608,7 +1608,7 @@ export const DEMO_SCRIPT = {
       },
       "set": {
         "display": "show",
-        "requirement": false
+        "requirement": false,
       
         "readDesc": true,},
       "requirement": {
@@ -2001,7 +2001,7 @@ export const DEMO_SCRIPT = {
       },
       "set": {
         "display": "show",
-        "requirement": true
+        "requirement": true,
       
         "readDesc": true,},
       "effect": {
@@ -2281,7 +2281,7 @@ export const DEMO_SCRIPT = {
       "set": {
         "display": "show",
         "password": "string:pw_guest",
-        "requirement": true
+        "requirement": true,
       
         "readDesc": true,},
       "effect": {
@@ -2485,7 +2485,7 @@ export const DEMO_SCRIPT = {
       },
       "set": {
         "display": "show",
-        "password": "number:pw_bell"
+        "password": "number:pw_bell",
       
         "readDesc": true,},
       "effect": {
@@ -2534,7 +2534,7 @@ export const DEMO_SCRIPT = {
       },
       "set": {
         "display": "show",
-        "requirement": true
+        "requirement": true,
       
         "readDesc": true,},
       "effect": {
@@ -2632,7 +2632,7 @@ export const DEMO_SCRIPT = {
         "buttonLabel": "Đối chiếu vị trí",
         "desc": "Đối chiếu sơ đồ chỗ ngồi với bản sao sổ điểm danh được bảo toàn. Khoảng trống giữa các dãy bàn trùng với vị trí học sinh thứ mười hai."
       },
-      "set": {"display": "show", "requirement": true
+      "set": {"display": "show", "requirement": true,
         "readDesc": true,},
       "effect": {
         "normal": [],
@@ -2666,7 +2666,7 @@ export const DEMO_SCRIPT = {
     "desc": "Các vệt sơn trên thân thông xuất hiện theo cặp, có chỗ bị rêu che gần hết. Chúng không phải dấu đánh dấu đường đi thông thường: khoảng cách giữa các vệt thay đổi theo hướng rẽ và dẫn đến một khoảng đất trống khuất sau sườn dốc. Từ đó có thể nhìn thấy vòng cọc gỗ giữa rừng."
   },
   "set": {
-    "display": "show"
+    "display": "show",
   
         "readDesc": true,},
   "effect": {
@@ -2743,7 +2743,7 @@ export const DEMO_SCRIPT = {
       "set": {
         "display": "show",
         "password": "find_way:pw_forest",
-        "requirement": true
+        "requirement": true,
       
         "readDesc": true,},
       "effect": {
@@ -2846,7 +2846,7 @@ export const DEMO_SCRIPT = {
       "set": {
         "display": "show",
         "password": "puzzle:pw_photo",
-        "requirement": true
+        "requirement": true,
       
         "readDesc": true,},
       "effect": {
@@ -2910,7 +2910,7 @@ export const DEMO_SCRIPT = {
         "buttonLabel": "Khởi động lại",
         "desc": "Cối xay cần chốt truyền động, lò xo và bộ dụng cụ. Chất lượng các linh kiện phải đạt mức tối thiểu; dấu đường hầm từ Memory hoặc mảnh bản đồ từ Evidence đều cung cấp hướng dẫn."
       },
-      "set": {"display": "show", "requirement": true
+      "set": {"display": "show", "requirement": true,
         "readDesc": true,},
       "effect": {
         "normal": [],
@@ -3022,7 +3022,7 @@ export const DEMO_SCRIPT = {
         "buttonLabel": "Mở khóa",
         "desc": "Tủ hồ sơ dưới đê lưu bản ghi sơ tán. Sau khi chọn phương thức điều tra và khôi phục dấu đường hầm, chìa khóa cho phép tiếp cận kho tư liệu."
       },
-      "set": {"display": "show", "requirement": true
+      "set": {"display": "show", "requirement": true,
         "readDesc": true,},
       "effect": {
         "normal": [],
@@ -3057,7 +3057,7 @@ export const DEMO_SCRIPT = {
       },
       "set": {
         "display": "show",
-        "requirement": true
+        "requirement": true,
       
         "readDesc": true,},
       "effect": {
@@ -3098,7 +3098,7 @@ export const DEMO_SCRIPT = {
       },
       "set": {
         "display": "show",
-        "requirement": true
+        "requirement": true,
       
         "readDesc": true,},
       "effect": {
@@ -3137,7 +3137,7 @@ export const DEMO_SCRIPT = {
   },
   "set": {
     "display": "hide",
-    "requirement": true
+    "requirement": true,
   
         "readDesc": true,},
   "effect": {
@@ -3214,7 +3214,7 @@ export const DEMO_SCRIPT = {
       },
       "set": {
         "display": "show",
-        "requirement": true
+        "requirement": true,
       
         "readDesc": true,},
       "effect": {
@@ -3261,7 +3261,7 @@ export const DEMO_SCRIPT = {
       },
       "set": {
         "display": "show",
-        "requirement": true
+        "requirement": true,
       
         "readDesc": true,},
       "effect": {
@@ -3314,7 +3314,7 @@ export const DEMO_SCRIPT = {
       },
       "set": {
         "display": "show",
-        "requirement": true
+        "requirement": true,
       
         "readDesc": true,},
       "effect": {
@@ -3838,7 +3838,7 @@ export const DEMO_SCRIPT = {
       },
       "set": {
         "display": "show",
-        "requirement": true
+        "requirement": true,
       
         "readDesc": true,},
       "effect": {
@@ -3883,7 +3883,7 @@ export const DEMO_SCRIPT = {
 "action_find_insulated_wire":{"meta":{"title":"Cuộn dây cách nhiệt","buttonLabel": "Lấy dây cách điện","desc":"Sau thùng rượu rỗng là cuộn dây cách nhiệt còn dùng được, có thể thay đoạn dây đứt trong thiết bị cũ."},"set":{"display":"show"},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"insulated_wire"},{"type":"set","subtype":"action","target":"action_find_insulated_wire","property":"display","value":"hide"}]}},
 "action_find_spare_fuse":{"meta":{"title":"Cầu chì dự phòng","buttonLabel":"Nhặt lên","desc":"Hộp linh kiện cũ chứa cầu chì sứ dự phòng còn nguyên, được giữ riêng khỏi dây dẫn đã hỏng."},"set":{"display":"show"},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"spare_fuse"},{"type":"set","subtype":"action","target":"action_find_spare_fuse","property":"display","value":"hide"}]}},
 "action_find_clockwork_spring":{"meta":{"title":"Lò xo cơ khí","buttonLabel": "Lấy lò xo cơ khí","desc":"Hộp bảo trì có lò xo thép còn đàn hồi; cần bộ dụng cụ để mở hộp và lấy linh kiện."},"set":{"display":"show","requirement":true},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"radio_toolkit"}]},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"clockwork_spring"},{"type":"set","subtype":"action","target":"action_find_clockwork_spring","property":"display","value":"hide"}]}},
-"action_restore_radio_signal":{"meta":{"title":"Khôi phục tín hiệu phát thanh (tùy chọn)","buttonLabel":"Can thiệp mạch điện","desc":"Puzzle phụ tùy chọn: dùng bộ dụng cụ, dây, cầu chì và tinh thể có chất lượng tối thiểu để phục hồi tín hiệu. Việc sửa mạch không khóa tiến trình chính; cuộn tinh thể vẫn đủ để dò tín hiệu dưới ga."},"set":{"display":"show","requirement":true
+"action_restore_radio_signal":{"meta":{"title":"Khôi phục tín hiệu phát thanh (tùy chọn)","buttonLabel":"Can thiệp mạch điện","desc":"Puzzle phụ tùy chọn: dùng bộ dụng cụ, dây, cầu chì và tinh thể có chất lượng tối thiểu để phục hồi tín hiệu. Việc sửa mạch không khóa tiến trình chính; cuộn tinh thể vẫn đủ để dò tín hiệu dưới ga."},"set":{"display":"show","requirement":true,
         "readDesc": true,},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"radio_toolkit"},{"type":"item","subtype":"inventory","op":"has","value":"radio_crystal"},{"type":"item","subtype":"inventory","op":"has","value":"insulated_wire"},{"type":"item","subtype":"inventory","op":"has","value":"spare_fuse"},
           {"type":"stats","subtype":"item","target":"radio_toolkit","property":"condition","field":"current","op":">=","value":3},
           {"type":"stats","subtype":"item","target":"insulated_wire","property":"condition","field":"current","op":">=","value":3},
@@ -3896,7 +3896,7 @@ export const DEMO_SCRIPT = {
             "text": "Tín hiệu phát thanh đã được khôi phục; manh mối phụ được mở."
           }
         ]}},
-"action_overlay_map":{"meta":{"title":"Đối chiếu bản đồ","buttonLabel":"Chồng giấy can","desc":"Chồng giấy can lên mảnh bản đồ và kiểm tra các ký hiệu. Độ bao phủ bản đồ, độ chính xác giấy can và kính phải đạt mức tối thiểu để xác nhận tuyến phụ dẫn đến khu vực dưới chân đê."},"set":{"display":"show","requirement":true
+"action_overlay_map":{"meta":{"title":"Đối chiếu bản đồ","buttonLabel":"Chồng giấy can","desc":"Chồng giấy can lên mảnh bản đồ và kiểm tra các ký hiệu. Độ bao phủ bản đồ, độ chính xác giấy can và kính phải đạt mức tối thiểu để xác nhận tuyến phụ dẫn đến khu vực dưới chân đê."},"set":{"display":"show","requirement":true,
         "readDesc": true,},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"map_fragment"},{"type":"item","subtype":"inventory","op":"has","value":"tracing_paper"},{"type":"item","subtype":"inventory","op":"has","value":"inspection_loupe"},{"type":"state","property":"clue_seat_mark","op":"==","value":true},{"type":"state","property":"clue_class_clock","op":"==","value":true},
           {"type":"stats","subtype":"item","target":"map_fragment","property":"coverage","field":"current","op":">=","value":3},
           {"type":"stats","subtype":"item","target":"tracing_paper","property":"precision","field":"current","op":">=","value":3},
