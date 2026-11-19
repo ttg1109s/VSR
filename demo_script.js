@@ -4424,7 +4424,7 @@ export const DEMO_SCRIPT = {
     },
     "action_talk_linh": {
   "meta": {
-    "title": "Linh",
+    "title": "Lời khai riêng của Linh",
     "buttonLabel": "Bảo vệ lời khai",
     "desc": "Bạn quyết định không biến ký ức của Linh thành vật chứng công khai. Lời khai riêng và những chi tiết em nhớ sẽ là con đường tiếp tục điều tra."
   },
