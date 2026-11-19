@@ -57,6 +57,10 @@ export const DEMO_SCRIPT = {
       "type": "string",
       "value": "undecided"
     },
+    "school_choice": {
+      "type": "string",
+      "value": "undecided"
+    },
     "clue_village_notice": {
       "type": "boolean",
       "value": false
@@ -228,62 +232,44 @@ export const DEMO_SCRIPT = {
           }
         ]
       },
+      "school_undecided": {
+        "logic": "AND",
+        "check": [
+          {"type": "state", "property": "school_choice", "op": "==", "value": "undecided"}
+        ]
+      },
+      "school_memory": {
+        "logic": "AND",
+        "check": [
+          {"type": "state", "property": "school_choice", "op": "==", "value": "memory"}
+        ]
+      },
+      "school_evidence": {
+        "logic": "AND",
+        "check": [
+          {"type": "state", "property": "school_choice", "op": "==", "value": "evidence"}
+        ]
+      },
       "station_ready": {
         "logic": "AND",
         "check": [
-          {
-            "type": "state",
-            "property": "truth_fragments",
-            "op": ">=",
-            "value": 3
-          },
-          {
-            "type": "state",
-            "property": "archive_open",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "tunnel_manifest"
-          },
-          {
-            "type": "state",
-            "property": "evidence_evacuation_film",
-            "op": "==",
-            "value": true
-          }
+          {"type": "state", "property": "archive_open", "op": "==", "value": true},
+          {"type": "item", "subtype": "inventory", "op": "has", "value": "tunnel_manifest"},
+          {"type": "state", "property": "evidence_evacuation_film", "op": "==", "value": true},
+          {"type": "state", "property": "clue_hymn", "op": "==", "value": true},
+          {"type": "state", "property": "clue_stakes", "op": "==", "value": true},
+          {"type": "state", "property": "clue_tunnel", "op": "==", "value": true}
         ]
       },
       "release_ready": {
         "logic": "AND",
         "check": [
-          {
-            "type": "state",
-            "property": "truth_fragments",
-            "op": ">=",
-            "value": 3
-          },
-          {
-            "type": "state",
-            "property": "bell_rung",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "state",
-            "property": "archive_open",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "evacuation_seal"
-          }
+          {"type": "state", "property": "bell_rung", "op": "==", "value": true},
+          {"type": "state", "property": "archive_open", "op": "==", "value": true},
+          {"type": "state", "property": "evidence_evacuation_seal", "op": "==", "value": true},
+          {"type": "state", "property": "clue_hymn", "op": "==", "value": true},
+          {"type": "state", "property": "clue_stakes", "op": "==", "value": true},
+          {"type": "state", "property": "clue_tunnel", "op": "==", "value": true}
         ]
       }
     },
@@ -1455,6 +1441,7 @@ export const DEMO_SCRIPT = {
             "action_inspect_tunnel_names",
             "action_open_archive",
             "action_reach_station",
+            "action_reach_station_memory",
             "action_recover_tunnel_manifest"
           ]
         },
@@ -1473,6 +1460,7 @@ export const DEMO_SCRIPT = {
             "action_inspect_tunnel_names",
             "action_open_archive",
             "action_reach_station",
+            "action_reach_station_memory",
           ]
         }
       }
@@ -1504,6 +1492,7 @@ export const DEMO_SCRIPT = {
           "actions": [
             "action_confront_voice",
             "action_choose_fate",
+            "action_choose_fate_memory",
             "action_ending_bury",
             "action_ending_echo",
             "action_ending_depart",
@@ -1524,6 +1513,7 @@ export const DEMO_SCRIPT = {
           "actions": [
             "action_confront_voice",
             "action_choose_fate",
+            "action_choose_fate_memory",
             "action_ending_bury",
             "action_ending_echo",
             "action_ending_depart",
@@ -1725,69 +1715,164 @@ export const DEMO_SCRIPT = {
       }
     },
     "action_talk_mai": {
-      "meta": {
-        "title": "Mai",
-        "buttonLabel": "Trò chuyện",
-        "desc": "Mai đứng gần quảng trường nhưng luôn giữ khoảng cách với giếng đá. Những gì cô sẵn sàng kể thay đổi theo các manh mối bạn đã tìm được."
+  "meta": {
+    "title": "Mai",
+    "buttonLabel": "Trò chuyện",
+    "desc": "Mai đứng gần quảng trường nhưng luôn giữ khoảng cách với giếng đá. Những gì cô sẵn sàng kể thay đổi theo các manh mối bạn đã tìm được."
+  },
+  "set": {
+    "display": "show"
+  },
+  "effect": {
+    "normal": [
+      {
+        "type": "goto",
+        "subtype": "chat",
+        "target": "chat_mai_memory",
+        "req": {
+          "logic": "AND",
+          "check": [
+            {
+              "type": "state",
+              "property": "knows_twelve",
+              "op": "==",
+              "value": true
+            },
+            {
+              "type": "state",
+              "property": "school_choice",
+              "op": "==",
+              "value": "memory"
+            }
+          ]
+        }
       },
-      "set": {
-        "display": "show"
+      {
+        "type": "goto",
+        "subtype": "chat",
+        "target": "chat_mai_evidence",
+        "req": {
+          "logic": "AND",
+          "check": [
+            {
+              "type": "state",
+              "property": "knows_twelve",
+              "op": "==",
+              "value": true
+            },
+            {
+              "type": "state",
+              "property": "school_choice",
+              "op": "==",
+              "value": "evidence"
+            }
+          ]
+        }
       },
-      "effect": {
-        "normal": [
-          {
-            "type": "goto",
-            "subtype": "chat",
-            "target": "chat_mai",
-            "req": {
-              "logic": "AND",
-              "check": [
-                { "type": "state", "property": "knows_twelve", "op": "!=", "value": true },
-                { "type": "state", "property": "clue_well", "op": "!=", "value": true }
-              ]
+      {
+        "type": "goto",
+        "subtype": "chat",
+        "target": "chat_mai",
+        "req": {
+          "logic": "AND",
+          "check": [
+            {
+              "type": "state",
+              "property": "knows_twelve",
+              "op": "!=",
+              "value": true
+            },
+            {
+              "type": "state",
+              "property": "clue_well",
+              "op": "!=",
+              "value": true
             }
-          },
-          {
-            "type": "goto",
-            "subtype": "chat",
-            "target": "chat_mai",
-            "req": {
-              "logic": "AND",
-              "check": [
-                { "type": "state", "property": "knows_twelve", "op": "!=", "value": true },
-                { "type": "state", "property": "clue_well", "op": "==", "value": true },
-                { "type": "state", "property": "clue_lantern", "op": "!=", "value": true }
-              ]
+          ]
+        }
+      },
+      {
+        "type": "goto",
+        "subtype": "chat",
+        "target": "chat_mai",
+        "req": {
+          "logic": "AND",
+          "check": [
+            {
+              "type": "state",
+              "property": "knows_twelve",
+              "op": "!=",
+              "value": true
+            },
+            {
+              "type": "state",
+              "property": "clue_well",
+              "op": "==",
+              "value": true
+            },
+            {
+              "type": "state",
+              "property": "clue_lantern",
+              "op": "!=",
+              "value": true
             }
-          },
-          {
-            "type": "goto",
-            "subtype": "chat",
-            "target": "chat_mai_well",
-            "req": {
-              "logic": "AND",
-              "check": [
-                { "type": "state", "property": "knows_twelve", "op": "!=", "value": true },
-                { "type": "state", "property": "clue_well", "op": "==", "value": true },
-                { "type": "state", "property": "clue_lantern", "op": "==", "value": true }
-              ]
+          ]
+        }
+      },
+      {
+        "type": "goto",
+        "subtype": "chat",
+        "target": "chat_mai_well",
+        "req": {
+          "logic": "AND",
+          "check": [
+            {
+              "type": "state",
+              "property": "knows_twelve",
+              "op": "!=",
+              "value": true
+            },
+            {
+              "type": "state",
+              "property": "clue_well",
+              "op": "==",
+              "value": true
+            },
+            {
+              "type": "state",
+              "property": "clue_lantern",
+              "op": "==",
+              "value": true
             }
-          },
-          {
-            "type": "goto",
-            "subtype": "chat",
-            "target": "chat_mai_umbrella",
-            "req": {
-              "logic": "AND",
-              "check": [
-                { "type": "state", "property": "knows_twelve", "op": "==", "value": true }
-              ]
+          ]
+        }
+      },
+      {
+        "type": "goto",
+        "subtype": "chat",
+        "target": "chat_mai_umbrella",
+        "req": {
+          "logic": "AND",
+          "check": [
+            {
+              "type": "state",
+              "property": "knows_twelve",
+              "op": "==",
+              "value": true
+            },
+            {
+              "type": "state",
+              "property": "school_choice",
+              "op": "==",
+              "value": "undecided"
             }
-          }
-        ],
-        "pass": []
+          ]
+        }
       }
-    },
+    ],
+    "pass": []
+  }
+},
     "action_inspect_well": {
       "meta": {
         "title": "Giếng đá",
@@ -1900,69 +1985,164 @@ export const DEMO_SCRIPT = {
       }
     },
     "action_talk_hanh": {
-      "meta": {
-        "title": "Bà Hạnh",
-        "buttonLabel": "Trò chuyện",
-        "desc": "Bà Hạnh quản lý nhà trọ và nắm giữ cuốn sổ ghi khách đến, khách đi. Bà khẳng định nơi này chỉ có sáu phòng, nhưng hành lang phía sau quầy lại có bảy cánh cửa. Sự chênh lệch ấy không giống một nhầm lẫn trong cách đếm; nó giống một căn phòng đã bị cố tình xóa khỏi lời kể."
+  "meta": {
+    "title": "Bà Hạnh",
+    "buttonLabel": "Trò chuyện",
+    "desc": "Bà Hạnh quản lý nhà trọ và nắm giữ cuốn sổ ghi khách đến, khách đi. Bà khẳng định nơi này chỉ có sáu phòng, nhưng hành lang phía sau quầy lại có bảy cánh cửa. Sự chênh lệch ấy không giống một nhầm lẫn trong cách đếm; nó giống một căn phòng đã bị cố tình xóa khỏi lời kể."
+  },
+  "set": {
+    "display": "show"
+  },
+  "effect": {
+    "normal": [
+      {
+        "type": "goto",
+        "subtype": "chat",
+        "target": "chat_hanh_memory",
+        "req": {
+          "logic": "AND",
+          "check": [
+            {
+              "type": "state",
+              "property": "evidence_hidden_room",
+              "op": "==",
+              "value": true
+            },
+            {
+              "type": "state",
+              "property": "school_choice",
+              "op": "==",
+              "value": "memory"
+            }
+          ]
+        }
       },
-      "set": {
-        "display": "show"
+      {
+        "type": "goto",
+        "subtype": "chat",
+        "target": "chat_hanh_evidence",
+        "req": {
+          "logic": "AND",
+          "check": [
+            {
+              "type": "state",
+              "property": "evidence_hidden_room",
+              "op": "==",
+              "value": true
+            },
+            {
+              "type": "state",
+              "property": "school_choice",
+              "op": "==",
+              "value": "evidence"
+            }
+          ]
+        }
       },
-      "effect": {
-        "normal": [
-          {
-            "type": "goto",
-            "subtype": "chat",
-            "target": "chat_hanh_room",
-            "req": {
-              "logic": "AND",
-              "check": [
-                { "type": "state", "property": "evidence_hidden_room", "op": "==", "value": true }
-              ]
+      {
+        "type": "goto",
+        "subtype": "chat",
+        "target": "chat_hanh_room",
+        "req": {
+          "logic": "AND",
+          "check": [
+            {
+              "type": "state",
+              "property": "evidence_hidden_room",
+              "op": "==",
+              "value": true
+            },
+            {
+              "type": "state",
+              "property": "school_choice",
+              "op": "==",
+              "value": "undecided"
             }
-          },
-          {
-            "type": "goto",
-            "subtype": "chat",
-            "target": "chat_hanh_guestbook",
-            "req": {
-              "logic": "AND",
-              "check": [
-                { "type": "state", "property": "evidence_hidden_room", "op": "!=", "value": true },
-                { "type": "state", "property": "found_guestbook", "op": "==", "value": true }
-              ]
+          ]
+        }
+      },
+      {
+        "type": "goto",
+        "subtype": "chat",
+        "target": "chat_hanh_guestbook",
+        "req": {
+          "logic": "AND",
+          "check": [
+            {
+              "type": "state",
+              "property": "evidence_hidden_room",
+              "op": "!=",
+              "value": true
+            },
+            {
+              "type": "state",
+              "property": "found_guestbook",
+              "op": "==",
+              "value": true
             }
-          },
-          {
-            "type": "goto",
-            "subtype": "chat",
-            "target": "chat_hanh_notice",
-            "req": {
-              "logic": "AND",
-              "check": [
-                { "type": "state", "property": "evidence_hidden_room", "op": "!=", "value": true },
-                { "type": "state", "property": "found_guestbook", "op": "!=", "value": true },
-                { "type": "state", "property": "clue_village_notice", "op": "==", "value": true }
-              ]
+          ]
+        }
+      },
+      {
+        "type": "goto",
+        "subtype": "chat",
+        "target": "chat_hanh_notice",
+        "req": {
+          "logic": "AND",
+          "check": [
+            {
+              "type": "state",
+              "property": "evidence_hidden_room",
+              "op": "!=",
+              "value": true
+            },
+            {
+              "type": "state",
+              "property": "found_guestbook",
+              "op": "!=",
+              "value": true
+            },
+            {
+              "type": "state",
+              "property": "clue_village_notice",
+              "op": "==",
+              "value": true
             }
-          },
-          {
-            "type": "goto",
-            "subtype": "chat",
-            "target": "chat_hanh",
-            "req": {
-              "logic": "AND",
-              "check": [
-                { "type": "state", "property": "evidence_hidden_room", "op": "!=", "value": true },
-                { "type": "state", "property": "found_guestbook", "op": "!=", "value": true },
-                { "type": "state", "property": "clue_village_notice", "op": "!=", "value": true }
-              ]
+          ]
+        }
+      },
+      {
+        "type": "goto",
+        "subtype": "chat",
+        "target": "chat_hanh",
+        "req": {
+          "logic": "AND",
+          "check": [
+            {
+              "type": "state",
+              "property": "evidence_hidden_room",
+              "op": "!=",
+              "value": true
+            },
+            {
+              "type": "state",
+              "property": "found_guestbook",
+              "op": "!=",
+              "value": true
+            },
+            {
+              "type": "state",
+              "property": "clue_village_notice",
+              "op": "!=",
+              "value": true
             }
-          }
-        ],
-        "pass": []
+          ]
+        }
       }
-    },
+    ],
+    "pass": []
+  }
+},
     "action_open_guestbook": {
       "meta": {
         "title": "Sổ khách",
@@ -2120,45 +2300,79 @@ export const DEMO_SCRIPT = {
       }
     },
     "action_read_hymn": {
-      "meta": {
-        "title": "Bản thánh ca",
-        "buttonLabel": "Giải mã",
-        "desc": "Bản thánh ca nằm trên giá gỗ trong gian cầu nguyện. Mực ở vài dòng đã nhạt, nhưng chữ cái đầu mỗi dòng vẫn được viết đậm bất thường; ghép chúng lại thành cụm “IM LANG”. Một dòng khác bị gạch dưới nhiều lần, nhắc đến ba hồi chuông và sự im lặng sau đó."
+  "meta": {
+    "title": "Bản thánh ca",
+    "buttonLabel": "Giải mã",
+    "desc": "Bản thánh ca nằm trên giá gỗ trong gian cầu nguyện. Mực ở vài dòng đã nhạt, nhưng chữ cái đầu mỗi dòng vẫn được viết đậm bất thường; ghép chúng lại thành cụm “IM LANG”. Một dòng khác bị gạch dưới nhiều lần, nhắc đến ba hồi chuông và sự im lặng sau đó."
+  },
+  "set": {
+    "display": "show"
+  },
+  "effect": {
+    "normal": [],
+    "pass": [
+      {
+        "type": "set",
+        "subtype": "state",
+        "target": "truth_fragments",
+        "value": 1
       },
-      "set": {
-        "display": "show"
+      {
+        "type": "set",
+        "subtype": "state",
+        "target": "clue_hymn",
+        "value": true
       },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "truth_fragments",
-            "value": 1
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "clue_hymn",
-            "value": true
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Bạn ghi nhớ mật từ IM LANG và quy tắc ba hồi chuông."
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_read_hymn",
-            "property": "display",
-            "value": "hide"
-          }
-        ]
+      {
+        "type": "notify",
+        "subtype": "toast",
+        "level": "success",
+        "text": "Bạn ghi nhớ mật từ IM LANG và quy tắc ba hồi chuông."
+      },
+      {
+        "type": "set",
+        "subtype": "action",
+        "target": "action_read_hymn",
+        "property": "display",
+        "value": "hide"
+      },
+      {
+        "type": "notify",
+        "subtype": "toast",
+        "level": "info",
+        "text": "Linh đã bảo vệ ký ức riêng; bạn đọc thánh ca như một dấu hiệu, không phải lời khai thay em.",
+        "req": {
+          "logic": "AND",
+          "check": [
+            {
+              "type": "state",
+              "property": "school_choice",
+              "op": "==",
+              "value": "memory"
+            }
+          ]
+        }
+      },
+      {
+        "type": "notify",
+        "subtype": "toast",
+        "level": "info",
+        "text": "Bạn đối chiếu mật từ trong thánh ca với hồ sơ đã bảo toàn; chữ viết xác nhận một nghi thức bị che giấu.",
+        "req": {
+          "logic": "AND",
+          "check": [
+            {
+              "type": "state",
+              "property": "school_choice",
+              "op": "==",
+              "value": "evidence"
+            }
+          ]
+        }
       }
-    },
+    ]
+  }
+},
     "action_talk_keeper": {
       "meta": {
         "title": "Người giữ nhà nguyện",
@@ -2312,44 +2526,15 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Ngăn bàn giáo viên",
         "buttonLabel": "Kiểm tra",
-        "desc": "Ngăn bàn giáo viên chứa một danh sách lớp đã bị sửa bằng mực đen. Bốn cái tên bị gạch bỏ, còn bức ảnh tập thể bên cạnh bị xé khỏi phần giữa. Những dấu ghim và mép giấy cho thấy ảnh từng được giữ cùng một ghi chú về học sinh thứ mười hai."
+        "desc": "Ngăn bàn giáo viên chứa một danh sách lớp đã bị sửa bằng mực đen. Bên cạnh là bức ảnh tập thể bị xé khỏi phần giữa. Danh sách và ảnh mâu thuẫn: một thứ có thể chứng minh sĩ số, thứ còn lại chỉ giữ dấu vết về người đã bị xóa."
       },
-      "set": {
-        "display": "show"
-      },
+      "set": {"display": "show"},
       "effect": {
         "normal": [],
         "pass": [
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "truth_fragments",
-            "value": 1
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "clue_photo",
-            "value": true
-          },
-          {
-            "type": "item",
-            "subtype": "add",
-            "target": "class_photo"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Bức ảnh lớp bị xé để lộ vị trí của học sinh thứ mười hai."
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_check_desk",
-            "property": "display",
-            "value": "hide"
-          }
+          {"type": "set", "subtype": "state", "target": "clue_photo", "value": true},
+          {"type": "notify", "subtype": "toast", "level": "success", "text": "Ảnh và hồ sơ mâu thuẫn. Bạn phải chọn bảo vệ ký ức của Linh hay giữ hồ sơ làm bằng chứng."},
+          {"type": "set", "subtype": "action", "target": "action_check_desk", "property": "display", "value": "hide"}
         ]
       }
     },
@@ -2357,113 +2542,101 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Sơ đồ chỗ ngồi",
         "buttonLabel": "Đối chiếu",
-        "desc": "Sơ đồ chỗ ngồi của lớp số 3 có một khoảng trống bất thường giữa các dãy bàn. Bản gốc và những bản sao còn lại đều xóa cùng một vị trí, như thể mọi hồ sơ đã được sửa theo một chỉ thị thống nhất. Bản sao sổ điểm danh là đối chứng duy nhất còn ghi đủ sĩ số của ngày sơ tán."
+        "desc": "Đối chiếu sơ đồ chỗ ngồi với bản sao sổ điểm danh được bảo toàn. Khoảng trống giữa các dãy bàn trùng với vị trí học sinh thứ mười hai."
       },
-      "set": {
-        "display": "hide",
-        "requirement": true
-      },
+      "set": {"display": "show", "requirement": true},
       "effect": {
         "normal": [],
         "pass": [
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "truth_fragments",
-            "value": 1
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "knows_twelve",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "clue_roster",
-            "value": true
-          },
-          {
-            "type": "item",
-            "subtype": "add",
-            "target": "map_fragment"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Mảnh bản đồ chỉ tới cối xay nước phía Bắc."
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_decode_roster",
-            "property": "display",
-            "value": "hide"
-          }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warning",
-            "text": "Bạn chưa có bản sao sổ điểm danh để đối chiếu với sơ đồ chỗ ngồi đã bị sửa."
-          }
+          {"type": "set", "subtype": "state", "target": "knows_twelve", "value": true},
+          {"type": "set", "subtype": "state", "target": "clue_roster", "value": true},
+          {"type": "item", "subtype": "add", "target": "map_fragment"},
+          {"type": "notify", "subtype": "toast", "level": "success", "text": "Đối chiếu hồ sơ xác nhận vị trí thứ mười hai; mảnh bản đồ chỉ tới cối xay nước phía Bắc."},
+          {"type": "set", "subtype": "action", "target": "action_decode_roster", "property": "display", "value": "hide"}
         ]
       },
       "requirement": {
         "logic": "AND",
         "check": [
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "class_register_copy"
-          }
+          {"type": "item", "subtype": "inventory", "op": "has", "value": "class_register_copy"},
+          {"type": "state", "property": "school_choice", "op": "==", "value": "evidence"}
         ]
       }
     },
     "action_follow_marks": {
-      "meta": {
-        "title": "Dấu sơn trong rừng",
-        "buttonLabel": "Theo dấu",
-        "desc": "Các vệt sơn trên thân thông xuất hiện theo cặp, có chỗ bị rêu che gần hết. Chúng không phải dấu đánh dấu đường đi thông thường: khoảng cách giữa các vệt thay đổi theo hướng rẽ và dẫn đến một khoảng đất trống khuất sau sườn dốc. Từ đó có thể nhìn thấy vòng cọc gỗ giữa rừng."
+  "meta": {
+    "title": "Dấu sơn trong rừng",
+    "buttonLabel": "Theo dấu",
+    "desc": "Các vệt sơn trên thân thông xuất hiện theo cặp, có chỗ bị rêu che gần hết. Chúng không phải dấu đánh dấu đường đi thông thường: khoảng cách giữa các vệt thay đổi theo hướng rẽ và dẫn đến một khoảng đất trống khuất sau sườn dốc. Từ đó có thể nhìn thấy vòng cọc gỗ giữa rừng."
+  },
+  "set": {
+    "display": "show"
+  },
+  "effect": {
+    "normal": [],
+    "pass": [
+      {
+        "type": "set",
+        "subtype": "state",
+        "target": "truth_fragments",
+        "value": 1
       },
-      "set": {
-        "display": "show"
+      {
+        "type": "set",
+        "subtype": "state",
+        "target": "clue_stakes",
+        "value": true
       },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "truth_fragments",
-            "value": 1
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "clue_stakes",
-            "value": true
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Bạn xác định được hướng đi an toàn qua rừng."
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_follow_marks",
-            "property": "display",
-            "value": "hide"
-          }
-        ]
+      {
+        "type": "notify",
+        "subtype": "toast",
+        "level": "success",
+        "text": "Bạn xác định được hướng đi an toàn qua rừng."
+      },
+      {
+        "type": "set",
+        "subtype": "action",
+        "target": "action_follow_marks",
+        "property": "display",
+        "value": "hide"
+      },
+      {
+        "type": "notify",
+        "subtype": "toast",
+        "level": "info",
+        "text": "Bạn lần theo dấu sơn như lời khai của người sống: tuyến đường không cần hồ sơ chính thức để tồn tại.",
+        "req": {
+          "logic": "AND",
+          "check": [
+            {
+              "type": "state",
+              "property": "school_choice",
+              "op": "==",
+              "value": "memory"
+            }
+          ]
+        }
+      },
+      {
+        "type": "notify",
+        "subtype": "toast",
+        "level": "info",
+        "text": "Bạn đối chiếu các dấu sơn với tuyến sơ tán trong hồ sơ; một đoạn đường đã bị bỏ khỏi bản đồ chính thức.",
+        "req": {
+          "logic": "AND",
+          "check": [
+            {
+              "type": "state",
+              "property": "school_choice",
+              "op": "==",
+              "value": "evidence"
+            }
+          ]
+        }
       }
-    },
+    ]
+  }
+},
     "action_maze_path": {
       "meta": {
         "title": "Mê cung trong rừng",
@@ -2634,174 +2807,125 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Cối xay nước",
         "buttonLabel": "Bắt đầu",
-        "desc": "Cối xay nước đã ngừng hoạt động từ lâu; bánh xe mục kẹt trên trục và cơ cấu truyền động thiếu một chốt kim loại. Hộp bánh răng dưới sàn còn giữ đúng bộ phận thay thế, trong khi mảnh bản đồ ở trường học ghi chú chiều xoay ngược để nhả chốt cửa sập. Đây là lối cơ giới duy nhất nối cối xay với đường hầm dưới đê."
+        "desc": "Cối xay cần chốt truyền động, lò xo và bộ dụng cụ. Dấu đường hầm từ Memory hoặc mảnh bản đồ từ Evidence đều cung cấp hướng dẫn."
       },
-      "set": {
-        "display": "show",
-        "requirement": true
-      },
+      "set": {"display": "show", "requirement": true},
       "effect": {
         "normal": [],
         "pass": [
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "mill_powered",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "truth_fragments",
-            "value": 1
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Cối xay dừng lại. Cửa sập dưới sàn mở ra lối xuống đường hầm."
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_repair_mill",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "goto",
-            "subtype": "router",
-            "target": "router_watermill_running"
-          }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warning",
-            "text": "Cối xay chưa thể khởi động: cần cả mảnh bản đồ chỉ chiều xoay và chốt truyền động thay thế."
-          }
+          {"type": "set", "subtype": "state", "target": "mill_powered", "value": true},
+          {"type": "set", "subtype": "state", "target": "truth_fragments", "value": 1},
+          {"type": "notify", "subtype": "toast", "level": "success", "text": "Cối xay hoạt động; cửa sập mở lối xuống đường hầm."},
+          {"type": "set", "subtype": "action", "target": "action_repair_mill", "property": "display", "value": "hide"},
+          {"type": "goto", "subtype": "router", "target": "router_watermill_running"}
         ]
       },
       "requirement": {
         "logic": "AND",
         "check": [
-          { "type": "item", "subtype": "inventory", "op": "has", "value": "map_fragment" },
-          { "type": "item", "subtype": "inventory", "op": "has", "value": "clockwork_spring" },
-          { "type": "item", "subtype": "inventory", "op": "has", "value": "radio_toolkit" },
-          { "type": "item", "subtype": "hand", "op": "==", "value": ["mill_gear_pin"] }
+          {"type": "item", "subtype": "inventory", "op": "has", "value": "clockwork_spring"},
+          {"type": "item", "subtype": "inventory", "op": "has", "value": "radio_toolkit"},
+          {"type": "item", "subtype": "hand", "op": "==", "value": ["mill_gear_pin"]},
+          {"type": "state", "property": "clue_tunnel", "op": "==", "value": true}
         ]
       }
     },
     "action_inspect_tunnel_names": {
-      "meta": {
-        "title": "Danh sách tên trên tường đường hầm",
-        "buttonLabel": "Đọc dấu khắc",
-        "desc": "Các bức tường đường hầm phủ kín tên người và ngày tháng. Những dòng chữ được sắp theo thứ tự biến mất chứ không theo họ tên; một số đoạn đã bị cạo sửa, đặc biệt ở cuối danh sách. Đối chiếu các tên cho thấy có mười hai người, không phải mười một."
+  "meta": {
+    "title": "Danh sách tên trên tường đường hầm",
+    "buttonLabel": "Đọc dấu khắc",
+    "desc": "Các bức tường đường hầm phủ kín tên người và ngày tháng. Những dòng chữ được sắp theo thứ tự biến mất chứ không theo họ tên; một số đoạn đã bị cạo sửa, đặc biệt ở cuối danh sách. Đối chiếu các tên cho thấy có mười hai người, không phải mười một."
+  },
+  "set": {
+    "display": "show"
+  },
+  "effect": {
+    "normal": [],
+    "pass": [
+      {
+        "type": "set",
+        "subtype": "state",
+        "target": "truth_fragments",
+        "value": 1
       },
-      "set": {
-        "display": "show"
+      {
+        "type": "set",
+        "subtype": "state",
+        "target": "clue_tunnel",
+        "value": true
       },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "truth_fragments",
-            "value": 1
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "clue_tunnel",
-            "value": true
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Bạn phát hiện danh sách sơ tán bị sửa. Có mười hai cái tên, không phải mười một."
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_inspect_tunnel_names",
-            "property": "display",
-            "value": "hide"
-          }
-        ]
+      {
+        "type": "notify",
+        "subtype": "toast",
+        "level": "success",
+        "text": "Bạn phát hiện danh sách sơ tán bị sửa. Có mười hai cái tên, không phải mười một."
+      },
+      {
+        "type": "set",
+        "subtype": "action",
+        "target": "action_inspect_tunnel_names",
+        "property": "display",
+        "value": "hide"
+      },
+      {
+        "type": "notify",
+        "subtype": "toast",
+        "level": "info",
+        "text": "Những cái tên trên tường là dấu vết được giữ lại ngoài hồ sơ; bạn không chép chúng thành danh sách công khai.",
+        "req": {
+          "logic": "AND",
+          "check": [
+            {
+              "type": "state",
+              "property": "school_choice",
+              "op": "==",
+              "value": "memory"
+            }
+          ]
+        }
+      },
+      {
+        "type": "notify",
+        "subtype": "toast",
+        "level": "info",
+        "text": "Danh sách khắc trên tường xác nhận hồ sơ đã bỏ sót một người; đây là đối chứng vật lý cho bản ghi.",
+        "req": {
+          "logic": "AND",
+          "check": [
+            {
+              "type": "state",
+              "property": "school_choice",
+              "op": "==",
+              "value": "evidence"
+            }
+          ]
+        }
       }
-    },
+    ]
+  }
+},
     "action_open_archive": {
       "meta": {
         "title": "Tủ hồ sơ dưới đê",
         "buttonLabel": "Mở khóa",
-        "desc": "Tủ hồ sơ được đặt trong hốc bê tông dưới đê, khóa bằng loại ổ chỉ có thể mở bằng chìa chuyên dụng. Bên trong là hồ sơ vận chuyển, danh sách người qua đường hầm và cuộn phim ghi lại đêm sơ tán. Ba nguồn tư liệu phải được đặt cạnh nhau để xác định bản ghi nào đã bị sửa và điều gì thực sự xảy ra mười bảy năm trước."
+        "desc": "Tủ hồ sơ dưới đê lưu bản ghi sơ tán. Sau khi chọn phương thức điều tra và khôi phục dấu đường hầm, chìa khóa cho phép tiếp cận kho tư liệu."
       },
-      "set": {
-        "display": "show",
-        "requirement": true
-      },
+      "set": {"display": "show", "requirement": true},
       "effect": {
         "normal": [],
         "pass": [
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "archive_open",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "truth_fragments",
-            "value": 1
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Hồ sơ xác nhận ngôi làng đã bị sơ tán từ mười bảy năm trước."
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_open_archive",
-            "property": "display",
-            "value": "hide"
-          }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warning",
-            "text": "Chưa thể mở tủ hồ sơ. Cần chìa khóa kho, danh sách vận chuyển lấy từ đường hầm và cuộn phim sơ tán để đối chiếu."
-          }
+          {"type": "set", "subtype": "state", "target": "archive_open", "value": true},
+          {"type": "set", "subtype": "state", "target": "truth_fragments", "value": 1},
+          {"type": "notify", "subtype": "toast", "level": "success", "text": "Tủ hồ sơ mở; tư liệu xác nhận cuộc sơ tán."},
+          {"type": "set", "subtype": "action", "target": "action_open_archive", "property": "display", "value": "hide"}
         ]
       },
       "requirement": {
         "logic": "AND",
         "check": [
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "archive_key"
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "tunnel_manifest"
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "evacuation_film"
-          }
+          {"type": "item", "subtype": "inventory", "op": "has", "value": "archive_key"},
+          {"type": "state", "property": "clue_tunnel", "op": "==", "value": true},
+          {"type": "state", "property": "school_choice", "op": "!=", "value": "undecided"}
         ]
       }
     },
@@ -2883,6 +3007,82 @@ export const DEMO_SCRIPT = {
         "ref": "release_ready"
       }
     },
+    "action_choose_fate_memory": {
+  "meta": {
+    "title": "Sự giải thoát — tuyến ký ức",
+    "buttonLabel": "Giải phóng",
+    "desc": "Dựa trên ký ức nhân chứng, dấu đường hầm và những gì đã khôi phục, bạn chọn giải phóng người bị mắc kẹt."
+  },
+  "set": {
+    "display": "hide",
+    "requirement": true
+  },
+  "effect": {
+    "normal": [],
+    "pass": [
+      {
+        "type": "set",
+        "subtype": "state",
+        "target": "final_choice",
+        "value": "release"
+      },
+      {
+        "type": "goto",
+        "subtype": "end",
+        "target": "ending_release"
+      }
+    ],
+    "fail": [
+      {
+        "type": "notify",
+        "subtype": "toast",
+        "level": "warning",
+        "text": "Tuyến Memory cần rung chuông, mở kho hồ sơ và khôi phục dấu đường hầm, thánh ca cùng vòng cọc."
+      }
+    ]
+  },
+  "requirement": {
+    "logic": "AND",
+    "check": [
+      {
+        "type": "state",
+        "property": "school_choice",
+        "op": "==",
+        "value": "memory"
+      },
+      {
+        "type": "state",
+        "property": "bell_rung",
+        "op": "==",
+        "value": true
+      },
+      {
+        "type": "state",
+        "property": "archive_open",
+        "op": "==",
+        "value": true
+      },
+      {
+        "type": "state",
+        "property": "clue_tunnel",
+        "op": "==",
+        "value": true
+      },
+      {
+        "type": "state",
+        "property": "clue_hymn",
+        "op": "==",
+        "value": true
+      },
+      {
+        "type": "state",
+        "property": "clue_stakes",
+        "op": "==",
+        "value": true
+      }
+    ]
+  }
+},
     "action_ending_bury": {
       "meta": {
         "title": "Hồ sơ sơ tán",
@@ -3417,6 +3617,71 @@ export const DEMO_SCRIPT = {
         "ref": "station_ready"
       }
     },
+    "action_reach_station_memory": {
+  "meta": {
+    "title": "Ga tàu 03:17 — tuyến ký ức",
+    "buttonLabel": "Theo dấu ký ức",
+    "buttonIcon": "train",
+    "desc": "Tuyến Memory dùng lời khai và dấu đường hầm thay cho danh sách vận chuyển và cuộn phim."
+  },
+  "set": {
+    "display": "hide",
+    "requirement": true
+  },
+  "effect": {
+    "normal": [],
+    "pass": [
+      {
+        "type": "goto",
+        "subtype": "scene",
+        "target": "scene_ghost_station"
+      }
+    ],
+    "fail": [
+      {
+        "type": "notify",
+        "subtype": "toast",
+        "level": "warning",
+        "text": "Tuyến Memory cần mở kho hồ sơ, khôi phục dấu đường hầm, đọc thánh ca và xác định vòng cọc thứ mười hai."
+      }
+    ]
+  },
+  "requirement": {
+    "logic": "AND",
+    "check": [
+      {
+        "type": "state",
+        "property": "school_choice",
+        "op": "==",
+        "value": "memory"
+      },
+      {
+        "type": "state",
+        "property": "archive_open",
+        "op": "==",
+        "value": true
+      },
+      {
+        "type": "state",
+        "property": "clue_tunnel",
+        "op": "==",
+        "value": true
+      },
+      {
+        "type": "state",
+        "property": "clue_hymn",
+        "op": "==",
+        "value": true
+      },
+      {
+        "type": "state",
+        "property": "clue_stakes",
+        "op": "==",
+        "value": true
+      }
+    ]
+  }
+},
     "action_descend_tunnel": {
       "meta": {
         "title": "Cửa sập cối xay",
@@ -3681,38 +3946,128 @@ export const DEMO_SCRIPT = {
       }
     },
     "action_recover_class_register": {
-      "meta": {
-        "title": "Ngăn bàn cuối lớp",
-        "buttonLabel": "Lấy sổ điểm danh",
-        "desc": "Ngăn bàn cuối lớp bị đóng đinh, khác với những ngăn còn lại đã bị lục soát. Bản sao sổ điểm danh bên trong vẫn giữ sĩ số mười hai học sinh vào ngày sơ tán, dù tên của một em đã bị bôi đen ở các hồ sơ khác."
+  "meta": {
+    "title": "Ngăn bàn cuối lớp",
+    "buttonLabel": "Bảo toàn hồ sơ",
+    "desc": "Bạn quyết định giữ bản sao sổ điểm danh như bằng chứng có thể đối chiếu, dù việc này khiến Linh không còn muốn chia sẻ toàn bộ ký ức riêng."
+  },
+  "set": {
+    "display": "show",
+    "requirement": true
+  },
+  "effect": {
+    "normal": [],
+    "pass": [
+      {
+        "type": "set",
+        "subtype": "state",
+        "target": "school_choice",
+        "value": "evidence"
       },
-      "set": {
-        "display": "hide"
+      {
+        "type": "item",
+        "subtype": "add",
+        "target": "class_register_copy"
       },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "item",
-            "subtype": "add",
-            "target": "class_register_copy"
-          },
-          
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_recover_class_register",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "goto",
-            "subtype": "router",
-            "target": "router_classroom_archive_open"
-          }
-        ]
+      {
+        "type": "set",
+        "subtype": "state",
+        "target": "evidence_class_register",
+        "value": true
+      },
+      {
+        "type": "set",
+        "subtype": "state",
+        "target": "clue_roster",
+        "value": true
+      },
+      {
+        "type": "set",
+        "subtype": "state",
+        "target": "truth_fragments",
+        "value": 1
+      },
+      {
+        "type": "set",
+        "subtype": "action",
+        "target": "action_recover_class_register",
+        "property": "display",
+        "value": "hide"
+      },
+      {
+        "type": "set",
+        "subtype": "action",
+        "target": "action_talk_linh",
+        "property": "display",
+        "value": "hide"
+      },
+      {
+        "type": "set",
+        "subtype": "action",
+        "target": "action_reach_station",
+        "property": "display",
+        "value": "show"
+      },
+      {
+        "type": "set",
+        "subtype": "action",
+        "target": "action_choose_fate",
+        "property": "display",
+        "value": "show"
+      },
+      {
+        "type": "set",
+        "subtype": "action",
+        "target": "action_decode_roster",
+        "property": "display",
+        "value": "show"
+      },
+      {
+        "type": "set",
+        "subtype": "action",
+        "target": "action_overlay_map",
+        "property": "display",
+        "value": "show"
+      },
+      {
+        "type": "set",
+        "subtype": "action",
+        "target": "action_reach_station_memory",
+        "property": "display",
+        "value": "hide"
+      },
+      {
+        "type": "set",
+        "subtype": "action",
+        "target": "action_choose_fate_memory",
+        "property": "display",
+        "value": "hide"
+      },
+      {
+        "type": "goto",
+        "subtype": "router",
+        "target": "router_classroom_archive_open"
       }
-    },
+    ]
+  },
+  "requirement": {
+    "logic": "AND",
+    "check": [
+      {
+        "type": "state",
+        "property": "clue_photo",
+        "op": "==",
+        "value": true
+      },
+      {
+        "type": "state",
+        "property": "school_choice",
+        "op": "==",
+        "value": "undecided"
+      }
+    ]
+  }
+},
     "action_collect_forest_compass": {
       "meta": {
         "title": "La bàn người dẫn đường",
@@ -3866,50 +4221,123 @@ export const DEMO_SCRIPT = {
       }
     },
     "action_talk_linh": {
-      "meta": {
-        "title": "Linh",
-        "buttonLabel": "Trò chuyện",
-        "desc": "Bức ảnh lớp và dấu vết trong sổ điểm danh khiến Linh chịu nói về chiếc ghế thứ mười hai, cái tên bị xóa và ngày sơ tán."
+  "meta": {
+    "title": "Linh",
+    "buttonLabel": "Bảo vệ lời khai",
+    "desc": "Bạn quyết định không biến ký ức của Linh thành vật chứng công khai. Lời khai riêng và những chi tiết em nhớ sẽ là con đường tiếp tục điều tra."
+  },
+  "set": {
+    "display": "show",
+    "requirement": true
+  },
+  "effect": {
+    "normal": [],
+    "pass": [
+      {
+        "type": "set",
+        "subtype": "state",
+        "target": "school_choice",
+        "value": "memory"
       },
-      "set": {
-        "display": "show",
-        "requirement": true
+      {
+        "type": "set",
+        "subtype": "state",
+        "target": "knows_twelve",
+        "value": true
       },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "goto",
-            "subtype": "chat",
-            "target": "chat_linh"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_talk_linh",
-            "property": "display",
-            "value": "hide"
-          }
-        ]
+      {
+        "type": "set",
+        "subtype": "state",
+        "target": "truth_fragments",
+        "value": 1
       },
-      "requirement": {
-        "logic": "OR",
-        "check": [
-          {
-            "type": "state",
-            "property": "clue_photo",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "state",
-            "property": "clue_roster",
-            "op": "==",
-            "value": true
-          }
-        ]
+      {
+        "type": "set",
+        "subtype": "state",
+        "target": "clue_tunnel",
+        "value": true
+      },
+      {
+        "type": "set",
+        "subtype": "action",
+        "target": "action_talk_linh",
+        "property": "display",
+        "value": "hide"
+      },
+      {
+        "type": "set",
+        "subtype": "action",
+        "target": "action_recover_class_register",
+        "property": "display",
+        "value": "hide"
+      },
+      {
+        "type": "set",
+        "subtype": "action",
+        "target": "action_reach_station",
+        "property": "display",
+        "value": "hide"
+      },
+      {
+        "type": "set",
+        "subtype": "action",
+        "target": "action_choose_fate",
+        "property": "display",
+        "value": "hide"
+      },
+      {
+        "type": "set",
+        "subtype": "action",
+        "target": "action_decode_roster",
+        "property": "display",
+        "value": "hide"
+      },
+      {
+        "type": "set",
+        "subtype": "action",
+        "target": "action_overlay_map",
+        "property": "display",
+        "value": "hide"
+      },
+      {
+        "type": "set",
+        "subtype": "action",
+        "target": "action_reach_station_memory",
+        "property": "display",
+        "value": "show"
+      },
+      {
+        "type": "set",
+        "subtype": "action",
+        "target": "action_choose_fate_memory",
+        "property": "display",
+        "value": "show"
+      },
+      {
+        "type": "goto",
+        "subtype": "chat",
+        "target": "chat_linh"
       }
-    }
+    ]
+  },
+  "requirement": {
+    "logic": "AND",
+    "check": [
+      {
+        "type": "state",
+        "property": "clue_photo",
+        "op": "==",
+        "value": true
+      },
+      {
+        "type": "state",
+        "property": "school_choice",
+        "op": "==",
+        "value": "undecided"
+      }
+    ]
+  }
+}
   },
   "chat": {
     "chat_mai": {
@@ -4829,6 +5257,338 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
+    "chat_mai_memory": {
+  "meta": {
+    "title": "Mai — Bảo vệ ký ức",
+    "loop": false,
+    "sender": "mai",
+    "entry": "start",
+    "to": [
+      "player"
+    ]
+  },
+  "block": {
+    "start": {
+      "line": [
+        {
+          "char_id": "mai",
+          "text": "Cậu đã chọn bảo vệ Linh. Tôi không biết đó là cách đúng, nhưng tôi hiểu vì sao cậu không muốn biến ký ức của em ấy thành hồ sơ."
+        },
+        {
+          "char_id": "mai",
+          "text": "Có những điều tôi chỉ dám kể khi biết chúng sẽ không bị dùng để buộc người khác phải chứng minh mình tồn tại."
+        }
+      ],
+      "choice_id": "umbrella_ask",
+      "choiced": false
+    },
+    "name": {
+      "line": [
+        {
+          "char_id": "mai",
+          "text": "Nét khắc bị cào lại nhiều lần. Tôi nhận ra chữ đầu tiên, nhưng phần còn lại giống tên của một người mà cả làng đều bảo chưa từng tồn tại."
+        }
+      ],
+      "choice_id": "name_follow",
+      "choiced": false
+    },
+    "owner": {
+      "line": [
+        {
+          "char_id": "mai",
+          "text": "Chiếc ô từng ở quầy hàng của tôi. Nhưng có những ngày tôi nhớ mình đã đưa nó cho một đứa trẻ, có ngày lại nhớ chính mình cầm nó đi xuống giếng."
+        }
+      ],
+      "choice_id": "owner_follow",
+      "choiced": false
+    },
+    "accuse": {
+      "line": [
+        {
+          "char_id": "mai",
+          "text": "Nếu cậu muốn hỏi tôi có phải người thứ mười hai không, câu trả lời là tôi không biết. Tôi chỉ biết ký ức của mình có một khoảng trống mang hình dáng của người đó."
+        }
+      ],
+      "choice_id": "accuse_follow",
+      "choiced": false
+    },
+    "first_letter": {
+      "line": [
+        {
+          "char_id": "mai",
+          "text": "Chữ đầu tiên có thể là L. Nhưng trên những bản ghi cũ, tên ấy bị sửa thành một vết mực đen."
+        }
+      ],
+      "choiced": false
+    },
+    "other_names": {
+      "line": [
+        {
+          "char_id": "mai",
+          "text": "Tôi từng nghe ba cách đọc khác nhau cho cùng một cái tên. Mỗi người đều tin cách của mình là đúng."
+        }
+      ],
+      "choiced": false
+    },
+    "child": {
+      "line": [
+        {
+          "char_id": "mai",
+          "text": "Tôi nhớ bàn tay nhỏ nắm cán ô. Không nhớ mặt, không nhớ giọng. Chỉ nhớ đứa trẻ hỏi liệu chuyến tàu có chờ đủ mười hai người không."
+        }
+      ],
+      "choiced": false
+    },
+    "memory": {
+      "line": [
+        {
+          "char_id": "mai",
+          "text": "Nếu ký ức ấy là của tôi, tôi đã quên một người. Nếu là của người khác, tôi đang nhớ thay họ."
+        }
+      ],
+      "choiced": false
+    },
+    "doubt": {
+      "line": [
+        {
+          "char_id": "mai",
+          "text": "Cậu nên hỏi Linh về bức ảnh lớp. Một cái tên có thể bị sửa, nhưng vị trí của một người trong bức ảnh khó biến mất hoàn toàn."
+        }
+      ],
+      "choiced": false
+    },
+    "leave": {
+      "line": [
+        {
+          "char_id": "mai",
+          "text": "Tôi không thể đưa cậu câu trả lời chắc chắn. Hãy giữ chiếc ô và đối chiếu nó với hồ sơ."
+        }
+      ],
+      "choiced": false
+    }
+  },
+  "choice": {
+    "umbrella_ask": [
+      {
+        "id": "mai_umbrella_name",
+        "text": "Cô có nhận ra cái tên được khắc trên cán ô không?",
+        "jump": "name"
+      },
+      {
+        "id": "mai_umbrella_owner",
+        "text": "Chiếc ô này vốn thuộc về ai?",
+        "jump": "owner"
+      },
+      {
+        "id": "mai_umbrella_accuse",
+        "text": "Cô có phải người thứ mười hai không?",
+        "jump": "accuse"
+      }
+    ],
+    "name_follow": [
+      {
+        "id": "mai_name_letter",
+        "text": "Cô đọc được chữ nào đầu tiên?",
+        "jump": "first_letter"
+      },
+      {
+        "id": "mai_name_versions",
+        "text": "Vì sao mỗi người lại đọc cái tên ấy khác nhau?",
+        "jump": "other_names"
+      }
+    ],
+    "owner_follow": [
+      {
+        "id": "mai_owner_child",
+        "text": "Cô có nhớ đứa trẻ đã cầm chiếc ô không?",
+        "jump": "child"
+      },
+      {
+        "id": "mai_owner_memory",
+        "text": "Cô nghĩ ký ức đó thuộc về ai?",
+        "jump": "memory"
+      }
+    ],
+    "accuse_follow": [
+      {
+        "id": "mai_accuse_doubt",
+        "text": "Cô có nghĩ mình đang nhớ thay một người khác?",
+        "jump": "doubt"
+      },
+      {
+        "id": "mai_accuse_leave",
+        "text": "Tôi sẽ đối chiếu chiếc ô với hồ sơ trước.",
+        "jump": "leave"
+      }
+    ]
+  }
+},
+    "chat_mai_evidence": {
+  "meta": {
+    "title": "Mai — Hồ sơ được giữ lại",
+    "loop": false,
+    "sender": "mai",
+    "entry": "start",
+    "to": [
+      "player"
+    ]
+  },
+  "block": {
+    "start": {
+      "line": [
+        {
+          "char_id": "mai",
+          "text": "Cậu đã giữ bản ghi ở trường. Nếu hồ sơ còn nguyên, tôi có thể giúp đối chiếu những cái tên mà làng đã sửa."
+        },
+        {
+          "char_id": "mai",
+          "text": "Nhưng đừng để giấy tờ thay thế lời người sống. Bản ghi có thể xác nhận một sự kiện, không thể nói hết một người."
+        }
+      ],
+      "choice_id": "umbrella_ask",
+      "choiced": false
+    },
+    "name": {
+      "line": [
+        {
+          "char_id": "mai",
+          "text": "Nét khắc bị cào lại nhiều lần. Tôi nhận ra chữ đầu tiên, nhưng phần còn lại giống tên của một người mà cả làng đều bảo chưa từng tồn tại."
+        }
+      ],
+      "choice_id": "name_follow",
+      "choiced": false
+    },
+    "owner": {
+      "line": [
+        {
+          "char_id": "mai",
+          "text": "Chiếc ô từng ở quầy hàng của tôi. Nhưng có những ngày tôi nhớ mình đã đưa nó cho một đứa trẻ, có ngày lại nhớ chính mình cầm nó đi xuống giếng."
+        }
+      ],
+      "choice_id": "owner_follow",
+      "choiced": false
+    },
+    "accuse": {
+      "line": [
+        {
+          "char_id": "mai",
+          "text": "Nếu cậu muốn hỏi tôi có phải người thứ mười hai không, câu trả lời là tôi không biết. Tôi chỉ biết ký ức của mình có một khoảng trống mang hình dáng của người đó."
+        }
+      ],
+      "choice_id": "accuse_follow",
+      "choiced": false
+    },
+    "first_letter": {
+      "line": [
+        {
+          "char_id": "mai",
+          "text": "Chữ đầu tiên có thể là L. Nhưng trên những bản ghi cũ, tên ấy bị sửa thành một vết mực đen."
+        }
+      ],
+      "choiced": false
+    },
+    "other_names": {
+      "line": [
+        {
+          "char_id": "mai",
+          "text": "Tôi từng nghe ba cách đọc khác nhau cho cùng một cái tên. Mỗi người đều tin cách của mình là đúng."
+        }
+      ],
+      "choiced": false
+    },
+    "child": {
+      "line": [
+        {
+          "char_id": "mai",
+          "text": "Tôi nhớ bàn tay nhỏ nắm cán ô. Không nhớ mặt, không nhớ giọng. Chỉ nhớ đứa trẻ hỏi liệu chuyến tàu có chờ đủ mười hai người không."
+        }
+      ],
+      "choiced": false
+    },
+    "memory": {
+      "line": [
+        {
+          "char_id": "mai",
+          "text": "Nếu ký ức ấy là của tôi, tôi đã quên một người. Nếu là của người khác, tôi đang nhớ thay họ."
+        }
+      ],
+      "choiced": false
+    },
+    "doubt": {
+      "line": [
+        {
+          "char_id": "mai",
+          "text": "Cậu nên hỏi Linh về bức ảnh lớp. Một cái tên có thể bị sửa, nhưng vị trí của một người trong bức ảnh khó biến mất hoàn toàn."
+        }
+      ],
+      "choiced": false
+    },
+    "leave": {
+      "line": [
+        {
+          "char_id": "mai",
+          "text": "Tôi không thể đưa cậu câu trả lời chắc chắn. Hãy giữ chiếc ô và đối chiếu nó với hồ sơ."
+        }
+      ],
+      "choiced": false
+    }
+  },
+  "choice": {
+    "umbrella_ask": [
+      {
+        "id": "mai_umbrella_name",
+        "text": "Cô có nhận ra cái tên được khắc trên cán ô không?",
+        "jump": "name"
+      },
+      {
+        "id": "mai_umbrella_owner",
+        "text": "Chiếc ô này vốn thuộc về ai?",
+        "jump": "owner"
+      },
+      {
+        "id": "mai_umbrella_accuse",
+        "text": "Cô có phải người thứ mười hai không?",
+        "jump": "accuse"
+      }
+    ],
+    "name_follow": [
+      {
+        "id": "mai_name_letter",
+        "text": "Cô đọc được chữ nào đầu tiên?",
+        "jump": "first_letter"
+      },
+      {
+        "id": "mai_name_versions",
+        "text": "Vì sao mỗi người lại đọc cái tên ấy khác nhau?",
+        "jump": "other_names"
+      }
+    ],
+    "owner_follow": [
+      {
+        "id": "mai_owner_child",
+        "text": "Cô có nhớ đứa trẻ đã cầm chiếc ô không?",
+        "jump": "child"
+      },
+      {
+        "id": "mai_owner_memory",
+        "text": "Cô nghĩ ký ức đó thuộc về ai?",
+        "jump": "memory"
+      }
+    ],
+    "accuse_follow": [
+      {
+        "id": "mai_accuse_doubt",
+        "text": "Cô có nghĩ mình đang nhớ thay một người khác?",
+        "jump": "doubt"
+      },
+      {
+        "id": "mai_accuse_leave",
+        "text": "Tôi sẽ đối chiếu chiếc ô với hồ sơ trước.",
+        "jump": "leave"
+      }
+    ]
+  }
+},
     "chat_mai_umbrella": {
       "meta": {
         "title": "Mai — Cái tên trên cán ô",
@@ -5152,6 +5912,320 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
+    "chat_hanh_memory": {
+  "meta": {
+    "title": "Bà Hạnh — Lời kể được bảo vệ",
+    "loop": false,
+    "sender": "hanh",
+    "entry": "start",
+    "to": [
+      "player"
+    ]
+  },
+  "block": {
+    "start": {
+      "line": [
+        {
+          "char_id": "hanh",
+          "text": "Cậu đã chọn giữ lời khai của Linh riêng tư. Tôi tôn trọng điều đó; có những ký ức chỉ nên được kể khi người mang chúng thấy an toàn."
+        },
+        {
+          "char_id": "hanh",
+          "text": "Căn phòng thứ bảy không phải một hồ sơ. Nó là nơi một người từng chờ được gọi tên."
+        }
+      ],
+      "choice_id": "room_ask",
+      "choiced": false
+    },
+    "belongings": {
+      "line": [
+        {
+          "char_id": "hanh",
+          "text": "Trong phòng có một chiếc cốc, một tấm ảnh bị úp xuống và dấu bụi hình chữ nhật trên bàn. Tôi không biết món nào được đặt ở đó đầu tiên."
+        }
+      ],
+      "choice_id": "belongings_follow",
+      "choiced": false
+    },
+    "photo": {
+      "line": [
+        {
+          "char_id": "hanh",
+          "text": "Tấm ảnh chụp hành lang nhà trọ. Có bảy cánh cửa, nhưng người đứng trước cánh cửa cuối cùng đã bị cắt khỏi ảnh."
+        }
+      ],
+      "choice_id": "photo_follow",
+      "choiced": false
+    },
+    "waiting": {
+      "line": [
+        {
+          "char_id": "hanh",
+          "text": "Tôi từng đặt một chiếc cốc thứ hai mỗi tối. Khi nhận ra mình làm vậy, tôi đã cất nó đi. Sáng hôm sau nó lại nằm trên bàn."
+        }
+      ],
+      "choice_id": "waiting_follow",
+      "choiced": false
+    },
+    "back_photo": {
+      "line": [
+        {
+          "char_id": "hanh",
+          "text": "Mặt sau ảnh có dòng chữ: “Đừng khóa cửa khi đủ mười hai”. Không có chữ ký."
+        }
+      ],
+      "choiced": false
+    },
+    "identity": {
+      "line": [
+        {
+          "char_id": "hanh",
+          "text": "Tôi không thể nói người trong ảnh là cậu. Khuôn mặt đã bị cắt, và phần còn lại không đủ để nhận dạng."
+        }
+      ],
+      "choiced": false
+    },
+    "cup": {
+      "line": [
+        {
+          "char_id": "hanh",
+          "text": "Chiếc cốc có vết son môi ở miệng, nhưng tôi sống một mình. Có lẽ căn phòng này từng có người ở cùng tôi."
+        }
+      ],
+      "choiced": false
+    },
+    "night": {
+      "line": [
+        {
+          "char_id": "hanh",
+          "text": "Tôi nghe tiếng chìa khóa xoay vào lúc 03:17. Khi mở cửa, hành lang trống không, nhưng chiếc cốc thứ hai đã được rót đầy."
+        }
+      ],
+      "choiced": false
+    },
+    "truth": {
+      "line": [
+        {
+          "char_id": "hanh",
+          "text": "Tôi sẽ không yêu cầu cậu tin tôi. Hãy giữ tấm ảnh và so sánh nó với ảnh lớp ở trường."
+        }
+      ],
+      "choiced": false
+    }
+  },
+  "choice": {
+    "room_ask": [
+      {
+        "id": "hanh_room_belongings",
+        "text": "Những món đồ trong phòng thuộc về ai?",
+        "jump": "belongings"
+      },
+      {
+        "id": "hanh_room_photo",
+        "text": "Bức ảnh hành lang có gì bất thường?",
+        "jump": "photo"
+      },
+      {
+        "id": "hanh_room_waiting",
+        "text": "Bà đã từng chờ ai trong căn phòng này?",
+        "jump": "waiting"
+      }
+    ],
+    "belongings_follow": [
+      {
+        "id": "hanh_belongings_photo",
+        "text": "Tấm ảnh có manh mối gì ở mặt sau?",
+        "jump": "back_photo"
+      },
+      {
+        "id": "hanh_belongings_identity",
+        "text": "Bà có nhận ra người từng ở đây không?",
+        "jump": "identity"
+      }
+    ],
+    "photo_follow": [
+      {
+        "id": "hanh_photo_cup",
+        "text": "Chiếc cốc thứ hai có liên quan đến căn phòng không?",
+        "jump": "cup"
+      },
+      {
+        "id": "hanh_photo_night",
+        "text": "Bà có nghe thấy ai trở lại vào ban đêm?",
+        "jump": "night"
+      }
+    ],
+    "waiting_follow": [
+      {
+        "id": "hanh_waiting_cup",
+        "text": "Vì sao bà vẫn đặt hai chiếc cốc?",
+        "jump": "cup"
+      },
+      {
+        "id": "hanh_waiting_truth",
+        "text": "Tôi nên làm gì với những gì tìm thấy ở đây?",
+        "jump": "truth"
+      }
+    ]
+  }
+},
+    "chat_hanh_evidence": {
+  "meta": {
+    "title": "Bà Hạnh — Hồ sơ đối chiếu",
+    "loop": false,
+    "sender": "hanh",
+    "entry": "start",
+    "to": [
+      "player"
+    ]
+  },
+  "block": {
+    "start": {
+      "line": [
+        {
+          "char_id": "hanh",
+          "text": "Cậu đã giữ sổ ở trường. Tôi có thể đối chiếu căn phòng này với bản ghi, nhưng đừng nghĩ tài liệu sẽ khiến người ta thôi sợ."
+        },
+        {
+          "char_id": "hanh",
+          "text": "Nếu cậu công khai nó, hãy nhớ người sống vẫn phải ở lại trong ngôi làng này sau khi sự thật được ghi ra."
+        }
+      ],
+      "choice_id": "room_ask",
+      "choiced": false
+    },
+    "belongings": {
+      "line": [
+        {
+          "char_id": "hanh",
+          "text": "Trong phòng có một chiếc cốc, một tấm ảnh bị úp xuống và dấu bụi hình chữ nhật trên bàn. Tôi không biết món nào được đặt ở đó đầu tiên."
+        }
+      ],
+      "choice_id": "belongings_follow",
+      "choiced": false
+    },
+    "photo": {
+      "line": [
+        {
+          "char_id": "hanh",
+          "text": "Tấm ảnh chụp hành lang nhà trọ. Có bảy cánh cửa, nhưng người đứng trước cánh cửa cuối cùng đã bị cắt khỏi ảnh."
+        }
+      ],
+      "choice_id": "photo_follow",
+      "choiced": false
+    },
+    "waiting": {
+      "line": [
+        {
+          "char_id": "hanh",
+          "text": "Tôi từng đặt một chiếc cốc thứ hai mỗi tối. Khi nhận ra mình làm vậy, tôi đã cất nó đi. Sáng hôm sau nó lại nằm trên bàn."
+        }
+      ],
+      "choice_id": "waiting_follow",
+      "choiced": false
+    },
+    "back_photo": {
+      "line": [
+        {
+          "char_id": "hanh",
+          "text": "Mặt sau ảnh có dòng chữ: “Đừng khóa cửa khi đủ mười hai”. Không có chữ ký."
+        }
+      ],
+      "choiced": false
+    },
+    "identity": {
+      "line": [
+        {
+          "char_id": "hanh",
+          "text": "Tôi không thể nói người trong ảnh là cậu. Khuôn mặt đã bị cắt, và phần còn lại không đủ để nhận dạng."
+        }
+      ],
+      "choiced": false
+    },
+    "cup": {
+      "line": [
+        {
+          "char_id": "hanh",
+          "text": "Chiếc cốc có vết son môi ở miệng, nhưng tôi sống một mình. Có lẽ căn phòng này từng có người ở cùng tôi."
+        }
+      ],
+      "choiced": false
+    },
+    "night": {
+      "line": [
+        {
+          "char_id": "hanh",
+          "text": "Tôi nghe tiếng chìa khóa xoay vào lúc 03:17. Khi mở cửa, hành lang trống không, nhưng chiếc cốc thứ hai đã được rót đầy."
+        }
+      ],
+      "choiced": false
+    },
+    "truth": {
+      "line": [
+        {
+          "char_id": "hanh",
+          "text": "Tôi sẽ không yêu cầu cậu tin tôi. Hãy giữ tấm ảnh và so sánh nó với ảnh lớp ở trường."
+        }
+      ],
+      "choiced": false
+    }
+  },
+  "choice": {
+    "room_ask": [
+      {
+        "id": "hanh_room_belongings",
+        "text": "Những món đồ trong phòng thuộc về ai?",
+        "jump": "belongings"
+      },
+      {
+        "id": "hanh_room_photo",
+        "text": "Bức ảnh hành lang có gì bất thường?",
+        "jump": "photo"
+      },
+      {
+        "id": "hanh_room_waiting",
+        "text": "Bà đã từng chờ ai trong căn phòng này?",
+        "jump": "waiting"
+      }
+    ],
+    "belongings_follow": [
+      {
+        "id": "hanh_belongings_photo",
+        "text": "Tấm ảnh có manh mối gì ở mặt sau?",
+        "jump": "back_photo"
+      },
+      {
+        "id": "hanh_belongings_identity",
+        "text": "Bà có nhận ra người từng ở đây không?",
+        "jump": "identity"
+      }
+    ],
+    "photo_follow": [
+      {
+        "id": "hanh_photo_cup",
+        "text": "Chiếc cốc thứ hai có liên quan đến căn phòng không?",
+        "jump": "cup"
+      },
+      {
+        "id": "hanh_photo_night",
+        "text": "Bà có nghe thấy ai trở lại vào ban đêm?",
+        "jump": "night"
+      }
+    ],
+    "waiting_follow": [
+      {
+        "id": "hanh_waiting_cup",
+        "text": "Vì sao bà vẫn đặt hai chiếc cốc?",
+        "jump": "cup"
+      },
+      {
+        "id": "hanh_waiting_truth",
+        "text": "Tôi nên làm gì với những gì tìm thấy ở đây?",
+        "jump": "truth"
+      }
+    ]
+  }
+},
     "chat_hanh_room": {
       "meta": {
         "title": "Bà Hạnh — Căn phòng thứ bảy",
