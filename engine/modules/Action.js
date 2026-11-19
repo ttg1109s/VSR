@@ -258,6 +258,11 @@ export const ActionSystem = {
                     await this.processRunnables(actDef.effect.fail, { sceneId: sId, routerId: rId, actionId: actionKey, hook: 'fail' });
                 }
 
+                // Requirement failure is a completed action attempt. Release the global
+                // processing lock before publishing the snapshot; otherwise every Action
+                // is projected as `busy` and the client receives no unlocked snapshot
+                // (the protocol's post-command commit is skipped after this commit).
+                this.isActionProcessing = false;
                 this.commitState('action.changed');
                 return { success: false, reason: 'requirement_failed', failType, notificationEmitted };
             }
