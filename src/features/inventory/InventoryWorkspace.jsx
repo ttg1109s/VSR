@@ -125,7 +125,25 @@ function InventoryItemDetails({ item, onBack, onToggleEquipment, busy }) {
       {Array.isArray(item.stats) && item.stats.length > 0 && (
         <section className="vsr-inventory-item-details__section">
           <h3><span className="material-symbols-rounded" aria-hidden="true">analytics</span>Stats</h3>
-          <dl className="vsr-inventory-item-details__stats">{item.stats.map(stat => <div key={stat.id}><dt>{stat.label}</dt><dd>{stat.current === null ? '—' : stat.current}{stat.max !== null ? ` / ${stat.max}` : ''}</dd></div>)}</dl>
+          <div className="vsr-inventory-item-details__stats">{item.stats.map(stat => {
+            const current = Number(stat.current);
+            const max = Number(stat.max);
+            const hasProgress = stat.current !== null && stat.current !== undefined && stat.max !== null && stat.max !== undefined && Number.isFinite(current) && Number.isFinite(max) && max > 0;
+            const progress = hasProgress ? Math.max(0, Math.min(100, (current / max) * 100)) : null;
+            return (
+              <div className="vsr-inventory-item-details__stat" key={stat.id}>
+                <div className="vsr-inventory-item-details__stat-value">
+                  <dt>{stat.label}</dt>
+                  <dd>{stat.current === null || stat.current === undefined ? '—' : stat.current}{stat.max !== null && stat.max !== undefined ? ` / ${stat.max}` : ''}</dd>
+                </div>
+                {progress !== null && (
+                  <div className="vsr-inventory-item-details__stat-progress" role="progressbar" aria-valuenow={progress} aria-valuemin="0" aria-valuemax="100" aria-label={stat.label}>
+                    <span style={{ width: `${progress}%` }} />
+                  </div>
+                )}
+              </div>
+            );
+          })}</div>
         </section>
       )}
 
