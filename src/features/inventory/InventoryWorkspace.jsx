@@ -342,22 +342,23 @@ export default function InventoryWorkspace({ snapshot, client, open = false, onC
     <>
     <Drawer
       open={open}
-      title={liveDetailItem ? (liveDetailItem.name || "Item Details") : "Inventory"}
+      title={liveDetailItem ? "Inventory Details" : "Inventory"}
       onClose={onClose}
       size="lg"
       width="min(100vw, 760px)"
       lockScroll
       contentClassName="vsr-inventory-drawer-content"
-      headerActions={liveDetailItem ? (
-        <Button variant="tertiary" size="sm" onClick={() => setDetailItem(null)}>
-          <span className="material-symbols-rounded" aria-hidden="true">arrow_back</span>
-          Back to Inventory
-        </Button>
-      ) : (
+      headerContent={liveDetailItem ? (
+        <div className="vsr-inventory-details-header">
+          <IconButton icon="arrow_back" label="Back to Inventory" onClick={() => setDetailItem(null)} className="vsr-inventory-details-header__back" />
+          <h2>Inventory Details</h2>
+        </div>
+      ) : undefined}
+      headerActions={!liveDetailItem ? (
         <Popover align="end" label="Inventory filters" trigger={<IconButton icon="tune" label="Inventory filters" />}>
           <InventoryFilters category={category} onCategoryChange={resetPage(setCategory)} categories={categories} equipment={equipment} onEquipmentChange={resetPage(setEquipment)} sort={sort} onSortChange={resetPage(setSort)} />
         </Popover>
-      )}
+      ) : undefined}
     >
       {liveDetailItem ? (
         <InventoryItemDetails
