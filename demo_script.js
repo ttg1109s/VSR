@@ -57,6 +57,10 @@ export const DEMO_SCRIPT = {
       "type": "string",
       "value": "undecided"
     },
+    "school_choice": {
+      "type": "string",
+      "value": "undecided"
+    },
     "clue_village_notice": {
       "type": "boolean",
       "value": false
@@ -226,6 +230,24 @@ export const DEMO_SCRIPT = {
             "op": "has",
             "value": "archive_key"
           }
+        ]
+      },
+      "school_undecided": {
+        "logic": "AND",
+        "check": [
+          {"type": "state", "property": "school_choice", "op": "==", "value": "undecided"}
+        ]
+      },
+      "school_memory": {
+        "logic": "AND",
+        "check": [
+          {"type": "state", "property": "school_choice", "op": "==", "value": "memory"}
+        ]
+      },
+      "school_evidence": {
+        "logic": "AND",
+        "check": [
+          {"type": "state", "property": "school_choice", "op": "==", "value": "evidence"}
         ]
       },
       "station_ready": {
@@ -2312,44 +2334,15 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Ngăn bàn giáo viên",
         "buttonLabel": "Kiểm tra",
-        "desc": "Ngăn bàn giáo viên chứa một danh sách lớp đã bị sửa bằng mực đen. Bốn cái tên bị gạch bỏ, còn bức ảnh tập thể bên cạnh bị xé khỏi phần giữa. Những dấu ghim và mép giấy cho thấy ảnh từng được giữ cùng một ghi chú về học sinh thứ mười hai."
+        "desc": "Ngăn bàn giáo viên chứa một danh sách lớp đã bị sửa bằng mực đen. Bên cạnh là bức ảnh tập thể bị xé khỏi phần giữa. Danh sách và ảnh mâu thuẫn: một thứ có thể chứng minh sĩ số, thứ còn lại chỉ giữ dấu vết về người đã bị xóa."
       },
-      "set": {
-        "display": "show"
-      },
+      "set": {"display": "show"},
       "effect": {
         "normal": [],
         "pass": [
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "truth_fragments",
-            "value": 1
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "clue_photo",
-            "value": true
-          },
-          {
-            "type": "item",
-            "subtype": "add",
-            "target": "class_photo"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Bức ảnh lớp bị xé để lộ vị trí của học sinh thứ mười hai."
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_check_desk",
-            "property": "display",
-            "value": "hide"
-          }
+          {"type": "set", "subtype": "state", "target": "clue_photo", "value": true},
+          {"type": "notify", "subtype": "toast", "level": "success", "text": "Ảnh và hồ sơ mâu thuẫn. Bạn phải chọn bảo vệ ký ức của Linh hay giữ hồ sơ làm bằng chứng."},
+          {"type": "set", "subtype": "action", "target": "action_check_desk", "property": "display", "value": "hide"}
         ]
       }
     },
@@ -2357,70 +2350,24 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Sơ đồ chỗ ngồi",
         "buttonLabel": "Đối chiếu",
-        "desc": "Sơ đồ chỗ ngồi của lớp số 3 có một khoảng trống bất thường giữa các dãy bàn. Bản gốc và những bản sao còn lại đều xóa cùng một vị trí, như thể mọi hồ sơ đã được sửa theo một chỉ thị thống nhất. Bản sao sổ điểm danh là đối chứng duy nhất còn ghi đủ sĩ số của ngày sơ tán."
+        "desc": "Đối chiếu sơ đồ chỗ ngồi với bản sao sổ điểm danh được bảo toàn. Khoảng trống giữa các dãy bàn trùng với vị trí học sinh thứ mười hai."
       },
-      "set": {
-        "display": "hide",
-        "requirement": true
-      },
+      "set": {"display": "show", "requirement": true},
       "effect": {
         "normal": [],
         "pass": [
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "truth_fragments",
-            "value": 1
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "knows_twelve",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "clue_roster",
-            "value": true
-          },
-          {
-            "type": "item",
-            "subtype": "add",
-            "target": "map_fragment"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Mảnh bản đồ chỉ tới cối xay nước phía Bắc."
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_decode_roster",
-            "property": "display",
-            "value": "hide"
-          }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warning",
-            "text": "Bạn chưa có bản sao sổ điểm danh để đối chiếu với sơ đồ chỗ ngồi đã bị sửa."
-          }
+          {"type": "set", "subtype": "state", "target": "knows_twelve", "value": true},
+          {"type": "set", "subtype": "state", "target": "clue_roster", "value": true},
+          {"type": "item", "subtype": "add", "target": "map_fragment"},
+          {"type": "notify", "subtype": "toast", "level": "success", "text": "Đối chiếu hồ sơ xác nhận vị trí thứ mười hai; mảnh bản đồ chỉ tới cối xay nước phía Bắc."},
+          {"type": "set", "subtype": "action", "target": "action_decode_roster", "property": "display", "value": "hide"}
         ]
       },
       "requirement": {
         "logic": "AND",
         "check": [
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "class_register_copy"
-          }
+          {"type": "item", "subtype": "inventory", "op": "has", "value": "class_register_copy"},
+          {"type": "template", "subtype": "requirement", "ref": "school_evidence"}
         ]
       }
     },
@@ -3683,33 +3630,28 @@ export const DEMO_SCRIPT = {
     "action_recover_class_register": {
       "meta": {
         "title": "Ngăn bàn cuối lớp",
-        "buttonLabel": "Lấy sổ điểm danh",
-        "desc": "Ngăn bàn cuối lớp bị đóng đinh, khác với những ngăn còn lại đã bị lục soát. Bản sao sổ điểm danh bên trong vẫn giữ sĩ số mười hai học sinh vào ngày sơ tán, dù tên của một em đã bị bôi đen ở các hồ sơ khác."
+        "buttonLabel": "Bảo toàn hồ sơ",
+        "desc": "Bạn quyết định giữ bản sao sổ điểm danh như bằng chứng có thể đối chiếu, dù việc này khiến Linh không còn muốn chia sẻ toàn bộ ký ức riêng."
       },
-      "set": {
-        "display": "hide"
-      },
+      "set": {"display": "show", "requirement": true},
       "effect": {
         "normal": [],
         "pass": [
-          {
-            "type": "item",
-            "subtype": "add",
-            "target": "class_register_copy"
-          },
-          
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_recover_class_register",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "goto",
-            "subtype": "router",
-            "target": "router_classroom_archive_open"
-          }
+          {"type": "set", "subtype": "state", "target": "school_choice", "value": "evidence"},
+          {"type": "item", "subtype": "add", "target": "class_register_copy"},
+          {"type": "set", "subtype": "state", "target": "evidence_class_register", "value": true},
+          {"type": "set", "subtype": "state", "target": "clue_roster", "value": true},
+          {"type": "set", "subtype": "state", "target": "truth_fragments", "value": 1},
+          {"type": "set", "subtype": "action", "target": "action_recover_class_register", "property": "display", "value": "hide"},
+          {"type": "set", "subtype": "action", "target": "action_talk_linh", "property": "display", "value": "hide"},
+          {"type": "goto", "subtype": "router", "target": "router_classroom_archive_open"}
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {"type": "state", "property": "clue_photo", "op": "==", "value": true},
+          {"type": "template", "subtype": "requirement", "ref": "school_undecided"}
         ]
       }
     },
@@ -3868,45 +3810,26 @@ export const DEMO_SCRIPT = {
     "action_talk_linh": {
       "meta": {
         "title": "Linh",
-        "buttonLabel": "Trò chuyện",
-        "desc": "Bức ảnh lớp và dấu vết trong sổ điểm danh khiến Linh chịu nói về chiếc ghế thứ mười hai, cái tên bị xóa và ngày sơ tán."
+        "buttonLabel": "Bảo vệ lời khai",
+        "desc": "Bạn quyết định không biến ký ức của Linh thành vật chứng công khai. Lời khai riêng và những chi tiết em nhớ sẽ là con đường tiếp tục điều tra."
       },
-      "set": {
-        "display": "show",
-        "requirement": true
-      },
+      "set": {"display": "show", "requirement": true},
       "effect": {
         "normal": [],
         "pass": [
-          {
-            "type": "goto",
-            "subtype": "chat",
-            "target": "chat_linh"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_talk_linh",
-            "property": "display",
-            "value": "hide"
-          }
+          {"type": "set", "subtype": "state", "target": "school_choice", "value": "memory"},
+          {"type": "set", "subtype": "state", "target": "knows_twelve", "value": true},
+          {"type": "set", "subtype": "state", "target": "truth_fragments", "value": 1},
+          {"type": "goto", "subtype": "chat", "target": "chat_linh"},
+          {"type": "set", "subtype": "action", "target": "action_talk_linh", "property": "display", "value": "hide"},
+          {"type": "set", "subtype": "action", "target": "action_recover_class_register", "property": "display", "value": "hide"}
         ]
       },
       "requirement": {
-        "logic": "OR",
+        "logic": "AND",
         "check": [
-          {
-            "type": "state",
-            "property": "clue_photo",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "state",
-            "property": "clue_roster",
-            "op": "==",
-            "value": true
-          }
+          {"type": "state", "property": "clue_photo", "op": "==", "value": true},
+          {"type": "template", "subtype": "requirement", "ref": "school_undecided"}
         ]
       }
     }
