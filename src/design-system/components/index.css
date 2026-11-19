@@ -135,6 +135,7 @@
   min-width: 0;
 }
 .vsr-inventory-item {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -150,6 +151,23 @@
 .vsr-inventory-item:focus-visible {
   outline: 2px solid var(--vsr-color-primary);
   outline-offset: 2px;
+}
+.vsr-inventory-item__equipped-badge {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  background: var(--vsr-color-primary);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  z-index: 1;
 }
 .vsr-inventory-item__icon {
   display: flex;
