@@ -1437,3 +1437,41 @@ test('Mask relationship requirements use the borrowed identity without overwriti
   }).pass, false);
   assert.deepEqual(characters.player.relationship, [['friend', 'ally']]);
 });
+
+test('demo progression gates are reachable and optional radio repair is explicit', () => {
+  const notice = DEMO_SCRIPT.actions.action_read_notice;
+  assert.equal(notice.set.requirement, false); // first interaction remains intentionally ungated
+  assert.deepEqual(notice.requirement.check.map(check => check.property), [
+    'clue_photo', 'clue_roster', 'clue_tape'
+  ]);
+  assert.equal(DEMO_SCRIPT.actions.action_talk_linh.set.requirement, true);
+
+  const radioRepair = DEMO_SCRIPT.actions.action_restore_radio_signal;
+  assert.match(radioRepair.meta.title, /tùy chọn/);
+  assert.equal(radioRepair.effect.pass.some(effect =>
+    effect.type === 'set' && effect.subtype === 'state' &&
+    effect.target === 'radio_signal_restored' && effect.value === true
+  ), true);
+  assert.equal(DEMO_SCRIPT.actions.action_confront_voice.requirement.check.some(check =>
+    check.type === 'item' && check.value === 'radio_crystal'
+  ), true);
+});
+
+test('one-shot clue actions hide themselves after granting truth fragments', () => {
+  for (const actionId of ['action_read_notice', 'action_inspect_well']) {
+    const action = DEMO_SCRIPT.actions[actionId];
+    const grantsTruth = [
+      ...(action.effect.normal || []),
+      ...(action.effect.pass || [])
+    ].some(effect => effect.type === 'set' && effect.subtype === 'state' &&
+      effect.target === 'truth_fragments');
+    assert.equal(grantsTruth, true, actionId);
+    const hidesSelf = [
+      ...(action.effect.normal || []),
+      ...(action.effect.pass || [])
+    ].some(effect => effect.type === 'set' && effect.subtype === 'action' &&
+      effect.target === actionId && effect.property === 'display' &&
+      effect.value === 'hide');
+    assert.equal(hidesSelf, true, actionId);
+  }
+});
