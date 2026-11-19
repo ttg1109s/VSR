@@ -308,7 +308,7 @@ export const DEMO_SCRIPT = {
       
       "category": "tool",
       "icon": "light",
-      "desc": "Chiếu sáng những dấu vết chỉ xuất hiện trong sương.",
+      "desc": "Đèn bão cũ, kính ám khói và quai xách đã sờn. Ánh sáng của nó làm lộ những vệt dấu mờ trong sương mà mắt thường khó nhận ra.",
       "usage": {
         "current":  0,
         "max":  10,
@@ -330,7 +330,7 @@ export const DEMO_SCRIPT = {
       
       "category": "document",
       "icon": "menu_book",
-      "desc": "Cuốn sổ ghi lại những người chưa rời khỏi làng.",
+      "desc": "Cuốn sổ khách đã ngả vàng, nhiều trang nhòe nước. Ở trang cuối, một cái tên được viết bằng mực còn mới bất thường.",
       "usage": {
         "current":  0,
         "max":  10,
@@ -352,7 +352,7 @@ export const DEMO_SCRIPT = {
       
       "category": "media",
       "icon": "audio_file",
-      "desc": "Bản ghi âm đêm mất điện.",
+      "desc": "Cuộn băng được bọc trong giấy dầu, nhãn ghi ngày đêm mất điện. Khi phát lại, giữa tiếng rè có một tín hiệu ngắn lặp lại.",
       "usage": {
         "current":  0,
         "max":  10,
@@ -374,7 +374,7 @@ export const DEMO_SCRIPT = {
       
       "category": "evidence",
       "icon": "rainy",
-      "desc": "Vật chứng xuất hiện trong lời kể của Mai.",
+      "desc": "Chiếc ô đỏ bạc màu, một nan bị cong và cán có vết khắc nhỏ. Mai từng nhắc đến nó, nhưng dấu khắc dường như không phải tên chủ sở hữu.",
       "usage": {
         "current":  0,
         "max":  10,
@@ -402,7 +402,7 @@ export const DEMO_SCRIPT = {
       
       "category": "mechanism",
       "icon": "notifications",
-      "desc": "Bộ phận bị tháo khỏi tháp chuông.",
+      "desc": "Quả lắc bằng kim loại nặng, bề mặt có vết va đập và một đầu còn dấu tháo khỏi trục. Nó không thể phát huy tác dụng khi chưa được lắp lại.",
       "usage": {
         "current":  0,
         "max":  10,
@@ -424,7 +424,7 @@ export const DEMO_SCRIPT = {
       
       "category": "evidence",
       "icon": "photo",
-      "desc": "Bức ảnh có một học sinh bị cắt khỏi khung.",
+      "desc": "Ảnh lớp cũ bị xé ở giữa. Những người còn lại đứng sát nhau, nhưng khoảng trống và mép giấy cho thấy một người đã bị loại khỏi ảnh.",
       "usage": {
         "current":  0,
         "max":  10,
@@ -446,7 +446,7 @@ export const DEMO_SCRIPT = {
       
       "category": "key",
       "icon": "key",
-      "desc": "Chìa khóa mở tủ hồ sơ dưới đê.",
+      "desc": "Chìa khóa sắt có răng khóa không đều, dính bụi bê tông và một vệt dầu cũ. Nó có vẻ thuộc về một ổ khóa chuyên dụng, không phải cửa phòng thông thường.",
       "usage": {
         "current":  0,
         "max":  10,
@@ -468,7 +468,7 @@ export const DEMO_SCRIPT = {
       
       "category": "document",
       "icon": "map",
-      "desc": "Mảnh giấy vẽ lối xuống đường hầm.",
+      "desc": "Mảnh bản đồ vẽ bằng tay, góc giấy bị cháy và một tuyến đường được đánh dấu bằng mực xanh. Một ký hiệu ở phía Bắc vẫn chưa được giải thích.",
       "usage": {
         "current":  0,
         "max":  10,
@@ -490,7 +490,7 @@ export const DEMO_SCRIPT = {
       
       "category": "mechanism",
       "icon": "radio",
-      "desc": "Linh kiện lấy từ hộp loa, có thể dò lại tần số phát thanh.",
+      "desc": "Cuộn tinh thể nhỏ nằm trong vỏ kim loại nứt. Các chân tiếp xúc bị xỉn màu, nhưng cấu trúc bên trong có thể lưu lại một tần số phát thanh.",
       "usage": {
         "current":  0,
         "max":  10,
@@ -512,7 +512,7 @@ export const DEMO_SCRIPT = {
       
       "category": "evidence",
       "icon": "badge",
-      "desc": "Phù hiệu kim loại có khắc ký hiệu của đội sơ tán năm ấy.",
+      "desc": "Phù hiệu kim loại phủ cặn nước, khắc biểu tượng đội sơ tán. Mặt sau có dấu đóng mờ, cùng kiểu với ký hiệu trên một vật được niêm kín.",
       "usage": {
         "current":  0,
         "max":  10,
@@ -534,7 +534,7 @@ export const DEMO_SCRIPT = {
       
       "category": "key",
       "icon": "key",
-      "desc": "Chìa khóa đồng mở căn phòng bị xóa khỏi sơ đồ nhà trọ.",
+      "desc": "Chìa khóa đồng mang số bảy, răng khóa còn mới hơn phần thân đã xỉn màu. Số phòng này không xuất hiện trong sơ đồ nhà trọ.",
       "usage": {
         "current":  0,
         "max":  10,
@@ -556,7 +556,7 @@ export const DEMO_SCRIPT = {
       
       "category": "media",
       "icon": "movie",
-      "desc": "Cuộn phim ghi lại đám đông ở bờ đê trong đêm mất tích.",
+      "desc": "Cuộn phim nhỏ được bọc kín để tránh ẩm. Trên hộp có ghi ngày sơ tán; một vài khung hình có thể cho thấy những người mà hồ sơ làng phủ nhận.",
       "usage": {
         "current":  0,
         "max":  10,
@@ -578,7 +578,7 @@ export const DEMO_SCRIPT = {
       
       "category": "document",
       "icon": "description",
-      "desc": "Mảnh giấy giải thích ý nghĩa của ba hồi chuông trong đêm sơ tán.",
+      "desc": "Trang giấy gấp giấu trong gáy thánh ca. Những dòng ghi chú nói về tín hiệu chuông, nhưng phần cuối bị mực thấm làm nhòe.",
       "usage": {
         "current":  0,
         "max":  10,
@@ -600,7 +600,7 @@ export const DEMO_SCRIPT = {
       
       "category": "mechanism",
       "icon": "cable",
-      "desc": "Đoạn dây đồng dùng để nối lại cơ cấu truyền lực của chuông.",
+      "desc": "Đoạn dây đồng bị xoắn và có một đầu tuột khỏi mối nối. Vết xước trên dây cho thấy nó từng nằm trong cơ cấu truyền lực của tháp chuông.",
       "usage": {
         "current":  0,
         "max":  10,
@@ -622,7 +622,7 @@ export const DEMO_SCRIPT = {
       
       "category": "document",
       "icon": "menu_book",
-      "desc": "Bản ghi xác nhận có mười hai học sinh trong lớp vào ngày sơ tán.",
+      "desc": "Bản sao sổ điểm danh với mép giấy bị xé và vài dòng bị bôi đen. Số sĩ số ở đầu trang vẫn còn đọc được, dù danh sách tên đã bị sửa.",
       "usage": {
         "current":  0,
         "max":  10,
@@ -644,7 +644,7 @@ export const DEMO_SCRIPT = {
       
       "category": "tool",
       "icon": "explore",
-      "desc": "La bàn cũ có khắc tuyến đường từ rừng xuống chân đê.",
+      "desc": "La bàn cũ có mặt kính nứt nhẹ. Mặt sau khắc một tuyến đường bằng các ô và dấu mốc, khác với những lối mòn đang thay đổi trong rừng.",
       "usage": {
         "current":  0,
         "max":  10,
@@ -666,7 +666,7 @@ export const DEMO_SCRIPT = {
       
       "category": "evidence",
       "icon": "approval",
-      "desc": "Con dấu gỗ dùng để xác nhận danh sách sơ tán chính thức.",
+      "desc": "Con dấu gỗ đã mòn ở tay cầm, mặt dấu còn biểu tượng đội sơ tán. Một lớp đất khô bám trong các rãnh cho thấy nó từng bị chôn giấu.",
       "usage": {
         "current":  0,
         "max":  10,
@@ -688,7 +688,7 @@ export const DEMO_SCRIPT = {
       
       "category": "mechanism",
       "icon": "settings",
-      "desc": "Chốt kim loại thay thế cho bộ truyền động của cối xay nước.",
+      "desc": "Chốt kim loại ngắn, cong nhẹ ở một đầu và phủ dầu khô. Kích thước khớp với một vị trí trống trong bộ truyền động cối xay.",
       "usage": {
         "current":  0,
         "max":  10,
@@ -710,7 +710,7 @@ export const DEMO_SCRIPT = {
       
       "category": "document",
       "icon": "description",
-      "desc": "Danh sách ghi tên những người được đưa qua đường hầm trong đêm sơ tán.",
+      "desc": "Danh sách vận chuyển được cuộn trong ống chống ẩm. Nhiều tên được chia theo lượt, kèm dấu thời gian và ký hiệu tuyến đường.",
       "usage": {
         "current":  0,
         "max":  10,
@@ -732,7 +732,7 @@ export const DEMO_SCRIPT = {
       
       "category": "evidence",
       "icon": "confirmation_number",
-      "desc": "Vé của chuyến 03:17, còn nguyên phần kiểm soát.",
+      "desc": "Vé tàu cũ còn nguyên phần kiểm soát, chưa bị xé. Giờ khởi hành 03:17 được in rõ, trong khi tên ga đến đã phai.",
       "usage": {
         "current":  0,
         "max":  10,
