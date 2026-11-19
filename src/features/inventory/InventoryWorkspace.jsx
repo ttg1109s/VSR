@@ -226,7 +226,8 @@ export default function InventoryWorkspace({ snapshot, client, open = false, onC
   const [sort, setSort] = useState('name-asc');
   const [page, setPage] = useState(1);
 
-  const [pendingItemId, setPendingItemId] = useState(null);\n  const [detailItem, setDetailItem] = useState(null);
+  const [pendingItemId, setPendingItemId] = useState(null);
+  const [detailItem, setDetailItem] = useState(null);
 
   const categories = useMemo(() => {
     if (!items) return [];
@@ -321,7 +322,14 @@ export default function InventoryWorkspace({ snapshot, client, open = false, onC
         </Popover>
       }
     >
-      {detailItem ? (\n        <InventoryItemDetails\n          item={detailItem}\n          onBack={() => setDetailItem(null)}\n          onToggleEquipment={toggleItemEquipment}\n          busy={pendingItemId === detailItem.id}\n        />\n      ) : !inventory || !items ? (
+      {detailItem ? (
+        <InventoryItemDetails
+          item={detailItem}
+          onBack={() => setDetailItem(null)}
+          onToggleEquipment={toggleItemEquipment}
+          busy={pendingItemId === detailItem.id}
+        />
+      ) : !inventory || !items ? (
         <EmptyInventoryState
           title="Inventory unavailable"
           message="Inventory data is not available yet."
@@ -609,7 +617,8 @@ export default function InventoryWorkspace({ snapshot, client, open = false, onC
   const [sort, setSort] = useState('name-asc');
   const [page, setPage] = useState(1);
 
-  const [pendingItemId, setPendingItemId] = useState(null);\n  const [detailItem, setDetailItem] = useState(null);
+  const [pendingItemId, setPendingItemId] = useState(null);
+  const [detailItem, setDetailItem] = useState(null);
 
   const categories = useMemo(() => {
     if (!items) return [];
@@ -704,7 +713,14 @@ export default function InventoryWorkspace({ snapshot, client, open = false, onC
         </Popover>
       }
     >
-      {detailItem ? (\n        <InventoryItemDetails\n          item={detailItem}\n          onBack={() => setDetailItem(null)}\n          onToggleEquipment={toggleItemEquipment}\n          busy={pendingItemId === detailItem.id}\n        />\n      ) : !inventory || !items ? (
+      {detailItem ? (
+        <InventoryItemDetails
+          item={detailItem}
+          onBack={() => setDetailItem(null)}
+          onToggleEquipment={toggleItemEquipment}
+          busy={pendingItemId === detailItem.id}
+        />
+      ) : !inventory || !items ? (
         <EmptyInventoryState
           title="Inventory unavailable"
           message="Inventory data is not available yet."
