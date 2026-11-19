@@ -548,7 +548,7 @@ export const DEMO_SCRIPT = {
       
       "category": "mechanism",
       "icon": "radio",
-      "desc": "Cuộn tinh thể nhỏ nằm trong vỏ kim loại nứt. Các chân tiếp xúc bị xỉn màu, nhưng cấu trúc bên trong có thể lưu lại một tần số phát thanh.",
+      "desc": "Cuộn tinh thể nhỏ nằm trong vỏ kim loại nứt. Các chân tiếp xúc bị xỉn màu, nhưng cấu trúc bên trong có thể lưu lại một tần số phát thanh. Cần xử lý tại hộp loa phát thanh bằng Action sửa radio; kiểm tra trong Inventory chỉ xem linh kiện, không tự khôi phục tín hiệu.",
       "usage": {
         "current":  0,
         "max":  10,
@@ -596,7 +596,7 @@ export const DEMO_SCRIPT = {
       
       "category": "key",
       "icon": "key",
-      "desc": "Chìa khóa đồng mang số bảy, răng khóa còn mới hơn phần thân đã xỉn màu. Số phòng này không xuất hiện trong sơ đồ nhà trọ.",
+      "desc": "Chìa khóa đồng mang số bảy, răng khóa còn mới hơn phần thân đã xỉn màu. Số phòng này không xuất hiện trong sơ đồ nhà trọ; dùng tại cánh cửa ẩn ở nhà trọ, tương tác đúng địa điểm để mở.",
       "usage": {
         "current":  0,
         "max":  10,
@@ -636,7 +636,7 @@ export const DEMO_SCRIPT = {
       
       "category": "document",
       "icon": "description",
-      "desc": "Trang giấy gấp giấu trong gáy thánh ca. Những dòng ghi chú nói về tín hiệu chuông, nhưng phần cuối bị mực thấm làm nhòe.",
+      "desc": "Trang giấy gấp giấu trong gáy thánh ca. Những dòng ghi chú nói về tín hiệu chuông, thứ tự ba hồi và lý do không được có hồi thứ tư; phần cuối bị mực thấm làm nhòe.",
       "usage": {
         "current":  0,
         "max":  10,
@@ -660,7 +660,7 @@ export const DEMO_SCRIPT = {
       
       "category": "mechanism",
       "icon": "cable",
-      "desc": "Đoạn dây đồng bị xoắn và có một đầu tuột khỏi mối nối. Vết xước trên dây cho thấy nó từng nằm trong cơ cấu truyền lực của tháp chuông.",
+      "desc": "Đoạn dây đồng bị xoắn và có một đầu tuột khỏi mối nối. Vết xước cho thấy nó từng nằm trong cơ cấu truyền lực của tháp chuông; cần nối tại cơ cấu chuông ở tháp, kiểm tra vật phẩm không tự sửa cơ cấu.",
       "usage": {
         "current":  0,
         "max":  10,
@@ -708,7 +708,7 @@ export const DEMO_SCRIPT = {
       
       "category": "tool",
       "icon": "explore",
-      "desc": "La bàn cũ có mặt kính nứt nhẹ. Mặt sau khắc một tuyến đường bằng các ô và dấu mốc, khác với những lối mòn đang thay đổi trong rừng.",
+      "desc": "La bàn cũ có mặt kính nứt nhẹ. Mặt sau khắc một tuyến đường bằng các ô và dấu mốc, khác với những lối mòn đang thay đổi trong rừng; dùng để giải mê cung tại khu rừng, không tự mở đường toàn cục.",
       "usage": {
         "current":  0,
         "max":  10,
@@ -756,7 +756,7 @@ export const DEMO_SCRIPT = {
       
       "category": "mechanism",
       "icon": "settings",
-      "desc": "Chốt kim loại ngắn, cong nhẹ ở một đầu và phủ dầu khô. Kích thước khớp với một vị trí trống trong bộ truyền động cối xay.",
+      "desc": "Chốt kim loại ngắn, cong nhẹ ở một đầu và phủ dầu khô. Kích thước khớp với một vị trí trống trong bộ truyền động cối xay; cần lắp tại cơ cấu cối xay ở đúng địa điểm, kiểm tra vật phẩm không tự sửa máy.",
       "usage": {
         "current":  0,
         "max":  10,
