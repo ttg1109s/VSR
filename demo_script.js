@@ -3830,9 +3830,9 @@ export const DEMO_SCRIPT = {
           {"type": "set", "subtype": "state", "target": "knows_twelve", "value": true},
           {"type": "set", "subtype": "state", "target": "truth_fragments", "value": 1},
           {"type": "set", "subtype": "state", "target": "clue_tunnel", "value": true},
-          {"type": "goto", "subtype": "chat", "target": "chat_linh"},
           {"type": "set", "subtype": "action", "target": "action_talk_linh", "property": "display", "value": "hide"},
-          {"type": "set", "subtype": "action", "target": "action_recover_class_register", "property": "display", "value": "hide"}
+          {"type": "set", "subtype": "action", "target": "action_recover_class_register", "property": "display", "value": "hide"},
+          {"type": "goto", "subtype": "chat", "target": "chat_linh"}
         ]
       },
       "requirement": {
