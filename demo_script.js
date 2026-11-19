@@ -1479,6 +1479,7 @@ export const DEMO_SCRIPT = {
             "action_follow_marks",
             "action_maze_path",
             "action_enter_clearing",
+            "action_enter_watermill",
             "action_collect_forest_compass"
           ]
         },
@@ -1497,6 +1498,7 @@ export const DEMO_SCRIPT = {
             "action_follow_marks",
             "action_maze_path",
             "action_enter_clearing",
+            "action_enter_watermill"
           ]
         }
       }
@@ -3165,7 +3167,7 @@ export const DEMO_SCRIPT = {
     "action_choose_fate": {
       "meta": {
         "title": "Quyết định số phận",
-        "buttonLabel": "Chọn kết cục",
+        "buttonLabel": "Giải phóng",
         "desc": "Sân ga 03:17 là điểm cuối của tuyến sơ tán và cũng là nơi những lời kể rời rạc hội tụ. Những gì được tìm thấy trong giếng, nhà nguyện, trường học và kho hồ sơ cho thấy ký ức của làng đã bị thay đổi có chủ đích. Quyết định ở đây không đơn thuần là chọn một lối ra; nó xác định liệu sự thật được trả lại, bị chôn vùi hay tiếp tục tồn tại như một tiếng vọng."
       },
       "set": {
@@ -3192,7 +3194,7 @@ export const DEMO_SCRIPT = {
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Các điều kiện giải thoát chưa hội đủ: cần khôi phục ít nhất ba mảnh ký ức, rung chuông, mở kho hồ sơ và có con dấu đội sơ tán."
+            "text": "Các điều kiện giải thoát chưa hội đủ: cần rung chuông, mở kho hồ sơ, có con dấu sơ tán và khôi phục thánh ca, vòng cọc cùng dấu đường hầm."
           }
         ]
       },
@@ -3504,6 +3506,19 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
+    "action_enter_watermill": {
+      "meta": {
+        "title": "Cối xay nước",
+        "buttonLabel": "Đến cối xay nước",
+        "buttonIcon": "water",
+        "desc": "Lối rẽ phía Bắc dẫn tới cối xay cũ nép bên dòng suối đã cạn. Bánh xe và phòng máy có thể hé lộ cơ cấu mở đường hầm dưới chân đê."
+      },
+      "set": { "display": "show" },
+      "effect": {
+        "normal": [],
+        "pass": [{ "type": "goto", "subtype": "scene", "target": "scene_watermill" }]
+      }
+    },
     "action_travel_inn": {
       "meta": {
         "title": "Nhà trọ Bà Hạnh",
@@ -3528,7 +3543,7 @@ export const DEMO_SCRIPT = {
     "action_travel_chapel": {
       "meta": {
         "title": "Nhà nguyện",
-        "buttonLabel": "Tiến vào",
+        "buttonLabel": "Đến nhà nguyện",
         "buttonIcon": "church",
         "desc": "Nhà nguyện nằm cuối con đường nơi tiếng chuông đã im bặt từ mười bảy năm trước. Bản thánh ca trong gian cầu nguyện giữ mật từ và quy tắc ba hồi chuông cần thiết để hiểu chuyện gì đã xảy ra."
       },
@@ -3549,7 +3564,7 @@ export const DEMO_SCRIPT = {
     "action_travel_school": {
       "meta": {
         "title": "Trường học bỏ hoang",
-        "buttonLabel": "Tiến vào",
+        "buttonLabel": "Đến trường học",
         "buttonIcon": "school",
         "desc": "Trường tiểu học bỏ hoang nằm bên con đường có những dấu chân nhỏ dẫn vào lớp số 3. Hồ sơ lớp học và bức ảnh bị xé là những bằng chứng quan trọng về người thứ mười hai."
       },
@@ -3759,7 +3774,7 @@ export const DEMO_SCRIPT = {
     "action_travel_forest": {
       "meta": {
         "title": "Rừng thông phía Bắc",
-        "buttonLabel": "Tiến vào",
+        "buttonLabel": "Vào rừng",
         "buttonIcon": "forest",
         "desc": "Rừng thông phía Bắc bắt đầu ở rìa làng, nơi những vệt sơn lặp lại trên thân cây. Con đường ở đây không ổn định, nhưng các dấu mốc dẫn đến khoảng đất nghi lễ và tuyến xuống chân đê."
       },
@@ -3802,7 +3817,7 @@ export const DEMO_SCRIPT = {
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Lối tới sân ga chưa hiện ra: cần ít nhất ba mảnh ký ức, mở kho hồ sơ và thu được danh sách vận chuyển."
+            "text": "Lối tới sân ga chưa hiện ra: cần mở kho hồ sơ, có danh sách vận chuyển và cuộn phim sơ tán, đồng thời khôi phục thánh ca, vòng cọc và dấu đường hầm."
           }
         ]
       },
@@ -3922,12 +3937,12 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "action_find_radio_toolkit":{"meta":{"title":"Bộ dụng cụ sửa chữa","buttonLabel":"Thu thập","desc":"Trong ngăn tủ giáo viên có bộ tua vít cách điện, kìm và đầu dò mạch, đủ để tháo thiết bị mà không làm hỏng linh kiện."},"set":{"display":"show"},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"radio_toolkit"},{"type":"set","subtype":"action","target":"action_find_radio_toolkit","property":"display","value":"hide"}]}},
+    "action_find_radio_toolkit":{"meta":{"title":"Bộ dụng cụ sửa chữa","buttonLabel": "Lấy bộ dụng cụ","desc":"Trong ngăn tủ giáo viên có bộ tua vít cách điện, kìm và đầu dò mạch, đủ để tháo thiết bị mà không làm hỏng linh kiện."},"set":{"display":"show"},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"radio_toolkit"},{"type":"set","subtype":"action","target":"action_find_radio_toolkit","property":"display","value":"hide"}]}},
 "action_find_tracing_paper":{"meta":{"title":"Giấy can","buttonLabel":"Nhặt lên","desc":"Tờ giấy can sạch được kẹp cạnh bản vẽ sơ đồ cũ, có thể chép chồng ký hiệu để đối chiếu bản đồ."},"set":{"display":"show"},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"tracing_paper"},{"type":"set","subtype":"action","target":"action_find_tracing_paper","property":"display","value":"hide"}]}},
-"action_find_inspection_loupe":{"meta":{"title":"Kính phóng đại","buttonLabel":"Thu thập","desc":"Kính phóng đại nhỏ trong hộp bảo quản dụng cụ có thể giúp đọc dấu khắc và nét sửa trên vật chứng."},"set":{"display":"show"},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"inspection_loupe"},{"type":"set","subtype":"action","target":"action_find_inspection_loupe","property":"display","value":"hide"}]}},
-"action_find_insulated_wire":{"meta":{"title":"Cuộn dây cách nhiệt","buttonLabel":"Thu thập","desc":"Sau thùng rượu rỗng là cuộn dây cách nhiệt còn dùng được, có thể thay đoạn dây đứt trong thiết bị cũ."},"set":{"display":"show"},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"insulated_wire"},{"type":"set","subtype":"action","target":"action_find_insulated_wire","property":"display","value":"hide"}]}},
+"action_find_inspection_loupe":{"meta":{"title":"Kính phóng đại","buttonLabel": "Lấy kính lúp","desc":"Kính phóng đại nhỏ trong hộp bảo quản dụng cụ có thể giúp đọc dấu khắc và nét sửa trên vật chứng."},"set":{"display":"show"},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"inspection_loupe"},{"type":"set","subtype":"action","target":"action_find_inspection_loupe","property":"display","value":"hide"}]}},
+"action_find_insulated_wire":{"meta":{"title":"Cuộn dây cách nhiệt","buttonLabel": "Lấy dây cách điện","desc":"Sau thùng rượu rỗng là cuộn dây cách nhiệt còn dùng được, có thể thay đoạn dây đứt trong thiết bị cũ."},"set":{"display":"show"},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"insulated_wire"},{"type":"set","subtype":"action","target":"action_find_insulated_wire","property":"display","value":"hide"}]}},
 "action_find_spare_fuse":{"meta":{"title":"Cầu chì dự phòng","buttonLabel":"Nhặt lên","desc":"Hộp linh kiện cũ chứa cầu chì sứ dự phòng còn nguyên, được giữ riêng khỏi dây dẫn đã hỏng."},"set":{"display":"show"},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"spare_fuse"},{"type":"set","subtype":"action","target":"action_find_spare_fuse","property":"display","value":"hide"}]}},
-"action_find_clockwork_spring":{"meta":{"title":"Lò xo cơ khí","buttonLabel":"Thu thập","desc":"Hộp bảo trì có lò xo thép còn đàn hồi; cần bộ dụng cụ để mở hộp và lấy linh kiện."},"set":{"display":"show","requirement":true},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"radio_toolkit"}]},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"clockwork_spring"},{"type":"set","subtype":"action","target":"action_find_clockwork_spring","property":"display","value":"hide"}]}},
+"action_find_clockwork_spring":{"meta":{"title":"Lò xo cơ khí","buttonLabel": "Lấy lò xo cơ khí","desc":"Hộp bảo trì có lò xo thép còn đàn hồi; cần bộ dụng cụ để mở hộp và lấy linh kiện."},"set":{"display":"show","requirement":true},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"radio_toolkit"}]},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"clockwork_spring"},{"type":"set","subtype":"action","target":"action_find_clockwork_spring","property":"display","value":"hide"}]}},
 "action_restore_radio_signal":{"meta":{"title":"Khôi phục tín hiệu phát thanh (tùy chọn)","buttonLabel":"Can thiệp mạch điện","desc":"Puzzle phụ tùy chọn: dùng bộ dụng cụ, dây, cầu chì và tinh thể có chất lượng tối thiểu để phục hồi tín hiệu. Việc sửa mạch không khóa tiến trình chính; cuộn tinh thể vẫn đủ để dò tín hiệu dưới ga."},"set":{"display":"show","requirement":true},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"radio_toolkit"},{"type":"item","subtype":"inventory","op":"has","value":"radio_crystal"},{"type":"item","subtype":"inventory","op":"has","value":"insulated_wire"},{"type":"item","subtype":"inventory","op":"has","value":"spare_fuse"},
           {"type":"stats","subtype":"item","target":"radio_toolkit","property":"condition","field":"current","op":">=","value":3},
           {"type":"stats","subtype":"item","target":"insulated_wire","property":"condition","field":"current","op":">=","value":3},
@@ -4034,7 +4049,7 @@ export const DEMO_SCRIPT = {
     "action_find_evacuation_film": {
       "meta": {
         "title": "Cuộn phim sơ tán",
-        "buttonLabel": "Thu thập",
+        "buttonLabel": "Lấy cuộn phim",
         "desc": "Hộp thiếc nằm khuất sau kệ rượu, được bọc để tránh ẩm và bụi. Cuộn phim bên trong ghi lại đám đông tập trung ở bờ đê trước đêm mất điện, cung cấp hình ảnh đối chứng cho danh sách vận chuyển và lời kể trong cuộn băng."
       },
       "set": {
@@ -4344,7 +4359,7 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "action_find_gear_pin":{"meta":{"title":"Chốt bánh răng cối xay","buttonLabel":"Thu thập","desc":"Hộp bánh răng dưới sàn cối xay bị kẹt. Bộ dụng cụ cần thiết để mở nắp và lấy chốt truyền động bị cong."},"set":{"display":"show","requirement":true},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"radio_toolkit"}]},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"mill_gear_pin"},{"type":"set","subtype":"state","target":"evidence_gear_pin","value":true},{"type":"set","subtype":"action","target":"action_find_gear_pin","property":"display","value":"hide"},{"type":"goto","subtype":"router","target":"router_watermill_gear_inspected"}]}},"action_recover_tunnel_manifest": {
+    "action_find_gear_pin":{"meta":{"title":"Chốt bánh răng cối xay","buttonLabel": "Lấy chốt bánh răng","desc":"Hộp bánh răng dưới sàn cối xay bị kẹt. Bộ dụng cụ cần thiết để mở nắp và lấy chốt truyền động bị cong."},"set":{"display":"show","requirement":true},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"radio_toolkit"}]},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"mill_gear_pin"},{"type":"set","subtype":"state","target":"evidence_gear_pin","value":true},{"type":"set","subtype":"action","target":"action_find_gear_pin","property":"display","value":"hide"},{"type":"goto","subtype":"router","target":"router_watermill_gear_inspected"}]}},"action_recover_tunnel_manifest": {
       "meta": {
         "title": "Danh sách vận chuyển",
         "buttonLabel": "Thu thập",
