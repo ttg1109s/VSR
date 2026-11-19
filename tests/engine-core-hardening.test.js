@@ -1457,15 +1457,16 @@ test('demo progression gates are reachable and optional radio repair is explicit
   ), true);
 });
 
-test('one-shot clue actions hide themselves after granting truth fragments', () => {
-  for (const actionId of ['action_read_notice', 'action_inspect_well']) {
-    const action = DEMO_SCRIPT.actions[actionId];
-    const grantsTruth = [
-      ...(action.effect.normal || []),
-      ...(action.effect.pass || [])
+test('all truth-fragment granting actions are one-shot and hide themselves', () => {
+  const grantingActions = Object.entries(DEMO_SCRIPT.actions).filter(([actionId, action]) =>
+    [
+      ...(action.effect?.normal || []),
+      ...(action.effect?.pass || [])
     ].some(effect => effect.type === 'set' && effect.subtype === 'state' &&
-      effect.target === 'truth_fragments');
-    assert.equal(grantsTruth, true, actionId);
+      effect.target === 'truth_fragments')
+  );
+  assert.ok(grantingActions.length > 0);
+  for (const [actionId, action] of grantingActions) {
     const hidesSelf = [
       ...(action.effect.normal || []),
       ...(action.effect.pass || [])
