@@ -516,11 +516,11 @@
                 "type": "array",
                 "default": [
                   [
-                    10,
+                    0,
                     "good"
                   ],
                   [
-                    5,
+                    100,
                     "broken"
                   ]
                 ],
