@@ -56,10 +56,17 @@ function InventoryItemCard({ item, onViewDetails, onToggleEquipment, onUseItem, 
         </article>
       }
       items={[
-        ...(item.hasUseEffect ? [{
+        {
+          key: 'equipment',
+          label: item.equipped ? 'Unequip' : 'Equip',
+          icon: item.equipped ? 'remove_circle_outline' : 'check_circle_outline',
+          disabled: busy || (!item.equipped && item.canEquip === false),
+          onSelect: () => onToggleEquipment(item)
+        },
+        ...(item.equipped && item.hasUseEffect ? [{
           key: 'use',
           label: 'Use',
-          icon: 'play_arrow',
+          icon: 'touch_app',
           disabled: busy || item.canUse === false,
           onSelect: () => onUseItem(item)
         }] : []),
@@ -68,13 +75,6 @@ function InventoryItemCard({ item, onViewDetails, onToggleEquipment, onUseItem, 
           label: 'View Details',
           icon: 'info',
           onSelect: () => onViewDetails(item)
-        },
-        {
-          key: 'equipment',
-          label: item.equipped ? 'Unequip' : 'Equip',
-          icon: item.equipped ? 'remove_circle_outline' : 'check_circle_outline',
-          disabled: busy || (!item.equipped && item.canEquip === false),
-          onSelect: () => onToggleEquipment(item)
         }
       ]}
     />
