@@ -1863,8 +1863,8 @@ export const DEMO_SCRIPT = {
           {
             "type": "item",
             "subtype": "hand",
-            "op": "has",
-            "value": "lantern"
+            "op": "==",
+            "value": ["lantern"]
           }
         ]
       }
@@ -2488,8 +2488,8 @@ export const DEMO_SCRIPT = {
           {
             "type": "item",
             "subtype": "hand",
-            "op": "has",
-            "value": "guide_compass"
+            "op": "==",
+            "value": ["guide_compass"]
           }
         ]
       }
@@ -2665,8 +2665,8 @@ export const DEMO_SCRIPT = {
           {
             "type": "item",
             "subtype": "hand",
-            "op": "has",
-            "value": "mill_gear_pin"
+            "op": "==",
+            "value": ["mill_gear_pin"]
           }
         ]
       }
