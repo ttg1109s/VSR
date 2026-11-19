@@ -2356,7 +2356,7 @@ export const DEMO_SCRIPT = {
         "logic": "AND",
         "check": [
           {"type": "item", "subtype": "inventory", "op": "has", "value": "class_register_copy"},
-          {"type": "template", "subtype": "requirement", "ref": "school_evidence"}
+          {"type": "state", "property": "school_choice", "op": "==", "value": "evidence"}
         ]
       }
     },
@@ -2570,7 +2570,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Cối xay nước",
         "buttonLabel": "Bắt đầu",
-        "desc": "Cối xay cần chốt truyền động, lò xo và bộ dụng cụ. Tuyến Evidence dùng mảnh bản đồ để xác định chiều xoay; tuyến Memory dựa vào lời khai và dấu vết đường hầm để tìm cách khởi động."
+        "desc": "Cối xay cần chốt truyền động, lò xo và bộ dụng cụ. Dấu đường hầm từ Memory hoặc mảnh bản đồ từ Evidence đều cung cấp hướng dẫn."
       },
       "set": {"display": "show", "requirement": true},
       "effect": {
@@ -2581,9 +2581,6 @@ export const DEMO_SCRIPT = {
           {"type": "notify", "subtype": "toast", "level": "success", "text": "Cối xay hoạt động; cửa sập mở lối xuống đường hầm."},
           {"type": "set", "subtype": "action", "target": "action_repair_mill", "property": "display", "value": "hide"},
           {"type": "goto", "subtype": "router", "target": "router_watermill_running"}
-        ],
-        "fail": [
-          {"type": "notify", "subtype": "toast", "level": "warning", "text": "Cần chốt truyền động, lò xo và bộ dụng cụ. Mảnh bản đồ hoặc clue đường hầm cung cấp hướng dẫn."}
         ]
       },
       "requirement": {
@@ -2592,14 +2589,7 @@ export const DEMO_SCRIPT = {
           {"type": "item", "subtype": "inventory", "op": "has", "value": "clockwork_spring"},
           {"type": "item", "subtype": "inventory", "op": "has", "value": "radio_toolkit"},
           {"type": "item", "subtype": "hand", "op": "==", "value": ["mill_gear_pin"]},
-          {
-            "logic": "OR",
-            "check": [
-              {"type": "item", "subtype": "inventory", "op": "has", "value": "map_fragment"},
-              {"type": "state", "property": "school_choice", "op": "==", "value": "memory"},
-              {"type": "state", "property": "clue_tunnel", "op": "==", "value": true}
-            ]
-          }
+          {"type": "state", "property": "clue_tunnel", "op": "==", "value": true}
         ]
       }
     },
@@ -2647,7 +2637,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Tủ hồ sơ dưới đê",
         "buttonLabel": "Mở khóa",
-        "desc": "Tủ hồ sơ dưới đê lưu bản ghi sơ tán. Tuyến Evidence cần đối chiếu hồ sơ, danh sách vận chuyển và cuộn phim; tuyến Memory có thể mở tủ bằng chìa khóa và thông tin lối hầm đã khôi phục mà không lấy hồ sơ làm vật chứng trung tâm."
+        "desc": "Tủ hồ sơ dưới đê lưu bản ghi sơ tán. Sau khi chọn phương thức điều tra và khôi phục dấu đường hầm, chìa khóa cho phép tiếp cận kho tư liệu."
       },
       "set": {"display": "show", "requirement": true},
       "effect": {
@@ -2655,30 +2645,16 @@ export const DEMO_SCRIPT = {
         "pass": [
           {"type": "set", "subtype": "state", "target": "archive_open", "value": true},
           {"type": "set", "subtype": "state", "target": "truth_fragments", "value": 1},
-          {"type": "notify", "subtype": "toast", "level": "success", "text": "Tủ hồ sơ mở. Bên trong xác nhận cuộc sơ tán, nhưng cách bạn tiếp cận tài liệu quyết định ý nghĩa của nó."},
+          {"type": "notify", "subtype": "toast", "level": "success", "text": "Tủ hồ sơ mở; tư liệu xác nhận cuộc sơ tán."},
           {"type": "set", "subtype": "action", "target": "action_open_archive", "property": "display", "value": "hide"}
         ]
       },
       "requirement": {
-        "logic": "OR",
+        "logic": "AND",
         "check": [
-          {
-            "logic": "AND",
-            "check": [
-              {"type": "item", "subtype": "inventory", "op": "has", "value": "archive_key"},
-              {"type": "item", "subtype": "inventory", "op": "has", "value": "tunnel_manifest"},
-              {"type": "item", "subtype": "inventory", "op": "has", "value": "evacuation_film"},
-              {"type": "state", "property": "school_choice", "op": "==", "value": "evidence"}
-            ]
-          },
-          {
-            "logic": "AND",
-            "check": [
-              {"type": "item", "subtype": "inventory", "op": "has", "value": "archive_key"},
-              {"type": "state", "property": "school_choice", "op": "==", "value": "memory"},
-              {"type": "state", "property": "clue_tunnel", "op": "==", "value": true}
-            ]
-          }
+          {"type": "item", "subtype": "inventory", "op": "has", "value": "archive_key"},
+          {"type": "state", "property": "clue_tunnel", "op": "==", "value": true},
+          {"type": "state", "property": "school_choice", "op": "!=", "value": "undecided"}
         ]
       }
     },
@@ -3581,7 +3557,7 @@ export const DEMO_SCRIPT = {
         "logic": "AND",
         "check": [
           {"type": "state", "property": "clue_photo", "op": "==", "value": true},
-          {"type": "template", "subtype": "requirement", "ref": "school_undecided"}
+          {"type": "state", "property": "school_choice", "op": "==", "value": "undecided"}
         ]
       }
     },
@@ -3750,6 +3726,7 @@ export const DEMO_SCRIPT = {
           {"type": "set", "subtype": "state", "target": "school_choice", "value": "memory"},
           {"type": "set", "subtype": "state", "target": "knows_twelve", "value": true},
           {"type": "set", "subtype": "state", "target": "truth_fragments", "value": 1},
+          {"type": "set", "subtype": "state", "target": "clue_tunnel", "value": true},
           {"type": "goto", "subtype": "chat", "target": "chat_linh"},
           {"type": "set", "subtype": "action", "target": "action_talk_linh", "property": "display", "value": "hide"},
           {"type": "set", "subtype": "action", "target": "action_recover_class_register", "property": "display", "value": "hide"}
@@ -3759,7 +3736,7 @@ export const DEMO_SCRIPT = {
         "logic": "AND",
         "check": [
           {"type": "state", "property": "clue_photo", "op": "==", "value": true},
-          {"type": "template", "subtype": "requirement", "ref": "school_undecided"}
+          {"type": "state", "property": "school_choice", "op": "==", "value": "undecided"}
         ]
       }
     }
