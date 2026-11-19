@@ -92,14 +92,19 @@ function InventoryItemDetails({ item, onBack, onToggleEquipment, busy }) {
   const usageStatus = item.broken
     ? 'Broken'
     : usageRatio !== null && Array.isArray(usage?.status) && usage.status.length > 0
-      ? usage.status
-        .map(entry => Array.isArray(entry) && entry.length >= 2 && Number.isFinite(Number(entry[0]))
-          ? { threshold: Number(entry[0]), label: String(entry[1]) }
-          : null)
-        .filter(Boolean)
-        .sort((a, b) => a.threshold - b.threshold)
-        .find(entry => usageRatio <= entry.threshold)?.label
-        || String(usage.status[usage.status.length - 1]?.[1] ?? 'Normal')
+      ? (() => {
+        const statuses = usage.status
+          .map(entry => Array.isArray(entry) && entry.length >= 2 && Number.isFinite(Number(entry[0]))
+            ? { threshold: Number(entry[0]), label: String(entry[1]) }
+            : null)
+          .filter(Boolean)
+          .sort((a, b) => a.threshold - b.threshold);
+        const healthyStatuses = statuses.filter(entry => entry.label.toLowerCase() !== 'broken');
+        const progressedStatus = healthyStatuses
+          .filter(entry => usageRatio >= entry.threshold)
+          .at(-1);
+        return progressedStatus?.label || healthyStatuses[0]?.label || 'Normal';
+      })()
       : usage
         ? 'Normal'
         : null;
