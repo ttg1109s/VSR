@@ -686,7 +686,6 @@ export default function InventoryWorkspace({ snapshot, client, open = false, onC
   }
 
   return (
-    <>
     <Drawer
       open={open}
       title={detailItem ? (detailItem.name || "Item Details") : "Inventory"}
@@ -700,18 +699,6 @@ export default function InventoryWorkspace({ snapshot, client, open = false, onC
           <InventoryFilters category={category} onCategoryChange={resetPage(setCategory)} categories={categories} equipment={equipment} onEquipmentChange={resetPage(setEquipment)} sort={sort} onSortChange={resetPage(setSort)} />
         </Popover>
       )}
-    >
-          <InventoryFilters
-            category={category}
-            onCategoryChange={resetPage(setCategory)}
-            categories={categories}
-            equipment={equipment}
-            onEquipmentChange={resetPage(setEquipment)}
-            sort={sort}
-            onSortChange={resetPage(setSort)}
-          />
-        </Popover>
-      }
     >
       {detailItem ? (
         <InventoryItemDetails
@@ -746,36 +733,34 @@ export default function InventoryWorkspace({ snapshot, client, open = false, onC
               )}
             </div>
 
-          {filteredItems.length === 0 ? (
-            <EmptyInventoryState
-              title="No matching items"
-              message="Try changing your search or filters."
-            />
-          ) : (
-            <>
-              <Grid columns="auto" gap="3" className="vsr-inventory-items-grid" aria-label="Inventory items">
-                {pageItems.map(item => (
-                  <InventoryItemCard
-                    key={item.id}
-                    item={item}
-                    busy={pendingItemId === item.id}
-                    onViewDetails={setDetailItem}
-                    onToggleEquipment={toggleItemEquipment}
-                  />
-                ))}
-              </Grid>
-              <InventoryPagination
-                page={currentPage}
-                pageCount={pageCount}
-                onPageChange={setPage}
+            {filteredItems.length === 0 ? (
+              <EmptyInventoryState
+                title="No matching items"
+                message="Try changing your search or filters."
               />
-            </>
-          )}
+            ) : (
+              <>
+                <Grid columns="auto" gap="3" className="vsr-inventory-items-grid" aria-label="Inventory items">
+                  {pageItems.map(item => (
+                    <InventoryItemCard
+                      key={item.id}
+                      item={item}
+                      busy={pendingItemId === item.id}
+                      onViewDetails={setDetailItem}
+                      onToggleEquipment={toggleItemEquipment}
+                    />
+                  ))}
+                </Grid>
+                <InventoryPagination
+                  page={currentPage}
+                  pageCount={pageCount}
+                  onPageChange={setPage}
+                />
+              </>
+            )}
           </div>
         </div>
       )}
     </Drawer>
-
-    </>
   );
 }
