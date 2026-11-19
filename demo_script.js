@@ -1048,7 +1048,9 @@ export const DEMO_SCRIPT = {
           },
           "actions": [
             "action_search_cellar",
-          ]
+          
+            "action_find_insulated_wire",
+            "action_find_spare_fuse"]
         }
       }
     },
@@ -1222,7 +1224,11 @@ export const DEMO_SCRIPT = {
             "action_check_desk",
             "action_talk_linh",
             "action_decode_roster"
-          ]
+           ,
+            "action_find_radio_toolkit",
+            "action_find_tracing_paper",
+            "action_find_inspection_loupe",
+            "action_overlay_map"]
         }
       }
     },
@@ -1415,7 +1421,8 @@ export const DEMO_SCRIPT = {
           },
           "actions": [
             "action_repair_mill",
-          ]
+          
+            "action_find_clockwork_spring"]
         }
       }
     },
