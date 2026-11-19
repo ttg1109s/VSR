@@ -893,7 +893,7 @@ export const DEMO_SCRIPT = {
             "action_read_notice",
             "action_talk_mai",
             "action_enter_well",
-            "action_restore_radio_signal",
+            ,
             "action_decode_broadcast"
           ]
         },
@@ -912,6 +912,7 @@ export const DEMO_SCRIPT = {
             "action_read_notice",
             "action_talk_mai",
             "action_enter_well",
+            "action_restore_radio_signal",
           ]
         }
       }
