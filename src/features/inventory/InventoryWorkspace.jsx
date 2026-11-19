@@ -112,7 +112,7 @@ function InventoryItemDetails({ item, onBack, onToggleEquipment, busy }) {
       <header className="vsr-inventory-item-details__hero">
         <span className="material-symbols-rounded vsr-inventory-item-details__icon" aria-hidden="true">{iconName}</span>
         <h2>{item.name || 'Item'}</h2>
-        <p className="vsr-inventory-item-details__category">{categoryLabel ? `Utility · ${categoryLabel}` : 'Utility'}</p>
+        <p className="vsr-inventory-item-details__category">{categoryLabel || 'Uncategorized'}</p>
         <div className="vsr-inventory-item-details__badges">
           {item.broken && <span className="vsr-inventory-item-details__badge vsr-inventory-item-details__badge--warning"><span className="material-symbols-rounded" aria-hidden="true">warning</span>Broken</span>}
           <span className="vsr-inventory-item-details__badge"><span className="material-symbols-rounded" aria-hidden="true">{item.equipped ? 'check_circle' : 'inventory_2'}</span>{item.equipped ? 'Equipped' : 'Not equipped'}</span>
