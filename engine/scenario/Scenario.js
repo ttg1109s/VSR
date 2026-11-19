@@ -368,10 +368,12 @@ function validateReferences(scenario) {
     }
   }
 
-  const globalChoiceIds = new Map();
   for (const [chatId, chat] of Object.entries(chats)) {
     const blocks = chat?.block || {};
     const choices = chat?.choice || {};
+    // Choice IDs are only consumed inside their owning chat. Separate chat
+    // threads may intentionally reuse the same IDs and share choice layouts.
+    const choiceIds = new Set();
     const entry = chat?.meta?.entry;
     if (entry && !Object.hasOwn(blocks, entry)) add(`chat.${chatId}.meta.entry`, `references missing entry block '${entry}'`);
     // Sender IDs are not all Characters: `$communication` is built in and
@@ -393,8 +395,8 @@ function validateReferences(scenario) {
     for (const [choiceId, list] of Object.entries(choices)) {
       for (const [index, choice] of asArray(list).entries()) {
         if (choice?.id) {
-          if (globalChoiceIds.has(choice.id)) add(`chat.${chatId}.choice.${choiceId}[${index}].id`, `choice ID '${choice.id}' is already used in chat '${globalChoiceIds.get(choice.id)}'`);
-          else globalChoiceIds.set(choice.id, chatId);
+          if (choiceIds.has(choice.id)) add(`chat.${chatId}.choice.${choiceId}[${index}].id`, `choice ID '${choice.id}' is duplicated within this chat`);
+          else choiceIds.add(choice.id);
         }
         if (choice?.jump && !Object.hasOwn(blocks, choice.jump)) {
           add(`chat.${chatId}.choice.${choiceId}[${index}].jump`, `references missing block '${choice.jump}'`);
