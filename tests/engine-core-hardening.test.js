@@ -306,6 +306,32 @@ test('chat entry, choice references, and jumps must resolve within the same chat
   assert.ok(validateScenario(scenario).some(error => error.includes("references missing block 'missing'")));
 });
 
+test('choice IDs are unique within each chat while separate chats may reuse them', () => {
+  const scenario = validScenario();
+  const sharedChoices = [
+    { id: 'shared_choice', text: 'Continue', jump: 'first' }
+  ];
+  scenario.chat.first = {
+    meta: { loop: false, entry: 'first' },
+    block: { first: { line: [], choice_id: 'answer' } },
+    choice: { answer: sharedChoices }
+  };
+  scenario.chat.second = {
+    meta: { loop: false, entry: 'first' },
+    block: { first: { line: [], choice_id: 'answer' } },
+    choice: { answer: sharedChoices.map(choice => ({ ...choice })) }
+  };
+
+  assert.deepEqual(validateScenario(scenario), []);
+
+  scenario.chat.first.choice.other = [{ id: 'shared_choice', text: 'Duplicate', jump: 'first' }];
+  const errors = validateScenario(scenario);
+  assert.ok(errors.some(error =>
+    error.includes("chat.first.choice.other[0].id") &&
+    error.includes("choice ID 'shared_choice' is duplicated within this chat")
+  ));
+});
+
 test('find-way paths must remain in bounds, begin at start, end at target, and use adjacent cells', () => {
   const scenario = validScenario();
   scenario.passwords.find_way = {
