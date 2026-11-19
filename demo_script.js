@@ -1460,6 +1460,7 @@ export const DEMO_SCRIPT = {
             "action_inspect_tunnel_names",
             "action_open_archive",
             "action_reach_station",
+            "action_reach_station_memory",
           ]
         }
       }
