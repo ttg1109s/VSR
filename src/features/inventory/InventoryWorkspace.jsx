@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Button, Dialog, Drawer, Grid, IconButton, Input, Menu, Popover } from '../../design-system/index.js';
+import { Button, Drawer, Grid, IconButton, Input, Menu, Popover } from '../../design-system/index.js';
 
 const PAGE_SIZE = 24;
 
@@ -74,7 +74,7 @@ function InventoryItemCard({ item, onViewDetails, onToggleEquipment, busy }) {
   );
 }
 
-function InventoryItemDetails({ item }) {
+function InventoryItemDetails({ item, onBack, onToggleEquipment, busy }) {
   if (!item) return null;
   const usage = item.usage;
 
@@ -85,6 +85,7 @@ function InventoryItemDetails({ item }) {
         <span className="vsr-tag">
           {item.equipped ? 'Equipped' : 'Not equipped'}
         </span>
+      </div>
       </div>
       {item.description && (
         <section className="vsr-inventory-item-details__section">
@@ -121,6 +122,16 @@ function InventoryItemDetails({ item }) {
       {!item.description && !usage && !item.requirements?.hasRequirements && !(item.stats?.length) && (
         <p className="vsr-text-secondary">No additional details available.</p>
       )}
+      <div className="vsr-inventory-item-details__actions">
+        <Button
+          block
+          variant="primary"
+          disabled={busy || (!item.equipped && item.canEquip === false)}
+          onClick={() => onToggleEquipment(item)}
+        >
+          {busy ? 'Updating…' : item.equipped ? 'Unequip' : 'Equip'}
+        </Button>
+      </div>
     </div>
   );
 }
@@ -253,7 +264,7 @@ export default function InventoryWorkspace({ snapshot, client, open = false, onC
   const [sort, setSort] = useState('name-asc');
   const [page, setPage] = useState(1);
   const [selectedItem, setSelectedItem] = useState(null);
-  const [pendingItemId, setPendingItemId] = useState(null);
+  const [pendingItemId, setPendingItemId] = useState(null);\n  const [detailItem, setDetailItem] = useState(null);
 
   const categories = useMemo(() => {
     if (!items) return [];
@@ -324,7 +335,7 @@ export default function InventoryWorkspace({ snapshot, client, open = false, onC
     <>
     <Drawer
       open={open}
-      title="Inventory"
+      title={detailItem ? (detailItem.name || "Item Details") : "Inventory"}
       onClose={onClose}
       size="lg"
       width="min(100vw, 760px)"
@@ -348,7 +359,7 @@ export default function InventoryWorkspace({ snapshot, client, open = false, onC
         </Popover>
       }
     >
-      {!inventory || !items ? (
+      {detailItem ? (\n        <InventoryItemDetails\n          item={detailItem}\n          onBack={() => setDetailItem(null)}\n          onToggleEquipment={toggleItemEquipment}\n          busy={pendingItemId === detailItem.id}\n        />\n      ) : !inventory || !items ? (
         <EmptyInventoryState
           title="Inventory unavailable"
           message="Inventory data is not available yet."
@@ -387,7 +398,7 @@ export default function InventoryWorkspace({ snapshot, client, open = false, onC
                     key={item.id}
                     item={item}
                     busy={pendingItemId === item.id}
-                    onViewDetails={setSelectedItem}
+                    onViewDetails={setDetailItem}
                     onToggleEquipment={toggleItemEquipment}
                   />
                 ))}
