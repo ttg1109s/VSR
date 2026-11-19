@@ -1859,6 +1859,12 @@ export const DEMO_SCRIPT = {
             "property": "clue_lantern",
             "op": "==",
             "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "hand",
+            "op": "has",
+            "value": "lantern"
           }
         ]
       }
@@ -2481,7 +2487,7 @@ export const DEMO_SCRIPT = {
         "check": [
           {
             "type": "item",
-            "subtype": "inventory",
+            "subtype": "hand",
             "op": "has",
             "value": "guide_compass"
           }
@@ -2658,7 +2664,7 @@ export const DEMO_SCRIPT = {
           },
           {
             "type": "item",
-            "subtype": "inventory",
+            "subtype": "hand",
             "op": "has",
             "value": "mill_gear_pin"
           }
