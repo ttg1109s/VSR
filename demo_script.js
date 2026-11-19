@@ -251,50 +251,21 @@ export const DEMO_SCRIPT = {
         ]
       },
       "station_ready": {
-        "logic": "OR",
+        "logic": "AND",
         "check": [
-          {
-            "logic": "AND",
-            "check": [
-              {"type": "state", "property": "truth_fragments", "op": ">=", "value": 3},
-              {"type": "state", "property": "archive_open", "op": "==", "value": true},
-              {"type": "item", "subtype": "inventory", "op": "has", "value": "tunnel_manifest"},
-              {"type": "state", "property": "evidence_evacuation_film", "op": "==", "value": true}
-            ]
-          },
-          {
-            "logic": "AND",
-            "check": [
-              {"type": "state", "property": "school_choice", "op": "==", "value": "memory"},
-              {"type": "state", "property": "truth_fragments", "op": ">=", "value": 3},
-              {"type": "state", "property": "archive_open", "op": "==", "value": true},
-              {"type": "state", "property": "clue_tunnel", "op": "==", "value": true}
-            ]
-          }
+          {"type": "state", "property": "truth_fragments", "op": ">=", "value": 3},
+          {"type": "state", "property": "archive_open", "op": "==", "value": true},
+          {"type": "item", "subtype": "inventory", "op": "has", "value": "tunnel_manifest"},
+          {"type": "state", "property": "evidence_evacuation_film", "op": "==", "value": true}
         ]
       },
       "release_ready": {
-        "logic": "OR",
+        "logic": "AND",
         "check": [
-          {
-            "logic": "AND",
-            "check": [
-              {"type": "state", "property": "truth_fragments", "op": ">=", "value": 3},
-              {"type": "state", "property": "bell_rung", "op": "==", "value": true},
-              {"type": "state", "property": "archive_open", "op": "==", "value": true},
-              {"type": "state", "property": "evidence_evacuation_seal", "op": "==", "value": true}
-            ]
-          },
-          {
-            "logic": "AND",
-            "check": [
-              {"type": "state", "property": "school_choice", "op": "==", "value": "memory"},
-              {"type": "state", "property": "truth_fragments", "op": ">=", "value": 3},
-              {"type": "state", "property": "bell_rung", "op": "==", "value": true},
-              {"type": "state", "property": "archive_open", "op": "==", "value": true},
-              {"type": "state", "property": "clue_tunnel", "op": "==", "value": true}
-            ]
-          }
+          {"type": "state", "property": "truth_fragments", "op": ">=", "value": 3},
+          {"type": "state", "property": "bell_rung", "op": "==", "value": true},
+          {"type": "state", "property": "archive_open", "op": "==", "value": true},
+          {"type": "state", "property": "evidence_evacuation_seal", "op": "==", "value": true}
         ]
       }
     },
@@ -1466,6 +1437,7 @@ export const DEMO_SCRIPT = {
             "action_inspect_tunnel_names",
             "action_open_archive",
             "action_reach_station",
+            "action_reach_station_memory",
             "action_recover_tunnel_manifest"
           ]
         },
@@ -1515,6 +1487,7 @@ export const DEMO_SCRIPT = {
           "actions": [
             "action_confront_voice",
             "action_choose_fate",
+            "action_choose_fate_memory",
             "action_ending_bury",
             "action_ending_echo",
             "action_ending_depart",
@@ -1535,6 +1508,7 @@ export const DEMO_SCRIPT = {
           "actions": [
             "action_confront_voice",
             "action_choose_fate",
+            "action_choose_fate_memory",
             "action_ending_bury",
             "action_ending_echo",
             "action_ending_depart",
@@ -2736,6 +2710,76 @@ export const DEMO_SCRIPT = {
         "ref": "release_ready"
       }
     },
+    "action_choose_fate_memory": {
+  "meta": {
+    "title": "Sự giải thoát — tuyến ký ức",
+    "buttonLabel": "Giải phóng",
+    "desc": "Dựa trên ký ức nhân chứng, dấu đường hầm và những gì đã khôi phục, bạn chọn giải phóng người bị mắc kẹt."
+  },
+  "set": {
+    "display": "show",
+    "requirement": true
+  },
+  "effect": {
+    "normal": [],
+    "pass": [
+      {
+        "type": "set",
+        "subtype": "state",
+        "target": "final_choice",
+        "value": "release"
+      },
+      {
+        "type": "goto",
+        "subtype": "end",
+        "target": "ending_release"
+      }
+    ],
+    "fail": [
+      {
+        "type": "notify",
+        "subtype": "toast",
+        "level": "warning",
+        "text": "Tuyến Memory cần ba mảnh ký ức, rung chuông, mở kho hồ sơ và khôi phục dấu đường hầm."
+      }
+    ]
+  },
+  "requirement": {
+    "logic": "AND",
+    "check": [
+      {
+        "type": "state",
+        "property": "school_choice",
+        "op": "==",
+        "value": "memory"
+      },
+      {
+        "type": "state",
+        "property": "truth_fragments",
+        "op": ">=",
+        "value": 3
+      },
+      {
+        "type": "state",
+        "property": "bell_rung",
+        "op": "==",
+        "value": true
+      },
+      {
+        "type": "state",
+        "property": "archive_open",
+        "op": "==",
+        "value": true
+      },
+      {
+        "type": "state",
+        "property": "clue_tunnel",
+        "op": "==",
+        "value": true
+      }
+    ]
+  }
+},
     "action_ending_bury": {
       "meta": {
         "title": "Hồ sơ sơ tán",
@@ -3270,6 +3314,65 @@ export const DEMO_SCRIPT = {
         "ref": "station_ready"
       }
     },
+    "action_reach_station_memory": {
+  "meta": {
+    "title": "Ga tàu 03:17 — tuyến ký ức",
+    "buttonLabel": "Theo dấu ký ức",
+    "buttonIcon": "train",
+    "desc": "Tuyến Memory dùng lời khai và dấu đường hầm thay cho danh sách vận chuyển và cuộn phim."
+  },
+  "set": {
+    "display": "show",
+    "requirement": true
+  },
+  "effect": {
+    "normal": [],
+    "pass": [
+      {
+        "type": "goto",
+        "subtype": "scene",
+        "target": "scene_ghost_station"
+      }
+    ],
+    "fail": [
+      {
+        "type": "notify",
+        "subtype": "toast",
+        "level": "warning",
+        "text": "Tuyến Memory cần ba mảnh ký ức, kho hồ sơ đã mở và dấu đường hầm được khôi phục."
+      }
+    ]
+  },
+  "requirement": {
+    "logic": "AND",
+    "check": [
+      {
+        "type": "state",
+        "property": "school_choice",
+        "op": "==",
+        "value": "memory"
+      },
+      {
+        "type": "state",
+        "property": "truth_fragments",
+        "op": ">=",
+        "value": 3
+      },
+      {
+        "type": "state",
+        "property": "archive_open",
+        "op": "==",
+        "value": true
+      },
+      {
+        "type": "state",
+        "property": "clue_tunnel",
+        "op": "==",
+        "value": true
+      }
+    ]
+  }
+},
     "action_descend_tunnel": {
       "meta": {
         "title": "Cửa sập cối xay",
