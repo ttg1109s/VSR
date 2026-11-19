@@ -91,7 +91,7 @@ function InventoryItemDetails({ item, onBack, onToggleEquipment, busy }) {
     : null;
   const usageStatus = item.broken
     ? 'Broken'
-    : usageRatio !== null && Array.isArray(usage?.status)
+    : usageRatio !== null && Array.isArray(usage?.status) && usage.status.length > 0
       ? usage.status
         .map(entry => Array.isArray(entry) && entry.length >= 2 && Number.isFinite(Number(entry[0]))
           ? { threshold: Number(entry[0]), label: String(entry[1]) }
@@ -99,8 +99,10 @@ function InventoryItemDetails({ item, onBack, onToggleEquipment, busy }) {
         .filter(Boolean)
         .sort((a, b) => a.threshold - b.threshold)
         .find(entry => usageRatio <= entry.threshold)?.label
-        || (usage.status.length ? String(usage.status[usage.status.length - 1]?.[1] ?? '') : '')
-      : null;
+        || String(usage.status[usage.status.length - 1]?.[1] ?? 'Normal')
+      : usage
+        ? 'Normal'
+        : null;
   const equipDisabled = busy || (!item.equipped && item.canEquip === false);
 
   return (
