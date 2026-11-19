@@ -313,9 +313,9 @@ export default function InventoryWorkspace({ snapshot, client, open = false, onC
         </Popover>
       )}
     >
-      {detailItem ? (
+      {liveDetailItem ? (
         <InventoryItemDetails
-          item={detailItem}
+          item={liveDetailItem}
           onBack={() => setDetailItem(null)}
           onToggleEquipment={toggleItemEquipment}
           busy={pendingItemId === liveDetailItem.id}
