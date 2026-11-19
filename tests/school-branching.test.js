@@ -33,7 +33,10 @@ test('Memory commitment sets branch before chat and locks Evidence Action', () =
   assert.equal(pass[0].target, 'school_choice');
   assert.equal(pass[0].value, 'memory');
   assert.ok(pass.some(e => e.type === 'set' && e.subtype === 'action' && e.target === 'action_recover_class_register' && e.value === 'hide'));
-  assert.ok(pass.some(e => e.type === 'goto' && e.subtype === 'chat' && e.target === 'chat_linh'));
+  const hideMemory = pass.findIndex(e => e.type === 'set' && e.subtype === 'action' && e.target === 'action_talk_linh' && e.value === 'hide');
+  const hideEvidence = pass.findIndex(e => e.type === 'set' && e.subtype === 'action' && e.target === 'action_recover_class_register' && e.value === 'hide');
+  const gotoChat = pass.findIndex(e => e.type === 'goto' && e.subtype === 'chat' && e.target === 'chat_linh');
+  assert.ok(hideMemory >= 0 && hideEvidence >= 0 && hideMemory < gotoChat && hideEvidence < gotoChat, 'hide opposing Action before chat transition');
 });
 
 test('Evidence commitment sets branch before reward and locks Memory Action', () => {
@@ -93,4 +96,11 @@ test('Memory ending Action is available in station routers', () => {
     }
   }
   assert.ok(refs.length >= 2, 'Memory release Action should be exposed in both station routers');
+});
+\n\ntest('plaza and inn dialogue react to the irreversible branch', () => {
+  for (const chatId of ['chat_mai_memory', 'chat_mai_evidence', 'chat_hanh_memory', 'chat_hanh_evidence']) assert.ok(DEMO_SCRIPT.chats[chatId], `Missing branch chat ${chatId}`);
+  assert.ok(actions.action_talk_mai.effect.normal.some(e => e.target === 'chat_mai_memory' && e.req?.check?.some(c => c.property === 'school_choice' && c.value === 'memory')));
+  assert.ok(actions.action_talk_mai.effect.normal.some(e => e.target === 'chat_mai_evidence' && e.req?.check?.some(c => c.property === 'school_choice' && c.value === 'evidence')));
+  assert.ok(actions.action_talk_hanh.effect.normal.some(e => e.target === 'chat_hanh_memory' && e.req?.check?.some(c => c.property === 'school_choice' && c.value === 'memory')));
+  assert.ok(actions.action_talk_hanh.effect.normal.some(e => e.target === 'chat_hanh_evidence' && e.req?.check?.some(c => c.property === 'school_choice' && c.value === 'evidence')));
 });
