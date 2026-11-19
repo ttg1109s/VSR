@@ -263,7 +263,7 @@ export default function InventoryWorkspace({ snapshot, client, open = false, onC
   const [equipment, setEquipment] = useState('all');
   const [sort, setSort] = useState('name-asc');
   const [page, setPage] = useState(1);
-  const [selectedItem, setSelectedItem] = useState(null);
+
   const [pendingItemId, setPendingItemId] = useState(null);\n  const [detailItem, setDetailItem] = useState(null);
 
   const categories = useMemo(() => {
@@ -414,15 +414,7 @@ export default function InventoryWorkspace({ snapshot, client, open = false, onC
         </div>
       )}
     </Drawer>
-      <Dialog
-        open={Boolean(selectedItem)}
-        title={selectedItem?.name || 'Item Details'}
-        onClose={() => setSelectedItem(null)}
-        size="sm"
-        ariaLabel={selectedItem ? `Details for ${selectedItem.name}` : 'Item Details'}
-      >
-        <InventoryItemDetails item={selectedItem} />
-      </Dialog>
+
     </>
   );
 }
