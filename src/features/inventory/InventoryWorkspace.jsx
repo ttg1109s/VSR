@@ -696,7 +696,15 @@ export default function InventoryWorkspace({ snapshot, client, open = false, onC
       contentClassName="vsr-inventory-drawer-content"
       headerActions={!detailItem && (
         <Popover align="end" label="Inventory filters" trigger={<IconButton icon="tune" label="Inventory filters" />}>
-          <InventoryFilters category={category} onCategoryChange={resetPage(setCategory)} categories={categories} equipment={equipment} onEquipmentChange={resetPage(setEquipment)} sort={sort} onSortChange={resetPage(setSort)} />
+          <InventoryFilters
+            category={category}
+            onCategoryChange={resetPage(setCategory)}
+            categories={categories}
+            equipment={equipment}
+            onEquipmentChange={resetPage(setEquipment)}
+            sort={sort}
+            onSortChange={resetPage(setSort)}
+          />
         </Popover>
       )}
     >
@@ -720,7 +728,6 @@ export default function InventoryWorkspace({ snapshot, client, open = false, onC
             search={search}
             onSearchChange={resetPage(setSearch)}
           />
-
           <div className="vsr-inventory-results">
             <div className="vsr-inventory-results__meta">
               <p className="vsr-text-secondary" aria-live="polite">
@@ -732,7 +739,6 @@ export default function InventoryWorkspace({ snapshot, client, open = false, onC
                 </p>
               )}
             </div>
-
             {filteredItems.length === 0 ? (
               <EmptyInventoryState
                 title="No matching items"
