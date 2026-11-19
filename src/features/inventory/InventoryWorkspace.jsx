@@ -78,22 +78,74 @@ function InventoryItemDetails({ item, onBack, onToggleEquipment, busy }) {
   if (!item) return null;
   const usage = item.usage;
   const iconName = typeof item.icon === 'string' && /^[a-z][a-z0-9_]*$/.test(item.icon) ? item.icon : 'inventory_2';
+  const categoryLabel = item.category === 'uncategorized' ? 'Uncategorized' : item.category;
+  const usageRatio = usage && Number(usage.max) > 0
+    ? Math.max(0, Math.min(100, (Number(usage.current) / Number(usage.max)) * 100))
+    : null;
+  const equipDisabled = busy || (!item.equipped && item.canEquip === false);
+
   return (
     <div className="vsr-inventory-item-details">
       <div className="vsr-inventory-item-details__navigation">
-        <Button variant="secondary" size="sm" onClick={onBack}><span className="material-symbols-rounded" aria-hidden="true">arrow_back</span>Back to Inventory</Button>
+        <Button variant="tertiary" size="sm" onClick={onBack}>
+          <span className="material-symbols-rounded" aria-hidden="true">arrow_back</span>
+          Back to Inventory
+        </Button>
       </div>
-      <div className="vsr-inventory-item-details__hero">
+
+      <header className="vsr-inventory-item-details__hero">
         <span className="material-symbols-rounded vsr-inventory-item-details__icon" aria-hidden="true">{iconName}</span>
         <h2>{item.name || 'Item'}</h2>
-        <div className="vsr-inventory-item-details__status"><span className="vsr-text-secondary">{item.category === 'uncategorized' ? 'Uncategorized' : item.category}</span><span className="vsr-tag">{item.equipped ? 'Equipped' : 'Not equipped'}</span></div>
+        <p className="vsr-inventory-item-details__category">{categoryLabel ? `Utility · ${categoryLabel}` : 'Utility'}</p>
+        <div className="vsr-inventory-item-details__badges">
+          {item.broken && <span className="vsr-inventory-item-details__badge vsr-inventory-item-details__badge--warning"><span className="material-symbols-rounded" aria-hidden="true">warning</span>Broken</span>}
+          <span className="vsr-inventory-item-details__badge"><span className="material-symbols-rounded" aria-hidden="true">{item.equipped ? 'check_circle' : 'inventory_2'}</span>{item.equipped ? 'Equipped' : 'Not equipped'}</span>
+        </div>
+      </header>
+
+      {item.description && (
+        <section className="vsr-inventory-item-details__section">
+          <h3><span className="material-symbols-rounded" aria-hidden="true">description</span>Description</h3>
+          <p>{item.description}</p>
+        </section>
+      )}
+
+      {usage && (
+        <section className="vsr-inventory-item-details__section">
+          <h3><span className="material-symbols-rounded" aria-hidden="true">bar_chart</span>Durability / Usage</h3>
+          <div className="vsr-inventory-item-details__metric">
+            <span className="vsr-text-secondary">Usage</span>
+            <strong>{usage.current} / {usage.max}</strong>
+          </div>
+          {usageRatio !== null && <div className="vsr-inventory-item-details__progress" role="progressbar" aria-valuenow={usageRatio} aria-valuemin="0" aria-valuemax="100" aria-label="Usage"><span className={item.broken ? 'is-broken' : ''} style={{ width: `${usageRatio}%` }} /></div>}
+          {item.broken && <p className="vsr-inventory-item-details__warning"><span className="material-symbols-rounded" aria-hidden="true">error</span>Broken</p>}
+        </section>
+      )}
+
+      {item.requirements?.hasRequirements && (
+        <section className="vsr-inventory-item-details__section">
+          <h3><span className="material-symbols-rounded" aria-hidden="true">rule</span>Requirements</h3>
+          <p>{item.requirements.passed === false ? 'Requirements not met' : item.requirements.passed === true ? 'Requirements met' : 'Not evaluated'}</p>
+        </section>
+      )}
+
+      {Array.isArray(item.stats) && item.stats.length > 0 && (
+        <section className="vsr-inventory-item-details__section">
+          <h3><span className="material-symbols-rounded" aria-hidden="true">analytics</span>Stats</h3>
+          <dl className="vsr-inventory-item-details__stats">{item.stats.map(stat => <div key={stat.id}><dt>{stat.label}</dt><dd>{stat.current === null ? '—' : stat.current}{stat.max !== null ? ` / ${stat.max}` : ''}</dd></div>)}</dl>
+        </section>
+      )}
+
+      <section className="vsr-inventory-item-details__section vsr-inventory-item-details__equipment">
+        <h3><span className="material-symbols-rounded" aria-hidden="true">checkroom</span>Equipment Status</h3>
+        <p>{item.equipped ? 'Currently equipped.' : 'Currently not equipped.'}</p>
+      </section>
+
+      <div className="vsr-inventory-item-details__actions">
+        <Button block variant={equipDisabled ? 'secondary' : 'primary'} disabled={equipDisabled} onClick={() => onToggleEquipment(item)}>
+          {busy ? 'Updating…' : equipDisabled && item.broken ? 'Equip unavailable · item broken' : item.equipped ? 'Unequip' : 'Equip'}
+        </Button>
       </div>
-      {item.description && <section className="vsr-inventory-item-details__section"><h3>Description</h3><p>{item.description}</p></section>}
-      {usage && <section className="vsr-inventory-item-details__section"><h3>Usage</h3><p>{usage.current} / {usage.max}</p>{item.broken && <p className="vsr-inventory-item-details__warning">Broken</p>}</section>}
-      {item.requirements?.hasRequirements && <section className="vsr-inventory-item-details__section"><h3>Requirements</h3><p>{item.requirements.passed === false ? 'Requirements not met' : item.requirements.passed === true ? 'Requirements met' : 'Not evaluated'}</p></section>}
-      {Array.isArray(item.stats) && item.stats.length > 0 && <section className="vsr-inventory-item-details__section"><h3>Stats</h3><dl className="vsr-inventory-item-details__stats">{item.stats.map(stat => <div key={stat.id}><dt>{stat.label}</dt><dd>{stat.current === null ? '—' : stat.current}{stat.max !== null ? ` / ${stat.max}` : ''}</dd></div>)}</dl></section>}
-      {!item.description && !usage && !item.requirements?.hasRequirements && !(item.stats?.length) && <p className="vsr-text-secondary">No additional details available.</p>}
-      <div className="vsr-inventory-item-details__actions"><Button block variant="primary" disabled={busy || (!item.equipped && item.canEquip === false)} onClick={() => onToggleEquipment(item)}>{busy ? 'Updating…' : item.equipped ? 'Unequip' : 'Equip'}</Button></div>
     </div>
   );
 }
