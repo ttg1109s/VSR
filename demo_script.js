@@ -339,16 +339,10 @@ export const DEMO_SCRIPT = {
       "effect": {
         "use": [
           {
-            "type": "set",
-            "subtype": "state",
-            "target": "found_guestbook",
-            "value": true
-          },
-          {
             "type": "notify",
             "subtype": "toast",
             "level": "info",
-            "text": "Những cái tên trong sổ không phải khách trọ. Đó là người chưa thể rời làng."
+            "text": "Bạn đọc lại sổ khách. Những cái tên và vết mực ở trang cuối xác nhận các khách trọ không thực sự rời làng."
           }
         ]
       }
@@ -367,16 +361,10 @@ export const DEMO_SCRIPT = {
       "effect": {
         "use": [
           {
-            "type": "set",
-            "subtype": "state",
-            "target": "clue_tape",
-            "value": true
-          },
-          {
             "type": "notify",
             "subtype": "toast",
             "level": "info",
-            "text": "Giọng nói trong băng nhắc đến hồi chuông lúc 03:17."
+            "text": "Bạn nghe lại cuộn băng: tín hiệu nhắc đến hồi chuông lúc 03:17. Clue này đã được ghi nhận khi bạn tìm thấy băng."
           }
         ]
       }
@@ -404,7 +392,7 @@ export const DEMO_SCRIPT = {
             "type": "notify",
             "subtype": "toast",
             "level": "info",
-            "text": "Mặt trong cán ô có khắc tên người thứ mười hai."
+            "text": "Bạn kiểm tra mặt trong cán ô và nhận ra tên người thứ mười hai."
           }
         ]
       }
@@ -423,10 +411,10 @@ export const DEMO_SCRIPT = {
       "effect": {
         "use": [
           {
-            "type": "set",
-            "subtype": "state",
-            "target": "heard_bell",
-            "value": true
+            "type": "notify",
+            "subtype": "toast",
+            "level": "info",
+            "text": "Quả lắc chuông là bộ phận cần lắp tại tháp chuông. Hãy dùng hành động sửa/rung chuông ở đúng địa điểm; kiểm tra vật phẩm không tự rung chuông."
           }
         ]
       }
@@ -445,10 +433,10 @@ export const DEMO_SCRIPT = {
       "effect": {
         "use": [
           {
-            "type": "set",
-            "subtype": "state",
-            "target": "clue_photo",
-            "value": true
+            "type": "notify",
+            "subtype": "toast",
+            "level": "info",
+            "text": "Bạn xem lại ảnh lớp. Bức ảnh cho thấy một học sinh đã bị cắt khỏi khung; clue đã được ghi nhận khi tìm thấy ảnh."
           }
         ]
       }
@@ -467,10 +455,10 @@ export const DEMO_SCRIPT = {
       "effect": {
         "use": [
           {
-            "type": "set",
-            "subtype": "state",
-            "target": "archive_open",
-            "value": true
+            "type": "notify",
+            "subtype": "toast",
+            "level": "info",
+            "text": "Chìa khóa kho hồ sơ chỉ mở đúng tủ tại khu kho. Hãy tương tác với tủ hồ sơ ở địa điểm đó."
           }
         ]
       }
@@ -489,10 +477,10 @@ export const DEMO_SCRIPT = {
       "effect": {
         "use": [
           {
-            "type": "set",
-            "subtype": "state",
-            "target": "clue_tunnel",
-            "value": true
+            "type": "notify",
+            "subtype": "toast",
+            "level": "info",
+            "text": "Bạn xem mảnh bản đồ và xác nhận đường xuống tunnel. Thông tin này đã được ghi nhận khi tìm thấy bản đồ."
           }
         ]
       }
@@ -511,16 +499,10 @@ export const DEMO_SCRIPT = {
       "effect": {
         "use": [
           {
-            "type": "set",
-            "subtype": "state",
-            "target": "evidence_broadcast",
-            "value": true
-          },
-          {
             "type": "notify",
             "subtype": "toast",
             "level": "info",
-            "text": "Bạn đối chiếu cuộn tinh thể thu sóng với các manh mối đã thu thập."
+            "text": "Tinh thể thu sóng cần được xử lý tại hộp loa phát thanh. Use trong Inventory chỉ kiểm tra linh kiện, không tự khôi phục tín hiệu."
           }
         ]
       }
@@ -539,16 +521,10 @@ export const DEMO_SCRIPT = {
       "effect": {
         "use": [
           {
-            "type": "set",
-            "subtype": "state",
-            "target": "evidence_well_badge",
-            "value": true
-          },
-          {
             "type": "notify",
             "subtype": "toast",
             "level": "info",
-            "text": "Bạn đối chiếu phù hiệu đội sơ tán với các manh mối đã thu thập."
+            "text": "Bạn kiểm tra phù hiệu đội sơ tán. Ký hiệu trên phù hiệu đã được ghi nhận khi thu hồi nó dưới giếng."
           }
         ]
       }
@@ -567,16 +543,10 @@ export const DEMO_SCRIPT = {
       "effect": {
         "use": [
           {
-            "type": "set",
-            "subtype": "state",
-            "target": "evidence_hidden_room",
-            "value": true
-          },
-          {
             "type": "notify",
             "subtype": "toast",
             "level": "info",
-            "text": "Bạn đối chiếu chìa khóa phòng thứ bảy với các manh mối đã thu thập."
+            "text": "Chìa khóa phòng thứ bảy dùng tại cánh cửa ẩn của nhà trọ. Use trong Inventory không tự mở phòng."
           }
         ]
       }
@@ -595,16 +565,10 @@ export const DEMO_SCRIPT = {
       "effect": {
         "use": [
           {
-            "type": "set",
-            "subtype": "state",
-            "target": "evidence_evacuation_film",
-            "value": true
-          },
-          {
             "type": "notify",
             "subtype": "toast",
             "level": "info",
-            "text": "Bạn đối chiếu cuộn phim sơ tán với các manh mối đã thu thập."
+            "text": "Bạn xem lại cuộn phim sơ tán. Bằng chứng phim đã được ghi nhận khi tìm thấy cuộn phim."
           }
         ]
       }
@@ -623,16 +587,10 @@ export const DEMO_SCRIPT = {
       "effect": {
         "use": [
           {
-            "type": "set",
-            "subtype": "state",
-            "target": "evidence_hymn_note",
-            "value": true
-          },
-          {
             "type": "notify",
             "subtype": "toast",
             "level": "info",
-            "text": "Bạn đối chiếu trang ghi chú trong thánh ca với các manh mối đã thu thập."
+            "text": "Bạn đọc lại ghi chú thánh ca: nó giải thích thứ tự ba hồi chuông và lý do không được có hồi thứ tư."
           }
         ]
       }
@@ -651,16 +609,10 @@ export const DEMO_SCRIPT = {
       "effect": {
         "use": [
           {
-            "type": "set",
-            "subtype": "state",
-            "target": "evidence_bell_wire",
-            "value": true
-          },
-          {
             "type": "notify",
             "subtype": "toast",
             "level": "info",
-            "text": "Bạn đối chiếu dây đồng chuông với các manh mối đã thu thập."
+            "text": "Dây đồng phải được nối vào cơ cấu chuông tại tháp. Kiểm tra item không tự sửa cơ cấu."
           }
         ]
       }
@@ -679,16 +631,10 @@ export const DEMO_SCRIPT = {
       "effect": {
         "use": [
           {
-            "type": "set",
-            "subtype": "state",
-            "target": "evidence_class_register",
-            "value": true
-          },
-          {
             "type": "notify",
             "subtype": "toast",
             "level": "info",
-            "text": "Bạn đối chiếu bản sao sổ điểm danh với các manh mối đã thu thập."
+            "text": "Bạn đọc bản sao sổ điểm danh: hồ sơ xác nhận có mười hai học sinh vào ngày sơ tán."
           }
         ]
       }
@@ -707,16 +653,10 @@ export const DEMO_SCRIPT = {
       "effect": {
         "use": [
           {
-            "type": "set",
-            "subtype": "state",
-            "target": "evidence_forest_route",
-            "value": true
-          },
-          {
             "type": "notify",
             "subtype": "toast",
             "level": "info",
-            "text": "Bạn đối chiếu la bàn người dẫn đường với các manh mối đã thu thập."
+            "text": "La bàn chỉ tuyến đường rừng đã khắc trên mặt sau. Hãy dùng nó để giải mê cung tại khu rừng, không phải để tự mở đường toàn cục."
           }
         ]
       }
@@ -735,16 +675,10 @@ export const DEMO_SCRIPT = {
       "effect": {
         "use": [
           {
-            "type": "set",
-            "subtype": "state",
-            "target": "evidence_evacuation_seal",
-            "value": true
-          },
-          {
             "type": "notify",
             "subtype": "toast",
             "level": "info",
-            "text": "Bạn đối chiếu con dấu đội sơ tán với các manh mối đã thu thập."
+            "text": "Bạn kiểm tra con dấu đội sơ tán. Con dấu là vật chứng cần giữ để xác nhận danh sách; kiểm tra nó không tự hoàn tất nghi thức."
           }
         ]
       }
@@ -763,16 +697,10 @@ export const DEMO_SCRIPT = {
       "effect": {
         "use": [
           {
-            "type": "set",
-            "subtype": "state",
-            "target": "evidence_gear_pin",
-            "value": true
-          },
-          {
             "type": "notify",
             "subtype": "toast",
             "level": "info",
-            "text": "Bạn đối chiếu chốt truyền động với các manh mối đã thu thập."
+            "text": "Chốt truyền động phải được lắp vào cơ cấu cối xay tại đúng địa điểm. Kiểm tra item không tự sửa máy."
           }
         ]
       }
@@ -791,16 +719,10 @@ export const DEMO_SCRIPT = {
       "effect": {
         "use": [
           {
-            "type": "set",
-            "subtype": "state",
-            "target": "evidence_tunnel_manifest",
-            "value": true
-          },
-          {
             "type": "notify",
             "subtype": "toast",
             "level": "info",
-            "text": "Bạn đối chiếu danh sách vận chuyển với các manh mối đã thu thập."
+            "text": "Bạn đọc danh sách vận chuyển. Các tên và lượt đi qua tunnel đã được ghi nhận khi tìm thấy tài liệu."
           }
         ]
       }
@@ -819,16 +741,10 @@ export const DEMO_SCRIPT = {
       "effect": {
         "use": [
           {
-            "type": "set",
-            "subtype": "state",
-            "target": "evidence_station_ticket",
-            "value": true
-          },
-          {
             "type": "notify",
             "subtype": "toast",
             "level": "info",
-            "text": "Bạn đối chiếu vé tàu chưa xé với các manh mối đã thu thập."
+            "text": "Bạn kiểm tra vé tàu chưa xé. Giờ 03:17 xác nhận chuyến tàu; bằng chứng đã được ghi nhận khi tìm thấy vé."
           }
         ]
       }
