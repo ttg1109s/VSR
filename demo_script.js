@@ -1983,6 +1983,13 @@ export const DEMO_SCRIPT = {
             "property": "display",
             "value": "hide"
           }
+        ,
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Đã phát hiện dấu vết tại giếng và khôi phục một mảnh ký ức."
+          }
         ]
       }
     },
@@ -2254,6 +2261,13 @@ export const DEMO_SCRIPT = {
             "property": "display",
             "value": "hide"
           }
+        ,
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Sổ khách đã được ghi nhận; tên và ngày đến là manh mối mới."
+          }
         ]
       }
     },
@@ -2502,6 +2516,13 @@ export const DEMO_SCRIPT = {
             "property": "display",
             "value": "hide"
           }
+        ,
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Bạn giải được mã đồng hồ, khôi phục ký ức về tiếng chuông và lấy quả lắc."
+          }
         ]
       }
     },
@@ -2621,6 +2642,13 @@ export const DEMO_SCRIPT = {
           {"type": "item", "subtype": "add", "target": "map_fragment"},
           
           {"type": "set", "subtype": "action", "target": "action_decode_roster", "property": "display", "value": "hide"}
+        ,
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Đã đối chiếu sơ đồ chỗ ngồi: xác nhận có người thứ mười hai."
+          }
         ]
       },
       "requirement": {
@@ -2799,6 +2827,13 @@ export const DEMO_SCRIPT = {
             "property": "display",
             "value": "hide"
           }
+        ,
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Vòng cọc xác nhận khoảng trống của người thứ mười hai."
+          }
         ]
       }
     },
@@ -2885,6 +2920,13 @@ export const DEMO_SCRIPT = {
           
           {"type": "set", "subtype": "action", "target": "action_repair_mill", "property": "display", "value": "hide"},
           {"type": "goto", "subtype": "router", "target": "router_watermill_running"}
+        ,
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Cối xay đã hoạt động trở lại; một mảnh ký ức được khôi phục."
+          }
         ]
       },
       "requirement": {
@@ -2989,6 +3031,13 @@ export const DEMO_SCRIPT = {
           {"type": "set", "subtype": "state", "target": "truth_fragments", "value": 1},
           
           {"type": "set", "subtype": "action", "target": "action_open_archive", "property": "display", "value": "hide"}
+        ,
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Tủ hồ sơ đã mở. Bản ghi sơ tán trở thành nguồn chứng cứ."
+          }
         ]
       },
       "requirement": {
@@ -3543,6 +3592,13 @@ export const DEMO_SCRIPT = {
             "subtype": "router",
             "target": "router_classroom_erased"
           }
+        ,
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Bạn xác nhận danh sách lớp bị xóa có chủ ý; các lựa chọn điều tra mới đã mở."
+          }
         ]
       }
     },
@@ -3571,6 +3627,13 @@ export const DEMO_SCRIPT = {
             "target": "action_inspect_student_seat",
             "property": "display",
             "value": "hide"
+          }
+        ,
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Dấu khắc trên bàn xác nhận vị trí học sinh thứ mười hai."
           }
         ]
       }
@@ -3601,6 +3664,13 @@ export const DEMO_SCRIPT = {
             "property": "display",
             "value": "hide"
           }
+        ,
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Bạn ghi nhận thời điểm 03:17 trên đồng hồ lớp."
+          }
         ]
       }
     },
@@ -3629,6 +3699,13 @@ export const DEMO_SCRIPT = {
             "target": "action_inspect_evacuation_notice",
             "property": "display",
             "value": "hide"
+          }
+        ,
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Thông báo xác nhận sĩ số mười hai học sinh."
           }
         ]
       }
@@ -3811,13 +3888,34 @@ export const DEMO_SCRIPT = {
           {"type":"stats","subtype":"item","target":"radio_toolkit","property":"condition","field":"current","op":">=","value":3},
           {"type":"stats","subtype":"item","target":"insulated_wire","property":"condition","field":"current","op":">=","value":3},
           {"type":"stats","subtype":"item","target":"spare_fuse","property":"capacity","field":"current","op":">=","value":3},
-          {"type":"stats","subtype":"item","target":"radio_crystal","property":"signal","field":"current","op":">=","value":3}]},"effect":{"normal":[],"pass":[{"type":"set","subtype":"state","target":"radio_signal_restored","value":true},{"type":"set","subtype":"action","target":"action_restore_radio_signal","property":"display","value":"hide"},]}},
+          {"type":"stats","subtype":"item","target":"radio_crystal","property":"signal","field":"current","op":">=","value":3}]},"effect":{"normal":[],"pass":[{"type":"set","subtype":"state","target":"radio_signal_restored","value":true},{"type":"set","subtype":"action","target":"action_restore_radio_signal","property":"display","value":"hide"},
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Tín hiệu phát thanh đã được khôi phục; manh mối phụ được mở."
+          }
+        ]}},
 "action_overlay_map":{"meta":{"title":"Đối chiếu bản đồ","buttonLabel":"Chồng giấy can","desc":"Chồng giấy can lên mảnh bản đồ và kiểm tra các ký hiệu. Độ bao phủ bản đồ, độ chính xác giấy can và kính phải đạt mức tối thiểu để xác nhận tuyến phụ dẫn đến khu vực dưới chân đê."},"set":{"display":"show","requirement":true
         "readDesc": true,},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"map_fragment"},{"type":"item","subtype":"inventory","op":"has","value":"tracing_paper"},{"type":"item","subtype":"inventory","op":"has","value":"inspection_loupe"},{"type":"state","property":"clue_seat_mark","op":"==","value":true},{"type":"state","property":"clue_class_clock","op":"==","value":true},
           {"type":"stats","subtype":"item","target":"map_fragment","property":"coverage","field":"current","op":">=","value":3},
           {"type":"stats","subtype":"item","target":"tracing_paper","property":"precision","field":"current","op":">=","value":3},
-          {"type":"stats","subtype":"item","target":"inspection_loupe","property":"precision","field":"current","op":">=","value":3}]},"effect":{"normal":[],"pass":[{"type":"set","subtype":"state","target":"clue_tunnel","value":true},{"type":"set","subtype":"action","target":"action_overlay_map","property":"display","value":"hide"},]}},
-"action_decode_broadcast":{"meta":{"title":"Mạch phát thanh","buttonLabel":"Lấy tinh thể","desc":"Hộp loa gắn sau bảng thông báo. Tiếng gọi tên dân làng phát đều đặn; sau bảng mạch là cuộn tinh thể lưu tần số. Cần bộ dụng cụ sửa chữa để mở mạch và lấy linh kiện an toàn."},"set":{"display":"show","requirement":true},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"radio_toolkit"}]},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"radio_crystal"},{"type":"set","subtype":"state","target":"evidence_broadcast","value":true},{"type":"set","subtype":"action","target":"action_decode_broadcast","property":"display","value":"hide"},{"type":"goto","subtype":"router","target":"router_square_broadcast_decoded"}]}},"action_retrieve_well_badge": {
+          {"type":"stats","subtype":"item","target":"inspection_loupe","property":"precision","field":"current","op":">=","value":3}]},"effect":{"normal":[],"pass":[{"type":"set","subtype":"state","target":"clue_tunnel","value":true},{"type":"set","subtype":"action","target":"action_overlay_map","property":"display","value":"hide"},
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Đối chiếu bản đồ thành công: tuyến đường dưới chân đê đã được xác nhận."
+          }
+        ]}},
+"action_decode_broadcast":{"meta":{"title":"Mạch phát thanh","buttonLabel":"Lấy tinh thể","desc":"Hộp loa gắn sau bảng thông báo. Tiếng gọi tên dân làng phát đều đặn; sau bảng mạch là cuộn tinh thể lưu tần số. Cần bộ dụng cụ sửa chữa để mở mạch và lấy linh kiện an toàn."},"set":{"display":"show","requirement":true},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"radio_toolkit"}]},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"radio_crystal"},{"type":"set","subtype":"state","target":"evidence_broadcast","value":true},{"type":"set","subtype":"action","target":"action_decode_broadcast","property":"display","value":"hide"},{"type":"goto","subtype":"router","target":"router_square_broadcast_decoded"},
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Bạn lấy được cuộn tinh thể và giải mã mạch phát thanh; trạng thái quảng trường đã thay đổi."
+          }
+        ]}},"action_retrieve_well_badge": {
       "meta": {
         "title": "Phù hiệu đội sơ tán",
         "buttonLabel": "Nhặt lên",
@@ -3852,6 +3950,13 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "router",
             "target": "router_well_bottom_revealed"
+          }
+        ,
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Đã thu hồi phù hiệu đội sơ tán từ hốc giếng."
           }
         ]
       },
@@ -3908,6 +4013,13 @@ export const DEMO_SCRIPT = {
             "subtype": "router",
             "target": "router_inn_hidden_room"
           }
+        ,
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Đã tìm thấy chìa khóa phòng thứ bảy; căn phòng ẩn được mở."
+          }
         ]
       }
     },
@@ -3945,6 +4057,13 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "router",
             "target": "router_cellar_recording_found"
+          }
+        ,
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Đã thu hồi cuộn phim sơ tán, một bằng chứng quan trọng."
           }
         ]
       }
@@ -3984,6 +4103,13 @@ export const DEMO_SCRIPT = {
             "subtype": "router",
             "target": "router_chapel_cryptic_note"
           }
+        ,
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Đã tìm thấy ghi chú về ba hồi chuông và điều cấm hồi thứ tư."
+          }
         ]
       }
     },
@@ -4021,6 +4147,13 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "router",
             "target": "router_bell_mechanism_repaired"
+          }
+        ,
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Đã thu hồi dây đồng chuông; cơ cấu chuông được cập nhật."
           }
         ]
       }
@@ -4128,7 +4261,14 @@ export const DEMO_SCRIPT = {
         "subtype": "router",
         "target": "router_classroom_archive_open"
       }
-    ]
+    ,
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Bạn chọn bảo toàn bản sao sổ điểm danh. Linh không còn chia sẻ toàn bộ ký ức; các hướng điều tra mới đã mở."
+          }
+        ]
   },
   "requirement": {
     "logic": "AND",
@@ -4183,6 +4323,13 @@ export const DEMO_SCRIPT = {
             "subtype": "router",
             "target": "router_forest_markers_aligned"
           }
+        ,
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Đã thu hồi la bàn dẫn đường và xác nhận tuyến qua rừng."
+          }
         ]
       }
     },
@@ -4221,10 +4368,24 @@ export const DEMO_SCRIPT = {
             "subtype": "router",
             "target": "router_clearing_ritual_trace"
           }
+        ,
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Đã tìm thấy con dấu đội sơ tán, chứng cứ về danh sách chính thức."
+          }
         ]
       }
     },
-    "action_find_gear_pin":{"meta":{"title":"Chốt bánh răng cối xay","buttonLabel": "Lấy chốt bánh răng","desc":"Hộp bánh răng dưới sàn cối xay bị kẹt. Bộ dụng cụ cần thiết để mở nắp và lấy chốt truyền động bị cong."},"set":{"display":"show","requirement":true},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"radio_toolkit"}]},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"mill_gear_pin"},{"type":"set","subtype":"state","target":"evidence_gear_pin","value":true},{"type":"set","subtype":"action","target":"action_find_gear_pin","property":"display","value":"hide"},{"type":"goto","subtype":"router","target":"router_watermill_gear_inspected"}]}},"action_recover_tunnel_manifest": {
+    "action_find_gear_pin":{"meta":{"title":"Chốt bánh răng cối xay","buttonLabel": "Lấy chốt bánh răng","desc":"Hộp bánh răng dưới sàn cối xay bị kẹt. Bộ dụng cụ cần thiết để mở nắp và lấy chốt truyền động bị cong."},"set":{"display":"show","requirement":true},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"radio_toolkit"}]},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"mill_gear_pin"},{"type":"set","subtype":"state","target":"evidence_gear_pin","value":true},{"type":"set","subtype":"action","target":"action_find_gear_pin","property":"display","value":"hide"},{"type":"goto","subtype":"router","target":"router_watermill_gear_inspected"},
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Đã lấy chốt bánh răng; trạng thái kiểm tra cối xay được cập nhật."
+          }
+        ]}},"action_recover_tunnel_manifest": {
       "meta": {
         "title": "Danh sách vận chuyển",
         "buttonLabel": "Thu thập",
@@ -4258,6 +4419,13 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "router",
             "target": "router_tunnel_manifest_found"
+          }
+        ,
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Đã thu hồi danh sách vận chuyển trong đường hầm."
           }
         ]
       }
@@ -4296,6 +4464,13 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "router",
             "target": "router_station_departure_records"
+          }
+        ,
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Đã tìm thấy vé tàu 03:17, xác nhận chuyến tàu từng tồn tại."
           }
         ]
       }
@@ -4398,7 +4573,14 @@ export const DEMO_SCRIPT = {
         "subtype": "chat",
         "target": "chat_linh"
       }
-    ]
+    ,
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Bạn chọn bảo vệ lời khai riêng của Linh; nhánh ký ức được giữ lại."
+          }
+        ]
   },
   "requirement": {
     "logic": "AND",
