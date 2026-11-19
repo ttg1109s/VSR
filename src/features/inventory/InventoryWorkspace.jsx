@@ -15,7 +15,7 @@ function EmptyInventoryState({ title = 'Your inventory is empty', message = "You
   );
 }
 
-function InventoryItemCard({ item, onViewDetails, onToggleEquipment, busy }) {
+function InventoryItemCard({ item, onViewDetails, onToggleEquipment, onUseItem, busy }) {
   const iconName = typeof item.icon === 'string'
     && /^[a-z][a-z0-9_]*$/.test(item.icon)
     ? item.icon
@@ -341,6 +341,21 @@ export default function InventoryWorkspace({ snapshot, client, open = false, onC
     setPage(1);
   };
 
+  async function useInventoryItem(item) {
+    if (!client?.useItem || pendingItemId) {
+      if (!client?.useItem) onError?.('Inventory actions are unavailable.');
+      return;
+    }
+    setPendingItemId(item.id);
+    try {
+      await client.useItem(item.id);
+    } catch (error) {
+      onError?.(error?.message || 'Unable to use this item.');
+    } finally {
+      setPendingItemId(null);
+    }
+  }
+
   async function toggleItemEquipment(item) {
     if (!client?.toggleHand || pendingItemId) {
       if (!client?.toggleHand) onError?.('Inventory actions are unavailable.');
@@ -426,6 +441,7 @@ export default function InventoryWorkspace({ snapshot, client, open = false, onC
                     busy={pendingItemId === item.id}
                     onViewDetails={setDetailItem}
                     onToggleEquipment={toggleItemEquipment}
+                    onUseItem={useInventoryItem}
                   />
                 ))}
               </Grid>
