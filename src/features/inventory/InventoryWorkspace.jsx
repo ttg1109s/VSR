@@ -228,6 +228,9 @@ export default function InventoryWorkspace({ snapshot, client, open = false, onC
 
   const [pendingItemId, setPendingItemId] = useState(null);
   const [detailItem, setDetailItem] = useState(null);
+  const liveDetailItem = detailItem && items
+    ? items.find(item => item.id === detailItem.id) || detailItem
+    : detailItem;
 
   const categories = useMemo(() => {
     if (!items) return [];
@@ -298,7 +301,7 @@ export default function InventoryWorkspace({ snapshot, client, open = false, onC
     <>
     <Drawer
       open={open}
-      title={detailItem ? (detailItem.name || "Item Details") : "Inventory"}
+      title={liveDetailItem ? (liveDetailItem.name || "Item Details") : "Inventory"}
       onClose={onClose}
       size="lg"
       width="min(100vw, 760px)"
@@ -310,24 +313,12 @@ export default function InventoryWorkspace({ snapshot, client, open = false, onC
         </Popover>
       )}
     >
-          <InventoryFilters
-            category={category}
-            onCategoryChange={resetPage(setCategory)}
-            categories={categories}
-            equipment={equipment}
-            onEquipmentChange={resetPage(setEquipment)}
-            sort={sort}
-            onSortChange={resetPage(setSort)}
-          />
-        </Popover>
-      }
-    >
       {detailItem ? (
         <InventoryItemDetails
           item={detailItem}
           onBack={() => setDetailItem(null)}
           onToggleEquipment={toggleItemEquipment}
-          busy={pendingItemId === detailItem.id}
+          busy={pendingItemId === liveDetailItem.id}
         />
       ) : !inventory || !items ? (
         <EmptyInventoryState
