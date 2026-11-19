@@ -1520,3 +1520,44 @@ test('village notice and school evacuation notice use separate clue states', () 
     effect.type === 'item' && effect.subtype === 'add' && effect.target === 'inspection_loupe'
   ), true);
 });
+
+
+test('requirement failure publishes an unlocked Action snapshot after notify effects', async () => {
+  const scenario = validScenario();
+  scenario.actions.map_check = {
+    meta: { title: 'Map overlay' },
+    set: { display: 'show', requirement: true },
+    requirement: { logic: 'AND', check: [
+      { type: 'state', property: 'clue_tunnel', op: '==', value: true }
+    ] },
+    effect: { fail: [
+      { type: 'notify', subtype: 'toast', level: 'warning', text: 'Map clues are incomplete.' }
+    ] }
+  };
+  scenario.scenes.start.routers.main.actions = ['test_action', 'map_check'];
+  const engine = new GameEngine();
+  const snapshots = [];
+  const unsubscribe = engine.protocol.subscribe(event => {
+    if (event.type === 'state.snapshot') snapshots.push(event.payload.snapshot);
+  });
+  try {
+    await engine.init(scenario);
+    snapshots.length = 0;
+    const command = engine.protocol.createCommand(
+      'action.trigger',
+      { actionId: 'map_check', uniqueId: 'start_main_map_check' },
+      { commandId: 'test-map-requirement-fail' }
+    );
+    const acknowledgement = await engine.dispatchProtocolCommand(command);
+    assert.equal(acknowledgement.ok, true);
+    assert.equal(acknowledgement.result.reason, 'requirement_failed');
+    assert.equal(engine.isActionProcessing, false);
+    assert.ok(snapshots.length > 0);
+    const latest = snapshots.at(-1);
+    assert.equal(latest.presentation.actions.find(action => action.id === 'test_action').availability.reason, 'available');
+    assert.notEqual(latest.presentation.actions.find(action => action.id === 'test_action').availability.reason, 'busy');
+  } finally {
+    unsubscribe();
+    engine.dispose();
+  }
+});
