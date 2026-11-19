@@ -517,11 +517,11 @@
                 "default": [
                   [
                     0,
-                    "good"
+                    "Normal"
                   ],
                   [
                     100,
-                    "broken"
+                    "Broken"
                   ]
                 ],
                 "description": "Status of the item is an array of [value percents, label].",
