@@ -86,13 +86,6 @@ function InventoryItemDetails({ item, onBack, onToggleEquipment, busy }) {
 
   return (
     <div className="vsr-inventory-item-details">
-      <div className="vsr-inventory-item-details__navigation">
-        <Button variant="tertiary" size="sm" onClick={onBack}>
-          <span className="material-symbols-rounded" aria-hidden="true">arrow_back</span>
-          Back to Inventory
-        </Button>
-      </div>
-
       <header className="vsr-inventory-item-details__hero">
         <span className="material-symbols-rounded vsr-inventory-item-details__icon" aria-hidden="true">{iconName}</span>
         <h2>{item.name || 'Item'}</h2>
@@ -355,7 +348,12 @@ export default function InventoryWorkspace({ snapshot, client, open = false, onC
       width="min(100vw, 760px)"
       lockScroll
       contentClassName="vsr-inventory-drawer-content"
-      headerActions={!detailItem && (
+      headerActions={liveDetailItem ? (
+        <Button variant="tertiary" size="sm" onClick={() => setDetailItem(null)}>
+          <span className="material-symbols-rounded" aria-hidden="true">arrow_back</span>
+          Back to Inventory
+        </Button>
+      ) : (
         <Popover align="end" label="Inventory filters" trigger={<IconButton icon="tune" label="Inventory filters" />}>
           <InventoryFilters category={category} onCategoryChange={resetPage(setCategory)} categories={categories} equipment={equipment} onEquipmentChange={resetPage(setEquipment)} sort={sort} onSortChange={resetPage(setSort)} />
         </Popover>
