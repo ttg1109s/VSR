@@ -86,8 +86,18 @@ function InventoryItemDetails({ item, onBack, onToggleEquipment, busy }) {
   const usage = item.usage;
   const iconName = typeof item.icon === 'string' && /^[a-z][a-z0-9_]*$/.test(item.icon) ? item.icon : 'inventory_2';
   const categoryLabel = item.category === 'uncategorized' ? 'Uncategorized' : item.category;
-  const usageRatio = usage && Number(usage.max) > 0
+  const usageRatio = usage && Number.isFinite(Number(usage.current)) && Number(usage.max) > 0
     ? Math.max(0, Math.min(100, (Number(usage.current) / Number(usage.max)) * 100))
+    : null;
+  const usageCondition = !item.broken && usageRatio !== null && Array.isArray(usage?.status)
+    ? usage.status
+      .map(entry => Array.isArray(entry) && entry.length >= 2 && Number.isFinite(Number(entry[0]))
+        ? { threshold: Number(entry[0]), label: String(entry[1]) }
+        : null)
+      .filter(Boolean)
+      .sort((a, b) => a.threshold - b.threshold)
+      .find(entry => usageRatio <= entry.threshold)?.label
+      || (usage.status.length ? String(usage.status[usage.status.length - 1]?.[1] ?? '') : '')
     : null;
   const equipDisabled = busy || (!item.equipped && item.canEquip === false);
 
@@ -119,6 +129,7 @@ function InventoryItemDetails({ item, onBack, onToggleEquipment, busy }) {
           </div>
           {usageRatio !== null && <div className="vsr-inventory-item-details__progress" role="progressbar" aria-valuenow={usageRatio} aria-valuemin="0" aria-valuemax="100" aria-label="Usage"><span className={item.broken ? 'is-broken' : ''} style={{ width: `${usageRatio}%` }} /></div>}
           {item.broken && <p className="vsr-inventory-item-details__warning"><span className="material-symbols-rounded" aria-hidden="true">error</span>Broken</p>}
+          {usageCondition && <div className="vsr-inventory-item-details__condition"><span className="vsr-text-secondary">Condition</span><strong>{usageCondition}</strong></div>}
         </section>
       )}
 
