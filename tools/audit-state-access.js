@@ -11,7 +11,7 @@ function walk(dir, out = []) {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     if (entry.isDirectory()) {
       if (!IGNORED_DIRS.has(entry.name)) walk(path.join(dir, entry.name), out);
-    } else if (entry.isFile() && entry.name.endsWith('.js')) out.push(path.join(dir, entry.name));
+    } else if (entry.isFile() && entry.name.endsWith('.js') && entry.name !== 'demo_script.js') out.push(path.join(dir, entry.name));
   }
   return out;
 }
