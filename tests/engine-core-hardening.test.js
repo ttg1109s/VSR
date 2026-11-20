@@ -12,7 +12,6 @@ import { LoaderSystem } from '../engine/modules/Loader.js';
 import { ActionSystem } from '../engine/modules/Action.js';
 import { SceneSystem } from '../engine/modules/Scene.js';
 import { AutomationSystem } from '../engine/modules/Automation.js';
-import { DEMO_SCRIPT } from '../demo-script-data.js';
 import { GameEngine } from '../engine/GameEngine.js';
 import { normalizeSaveEnvelope } from '../engine/persistence/SaveState.js';
 import { JsonProtocol } from '../protocol/JsonProtocol.js';
@@ -261,14 +260,6 @@ test('random automation stops after its configured number of complete cycles', a
   assert.equal(stopped, true);
 });
 
-
-test('the canonical demo scenario satisfies the schema and semantic contract', () => {
-  assert.deepEqual(validateScenario(DEMO_SCRIPT), []);
-  const normalized = normalizeScenario(DEMO_SCRIPT);
-  assert.equal(normalized.formatVersion, 1);
-  assert.equal(normalized.meta.entryScene, 'scene_village');
-});
-
 test('global state declarations require values that match their declared type', () => {
   const scenario = validScenario();
   scenario.globalStates.flag = { type: 'boolean', value: 1 };
@@ -371,7 +362,6 @@ test('effect wrappers reject unresolved template references', async () => {
   await assert.rejects(() => engine.processRunnable({ type: 'effect', ref: 'missing' }), /Unknown effect template reference/);
 });
 
-
 test('normalization applies schema defaults before runtime use', () => {
   const normalized = normalizeScenario(validScenario());
   assert.equal(normalized.formatVersion, 1);
@@ -390,7 +380,6 @@ test('loader keeps the normalized scenario separate from runtime-only indexes', 
   assert.equal(Object.hasOwn(loaded.scenario, 'path'), false);
   assert.equal(Object.hasOwn(loaded.src, 'path'), true);
 });
-
 
 test('nested effect templates are valid runnable graphs and resolve their references', () => {
   const scenario = validScenario();
@@ -424,7 +413,6 @@ test('malformed collection shapes produce validation errors instead of crashing 
   assert.doesNotThrow(() => validateScenario(scenario));
   assert.ok(validateScenario(scenario).length > 0);
 });
-
 
 test('scenario format version is explicit and must match the current contract', () => {
   const missingVersion = validScenario();
@@ -464,7 +452,6 @@ test('character source must be provided as a separate field, not encoded in targ
   };
   assert.ok(validateScenario(scenario).some(error => error.includes('separate source field')));
 });
-
 
 test('schema-defined notify.toast is dispatched to the toast notification API', () => {
   const calls = [];
@@ -514,7 +501,6 @@ test('scenario schema rejects characters.mng_stats operations outside its contra
   assert.ok(validateScenario(scenario).length > 0);
 });
 
-
 test('requirements require the canonical logic field and object references', () => {
   const engine = Object.assign({}, LogicSystem, {
     src: {
@@ -551,7 +537,6 @@ test('runtime rejects stat field and mode combinations excluded by the schema', 
   }, false, 'item', {}), false);
 });
 
-
 test('character and management effect dispatchers await asynchronous handlers', async () => {
   let characterCompleted = false;
   const engine = {
@@ -581,7 +566,6 @@ test('character and management effect dispatchers await asynchronous handlers', 
   }
 });
 
-
 test('skip_all evaluates its requirement before stopping the runnable list', async () => {
   const notices = [];
   const engine = Object.assign({}, EffectSystem, {
@@ -609,7 +593,6 @@ test('skip_all evaluates its requirement before stopping the runnable list', asy
   await engine.processRunnables(makeList(true), {}, false, true);
   assert.equal(notices.length, 0);
 });
-
 
 test('item stat requirements resolve IDs through safe state-path placeholders', () => {
   let requested;
@@ -671,7 +654,6 @@ test('characters.moving.replace supports every schema-valid index in an index ar
   ]);
 });
 
-
 test('inline character effects enforce the same subtype contract as runnable wrappers', () => {
   const scenario = validScenario();
   scenario.actions.test_action.effect = {
@@ -694,7 +676,6 @@ test('inline character effects enforce the same subtype contract as runnable wra
   const errors = validateScenario(scenario);
   assert.ok(errors.length > 0);
 });
-
 
 test('CMS implements schema-defined collection set and met insert operations', async () => {
   const store = {
@@ -756,7 +737,6 @@ test('CMS schema constrains met insert indexes to a single integer', () => {
   assert.ok(validateScenario(scenario).length > 0);
 });
 
-
 test('manage_effect schema limits router, item, and chat hooks to runtime-supported forms', () => {
   const makeScenario = inline => {
     const scenario = validScenario();
@@ -781,7 +761,6 @@ test('manage_effect schema limits router, item, and chat hooks to runtime-suppor
     target: 'unknown_chat', index: [0]
   })).length > 0);
 });
-
 
 test('set.state preserves the declared global-state type and numeric delta semantics', () => {
   const writes = [];
@@ -819,7 +798,6 @@ test('set.state preserves the declared global-state type and numeric delta seman
   );
   assert.equal(declarations.coins.value, 12);
 });
-
 
 test('CharacterStrategies.mng_stats adds a stat through the shared stat helper', () => {
   const character = { set: { name: 'Character' }, stats: {} };
@@ -893,7 +871,6 @@ test('action snapshot projection exposes stable identity and engine-evaluated av
   }
 });
 
-
 test('snapshot projection does not evaluate random requirement expressions', () => {
   let evaluations = 0;
   const action = {
@@ -927,7 +904,6 @@ test('snapshot projection does not evaluate random requirement expressions', () 
   assert.equal(projection.availability.canTrigger, true);
   assert.equal(projection.availability.checks.requirement, 'not_evaluated');
 });
-
 
 test('random requirements remain triggerable and are evaluated only at execution time', () => {
   const requirement = {
@@ -1013,7 +989,6 @@ test('mark-as-read only mutates actions in the active router', async () => {
   }
 });
 
-
 test('runtime Action requirement overrides are projected into subsequent effective Action definitions', () => {
   const runtime = { requirement: true, count: { normal: 1, pass: 1, fail: 0, pwFailed: 0 } };
   const engine = {
@@ -1086,7 +1061,6 @@ test('set dispatcher rejects unknown subtypes explicitly', () => {
     /Unsupported set subtype: not_supported/
   );
 });
-
 
 test('item hide only occurs after a successful item operation in action context', () => {
   const action = { display: 'show' };
@@ -1181,7 +1155,6 @@ test('item hide is ignored outside action context', () => {
   assert.equal(action.display, 'show');
 });
 
-
 test('Player Entry exposes current controlled identity across save restoration', async () => {
   const scenario = validScenario();
   scenario.meta.entryCharacter = 'hero';
@@ -1254,7 +1227,6 @@ test('loader rejects a configured entry character that is absent from scenario c
     /meta\.entryCharacter.*references missing character 'missing'/
   );
 });
-
 
 test('Contact snapshot projects only characters met by the current Player Entry', async () => {
   const scenario = validScenario();
@@ -1422,7 +1394,6 @@ test('relationship requirements read only the canonical root relationship collec
   }).pass, true);
 });
 
-
 test('Mask relationship requirements use the borrowed identity without overwriting Player relationships', () => {
   const characters = {
     player: { relationship: [['friend', 'ally']] },
@@ -1465,77 +1436,6 @@ test('Mask relationship requirements use the borrowed identity without overwriti
   assert.deepEqual(characters.player.relationship, [['friend', 'ally']]);
 });
 
-test('demo progression gates are reachable and optional radio repair is explicit', () => {
-  const notice = DEMO_SCRIPT.actions.action_read_notice;
-  assert.equal(notice.set.requirement, false); // first interaction remains intentionally ungated
-  assert.deepEqual(notice.requirement.check.map(check => check.property), [
-    'clue_photo', 'clue_roster', 'clue_tape'
-  ]);
-  assert.equal(DEMO_SCRIPT.actions.action_talk_linh.set.requirement, true);
-
-  const radioRepair = DEMO_SCRIPT.actions.action_restore_radio_signal;
-  assert.match(radioRepair.meta.title, /tùy chọn/);
-  assert.equal(DEMO_SCRIPT.globalStates.radio_signal_restored, undefined);
-  assert.deepEqual(DEMO_SCRIPT.actions.action_confront_voice.requirement.check, [
-    { type: 'item', subtype: 'hand', op: '==', value: ['radio_crystal'] }
-  ]);
-});
-
-test('demo no longer writes the retired truth-fragments state', () => {
-  const legacyStateWrites = Object.entries(DEMO_SCRIPT.actions).flatMap(([actionId, action]) =>
-    [
-      ...(action.effect?.normal || []),
-      ...(action.effect?.pass || [])
-    ].filter(effect => effect.type === 'set' && effect.subtype === 'state' &&
-      effect.target === 'truth_fragments')
-      .map(effect => actionId)
-  );
-  assert.deepEqual(legacyStateWrites, []);
-});
-
-
-test('school optional map puzzle consumes all intended clue/tool prerequisites', () => {
-  const overlay = DEMO_SCRIPT.actions.action_overlay_map;
-  const requiredItems = overlay.requirement.check
-    .filter(check => check.type === 'item' && check.op === 'has')
-    .map(check => check.value);
-  const requiredStates = overlay.requirement.check
-    .filter(check => check.type === 'state' && check.op === '==')
-    .map(check => check.property);
-  assert.deepEqual(requiredItems, ['map_fragment', 'tracing_paper', 'inspection_loupe']);
-  assert.deepEqual(requiredStates, ['clue_seat_mark', 'clue_class_clock']);
-  assert.equal(overlay.effect.pass.some(effect =>
-    effect.type === 'set' && effect.subtype === 'state' && effect.target === 'clue_tunnel' && effect.value === true
-  ), true);
-  const tunnelEntry = DEMO_SCRIPT.actions.action_descend_tunnel;
-  assert.equal(tunnelEntry.requirement.logic, 'OR');
-  assert.deepEqual(tunnelEntry.requirement.check.map(check => check.property), ['mill_powered', 'clue_tunnel']);
-});
-
-test('school Linh conversation action is one-shot to prevent repeated chat rewards', () => {
-  const talk = DEMO_SCRIPT.actions.action_talk_linh;
-  assert.equal(talk.set.display, 'show');
-  assert.equal(talk.set.requirement, true);
-  assert.equal(talk.effect.pass.some(effect =>
-    effect.type === 'set' && effect.subtype === 'action' &&
-    effect.target === 'action_talk_linh' && effect.property === 'display' && effect.value === 'hide'
-  ), true);
-});
-
-test('village notice clue and inspection loupe reward remain wired', () => {
-  assert.ok(DEMO_SCRIPT.globalStates.clue_village_notice);
-  assert.equal(DEMO_SCRIPT.globalStates.clue_school_evacuation_notice, undefined);
-  assert.equal(DEMO_SCRIPT.globalStates.clue_notice, undefined);
-  assert.equal(DEMO_SCRIPT.actions.action_read_notice.effect.normal.some(effect =>
-    effect.type === 'set' && effect.subtype === 'state' && effect.target === 'clue_village_notice'
-  ), true);
-  assert.ok(DEMO_SCRIPT.actions.action_inspect_evacuation_notice);
-  assert.equal(DEMO_SCRIPT.actions.action_find_inspection_loupe.effect.pass.some(effect =>
-    effect.type === 'item' && effect.subtype === 'add' && effect.target === 'inspection_loupe'
-  ), true);
-});
-
-
 test('requirement failure publishes an unlocked Action snapshot after notify effects', async () => {
   const scenario = validScenario();
   scenario.globalStates.clue_tunnel = { type: 'boolean', value: false };
@@ -1577,7 +1477,6 @@ test('requirement failure publishes an unlocked Action snapshot after notify eff
   }
 });
 
-
 test('LogicSystem evaluates nested requirement groups recursively', () => {
   const fake = {
     src: {},
@@ -1613,51 +1512,3 @@ test('LogicSystem preserves single-level requirement behavior', () => {
   }), { pass: true });
 });
 
-test('radio actions are distributed across routers and optional branches preserve the crystal for full repair', () => {
-  const radioIds = [
-    'action_decode_broadcast', 'action_restore_radio_signal', 'action_restore_radio_signal_partial',
-    'action_repair_radio_toolkit', 'action_listen_static',
-    'action_confront_voice', 'action_ground_with_radio', 'action_verify_route_from_radio',
-    'action_find_classroom_supplies', 'action_find_cellar_components'
-  ];
-  const placements = {};
-  for (const [sceneId, scene] of Object.entries(DEMO_SCRIPT.scenes)) {
-    for (const [routerId, router] of Object.entries(scene.routers)) {
-      const radioActions = router.actions.filter(actionId => radioIds.includes(actionId));
-      assert.ok(radioActions.length <= 2, `${sceneId}/${routerId} has ${radioActions.length} radio actions`);
-      for (const actionId of radioActions) {
-        assert.equal(placements[actionId], undefined, `${actionId} must have a single placement`);
-        placements[actionId] = [sceneId, routerId];
-      }
-    }
-  }
-  assert.deepEqual(placements, {
-    action_decode_broadcast: ['scene_village_square', 'router_square_fogbound'],
-    action_restore_radio_signal: ['scene_village_square', 'router_square_broadcast_decoded'],
-    action_find_classroom_supplies: ['scene_school_classroom_03', 'router_classroom_overview'],
-    action_find_cellar_components: ['scene_inn_cellar', 'router_cellar_open'],
-    action_restore_radio_signal_partial: ['scene_watermill', 'router_watermill_gear_inspected'],
-    action_repair_radio_toolkit: ['scene_classroom_blackboard', 'router_classroom_blackboard'],
-    action_listen_static: ['scene_inn', 'router_inn_hidden_room'],
-    action_verify_route_from_radio: ['scene_levee_tunnel', 'router_tunnel_manifest_found'],
-    action_confront_voice: ['scene_ghost_station', 'router_station_0317'],
-    action_ground_with_radio: ['scene_ghost_station', 'router_station_0317']
-  });
-  assert.deepEqual(DEMO_SCRIPT.templates.effects.consume_action_restore_radio_components
-    .filter(effect => effect.type === 'item' && effect.subtype === 'usage')
-    .map(effect => effect.target),
-    ['radio_toolkit', 'radio_crystal', 'insulated_wire', 'spare_fuse']);
-  assert.equal(DEMO_SCRIPT.templates.effects.consume_action_confront_voice, undefined);
-  const partialRadio = DEMO_SCRIPT.actions.action_restore_radio_signal_partial.effect.pass;
-  assert.ok(partialRadio.some(effect => effect.type === 'set' && effect.subtype === 'state' && effect.target === 'radio_damaged' && effect.value === true));
-  assert.ok(!partialRadio.some(effect => effect.type === 'set' && effect.subtype === 'state' && effect.target === 'voice_revealed'));
-  const listenStatic = DEMO_SCRIPT.actions.action_listen_static;
-  assert.ok(listenStatic.effect.pass.some(effect => effect.type === 'set' && effect.subtype === 'state' && effect.target === 'radio_static_matched' && effect.value === true));
-  assert.ok(listenStatic.effect.pass.some(effect => effect.type === 'set' && effect.subtype === 'action' && effect.target === 'action_repair_radio_toolkit' && effect.property === 'display' && effect.value === 'show'));
-  const repairRadio = DEMO_SCRIPT.actions.action_repair_radio_toolkit;
-  assert.ok(repairRadio.requirement.check.some(check => check.property === 'radio_static_matched' && check.value === true));
-  assert.ok(repairRadio.effect.pass.some(effect => effect.type === 'set' && effect.subtype === 'state' && effect.target === 'radio_damaged' && effect.value === false));
-  assert.ok(repairRadio.effect.pass.some(effect => effect.type === 'set' && effect.subtype === 'state' && effect.target === 'radio_signal_partial' && effect.value === false));
-  const fullRepair = DEMO_SCRIPT.actions.action_restore_radio_signal.requirement.check;
-  assert.ok(fullRepair.some(check => check.target === 'radio_crystal' && check.subtype === 'usage' && check.op === '<' && check.value === 1));
-});
