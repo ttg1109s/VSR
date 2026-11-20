@@ -5284,6 +5284,12 @@
         }
       ]
     },
+    "requirement_node": {
+      "oneOf": [
+        { "$ref": "#/definitions/requirement_check" },
+        { "$ref": "#/definitions/requirement_definition" }
+      ]
+    },
     "requirement_definition": {
       "type": "object",
       "description": "Canonical inline requirement template; templates are definitions, not aliases.",
@@ -5310,7 +5316,7 @@
           "type": "array",
           "minItems": 1,
           "items": {
-            "$ref": "#/definitions/requirement_check"
+            "$ref": "#/definitions/requirement_node"
           }
         }
       },

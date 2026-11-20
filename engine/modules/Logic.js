@@ -200,12 +200,30 @@ export const LogicSystem = {
             return { pass: false, type: 'invalid_requirement' };
         }
 
-        const results = definition.check.map(check => this.checkSingle(check));
-        if (definition.logic === null) {
+        return this.evaluateRequirementNode(definition);
+    },
+
+    evaluateRequirementNode(node) {
+        if (!node || typeof node !== 'object' || Array.isArray(node) ||
+            !Object.prototype.hasOwnProperty.call(node, 'logic') ||
+            !Array.isArray(node.check) || node.check.length === 0) {
+            return { pass: false, type: 'invalid_requirement' };
+        }
+
+        const results = node.check.map(child => {
+            if (child && typeof child === 'object' && !Array.isArray(child) &&
+                Object.prototype.hasOwnProperty.call(child, 'logic') &&
+                Array.isArray(child.check)) {
+                return this.evaluateRequirementNode(child);
+            }
+            return this.checkSingle(child);
+        });
+
+        if (node.logic === null) {
             return results.length === 1 ? results[0] : { pass: false, type: 'invalid_requirement' };
         }
-        const gate = LogicGates[definition.logic];
-        if (!gate || (definition.logic === 'NOT' && results.length !== 1)) {
+        const gate = LogicGates[node.logic];
+        if (!gate || (node.logic === 'NOT' && results.length !== 1)) {
             return { pass: false, type: 'invalid_requirement' };
         }
         return { pass: gate(results) };

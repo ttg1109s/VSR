@@ -23,7 +23,7 @@ export const DEMO_SCRIPT = {
     "updatedAt": "2026-11-16T00:00:00.000Z",
     "copyright": "Kịch bản demo gốc dành cho VSR Engine",
     "license": "Chưa cấp phép",
-    "notes": "Structural rewrite: every distinct physical location is a Scene; each Router represents a state/presentation of that space; Actions encode interaction, state changes and navigation. Consequence system expanded across all phases: item quality/usage, recovery branches, character stats, alternative evidence and ending variants. No runtime test suite was run as requested."
+    "notes": "Schema remediation: Router metadata normalized; recursive AND/OR requirements supported for endings while preserving single Actions; invalid player stat subtype corrected; missing bell state declared. Schema and runtime validation verified; recursive and flat requirement tests pass."
   },
   "globalStates": {
     "clue_lantern": {
@@ -431,6 +431,10 @@ export const DEMO_SCRIPT = {
       "value": false
     },
     "archive_reconstructed": {
+      "type": "boolean",
+      "value": false
+    },
+    "bell_rung_cleanly": {
       "type": "boolean",
       "value": false
     }
@@ -2059,8 +2063,7 @@ export const DEMO_SCRIPT = {
           "meta": {
             "sceneID": "scene_inn",
             "subTitleStatus": "Bất an",
-            "desc": "Cửa đã bị cưỡng chế; clue partial và recovery/alternative routes khả dụng.",
-            "title": "Phòng thứ bảy — cửa bị cưỡng chế"
+            "desc": "Cửa phòng thứ bảy đã bị cưỡng chế mở, khiến việc tiếp cận căn phòng để lại hậu quả và dấu vết không hoàn chỉnh. Dù manh mối thu được còn thiếu, người chơi vẫn có thể tiếp tục điều tra, khôi phục tình trạng và tìm những hướng tiếp cận thay thế."
           },
           "set": {
             "blocked": false,
@@ -2089,8 +2092,7 @@ export const DEMO_SCRIPT = {
           "meta": {
             "sceneID": "scene_inn",
             "subTitleStatus": "Bất an",
-            "desc": "Chìa khóa và khóa đã được phục hồi.",
-            "title": "Nhà trọ — chìa khóa được sửa"
+            "desc": "Chìa khóa và ổ khóa phòng thứ bảy đã được phục hồi. Người chơi có thể tiếp tục khám phá căn phòng bằng chìa khóa, đồng thời đối chiếu những dấu vết còn lại để làm rõ sự việc."
           },
           "set": {
             "blocked": false,
@@ -7217,7 +7219,7 @@ export const DEMO_SCRIPT = {
           },
           {
             "type": "stats",
-            "subtype": "character",
+            "subtype": "characters",
             "target": "player",
             "property": "composure",
             "field": "current",
@@ -9620,6 +9622,13 @@ export const DEMO_SCRIPT = {
             "subtype": "toast",
             "level": "success",
             "text": "Chuông vang méo. Critical flag bell_rung vẫn đạt; có thể sửa tín hiệu."
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_ring_bell_imperfect",
+            "property": "display",
+            "value": "hide"
           }
         ],
         "fail": [
