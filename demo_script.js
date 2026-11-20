@@ -53,7 +53,7 @@ export const DEMO_SCRIPT = {
     },
     "school_choice": {
       "type": "string",
-      "value": "chưa_quyết_định",
+      "value": "chưa quyết định",
       "title": "Lựa chọn trường học"
     },
     "clue_village_notice": {
@@ -336,7 +336,7 @@ export const DEMO_SCRIPT = {
             "type": "state",
             "property": "school_choice",
             "op": "==",
-            "value": "chưa_quyết_định"
+            "value": "chưa quyết định"
           }
         ]
       },
@@ -347,7 +347,7 @@ export const DEMO_SCRIPT = {
             "type": "state",
             "property": "school_choice",
             "op": "==",
-            "value": "ký_ức"
+            "value": "ký ức"
           }
         ]
       },
@@ -358,7 +358,7 @@ export const DEMO_SCRIPT = {
             "type": "state",
             "property": "school_choice",
             "op": "==",
-            "value": "bằng_chứng"
+            "value": "bằng chứng"
           }
         ]
       },
@@ -2468,7 +2468,7 @@ export const DEMO_SCRIPT = {
                   "type": "state",
                   "property": "school_choice",
                   "op": "==",
-                  "value": "ký_ức"
+                  "value": "ký ức"
                 }
               ]
             }
@@ -2490,7 +2490,7 @@ export const DEMO_SCRIPT = {
                   "type": "state",
                   "property": "school_choice",
                   "op": "==",
-                  "value": "bằng_chứng"
+                  "value": "bằng chứng"
                 }
               ]
             }
@@ -2590,7 +2590,7 @@ export const DEMO_SCRIPT = {
                   "type": "state",
                   "property": "school_choice",
                   "op": "==",
-                  "value": "chưa_quyết_định"
+                  "value": "chưa quyết định"
                 }
               ]
             }
@@ -2758,7 +2758,7 @@ export const DEMO_SCRIPT = {
                   "type": "state",
                   "property": "school_choice",
                   "op": "==",
-                  "value": "ký_ức"
+                  "value": "ký ức"
                 }
               ]
             }
@@ -2780,7 +2780,7 @@ export const DEMO_SCRIPT = {
                   "type": "state",
                   "property": "school_choice",
                   "op": "==",
-                  "value": "bằng_chứng"
+                  "value": "bằng chứng"
                 }
               ]
             }
@@ -2802,7 +2802,7 @@ export const DEMO_SCRIPT = {
                   "type": "state",
                   "property": "school_choice",
                   "op": "==",
-                  "value": "chưa_quyết_định"
+                  "value": "chưa quyết định"
                 }
               ]
             }
@@ -3131,7 +3131,7 @@ export const DEMO_SCRIPT = {
                   "type": "state",
                   "property": "school_choice",
                   "op": "==",
-                  "value": "ký_ức"
+                  "value": "ký ức"
                 }
               ]
             }
@@ -3148,7 +3148,7 @@ export const DEMO_SCRIPT = {
                   "type": "state",
                   "property": "school_choice",
                   "op": "==",
-                  "value": "bằng_chứng"
+                  "value": "bằng chứng"
                 }
               ]
             }
@@ -3468,7 +3468,7 @@ export const DEMO_SCRIPT = {
             "type": "state",
             "property": "school_choice",
             "op": "==",
-            "value": "bằng_chứng"
+            "value": "bằng chứng"
           }
         ]
       }
@@ -3523,7 +3523,7 @@ export const DEMO_SCRIPT = {
                   "type": "state",
                   "property": "school_choice",
                   "op": "==",
-                  "value": "ký_ức"
+                  "value": "ký ức"
                 }
               ]
             }
@@ -3540,7 +3540,7 @@ export const DEMO_SCRIPT = {
                   "type": "state",
                   "property": "school_choice",
                   "op": "==",
-                  "value": "bằng_chứng"
+                  "value": "bằng chứng"
                 }
               ]
             }
@@ -3907,7 +3907,7 @@ export const DEMO_SCRIPT = {
                   "type": "state",
                   "property": "school_choice",
                   "op": "==",
-                  "value": "ký_ức"
+                  "value": "ký ức"
                 }
               ]
             }
@@ -3924,7 +3924,7 @@ export const DEMO_SCRIPT = {
                   "type": "state",
                   "property": "school_choice",
                   "op": "==",
-                  "value": "bằng_chứng"
+                  "value": "bằng chứng"
                 }
               ]
             }
@@ -4023,7 +4023,7 @@ export const DEMO_SCRIPT = {
             "type": "state",
             "property": "school_choice",
             "op": "!=",
-            "value": "chưa_quyết_định"
+            "value": "chưa quyết định"
           }
         ]
       }
@@ -4151,7 +4151,7 @@ export const DEMO_SCRIPT = {
             "type": "state",
             "property": "school_choice",
             "op": "==",
-            "value": "ký_ức"
+            "value": "ký ức"
           },
           {
             "type": "state",
@@ -4790,7 +4790,7 @@ export const DEMO_SCRIPT = {
             "type": "state",
             "property": "school_choice",
             "op": "==",
-            "value": "ký_ức"
+            "value": "ký ức"
           },
           {
             "type": "state",
@@ -5577,7 +5577,7 @@ export const DEMO_SCRIPT = {
             "type": "set",
             "subtype": "state",
             "target": "school_choice",
-            "value": "bằng_chứng"
+            "value": "bằng chứng"
           },
           {
             "type": "item",
@@ -5678,7 +5678,7 @@ export const DEMO_SCRIPT = {
             "type": "state",
             "property": "school_choice",
             "op": "==",
-            "value": "chưa_quyết_định"
+            "value": "chưa quyết định"
           }
         ]
       }
@@ -5944,7 +5944,7 @@ export const DEMO_SCRIPT = {
             "type": "set",
             "subtype": "state",
             "target": "school_choice",
-            "value": "ký_ức"
+            "value": "ký ức"
           },
           {
             "type": "set",
@@ -6085,7 +6085,7 @@ export const DEMO_SCRIPT = {
             "type": "state",
             "property": "school_choice",
             "op": "==",
-            "value": "chưa_quyết_định"
+            "value": "chưa quyết định"
           }
         ]
       }
@@ -7966,7 +7966,7 @@ export const DEMO_SCRIPT = {
             "type": "state",
             "property": "school_choice",
             "op": "!=",
-            "value": "chưa_quyết_định"
+            "value": "chưa quyết định"
           }
         ]
       }
@@ -8136,7 +8136,7 @@ export const DEMO_SCRIPT = {
             "type": "state",
             "property": "school_choice",
             "op": "!=",
-            "value": "chưa_quyết_định"
+            "value": "chưa quyết định"
           }
         ]
       }
