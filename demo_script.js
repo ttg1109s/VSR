@@ -10372,12 +10372,6 @@
             "jump": "person",
             "effect": [
               {
-                "type": "set",
-                "subtype": "state",
-                "target": "knows_twelve",
-                "value": true
-              },
-              {
                 "type": "item",
                 "subtype": "add",
                 "target": "red_umbrella"
@@ -12927,4 +12921,4 @@
     "allDescRead": false,
     "clickHintDesc": 2
   }
-};
+}
