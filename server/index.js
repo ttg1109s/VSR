@@ -26,6 +26,8 @@ function sendJson(response, status, value) {
 }
 
 function authorizeRequest(request) {
+  // Loopback development has no secret by design. All non-loopback deployments
+  // require the same bearer credential for snapshots, commands and event streams.
   if (!apiToken && isLoopback) return { id: 'loopback' };
   const header = request.headers.authorization || '';
   const supplied = header.startsWith('Bearer ') ? header.slice(7) : '';
@@ -38,8 +40,11 @@ function authorizeRequest(request) {
 function publishToClients(message) {
   const frame = `id: ${message.sequence || ''}\ndata: ${JSON.stringify(message)}\n\n`;
   for (const response of clients) {
-    try { response.write(frame); }
-    catch { clients.delete(response); }
+    try {
+      response.write(frame);
+    } catch {
+      clients.delete(response);
+    }
   }
 }
 
@@ -84,7 +89,7 @@ const server = createServer(async (request, response) => {
     return sendJson(response, 200, { ok: true, protocolVersion: engine.protocol.protocolVersion });
   }
   const principal = authorizeRequest(request);
-  if (!(request.method === 'GET' && url.pathname === '/api/health') && !principal) {
+  if (!principal) {
     return sendJson(response, 401, { ok: false, error: 'UNAUTHORIZED' });
   }
   if (request.method === 'GET' && url.pathname === '/api/demo-scenario') {

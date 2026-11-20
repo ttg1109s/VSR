@@ -33,6 +33,9 @@ export const ChatSystem = {
     },
 
     getThreads(charId) {
+        // The HTTP Engine can be started before a scenario is loaded. Snapshot projections
+        // must remain safe in that empty-source state instead of dereferencing this.src.
+        if (!this.src || typeof this.src !== 'object') return [];
         let chatIds = [];
         const state = this.api.engine.state;
         const chats = state.getRuntimeSnapshot('chats') || {};
