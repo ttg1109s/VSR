@@ -20,6 +20,10 @@ function validScenario() {
   return JSON.parse(readFileSync(new URL('./fixtures/engine/minimal-scenario.json', import.meta.url), 'utf8'));
 }
 
+test('independent Engine JSON fixture conforms to scenario schema', () => {
+  assert.deepEqual(validateScenario(validScenario()), []);
+});
+
 test('engine.init can load a scenario without entering its entry scene', async () => {
   const engine = new GameEngine();
   try {
