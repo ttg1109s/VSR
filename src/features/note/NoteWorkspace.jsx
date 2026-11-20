@@ -115,7 +115,6 @@ export default function NoteWorkspace({ snapshot, open = false, onClose }) {
                   label={state.title}
                   value={<StateValue state={state} />}
                   layout="stacked"
-                  className="vsr-note-state-row"
                 />
               ))}
             </DescriptionList>
