@@ -7988,7 +7988,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Cối xay đã ổn định。Lối chính vẫn thông."
+            "text": "Cối xay đã ổn định. Lối chính vẫn thông."
           }
         ],
         "fail": [
