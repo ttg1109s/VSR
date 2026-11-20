@@ -1476,9 +1476,9 @@ test('demo progression gates are reachable and optional radio repair is explicit
   const radioRepair = DEMO_SCRIPT.actions.action_restore_radio_signal;
   assert.match(radioRepair.meta.title, /tùy chọn/);
   assert.equal(DEMO_SCRIPT.globalStates.radio_signal_restored, undefined);
-  assert.equal(DEMO_SCRIPT.actions.action_confront_voice.requirement.check.some(check =>
-    check.type === 'item' && check.value === 'radio_crystal'
-  ), true);
+  assert.deepEqual(DEMO_SCRIPT.actions.action_confront_voice.requirement.check, [
+    { type: 'item', subtype: 'hand', op: '==', value: ['radio_crystal'] }
+  ]);
 });
 
 test('demo no longer writes the retired truth-fragments state', () => {
@@ -1643,7 +1643,9 @@ test('radio actions are distributed across routers and optional branches preserv
     action_confront_voice: ['scene_ghost_station', 'router_station_0317'],
     action_ground_with_radio: ['scene_ghost_station', 'router_station_0317']
   });
-  assert.deepEqual(DEMO_SCRIPT.templates.effects.consume_action_restore_radio_signal_partial.map(effect => effect.target),
+  assert.deepEqual(DEMO_SCRIPT.templates.effects.consume_action_restore_radio_components
+    .filter(effect => effect.type === 'item' && effect.subtype === 'usage')
+    .map(effect => effect.target),
     ['radio_toolkit', 'radio_crystal', 'insulated_wire', 'spare_fuse']);
   assert.equal(DEMO_SCRIPT.templates.effects.consume_action_confront_voice, undefined);
   const partialRadio = DEMO_SCRIPT.actions.action_restore_radio_signal_partial.effect.pass;
