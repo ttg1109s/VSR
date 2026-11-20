@@ -14,7 +14,7 @@ const engine = new GameEngine({
   requireAuthorization: true,
   authorizeCommand: ({ context }) => Boolean(context?.principal?.id)
 });
-const clients = new Set();
+const clients = new Map();
 
 function sendJson(response, status, value) {
   response.writeHead(status, {
@@ -26,6 +26,8 @@ function sendJson(response, status, value) {
 }
 
 function authorizeRequest(request) {
+  // Loopback development has no secret by design. All non-loopback deployments
+  // require the same bearer credential for snapshots, commands and event streams.
   if (!apiToken && isLoopback) return { id: 'loopback' };
   const header = request.headers.authorization || '';
   const supplied = header.startsWith('Bearer ') ? header.slice(7) : '';
@@ -37,9 +39,14 @@ function authorizeRequest(request) {
 
 function publishToClients(message) {
   const frame = `id: ${message.sequence || ''}\ndata: ${JSON.stringify(message)}\n\n`;
-  for (const response of clients) {
-    try { response.write(frame); }
-    catch { clients.delete(response); }
+  for (const [response, client] of clients) {
+    try {
+      // A long-lived stream is revoked when its authenticated credential is
+      // rotated. The server never accepts credentials in a URL query string.
+      response.write(frame);
+    } catch {
+      clients.delete(response);
+    }
   }
 }
 
@@ -56,7 +63,7 @@ async function readJson(request) {
   return JSON.parse(Buffer.concat(chunks).toString('utf8'));
 }
 
-function openEventStream(request, response) {
+function openEventStream(request, response, principal) {
   response.writeHead(200, {
     'content-type': 'text/event-stream; charset=utf-8',
     'cache-control': 'no-cache, no-transform',
@@ -64,7 +71,7 @@ function openEventStream(request, response) {
     'x-accel-buffering': 'no'
   });
   response.flushHeaders?.();
-  clients.add(response);
+  clients.set(response, { principalId: principal.id });
   response.on('close', () => clients.delete(response));
 
   const lastId = Number(request.headers['last-event-id'] || 0);
@@ -84,7 +91,7 @@ const server = createServer(async (request, response) => {
     return sendJson(response, 200, { ok: true, protocolVersion: engine.protocol.protocolVersion });
   }
   const principal = authorizeRequest(request);
-  if (!(request.method === 'GET' && url.pathname === '/api/health') && !principal) {
+  if (!principal) {
     return sendJson(response, 401, { ok: false, error: 'UNAUTHORIZED' });
   }
   if (request.method === 'GET' && url.pathname === '/api/demo-scenario') {
@@ -93,7 +100,7 @@ const server = createServer(async (request, response) => {
   if (request.method === 'GET' && url.pathname === '/api/snapshot') {
     return sendJson(response, 200, engine.protocol.createSnapshot(engine));
   }
-  if (request.method === 'GET' && url.pathname === '/api/events') return openEventStream(request, response);
+  if (request.method === 'GET' && url.pathname === '/api/events') return openEventStream(request, response, principal);
   if (request.method === 'POST' && url.pathname === '/api/command') {
     try {
       const command = await readJson(request);
@@ -115,7 +122,7 @@ server.listen(port, host, () => {
 });
 
 function shutdown() {
-  for (const client of clients) client.end();
+  for (const client of clients.keys()) client.end();
   clients.clear();
   engine.dispose();
   server.close(() => process.exit(0));
