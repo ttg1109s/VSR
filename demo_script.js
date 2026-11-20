@@ -9,7 +9,7 @@ export const DEMO_SCRIPT = {
     "desc": "Bạn tỉnh dậy giữa màn đêm của một ngôi làng bị mắc kẹt trong ký ức. Sương mù che khuất những con đường và tiếng loa rè rè vọng ra từ quảng trường. Hãy lần theo dấu vết qua các địa điểm trong làng — từ giếng đá, nhà trọ, nhà nguyện, trường học đến khu rừng, cối xay và đường hầm — để tìm sân ga xuất hiện lúc 03:17; sự thật được ghép lại sẽ quyết định ai được giải thoát.",
     "writer": "Nhóm phát triển bản demo VSR",
     "studio": "VSR",
-    "version": "2.0.0",
+    "version": "2.1.0",
     "language": "vi",
     "ageRating": "16+",
     "tags": [
@@ -26,7 +26,7 @@ export const DEMO_SCRIPT = {
     "updatedAt": "2026-11-16T00:00:00.000Z",
     "copyright": "Kịch bản demo gốc dành cho VSR Engine",
     "license": "Chưa cấp phép",
-    "notes": "Structural rewrite: every distinct physical location is a Scene; each Router represents a state/presentation of that space; Actions encode interaction, state changes and navigation."
+    "notes": "Structural rewrite: every distinct physical location is a Scene; each Router represents a state/presentation of that space; Actions encode interaction, state changes and navigation. Consequence system expanded across all phases: item quality/usage, recovery branches, character stats, alternative evidence and ending variants. No runtime test suite was run as requested."
   },
   "globalStates": {
     "clue_lantern": {
@@ -125,7 +125,10 @@ export const DEMO_SCRIPT = {
       "type": "boolean",
       "value": false
     },
-    "radio_signal_restored":{"type":"boolean","value":false},
+    "radio_signal_restored": {
+      "type": "boolean",
+      "value": false
+    },
     "evidence_broadcast": {
       "type": "boolean",
       "value": false
@@ -171,6 +174,266 @@ export const DEMO_SCRIPT = {
       "value": false
     },
     "evidence_station_ticket": {
+      "type": "boolean",
+      "value": false
+    },
+    "room7_confirmed": {
+      "type": "boolean",
+      "value": false
+    },
+    "room7_open": {
+      "type": "boolean",
+      "value": false
+    },
+    "room7_opened_cleanly": {
+      "type": "boolean",
+      "value": false
+    },
+    "room7_forced": {
+      "type": "boolean",
+      "value": false
+    },
+    "room7_lock_damaged": {
+      "type": "boolean",
+      "value": false
+    },
+    "room7_key_damaged": {
+      "type": "boolean",
+      "value": false
+    },
+    "room7_key_broken": {
+      "type": "boolean",
+      "value": false
+    },
+    "room7_key_repaired": {
+      "type": "boolean",
+      "value": false
+    },
+    "room7_clue_partial": {
+      "type": "boolean",
+      "value": false
+    },
+    "room7_clue_verified": {
+      "type": "boolean",
+      "value": false
+    },
+    "room7_opened_alternative": {
+      "type": "boolean",
+      "value": false
+    },
+    "player_panicked": {
+      "type": "boolean",
+      "value": false
+    },
+    "player_recovered": {
+      "type": "boolean",
+      "value": false
+    },
+    "memory_fragmented": {
+      "type": "boolean",
+      "value": false
+    },
+    "memory_reconstructed": {
+      "type": "boolean",
+      "value": false
+    },
+    "forced_attempt_count": {
+      "type": "number",
+      "value": 0
+    },
+    "lantern_damaged": {
+      "type": "boolean",
+      "value": false
+    },
+    "radio_damaged": {
+      "type": "boolean",
+      "value": false
+    },
+    "map_incomplete": {
+      "type": "boolean",
+      "value": false
+    },
+    "mill_repair_failed": {
+      "type": "boolean",
+      "value": false
+    },
+    "mill_repaired_partial": {
+      "type": "boolean",
+      "value": false
+    },
+    "bell_rung_imperfectly": {
+      "type": "boolean",
+      "value": false
+    },
+    "bell_signal_distorted": {
+      "type": "boolean",
+      "value": false
+    },
+    "archive_partial": {
+      "type": "boolean",
+      "value": false
+    },
+    "evidence_corrupted": {
+      "type": "boolean",
+      "value": false
+    },
+    "mai_confessed": {
+      "type": "boolean",
+      "value": false
+    },
+    "hanh_confessed": {
+      "type": "boolean",
+      "value": false
+    },
+    "keeper_confessed": {
+      "type": "boolean",
+      "value": false
+    },
+    "linh_private_testimony": {
+      "type": "boolean",
+      "value": false
+    },
+    "npc_avoids_player": {
+      "type": "boolean",
+      "value": false
+    },
+    "npc_recovered_trust": {
+      "type": "boolean",
+      "value": false
+    },
+    "room7_clue_source": {
+      "type": "string",
+      "value": "none"
+    },
+    "clue_well_bottom_partial": {
+      "type": "boolean",
+      "value": false
+    },
+    "forest_route_partial": {
+      "type": "boolean",
+      "value": false
+    },
+    "radio_signal_partial": {
+      "type": "boolean",
+      "value": false
+    },
+    "identity_verified_partial": {
+      "type": "boolean",
+      "value": false
+    },
+    "identity_verified": {
+      "type": "boolean",
+      "value": false
+    },
+    "echo_distorted": {
+      "type": "boolean",
+      "value": false
+    },
+    "ticket_verified": {
+      "type": "boolean",
+      "value": false
+    },
+    "archive_opened_alternative": {
+      "type": "boolean",
+      "value": false
+    },
+    "evidence_verified": {
+      "type": "boolean",
+      "value": false
+    },
+    "release_partial": {
+      "type": "boolean",
+      "value": false
+    },
+    "release_reconstructed": {
+      "type": "boolean",
+      "value": false
+    },
+    "recovery_milestone": {
+      "type": "number",
+      "value": 0
+    },
+    "memory_reward_roster": {
+      "type": "boolean",
+      "value": false
+    },
+    "memory_reward_tunnel": {
+      "type": "boolean",
+      "value": false
+    },
+    "memory_reward_well": {
+      "type": "boolean",
+      "value": false
+    },
+    "memory_reward_stakes": {
+      "type": "boolean",
+      "value": false
+    },
+    "resolve_reward_repair": {
+      "type": "boolean",
+      "value": false
+    },
+    "composure_recovery_reward": {
+      "type": "boolean",
+      "value": false
+    },
+    "guestbook_partial": {
+      "type": "boolean",
+      "value": false
+    },
+    "hymn_partial": {
+      "type": "boolean",
+      "value": false
+    },
+    "film_damaged": {
+      "type": "boolean",
+      "value": false
+    },
+    "bell_wire_damaged": {
+      "type": "boolean",
+      "value": false
+    },
+    "compass_damaged": {
+      "type": "boolean",
+      "value": false
+    },
+    "seal_damaged": {
+      "type": "boolean",
+      "value": false
+    },
+    "manifest_partial": {
+      "type": "boolean",
+      "value": false
+    },
+    "radio_toolkit_damaged": {
+      "type": "boolean",
+      "value": false
+    },
+    "spare_fuse_used_up": {
+      "type": "boolean",
+      "value": false
+    },
+    "map_verified": {
+      "type": "boolean",
+      "value": false
+    },
+    "clue_tunnel_partial": {
+      "type": "boolean",
+      "value": false
+    },
+    "clue_roster_verified": {
+      "type": "boolean",
+      "value": false
+    },
+    "mill_powered_partial": {
+      "type": "boolean",
+      "value": false
+    },
+    "tunnel_entry_damaged": {
+      "type": "boolean",
+      "value": false
+    },
+    "archive_reconstructed": {
       "type": "boolean",
       "value": false
     }
@@ -235,41 +498,116 @@ export const DEMO_SCRIPT = {
       "school_undecided": {
         "logic": "AND",
         "check": [
-          {"type": "state", "property": "school_choice", "op": "==", "value": "undecided"}
+          {
+            "type": "state",
+            "property": "school_choice",
+            "op": "==",
+            "value": "undecided"
+          }
         ]
       },
       "school_memory": {
         "logic": "AND",
         "check": [
-          {"type": "state", "property": "school_choice", "op": "==", "value": "memory"}
+          {
+            "type": "state",
+            "property": "school_choice",
+            "op": "==",
+            "value": "memory"
+          }
         ]
       },
       "school_evidence": {
         "logic": "AND",
         "check": [
-          {"type": "state", "property": "school_choice", "op": "==", "value": "evidence"}
+          {
+            "type": "state",
+            "property": "school_choice",
+            "op": "==",
+            "value": "evidence"
+          }
         ]
       },
       "station_ready": {
         "logic": "AND",
         "check": [
-          {"type": "state", "property": "archive_open", "op": "==", "value": true},
-          {"type": "item", "subtype": "inventory", "op": "has", "value": "tunnel_manifest"},
-          {"type": "state", "property": "evidence_evacuation_film", "op": "==", "value": true},
-          {"type": "state", "property": "clue_hymn", "op": "==", "value": true},
-          {"type": "state", "property": "clue_stakes", "op": "==", "value": true},
-          {"type": "state", "property": "clue_tunnel", "op": "==", "value": true}
+          {
+            "type": "state",
+            "property": "archive_open",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "tunnel_manifest"
+          },
+          {
+            "type": "state",
+            "property": "evidence_evacuation_film",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "clue_hymn",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "clue_stakes",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "clue_tunnel",
+            "op": "==",
+            "value": true
+          }
         ]
       },
       "release_ready": {
         "logic": "AND",
         "check": [
-          {"type": "state", "property": "bell_rung", "op": "==", "value": true},
-          {"type": "state", "property": "archive_open", "op": "==", "value": true},
-          {"type": "state", "property": "evidence_evacuation_seal", "op": "==", "value": true},
-          {"type": "state", "property": "clue_hymn", "op": "==", "value": true},
-          {"type": "state", "property": "clue_stakes", "op": "==", "value": true},
-          {"type": "state", "property": "clue_tunnel", "op": "==", "value": true}
+          {
+            "type": "state",
+            "property": "bell_rung",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "archive_open",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "evidence_evacuation_seal",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "clue_hymn",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "clue_stakes",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "clue_tunnel",
+            "op": "==",
+            "value": true
+          }
         ]
       }
     },
@@ -296,13 +634,12 @@ export const DEMO_SCRIPT = {
   "itemInfo": {
     "lantern": {
       "name": "Đèn bão",
-      
       "category": "tool",
       "icon": "light",
       "desc": "Đèn bão cũ, kính ám khói và quai xách đã sờn. Ánh sáng của nó làm lộ những vệt dấu mờ trong sương mà mắt thường khó nhận ra.",
       "usage": {
-        "current":  0,
-        "max":  10,
+        "current": 0,
+        "max": 3,
         "autoInc": false
       },
       "stats": {
@@ -326,13 +663,12 @@ export const DEMO_SCRIPT = {
     },
     "guestbook": {
       "name": "Sổ khách",
-      
       "category": "document",
       "icon": "menu_book",
       "desc": "Cuốn sổ khách đã ngả vàng, nhiều trang nhòe nước. Ở trang cuối, một cái tên được viết bằng mực còn mới bất thường.",
       "usage": {
-        "current":  0,
-        "max":  10,
+        "current": 0,
+        "max": 2,
         "autoInc": false
       },
       "stats": {
@@ -344,19 +680,17 @@ export const DEMO_SCRIPT = {
         }
       },
       "effect": {
-        "use": [
-          ]
+        "use": []
       }
     },
     "tape": {
       "name": "Cuộn băng",
-      
       "category": "media",
       "icon": "audio_file",
       "desc": "Cuộn băng được bọc trong giấy dầu, nhãn ghi ngày đêm mất điện. Khi phát lại, giữa tiếng rè có một tín hiệu ngắn lặp lại.",
       "usage": {
-        "current":  0,
-        "max":  10,
+        "current": 0,
+        "max": 3,
         "autoInc": false
       },
       "stats": {
@@ -368,19 +702,17 @@ export const DEMO_SCRIPT = {
         }
       },
       "effect": {
-        "use": [
-          ]
+        "use": []
       }
     },
     "red_umbrella": {
       "name": "Ô đỏ",
-      
       "category": "evidence",
       "icon": "rainy",
       "desc": "Chiếc ô đỏ bạc màu, một nan bị cong và cán có vết khắc nhỏ. Mai từng nhắc đến nó, nhưng dấu khắc dường như không phải tên chủ sở hữu.",
       "usage": {
-        "current":  0,
-        "max":  10,
+        "current": 0,
+        "max": 2,
         "autoInc": false
       },
       "stats": {
@@ -398,19 +730,18 @@ export const DEMO_SCRIPT = {
             "subtype": "state",
             "target": "knows_twelve",
             "value": true
-          },
-          ]
+          }
+        ]
       }
     },
     "bell_clapper": {
       "name": "Quả lắc chuông",
-      
       "category": "mechanism",
       "icon": "notifications",
       "desc": "Quả lắc bằng kim loại nặng, bề mặt có vết va đập và một đầu còn dấu tháo khỏi trục. Nó cần được lắp lại tại cơ cấu chuông ở tháp nhà nguyện; kiểm tra vật phẩm không tự làm chuông rung.",
       "usage": {
-        "current":  0,
-        "max":  10,
+        "current": 0,
+        "max": 1,
         "autoInc": false
       },
       "stats": {
@@ -422,19 +753,17 @@ export const DEMO_SCRIPT = {
         }
       },
       "effect": {
-        "use": [
-          ]
+        "use": []
       }
     },
     "class_photo": {
       "name": "Ảnh lớp",
-      
       "category": "evidence",
       "icon": "photo",
       "desc": "Ảnh lớp cũ bị xé ở giữa. Những người còn lại đứng sát nhau, nhưng khoảng trống và mép giấy cho thấy một người đã bị loại khỏi ảnh.",
       "usage": {
-        "current":  0,
-        "max":  10,
+        "current": 0,
+        "max": 3,
         "autoInc": false
       },
       "stats": {
@@ -446,35 +775,31 @@ export const DEMO_SCRIPT = {
         }
       },
       "effect": {
-        "use": [
-          ]
+        "use": []
       }
     },
     "archive_key": {
       "name": "Chìa khóa kho hồ sơ",
-      
       "category": "key",
       "icon": "key",
       "desc": "Chìa khóa sắt có răng khóa không đều, dính bụi bê tông và một vệt dầu cũ. Nó thuộc tủ hồ sơ tại khu kho; cần tương tác với tủ ở đúng địa điểm để mở, không phải cửa phòng thông thường.",
       "usage": {
-        "current":  0,
-        "max":  10,
+        "current": 0,
+        "max": 3,
         "autoInc": false
       },
       "effect": {
-        "use": [
-          ]
+        "use": []
       }
     },
     "map_fragment": {
       "name": "Mảnh bản đồ",
-      
       "category": "document",
       "icon": "map",
       "desc": "Mảnh bản đồ vẽ bằng tay, góc giấy bị cháy và một tuyến đường được đánh dấu bằng mực xanh. Một ký hiệu ở phía Bắc vẫn chưa được giải thích.",
       "usage": {
-        "current":  0,
-        "max":  10,
+        "current": 0,
+        "max": 3,
         "autoInc": false
       },
       "stats": {
@@ -486,11 +811,19 @@ export const DEMO_SCRIPT = {
         }
       },
       "effect": {
-        "use": [
-          ]
+        "use": []
       }
     },
-    "radio_toolkit":{"name":"Bộ dụng cụ sửa radio","category":"tool","icon":"build","desc":"Bộ tua vít cách điện, kìm nhỏ và đầu dò mạch trong hộp vải ở lớp học. Dùng mở thiết bị, kiểm tra tiếp điểm và tháo linh kiện an toàn; phối hợp trong Action sửa chữa phù hợp.","usage":{"current":0,"max":10,"autoInc":false},
+    "radio_toolkit": {
+      "name": "Bộ dụng cụ sửa radio",
+      "category": "tool",
+      "icon": "build",
+      "desc": "Bộ tua vít cách điện, kìm nhỏ và đầu dò mạch trong hộp vải ở lớp học. Dùng mở thiết bị, kiểm tra tiếp điểm và tháo linh kiện an toàn; phối hợp trong Action sửa chữa phù hợp.",
+      "usage": {
+        "current": 0,
+        "max": 5,
+        "autoInc": false
+      },
       "stats": {
         "condition": {
           "current": 4,
@@ -498,8 +831,21 @@ export const DEMO_SCRIPT = {
           "label": "Tình trạng dụng cụ",
           "color": "#67D6A0"
         }
-      },"effect":{"use":[]}},
-"insulated_wire":{"name":"Dây điện cách nhiệt","category":"material","icon":"cable","desc":"Cuộn dây còn lớp cách điện, tìm thấy trong hầm rượu; có thể thay dây đứt hoặc nối tạm tiếp điểm, phối hợp cùng cầu chì và bộ dụng cụ tại Action sửa mạch.","usage":{"current":0,"max":10,"autoInc":false},
+      },
+      "effect": {
+        "use": []
+      }
+    },
+    "insulated_wire": {
+      "name": "Dây điện cách nhiệt",
+      "category": "material",
+      "icon": "cable",
+      "desc": "Cuộn dây còn lớp cách điện, tìm thấy trong hầm rượu; có thể thay dây đứt hoặc nối tạm tiếp điểm, phối hợp cùng cầu chì và bộ dụng cụ tại Action sửa mạch.",
+      "usage": {
+        "current": 0,
+        "max": 2,
+        "autoInc": false
+      },
       "stats": {
         "condition": {
           "current": 4,
@@ -507,8 +853,21 @@ export const DEMO_SCRIPT = {
           "label": "Tình trạng dây",
           "color": "#67D6A0"
         }
-      },"effect":{"use":[]}},
-"spare_fuse":{"name":"Cầu chì dự phòng","category":"material","icon":"electrical_services","desc":"Cầu chì sứ còn nguyên trong hộp linh kiện cũ ở hầm rượu, dùng thay cầu chì cháy khi lắp vào thiết bị bằng Action phối hợp vật liệu.","usage":{"current":0,"max":10,"autoInc":false},
+      },
+      "effect": {
+        "use": []
+      }
+    },
+    "spare_fuse": {
+      "name": "Cầu chì dự phòng",
+      "category": "material",
+      "icon": "electrical_services",
+      "desc": "Cầu chì sứ còn nguyên trong hộp linh kiện cũ ở hầm rượu, dùng thay cầu chì cháy khi lắp vào thiết bị bằng Action phối hợp vật liệu.",
+      "usage": {
+        "current": 0,
+        "max": 2,
+        "autoInc": false
+      },
       "stats": {
         "capacity": {
           "current": 4,
@@ -516,8 +875,21 @@ export const DEMO_SCRIPT = {
           "label": "Khả năng chịu tải",
           "color": "#67D6A0"
         }
-      },"effect":{"use":[]}},
-"clockwork_spring":{"name":"Lò xo cơ khí","category":"material","icon":"settings","desc":"Lò xo thép còn đàn hồi lấy từ hộp bảo trì cối xay, có thể thay bộ phận hồi lực bị mất; dùng cùng chốt truyền động và bộ dụng cụ để sửa cơ cấu cối xay.","usage":{"current":0,"max":10,"autoInc":false},
+      },
+      "effect": {
+        "use": []
+      }
+    },
+    "clockwork_spring": {
+      "name": "Lò xo cơ khí",
+      "category": "material",
+      "icon": "settings",
+      "desc": "Lò xo thép còn đàn hồi lấy từ hộp bảo trì cối xay, có thể thay bộ phận hồi lực bị mất; dùng cùng chốt truyền động và bộ dụng cụ để sửa cơ cấu cối xay.",
+      "usage": {
+        "current": 0,
+        "max": 2,
+        "autoInc": false
+      },
       "stats": {
         "tension": {
           "current": 4,
@@ -525,8 +897,21 @@ export const DEMO_SCRIPT = {
           "label": "Lực hồi",
           "color": "#67D6A0"
         }
-      },"effect":{"use":[]}},
-"tracing_paper":{"name":"Giấy can","category":"material","icon":"description","desc":"Giấy can mỏng trong ngăn bàn giáo viên, dùng chép chồng ký hiệu để đối chiếu bản đồ và hướng cơ cấu.","usage":{"current":0,"max":10,"autoInc":false},
+      },
+      "effect": {
+        "use": []
+      }
+    },
+    "tracing_paper": {
+      "name": "Giấy can",
+      "category": "material",
+      "icon": "description",
+      "desc": "Giấy can mỏng trong ngăn bàn giáo viên, dùng chép chồng ký hiệu để đối chiếu bản đồ và hướng cơ cấu.",
+      "usage": {
+        "current": 0,
+        "max": 3,
+        "autoInc": false
+      },
       "stats": {
         "precision": {
           "current": 4,
@@ -534,8 +919,21 @@ export const DEMO_SCRIPT = {
           "label": "Độ chính xác đối chiếu",
           "color": "#8BC5FF"
         }
-      },"effect":{"use":[]}},
-"inspection_loupe":{"name":"Kính kiểm tra","category":"tool","icon":"search","desc":"Kính phóng đại nhỏ trong hộp dụng cụ giáo viên, dùng phát hiện nét khắc, dấu sửa và chi tiết nhỏ trên vật chứng.","usage":{"current":0,"max":10,"autoInc":false},
+      },
+      "effect": {
+        "use": []
+      }
+    },
+    "inspection_loupe": {
+      "name": "Kính kiểm tra",
+      "category": "tool",
+      "icon": "search",
+      "desc": "Kính phóng đại nhỏ trong hộp dụng cụ giáo viên, dùng phát hiện nét khắc, dấu sửa và chi tiết nhỏ trên vật chứng.",
+      "usage": {
+        "current": 0,
+        "max": 4,
+        "autoInc": false
+      },
       "stats": {
         "precision": {
           "current": 4,
@@ -543,15 +941,19 @@ export const DEMO_SCRIPT = {
           "label": "Độ chính xác kiểm tra",
           "color": "#8BC5FF"
         }
-      },"effect":{"use":[]}},"radio_crystal": {
+      },
+      "effect": {
+        "use": []
+      }
+    },
+    "radio_crystal": {
       "name": "Cuộn tinh thể thu sóng",
-      
       "category": "mechanism",
       "icon": "radio",
       "desc": "Cuộn tinh thể nhỏ nằm trong vỏ kim loại nứt. Các chân tiếp xúc bị xỉn màu, nhưng cấu trúc bên trong có thể lưu lại một tần số phát thanh. Cần xử lý tại hộp loa phát thanh bằng Action sửa radio; kiểm tra trong Inventory chỉ xem linh kiện, không tự khôi phục tín hiệu.",
       "usage": {
-        "current":  0,
-        "max":  10,
+        "current": 0,
+        "max": 3,
         "autoInc": false
       },
       "stats": {
@@ -563,19 +965,17 @@ export const DEMO_SCRIPT = {
         }
       },
       "effect": {
-        "use": [
-          ]
+        "use": []
       }
     },
     "well_badge": {
       "name": "Phù hiệu đội sơ tán",
-      
       "category": "evidence",
       "icon": "badge",
       "desc": "Phù hiệu kim loại phủ cặn nước, khắc biểu tượng đội sơ tán. Mặt sau có dấu đóng mờ, cùng kiểu với ký hiệu trên một vật được niêm kín.",
       "usage": {
-        "current":  0,
-        "max":  10,
+        "current": 0,
+        "max": 2,
         "autoInc": false
       },
       "stats": {
@@ -587,35 +987,39 @@ export const DEMO_SCRIPT = {
         }
       },
       "effect": {
-        "use": [
-          ]
+        "use": []
       }
     },
     "spare_room_key": {
       "name": "Chìa khóa phòng thứ bảy",
-      
       "category": "key",
       "icon": "key",
       "desc": "Chìa khóa đồng mang số bảy, răng khóa còn mới hơn phần thân đã xỉn màu. Số phòng này không xuất hiện trong sơ đồ nhà trọ; dùng tại cánh cửa ẩn ở nhà trọ, tương tác đúng địa điểm để mở.",
       "usage": {
-        "current":  0,
-        "max":  10,
+        "current": 0,
+        "max": 3,
         "autoInc": false
       },
       "effect": {
-        "use": [
-          ]
+        "use": []
+      },
+      "stats": {
+        "integrity": {
+          "current": 3,
+          "max": 5,
+          "label": "Độ nguyên vẹn",
+          "color": "#F5C451"
+        }
       }
     },
     "evacuation_film": {
       "name": "Cuộn phim sơ tán",
-      
       "category": "media",
       "icon": "movie",
       "desc": "Cuộn phim nhỏ được bọc kín để tránh ẩm. Trên hộp có ghi ngày sơ tán; một vài khung hình có thể cho thấy những người mà hồ sơ làng phủ nhận.",
       "usage": {
-        "current":  0,
-        "max":  10,
+        "current": 0,
+        "max": 3,
         "autoInc": false
       },
       "stats": {
@@ -627,19 +1031,17 @@ export const DEMO_SCRIPT = {
         }
       },
       "effect": {
-        "use": [
-          ]
+        "use": []
       }
     },
     "hymn_note": {
       "name": "Trang ghi chú trong thánh ca",
-      
       "category": "document",
       "icon": "description",
       "desc": "Trang giấy gấp giấu trong gáy thánh ca. Những dòng ghi chú nói về tín hiệu chuông, thứ tự ba hồi và lý do không được có hồi thứ tư; phần cuối bị mực thấm làm nhòe.",
       "usage": {
-        "current":  0,
-        "max":  10,
+        "current": 0,
+        "max": 3,
         "autoInc": false
       },
       "stats": {
@@ -651,19 +1053,17 @@ export const DEMO_SCRIPT = {
         }
       },
       "effect": {
-        "use": [
-          ]
+        "use": []
       }
     },
     "bell_copper_wire": {
       "name": "Dây đồng chuông",
-      
       "category": "mechanism",
       "icon": "cable",
       "desc": "Đoạn dây đồng bị xoắn và có một đầu tuột khỏi mối nối. Vết xước cho thấy nó từng nằm trong cơ cấu truyền lực của tháp chuông; cần nối tại cơ cấu chuông ở tháp, kiểm tra vật phẩm không tự sửa cơ cấu.",
       "usage": {
-        "current":  0,
-        "max":  10,
+        "current": 0,
+        "max": 2,
         "autoInc": false
       },
       "stats": {
@@ -675,19 +1075,17 @@ export const DEMO_SCRIPT = {
         }
       },
       "effect": {
-        "use": [
-          ]
+        "use": []
       }
     },
     "class_register_copy": {
       "name": "Bản sao sổ điểm danh",
-      
       "category": "document",
       "icon": "menu_book",
       "desc": "Bản sao sổ điểm danh với mép giấy bị xé và vài dòng bị bôi đen. Số sĩ số ở đầu trang vẫn còn đọc được, dù danh sách tên đã bị sửa.",
       "usage": {
-        "current":  0,
-        "max":  10,
+        "current": 0,
+        "max": 3,
         "autoInc": false
       },
       "stats": {
@@ -699,19 +1097,17 @@ export const DEMO_SCRIPT = {
         }
       },
       "effect": {
-        "use": [
-          ]
+        "use": []
       }
     },
     "guide_compass": {
       "name": "La bàn người dẫn đường",
-      
       "category": "tool",
       "icon": "explore",
       "desc": "La bàn cũ có mặt kính nứt nhẹ. Mặt sau khắc một tuyến đường bằng các ô và dấu mốc, khác với những lối mòn đang thay đổi trong rừng; dùng để giải mê cung tại khu rừng, không tự mở đường toàn cục.",
       "usage": {
-        "current":  0,
-        "max":  10,
+        "current": 0,
+        "max": 3,
         "autoInc": false
       },
       "stats": {
@@ -723,19 +1119,17 @@ export const DEMO_SCRIPT = {
         }
       },
       "effect": {
-        "use": [
-          ]
+        "use": []
       }
     },
     "evacuation_seal": {
       "name": "Con dấu đội sơ tán",
-      
       "category": "evidence",
       "icon": "approval",
       "desc": "Con dấu gỗ đã mòn ở tay cầm, mặt dấu còn biểu tượng đội sơ tán. Một lớp đất khô bám trong các rãnh cho thấy nó từng bị chôn giấu.",
       "usage": {
-        "current":  0,
-        "max":  10,
+        "current": 0,
+        "max": 2,
         "autoInc": false
       },
       "stats": {
@@ -747,19 +1141,17 @@ export const DEMO_SCRIPT = {
         }
       },
       "effect": {
-        "use": [
-          ]
+        "use": []
       }
     },
     "mill_gear_pin": {
       "name": "Chốt truyền động",
-      
       "category": "mechanism",
       "icon": "settings",
       "desc": "Chốt kim loại ngắn, cong nhẹ ở một đầu và phủ dầu khô. Kích thước khớp với một vị trí trống trong bộ truyền động cối xay; cần lắp tại cơ cấu cối xay ở đúng địa điểm, kiểm tra vật phẩm không tự sửa máy.",
       "usage": {
-        "current":  0,
-        "max":  10,
+        "current": 0,
+        "max": 2,
         "autoInc": false
       },
       "stats": {
@@ -771,19 +1163,17 @@ export const DEMO_SCRIPT = {
         }
       },
       "effect": {
-        "use": [
-          ]
+        "use": []
       }
     },
     "tunnel_manifest": {
       "name": "Danh sách vận chuyển",
-      
       "category": "document",
       "icon": "description",
       "desc": "Danh sách vận chuyển được cuộn trong ống chống ẩm. Nhiều tên được chia theo lượt, kèm dấu thời gian và ký hiệu tuyến đường.",
       "usage": {
-        "current":  0,
-        "max":  10,
+        "current": 0,
+        "max": 3,
         "autoInc": false
       },
       "stats": {
@@ -795,19 +1185,17 @@ export const DEMO_SCRIPT = {
         }
       },
       "effect": {
-        "use": [
-          ]
+        "use": []
       }
     },
     "unpunched_ticket": {
       "name": "Vé tàu chưa xé",
-      
       "category": "evidence",
       "icon": "confirmation_number",
       "desc": "Vé tàu cũ còn nguyên phần kiểm soát, chưa bị xé. Giờ khởi hành 03:17 được in rõ, trong khi tên ga đến đã phai.",
       "usage": {
-        "current":  0,
-        "max":  10,
+        "current": 0,
+        "max": 2,
         "autoInc": false
       },
       "stats": {
@@ -819,8 +1207,7 @@ export const DEMO_SCRIPT = {
         }
       },
       "effect": {
-        "use": [
-          ]
+        "use": []
       }
     }
   },
@@ -961,7 +1348,9 @@ export const DEMO_SCRIPT = {
             "action_read_notice",
             "action_talk_mai",
             "action_enter_well",
-            "action_decode_broadcast"
+            "action_decode_broadcast",
+            "action_observe_mai",
+            "action_listen_mai_tape"
           ]
         },
         "router_square_broadcast_decoded": {
@@ -980,6 +1369,8 @@ export const DEMO_SCRIPT = {
             "action_talk_mai",
             "action_enter_well",
             "action_restore_radio_signal",
+            "action_observe_mai",
+            "action_listen_mai_tape"
           ]
         }
       }
@@ -1008,6 +1399,9 @@ export const DEMO_SCRIPT = {
           "actions": [
             "action_inspect_well",
             "action_use_lantern",
+            "action_use_lantern_dim",
+            "action_recover_lantern",
+            "action_retrieve_well_badge_alternative"
           ]
         },
         "router_well_bottom_revealed": {
@@ -1025,6 +1419,8 @@ export const DEMO_SCRIPT = {
             "action_inspect_well",
             "action_use_lantern",
             "action_retrieve_well_badge",
+            "action_use_lantern_dim",
+            "action_recover_lantern"
           ]
         }
       }
@@ -1054,7 +1450,19 @@ export const DEMO_SCRIPT = {
             "action_talk_hanh",
             "action_open_guestbook",
             "action_unlock_cellar",
-            "action_find_spare_key"
+            "action_find_spare_key",
+            "action_confirm_room7",
+            "action_unlock_room7",
+            "action_force_room7",
+            "action_repair_room7_key",
+            "action_open_room7_alternative",
+            "action_inspect_damaged_lock",
+            "action_dry_guestbook",
+            "action_compare_guestbook_photo",
+            "action_verify_guestbook",
+            "action_rest_at_inn",
+            "action_recover_with_mai",
+            "action_recover_character_trust"
           ]
         },
         "router_inn_hidden_room": {
@@ -1072,6 +1480,18 @@ export const DEMO_SCRIPT = {
             "action_talk_hanh",
             "action_open_guestbook",
             "action_unlock_cellar",
+            "action_confirm_room7",
+            "action_unlock_room7",
+            "action_force_room7",
+            "action_repair_room7_key",
+            "action_open_room7_alternative",
+            "action_inspect_damaged_lock",
+            "action_dry_guestbook",
+            "action_compare_guestbook_photo",
+            "action_verify_guestbook",
+            "action_rest_at_inn",
+            "action_recover_with_mai",
+            "action_recover_character_trust"
           ]
         }
       }
@@ -1100,7 +1520,8 @@ export const DEMO_SCRIPT = {
           "actions": [
             "action_search_cellar",
             "action_find_evacuation_film",
-            "action_find_insulated_wire","action_find_spare_fuse"
+            "action_find_insulated_wire",
+            "action_find_spare_fuse"
           ]
         },
         "router_cellar_recording_found": {
@@ -1116,9 +1537,9 @@ export const DEMO_SCRIPT = {
           },
           "actions": [
             "action_search_cellar",
-          
             "action_find_insulated_wire",
-            "action_find_spare_fuse"]
+            "action_find_spare_fuse"
+          ]
         }
       }
     },
@@ -1147,7 +1568,8 @@ export const DEMO_SCRIPT = {
             "action_read_hymn",
             "action_talk_keeper",
             "action_enter_tower",
-            "action_find_hymn_note"
+            "action_find_hymn_note",
+            "action_restore_hymn_note"
           ]
         },
         "router_chapel_cryptic_note": {
@@ -1165,6 +1587,7 @@ export const DEMO_SCRIPT = {
             "action_read_hymn",
             "action_talk_keeper",
             "action_enter_tower",
+            "action_restore_hymn_note"
           ]
         }
       }
@@ -1193,7 +1616,9 @@ export const DEMO_SCRIPT = {
           "actions": [
             "action_solve_bell",
             "action_ring_bell",
-            "action_recover_bell_wire"
+            "action_recover_bell_wire",
+            "action_ring_bell_imperfect",
+            "action_correct_bell_signal"
           ]
         },
         "router_bell_mechanism_repaired": {
@@ -1210,6 +1635,8 @@ export const DEMO_SCRIPT = {
           "actions": [
             "action_solve_bell",
             "action_ring_bell",
+            "action_ring_bell_imperfect",
+            "action_correct_bell_signal"
           ]
         }
       }
@@ -1269,7 +1696,22 @@ export const DEMO_SCRIPT = {
             "action_inspect_evacuation_notice",
             "action_check_desk",
             "action_talk_linh",
-            "action_find_radio_toolkit","action_find_tracing_paper","action_find_inspection_loupe","action_overlay_map"
+            "action_find_radio_toolkit",
+            "action_find_tracing_paper",
+            "action_find_inspection_loupe",
+            "action_overlay_map",
+            "action_retrace_map",
+            "action_compare_evacuation_film",
+            "action_verify_route_from_radio",
+            "action_restore_radio_signal_partial",
+            "action_diagnose_radio",
+            "action_repair_radio_toolkit",
+            "action_listen_static",
+            "action_rest_at_inn",
+            "action_ground_with_radio",
+            "action_recover_with_linh",
+            "action_recover_character_trust",
+            "action_reward_memory_roster"
           ]
         },
         "router_classroom_archive_open": {
@@ -1289,12 +1731,23 @@ export const DEMO_SCRIPT = {
             "action_inspect_evacuation_notice",
             "action_check_desk",
             "action_talk_linh",
-            "action_decode_roster"
-           ,
+            "action_decode_roster",
             "action_find_radio_toolkit",
             "action_find_tracing_paper",
             "action_find_inspection_loupe",
-            "action_overlay_map"]
+            "action_overlay_map",
+            "action_retrace_map",
+            "action_compare_evacuation_film",
+            "action_verify_route_from_radio",
+            "action_restore_radio_signal_partial",
+            "action_diagnose_radio",
+            "action_repair_radio_toolkit",
+            "action_listen_static",
+            "action_ground_with_radio",
+            "action_recover_with_linh",
+            "action_recover_character_trust",
+            "action_reward_memory_roster"
+          ]
         }
       }
     },
@@ -1318,7 +1771,8 @@ export const DEMO_SCRIPT = {
             "blocked": false,
             "visited": false,
             "countVisited": 0
-          },"actions": [
+          },
+          "actions": [
             "action_read_blackboard"
           ]
         },
@@ -1365,7 +1819,9 @@ export const DEMO_SCRIPT = {
             "action_maze_path",
             "action_enter_clearing",
             "action_enter_watermill",
-            "action_collect_forest_compass"
+            "action_collect_forest_compass",
+            "action_follow_compass_uncertain",
+            "action_verify_forest_route"
           ]
         },
         "router_forest_markers_aligned": {
@@ -1383,7 +1839,9 @@ export const DEMO_SCRIPT = {
             "action_follow_marks",
             "action_maze_path",
             "action_enter_clearing",
-            "action_enter_watermill"
+            "action_enter_watermill",
+            "action_follow_compass_uncertain",
+            "action_verify_forest_route"
           ]
         }
       }
@@ -1412,7 +1870,9 @@ export const DEMO_SCRIPT = {
           "actions": [
             "action_inspect_stakes",
             "action_find_hidden_box",
-            "action_find_wooden_seal"
+            "action_find_wooden_seal",
+            "action_force_seal",
+            "action_verify_seal"
           ]
         },
         "router_clearing_ritual_trace": {
@@ -1429,6 +1889,8 @@ export const DEMO_SCRIPT = {
           "actions": [
             "action_inspect_stakes",
             "action_find_hidden_box",
+            "action_force_seal",
+            "action_verify_seal"
           ]
         }
       }
@@ -1457,7 +1919,11 @@ export const DEMO_SCRIPT = {
           "actions": [
             "action_repair_mill",
             "action_find_gear_pin",
-            "action_find_clockwork_spring"
+            "action_find_clockwork_spring",
+            "action_repair_mill_partial",
+            "action_force_mill_repair",
+            "action_stabilize_mill",
+            "action_bypass_mill"
           ]
         },
         "router_watermill_running": {
@@ -1472,7 +1938,7 @@ export const DEMO_SCRIPT = {
             "countVisited": 0
           },
           "actions": [
-            "action_descend_tunnel",
+            "action_descend_tunnel"
           ]
         },
         "router_watermill_gear_inspected": {
@@ -1488,8 +1954,12 @@ export const DEMO_SCRIPT = {
           },
           "actions": [
             "action_repair_mill",
-          
-            "action_find_clockwork_spring"]
+            "action_find_clockwork_spring",
+            "action_repair_mill_partial",
+            "action_force_mill_repair",
+            "action_stabilize_mill",
+            "action_bypass_mill"
+          ]
         }
       }
     },
@@ -1519,7 +1989,17 @@ export const DEMO_SCRIPT = {
             "action_open_archive",
             "action_reach_station",
             "action_reach_station_memory",
-            "action_recover_tunnel_manifest"
+            "action_recover_tunnel_manifest",
+            "action_bypass_archive_lock",
+            "action_reconstruct_archive_record",
+            "action_open_archive_from_evidence",
+            "action_reconstruct_manifest",
+            "action_verify_evacuation_film",
+            "action_recover_hymn",
+            "action_reconstruct_stakes_evidence",
+            "action_verify_tunnel_clue",
+            "action_reach_station_memory_evidence",
+            "action_reward_memory_tunnel"
           ]
         },
         "router_tunnel_manifest_found": {
@@ -1538,6 +2018,16 @@ export const DEMO_SCRIPT = {
             "action_open_archive",
             "action_reach_station",
             "action_reach_station_memory",
+            "action_bypass_archive_lock",
+            "action_reconstruct_archive_record",
+            "action_open_archive_from_evidence",
+            "action_reconstruct_manifest",
+            "action_verify_evacuation_film",
+            "action_recover_hymn",
+            "action_reconstruct_stakes_evidence",
+            "action_verify_tunnel_clue",
+            "action_reach_station_memory_evidence",
+            "action_reward_memory_tunnel"
           ]
         }
       }
@@ -1573,7 +2063,14 @@ export const DEMO_SCRIPT = {
             "action_ending_bury",
             "action_ending_echo",
             "action_ending_depart",
-            "action_find_station_ticket"
+            "action_find_station_ticket",
+            "action_listen_static",
+            "action_diagnose_radio",
+            "action_ground_with_radio",
+            "action_recover_character_trust",
+            "action_ending_release_partial",
+            "action_ending_release_reconstructed",
+            "action_verify_ticket"
           ]
         },
         "router_station_departure_records": {
@@ -1594,12 +2091,15 @@ export const DEMO_SCRIPT = {
             "action_ending_bury",
             "action_ending_echo",
             "action_ending_depart",
+            "action_ending_release_partial",
+            "action_ending_release_reconstructed",
+            "action_verify_ticket"
           ]
         }
       }
     }
   },
-  "actions":   {
+  "actions": {
     "action_read_notice": {
       "meta": {
         "title": "Bảng thông báo",
@@ -1609,8 +2109,8 @@ export const DEMO_SCRIPT = {
       "set": {
         "display": "show",
         "requirement": false,
-      
-        "readDesc": true,},
+        "readDesc": true
+      },
       "requirement": {
         "logic": "OR",
         "check": [
@@ -1793,164 +2293,180 @@ export const DEMO_SCRIPT = {
       }
     },
     "action_talk_mai": {
-  "meta": {
-    "title": "Mai",
-    "buttonLabel": "Trò chuyện",
-    "desc": "Mai đứng gần quảng trường nhưng luôn giữ khoảng cách với giếng đá. Những gì cô sẵn sàng kể thay đổi theo các manh mối bạn đã tìm được."
-  },
-  "set": {
-    "display": "show"
-  },
-  "effect": {
-    "normal": [
-      {
-        "type": "goto",
-        "subtype": "chat",
-        "target": "chat_mai_memory",
-        "req": {
-          "logic": "AND",
-          "check": [
-            {
-              "type": "state",
-              "property": "knows_twelve",
-              "op": "==",
-              "value": true
-            },
-            {
-              "type": "state",
-              "property": "school_choice",
-              "op": "==",
-              "value": "memory"
-            }
-          ]
-        }
+      "meta": {
+        "title": "Mai",
+        "buttonLabel": "Trò chuyện",
+        "desc": "Mai đứng gần quảng trường nhưng luôn giữ khoảng cách với giếng đá. Những gì cô sẵn sàng kể thay đổi theo các manh mối bạn đã tìm được."
       },
-      {
-        "type": "goto",
-        "subtype": "chat",
-        "target": "chat_mai_evidence",
-        "req": {
-          "logic": "AND",
-          "check": [
-            {
-              "type": "state",
-              "property": "knows_twelve",
-              "op": "==",
-              "value": true
-            },
-            {
-              "type": "state",
-              "property": "school_choice",
-              "op": "==",
-              "value": "evidence"
-            }
-          ]
-        }
+      "set": {
+        "display": "show"
       },
-      {
-        "type": "goto",
-        "subtype": "chat",
-        "target": "chat_mai",
-        "req": {
-          "logic": "AND",
-          "check": [
-            {
-              "type": "state",
-              "property": "knows_twelve",
-              "op": "!=",
-              "value": true
-            },
-            {
-              "type": "state",
-              "property": "clue_well",
-              "op": "!=",
-              "value": true
+      "effect": {
+        "normal": [
+          {
+            "type": "goto",
+            "subtype": "chat",
+            "target": "chat_mai_memory",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "state",
+                  "property": "knows_twelve",
+                  "op": "==",
+                  "value": true
+                },
+                {
+                  "type": "state",
+                  "property": "school_choice",
+                  "op": "==",
+                  "value": "memory"
+                }
+              ]
             }
-          ]
-        }
-      },
-      {
-        "type": "goto",
-        "subtype": "chat",
-        "target": "chat_mai",
-        "req": {
-          "logic": "AND",
-          "check": [
-            {
-              "type": "state",
-              "property": "knows_twelve",
-              "op": "!=",
-              "value": true
-            },
-            {
-              "type": "state",
-              "property": "clue_well",
-              "op": "==",
-              "value": true
-            },
-            {
-              "type": "state",
-              "property": "clue_lantern",
-              "op": "!=",
-              "value": true
+          },
+          {
+            "type": "goto",
+            "subtype": "chat",
+            "target": "chat_mai_evidence",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "state",
+                  "property": "knows_twelve",
+                  "op": "==",
+                  "value": true
+                },
+                {
+                  "type": "state",
+                  "property": "school_choice",
+                  "op": "==",
+                  "value": "evidence"
+                }
+              ]
             }
-          ]
-        }
-      },
-      {
-        "type": "goto",
-        "subtype": "chat",
-        "target": "chat_mai_well",
-        "req": {
-          "logic": "AND",
-          "check": [
-            {
-              "type": "state",
-              "property": "knows_twelve",
-              "op": "!=",
-              "value": true
-            },
-            {
-              "type": "state",
-              "property": "clue_well",
-              "op": "==",
-              "value": true
-            },
-            {
-              "type": "state",
-              "property": "clue_lantern",
-              "op": "==",
-              "value": true
+          },
+          {
+            "type": "goto",
+            "subtype": "chat",
+            "target": "chat_mai",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "state",
+                  "property": "knows_twelve",
+                  "op": "!=",
+                  "value": true
+                },
+                {
+                  "type": "state",
+                  "property": "clue_well",
+                  "op": "!=",
+                  "value": true
+                }
+              ]
             }
-          ]
-        }
-      },
-      {
-        "type": "goto",
-        "subtype": "chat",
-        "target": "chat_mai_umbrella",
-        "req": {
-          "logic": "AND",
-          "check": [
-            {
-              "type": "state",
-              "property": "knows_twelve",
-              "op": "==",
-              "value": true
-            },
-            {
-              "type": "state",
-              "property": "school_choice",
-              "op": "==",
-              "value": "undecided"
+          },
+          {
+            "type": "goto",
+            "subtype": "chat",
+            "target": "chat_mai",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "state",
+                  "property": "knows_twelve",
+                  "op": "!=",
+                  "value": true
+                },
+                {
+                  "type": "state",
+                  "property": "clue_well",
+                  "op": "==",
+                  "value": true
+                },
+                {
+                  "type": "state",
+                  "property": "clue_lantern",
+                  "op": "!=",
+                  "value": true
+                }
+              ]
             }
-          ]
-        }
+          },
+          {
+            "type": "goto",
+            "subtype": "chat",
+            "target": "chat_mai_well",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "state",
+                  "property": "knows_twelve",
+                  "op": "!=",
+                  "value": true
+                },
+                {
+                  "type": "state",
+                  "property": "clue_well",
+                  "op": "==",
+                  "value": true
+                },
+                {
+                  "type": "state",
+                  "property": "clue_lantern",
+                  "op": "==",
+                  "value": true
+                }
+              ]
+            }
+          },
+          {
+            "type": "goto",
+            "subtype": "chat",
+            "target": "chat_mai_umbrella",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "state",
+                  "property": "knows_twelve",
+                  "op": "==",
+                  "value": true
+                },
+                {
+                  "type": "state",
+                  "property": "school_choice",
+                  "op": "==",
+                  "value": "undecided"
+                }
+              ]
+            }
+          }
+        ],
+        "pass": [
+          {
+            "type": "characters",
+            "subtype": "edit_stats",
+            "target": "mai",
+            "property": "trust",
+            "field": "current",
+            "mode": "add",
+            "value": 1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "mai_confessed",
+            "value": true
+          }
+        ]
       }
-    ],
-    "pass": []
-  }
-},
+    },
     "action_inspect_well": {
       "meta": {
         "title": "Giếng đá",
@@ -1975,20 +2491,24 @@ export const DEMO_SCRIPT = {
             "target": "clue_well",
             "value": true
           },
-          
           {
             "type": "set",
             "subtype": "action",
             "target": "action_inspect_well",
             "property": "display",
             "value": "hide"
-          }
-        ,
+          },
           {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
             "text": "Đã phát hiện dấu vết tại giếng và khôi phục một mảnh ký ức."
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "memory_reward_well",
+            "value": true
           }
         ]
       }
@@ -2002,8 +2522,8 @@ export const DEMO_SCRIPT = {
       "set": {
         "display": "show",
         "requirement": true,
-      
-        "readDesc": true,},
+        "readDesc": true
+      },
       "effect": {
         "normal": [],
         "pass": [
@@ -2030,6 +2550,12 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "router",
             "target": "router_well_bottom_revealed"
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "lantern",
+            "value": 1
           }
         ],
         "fail": [
@@ -2060,175 +2586,193 @@ export const DEMO_SCRIPT = {
             "type": "item",
             "subtype": "hand",
             "op": "==",
-            "value": ["lantern"]
+            "value": [
+              "lantern"
+            ]
           }
         ]
       }
     },
     "action_talk_hanh": {
-  "meta": {
-    "title": "Bà Hạnh",
-    "buttonLabel": "Trò chuyện",
-    "desc": "Bà Hạnh quản lý nhà trọ và nắm giữ cuốn sổ ghi khách đến, khách đi. Bà khẳng định nơi này chỉ có sáu phòng, nhưng hành lang phía sau quầy lại có bảy cánh cửa. Sự chênh lệch ấy không giống một nhầm lẫn trong cách đếm; nó giống một căn phòng đã bị cố tình xóa khỏi lời kể."
-  },
-  "set": {
-    "display": "show"
-  },
-  "effect": {
-    "normal": [
-      {
-        "type": "goto",
-        "subtype": "chat",
-        "target": "chat_hanh_memory",
-        "req": {
-          "logic": "AND",
-          "check": [
-            {
-              "type": "state",
-              "property": "evidence_hidden_room",
-              "op": "==",
-              "value": true
-            },
-            {
-              "type": "state",
-              "property": "school_choice",
-              "op": "==",
-              "value": "memory"
-            }
-          ]
-        }
+      "meta": {
+        "title": "Bà Hạnh",
+        "buttonLabel": "Trò chuyện",
+        "desc": "Bà Hạnh quản lý nhà trọ và nắm giữ cuốn sổ ghi khách đến, khách đi. Bà khẳng định nơi này chỉ có sáu phòng, nhưng hành lang phía sau quầy lại có bảy cánh cửa. Sự chênh lệch ấy không giống một nhầm lẫn trong cách đếm; nó giống một căn phòng đã bị cố tình xóa khỏi lời kể."
       },
-      {
-        "type": "goto",
-        "subtype": "chat",
-        "target": "chat_hanh_evidence",
-        "req": {
-          "logic": "AND",
-          "check": [
-            {
-              "type": "state",
-              "property": "evidence_hidden_room",
-              "op": "==",
-              "value": true
-            },
-            {
-              "type": "state",
-              "property": "school_choice",
-              "op": "==",
-              "value": "evidence"
-            }
-          ]
-        }
+      "set": {
+        "display": "show"
       },
-      {
-        "type": "goto",
-        "subtype": "chat",
-        "target": "chat_hanh_room",
-        "req": {
-          "logic": "AND",
-          "check": [
-            {
-              "type": "state",
-              "property": "evidence_hidden_room",
-              "op": "==",
-              "value": true
-            },
-            {
-              "type": "state",
-              "property": "school_choice",
-              "op": "==",
-              "value": "undecided"
+      "effect": {
+        "normal": [
+          {
+            "type": "goto",
+            "subtype": "chat",
+            "target": "chat_hanh_memory",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "state",
+                  "property": "evidence_hidden_room",
+                  "op": "==",
+                  "value": true
+                },
+                {
+                  "type": "state",
+                  "property": "school_choice",
+                  "op": "==",
+                  "value": "memory"
+                }
+              ]
             }
-          ]
-        }
-      },
-      {
-        "type": "goto",
-        "subtype": "chat",
-        "target": "chat_hanh_guestbook",
-        "req": {
-          "logic": "AND",
-          "check": [
-            {
-              "type": "state",
-              "property": "evidence_hidden_room",
-              "op": "!=",
-              "value": true
-            },
-            {
-              "type": "state",
-              "property": "found_guestbook",
-              "op": "==",
-              "value": true
+          },
+          {
+            "type": "goto",
+            "subtype": "chat",
+            "target": "chat_hanh_evidence",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "state",
+                  "property": "evidence_hidden_room",
+                  "op": "==",
+                  "value": true
+                },
+                {
+                  "type": "state",
+                  "property": "school_choice",
+                  "op": "==",
+                  "value": "evidence"
+                }
+              ]
             }
-          ]
-        }
-      },
-      {
-        "type": "goto",
-        "subtype": "chat",
-        "target": "chat_hanh_notice",
-        "req": {
-          "logic": "AND",
-          "check": [
-            {
-              "type": "state",
-              "property": "evidence_hidden_room",
-              "op": "!=",
-              "value": true
-            },
-            {
-              "type": "state",
-              "property": "found_guestbook",
-              "op": "!=",
-              "value": true
-            },
-            {
-              "type": "state",
-              "property": "clue_village_notice",
-              "op": "==",
-              "value": true
+          },
+          {
+            "type": "goto",
+            "subtype": "chat",
+            "target": "chat_hanh_room",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "state",
+                  "property": "evidence_hidden_room",
+                  "op": "==",
+                  "value": true
+                },
+                {
+                  "type": "state",
+                  "property": "school_choice",
+                  "op": "==",
+                  "value": "undecided"
+                }
+              ]
             }
-          ]
-        }
-      },
-      {
-        "type": "goto",
-        "subtype": "chat",
-        "target": "chat_hanh",
-        "req": {
-          "logic": "AND",
-          "check": [
-            {
-              "type": "state",
-              "property": "evidence_hidden_room",
-              "op": "!=",
-              "value": true
-            },
-            {
-              "type": "state",
-              "property": "found_guestbook",
-              "op": "!=",
-              "value": true
-            },
-            {
-              "type": "state",
-              "property": "clue_village_notice",
-              "op": "!=",
-              "value": true
+          },
+          {
+            "type": "goto",
+            "subtype": "chat",
+            "target": "chat_hanh_guestbook",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "state",
+                  "property": "evidence_hidden_room",
+                  "op": "!=",
+                  "value": true
+                },
+                {
+                  "type": "state",
+                  "property": "found_guestbook",
+                  "op": "==",
+                  "value": true
+                }
+              ]
             }
-          ]
-        }
+          },
+          {
+            "type": "goto",
+            "subtype": "chat",
+            "target": "chat_hanh_notice",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "state",
+                  "property": "evidence_hidden_room",
+                  "op": "!=",
+                  "value": true
+                },
+                {
+                  "type": "state",
+                  "property": "found_guestbook",
+                  "op": "!=",
+                  "value": true
+                },
+                {
+                  "type": "state",
+                  "property": "clue_village_notice",
+                  "op": "==",
+                  "value": true
+                }
+              ]
+            }
+          },
+          {
+            "type": "goto",
+            "subtype": "chat",
+            "target": "chat_hanh",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "state",
+                  "property": "evidence_hidden_room",
+                  "op": "!=",
+                  "value": true
+                },
+                {
+                  "type": "state",
+                  "property": "found_guestbook",
+                  "op": "!=",
+                  "value": true
+                },
+                {
+                  "type": "state",
+                  "property": "clue_village_notice",
+                  "op": "!=",
+                  "value": true
+                }
+              ]
+            }
+          }
+        ],
+        "pass": [
+          {
+            "type": "characters",
+            "subtype": "edit_stats",
+            "target": "hanh",
+            "property": "trust",
+            "field": "current",
+            "mode": "add",
+            "value": 1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "hanh_confessed",
+            "value": true
+          }
+        ]
       }
-    ],
-    "pass": []
-  }
-},
+    },
     "action_open_guestbook": {
       "meta": {
         "title": "Sổ khách",
         "buttonLabel": "Lật đến trang cuối",
-        "desc": "Cuốn sổ khách nằm sau quầy lễ tân, giấy đã ngả vàng và nhiều trang bị nhòe bởi hơi ẩm. Những dòng ghi chép cũ cho thấy khách thường rời đi ngay sau đêm mất điện. Ở trang cuối, tên bạn xuất hiện cạnh ngày đến là ngày mai, nét mực vẫn còn mới dù cuốn sổ đã bị bỏ quên."
+        "desc": "Cuốn sổ khách nằm sau quầy lễ tân, giấy đã ngả vàng và nhiều trang bị nhòe bởi hơi ẩm. Những dòng ghi chép cũ cho thấy khách thường rời đi ngay sau đêm mất điện. Ở trang cuối, tên bạn xuất hiện cạnh ngày đến là ngày mai, nét mực vẫn còn mới dù cuốn sổ đã bị bỏ quên. Nếu sổ bị ẩm, độ đọc được giảm và có thể phục hồi hoặc đối chiếu với ảnh."
       },
       "set": {
         "display": "show"
@@ -2253,20 +2797,59 @@ export const DEMO_SCRIPT = {
             "subtype": "add",
             "target": "guestbook"
           },
-          
           {
             "type": "set",
             "subtype": "action",
             "target": "action_open_guestbook",
             "property": "display",
             "value": "hide"
-          }
-        ,
+          },
           {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
             "text": "Sổ khách đã được ghi nhận; tên và ngày đến là manh mối mới."
+          },
+          {
+            "type": "item",
+            "subtype": "stats",
+            "target": "guestbook",
+            "exec": "add",
+            "property": "legibility",
+            "field": "current",
+            "value": -1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "guestbook_partial",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_dry_guestbook",
+            "property": "display",
+            "value": "show"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_compare_guestbook_photo",
+            "property": "display",
+            "value": "show"
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "found_guestbook",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "room7_confirmed",
+            "value": false
           }
         ]
       }
@@ -2276,14 +2859,14 @@ export const DEMO_SCRIPT = {
         "title": "Cửa hầm rượu",
         "buttonLabel": "Nhập mật mã",
         "buttonIcon": "lock_open",
-        "desc": "Ổ khóa phụ dưới quầy không dẫn ra cửa chính mà mở lối xuống hầm rượu, nơi nhà trọ cất những thứ không muốn khách nhìn thấy. Trên thân khóa có vết khắc của căn phòng thứ bảy; cơ cấu chỉ nhận đúng mật từ trong thánh ca và cần đối chiếu với sổ khách cùng chìa khóa dự phòng."
+        "desc": "Ổ khóa phụ dưới quầy không dẫn ra cửa chính mà mở lối xuống hầm rượu, nơi nhà trọ cất những thứ không muốn khách nhìn thấy. Trên thân khóa có vết khắc của căn phòng thứ bảy; cơ cấu chỉ nhận đúng mật từ trong thánh ca và cần đối chiếu với sổ khách cùng chìa khóa dự phòng. Chìa khóa phòng thứ bảy không liên quan đến cửa hầm; cửa hầm dùng mã riêng."
       },
       "set": {
         "display": "show",
         "password": "string:pw_guest",
         "requirement": true,
-      
-        "readDesc": true,},
+        "readDesc": true
+      },
       "effect": {
         "normal": [],
         "pass": [
@@ -2310,7 +2893,7 @@ export const DEMO_SCRIPT = {
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Chưa đủ căn cứ mở ổ khóa: cần sổ khách cùng chìa khóa phòng thứ bảy. Mật từ thánh ca sẽ được kiểm tra riêng sau khi các vật chứng này có mặt."
+            "text": "Cửa hầm dùng mật mã riêng. Chìa khóa phòng thứ bảy không phải chìa khóa hầm."
           }
         ]
       },
@@ -2328,12 +2911,6 @@ export const DEMO_SCRIPT = {
             "subtype": "inventory",
             "op": "has",
             "value": "guestbook"
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "spare_room_key"
           }
         ]
       }
@@ -2384,79 +2961,85 @@ export const DEMO_SCRIPT = {
       }
     },
     "action_read_hymn": {
-  "meta": {
-    "title": "Bản thánh ca",
-    "buttonLabel": "Giải mã chữ đầu dòng",
-    "desc": "Bản thánh ca nằm trên giá gỗ trong gian cầu nguyện. Mực ở vài dòng đã nhạt, nhưng chữ cái đầu mỗi dòng vẫn được viết đậm bất thường; ghép chúng lại thành cụm “IM LANG”. Một dòng khác bị gạch dưới nhiều lần, nhắc đến ba hồi chuông và sự im lặng sau đó."
-  },
-  "set": {
-    "display": "show"
-  },
-  "effect": {
-    "normal": [],
-    "pass": [
-      {
-        "type": "set",
-        "subtype": "state",
-        "target": "truth_fragments",
-        "value": 1
+      "meta": {
+        "title": "Bản thánh ca",
+        "buttonLabel": "Giải mã chữ đầu dòng",
+        "desc": "Bản thánh ca nằm trên giá gỗ trong gian cầu nguyện. Mực ở vài dòng đã nhạt, nhưng chữ cái đầu mỗi dòng vẫn được viết đậm bất thường; ghép chúng lại thành cụm “IM LANG”. Một dòng khác bị gạch dưới nhiều lần, nhắc đến ba hồi chuông và sự im lặng sau đó."
       },
-      {
-        "type": "set",
-        "subtype": "state",
-        "target": "clue_hymn",
-        "value": true
+      "set": {
+        "display": "show"
       },
-      {
-        "type": "notify",
-        "subtype": "toast",
-        "level": "success",
-        "text": "Bạn ghi nhớ mật từ IM LANG và quy tắc ba hồi chuông."
-      },
-      {
-        "type": "set",
-        "subtype": "action",
-        "target": "action_read_hymn",
-        "property": "display",
-        "value": "hide"
-      },
-      {
-        "type": "notify",
-        "subtype": "toast",
-        "level": "info",
-        "text": "Linh đã bảo vệ ký ức riêng; bạn đọc thánh ca như một dấu hiệu, không phải lời khai thay em.",
-        "req": {
-          "logic": "AND",
-          "check": [
-            {
-              "type": "state",
-              "property": "school_choice",
-              "op": "==",
-              "value": "memory"
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "truth_fragments",
+            "value": 1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_hymn",
+            "value": true
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Bạn ghi nhớ mật từ IM LANG và quy tắc ba hồi chuông."
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_read_hymn",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "info",
+            "text": "Linh đã bảo vệ ký ức riêng; bạn đọc thánh ca như một dấu hiệu, không phải lời khai thay em.",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "state",
+                  "property": "school_choice",
+                  "op": "==",
+                  "value": "memory"
+                }
+              ]
             }
-          ]
-        }
-      },
-      {
-        "type": "notify",
-        "subtype": "toast",
-        "level": "info",
-        "text": "Bạn đối chiếu mật từ trong thánh ca với hồ sơ đã bảo toàn; chữ viết xác nhận một nghi thức bị che giấu.",
-        "req": {
-          "logic": "AND",
-          "check": [
-            {
-              "type": "state",
-              "property": "school_choice",
-              "op": "==",
-              "value": "evidence"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "info",
+            "text": "Bạn đối chiếu mật từ trong thánh ca với hồ sơ đã bảo toàn; chữ viết xác nhận một nghi thức bị che giấu.",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "state",
+                  "property": "school_choice",
+                  "op": "==",
+                  "value": "evidence"
+                }
+              ]
             }
-          ]
-        }
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_hymn",
+            "value": true
+          }
+        ]
       }
-    ]
-  }
-},
+    },
     "action_talk_keeper": {
       "meta": {
         "title": "Người giữ nhà nguyện",
@@ -2473,6 +3056,21 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "chat",
             "target": "chat_keeper"
+          },
+          {
+            "type": "characters",
+            "subtype": "edit_stats",
+            "target": "keeper",
+            "property": "remorse",
+            "field": "current",
+            "mode": "add",
+            "value": 1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "keeper_confessed",
+            "value": true
           }
         ]
       }
@@ -2486,8 +3084,8 @@ export const DEMO_SCRIPT = {
       "set": {
         "display": "show",
         "password": "number:pw_bell",
-      
-        "readDesc": true,},
+        "readDesc": true
+      },
       "effect": {
         "normal": [],
         "pass": [
@@ -2508,15 +3106,13 @@ export const DEMO_SCRIPT = {
             "subtype": "add",
             "target": "bell_clapper"
           },
-          
           {
             "type": "set",
             "subtype": "action",
             "target": "action_solve_bell",
             "property": "display",
             "value": "hide"
-          }
-        ,
+          },
           {
             "type": "notify",
             "subtype": "toast",
@@ -2535,8 +3131,8 @@ export const DEMO_SCRIPT = {
       "set": {
         "display": "show",
         "requirement": true,
-      
-        "readDesc": true,},
+        "readDesc": true
+      },
       "effect": {
         "normal": [],
         "pass": [
@@ -2569,6 +3165,30 @@ export const DEMO_SCRIPT = {
             "target": "action_ring_bell",
             "property": "display",
             "value": "hide"
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "bell_copper_wire",
+            "value": 1
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "hymn_note",
+            "value": 1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "bell_rung_cleanly",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "bell_clapper",
+            "value": 1
           }
         ],
         "fail": [
@@ -2606,6 +3226,33 @@ export const DEMO_SCRIPT = {
             "subtype": "inventory",
             "op": "has",
             "value": "bell_copper_wire"
+          },
+          {
+            "type": "stats",
+            "subtype": "item",
+            "target": "bell_copper_wire",
+            "property": "conductivity",
+            "field": "current",
+            "op": ">=",
+            "value": 3
+          },
+          {
+            "type": "stats",
+            "subtype": "item",
+            "target": "hymn_note",
+            "property": "completeness",
+            "field": "current",
+            "op": ">=",
+            "value": 3
+          },
+          {
+            "type": "stats",
+            "subtype": "item",
+            "target": "bell_clapper",
+            "property": "integrity",
+            "field": "current",
+            "op": ">=",
+            "value": 2
           }
         ]
       }
@@ -2616,13 +3263,31 @@ export const DEMO_SCRIPT = {
         "buttonLabel": "Tìm hồ sơ bị sửa",
         "desc": "Ngăn bàn giáo viên chứa một danh sách lớp đã bị sửa bằng mực đen. Bên cạnh là bức ảnh tập thể bị xé khỏi phần giữa. Danh sách và ảnh mâu thuẫn: một thứ có thể chứng minh sĩ số, thứ còn lại chỉ giữ dấu vết về người đã bị xóa."
       },
-      "set": {"display": "show"},
+      "set": {
+        "display": "show"
+      },
       "effect": {
         "normal": [],
         "pass": [
-          {"type": "set", "subtype": "state", "target": "clue_photo", "value": true},
-          {"type": "notify", "subtype": "toast", "level": "success", "text": "Ảnh và hồ sơ mâu thuẫn. Bạn phải chọn bảo vệ ký ức của Linh hay giữ hồ sơ làm bằng chứng."},
-          {"type": "set", "subtype": "action", "target": "action_check_desk", "property": "display", "value": "hide"}
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_photo",
+            "value": true
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Ảnh và hồ sơ mâu thuẫn. Bạn phải chọn bảo vệ ký ức của Linh hay giữ hồ sơ làm bằng chứng."
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_check_desk",
+            "property": "display",
+            "value": "hide"
+          }
         ]
       }
     },
@@ -2632,108 +3297,157 @@ export const DEMO_SCRIPT = {
         "buttonLabel": "Đối chiếu vị trí",
         "desc": "Đối chiếu sơ đồ chỗ ngồi với bản sao sổ điểm danh được bảo toàn. Khoảng trống giữa các dãy bàn trùng với vị trí học sinh thứ mười hai."
       },
-      "set": {"display": "show", "requirement": true,
-        "readDesc": true,},
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
       "effect": {
         "normal": [],
         "pass": [
-          {"type": "set", "subtype": "state", "target": "knows_twelve", "value": true},
-          {"type": "set", "subtype": "state", "target": "clue_roster", "value": true},
-          {"type": "item", "subtype": "add", "target": "map_fragment"},
-          
-          {"type": "set", "subtype": "action", "target": "action_decode_roster", "property": "display", "value": "hide"}
-        ,
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "knows_twelve",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_roster",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "add",
+            "target": "map_fragment"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_decode_roster",
+            "property": "display",
+            "value": "hide"
+          },
           {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
             "text": "Đã đối chiếu sơ đồ chỗ ngồi: xác nhận có người thứ mười hai."
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_roster_verified",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "class_register_copy",
+            "value": 1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "memory_reward_roster",
+            "value": true
           }
         ]
       },
       "requirement": {
         "logic": "AND",
         "check": [
-          {"type": "item", "subtype": "inventory", "op": "has", "value": "class_register_copy"},
-          {"type": "state", "property": "school_choice", "op": "==", "value": "evidence"}
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "class_register_copy"
+          },
+          {
+            "type": "state",
+            "property": "school_choice",
+            "op": "==",
+            "value": "evidence"
+          }
         ]
       }
     },
     "action_follow_marks": {
-  "meta": {
-    "title": "Dấu sơn trong rừng",
-    "buttonLabel": "Theo dấu đến cuối",
-    "desc": "Các vệt sơn trên thân thông xuất hiện theo cặp, có chỗ bị rêu che gần hết. Chúng không phải dấu đánh dấu đường đi thông thường: khoảng cách giữa các vệt thay đổi theo hướng rẽ và dẫn đến một khoảng đất trống khuất sau sườn dốc. Từ đó có thể nhìn thấy vòng cọc gỗ giữa rừng."
-  },
-  "set": {
-    "display": "show",
-  
-        "readDesc": true,},
-  "effect": {
-    "normal": [],
-    "pass": [
-      {
-        "type": "set",
-        "subtype": "state",
-        "target": "truth_fragments",
-        "value": 1
+      "meta": {
+        "title": "Dấu sơn trong rừng",
+        "buttonLabel": "Theo dấu đến cuối",
+        "desc": "Các vệt sơn trên thân thông xuất hiện theo cặp, có chỗ bị rêu che gần hết. Chúng không phải dấu đánh dấu đường đi thông thường: khoảng cách giữa các vệt thay đổi theo hướng rẽ và dẫn đến một khoảng đất trống khuất sau sườn dốc. Từ đó có thể nhìn thấy vòng cọc gỗ giữa rừng."
       },
-      {
-        "type": "set",
-        "subtype": "state",
-        "target": "clue_stakes",
-        "value": true
+      "set": {
+        "display": "show",
+        "readDesc": true
       },
-      {
-        "type": "notify",
-        "subtype": "toast",
-        "level": "success",
-        "text": "Bạn xác định được hướng đi an toàn qua rừng."
-      },
-      {
-        "type": "set",
-        "subtype": "action",
-        "target": "action_follow_marks",
-        "property": "display",
-        "value": "hide"
-      },
-      {
-        "type": "notify",
-        "subtype": "toast",
-        "level": "info",
-        "text": "Bạn lần theo dấu sơn như lời khai của người sống: tuyến đường không cần hồ sơ chính thức để tồn tại.",
-        "req": {
-          "logic": "AND",
-          "check": [
-            {
-              "type": "state",
-              "property": "school_choice",
-              "op": "==",
-              "value": "memory"
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "truth_fragments",
+            "value": 1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_stakes",
+            "value": true
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Bạn xác định được hướng đi an toàn qua rừng."
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_follow_marks",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "info",
+            "text": "Bạn lần theo dấu sơn như lời khai của người sống: tuyến đường không cần hồ sơ chính thức để tồn tại.",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "state",
+                  "property": "school_choice",
+                  "op": "==",
+                  "value": "memory"
+                }
+              ]
             }
-          ]
-        }
-      },
-      {
-        "type": "notify",
-        "subtype": "toast",
-        "level": "info",
-        "text": "Bạn đối chiếu các dấu sơn với tuyến sơ tán trong hồ sơ; một đoạn đường đã bị bỏ khỏi bản đồ chính thức.",
-        "req": {
-          "logic": "AND",
-          "check": [
-            {
-              "type": "state",
-              "property": "school_choice",
-              "op": "==",
-              "value": "evidence"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "info",
+            "text": "Bạn đối chiếu các dấu sơn với tuyến sơ tán trong hồ sơ; một đoạn đường đã bị bỏ khỏi bản đồ chính thức.",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "state",
+                  "property": "school_choice",
+                  "op": "==",
+                  "value": "evidence"
+                }
+              ]
             }
-          ]
-        }
+          }
+        ]
       }
-    ]
-  }
-},
+    },
     "action_maze_path": {
       "meta": {
         "title": "Mê cung trong rừng",
@@ -2744,8 +3458,8 @@ export const DEMO_SCRIPT = {
         "display": "show",
         "password": "find_way:pw_forest",
         "requirement": true,
-      
-        "readDesc": true,},
+        "readDesc": true
+      },
       "effect": {
         "normal": [],
         "pass": [
@@ -2772,6 +3486,12 @@ export const DEMO_SCRIPT = {
             "target": "action_maze_path",
             "property": "display",
             "value": "hide"
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "guide_compass",
+            "value": 1
           }
         ],
         "fail": [
@@ -2790,7 +3510,9 @@ export const DEMO_SCRIPT = {
             "type": "item",
             "subtype": "hand",
             "op": "==",
-            "value": ["guide_compass"]
+            "value": [
+              "guide_compass"
+            ]
           }
         ]
       }
@@ -2819,20 +3541,24 @@ export const DEMO_SCRIPT = {
             "target": "knows_twelve",
             "value": true
           },
-          
           {
             "type": "set",
             "subtype": "action",
             "target": "action_inspect_stakes",
             "property": "display",
             "value": "hide"
-          }
-        ,
+          },
           {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
             "text": "Vòng cọc xác nhận khoảng trống của người thứ mười hai."
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "memory_reward_stakes",
+            "value": true
           }
         ]
       }
@@ -2847,8 +3573,8 @@ export const DEMO_SCRIPT = {
         "display": "show",
         "password": "puzzle:pw_photo",
         "requirement": true,
-      
-        "readDesc": true,},
+        "readDesc": true
+      },
       "effect": {
         "normal": [],
         "pass": [
@@ -2881,6 +3607,27 @@ export const DEMO_SCRIPT = {
             "target": "action_find_hidden_box",
             "property": "display",
             "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_stakes",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "well_badge",
+            "value": 1
+          },
+          {
+            "type": "item",
+            "subtype": "stats",
+            "target": "well_badge",
+            "exec": "add",
+            "property": "authenticity",
+            "field": "current",
+            "value": -1
           }
         ],
         "fail": [
@@ -2910,142 +3657,304 @@ export const DEMO_SCRIPT = {
         "buttonLabel": "Khởi động lại",
         "desc": "Cối xay cần chốt truyền động, lò xo và bộ dụng cụ. Chất lượng các linh kiện phải đạt mức tối thiểu; dấu đường hầm từ Memory hoặc mảnh bản đồ từ Evidence đều cung cấp hướng dẫn."
       },
-      "set": {"display": "show", "requirement": true,
-        "readDesc": true,},
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
       "effect": {
         "normal": [],
         "pass": [
-          {"type": "set", "subtype": "state", "target": "mill_powered", "value": true},
-          {"type": "set", "subtype": "state", "target": "truth_fragments", "value": 1},
-          
-          {"type": "set", "subtype": "action", "target": "action_repair_mill", "property": "display", "value": "hide"},
-          {"type": "goto", "subtype": "router", "target": "router_watermill_running"}
-        ,
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "mill_powered",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "truth_fragments",
+            "value": 1
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_repair_mill",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "goto",
+            "subtype": "router",
+            "target": "router_watermill_running"
+          },
           {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
             "text": "Cối xay đã hoạt động trở lại; một mảnh ký ức được khôi phục."
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "radio_toolkit",
+            "value": 1
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "clockwork_spring",
+            "value": 1
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "mill_gear_pin",
+            "value": 1
+          },
+          {
+            "type": "characters",
+            "subtype": "edit_stats",
+            "target": "player",
+            "property": "resolve",
+            "field": "current",
+            "mode": "add",
+            "value": 1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "resolve_reward_repair",
+            "value": true
           }
         ]
       },
       "requirement": {
         "logic": "AND",
         "check": [
-          {"type": "item", "subtype": "inventory", "op": "has", "value": "clockwork_spring"},
-          {"type": "item", "subtype": "inventory", "op": "has", "value": "radio_toolkit"},
-          {"type": "item", "subtype": "hand", "op": "==", "value": ["mill_gear_pin"]},
-          {"type": "state", "property": "clue_tunnel", "op": "==", "value": true}
-        ,
-          {"type":"stats","subtype":"item","target":"radio_toolkit","property":"condition","field":"current","op":">=","value":3},
-          {"type":"stats","subtype":"item","target":"clockwork_spring","property":"tension","field":"current","op":">=","value":3},
-          {"type":"stats","subtype":"item","target":"mill_gear_pin","property":"integrity","field":"current","op":">=","value":3}]
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "clockwork_spring"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "radio_toolkit"
+          },
+          {
+            "type": "item",
+            "subtype": "hand",
+            "op": "==",
+            "value": [
+              "mill_gear_pin"
+            ]
+          },
+          {
+            "type": "state",
+            "property": "clue_tunnel",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "stats",
+            "subtype": "item",
+            "target": "radio_toolkit",
+            "property": "condition",
+            "field": "current",
+            "op": ">=",
+            "value": 3
+          },
+          {
+            "type": "stats",
+            "subtype": "item",
+            "target": "clockwork_spring",
+            "property": "tension",
+            "field": "current",
+            "op": ">=",
+            "value": 3
+          },
+          {
+            "type": "stats",
+            "subtype": "item",
+            "target": "mill_gear_pin",
+            "property": "integrity",
+            "field": "current",
+            "op": ">=",
+            "value": 3
+          }
+        ]
       }
     },
     "action_inspect_tunnel_names": {
-  "meta": {
-    "title": "Danh sách tên trên tường đường hầm",
-    "buttonLabel": "Đối chiếu số người",
-    "desc": "Các bức tường đường hầm phủ kín tên người và ngày tháng. Những dòng chữ được sắp theo thứ tự biến mất chứ không theo họ tên; một số đoạn đã bị cạo sửa, đặc biệt ở cuối danh sách. Đối chiếu các tên cho thấy có mười hai người, không phải mười một."
-  },
-  "set": {
-    "display": "show"
-  },
-  "effect": {
-    "normal": [],
-    "pass": [
-      {
-        "type": "set",
-        "subtype": "state",
-        "target": "truth_fragments",
-        "value": 1
+      "meta": {
+        "title": "Danh sách tên trên tường đường hầm",
+        "buttonLabel": "Đối chiếu số người",
+        "desc": "Các bức tường đường hầm phủ kín tên người và ngày tháng. Những dòng chữ được sắp theo thứ tự biến mất chứ không theo họ tên; một số đoạn đã bị cạo sửa, đặc biệt ở cuối danh sách. Đối chiếu các tên cho thấy có mười hai người, không phải mười một."
       },
-      {
-        "type": "set",
-        "subtype": "state",
-        "target": "clue_tunnel",
-        "value": true
+      "set": {
+        "display": "show"
       },
-      {
-        "type": "notify",
-        "subtype": "toast",
-        "level": "success",
-        "text": "Bạn phát hiện danh sách sơ tán bị sửa. Có mười hai cái tên, không phải mười một."
-      },
-      {
-        "type": "set",
-        "subtype": "action",
-        "target": "action_inspect_tunnel_names",
-        "property": "display",
-        "value": "hide"
-      },
-      {
-        "type": "notify",
-        "subtype": "toast",
-        "level": "info",
-        "text": "Những cái tên trên tường là dấu vết được giữ lại ngoài hồ sơ; bạn không chép chúng thành danh sách công khai.",
-        "req": {
-          "logic": "AND",
-          "check": [
-            {
-              "type": "state",
-              "property": "school_choice",
-              "op": "==",
-              "value": "memory"
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "truth_fragments",
+            "value": 1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_tunnel",
+            "value": true
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Bạn phát hiện danh sách sơ tán bị sửa. Có mười hai cái tên, không phải mười một."
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_inspect_tunnel_names",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "info",
+            "text": "Những cái tên trên tường là dấu vết được giữ lại ngoài hồ sơ; bạn không chép chúng thành danh sách công khai.",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "state",
+                  "property": "school_choice",
+                  "op": "==",
+                  "value": "memory"
+                }
+              ]
             }
-          ]
-        }
-      },
-      {
-        "type": "notify",
-        "subtype": "toast",
-        "level": "info",
-        "text": "Danh sách khắc trên tường xác nhận hồ sơ đã bỏ sót một người; đây là đối chứng vật lý cho bản ghi.",
-        "req": {
-          "logic": "AND",
-          "check": [
-            {
-              "type": "state",
-              "property": "school_choice",
-              "op": "==",
-              "value": "evidence"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "info",
+            "text": "Danh sách khắc trên tường xác nhận hồ sơ đã bỏ sót một người; đây là đối chứng vật lý cho bản ghi.",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "state",
+                  "property": "school_choice",
+                  "op": "==",
+                  "value": "evidence"
+                }
+              ]
             }
-          ]
-        }
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "memory_reward_tunnel",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "knows_twelve",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_tunnel",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "knows_twelve",
+            "value": true
+          }
+        ]
       }
-    ]
-  }
-},
+    },
     "action_open_archive": {
       "meta": {
         "title": "Tủ hồ sơ dưới đê",
         "buttonLabel": "Mở khóa",
         "desc": "Tủ hồ sơ dưới đê lưu bản ghi sơ tán. Sau khi chọn phương thức điều tra và khôi phục dấu đường hầm, chìa khóa cho phép tiếp cận kho tư liệu."
       },
-      "set": {"display": "show", "requirement": true,
-        "readDesc": true,},
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
       "effect": {
         "normal": [],
         "pass": [
-          {"type": "set", "subtype": "state", "target": "archive_open", "value": true},
-          {"type": "set", "subtype": "state", "target": "truth_fragments", "value": 1},
-          
-          {"type": "set", "subtype": "action", "target": "action_open_archive", "property": "display", "value": "hide"}
-        ,
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "archive_open",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "truth_fragments",
+            "value": 1
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_open_archive",
+            "property": "display",
+            "value": "hide"
+          },
           {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
             "text": "Tủ hồ sơ đã mở. Bản ghi sơ tán trở thành nguồn chứng cứ."
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "archive_key",
+            "value": 1
           }
         ]
       },
       "requirement": {
         "logic": "AND",
         "check": [
-          {"type": "item", "subtype": "inventory", "op": "has", "value": "archive_key"},
-          {"type": "state", "property": "clue_tunnel", "op": "==", "value": true},
-          {"type": "state", "property": "school_choice", "op": "!=", "value": "undecided"}
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "archive_key"
+          },
+          {
+            "type": "state",
+            "property": "clue_tunnel",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "school_choice",
+            "op": "!=",
+            "value": "undecided"
+          }
         ]
       }
     },
@@ -3058,8 +3967,8 @@ export const DEMO_SCRIPT = {
       "set": {
         "display": "show",
         "requirement": true,
-      
-        "readDesc": true,},
+        "readDesc": true
+      },
       "effect": {
         "normal": [],
         "pass": [
@@ -3067,6 +3976,18 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "chat",
             "target": "chat_voice"
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "radio_crystal",
+            "value": 1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "identity_verified_partial",
+            "value": true
           }
         ],
         "fail": [
@@ -3075,6 +3996,12 @@ export const DEMO_SCRIPT = {
             "subtype": "toast",
             "level": "warning",
             "text": "Chưa có cuộn tinh thể thu sóng để dò đúng tần số của tín hiệu dưới ga."
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "echo_distorted",
+            "value": true
           }
         ]
       },
@@ -3099,8 +4026,8 @@ export const DEMO_SCRIPT = {
       "set": {
         "display": "show",
         "requirement": true,
-      
-        "readDesc": true,},
+        "readDesc": true
+      },
       "effect": {
         "normal": [],
         "pass": [
@@ -3130,82 +4057,82 @@ export const DEMO_SCRIPT = {
       }
     },
     "action_choose_fate_memory": {
-  "meta": {
-    "title": "Giải thoát — tuyến ký ức",
-    "buttonLabel": "Giải phóng",
-    "desc": "Dựa trên ký ức nhân chứng, dấu đường hầm và những gì đã khôi phục, bạn chọn giải phóng người bị mắc kẹt."
-  },
-  "set": {
-    "display": "hide",
-    "requirement": true,
-  
-        "readDesc": true,},
-  "effect": {
-    "normal": [],
-    "pass": [
-      {
-        "type": "set",
-        "subtype": "state",
-        "target": "final_choice",
-        "value": "release"
+      "meta": {
+        "title": "Giải thoát — tuyến ký ức",
+        "buttonLabel": "Giải phóng",
+        "desc": "Dựa trên ký ức nhân chứng, dấu đường hầm và những gì đã khôi phục, bạn chọn giải phóng người bị mắc kẹt."
       },
-      {
-        "type": "goto",
-        "subtype": "end",
-        "target": "ending_release"
+      "set": {
+        "display": "hide",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "final_choice",
+            "value": "release"
+          },
+          {
+            "type": "goto",
+            "subtype": "end",
+            "target": "ending_release"
+          }
+        ],
+        "fail": [
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "warning",
+            "text": "Tuyến Memory cần rung chuông, mở kho hồ sơ và khôi phục dấu đường hầm, thánh ca cùng vòng cọc."
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "school_choice",
+            "op": "==",
+            "value": "memory"
+          },
+          {
+            "type": "state",
+            "property": "bell_rung",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "archive_open",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "clue_tunnel",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "clue_hymn",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "clue_stakes",
+            "op": "==",
+            "value": true
+          }
+        ]
       }
-    ],
-    "fail": [
-      {
-        "type": "notify",
-        "subtype": "toast",
-        "level": "warning",
-        "text": "Tuyến Memory cần rung chuông, mở kho hồ sơ và khôi phục dấu đường hầm, thánh ca cùng vòng cọc."
-      }
-    ]
-  },
-  "requirement": {
-    "logic": "AND",
-    "check": [
-      {
-        "type": "state",
-        "property": "school_choice",
-        "op": "==",
-        "value": "memory"
-      },
-      {
-        "type": "state",
-        "property": "bell_rung",
-        "op": "==",
-        "value": true
-      },
-      {
-        "type": "state",
-        "property": "archive_open",
-        "op": "==",
-        "value": true
-      },
-      {
-        "type": "state",
-        "property": "clue_tunnel",
-        "op": "==",
-        "value": true
-      },
-      {
-        "type": "state",
-        "property": "clue_hymn",
-        "op": "==",
-        "value": true
-      },
-      {
-        "type": "state",
-        "property": "clue_stakes",
-        "op": "==",
-        "value": true
-      }
-    ]
-  }
-},
+    },
     "action_ending_bury": {
       "meta": {
         "title": "Hồ sơ sơ tán",
@@ -3215,8 +4142,8 @@ export const DEMO_SCRIPT = {
       "set": {
         "display": "show",
         "requirement": true,
-      
-        "readDesc": true,},
+        "readDesc": true
+      },
       "effect": {
         "normal": [],
         "pass": [
@@ -3262,8 +4189,8 @@ export const DEMO_SCRIPT = {
       "set": {
         "display": "show",
         "requirement": true,
-      
-        "readDesc": true,},
+        "readDesc": true
+      },
       "effect": {
         "normal": [],
         "pass": [
@@ -3284,7 +4211,7 @@ export const DEMO_SCRIPT = {
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Chưa đủ bằng chứng về người thứ mười hai: cần xác định danh tính của họ và nghe được sự thật từ tín hiệu dưới ga."
+            "text": "Cần biết về người thứ mười hai và có voice, testimony hoặc evidence thay thế."
           }
         ]
       },
@@ -3298,10 +4225,27 @@ export const DEMO_SCRIPT = {
             "value": true
           },
           {
-            "type": "state",
-            "property": "voice_revealed",
-            "op": "==",
-            "value": true
+            "logic": "OR",
+            "check": [
+              {
+                "type": "state",
+                "property": "voice_revealed",
+                "op": "==",
+                "value": true
+              },
+              {
+                "type": "state",
+                "property": "identity_verified_partial",
+                "op": "==",
+                "value": true
+              },
+              {
+                "type": "state",
+                "property": "linh_private_testimony",
+                "op": "==",
+                "value": true
+              }
+            ]
           }
         ]
       }
@@ -3315,8 +4259,8 @@ export const DEMO_SCRIPT = {
       "set": {
         "display": "show",
         "requirement": true,
-      
-        "readDesc": true,},
+        "readDesc": true
+      },
       "effect": {
         "normal": [],
         "pass": [
@@ -3337,7 +4281,7 @@ export const DEMO_SCRIPT = {
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Bạn chưa có vé tàu 03:17 còn nguyên phần kiểm soát để lên chuyến tàu."
+            "text": "Cần ticket hoặc xác minh ticket bằng Manifest."
           }
         ]
       },
@@ -3349,6 +4293,26 @@ export const DEMO_SCRIPT = {
             "subtype": "inventory",
             "op": "has",
             "value": "unpunched_ticket"
+          },
+          {
+            "logic": "OR",
+            "check": [
+              {
+                "type": "stats",
+                "subtype": "item",
+                "target": "unpunched_ticket",
+                "property": "verification",
+                "field": "current",
+                "op": ">=",
+                "value": 1
+              },
+              {
+                "type": "state",
+                "property": "ticket_verified",
+                "op": "==",
+                "value": true
+              }
+            ]
           }
         ]
       }
@@ -3444,10 +4408,18 @@ export const DEMO_SCRIPT = {
         "buttonIcon": "water",
         "desc": "Lối rẽ phía Bắc dẫn tới cối xay cũ nép bên dòng suối đã cạn. Bánh xe và phòng máy có thể hé lộ cơ cấu mở đường hầm dưới chân đê."
       },
-      "set": { "display": "show" },
+      "set": {
+        "display": "show"
+      },
       "effect": {
         "normal": [],
-        "pass": [{ "type": "goto", "subtype": "scene", "target": "scene_watermill" }]
+        "pass": [
+          {
+            "type": "goto",
+            "subtype": "scene",
+            "target": "scene_watermill"
+          }
+        ]
       }
     },
     "action_travel_inn": {
@@ -3586,18 +4558,22 @@ export const DEMO_SCRIPT = {
             "property": "display",
             "value": "show"
           },
-          
           {
             "type": "goto",
             "subtype": "router",
             "target": "router_classroom_erased"
-          }
-        ,
+          },
           {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
             "text": "Bạn xác nhận danh sách lớp bị xóa có chủ ý; các lựa chọn điều tra mới đã mở."
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "memory_reconstructed",
+            "value": true
           }
         ]
       }
@@ -3606,7 +4582,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Dãy bàn học sinh",
         "buttonLabel": "Tìm dấu khắc",
-        "desc": "Ở dãy bàn gần cuối lớp, một chiếc ghế bị kéo lệch khỏi hàng. Mặt bàn phía trước có những vết khắc nhỏ, trong đó số mười hai bị cào đi nhiều lần. Bụi quanh chân ghế cho thấy nó từng được di chuyển sau khi lớp học đã bỏ trống.",
+        "desc": "Ở dãy bàn gần cuối lớp, một chiếc ghế bị kéo lệch khỏi hàng. Mặt bàn phía trước có những vết khắc nhỏ, trong đó số mười hai bị cào đi nhiều lần. Bụi quanh chân ghế cho thấy nó từng được di chuyển sau khi lớp học đã bỏ trống."
       },
       "set": {
         "display": "show"
@@ -3620,15 +4596,13 @@ export const DEMO_SCRIPT = {
             "target": "clue_seat_mark",
             "value": true
           },
-          
           {
             "type": "set",
             "subtype": "action",
             "target": "action_inspect_student_seat",
             "property": "display",
             "value": "hide"
-          }
-        ,
+          },
           {
             "type": "notify",
             "subtype": "toast",
@@ -3642,7 +4616,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Đồng hồ treo tường",
         "buttonLabel": "Đọc thời điểm dừng",
-        "desc": "Chiếc đồng hồ tròn đã ngừng chạy. Kim phút dừng ở số mười bảy, còn kim giờ nằm sát số ba. Mặt kính không vỡ và bộ kim không bị cong; đồng hồ có vẻ đã bị dừng đúng vào 03:17.",
+        "desc": "Chiếc đồng hồ tròn đã ngừng chạy. Kim phút dừng ở số mười bảy, còn kim giờ nằm sát số ba. Mặt kính không vỡ và bộ kim không bị cong; đồng hồ có vẻ đã bị dừng đúng vào 03:17."
       },
       "set": {
         "display": "show"
@@ -3656,15 +4630,13 @@ export const DEMO_SCRIPT = {
             "target": "clue_class_clock",
             "value": true
           },
-          
           {
             "type": "set",
             "subtype": "action",
             "target": "action_inspect_class_clock",
             "property": "display",
             "value": "hide"
-          }
-        ,
+          },
           {
             "type": "notify",
             "subtype": "toast",
@@ -3678,7 +4650,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Thông báo sơ tán",
         "buttonLabel": "Xác nhận sĩ số",
-        "desc": "Tờ thông báo cũ ghim cạnh cửa sổ ghi ngày sơ tán của trường. Phần danh sách lớp đã nhòe nước, nhưng dòng tổng sĩ số vẫn đọc được: mười hai học sinh. Mép giấy có dấu ghim thứ hai, như thể từng có một phụ lục bị tháo đi.",
+        "desc": "Tờ thông báo cũ ghim cạnh cửa sổ ghi ngày sơ tán của trường. Phần danh sách lớp đã nhòe nước, nhưng dòng tổng sĩ số vẫn đọc được: mười hai học sinh. Mép giấy có dấu ghim thứ hai, như thể từng có một phụ lục bị tháo đi."
       },
       "set": {
         "display": "show"
@@ -3692,15 +4664,13 @@ export const DEMO_SCRIPT = {
             "target": "clue_school_evacuation_notice",
             "value": true
           },
-          
           {
             "type": "set",
             "subtype": "action",
             "target": "action_inspect_evacuation_notice",
             "property": "display",
             "value": "hide"
-          }
-        ,
+          },
           {
             "type": "notify",
             "subtype": "toast",
@@ -3765,70 +4735,70 @@ export const DEMO_SCRIPT = {
       }
     },
     "action_reach_station_memory": {
-  "meta": {
-    "title": "Ga tàu 03:17 — ký ức",
-    "buttonLabel": "Theo dấu ký ức",
-    "buttonIcon": "train",
-    "desc": "Tuyến Memory dùng lời khai và dấu đường hầm thay cho danh sách vận chuyển và cuộn phim."
-  },
-  "set": {
-    "display": "hide",
-    "requirement": true
-  },
-  "effect": {
-    "normal": [],
-    "pass": [
-      {
-        "type": "goto",
-        "subtype": "scene",
-        "target": "scene_ghost_station"
+      "meta": {
+        "title": "Ga tàu 03:17 — ký ức",
+        "buttonLabel": "Theo dấu ký ức",
+        "buttonIcon": "train",
+        "desc": "Tuyến Memory dùng lời khai và dấu đường hầm thay cho danh sách vận chuyển và cuộn phim."
+      },
+      "set": {
+        "display": "hide",
+        "requirement": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "goto",
+            "subtype": "scene",
+            "target": "scene_ghost_station"
+          }
+        ],
+        "fail": [
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "warning",
+            "text": "Tuyến Memory cần mở kho hồ sơ, khôi phục dấu đường hầm, đọc thánh ca và xác định vòng cọc thứ mười hai."
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "school_choice",
+            "op": "==",
+            "value": "memory"
+          },
+          {
+            "type": "state",
+            "property": "archive_open",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "clue_tunnel",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "clue_hymn",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "clue_stakes",
+            "op": "==",
+            "value": true
+          }
+        ]
       }
-    ],
-    "fail": [
-      {
-        "type": "notify",
-        "subtype": "toast",
-        "level": "warning",
-        "text": "Tuyến Memory cần mở kho hồ sơ, khôi phục dấu đường hầm, đọc thánh ca và xác định vòng cọc thứ mười hai."
-      }
-    ]
-  },
-  "requirement": {
-    "logic": "AND",
-    "check": [
-      {
-        "type": "state",
-        "property": "school_choice",
-        "op": "==",
-        "value": "memory"
-      },
-      {
-        "type": "state",
-        "property": "archive_open",
-        "op": "==",
-        "value": true
-      },
-      {
-        "type": "state",
-        "property": "clue_tunnel",
-        "op": "==",
-        "value": true
-      },
-      {
-        "type": "state",
-        "property": "clue_hymn",
-        "op": "==",
-        "value": true
-      },
-      {
-        "type": "state",
-        "property": "clue_stakes",
-        "op": "==",
-        "value": true
-      }
-    ]
-  }
-},
+    },
     "action_descend_tunnel": {
       "meta": {
         "title": "Đường hầm dưới cối xay",
@@ -3839,8 +4809,8 @@ export const DEMO_SCRIPT = {
       "set": {
         "display": "show",
         "requirement": true,
-      
-        "readDesc": true,},
+        "readDesc": true
+      },
       "effect": {
         "normal": [],
         "pass": [
@@ -3877,45 +4847,523 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "action_find_radio_toolkit":{"meta":{"title":"Bộ dụng cụ sửa chữa","buttonLabel": "Lấy bộ dụng cụ","desc":"Trong ngăn tủ giáo viên có bộ tua vít cách điện, kìm và đầu dò mạch, đủ để tháo thiết bị mà không làm hỏng linh kiện."},"set":{"display":"show"},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"radio_toolkit"},{"type":"set","subtype":"action","target":"action_find_radio_toolkit","property":"display","value":"hide"}]}},
-"action_find_tracing_paper":{"meta":{"title":"Giấy can","buttonLabel":"Nhặt lên","desc":"Tờ giấy can sạch được kẹp cạnh bản vẽ sơ đồ cũ, có thể chép chồng ký hiệu để đối chiếu bản đồ."},"set":{"display":"show"},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"tracing_paper"},{"type":"set","subtype":"action","target":"action_find_tracing_paper","property":"display","value":"hide"}]}},
-"action_find_inspection_loupe":{"meta":{"title":"Kính phóng đại","buttonLabel": "Lấy kính lúp","desc":"Kính phóng đại nhỏ trong hộp bảo quản dụng cụ có thể giúp đọc dấu khắc và nét sửa trên vật chứng."},"set":{"display":"show"},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"inspection_loupe"},{"type":"set","subtype":"action","target":"action_find_inspection_loupe","property":"display","value":"hide"}]}},
-"action_find_insulated_wire":{"meta":{"title":"Cuộn dây cách nhiệt","buttonLabel": "Lấy dây cách điện","desc":"Sau thùng rượu rỗng là cuộn dây cách nhiệt còn dùng được, có thể thay đoạn dây đứt trong thiết bị cũ."},"set":{"display":"show"},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"insulated_wire"},{"type":"set","subtype":"action","target":"action_find_insulated_wire","property":"display","value":"hide"}]}},
-"action_find_spare_fuse":{"meta":{"title":"Cầu chì dự phòng","buttonLabel":"Nhặt lên","desc":"Hộp linh kiện cũ chứa cầu chì sứ dự phòng còn nguyên, được giữ riêng khỏi dây dẫn đã hỏng."},"set":{"display":"show"},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"spare_fuse"},{"type":"set","subtype":"action","target":"action_find_spare_fuse","property":"display","value":"hide"}]}},
-"action_find_clockwork_spring":{"meta":{"title":"Lò xo cơ khí","buttonLabel": "Lấy lò xo cơ khí","desc":"Hộp bảo trì có lò xo thép còn đàn hồi; cần bộ dụng cụ để mở hộp và lấy linh kiện."},"set":{"display":"show","requirement":true},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"radio_toolkit"}]},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"clockwork_spring"},{"type":"set","subtype":"action","target":"action_find_clockwork_spring","property":"display","value":"hide"}]}},
-"action_restore_radio_signal":{"meta":{"title":"Khôi phục tín hiệu phát thanh (tùy chọn)","buttonLabel":"Can thiệp mạch điện","desc":"Puzzle phụ tùy chọn: dùng bộ dụng cụ, dây, cầu chì và tinh thể có chất lượng tối thiểu để phục hồi tín hiệu. Việc sửa mạch không khóa tiến trình chính; cuộn tinh thể vẫn đủ để dò tín hiệu dưới ga."},"set":{"display":"show","requirement":true,
-        "readDesc": true,},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"radio_toolkit"},{"type":"item","subtype":"inventory","op":"has","value":"radio_crystal"},{"type":"item","subtype":"inventory","op":"has","value":"insulated_wire"},{"type":"item","subtype":"inventory","op":"has","value":"spare_fuse"},
-          {"type":"stats","subtype":"item","target":"radio_toolkit","property":"condition","field":"current","op":">=","value":3},
-          {"type":"stats","subtype":"item","target":"insulated_wire","property":"condition","field":"current","op":">=","value":3},
-          {"type":"stats","subtype":"item","target":"spare_fuse","property":"capacity","field":"current","op":">=","value":3},
-          {"type":"stats","subtype":"item","target":"radio_crystal","property":"signal","field":"current","op":">=","value":3}]},"effect":{"normal":[],"pass":[{"type":"set","subtype":"state","target":"radio_signal_restored","value":true},{"type":"set","subtype":"action","target":"action_restore_radio_signal","property":"display","value":"hide"},
+    "action_find_radio_toolkit": {
+      "meta": {
+        "title": "Bộ dụng cụ sửa chữa",
+        "buttonLabel": "Lấy bộ dụng cụ",
+        "desc": "Trong ngăn tủ giáo viên có bộ tua vít cách điện, kìm và đầu dò mạch, đủ để tháo thiết bị mà không làm hỏng linh kiện."
+      },
+      "set": {
+        "display": "show"
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "add",
+            "target": "radio_toolkit"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_find_radio_toolkit",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "radio_toolkit_damaged",
+            "value": false
+          }
+        ]
+      }
+    },
+    "action_find_tracing_paper": {
+      "meta": {
+        "title": "Giấy can",
+        "buttonLabel": "Nhặt lên",
+        "desc": "Tờ giấy can sạch được kẹp cạnh bản vẽ sơ đồ cũ, có thể chép chồng ký hiệu để đối chiếu bản đồ."
+      },
+      "set": {
+        "display": "show"
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "add",
+            "target": "tracing_paper"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_find_tracing_paper",
+            "property": "display",
+            "value": "hide"
+          }
+        ]
+      }
+    },
+    "action_find_inspection_loupe": {
+      "meta": {
+        "title": "Kính phóng đại",
+        "buttonLabel": "Lấy kính lúp",
+        "desc": "Kính phóng đại nhỏ trong hộp bảo quản dụng cụ có thể giúp đọc dấu khắc và nét sửa trên vật chứng."
+      },
+      "set": {
+        "display": "show"
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "add",
+            "target": "inspection_loupe"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_find_inspection_loupe",
+            "property": "display",
+            "value": "hide"
+          }
+        ]
+      }
+    },
+    "action_find_insulated_wire": {
+      "meta": {
+        "title": "Cuộn dây cách nhiệt",
+        "buttonLabel": "Lấy dây cách điện",
+        "desc": "Sau thùng rượu rỗng là cuộn dây cách nhiệt còn dùng được, có thể thay đoạn dây đứt trong thiết bị cũ."
+      },
+      "set": {
+        "display": "show"
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "add",
+            "target": "insulated_wire"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_find_insulated_wire",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "radio_damaged",
+            "value": false
+          }
+        ]
+      }
+    },
+    "action_find_spare_fuse": {
+      "meta": {
+        "title": "Cầu chì dự phòng",
+        "buttonLabel": "Nhặt lên",
+        "desc": "Hộp linh kiện cũ chứa cầu chì sứ dự phòng còn nguyên, được giữ riêng khỏi dây dẫn đã hỏng."
+      },
+      "set": {
+        "display": "show"
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "add",
+            "target": "spare_fuse"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_find_spare_fuse",
+            "property": "display",
+            "value": "hide"
+          }
+        ]
+      }
+    },
+    "action_find_clockwork_spring": {
+      "meta": {
+        "title": "Lò xo cơ khí",
+        "buttonLabel": "Lấy lò xo cơ khí",
+        "desc": "Hộp bảo trì có lò xo thép còn đàn hồi; cần bộ dụng cụ để mở hộp và lấy linh kiện."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "radio_toolkit"
+          }
+        ]
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "add",
+            "target": "clockwork_spring"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_find_clockwork_spring",
+            "property": "display",
+            "value": "hide"
+          }
+        ]
+      }
+    },
+    "action_restore_radio_signal": {
+      "meta": {
+        "title": "Khôi phục tín hiệu phát thanh (tùy chọn)",
+        "buttonLabel": "Can thiệp mạch điện",
+        "desc": "Puzzle phụ tùy chọn: dùng bộ dụng cụ, dây, cầu chì và tinh thể có chất lượng tối thiểu để phục hồi tín hiệu. Việc sửa mạch không khóa tiến trình chính; cuộn tinh thể vẫn đủ để dò tín hiệu dưới ga."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "radio_toolkit"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "radio_crystal"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "insulated_wire"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "spare_fuse"
+          },
+          {
+            "type": "stats",
+            "subtype": "item",
+            "target": "radio_toolkit",
+            "property": "condition",
+            "field": "current",
+            "op": ">=",
+            "value": 3
+          },
+          {
+            "type": "stats",
+            "subtype": "item",
+            "target": "insulated_wire",
+            "property": "condition",
+            "field": "current",
+            "op": ">=",
+            "value": 3
+          },
+          {
+            "type": "stats",
+            "subtype": "item",
+            "target": "spare_fuse",
+            "property": "capacity",
+            "field": "current",
+            "op": ">=",
+            "value": 3
+          },
+          {
+            "type": "stats",
+            "subtype": "item",
+            "target": "radio_crystal",
+            "property": "signal",
+            "field": "current",
+            "op": ">=",
+            "value": 3
+          }
+        ]
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "radio_signal_restored",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_restore_radio_signal",
+            "property": "display",
+            "value": "hide"
+          },
           {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
             "text": "Tín hiệu phát thanh đã được khôi phục; manh mối phụ được mở."
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "radio_toolkit",
+            "value": 1
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "radio_crystal",
+            "value": 1
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "insulated_wire",
+            "value": 1
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "spare_fuse",
+            "value": 1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "voice_revealed",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "identity_verified_partial",
+            "value": true
+          },
+          {
+            "type": "characters",
+            "subtype": "edit_stats",
+            "target": "player",
+            "property": "resolve",
+            "field": "current",
+            "mode": "add",
+            "value": 1
           }
-        ]}},
-"action_overlay_map":{"meta":{"title":"Đối chiếu bản đồ","buttonLabel":"Chồng giấy can","desc":"Chồng giấy can lên mảnh bản đồ và kiểm tra các ký hiệu. Độ bao phủ bản đồ, độ chính xác giấy can và kính phải đạt mức tối thiểu để xác nhận tuyến phụ dẫn đến khu vực dưới chân đê."},"set":{"display":"show","requirement":true,
-        "readDesc": true,},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"map_fragment"},{"type":"item","subtype":"inventory","op":"has","value":"tracing_paper"},{"type":"item","subtype":"inventory","op":"has","value":"inspection_loupe"},{"type":"state","property":"clue_seat_mark","op":"==","value":true},{"type":"state","property":"clue_class_clock","op":"==","value":true},
-          {"type":"stats","subtype":"item","target":"map_fragment","property":"coverage","field":"current","op":">=","value":3},
-          {"type":"stats","subtype":"item","target":"tracing_paper","property":"precision","field":"current","op":">=","value":3},
-          {"type":"stats","subtype":"item","target":"inspection_loupe","property":"precision","field":"current","op":">=","value":3}]},"effect":{"normal":[],"pass":[{"type":"set","subtype":"state","target":"clue_tunnel","value":true},{"type":"set","subtype":"action","target":"action_overlay_map","property":"display","value":"hide"},
+        ]
+      }
+    },
+    "action_overlay_map": {
+      "meta": {
+        "title": "Đối chiếu bản đồ",
+        "buttonLabel": "Chồng giấy can",
+        "desc": "Chồng giấy can lên mảnh bản đồ và kiểm tra các ký hiệu. Độ bao phủ bản đồ, độ chính xác giấy can và kính phải đạt mức tối thiểu để xác nhận tuyến phụ dẫn đến khu vực dưới chân đê."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "map_fragment"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "tracing_paper"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "inspection_loupe"
+          },
+          {
+            "type": "state",
+            "property": "clue_seat_mark",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "clue_class_clock",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "stats",
+            "subtype": "item",
+            "target": "map_fragment",
+            "property": "coverage",
+            "field": "current",
+            "op": ">=",
+            "value": 3
+          },
+          {
+            "type": "stats",
+            "subtype": "item",
+            "target": "tracing_paper",
+            "property": "precision",
+            "field": "current",
+            "op": ">=",
+            "value": 3
+          },
+          {
+            "type": "stats",
+            "subtype": "item",
+            "target": "inspection_loupe",
+            "property": "precision",
+            "field": "current",
+            "op": ">=",
+            "value": 3
+          }
+        ]
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_tunnel",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_overlay_map",
+            "property": "display",
+            "value": "hide"
+          },
           {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
             "text": "Đối chiếu bản đồ thành công: tuyến đường dưới chân đê đã được xác nhận."
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "tracing_paper",
+            "value": 1
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "inspection_loupe",
+            "value": 1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "map_verified",
+            "value": true
           }
-        ]}},
-"action_decode_broadcast":{"meta":{"title":"Mạch phát thanh","buttonLabel":"Lấy tinh thể","desc":"Hộp loa gắn sau bảng thông báo. Tiếng gọi tên dân làng phát đều đặn; sau bảng mạch là cuộn tinh thể lưu tần số. Cần bộ dụng cụ sửa chữa để mở mạch và lấy linh kiện an toàn."},"set":{"display":"show","requirement":true},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"radio_toolkit"}]},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"radio_crystal"},{"type":"set","subtype":"state","target":"evidence_broadcast","value":true},{"type":"set","subtype":"action","target":"action_decode_broadcast","property":"display","value":"hide"},{"type":"goto","subtype":"router","target":"router_square_broadcast_decoded"},
+        ]
+      }
+    },
+    "action_decode_broadcast": {
+      "meta": {
+        "title": "Mạch phát thanh",
+        "buttonLabel": "Lấy tinh thể",
+        "desc": "Hộp loa gắn sau bảng thông báo. Tiếng gọi tên dân làng phát đều đặn; sau bảng mạch là cuộn tinh thể lưu tần số. Cần bộ dụng cụ sửa chữa để mở mạch và lấy linh kiện an toàn."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "radio_toolkit"
+          }
+        ]
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "add",
+            "target": "radio_crystal"
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "evidence_broadcast",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_decode_broadcast",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "goto",
+            "subtype": "router",
+            "target": "router_square_broadcast_decoded"
+          },
           {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
             "text": "Bạn lấy được cuộn tinh thể và giải mã mạch phát thanh; trạng thái quảng trường đã thay đổi."
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "evidence_broadcast",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "radio_crystal",
+            "value": 1
           }
-        ]}},"action_retrieve_well_badge": {
+        ]
+      }
+    },
+    "action_retrieve_well_badge": {
       "meta": {
         "title": "Phù hiệu đội sơ tán",
         "buttonLabel": "Nhặt lên",
@@ -3950,8 +5398,7 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "router",
             "target": "router_well_bottom_revealed"
-          }
-        ,
+          },
           {
             "type": "notify",
             "subtype": "toast",
@@ -3982,7 +5429,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Chìa khóa phòng thứ bảy",
         "buttonLabel": "Thu thập",
-        "desc": "Ngăn kéo sau quầy lễ tân bị khóa riêng, khác với các ngăn chứa sổ sách thông thường. Bên trong có một chìa khóa đồng mang số bảy; nó mở cánh cửa không xuất hiện trên sơ đồ nhà trọ và giải thích vì sao Bà Hạnh luôn khẳng định chỉ có sáu phòng."
+        "desc": "Ngăn kéo sau quầy lễ tân chứa chìa khóa đồng số bảy. Việc tìm được chìa khóa xác nhận căn phòng thứ bảy tồn tại, nhưng chưa mở cửa. Bạn phải chọn mở sạch, cưỡng chế hoặc tìm cách bypass."
       },
       "set": {
         "display": "show"
@@ -3998,6 +5445,12 @@ export const DEMO_SCRIPT = {
           {
             "type": "set",
             "subtype": "state",
+            "target": "room7_confirmed",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
             "target": "evidence_hidden_room",
             "value": true
           },
@@ -4009,18 +5462,20 @@ export const DEMO_SCRIPT = {
             "value": "hide"
           },
           {
-            "type": "goto",
-            "subtype": "router",
-            "target": "router_inn_hidden_room"
-          }
-        ,
+            "type": "set",
+            "subtype": "action",
+            "target": "action_confirm_room7",
+            "property": "display",
+            "value": "show"
+          },
           {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Đã tìm thấy chìa khóa phòng thứ bảy; căn phòng ẩn được mở."
+            "text": "Đã tìm thấy chìa khóa phòng thứ bảy. Cửa vẫn đóng; hãy xác minh và chọn cách mở."
           }
-        ]
+        ],
+        "fail": []
       }
     },
     "action_find_evacuation_film": {
@@ -4057,13 +5512,24 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "router",
             "target": "router_cellar_recording_found"
-          }
-        ,
+          },
           {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
             "text": "Đã thu hồi cuộn phim sơ tán, một bằng chứng quan trọng."
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "evidence_evacuation_film",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "evidence_evacuation_film",
+            "value": true
           }
         ]
       }
@@ -4102,13 +5568,24 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "router",
             "target": "router_chapel_cryptic_note"
-          }
-        ,
+          },
           {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
             "text": "Đã tìm thấy ghi chú về ba hồi chuông và điều cấm hồi thứ tư."
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_hymn",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "hymn_partial",
+            "value": false
           }
         ]
       }
@@ -4147,121 +5624,125 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "router",
             "target": "router_bell_mechanism_repaired"
-          }
-        ,
+          },
           {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
             "text": "Đã thu hồi dây đồng chuông; cơ cấu chuông được cập nhật."
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "bell_wire_damaged",
+            "value": false
           }
         ]
       }
     },
     "action_recover_class_register": {
-  "meta": {
-    "title": "Sổ điểm danh",
-    "buttonLabel": "Bảo toàn hồ sơ",
-    "desc": "Bạn quyết định giữ bản sao sổ điểm danh như bằng chứng có thể đối chiếu, dù việc này khiến Linh không còn muốn chia sẻ toàn bộ ký ức riêng."
-  },
-  "set": {
-    "display": "show",
-    "requirement": true
-  },
-  "effect": {
-    "normal": [],
-    "pass": [
-      {
-        "type": "set",
-        "subtype": "state",
-        "target": "school_choice",
-        "value": "evidence"
+      "meta": {
+        "title": "Sổ điểm danh",
+        "buttonLabel": "Bảo toàn hồ sơ",
+        "desc": "Bạn quyết định giữ bản sao sổ điểm danh như bằng chứng có thể đối chiếu, dù việc này khiến Linh không còn muốn chia sẻ toàn bộ ký ức riêng."
       },
-      {
-        "type": "item",
-        "subtype": "add",
-        "target": "class_register_copy"
+      "set": {
+        "display": "show",
+        "requirement": true
       },
-      {
-        "type": "set",
-        "subtype": "state",
-        "target": "evidence_class_register",
-        "value": true
-      },
-      {
-        "type": "set",
-        "subtype": "state",
-        "target": "clue_roster",
-        "value": true
-      },
-      {
-        "type": "set",
-        "subtype": "state",
-        "target": "truth_fragments",
-        "value": 1
-      },
-      {
-        "type": "set",
-        "subtype": "action",
-        "target": "action_recover_class_register",
-        "property": "display",
-        "value": "hide"
-      },
-      {
-        "type": "set",
-        "subtype": "action",
-        "target": "action_talk_linh",
-        "property": "display",
-        "value": "hide"
-      },
-      {
-        "type": "set",
-        "subtype": "action",
-        "target": "action_reach_station",
-        "property": "display",
-        "value": "show"
-      },
-      {
-        "type": "set",
-        "subtype": "action",
-        "target": "action_choose_fate",
-        "property": "display",
-        "value": "show"
-      },
-      {
-        "type": "set",
-        "subtype": "action",
-        "target": "action_decode_roster",
-        "property": "display",
-        "value": "show"
-      },
-      {
-        "type": "set",
-        "subtype": "action",
-        "target": "action_overlay_map",
-        "property": "display",
-        "value": "show"
-      },
-      {
-        "type": "set",
-        "subtype": "action",
-        "target": "action_reach_station_memory",
-        "property": "display",
-        "value": "hide"
-      },
-      {
-        "type": "set",
-        "subtype": "action",
-        "target": "action_choose_fate_memory",
-        "property": "display",
-        "value": "hide"
-      },
-      {
-        "type": "goto",
-        "subtype": "router",
-        "target": "router_classroom_archive_open"
-      }
-    ,
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "school_choice",
+            "value": "evidence"
+          },
+          {
+            "type": "item",
+            "subtype": "add",
+            "target": "class_register_copy"
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "evidence_class_register",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_roster",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "truth_fragments",
+            "value": 1
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_recover_class_register",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_talk_linh",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_reach_station",
+            "property": "display",
+            "value": "show"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_choose_fate",
+            "property": "display",
+            "value": "show"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_decode_roster",
+            "property": "display",
+            "value": "show"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_overlay_map",
+            "property": "display",
+            "value": "show"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_reach_station_memory",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_choose_fate_memory",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "goto",
+            "subtype": "router",
+            "target": "router_classroom_archive_open"
+          },
           {
             "type": "notify",
             "subtype": "toast",
@@ -4269,25 +5750,25 @@ export const DEMO_SCRIPT = {
             "text": "Bạn chọn bảo toàn bản sao sổ điểm danh. Linh không còn chia sẻ toàn bộ ký ức; các hướng điều tra mới đã mở."
           }
         ]
-  },
-  "requirement": {
-    "logic": "AND",
-    "check": [
-      {
-        "type": "state",
-        "property": "clue_photo",
-        "op": "==",
-        "value": true
       },
-      {
-        "type": "state",
-        "property": "school_choice",
-        "op": "==",
-        "value": "undecided"
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "clue_photo",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "school_choice",
+            "op": "==",
+            "value": "undecided"
+          }
+        ]
       }
-    ]
-  }
-},
+    },
     "action_collect_forest_compass": {
       "meta": {
         "title": "La bàn người dẫn đường",
@@ -4322,13 +5803,18 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "router",
             "target": "router_forest_markers_aligned"
-          }
-        ,
+          },
           {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
             "text": "Đã thu hồi la bàn dẫn đường và xác nhận tuyến qua rừng."
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "compass_damaged",
+            "value": false
           }
         ]
       }
@@ -4367,25 +5853,85 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "router",
             "target": "router_clearing_ritual_trace"
-          }
-        ,
+          },
           {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
             "text": "Đã tìm thấy con dấu đội sơ tán, chứng cứ về danh sách chính thức."
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "evidence_evacuation_seal",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "seal_damaged",
+            "value": false
           }
         ]
       }
     },
-    "action_find_gear_pin":{"meta":{"title":"Chốt bánh răng cối xay","buttonLabel": "Lấy chốt bánh răng","desc":"Hộp bánh răng dưới sàn cối xay bị kẹt. Bộ dụng cụ cần thiết để mở nắp và lấy chốt truyền động bị cong."},"set":{"display":"show","requirement":true},"requirement":{"logic":"AND","check":[{"type":"item","subtype":"inventory","op":"has","value":"radio_toolkit"}]},"effect":{"normal":[],"pass":[{"type":"item","subtype":"add","target":"mill_gear_pin"},{"type":"set","subtype":"state","target":"evidence_gear_pin","value":true},{"type":"set","subtype":"action","target":"action_find_gear_pin","property":"display","value":"hide"},{"type":"goto","subtype":"router","target":"router_watermill_gear_inspected"},
+    "action_find_gear_pin": {
+      "meta": {
+        "title": "Chốt bánh răng cối xay",
+        "buttonLabel": "Lấy chốt bánh răng",
+        "desc": "Hộp bánh răng dưới sàn cối xay bị kẹt. Bộ dụng cụ cần thiết để mở nắp và lấy chốt truyền động bị cong."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "radio_toolkit"
+          }
+        ]
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "add",
+            "target": "mill_gear_pin"
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "evidence_gear_pin",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_find_gear_pin",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "goto",
+            "subtype": "router",
+            "target": "router_watermill_gear_inspected"
+          },
           {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
             "text": "Đã lấy chốt bánh răng; trạng thái kiểm tra cối xay được cập nhật."
           }
-        ]}},"action_recover_tunnel_manifest": {
+        ]
+      }
+    },
+    "action_recover_tunnel_manifest": {
       "meta": {
         "title": "Danh sách vận chuyển",
         "buttonLabel": "Thu thập",
@@ -4419,13 +5965,30 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "router",
             "target": "router_tunnel_manifest_found"
-          }
-        ,
+          },
           {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
             "text": "Đã thu hồi danh sách vận chuyển trong đường hầm."
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "evidence_verified",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_tunnel",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "manifest_partial",
+            "value": false
           }
         ]
       }
@@ -4464,142 +6027,4767 @@ export const DEMO_SCRIPT = {
             "type": "goto",
             "subtype": "router",
             "target": "router_station_departure_records"
-          }
-        ,
+          },
           {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
             "text": "Đã tìm thấy vé tàu 03:17, xác nhận chuyến tàu từng tồn tại."
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "ticket_verified",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "ticket_verified",
+            "value": false
           }
         ]
       }
     },
     "action_talk_linh": {
-  "meta": {
-    "title": "Lời khai riêng của Linh",
-    "buttonLabel": "Bảo vệ lời khai",
-    "desc": "Bạn quyết định không biến ký ức của Linh thành vật chứng công khai. Lời khai riêng và những chi tiết em nhớ sẽ là con đường tiếp tục điều tra."
-  },
-  "set": {
-    "display": "show",
-    "requirement": true
-  },
-  "effect": {
-    "normal": [],
-    "pass": [
-      {
-        "type": "set",
-        "subtype": "state",
-        "target": "school_choice",
-        "value": "memory"
+      "meta": {
+        "title": "Lời khai riêng của Linh",
+        "buttonLabel": "Bảo vệ lời khai",
+        "desc": "Bạn quyết định không biến ký ức của Linh thành vật chứng công khai. Lời khai riêng và những chi tiết em nhớ sẽ là con đường tiếp tục điều tra."
       },
-      {
-        "type": "set",
-        "subtype": "state",
-        "target": "knows_twelve",
-        "value": true
+      "set": {
+        "display": "show",
+        "requirement": true
       },
-      {
-        "type": "set",
-        "subtype": "state",
-        "target": "truth_fragments",
-        "value": 1
-      },
-      {
-        "type": "set",
-        "subtype": "state",
-        "target": "clue_tunnel",
-        "value": true
-      },
-      {
-        "type": "set",
-        "subtype": "action",
-        "target": "action_talk_linh",
-        "property": "display",
-        "value": "hide"
-      },
-      {
-        "type": "set",
-        "subtype": "action",
-        "target": "action_recover_class_register",
-        "property": "display",
-        "value": "hide"
-      },
-      {
-        "type": "set",
-        "subtype": "action",
-        "target": "action_reach_station",
-        "property": "display",
-        "value": "hide"
-      },
-      {
-        "type": "set",
-        "subtype": "action",
-        "target": "action_choose_fate",
-        "property": "display",
-        "value": "hide"
-      },
-      {
-        "type": "set",
-        "subtype": "action",
-        "target": "action_decode_roster",
-        "property": "display",
-        "value": "hide"
-      },
-      {
-        "type": "set",
-        "subtype": "action",
-        "target": "action_overlay_map",
-        "property": "display",
-        "value": "hide"
-      },
-      {
-        "type": "set",
-        "subtype": "action",
-        "target": "action_reach_station_memory",
-        "property": "display",
-        "value": "show"
-      },
-      {
-        "type": "set",
-        "subtype": "action",
-        "target": "action_choose_fate_memory",
-        "property": "display",
-        "value": "show"
-      },
-      {
-        "type": "goto",
-        "subtype": "chat",
-        "target": "chat_linh"
-      }
-    ,
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "school_choice",
+            "value": "memory"
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "knows_twelve",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "truth_fragments",
+            "value": 1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_tunnel",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_talk_linh",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_recover_class_register",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_reach_station",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_choose_fate",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_decode_roster",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_overlay_map",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_reach_station_memory",
+            "property": "display",
+            "value": "show"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_choose_fate_memory",
+            "property": "display",
+            "value": "show"
+          },
+          {
+            "type": "goto",
+            "subtype": "chat",
+            "target": "chat_linh"
+          },
           {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
             "text": "Bạn chọn bảo vệ lời khai riêng của Linh; nhánh ký ức được giữ lại."
+          },
+          {
+            "type": "characters",
+            "subtype": "edit_stats",
+            "target": "linh",
+            "property": "memory",
+            "field": "current",
+            "mode": "add",
+            "value": 1
+          },
+          {
+            "type": "characters",
+            "subtype": "edit_stats",
+            "target": "linh",
+            "property": "trust",
+            "field": "current",
+            "mode": "add",
+            "value": 1
+          },
+          {
+            "type": "characters",
+            "subtype": "edit_stats",
+            "target": "linh",
+            "property": "fear",
+            "field": "current",
+            "mode": "add",
+            "value": -1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "linh_private_testimony",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "memory_reconstructed",
+            "value": true
           }
         ]
-  },
-  "requirement": {
-    "logic": "AND",
-    "check": [
-      {
-        "type": "state",
-        "property": "clue_photo",
-        "op": "==",
-        "value": true
       },
-      {
-        "type": "state",
-        "property": "school_choice",
-        "op": "==",
-        "value": "undecided"
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "clue_photo",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "school_choice",
+            "op": "==",
+            "value": "undecided"
+          }
+        ]
       }
-    ]
-  }
-}
+    },
+    "action_confirm_room7": {
+      "meta": {
+        "title": "Xác minh phòng thứ bảy",
+        "buttonLabel": "Đối chiếu sổ khách",
+        "desc": "Sổ khách và lời Bà Hạnh cho thấy phòng thứ bảy bị bỏ khỏi sơ đồ. Xác minh trước khi thao tác cửa."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "room7_confirmed",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "room7_clue_source",
+            "value": "guestbook"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_unlock_room7",
+            "property": "display",
+            "value": "show"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_force_room7",
+            "property": "display",
+            "value": "show"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_confirm_room7",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Phòng thứ bảy đã được xác minh. Chọn cách mở cửa."
+          }
+        ],
+        "fail": [
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "warning",
+            "text": "Cần tìm và đối chiếu sổ khách trước."
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "found_guestbook",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "guestbook"
+          }
+        ]
+      }
+    },
+    "action_unlock_room7": {
+      "meta": {
+        "title": "Mở phòng thứ bảy — an toàn",
+        "buttonLabel": "Dùng chìa khóa",
+        "desc": "Chìa khóa còn nguyên và cơ cấu khóa không bị hư. Cách mở này không làm hỏng chìa khóa."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "spare_room_key",
+            "value": 1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "room7_open",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "room7_opened_cleanly",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "evidence_hidden_room",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_unlock_room7",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_force_room7",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_open_room7_alternative",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_repair_room7_key",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "goto",
+            "subtype": "router",
+            "target": "router_inn_hidden_room"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Phòng thứ bảy được mở bằng chìa khóa, không gây hư hại."
+          }
+        ],
+        "fail": [
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "warning",
+            "text": "Cần xác minh phòng 7, cầm chìa khóa, Integrity ≥2 và khóa chưa hỏng."
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "room7_confirmed",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "hand",
+            "op": "==",
+            "value": [
+              "spare_room_key"
+            ]
+          },
+          {
+            "type": "stats",
+            "subtype": "item",
+            "target": "spare_room_key",
+            "property": "integrity",
+            "field": "current",
+            "op": ">=",
+            "value": 2
+          },
+          {
+            "type": "state",
+            "property": "room7_lock_damaged",
+            "op": "==",
+            "value": false
+          }
+        ]
+      }
+    },
+    "action_force_room7": {
+      "meta": {
+        "title": "Cưỡng chế cửa phòng thứ bảy",
+        "buttonLabel": "Cạy cửa",
+        "desc": "Cưỡng chế có thể làm hỏng chìa khóa, khóa và khiến An mất bình tĩnh. Chỉ thực hiện khi bạn chấp nhận rủi ro."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "spare_room_key",
+            "value": 1
+          },
+          {
+            "type": "item",
+            "subtype": "stats",
+            "target": "spare_room_key",
+            "exec": "add",
+            "property": "integrity",
+            "field": "current",
+            "value": -1
+          },
+          {
+            "type": "characters",
+            "subtype": "edit_stats",
+            "target": "player",
+            "property": "composure",
+            "field": "current",
+            "mode": "add",
+            "value": -1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "room7_forced",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "room7_lock_damaged",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "room7_open",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "room7_clue_partial",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "room7_key_damaged",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "evidence_hidden_room",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_unlock_room7",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_force_room7",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_repair_room7_key",
+            "property": "display",
+            "value": "show"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_open_room7_alternative",
+            "property": "display",
+            "value": "show"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_inspect_damaged_lock",
+            "property": "display",
+            "value": "show"
+          },
+          {
+            "type": "goto",
+            "subtype": "router",
+            "target": "router_room7_forced"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Cửa bị cưỡng chế. Khóa và chìa khóa chịu hư hại; bằng chứng trong phòng chỉ được phát hiện một phần."
+          }
+        ],
+        "fail": [
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "warning",
+            "text": "Cần key, toolkit, xác minh phòng và Composure ≥1. Thiếu requirement không gây damage."
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "room7_confirmed",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "spare_room_key"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "radio_toolkit"
+          },
+          {
+            "type": "stats",
+            "subtype": "item",
+            "target": "spare_room_key",
+            "property": "integrity",
+            "field": "current",
+            "op": ">=",
+            "value": 1
+          },
+          {
+            "type": "stats",
+            "subtype": "character",
+            "target": "player",
+            "property": "composure",
+            "field": "current",
+            "op": ">=",
+            "value": 1
+          }
+        ]
+      }
+    },
+    "action_repair_room7_key": {
+      "meta": {
+        "title": "Sửa chìa khóa phòng thứ bảy",
+        "buttonLabel": "Sửa chìa khóa",
+        "desc": "Dùng bộ dụng cụ để chỉnh lại đầu chìa và giảm Usage. Repair không reset Usage về 0."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "stats",
+            "target": "spare_room_key",
+            "exec": "add",
+            "property": "integrity",
+            "field": "current",
+            "value": 2
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "spare_room_key",
+            "value": -1
+          },
+          {
+            "type": "item",
+            "subtype": "stats",
+            "target": "radio_toolkit",
+            "exec": "add",
+            "property": "condition",
+            "field": "current",
+            "value": -1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "room7_key_broken",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "room7_key_damaged",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "room7_key_repaired",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "room7_lock_damaged",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "room7_clue_verified",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_repair_room7_key",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_open_room7_alternative",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_unlock_room7",
+            "property": "display",
+            "value": "show"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_force_room7",
+            "property": "display",
+            "value": "show"
+          },
+          {
+            "type": "goto",
+            "subtype": "router",
+            "target": "router_room7_repaired"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Chìa khóa được chỉnh lại. Integrity tăng, Usage giảm một lượt; lịch sử hư hại vẫn được giữ."
+          }
+        ],
+        "fail": [
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "warning",
+            "text": "Cần chìa khóa, toolkit và state damage."
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "room7_key_damaged",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "spare_room_key"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "radio_toolkit"
+          }
+        ]
+      }
+    },
+    "action_open_room7_alternative": {
+      "meta": {
+        "title": "Mở phòng thứ bảy bằng phương án thay thế",
+        "buttonLabel": "Bypass cửa",
+        "desc": "Dựa vào dấu khóa, sơ đồ hoặc toolkit để bypass cửa khi chìa khóa không còn dùng được. Clue có thể không đầy đủ."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "radio_toolkit",
+            "value": 1
+          },
+          {
+            "type": "item",
+            "subtype": "stats",
+            "target": "radio_toolkit",
+            "exec": "add",
+            "property": "condition",
+            "field": "current",
+            "value": -1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "room7_open",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "room7_opened_alternative",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "room7_clue_partial",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "room7_clue_verified",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "evidence_hidden_room",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_open_room7_alternative",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_repair_room7_key",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_unlock_room7",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "goto",
+            "subtype": "router",
+            "target": "router_inn_hidden_room"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Bypass thành công. Phòng mở; clue được xác minh bằng dấu khóa và evidence thay thế."
+          }
+        ],
+        "fail": [
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "warning",
+            "text": "Chỉ mở bypass khi key broken, phòng đã xác minh và có toolkit."
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "room7_confirmed",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "room7_key_broken",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "radio_toolkit"
+          }
+        ]
+      }
+    },
+    "action_inspect_damaged_lock": {
+      "meta": {
+        "title": "Kiểm tra khóa bị hư",
+        "buttonLabel": "Examine khóa",
+        "desc": "Quan sát vết cạy, đầu chìa và dấu mài để xác định cách bypass. Examine không tiêu hao Usage."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "room7_clue_verified",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "room7_clue_source",
+            "value": "damaged_lock"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_open_room7_alternative",
+            "property": "display",
+            "value": "show"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_inspect_damaged_lock",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Dấu cạy được ghi nhận. Có thể đối chiếu với sơ đồ hoặc bypass."
+          }
+        ],
+        "fail": [
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "warning",
+            "text": "Chỉ xuất hiện khi khóa bị hư."
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "room7_lock_damaged",
+            "op": "==",
+            "value": true
+          }
+        ]
+      }
+    },
+    "action_dry_guestbook": {
+      "meta": {
+        "title": "Làm khô sổ khách",
+        "buttonLabel": "Làm khô sổ",
+        "desc": "Làm khô giấy và phục hồi độ đọc được."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "stats",
+            "target": "guestbook",
+            "exec": "add",
+            "property": "legibility",
+            "field": "current",
+            "value": 1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "guestbook_partial",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "room7_confirmed",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_dry_guestbook",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Sổ khách đã rõ hơn; phòng thứ bảy được xác minh."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "guestbook_partial",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "guestbook"
+          }
+        ]
+      }
+    },
+    "action_compare_guestbook_photo": {
+      "meta": {
+        "title": "Đối chiếu sổ khách với ảnh",
+        "buttonLabel": "Đối chiếu",
+        "desc": "Dùng class photo hoặc film để xác minh tên bị mất khỏi sổ."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "room7_confirmed",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "room7_clue_verified",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "guestbook_partial",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_compare_guestbook_photo",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Phòng thứ bảy được xác minh bằng nguồn độc lập."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "guestbook_partial",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "class_photo"
+          }
+        ]
+      }
+    },
+    "action_use_lantern_dim": {
+      "meta": {
+        "title": "Soi bằng đèn yếu",
+        "buttonLabel": "Soi một phần",
+        "desc": "Đèn còn ánh sáng nhưng không đủ rõ. Thao tác sẽ tiêu hao Usage và giảm Light."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "lantern",
+            "value": 1
+          },
+          {
+            "type": "item",
+            "subtype": "stats",
+            "target": "lantern",
+            "exec": "add",
+            "property": "light",
+            "field": "current",
+            "value": -1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_well_bottom_partial",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "lantern_damaged",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "room7_clue_partial",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_use_lantern_dim",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_recover_lantern",
+            "property": "display",
+            "value": "show"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_retrieve_well_badge",
+            "property": "display",
+            "value": "show"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Ánh sáng yếu chỉ hé lộ một phần ký hiệu. Cần recovery hoặc evidence thay thế."
+          }
+        ],
+        "fail": [
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "warning",
+            "text": "Cần đèn cầm tay và clue; đây là thao tác partial."
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "clue_well",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "clue_lantern",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "hand",
+            "op": "==",
+            "value": [
+              "lantern"
+            ]
+          },
+          {
+            "type": "stats",
+            "subtype": "item",
+            "target": "lantern",
+            "property": "light",
+            "field": "current",
+            "op": ">=",
+            "value": 1
+          }
+        ]
+      }
+    },
+    "action_recover_lantern": {
+      "meta": {
+        "title": "Khôi phục đèn bão",
+        "buttonLabel": "Chỉnh đèn",
+        "desc": "Thay dầu, chỉnh bấc và kiểm tra chụp kính để phục hồi Light."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "stats",
+            "target": "lantern",
+            "exec": "add",
+            "property": "light",
+            "field": "current",
+            "value": 2
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "lantern",
+            "value": -1
+          },
+          {
+            "type": "item",
+            "subtype": "stats",
+            "target": "radio_toolkit",
+            "exec": "add",
+            "property": "condition",
+            "field": "current",
+            "value": -1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "lantern_damaged",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_well_bottom_partial",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_recover_lantern",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_use_lantern",
+            "property": "display",
+            "value": "show"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Đèn được khôi phục; có thể thử soi lại."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "lantern_damaged",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "radio_toolkit"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "lantern"
+          }
+        ]
+      }
+    },
+    "action_retrieve_well_badge_alternative": {
+      "meta": {
+        "title": "Xác minh phù hiệu bằng evidence",
+        "buttonLabel": "Đối chiếu phù hiệu",
+        "desc": "Nếu đèn hỏng, dùng tape/film hoặc dấu giếng để xác minh phù hiệu."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "evidence_well_badge",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_well_bottom_partial",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "room7_clue_verified",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_retrieve_well_badge_alternative",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Phù hiệu được xác minh bằng evidence thay thế."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "lantern_damaged",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "well_badge"
+          }
+        ]
+      }
+    },
+    "action_observe_mai": {
+      "meta": {
+        "title": "Quan sát Mai từ xa",
+        "buttonLabel": "Quan sát",
+        "desc": "Không ép Mai kể chuyện. Quan sát hành vi và ghi nhận dấu hiệu, không làm thay đổi Trust."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "npc_avoids_player",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "player_recovered",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_observe_mai",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Bạn giữ khoảng cách an toàn; có thể tiếp tục bằng evidence."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "npc_avoids_player",
+            "op": "==",
+            "value": true
+          }
+        ]
+      }
+    },
+    "action_listen_mai_tape": {
+      "meta": {
+        "title": "Nghe lại băng của Mai",
+        "buttonLabel": "Nghe băng",
+        "desc": "Dùng băng ghi âm thay cho confession trực tiếp."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "tape",
+            "value": 1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "mai_confessed",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_listen_mai_tape",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Băng ghi âm cung cấp lời khai gián tiếp."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "tape"
+          }
+        ]
+      }
+    },
+    "action_verify_guestbook": {
+      "meta": {
+        "title": "Xác minh sổ khách",
+        "buttonLabel": "Đối chiếu sổ",
+        "desc": "Đối chiếu sổ với film hoặc class photo để xác minh phòng 7."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "room7_confirmed",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "room7_clue_verified",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_verify_guestbook",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Sổ khách được xác minh bằng nguồn độc lập."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "guestbook"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "evacuation_film"
+          }
+        ]
+      }
+    },
+    "action_follow_compass_uncertain": {
+      "meta": {
+        "title": "Theo la bàn không chắc chắn",
+        "buttonLabel": "Theo dấu mờ",
+        "desc": "Dùng la bàn độ chính xác thấp; Usage và Accuracy giảm, Composure bị ảnh hưởng."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "guide_compass",
+            "value": 1
+          },
+          {
+            "type": "item",
+            "subtype": "stats",
+            "target": "guide_compass",
+            "exec": "add",
+            "property": "accuracy",
+            "field": "current",
+            "value": -1
+          },
+          {
+            "type": "characters",
+            "subtype": "edit_stats",
+            "target": "player",
+            "property": "composure",
+            "field": "current",
+            "mode": "add",
+            "value": -1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "forest_route_partial",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "player_panicked",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_tunnel_partial",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_follow_compass_uncertain",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_verify_forest_route",
+            "property": "display",
+            "value": "show"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Tuyến rừng chỉ được xác định một phần; cần corroboration."
+          }
+        ],
+        "fail": [
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "warning",
+            "text": "Cần la bàn đang cầm."
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "item",
+            "subtype": "hand",
+            "op": "==",
+            "value": [
+              "guide_compass"
+            ]
+          },
+          {
+            "type": "stats",
+            "subtype": "item",
+            "target": "guide_compass",
+            "property": "accuracy",
+            "field": "current",
+            "op": ">=",
+            "value": 1
+          }
+        ]
+      }
+    },
+    "action_verify_forest_route": {
+      "meta": {
+        "title": "Xác minh tuyến rừng",
+        "buttonLabel": "Đối chiếu tuyến",
+        "desc": "Dùng dấu sơn, Tunnel Names hoặc Manifest để xác minh tuyến không phụ thuộc la bàn."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "forest_route_partial",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_tunnel_partial",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_tunnel",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_verify_forest_route",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Tuyến rừng được xác minh bằng evidence."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "forest_route_partial",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "clue_tunnel",
+            "op": "==",
+            "value": true
+          }
+        ]
+      }
+    },
+    "action_force_seal": {
+      "meta": {
+        "title": "Cạy niêm phong hộp",
+        "buttonLabel": "Cạy seal",
+        "desc": "Cạy seal có thể làm hỏng authenticity và evidence."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "evacuation_seal",
+            "value": 1
+          },
+          {
+            "type": "item",
+            "subtype": "stats",
+            "target": "evacuation_seal",
+            "exec": "add",
+            "property": "authenticity",
+            "field": "current",
+            "value": -1
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "radio_toolkit",
+            "value": 1
+          },
+          {
+            "type": "item",
+            "subtype": "stats",
+            "target": "radio_toolkit",
+            "exec": "add",
+            "property": "condition",
+            "field": "current",
+            "value": -1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "evidence_corrupted",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "seal_damaged",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_photo",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_stakes",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "evidence_evacuation_seal",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "room7_clue_partial",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_force_seal",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_verify_seal",
+            "property": "display",
+            "value": "show"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Seal bị hỏng nhưng hộp mở; evidence nhận được ở dạng partial."
+          }
+        ],
+        "fail": [
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "warning",
+            "text": "Cần seal và toolkit."
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "evacuation_seal"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "radio_toolkit"
+          }
+        ]
+      }
+    },
+    "action_verify_seal": {
+      "meta": {
+        "title": "Xác minh seal bị hư",
+        "buttonLabel": "Đối chiếu seal",
+        "desc": "Đối chiếu seal bị hư với film, Manifest hoặc badge."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "evidence_evacuation_seal",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "evidence_corrupted",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_verify_seal",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Evidence seal được corroborate bằng film."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "seal_damaged",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "evacuation_film"
+          }
+        ]
+      }
+    },
+    "action_repair_mill_partial": {
+      "meta": {
+        "title": "Sửa cối xay tạm thời",
+        "buttonLabel": "Sửa tạm",
+        "desc": "Repair khi chất lượng một linh kiện thấp: tiêu hao Usage, giảm quality và tạo trạng thái partial."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "radio_toolkit",
+            "value": 1
+          },
+          {
+            "type": "item",
+            "subtype": "stats",
+            "target": "radio_toolkit",
+            "exec": "add",
+            "property": "condition",
+            "field": "current",
+            "value": -1
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "clockwork_spring",
+            "value": 1
+          },
+          {
+            "type": "item",
+            "subtype": "stats",
+            "target": "clockwork_spring",
+            "exec": "add",
+            "property": "tension",
+            "field": "current",
+            "value": -1
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "mill_gear_pin",
+            "value": 1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "mill_powered_partial",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "mill_repaired_partial",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_tunnel",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_repair_mill_partial",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_stabilize_mill",
+            "property": "display",
+            "value": "show"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_bypass_mill",
+            "property": "display",
+            "value": "show"
+          },
+          {
+            "type": "goto",
+            "subtype": "router",
+            "target": "router_watermill_running"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Cối xay chạy tạm; tuyến đường hầm vẫn tiếp tục."
+          }
+        ],
+        "fail": [
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "warning",
+            "text": "Cần toolkit, spring, gear pin và clue."
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "clue_tunnel",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "radio_toolkit"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "clockwork_spring"
+          },
+          {
+            "type": "item",
+            "subtype": "hand",
+            "op": "==",
+            "value": [
+              "mill_gear_pin"
+            ]
+          },
+          {
+            "type": "stats",
+            "subtype": "item",
+            "target": "radio_toolkit",
+            "property": "condition",
+            "field": "current",
+            "op": ">=",
+            "value": 1
+          },
+          {
+            "type": "stats",
+            "subtype": "item",
+            "target": "clockwork_spring",
+            "property": "tension",
+            "field": "current",
+            "op": ">=",
+            "value": 1
+          },
+          {
+            "type": "stats",
+            "subtype": "item",
+            "target": "mill_gear_pin",
+            "property": "integrity",
+            "field": "current",
+            "op": ">=",
+            "value": 1
+          }
+        ]
+      }
+    },
+    "action_force_mill_repair": {
+      "meta": {
+        "title": "Cưỡng chế sửa cối xay",
+        "buttonLabel": "Cưỡng chế",
+        "desc": "Sửa cưỡng chế có thể làm hỏng toolkit và khiến An mất bình tĩnh."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "radio_toolkit",
+            "value": 1
+          },
+          {
+            "type": "item",
+            "subtype": "stats",
+            "target": "radio_toolkit",
+            "exec": "add",
+            "property": "condition",
+            "field": "current",
+            "value": -1
+          },
+          {
+            "type": "characters",
+            "subtype": "edit_stats",
+            "target": "player",
+            "property": "composure",
+            "field": "current",
+            "mode": "add",
+            "value": -1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "mill_repair_failed",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "radio_damaged",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "player_panicked",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_stabilize_mill",
+            "property": "display",
+            "value": "show"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_bypass_mill",
+            "property": "display",
+            "value": "show"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Repair thất bại; toolkit và Composure chịu ảnh hưởng. Bypass vẫn khả dụng."
+          }
+        ],
+        "fail": [
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "warning",
+            "text": "Cần cầm toolkit và có linh kiện."
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "item",
+            "subtype": "hand",
+            "op": "==",
+            "value": [
+              "radio_toolkit"
+            ]
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "clockwork_spring"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "mill_gear_pin"
+          }
+        ]
+      }
+    },
+    "action_stabilize_mill": {
+      "meta": {
+        "title": "Ổn định cối xay",
+        "buttonLabel": "Ổn định",
+        "desc": "Ổn định cối xay tạm bằng linh kiện và toolkit."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "radio_toolkit",
+            "value": 1
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "clockwork_spring",
+            "value": -1
+          },
+          {
+            "type": "item",
+            "subtype": "stats",
+            "target": "radio_toolkit",
+            "exec": "add",
+            "property": "condition",
+            "field": "current",
+            "value": 1
+          },
+          {
+            "type": "item",
+            "subtype": "stats",
+            "target": "clockwork_spring",
+            "exec": "add",
+            "property": "tension",
+            "field": "current",
+            "value": 1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "mill_powered",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "mill_repaired_partial",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "mill_powered_partial",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "mill_repair_failed",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_stabilize_mill",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_descend_tunnel",
+            "property": "display",
+            "value": "show"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Cối xay được ổn định; tuyến chính tiếp tục."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "mill_repaired_partial",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "radio_toolkit"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "clockwork_spring"
+          }
+        ]
+      }
+    },
+    "action_bypass_mill": {
+      "meta": {
+        "title": "Bỏ qua cối xay",
+        "buttonLabel": "Bypass",
+        "desc": "Đi theo evidence đường hầm mà không yêu cầu cối xay phải hoạt động."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "mill_powered",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_tunnel",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_bypass_mill",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_descend_tunnel",
+            "property": "display",
+            "value": "show"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Cối xay được bỏ qua; đường hầm vẫn reachable."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "clue_tunnel",
+            "op": "==",
+            "value": true
+          }
+        ]
+      }
+    },
+    "action_bypass_archive_lock": {
+      "meta": {
+        "title": "Bypass khóa kho hồ sơ",
+        "buttonLabel": "Bypass khóa",
+        "desc": "Mở tủ hồ sơ bằng toolkit và evidence thay thế; route partial nếu thao tác cưỡng chế."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "radio_toolkit",
+            "value": 1
+          },
+          {
+            "type": "item",
+            "subtype": "stats",
+            "target": "radio_toolkit",
+            "exec": "add",
+            "property": "condition",
+            "field": "current",
+            "value": -1
+          },
+          {
+            "type": "characters",
+            "subtype": "edit_stats",
+            "target": "player",
+            "property": "composure",
+            "field": "current",
+            "mode": "add",
+            "value": -1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "archive_open",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "archive_opened_alternative",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "archive_partial",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_bypass_archive_lock",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_reconstruct_archive_record",
+            "property": "display",
+            "value": "show"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Kho hồ sơ mở bằng bypass. Bản ghi partial; progression không bị khóa."
+          }
+        ],
+        "fail": [
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "warning",
+            "text": "Cần tunnel clue, toolkit và đã chọn Evidence/Memory."
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "clue_tunnel",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "radio_toolkit"
+          },
+          {
+            "type": "state",
+            "property": "school_choice",
+            "op": "!=",
+            "value": "undecided"
+          }
+        ]
+      }
+    },
+    "action_reconstruct_archive_record": {
+      "meta": {
+        "title": "Tái dựng hồ sơ bị thiếu",
+        "buttonLabel": "Tái dựng",
+        "desc": "Đối chiếu Tunnel Manifest, Film và class register để tái dựng bản ghi."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "tunnel_manifest",
+            "value": 1
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "evacuation_film",
+            "value": 1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "archive_partial",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "archive_reconstructed",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "archive_open",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "evidence_verified",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_reconstruct_archive_record",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Hồ sơ được tái dựng từ nhiều nguồn độc lập."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "archive_partial",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "tunnel_manifest"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "evacuation_film"
+          }
+        ]
+      }
+    },
+    "action_open_archive_from_evidence": {
+      "meta": {
+        "title": "Mở kho bằng evidence",
+        "buttonLabel": "Mở bằng evidence",
+        "desc": "Dùng Manifest, Film và Seal để mở kho khi Archive Key không còn."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "tunnel_manifest",
+            "value": 1
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "evacuation_film",
+            "value": 1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "archive_open",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "archive_opened_alternative",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "archive_partial",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_open_archive_from_evidence",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Kho hồ sơ mở bằng evidence độc lập."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "clue_tunnel",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "tunnel_manifest"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "evacuation_film"
+          },
+          {
+            "type": "state",
+            "property": "school_choice",
+            "op": "!=",
+            "value": "undecided"
+          }
+        ]
+      }
+    },
+    "action_retrace_map": {
+      "meta": {
+        "title": "Tái đối chiếu bản đồ",
+        "buttonLabel": "Tái đối chiếu",
+        "desc": "Dùng tracing paper và loupe phục hồi bản đồ thiếu."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "tracing_paper",
+            "value": -1
+          },
+          {
+            "type": "item",
+            "subtype": "stats",
+            "target": "tracing_paper",
+            "exec": "add",
+            "property": "precision",
+            "field": "current",
+            "value": 1
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "inspection_loupe",
+            "value": -1
+          },
+          {
+            "type": "item",
+            "subtype": "stats",
+            "target": "inspection_loupe",
+            "exec": "add",
+            "property": "precision",
+            "field": "current",
+            "value": 1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "map_incomplete",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_tunnel_partial",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_tunnel",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_retrace_map",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Tuyến bản đồ được xác minh."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "map_incomplete",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "tracing_paper"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "inspection_loupe"
+          }
+        ]
+      }
+    },
+    "action_compare_evacuation_film": {
+      "meta": {
+        "title": "Đối chiếu bản đồ bằng film",
+        "buttonLabel": "Đối chiếu film",
+        "desc": "Dùng film sơ tán xác minh tuyến dưới đê."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "evacuation_film",
+            "value": 1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "map_incomplete",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_tunnel_partial",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_tunnel",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_compare_evacuation_film",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Tuyến được xác minh bằng film."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "map_incomplete",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "evacuation_film"
+          }
+        ]
+      }
+    },
+    "action_verify_route_from_radio": {
+      "meta": {
+        "title": "Xác minh tuyến từ radio",
+        "buttonLabel": "Xác minh radio",
+        "desc": "Dùng transcript hoặc radio evidence để xác minh tunnel route."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "map_incomplete",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_tunnel_partial",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_tunnel",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_verify_route_from_radio",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Tuyến được xác minh bằng tín hiệu."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "map_incomplete",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "voice_revealed",
+            "op": "==",
+            "value": true
+          }
+        ]
+      }
+    },
+    "action_ring_bell_imperfect": {
+      "meta": {
+        "title": "Rung chuông không hoàn chỉnh",
+        "buttonLabel": "Rung chuông",
+        "desc": "Chấp nhận chất lượng thấp: Usage, Conductivity và Composure giảm; tín hiệu méo nhưng critical flag vẫn được đạt."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "bell_copper_wire",
+            "value": 1
+          },
+          {
+            "type": "item",
+            "subtype": "stats",
+            "target": "bell_copper_wire",
+            "exec": "add",
+            "property": "conductivity",
+            "field": "current",
+            "value": -1
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "hymn_note",
+            "value": 1
+          },
+          {
+            "type": "item",
+            "subtype": "stats",
+            "target": "hymn_note",
+            "exec": "add",
+            "property": "completeness",
+            "field": "current",
+            "value": -1
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "bell_clapper",
+            "value": 1
+          },
+          {
+            "type": "item",
+            "subtype": "stats",
+            "target": "bell_clapper",
+            "exec": "add",
+            "property": "integrity",
+            "field": "current",
+            "value": -1
+          },
+          {
+            "type": "characters",
+            "subtype": "edit_stats",
+            "target": "player",
+            "property": "composure",
+            "field": "current",
+            "mode": "add",
+            "value": -1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "bell_rung",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "bell_rung_imperfectly",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "bell_signal_distorted",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "truth_fragments",
+            "value": 1
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_ring_bell",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_correct_bell_signal",
+            "property": "display",
+            "value": "show"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Chuông vang méo. Critical flag bell_rung vẫn đạt; có thể sửa tín hiệu."
+          }
+        ],
+        "fail": [
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "warning",
+            "text": "Cần các bộ phận và xác nhận mã chuông."
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "bell_clapper"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "bell_copper_wire"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "hymn_note"
+          },
+          {
+            "type": "state",
+            "property": "heard_bell",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "stats",
+            "subtype": "item",
+            "target": "bell_copper_wire",
+            "property": "conductivity",
+            "field": "current",
+            "op": ">=",
+            "value": 1
+          },
+          {
+            "type": "stats",
+            "subtype": "item",
+            "target": "hymn_note",
+            "property": "completeness",
+            "field": "current",
+            "op": ">=",
+            "value": 1
+          },
+          {
+            "type": "stats",
+            "subtype": "item",
+            "target": "bell_clapper",
+            "property": "integrity",
+            "field": "current",
+            "op": ">=",
+            "value": 1
+          }
+        ]
+      }
+    },
+    "action_correct_bell_signal": {
+      "meta": {
+        "title": "Sửa tín hiệu chuông",
+        "buttonLabel": "Sửa tín hiệu",
+        "desc": "Repair wire và đối chiếu hymn để sửa tín hiệu bị méo."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "radio_toolkit",
+            "value": 1
+          },
+          {
+            "type": "item",
+            "subtype": "stats",
+            "target": "bell_copper_wire",
+            "exec": "add",
+            "property": "conductivity",
+            "field": "current",
+            "value": 1
+          },
+          {
+            "type": "item",
+            "subtype": "stats",
+            "target": "hymn_note",
+            "exec": "add",
+            "property": "completeness",
+            "field": "current",
+            "value": 1
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "bell_copper_wire",
+            "value": -1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "bell_signal_distorted",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "bell_rung_imperfectly",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_correct_bell_signal",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Tín hiệu được chỉnh lại; lịch sử rung chuông imperfect vẫn được lưu."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "bell_signal_distorted",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "radio_toolkit"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "bell_copper_wire"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "hymn_note"
+          }
+        ]
+      }
+    },
+    "action_restore_hymn_note": {
+      "meta": {
+        "title": "Tái dựng ghi chú thánh ca",
+        "buttonLabel": "Tái dựng",
+        "desc": "Đối chiếu hymn với Guestbook, Class Register hoặc Keeper confession."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "guestbook",
+            "value": 1
+          },
+          {
+            "type": "item",
+            "subtype": "stats",
+            "target": "hymn_note",
+            "exec": "add",
+            "property": "completeness",
+            "field": "current",
+            "value": 1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "hymn_partial",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_hymn",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_restore_hymn_note",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Ghi chú thánh ca được tái dựng."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "hymn_partial",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "guestbook"
+          }
+        ]
+      }
+    },
+    "action_restore_radio_signal_partial": {
+      "meta": {
+        "title": "Khôi phục radio tạm thời",
+        "buttonLabel": "Sửa tạm",
+        "desc": "Tín hiệu yếu cho phép phục hồi partial; vật liệu và stats bị hao mòn."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "radio_toolkit",
+            "value": 1
+          },
+          {
+            "type": "item",
+            "subtype": "stats",
+            "target": "radio_toolkit",
+            "exec": "add",
+            "property": "condition",
+            "field": "current",
+            "value": -1
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "radio_crystal",
+            "value": 1
+          },
+          {
+            "type": "item",
+            "subtype": "stats",
+            "target": "radio_crystal",
+            "exec": "add",
+            "property": "signal",
+            "field": "current",
+            "value": -1
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "insulated_wire",
+            "value": 1
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "spare_fuse",
+            "value": 1
+          },
+          {
+            "type": "characters",
+            "subtype": "edit_stats",
+            "target": "player",
+            "property": "composure",
+            "field": "current",
+            "mode": "add",
+            "value": -1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "radio_signal_partial",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "voice_revealed",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "identity_verified_partial",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "radio_damaged",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_restore_radio_signal_partial",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_repair_radio_toolkit",
+            "property": "display",
+            "value": "show"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_listen_static",
+            "property": "display",
+            "value": "show"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Radio phát được tín hiệu partial; identity có thể corroborate bằng tape/film."
+          }
+        ],
+        "fail": [
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "warning",
+            "text": "Cần đủ vật liệu radio."
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "radio_toolkit"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "radio_crystal"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "insulated_wire"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "spare_fuse"
+          },
+          {
+            "type": "stats",
+            "subtype": "item",
+            "target": "radio_toolkit",
+            "property": "condition",
+            "field": "current",
+            "op": ">=",
+            "value": 1
+          },
+          {
+            "type": "stats",
+            "subtype": "item",
+            "target": "radio_crystal",
+            "property": "signal",
+            "field": "current",
+            "op": ">=",
+            "value": 1
+          }
+        ]
+      }
+    },
+    "action_diagnose_radio": {
+      "meta": {
+        "title": "Chẩn đoán radio hỏng",
+        "buttonLabel": "Chẩn đoán",
+        "desc": "Chẩn đoán lỗi mạch để chọn repair hoặc alternative evidence."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "radio_signal_partial",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_repair_radio_toolkit",
+            "property": "display",
+            "value": "show"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_listen_static",
+            "property": "display",
+            "value": "show"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_diagnose_radio",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Radio hỏng được chẩn đoán; repair và alternative evidence đã mở."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "radio_damaged",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "radio_toolkit"
+          }
+        ]
+      }
+    },
+    "action_repair_radio_toolkit": {
+      "meta": {
+        "title": "Sửa bộ dụng cụ radio",
+        "buttonLabel": "Sửa toolkit",
+        "desc": "Sửa toolkit và giảm Usage; không yêu cầu toolkit Condition cao."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "stats",
+            "target": "radio_toolkit",
+            "exec": "add",
+            "property": "condition",
+            "field": "current",
+            "value": 2
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "radio_toolkit",
+            "value": -1
+          },
+          {
+            "type": "item",
+            "subtype": "stats",
+            "target": "insulated_wire",
+            "exec": "add",
+            "property": "condition",
+            "field": "current",
+            "value": 1
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "insulated_wire",
+            "value": -1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "radio_damaged",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "radio_toolkit_damaged",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_repair_radio_toolkit",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Toolkit radio được phục hồi."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "radio_damaged",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "radio_toolkit"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "insulated_wire"
+          }
+        ]
+      }
+    },
+    "action_listen_static": {
+      "meta": {
+        "title": "Nghe tín hiệu tĩnh",
+        "buttonLabel": "Nghe static",
+        "desc": "Nghe bản tín hiệu partial và đối chiếu Tape/Film."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "tape",
+            "value": 1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "voice_revealed",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "identity_verified_partial",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_listen_static",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Tín hiệu partial được đối chiếu với tape."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "radio_signal_partial",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "tape"
+          }
+        ]
+      }
+    },
+    "action_rest_at_inn": {
+      "meta": {
+        "title": "Nghỉ tại nhà trọ",
+        "buttonLabel": "Nghỉ",
+        "desc": "Nghỉ ngắn trong không gian an toàn để phục hồi Composure."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "characters",
+            "subtype": "edit_stats",
+            "target": "player",
+            "property": "composure",
+            "field": "current",
+            "mode": "add",
+            "value": 1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "player_panicked",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "player_recovered",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_rest_at_inn",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "An bình tĩnh lại."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "player_panicked",
+            "op": "==",
+            "value": true
+          }
+        ]
+      }
+    },
+    "action_ground_with_radio": {
+      "meta": {
+        "title": "Grounding bằng radio",
+        "buttonLabel": "Grounding",
+        "desc": "Dùng nhịp phát thanh ổn định để grounding; không cần tín hiệu hoàn hảo."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "characters",
+            "subtype": "edit_stats",
+            "target": "player",
+            "property": "composure",
+            "field": "current",
+            "mode": "add",
+            "value": 1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "player_panicked",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "player_recovered",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_ground_with_radio",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Nhịp radio giúp An ổn định."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "player_panicked",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "radio_crystal"
+          }
+        ]
+      }
+    },
+    "action_recover_with_mai": {
+      "meta": {
+        "title": "Recovery cùng Mai",
+        "buttonLabel": "Nói chuyện với Mai",
+        "desc": "Một cuộc nói chuyện an toàn giúp phục hồi Composure và tránh ép confession."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "characters",
+            "subtype": "edit_stats",
+            "target": "player",
+            "property": "composure",
+            "field": "current",
+            "mode": "add",
+            "value": 1
+          },
+          {
+            "type": "characters",
+            "subtype": "edit_stats",
+            "target": "mai",
+            "property": "trust",
+            "field": "current",
+            "mode": "add",
+            "value": 1
+          },
+          {
+            "type": "characters",
+            "subtype": "edit_stats",
+            "target": "mai",
+            "property": "fear",
+            "field": "current",
+            "mode": "add",
+            "value": -1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "player_panicked",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "npc_recovered_trust",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_recover_with_mai",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Mai hỗ trợ An; Trust và Fear được điều chỉnh."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "player_panicked",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "npc_avoids_player",
+            "op": "==",
+            "value": false
+          }
+        ]
+      }
+    },
+    "action_recover_with_linh": {
+      "meta": {
+        "title": "Recovery cùng Linh",
+        "buttonLabel": "Nói chuyện riêng",
+        "desc": "Giữ privacy và tạo môi trường an toàn cho Linh."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "characters",
+            "subtype": "edit_stats",
+            "target": "player",
+            "property": "composure",
+            "field": "current",
+            "mode": "add",
+            "value": 1
+          },
+          {
+            "type": "characters",
+            "subtype": "edit_stats",
+            "target": "linh",
+            "property": "trust",
+            "field": "current",
+            "mode": "add",
+            "value": 1
+          },
+          {
+            "type": "characters",
+            "subtype": "edit_stats",
+            "target": "linh",
+            "property": "fear",
+            "field": "current",
+            "mode": "add",
+            "value": -1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "player_panicked",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "npc_recovered_trust",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_recover_with_linh",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Recovery cùng Linh hoàn tất."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "player_panicked",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "linh_private_testimony",
+            "op": "==",
+            "value": true
+          }
+        ]
+      }
+    },
+    "action_recover_character_trust": {
+      "meta": {
+        "title": "Khôi phục lòng tin nhân chứng",
+        "buttonLabel": "Khôi phục Trust",
+        "desc": "Đối chiếu evidence và giữ lời khai riêng để phục hồi Trust."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "characters",
+            "subtype": "edit_stats",
+            "target": "mai",
+            "property": "trust",
+            "field": "current",
+            "mode": "add",
+            "value": 1
+          },
+          {
+            "type": "characters",
+            "subtype": "edit_stats",
+            "target": "hanh",
+            "property": "trust",
+            "field": "current",
+            "mode": "add",
+            "value": 1
+          },
+          {
+            "type": "characters",
+            "subtype": "edit_stats",
+            "target": "linh",
+            "property": "trust",
+            "field": "current",
+            "mode": "add",
+            "value": 1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "npc_avoids_player",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "npc_recovered_trust",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_recover_character_trust",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Lòng tin được phục hồi thông qua evidence và privacy."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "npc_avoids_player",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "evidence_verified",
+            "op": "==",
+            "value": true
+          }
+        ]
+      }
+    },
+    "action_reconstruct_manifest": {
+      "meta": {
+        "title": "Tái dựng Manifest",
+        "buttonLabel": "Tái dựng",
+        "desc": "Dùng Tunnel Names, Film hoặc Archive để tái dựng Manifest."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "evacuation_film",
+            "value": 1
+          },
+          {
+            "type": "item",
+            "subtype": "stats",
+            "target": "tunnel_manifest",
+            "exec": "add",
+            "property": "completeness",
+            "field": "current",
+            "value": 1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "manifest_partial",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "evidence_verified",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_reconstruct_manifest",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Manifest được tái dựng."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "manifest_partial",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "evacuation_film"
+          }
+        ]
+      }
+    },
+    "action_verify_evacuation_film": {
+      "meta": {
+        "title": "Xác minh Film sơ tán",
+        "buttonLabel": "Đối chiếu film",
+        "desc": "Đối chiếu Film với Manifest hoặc class register."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "tunnel_manifest",
+            "value": 1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "evidence_evacuation_film",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "evidence_verified",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_verify_evacuation_film",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Film sơ tán được xác minh."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "evacuation_film"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "tunnel_manifest"
+          }
+        ]
+      }
+    },
+    "action_recover_hymn": {
+      "meta": {
+        "title": "Phục hồi thánh ca",
+        "buttonLabel": "Phục hồi",
+        "desc": "Dùng Keeper confession hoặc guestbook để khôi phục clue hymn."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "guestbook",
+            "value": 1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_hymn",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "hymn_partial",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_recover_hymn",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Clue hymn được phục hồi từ evidence."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "clue_hymn",
+            "op": "==",
+            "value": false
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "guestbook"
+          }
+        ]
+      }
+    },
+    "action_reconstruct_stakes_evidence": {
+      "meta": {
+        "title": "Tái dựng evidence vòng cọc",
+        "buttonLabel": "Tái dựng",
+        "desc": "Dùng class photo và Tunnel Names để corroborate vòng cọc."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "class_photo",
+            "value": 1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_stakes",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "evidence_verified",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_reconstruct_stakes_evidence",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Evidence vòng cọc được tái dựng."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "clue_stakes",
+            "op": "==",
+            "value": false
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "class_photo"
+          },
+          {
+            "type": "state",
+            "property": "knows_twelve",
+            "op": "==",
+            "value": true
+          }
+        ]
+      }
+    },
+    "action_verify_tunnel_clue": {
+      "meta": {
+        "title": "Xác minh dấu đường hầm",
+        "buttonLabel": "Xác minh",
+        "desc": "Dùng Manifest, Archive hoặc Tunnel Names để xác minh tunnel clue."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "tunnel_manifest",
+            "value": 1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_tunnel",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_tunnel_partial",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_verify_tunnel_clue",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Tunnel clue được xác minh."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "clue_tunnel_partial",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "tunnel_manifest"
+          }
+        ]
+      }
+    },
+    "action_ending_release_partial": {
+      "meta": {
+        "title": "Giải thoát với evidence partial",
+        "buttonLabel": "Giải thoát",
+        "desc": "Nếu Release core đã đạt nhưng evidence còn partial, bạn vẫn có thể giải thoát người mắc kẹt."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "final_choice",
+            "value": "release"
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "release_partial",
+            "value": true
+          },
+          {
+            "type": "goto",
+            "subtype": "end",
+            "target": "ending_release_partial"
+          }
+        ],
+        "fail": [
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "warning",
+            "text": "Release core chưa đạt hoặc không có dấu consequence partial."
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "bell_rung",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "archive_open",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "evidence_evacuation_seal",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "clue_hymn",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "clue_stakes",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "clue_tunnel",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "bell_rung_imperfectly",
+            "op": "==",
+            "value": true
+          }
+        ]
+      }
+    },
+    "action_ending_release_reconstructed": {
+      "meta": {
+        "title": "Giải thoát sau tái dựng evidence",
+        "buttonLabel": "Giải thoát",
+        "desc": "Release core và corroboration đạt; ít nhất một recovery đã hoàn tất."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "final_choice",
+            "value": "release"
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "release_reconstructed",
+            "value": true
+          },
+          {
+            "type": "goto",
+            "subtype": "end",
+            "target": "ending_release_reconstructed"
+          }
+        ],
+        "fail": [
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "warning",
+            "text": "Cần Release core, corroboration và reconstruction."
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "bell_rung",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "archive_open",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "evidence_evacuation_seal",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "clue_hymn",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "clue_stakes",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "clue_tunnel",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "evidence_verified",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "memory_reconstructed",
+            "op": "==",
+            "value": true
+          }
+        ]
+      }
+    },
+    "action_verify_ticket": {
+      "meta": {
+        "title": "Xác minh vé tàu",
+        "buttonLabel": "Xác minh vé",
+        "desc": "Đối chiếu ticket với Station Manifest hoặc Archive khi ticket quality thấp."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "tunnel_manifest",
+            "value": 1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "ticket_verified",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_verify_ticket",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Vé được xác minh bằng Manifest."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "unpunched_ticket"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "tunnel_manifest"
+          }
+        ]
+      }
+    },
+    "action_reach_station_memory_evidence": {
+      "meta": {
+        "title": "Đến ga bằng evidence tái dựng",
+        "buttonLabel": "Tái dựng tuyến",
+        "desc": "Alternative route dùng Film, Manifest và witness; Memory thấp không khóa ga."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "goto",
+            "subtype": "scene",
+            "target": "scene_ghost_station"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Ga 03:17 reachable bằng evidence route."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "archive_open",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "evidence_evacuation_film",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "clue_hymn",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "clue_stakes",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "clue_tunnel",
+            "op": "==",
+            "value": true
+          }
+        ]
+      }
+    },
+    "action_reward_memory_roster": {
+      "meta": {
+        "title": "Reward Memory — roster corroborated",
+        "buttonLabel": "Xác minh roster",
+        "desc": "Reward một lần khi roster được corroborate bằng class photo."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "characters",
+            "subtype": "edit_stats",
+            "target": "player",
+            "property": "memory",
+            "field": "current",
+            "mode": "add",
+            "value": 1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_roster_verified",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_reward_memory_roster",
+            "property": "display",
+            "value": "hide"
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "clue_roster_verified",
+            "op": "==",
+            "value": false
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "class_photo"
+          },
+          {
+            "type": "state",
+            "property": "clue_roster",
+            "op": "==",
+            "value": true
+          }
+        ]
+      }
+    },
+    "action_reward_memory_tunnel": {
+      "meta": {
+        "title": "Reward Memory — Tunnel Names",
+        "buttonLabel": "Xác minh Tunnel Names",
+        "desc": "Reward một lần khi Tunnel Names và Manifest được đối chiếu."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "characters",
+            "subtype": "edit_stats",
+            "target": "player",
+            "property": "memory",
+            "field": "current",
+            "mode": "add",
+            "value": 1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "memory_reward_tunnel",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_reward_memory_tunnel",
+            "property": "display",
+            "value": "hide"
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "memory_reward_tunnel",
+            "op": "==",
+            "value": false
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "tunnel_manifest"
+          },
+          {
+            "type": "state",
+            "property": "clue_tunnel",
+            "op": "==",
+            "value": true
+          }
+        ]
+      }
+    }
   },
   "chat": {
     "chat_mai": {
@@ -5520,337 +11708,337 @@ export const DEMO_SCRIPT = {
       }
     },
     "chat_mai_memory": {
-  "meta": {
-    "title": "Mai — Bảo vệ ký ức",
-    "loop": false,
-    "sender": "mai",
-    "entry": "start",
-    "to": [
-      "player"
-    ]
-  },
-  "block": {
-    "start": {
-      "line": [
-        {
-          "char_id": "mai",
-          "text": "Cậu đã chọn bảo vệ Linh. Tôi không biết đó là cách đúng, nhưng tôi hiểu vì sao cậu không muốn biến ký ức của em ấy thành hồ sơ."
+      "meta": {
+        "title": "Mai — Bảo vệ ký ức",
+        "loop": false,
+        "sender": "mai",
+        "entry": "start",
+        "to": [
+          "player"
+        ]
+      },
+      "block": {
+        "start": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Cậu đã chọn bảo vệ Linh. Tôi không biết đó là cách đúng, nhưng tôi hiểu vì sao cậu không muốn biến ký ức của em ấy thành hồ sơ."
+            },
+            {
+              "char_id": "mai",
+              "text": "Có những điều tôi chỉ dám kể khi biết chúng sẽ không bị dùng để buộc người khác phải chứng minh mình tồn tại."
+            }
+          ],
+          "choice_id": "umbrella_ask",
+          "choiced": false
         },
-        {
-          "char_id": "mai",
-          "text": "Có những điều tôi chỉ dám kể khi biết chúng sẽ không bị dùng để buộc người khác phải chứng minh mình tồn tại."
+        "name": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Nét khắc bị cào lại nhiều lần. Tôi nhận ra chữ đầu tiên, nhưng phần còn lại giống tên của một người mà cả làng đều bảo chưa từng tồn tại."
+            }
+          ],
+          "choice_id": "name_follow",
+          "choiced": false
+        },
+        "owner": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Chiếc ô từng ở quầy hàng của tôi. Nhưng có những ngày tôi nhớ mình đã đưa nó cho một đứa trẻ, có ngày lại nhớ chính mình cầm nó đi xuống giếng."
+            }
+          ],
+          "choice_id": "owner_follow",
+          "choiced": false
+        },
+        "accuse": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Nếu cậu muốn hỏi tôi có phải người thứ mười hai không, câu trả lời là tôi không biết. Tôi chỉ biết ký ức của mình có một khoảng trống mang hình dáng của người đó."
+            }
+          ],
+          "choice_id": "accuse_follow",
+          "choiced": false
+        },
+        "first_letter": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Chữ đầu tiên có thể là L. Nhưng trên những bản ghi cũ, tên ấy bị sửa thành một vết mực đen."
+            }
+          ],
+          "choiced": false
+        },
+        "other_names": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Tôi từng nghe ba cách đọc khác nhau cho cùng một cái tên. Mỗi người đều tin cách của mình là đúng."
+            }
+          ],
+          "choiced": false
+        },
+        "child": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Tôi nhớ bàn tay nhỏ nắm cán ô. Không nhớ mặt, không nhớ giọng. Chỉ nhớ đứa trẻ hỏi liệu chuyến tàu có chờ đủ mười hai người không."
+            }
+          ],
+          "choiced": false
+        },
+        "memory": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Nếu ký ức ấy là của tôi, tôi đã quên một người. Nếu là của người khác, tôi đang nhớ thay họ."
+            }
+          ],
+          "choiced": false
+        },
+        "doubt": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Cậu nên hỏi Linh về bức ảnh lớp. Một cái tên có thể bị sửa, nhưng vị trí của một người trong bức ảnh khó biến mất hoàn toàn."
+            }
+          ],
+          "choiced": false
+        },
+        "leave": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Tôi không thể đưa cậu câu trả lời chắc chắn. Hãy giữ chiếc ô và đối chiếu nó với hồ sơ."
+            }
+          ],
+          "choiced": false
         }
-      ],
-      "choice_id": "umbrella_ask",
-      "choiced": false
-    },
-    "name": {
-      "line": [
-        {
-          "char_id": "mai",
-          "text": "Nét khắc bị cào lại nhiều lần. Tôi nhận ra chữ đầu tiên, nhưng phần còn lại giống tên của một người mà cả làng đều bảo chưa từng tồn tại."
-        }
-      ],
-      "choice_id": "name_follow",
-      "choiced": false
-    },
-    "owner": {
-      "line": [
-        {
-          "char_id": "mai",
-          "text": "Chiếc ô từng ở quầy hàng của tôi. Nhưng có những ngày tôi nhớ mình đã đưa nó cho một đứa trẻ, có ngày lại nhớ chính mình cầm nó đi xuống giếng."
-        }
-      ],
-      "choice_id": "owner_follow",
-      "choiced": false
-    },
-    "accuse": {
-      "line": [
-        {
-          "char_id": "mai",
-          "text": "Nếu cậu muốn hỏi tôi có phải người thứ mười hai không, câu trả lời là tôi không biết. Tôi chỉ biết ký ức của mình có một khoảng trống mang hình dáng của người đó."
-        }
-      ],
-      "choice_id": "accuse_follow",
-      "choiced": false
-    },
-    "first_letter": {
-      "line": [
-        {
-          "char_id": "mai",
-          "text": "Chữ đầu tiên có thể là L. Nhưng trên những bản ghi cũ, tên ấy bị sửa thành một vết mực đen."
-        }
-      ],
-      "choiced": false
-    },
-    "other_names": {
-      "line": [
-        {
-          "char_id": "mai",
-          "text": "Tôi từng nghe ba cách đọc khác nhau cho cùng một cái tên. Mỗi người đều tin cách của mình là đúng."
-        }
-      ],
-      "choiced": false
-    },
-    "child": {
-      "line": [
-        {
-          "char_id": "mai",
-          "text": "Tôi nhớ bàn tay nhỏ nắm cán ô. Không nhớ mặt, không nhớ giọng. Chỉ nhớ đứa trẻ hỏi liệu chuyến tàu có chờ đủ mười hai người không."
-        }
-      ],
-      "choiced": false
-    },
-    "memory": {
-      "line": [
-        {
-          "char_id": "mai",
-          "text": "Nếu ký ức ấy là của tôi, tôi đã quên một người. Nếu là của người khác, tôi đang nhớ thay họ."
-        }
-      ],
-      "choiced": false
-    },
-    "doubt": {
-      "line": [
-        {
-          "char_id": "mai",
-          "text": "Cậu nên hỏi Linh về bức ảnh lớp. Một cái tên có thể bị sửa, nhưng vị trí của một người trong bức ảnh khó biến mất hoàn toàn."
-        }
-      ],
-      "choiced": false
-    },
-    "leave": {
-      "line": [
-        {
-          "char_id": "mai",
-          "text": "Tôi không thể đưa cậu câu trả lời chắc chắn. Hãy giữ chiếc ô và đối chiếu nó với hồ sơ."
-        }
-      ],
-      "choiced": false
-    }
-  },
-  "choice": {
-    "umbrella_ask": [
-      {
-        "id": "mai_umbrella_name",
-        "text": "Cô có nhận ra cái tên được khắc trên cán ô không?",
-        "jump": "name"
       },
-      {
-        "id": "mai_umbrella_owner",
-        "text": "Chiếc ô này vốn thuộc về ai?",
-        "jump": "owner"
-      },
-      {
-        "id": "mai_umbrella_accuse",
-        "text": "Cô có phải người thứ mười hai không?",
-        "jump": "accuse"
+      "choice": {
+        "umbrella_ask": [
+          {
+            "id": "mai_umbrella_name",
+            "text": "Cô có nhận ra cái tên được khắc trên cán ô không?",
+            "jump": "name"
+          },
+          {
+            "id": "mai_umbrella_owner",
+            "text": "Chiếc ô này vốn thuộc về ai?",
+            "jump": "owner"
+          },
+          {
+            "id": "mai_umbrella_accuse",
+            "text": "Cô có phải người thứ mười hai không?",
+            "jump": "accuse"
+          }
+        ],
+        "name_follow": [
+          {
+            "id": "mai_name_letter",
+            "text": "Cô đọc được chữ nào đầu tiên?",
+            "jump": "first_letter"
+          },
+          {
+            "id": "mai_name_versions",
+            "text": "Vì sao mỗi người lại đọc cái tên ấy khác nhau?",
+            "jump": "other_names"
+          }
+        ],
+        "owner_follow": [
+          {
+            "id": "mai_owner_child",
+            "text": "Cô có nhớ đứa trẻ đã cầm chiếc ô không?",
+            "jump": "child"
+          },
+          {
+            "id": "mai_owner_memory",
+            "text": "Cô nghĩ ký ức đó thuộc về ai?",
+            "jump": "memory"
+          }
+        ],
+        "accuse_follow": [
+          {
+            "id": "mai_accuse_doubt",
+            "text": "Cô có nghĩ mình đang nhớ thay một người khác?",
+            "jump": "doubt"
+          },
+          {
+            "id": "mai_accuse_leave",
+            "text": "Tôi sẽ đối chiếu chiếc ô với hồ sơ trước.",
+            "jump": "leave"
+          }
+        ]
       }
-    ],
-    "name_follow": [
-      {
-        "id": "mai_name_letter",
-        "text": "Cô đọc được chữ nào đầu tiên?",
-        "jump": "first_letter"
-      },
-      {
-        "id": "mai_name_versions",
-        "text": "Vì sao mỗi người lại đọc cái tên ấy khác nhau?",
-        "jump": "other_names"
-      }
-    ],
-    "owner_follow": [
-      {
-        "id": "mai_owner_child",
-        "text": "Cô có nhớ đứa trẻ đã cầm chiếc ô không?",
-        "jump": "child"
-      },
-      {
-        "id": "mai_owner_memory",
-        "text": "Cô nghĩ ký ức đó thuộc về ai?",
-        "jump": "memory"
-      }
-    ],
-    "accuse_follow": [
-      {
-        "id": "mai_accuse_doubt",
-        "text": "Cô có nghĩ mình đang nhớ thay một người khác?",
-        "jump": "doubt"
-      },
-      {
-        "id": "mai_accuse_leave",
-        "text": "Tôi sẽ đối chiếu chiếc ô với hồ sơ trước.",
-        "jump": "leave"
-      }
-    ]
-  }
-},
+    },
     "chat_mai_evidence": {
-  "meta": {
-    "title": "Mai — Hồ sơ được giữ lại",
-    "loop": false,
-    "sender": "mai",
-    "entry": "start",
-    "to": [
-      "player"
-    ]
-  },
-  "block": {
-    "start": {
-      "line": [
-        {
-          "char_id": "mai",
-          "text": "Cậu đã giữ bản ghi ở trường. Nếu hồ sơ còn nguyên, tôi có thể giúp đối chiếu những cái tên mà làng đã sửa."
+      "meta": {
+        "title": "Mai — Hồ sơ được giữ lại",
+        "loop": false,
+        "sender": "mai",
+        "entry": "start",
+        "to": [
+          "player"
+        ]
+      },
+      "block": {
+        "start": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Cậu đã giữ bản ghi ở trường. Nếu hồ sơ còn nguyên, tôi có thể giúp đối chiếu những cái tên mà làng đã sửa."
+            },
+            {
+              "char_id": "mai",
+              "text": "Nhưng đừng để giấy tờ thay thế lời người sống. Bản ghi có thể xác nhận một sự kiện, không thể nói hết một người."
+            }
+          ],
+          "choice_id": "umbrella_ask",
+          "choiced": false
         },
-        {
-          "char_id": "mai",
-          "text": "Nhưng đừng để giấy tờ thay thế lời người sống. Bản ghi có thể xác nhận một sự kiện, không thể nói hết một người."
+        "name": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Nét khắc bị cào lại nhiều lần. Tôi nhận ra chữ đầu tiên, nhưng phần còn lại giống tên của một người mà cả làng đều bảo chưa từng tồn tại."
+            }
+          ],
+          "choice_id": "name_follow",
+          "choiced": false
+        },
+        "owner": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Chiếc ô từng ở quầy hàng của tôi. Nhưng có những ngày tôi nhớ mình đã đưa nó cho một đứa trẻ, có ngày lại nhớ chính mình cầm nó đi xuống giếng."
+            }
+          ],
+          "choice_id": "owner_follow",
+          "choiced": false
+        },
+        "accuse": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Nếu cậu muốn hỏi tôi có phải người thứ mười hai không, câu trả lời là tôi không biết. Tôi chỉ biết ký ức của mình có một khoảng trống mang hình dáng của người đó."
+            }
+          ],
+          "choice_id": "accuse_follow",
+          "choiced": false
+        },
+        "first_letter": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Chữ đầu tiên có thể là L. Nhưng trên những bản ghi cũ, tên ấy bị sửa thành một vết mực đen."
+            }
+          ],
+          "choiced": false
+        },
+        "other_names": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Tôi từng nghe ba cách đọc khác nhau cho cùng một cái tên. Mỗi người đều tin cách của mình là đúng."
+            }
+          ],
+          "choiced": false
+        },
+        "child": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Tôi nhớ bàn tay nhỏ nắm cán ô. Không nhớ mặt, không nhớ giọng. Chỉ nhớ đứa trẻ hỏi liệu chuyến tàu có chờ đủ mười hai người không."
+            }
+          ],
+          "choiced": false
+        },
+        "memory": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Nếu ký ức ấy là của tôi, tôi đã quên một người. Nếu là của người khác, tôi đang nhớ thay họ."
+            }
+          ],
+          "choiced": false
+        },
+        "doubt": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Cậu nên hỏi Linh về bức ảnh lớp. Một cái tên có thể bị sửa, nhưng vị trí của một người trong bức ảnh khó biến mất hoàn toàn."
+            }
+          ],
+          "choiced": false
+        },
+        "leave": {
+          "line": [
+            {
+              "char_id": "mai",
+              "text": "Tôi không thể đưa cậu câu trả lời chắc chắn. Hãy giữ chiếc ô và đối chiếu nó với hồ sơ."
+            }
+          ],
+          "choiced": false
         }
-      ],
-      "choice_id": "umbrella_ask",
-      "choiced": false
-    },
-    "name": {
-      "line": [
-        {
-          "char_id": "mai",
-          "text": "Nét khắc bị cào lại nhiều lần. Tôi nhận ra chữ đầu tiên, nhưng phần còn lại giống tên của một người mà cả làng đều bảo chưa từng tồn tại."
-        }
-      ],
-      "choice_id": "name_follow",
-      "choiced": false
-    },
-    "owner": {
-      "line": [
-        {
-          "char_id": "mai",
-          "text": "Chiếc ô từng ở quầy hàng của tôi. Nhưng có những ngày tôi nhớ mình đã đưa nó cho một đứa trẻ, có ngày lại nhớ chính mình cầm nó đi xuống giếng."
-        }
-      ],
-      "choice_id": "owner_follow",
-      "choiced": false
-    },
-    "accuse": {
-      "line": [
-        {
-          "char_id": "mai",
-          "text": "Nếu cậu muốn hỏi tôi có phải người thứ mười hai không, câu trả lời là tôi không biết. Tôi chỉ biết ký ức của mình có một khoảng trống mang hình dáng của người đó."
-        }
-      ],
-      "choice_id": "accuse_follow",
-      "choiced": false
-    },
-    "first_letter": {
-      "line": [
-        {
-          "char_id": "mai",
-          "text": "Chữ đầu tiên có thể là L. Nhưng trên những bản ghi cũ, tên ấy bị sửa thành một vết mực đen."
-        }
-      ],
-      "choiced": false
-    },
-    "other_names": {
-      "line": [
-        {
-          "char_id": "mai",
-          "text": "Tôi từng nghe ba cách đọc khác nhau cho cùng một cái tên. Mỗi người đều tin cách của mình là đúng."
-        }
-      ],
-      "choiced": false
-    },
-    "child": {
-      "line": [
-        {
-          "char_id": "mai",
-          "text": "Tôi nhớ bàn tay nhỏ nắm cán ô. Không nhớ mặt, không nhớ giọng. Chỉ nhớ đứa trẻ hỏi liệu chuyến tàu có chờ đủ mười hai người không."
-        }
-      ],
-      "choiced": false
-    },
-    "memory": {
-      "line": [
-        {
-          "char_id": "mai",
-          "text": "Nếu ký ức ấy là của tôi, tôi đã quên một người. Nếu là của người khác, tôi đang nhớ thay họ."
-        }
-      ],
-      "choiced": false
-    },
-    "doubt": {
-      "line": [
-        {
-          "char_id": "mai",
-          "text": "Cậu nên hỏi Linh về bức ảnh lớp. Một cái tên có thể bị sửa, nhưng vị trí của một người trong bức ảnh khó biến mất hoàn toàn."
-        }
-      ],
-      "choiced": false
-    },
-    "leave": {
-      "line": [
-        {
-          "char_id": "mai",
-          "text": "Tôi không thể đưa cậu câu trả lời chắc chắn. Hãy giữ chiếc ô và đối chiếu nó với hồ sơ."
-        }
-      ],
-      "choiced": false
-    }
-  },
-  "choice": {
-    "umbrella_ask": [
-      {
-        "id": "mai_umbrella_name",
-        "text": "Cô có nhận ra cái tên được khắc trên cán ô không?",
-        "jump": "name"
       },
-      {
-        "id": "mai_umbrella_owner",
-        "text": "Chiếc ô này vốn thuộc về ai?",
-        "jump": "owner"
-      },
-      {
-        "id": "mai_umbrella_accuse",
-        "text": "Cô có phải người thứ mười hai không?",
-        "jump": "accuse"
+      "choice": {
+        "umbrella_ask": [
+          {
+            "id": "mai_umbrella_name",
+            "text": "Cô có nhận ra cái tên được khắc trên cán ô không?",
+            "jump": "name"
+          },
+          {
+            "id": "mai_umbrella_owner",
+            "text": "Chiếc ô này vốn thuộc về ai?",
+            "jump": "owner"
+          },
+          {
+            "id": "mai_umbrella_accuse",
+            "text": "Cô có phải người thứ mười hai không?",
+            "jump": "accuse"
+          }
+        ],
+        "name_follow": [
+          {
+            "id": "mai_name_letter",
+            "text": "Cô đọc được chữ nào đầu tiên?",
+            "jump": "first_letter"
+          },
+          {
+            "id": "mai_name_versions",
+            "text": "Vì sao mỗi người lại đọc cái tên ấy khác nhau?",
+            "jump": "other_names"
+          }
+        ],
+        "owner_follow": [
+          {
+            "id": "mai_owner_child",
+            "text": "Cô có nhớ đứa trẻ đã cầm chiếc ô không?",
+            "jump": "child"
+          },
+          {
+            "id": "mai_owner_memory",
+            "text": "Cô nghĩ ký ức đó thuộc về ai?",
+            "jump": "memory"
+          }
+        ],
+        "accuse_follow": [
+          {
+            "id": "mai_accuse_doubt",
+            "text": "Cô có nghĩ mình đang nhớ thay một người khác?",
+            "jump": "doubt"
+          },
+          {
+            "id": "mai_accuse_leave",
+            "text": "Tôi sẽ đối chiếu chiếc ô với hồ sơ trước.",
+            "jump": "leave"
+          }
+        ]
       }
-    ],
-    "name_follow": [
-      {
-        "id": "mai_name_letter",
-        "text": "Cô đọc được chữ nào đầu tiên?",
-        "jump": "first_letter"
-      },
-      {
-        "id": "mai_name_versions",
-        "text": "Vì sao mỗi người lại đọc cái tên ấy khác nhau?",
-        "jump": "other_names"
-      }
-    ],
-    "owner_follow": [
-      {
-        "id": "mai_owner_child",
-        "text": "Cô có nhớ đứa trẻ đã cầm chiếc ô không?",
-        "jump": "child"
-      },
-      {
-        "id": "mai_owner_memory",
-        "text": "Cô nghĩ ký ức đó thuộc về ai?",
-        "jump": "memory"
-      }
-    ],
-    "accuse_follow": [
-      {
-        "id": "mai_accuse_doubt",
-        "text": "Cô có nghĩ mình đang nhớ thay một người khác?",
-        "jump": "doubt"
-      },
-      {
-        "id": "mai_accuse_leave",
-        "text": "Tôi sẽ đối chiếu chiếc ô với hồ sơ trước.",
-        "jump": "leave"
-      }
-    ]
-  }
-},
+    },
     "chat_mai_umbrella": {
       "meta": {
         "title": "Mai — Cái tên trên cán ô",
@@ -6175,319 +12363,319 @@ export const DEMO_SCRIPT = {
       }
     },
     "chat_hanh_memory": {
-  "meta": {
-    "title": "Bà Hạnh — Lời kể được bảo vệ",
-    "loop": false,
-    "sender": "hanh",
-    "entry": "start",
-    "to": [
-      "player"
-    ]
-  },
-  "block": {
-    "start": {
-      "line": [
-        {
-          "char_id": "hanh",
-          "text": "Cậu đã chọn giữ lời khai của Linh riêng tư. Tôi tôn trọng điều đó; có những ký ức chỉ nên được kể khi người mang chúng thấy an toàn."
+      "meta": {
+        "title": "Bà Hạnh — Lời kể được bảo vệ",
+        "loop": false,
+        "sender": "hanh",
+        "entry": "start",
+        "to": [
+          "player"
+        ]
+      },
+      "block": {
+        "start": {
+          "line": [
+            {
+              "char_id": "hanh",
+              "text": "Cậu đã chọn giữ lời khai của Linh riêng tư. Tôi tôn trọng điều đó; có những ký ức chỉ nên được kể khi người mang chúng thấy an toàn."
+            },
+            {
+              "char_id": "hanh",
+              "text": "Căn phòng thứ bảy không phải một hồ sơ. Nó là nơi một người từng chờ được gọi tên."
+            }
+          ],
+          "choice_id": "room_ask",
+          "choiced": false
         },
-        {
-          "char_id": "hanh",
-          "text": "Căn phòng thứ bảy không phải một hồ sơ. Nó là nơi một người từng chờ được gọi tên."
+        "belongings": {
+          "line": [
+            {
+              "char_id": "hanh",
+              "text": "Trong phòng có một chiếc cốc, một tấm ảnh bị úp xuống và dấu bụi hình chữ nhật trên bàn. Tôi không biết món nào được đặt ở đó đầu tiên."
+            }
+          ],
+          "choice_id": "belongings_follow",
+          "choiced": false
+        },
+        "photo": {
+          "line": [
+            {
+              "char_id": "hanh",
+              "text": "Tấm ảnh chụp hành lang nhà trọ. Có bảy cánh cửa, nhưng người đứng trước cánh cửa cuối cùng đã bị cắt khỏi ảnh."
+            }
+          ],
+          "choice_id": "photo_follow",
+          "choiced": false
+        },
+        "waiting": {
+          "line": [
+            {
+              "char_id": "hanh",
+              "text": "Tôi từng đặt một chiếc cốc thứ hai mỗi tối. Khi nhận ra mình làm vậy, tôi đã cất nó đi. Sáng hôm sau nó lại nằm trên bàn."
+            }
+          ],
+          "choice_id": "waiting_follow",
+          "choiced": false
+        },
+        "back_photo": {
+          "line": [
+            {
+              "char_id": "hanh",
+              "text": "Mặt sau ảnh có dòng chữ: “Đừng khóa cửa khi đủ mười hai”. Không có chữ ký."
+            }
+          ],
+          "choiced": false
+        },
+        "identity": {
+          "line": [
+            {
+              "char_id": "hanh",
+              "text": "Tôi không thể nói người trong ảnh là cậu. Khuôn mặt đã bị cắt, và phần còn lại không đủ để nhận dạng."
+            }
+          ],
+          "choiced": false
+        },
+        "cup": {
+          "line": [
+            {
+              "char_id": "hanh",
+              "text": "Chiếc cốc có vết son môi ở miệng, nhưng tôi sống một mình. Có lẽ căn phòng này từng có người ở cùng tôi."
+            }
+          ],
+          "choiced": false
+        },
+        "night": {
+          "line": [
+            {
+              "char_id": "hanh",
+              "text": "Tôi nghe tiếng chìa khóa xoay vào lúc 03:17. Khi mở cửa, hành lang trống không, nhưng chiếc cốc thứ hai đã được rót đầy."
+            }
+          ],
+          "choiced": false
+        },
+        "truth": {
+          "line": [
+            {
+              "char_id": "hanh",
+              "text": "Tôi sẽ không yêu cầu cậu tin tôi. Hãy giữ tấm ảnh và so sánh nó với ảnh lớp ở trường."
+            }
+          ],
+          "choiced": false
         }
-      ],
-      "choice_id": "room_ask",
-      "choiced": false
-    },
-    "belongings": {
-      "line": [
-        {
-          "char_id": "hanh",
-          "text": "Trong phòng có một chiếc cốc, một tấm ảnh bị úp xuống và dấu bụi hình chữ nhật trên bàn. Tôi không biết món nào được đặt ở đó đầu tiên."
-        }
-      ],
-      "choice_id": "belongings_follow",
-      "choiced": false
-    },
-    "photo": {
-      "line": [
-        {
-          "char_id": "hanh",
-          "text": "Tấm ảnh chụp hành lang nhà trọ. Có bảy cánh cửa, nhưng người đứng trước cánh cửa cuối cùng đã bị cắt khỏi ảnh."
-        }
-      ],
-      "choice_id": "photo_follow",
-      "choiced": false
-    },
-    "waiting": {
-      "line": [
-        {
-          "char_id": "hanh",
-          "text": "Tôi từng đặt một chiếc cốc thứ hai mỗi tối. Khi nhận ra mình làm vậy, tôi đã cất nó đi. Sáng hôm sau nó lại nằm trên bàn."
-        }
-      ],
-      "choice_id": "waiting_follow",
-      "choiced": false
-    },
-    "back_photo": {
-      "line": [
-        {
-          "char_id": "hanh",
-          "text": "Mặt sau ảnh có dòng chữ: “Đừng khóa cửa khi đủ mười hai”. Không có chữ ký."
-        }
-      ],
-      "choiced": false
-    },
-    "identity": {
-      "line": [
-        {
-          "char_id": "hanh",
-          "text": "Tôi không thể nói người trong ảnh là cậu. Khuôn mặt đã bị cắt, và phần còn lại không đủ để nhận dạng."
-        }
-      ],
-      "choiced": false
-    },
-    "cup": {
-      "line": [
-        {
-          "char_id": "hanh",
-          "text": "Chiếc cốc có vết son môi ở miệng, nhưng tôi sống một mình. Có lẽ căn phòng này từng có người ở cùng tôi."
-        }
-      ],
-      "choiced": false
-    },
-    "night": {
-      "line": [
-        {
-          "char_id": "hanh",
-          "text": "Tôi nghe tiếng chìa khóa xoay vào lúc 03:17. Khi mở cửa, hành lang trống không, nhưng chiếc cốc thứ hai đã được rót đầy."
-        }
-      ],
-      "choiced": false
-    },
-    "truth": {
-      "line": [
-        {
-          "char_id": "hanh",
-          "text": "Tôi sẽ không yêu cầu cậu tin tôi. Hãy giữ tấm ảnh và so sánh nó với ảnh lớp ở trường."
-        }
-      ],
-      "choiced": false
-    }
-  },
-  "choice": {
-    "room_ask": [
-      {
-        "id": "hanh_room_belongings",
-        "text": "Những món đồ trong phòng thuộc về ai?",
-        "jump": "belongings"
       },
-      {
-        "id": "hanh_room_photo",
-        "text": "Bức ảnh hành lang có gì bất thường?",
-        "jump": "photo"
-      },
-      {
-        "id": "hanh_room_waiting",
-        "text": "Bà đã từng chờ ai trong căn phòng này?",
-        "jump": "waiting"
+      "choice": {
+        "room_ask": [
+          {
+            "id": "hanh_room_belongings",
+            "text": "Những món đồ trong phòng thuộc về ai?",
+            "jump": "belongings"
+          },
+          {
+            "id": "hanh_room_photo",
+            "text": "Bức ảnh hành lang có gì bất thường?",
+            "jump": "photo"
+          },
+          {
+            "id": "hanh_room_waiting",
+            "text": "Bà đã từng chờ ai trong căn phòng này?",
+            "jump": "waiting"
+          }
+        ],
+        "belongings_follow": [
+          {
+            "id": "hanh_belongings_photo",
+            "text": "Tấm ảnh có manh mối gì ở mặt sau?",
+            "jump": "back_photo"
+          },
+          {
+            "id": "hanh_belongings_identity",
+            "text": "Bà có nhận ra người từng ở đây không?",
+            "jump": "identity"
+          }
+        ],
+        "photo_follow": [
+          {
+            "id": "hanh_photo_cup",
+            "text": "Chiếc cốc thứ hai có liên quan đến căn phòng không?",
+            "jump": "cup"
+          },
+          {
+            "id": "hanh_photo_night",
+            "text": "Bà có nghe thấy ai trở lại vào ban đêm?",
+            "jump": "night"
+          }
+        ],
+        "waiting_follow": [
+          {
+            "id": "hanh_waiting_cup",
+            "text": "Vì sao bà vẫn đặt hai chiếc cốc?",
+            "jump": "cup"
+          },
+          {
+            "id": "hanh_waiting_truth",
+            "text": "Tôi nên làm gì với những gì tìm thấy ở đây?",
+            "jump": "truth"
+          }
+        ]
       }
-    ],
-    "belongings_follow": [
-      {
-        "id": "hanh_belongings_photo",
-        "text": "Tấm ảnh có manh mối gì ở mặt sau?",
-        "jump": "back_photo"
-      },
-      {
-        "id": "hanh_belongings_identity",
-        "text": "Bà có nhận ra người từng ở đây không?",
-        "jump": "identity"
-      }
-    ],
-    "photo_follow": [
-      {
-        "id": "hanh_photo_cup",
-        "text": "Chiếc cốc thứ hai có liên quan đến căn phòng không?",
-        "jump": "cup"
-      },
-      {
-        "id": "hanh_photo_night",
-        "text": "Bà có nghe thấy ai trở lại vào ban đêm?",
-        "jump": "night"
-      }
-    ],
-    "waiting_follow": [
-      {
-        "id": "hanh_waiting_cup",
-        "text": "Vì sao bà vẫn đặt hai chiếc cốc?",
-        "jump": "cup"
-      },
-      {
-        "id": "hanh_waiting_truth",
-        "text": "Tôi nên làm gì với những gì tìm thấy ở đây?",
-        "jump": "truth"
-      }
-    ]
-  }
-},
+    },
     "chat_hanh_evidence": {
-  "meta": {
-    "title": "Bà Hạnh — Hồ sơ đối chiếu",
-    "loop": false,
-    "sender": "hanh",
-    "entry": "start",
-    "to": [
-      "player"
-    ]
-  },
-  "block": {
-    "start": {
-      "line": [
-        {
-          "char_id": "hanh",
-          "text": "Cậu đã giữ sổ ở trường. Tôi có thể đối chiếu căn phòng này với bản ghi, nhưng đừng nghĩ tài liệu sẽ khiến người ta thôi sợ."
+      "meta": {
+        "title": "Bà Hạnh — Hồ sơ đối chiếu",
+        "loop": false,
+        "sender": "hanh",
+        "entry": "start",
+        "to": [
+          "player"
+        ]
+      },
+      "block": {
+        "start": {
+          "line": [
+            {
+              "char_id": "hanh",
+              "text": "Cậu đã giữ sổ ở trường. Tôi có thể đối chiếu căn phòng này với bản ghi, nhưng đừng nghĩ tài liệu sẽ khiến người ta thôi sợ."
+            },
+            {
+              "char_id": "hanh",
+              "text": "Nếu cậu công khai nó, hãy nhớ người sống vẫn phải ở lại trong ngôi làng này sau khi sự thật được ghi ra."
+            }
+          ],
+          "choice_id": "room_ask",
+          "choiced": false
         },
-        {
-          "char_id": "hanh",
-          "text": "Nếu cậu công khai nó, hãy nhớ người sống vẫn phải ở lại trong ngôi làng này sau khi sự thật được ghi ra."
+        "belongings": {
+          "line": [
+            {
+              "char_id": "hanh",
+              "text": "Trong phòng có một chiếc cốc, một tấm ảnh bị úp xuống và dấu bụi hình chữ nhật trên bàn. Tôi không biết món nào được đặt ở đó đầu tiên."
+            }
+          ],
+          "choice_id": "belongings_follow",
+          "choiced": false
+        },
+        "photo": {
+          "line": [
+            {
+              "char_id": "hanh",
+              "text": "Tấm ảnh chụp hành lang nhà trọ. Có bảy cánh cửa, nhưng người đứng trước cánh cửa cuối cùng đã bị cắt khỏi ảnh."
+            }
+          ],
+          "choice_id": "photo_follow",
+          "choiced": false
+        },
+        "waiting": {
+          "line": [
+            {
+              "char_id": "hanh",
+              "text": "Tôi từng đặt một chiếc cốc thứ hai mỗi tối. Khi nhận ra mình làm vậy, tôi đã cất nó đi. Sáng hôm sau nó lại nằm trên bàn."
+            }
+          ],
+          "choice_id": "waiting_follow",
+          "choiced": false
+        },
+        "back_photo": {
+          "line": [
+            {
+              "char_id": "hanh",
+              "text": "Mặt sau ảnh có dòng chữ: “Đừng khóa cửa khi đủ mười hai”. Không có chữ ký."
+            }
+          ],
+          "choiced": false
+        },
+        "identity": {
+          "line": [
+            {
+              "char_id": "hanh",
+              "text": "Tôi không thể nói người trong ảnh là cậu. Khuôn mặt đã bị cắt, và phần còn lại không đủ để nhận dạng."
+            }
+          ],
+          "choiced": false
+        },
+        "cup": {
+          "line": [
+            {
+              "char_id": "hanh",
+              "text": "Chiếc cốc có vết son môi ở miệng, nhưng tôi sống một mình. Có lẽ căn phòng này từng có người ở cùng tôi."
+            }
+          ],
+          "choiced": false
+        },
+        "night": {
+          "line": [
+            {
+              "char_id": "hanh",
+              "text": "Tôi nghe tiếng chìa khóa xoay vào lúc 03:17. Khi mở cửa, hành lang trống không, nhưng chiếc cốc thứ hai đã được rót đầy."
+            }
+          ],
+          "choiced": false
+        },
+        "truth": {
+          "line": [
+            {
+              "char_id": "hanh",
+              "text": "Tôi sẽ không yêu cầu cậu tin tôi. Hãy giữ tấm ảnh và so sánh nó với ảnh lớp ở trường."
+            }
+          ],
+          "choiced": false
         }
-      ],
-      "choice_id": "room_ask",
-      "choiced": false
-    },
-    "belongings": {
-      "line": [
-        {
-          "char_id": "hanh",
-          "text": "Trong phòng có một chiếc cốc, một tấm ảnh bị úp xuống và dấu bụi hình chữ nhật trên bàn. Tôi không biết món nào được đặt ở đó đầu tiên."
-        }
-      ],
-      "choice_id": "belongings_follow",
-      "choiced": false
-    },
-    "photo": {
-      "line": [
-        {
-          "char_id": "hanh",
-          "text": "Tấm ảnh chụp hành lang nhà trọ. Có bảy cánh cửa, nhưng người đứng trước cánh cửa cuối cùng đã bị cắt khỏi ảnh."
-        }
-      ],
-      "choice_id": "photo_follow",
-      "choiced": false
-    },
-    "waiting": {
-      "line": [
-        {
-          "char_id": "hanh",
-          "text": "Tôi từng đặt một chiếc cốc thứ hai mỗi tối. Khi nhận ra mình làm vậy, tôi đã cất nó đi. Sáng hôm sau nó lại nằm trên bàn."
-        }
-      ],
-      "choice_id": "waiting_follow",
-      "choiced": false
-    },
-    "back_photo": {
-      "line": [
-        {
-          "char_id": "hanh",
-          "text": "Mặt sau ảnh có dòng chữ: “Đừng khóa cửa khi đủ mười hai”. Không có chữ ký."
-        }
-      ],
-      "choiced": false
-    },
-    "identity": {
-      "line": [
-        {
-          "char_id": "hanh",
-          "text": "Tôi không thể nói người trong ảnh là cậu. Khuôn mặt đã bị cắt, và phần còn lại không đủ để nhận dạng."
-        }
-      ],
-      "choiced": false
-    },
-    "cup": {
-      "line": [
-        {
-          "char_id": "hanh",
-          "text": "Chiếc cốc có vết son môi ở miệng, nhưng tôi sống một mình. Có lẽ căn phòng này từng có người ở cùng tôi."
-        }
-      ],
-      "choiced": false
-    },
-    "night": {
-      "line": [
-        {
-          "char_id": "hanh",
-          "text": "Tôi nghe tiếng chìa khóa xoay vào lúc 03:17. Khi mở cửa, hành lang trống không, nhưng chiếc cốc thứ hai đã được rót đầy."
-        }
-      ],
-      "choiced": false
-    },
-    "truth": {
-      "line": [
-        {
-          "char_id": "hanh",
-          "text": "Tôi sẽ không yêu cầu cậu tin tôi. Hãy giữ tấm ảnh và so sánh nó với ảnh lớp ở trường."
-        }
-      ],
-      "choiced": false
-    }
-  },
-  "choice": {
-    "room_ask": [
-      {
-        "id": "hanh_room_belongings",
-        "text": "Những món đồ trong phòng thuộc về ai?",
-        "jump": "belongings"
       },
-      {
-        "id": "hanh_room_photo",
-        "text": "Bức ảnh hành lang có gì bất thường?",
-        "jump": "photo"
-      },
-      {
-        "id": "hanh_room_waiting",
-        "text": "Bà đã từng chờ ai trong căn phòng này?",
-        "jump": "waiting"
+      "choice": {
+        "room_ask": [
+          {
+            "id": "hanh_room_belongings",
+            "text": "Những món đồ trong phòng thuộc về ai?",
+            "jump": "belongings"
+          },
+          {
+            "id": "hanh_room_photo",
+            "text": "Bức ảnh hành lang có gì bất thường?",
+            "jump": "photo"
+          },
+          {
+            "id": "hanh_room_waiting",
+            "text": "Bà đã từng chờ ai trong căn phòng này?",
+            "jump": "waiting"
+          }
+        ],
+        "belongings_follow": [
+          {
+            "id": "hanh_belongings_photo",
+            "text": "Tấm ảnh có manh mối gì ở mặt sau?",
+            "jump": "back_photo"
+          },
+          {
+            "id": "hanh_belongings_identity",
+            "text": "Bà có nhận ra người từng ở đây không?",
+            "jump": "identity"
+          }
+        ],
+        "photo_follow": [
+          {
+            "id": "hanh_photo_cup",
+            "text": "Chiếc cốc thứ hai có liên quan đến căn phòng không?",
+            "jump": "cup"
+          },
+          {
+            "id": "hanh_photo_night",
+            "text": "Bà có nghe thấy ai trở lại vào ban đêm?",
+            "jump": "night"
+          }
+        ],
+        "waiting_follow": [
+          {
+            "id": "hanh_waiting_cup",
+            "text": "Vì sao bà vẫn đặt hai chiếc cốc?",
+            "jump": "cup"
+          },
+          {
+            "id": "hanh_waiting_truth",
+            "text": "Tôi nên làm gì với những gì tìm thấy ở đây?",
+            "jump": "truth"
+          }
+        ]
       }
-    ],
-    "belongings_follow": [
-      {
-        "id": "hanh_belongings_photo",
-        "text": "Tấm ảnh có manh mối gì ở mặt sau?",
-        "jump": "back_photo"
-      },
-      {
-        "id": "hanh_belongings_identity",
-        "text": "Bà có nhận ra người từng ở đây không?",
-        "jump": "identity"
-      }
-    ],
-    "photo_follow": [
-      {
-        "id": "hanh_photo_cup",
-        "text": "Chiếc cốc thứ hai có liên quan đến căn phòng không?",
-        "jump": "cup"
-      },
-      {
-        "id": "hanh_photo_night",
-        "text": "Bà có nghe thấy ai trở lại vào ban đêm?",
-        "jump": "night"
-      }
-    ],
-    "waiting_follow": [
-      {
-        "id": "hanh_waiting_cup",
-        "text": "Vì sao bà vẫn đặt hai chiếc cốc?",
-        "jump": "cup"
-      },
-      {
-        "id": "hanh_waiting_truth",
-        "text": "Tôi nên làm gì với những gì tìm thấy ở đây?",
-        "jump": "truth"
-      }
-    ]
-  }
-},
+    },
     "chat_hanh_room": {
       "meta": {
         "title": "Bà Hạnh — Căn phòng thứ bảy",
@@ -6646,177 +12834,175 @@ export const DEMO_SCRIPT = {
       }
     },
     "chat_notice_history": {
-        "meta": {
-          "title": "Thông báo sơ tán — Bản lưu phát thanh",
-          "loop": false,
-          "sender": "$communication",
-          "entry": "start",
-          "to": [
-            "player"
-          ]
-        },
-        "block": {
-          "start": {
-            "line": [
-              {
-                "char_id": "$communication",
-                "text": "THÔNG BÁO SƠ TÁN — mười bảy năm trước. Toàn bộ cư dân có tên trong danh sách phải tập trung tại quảng trường trước 03:17."
-              },
-              {
-                "char_id": "$communication",
-                "text": "Đội sơ tán xác nhận đã tiếp nhận mười hai người. Không tự ý tách đoàn. Người phụ trách phải đối chiếu tên với sổ điểm danh trước khi rời làng."
-              },
-              {
-                "char_id": "$communication",
-                "text": "Bản lưu thứ hai ghi nhận mười một người lên chuyến xe. Dòng thứ mười hai trên bản niêm phong đã bị cạo bỏ; không có chữ ký xác nhận việc sửa danh sách."
-              },
-              {
-                "char_id": "$communication",
-                "text": "Mọi khiếu nại về số người phải gửi cho người quản lý nhà trọ. Bảng thông báo sẽ được thay mới sau khi hoàn tất sơ tán."
-              }
-            ],
-            "choice_id": "history_ack",
-            "choiced": false
-          }
-        },
-        "choice": {
-          "history_ack": [
+      "meta": {
+        "title": "Thông báo sơ tán — Bản lưu phát thanh",
+        "loop": false,
+        "sender": "$communication",
+        "entry": "start",
+        "to": [
+          "player"
+        ]
+      },
+      "block": {
+        "start": {
+          "line": [
             {
-              "id": "notice_history_acknowledge",
-              "text": "Tôi đã đọc xong bản thông báo.",
-              "jump": null
+              "char_id": "$communication",
+              "text": "THÔNG BÁO SƠ TÁN — mười bảy năm trước. Toàn bộ cư dân có tên trong danh sách phải tập trung tại quảng trường trước 03:17."
+            },
+            {
+              "char_id": "$communication",
+              "text": "Đội sơ tán xác nhận đã tiếp nhận mười hai người. Không tự ý tách đoàn. Người phụ trách phải đối chiếu tên với sổ điểm danh trước khi rời làng."
+            },
+            {
+              "char_id": "$communication",
+              "text": "Bản lưu thứ hai ghi nhận mười một người lên chuyến xe. Dòng thứ mười hai trên bản niêm phong đã bị cạo bỏ; không có chữ ký xác nhận việc sửa danh sách."
+            },
+            {
+              "char_id": "$communication",
+              "text": "Mọi khiếu nại về số người phải gửi cho người quản lý nhà trọ. Bảng thông báo sẽ được thay mới sau khi hoàn tất sơ tán."
             }
-          ]
+          ],
+          "choice_id": "history_ack",
+          "choiced": false
         }
       },
+      "choice": {
+        "history_ack": [
+          {
+            "id": "notice_history_acknowledge",
+            "text": "Tôi đã đọc xong bản thông báo.",
+            "jump": null
+          }
+        ]
+      }
+    },
     "chat_notice_memory": {
-        "meta": {
-          "title": "Bảng thông báo — Phần ký ức còn sót",
-          "loop": false,
-          "sender": "$communication",
-          "entry": "start",
-          "to": [
-            "player"
-          ]
-        },
-        "block": {
-          "start": {
-            "line": [
-              {
-                "char_id": "$communication",
-                "text": "BẢN ĐỐI CHIẾU — chỉ được mở khi người đọc có thể nhớ lại đầy đủ danh sách."
-              },
-              {
-                "char_id": "$communication",
-                "text": "Bản gốc ghi mười hai người được bàn giao tại quảng trường. Bản sao gửi về huyện chỉ ghi mười một."
-              },
-              {
-                "char_id": "$communication",
-                "text": "Ở mép giấy còn vết hằn của một cái tên. Nét chữ bị cạo đi nhưng áp lực bút vẫn in trên tờ giấy phía dưới."
-              },
-              {
-                "char_id": "$communication",
-                "text": "Dòng cuối cùng không có trong bản lưu chính thức: “Người bị xóa không được xem là đã rời đi. Hãy hỏi người giữ chìa khóa nhà trọ.”"
-              }
-            ],
-            "choice_id": "memory_choice",
-            "choiced": false
-          }
-        },
-        "choice": {
-          "memory_choice": [
+      "meta": {
+        "title": "Bảng thông báo — Phần ký ức còn sót",
+        "loop": false,
+        "sender": "$communication",
+        "entry": "start",
+        "to": [
+          "player"
+        ]
+      },
+      "block": {
+        "start": {
+          "line": [
             {
-              "id": "notice_memory_recall",
-              "text": "Tôi nhớ lại được thứ gì đó…",
-              "jump": null,
-              "effect": [
-                {
-                  "type": "set",
-                  "subtype": "action",
-                  "target": "action_read_notice",
-                  "property": "display",
-                  "value": "hide"
-                }
-              ]
+              "char_id": "$communication",
+              "text": "BẢN ĐỐI CHIẾU — chỉ được mở khi người đọc có thể nhớ lại đầy đủ danh sách."
             },
             {
-              "id": "notice_memory_forget",
-              "text": "Tôi mong sao quên đi tất cả…",
-              "jump": null,
-              "effect": [
-                {
-                  "type": "set",
-                  "subtype": "action",
-                  "target": "action_read_notice",
-                  "property": "display",
-                  "value": "hide"
-                }
-              ]
+              "char_id": "$communication",
+              "text": "Bản gốc ghi mười hai người được bàn giao tại quảng trường. Bản sao gửi về huyện chỉ ghi mười một."
+            },
+            {
+              "char_id": "$communication",
+              "text": "Ở mép giấy còn vết hằn của một cái tên. Nét chữ bị cạo đi nhưng áp lực bút vẫn in trên tờ giấy phía dưới."
+            },
+            {
+              "char_id": "$communication",
+              "text": "Dòng cuối cùng không có trong bản lưu chính thức: “Người bị xóa không được xem là đã rời đi. Hãy hỏi người giữ chìa khóa nhà trọ.”"
             }
-          ]
+          ],
+          "choice_id": "memory_choice",
+          "choiced": false
         }
       },
+      "choice": {
+        "memory_choice": [
+          {
+            "id": "notice_memory_recall",
+            "text": "Tôi nhớ lại được thứ gì đó…",
+            "jump": null,
+            "effect": [
+              {
+                "type": "set",
+                "subtype": "action",
+                "target": "action_read_notice",
+                "property": "display",
+                "value": "hide"
+              }
+            ]
+          },
+          {
+            "id": "notice_memory_forget",
+            "text": "Tôi mong sao quên đi tất cả…",
+            "jump": null,
+            "effect": [
+              {
+                "type": "set",
+                "subtype": "action",
+                "target": "action_read_notice",
+                "property": "display",
+                "value": "hide"
+              }
+            ]
+          }
+        ]
+      }
+    },
     "chat_hanh_notice": {
-        "meta": {
-          "title": "Bà Hạnh — Bản thông báo bị giữ lại",
-          "loop": false,
-          "sender": "hanh",
-          "entry": "start",
-          "to": [
-            "player"
-          ]
-        },
-        "block": {
-          "start": {
-            "line": [
-              {
-                "char_id": "hanh",
-                "text": "Tôi từng giữ lại một bản thông báo khác sau đêm sơ tán. Bản ấy không được phát qua loa, vì nó ghi một điều mà danh sách chính thức không thừa nhận."
-              },
-              {
-                "char_id": "hanh",
-                "text": "Tôi không thể đưa nó cho cậu trước khi cậu tự đọc bản ở quảng trường. Nếu muốn biết phần còn lại, hãy quay lại đó và nhìn kỹ những dòng bị cạo."
-              }
-            ],
-            "choice_id": "notice_return",
-            "choiced": false
-          }
-        },
-        "choice": {
-          "notice_return": [
+      "meta": {
+        "title": "Bà Hạnh — Bản thông báo bị giữ lại",
+        "loop": false,
+        "sender": "hanh",
+        "entry": "start",
+        "to": [
+          "player"
+        ]
+      },
+      "block": {
+        "start": {
+          "line": [
             {
-              "id": "hanh_notice_return_read",
-              "text": "Tôi sẽ quay lại quảng trường và đọc phần còn lại.",
-              "jump": null,
-              "effect": [
-                {
-                  "type": "set",
-                  "subtype": "action",
-                  "target": "action_read_notice",
-                  "property": "display",
-                  "value": "show"
-                },
-
-              ]
+              "char_id": "hanh",
+              "text": "Tôi từng giữ lại một bản thông báo khác sau đêm sơ tán. Bản ấy không được phát qua loa, vì nó ghi một điều mà danh sách chính thức không thừa nhận."
             },
             {
-              "id": "hanh_notice_verify",
-              "text": "Tôi muốn tự đối chiếu, không chỉ nghe lời kể.",
-              "jump": null,
-              "effect": [
-                {
-                  "type": "set",
-                  "subtype": "action",
-                  "target": "action_read_notice",
-                  "property": "display",
-                  "value": "show"
-                },
-
-              ]
+              "char_id": "hanh",
+              "text": "Tôi không thể đưa nó cho cậu trước khi cậu tự đọc bản ở quảng trường. Nếu muốn biết phần còn lại, hãy quay lại đó và nhìn kỹ những dòng bị cạo."
             }
-          ]
+          ],
+          "choice_id": "notice_return",
+          "choiced": false
         }
       },
+      "choice": {
+        "notice_return": [
+          {
+            "id": "hanh_notice_return_read",
+            "text": "Tôi sẽ quay lại quảng trường và đọc phần còn lại.",
+            "jump": null,
+            "effect": [
+              {
+                "type": "set",
+                "subtype": "action",
+                "target": "action_read_notice",
+                "property": "display",
+                "value": "show"
+              }
+            ]
+          },
+          {
+            "id": "hanh_notice_verify",
+            "text": "Tôi muốn tự đối chiếu, không chỉ nghe lời kể.",
+            "jump": null,
+            "effect": [
+              {
+                "type": "set",
+                "subtype": "action",
+                "target": "action_read_notice",
+                "property": "display",
+                "value": "show"
+              }
+            ]
+          }
+        ]
+      }
+    },
     "chat_linh": {
       "meta": {
         "title": "Linh — Chỗ ngồi bị xóa",
@@ -7284,6 +13470,14 @@ export const DEMO_SCRIPT = {
     "ending_depart": {
       "title": "Chuyến Tàu Lúc 03:17",
       "desc": "Bạn lên tàu mà không chọn phe. Tàu rời ga, nhưng trong cửa kính phản chiếu vẫn có một người đứng sau lưng bạn."
+    },
+    "ending_release_partial": {
+      "title": "Giải thoát — ký ức không hoàn chỉnh",
+      "desc": "Sự thật được trả lại, nhưng không phải mọi ký ức đều nguyên vẹn. Người bị mắc kẹt không còn bị buộc phải quên; một số chi tiết đã biến mất khỏi mọi bản ghi."
+    },
+    "ending_release_reconstructed": {
+      "title": "Giải thoát — sự thật được tái dựng",
+      "desc": "Sự thật được dựng lại từ những dấu vết hỏng, vật chứng bị bỏ quên và các nhân chứng dám đối chiếu ký ức. Không một lời kể đơn lẻ nào quyết định toàn bộ."
     }
   },
   "config": {
