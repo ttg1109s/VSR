@@ -239,8 +239,8 @@ export default function NotificationCenter({
                       <div className="vsr-notification-item__body">
                         <div className="vsr-notification-item__heading">
                           <strong>{item.title || 'Notification'}</strong>
-                          <Badge tone={tone} size="sm" aria-label={'Priority ' + (item.priority ?? levelLabel(item.level))}>
-                            {typeof item.priority === 'number' ? 'P' + item.priority + ' ' + levelLabel(item.level) : levelLabel(item.level)}
+                          <Badge tone={tone} size="sm">
+                            {levelLabel(item.level)}
                           </Badge>
                           {!item.read && <Badge tone={tone} size="lg">New</Badge>}
                         </div>
