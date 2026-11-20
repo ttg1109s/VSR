@@ -2511,7 +2511,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Mai",
         "buttonLabel": "Trò chuyện",
-        "desc": "Mai đứng gần quảng trường nhưng luôn giữ khoảng cách với giếng đá. Những gì cô sẵn sàng kể thay đổi theo các manh mối bạn đã tìm được."
+        "desc": "Mai đứng gần quảng trường nhưng luôn giữ khoảng cách với giếng đá. Cô dường như biết nhiều hơn những gì mình nói, và ánh mắt thường dừng lại ở những dấu vết bạn mang theo. Có lẽ cô chỉ sẵn lòng kể khi bạn tìm được điều gì đó khiến cô không thể tiếp tục im lặng."
       },
       "set": {
         "display": "show",
@@ -6853,7 +6853,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Quan sát Mai từ xa",
         "buttonLabel": "Quan sát",
-        "desc": "Giữ khoảng cách và theo dõi hành vi của Mai. Lựa chọn này thay thế việc trò chuyện trực tiếp, ghi nhận một dấu hiệu để tiếp tục điều tra."
+        "desc": "Bạn không tiến lại gần Mai. Từ phía bên kia quảng trường, cô nhiều lần nhìn về giếng rồi nhanh chóng quay đi. Khi loa phát thanh rè lên, Mai kiểm tra mảnh giấy gấp trong tay. Có điều gì đó khiến cô không muốn đối diện với giếng, nhưng bạn chưa thể biết đó là gì."
       },
       "set": {
         "display": "show",
@@ -6919,7 +6919,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Nghe lại băng của Mai",
         "buttonLabel": "Nghe băng",
-        "desc": "Nghe băng ghi âm để tìm lời kể thay vì yêu cầu Mai phải trực tiếp khai lại."
+        "desc": "Cuộn băng được bọc trong giấy dầu, nhãn ghi ngày đêm mất điện. Khi phát lại, giữa tiếng rè có một tín hiệu ngắn lặp lại. Lời ghi âm có thể hé lộ điều Mai chưa muốn nói trực tiếp."
       },
       "set": {
         "display": "show",
@@ -8925,7 +8925,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Cuộc trò chuyện với Mai",
         "buttonLabel": "Nói chuyện với Mai",
-        "desc": "Một cuộc nói chuyện an toàn giúp An bình tĩnh trở lại và tránh ép Mai phải khai điều cô chưa sẵn sàng kể."
+        "desc": "Mai nhận ra bạn đang không ổn. Cô ngồi lại bên cạnh, không hỏi về những chuyện bạn chưa muốn kể, chỉ kiên nhẫn chờ đến khi bạn có thể bình tĩnh lại. Sự hiện diện của cô khiến những âm thanh hỗn loạn trong đầu An dần lắng xuống."
       },
       "set": {
         "display": "show",
