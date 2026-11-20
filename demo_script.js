@@ -3779,12 +3779,6 @@
           {
             "type": "set",
             "subtype": "state",
-            "target": "knows_twelve",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
             "target": "clue_roster",
             "value": true
           },
@@ -3804,7 +3798,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Sơ đồ chỗ ngồi cho thấy có một người thứ mười hai."
+            "text": "Bạn mới chỉ nhận được thông tin mơ hồ về người thứ mười hai."
           },
           {
             "type": "set",
