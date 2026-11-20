@@ -6,6 +6,32 @@ import { GameEngine } from '../engine/GameEngine.js';
 import { TaskManager } from '../engine/runtime/TaskManager.js';
 import { normalizeScenario } from '../engine/scenario/Scenario.js';
 
+class NotificationFakeClock {
+  constructor() { this.time = 0; this.nextId = 0; this.timers = new Map(); }
+  now = () => this.time;
+  setTimeout = (callback, delay) => {
+    const id = ++this.nextId;
+    const timer = { id, at: this.time + delay, callback, unrefCalled: false, unref() { this.unrefCalled = true; } };
+    this.timers.set(id, timer);
+    return timer;
+  };
+  clearTimeout = timer => { this.timers.delete(timer?.id); };
+  async advance(ms) {
+    const target = this.time + ms;
+    while (true) {
+      const next = [...this.timers.entries()].filter(([, timer]) => timer.at <= target).sort((a,b)=>a[1].at-b[1].at)[0];
+      if (!next) break;
+      const [id, timer] = next;
+      this.timers.delete(id);
+      this.time = timer.at;
+      timer.callback();
+      await Promise.resolve(); await Promise.resolve();
+    }
+    this.time = target;
+    await Promise.resolve();
+  }
+}
+
 function makeProtocol() {
   const events = [];
   return {
