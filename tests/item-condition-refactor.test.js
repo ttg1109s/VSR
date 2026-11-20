@@ -10,7 +10,6 @@ const removedConditionStates = [
   'seal_damaged',
   'identity_verified',
   'trust_mai',
-  'final_choice',
   'clue_school_evacuation_notice',
   'cellar_open',
   'radio_signal_restored',
@@ -65,7 +64,7 @@ function collectReferences(node, out = []) {
   return out;
 }
 
-test('item-condition refactor plus audited write-only-state cleanup preserves schema', () => {
+test('item-condition refactor and safe write-only-state cleanup preserves schema', () => {
   assert.deepEqual(validateScenario(DEMO_SCRIPT), []);
 
   for (const stateId of removedConditionStates) {
