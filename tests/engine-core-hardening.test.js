@@ -12,7 +12,7 @@ import { LoaderSystem } from '../engine/modules/Loader.js';
 import { ActionSystem } from '../engine/modules/Action.js';
 import { SceneSystem } from '../engine/modules/Scene.js';
 import { AutomationSystem } from '../engine/modules/Automation.js';
-import { DEMO_SCRIPT } from '../demo_script.js';
+import { DEMO_SCRIPT } from '../demo-script-data.js';
 import { GameEngine } from '../engine/GameEngine.js';
 import { normalizeSaveEnvelope } from '../engine/persistence/SaveState.js';
 import { JsonProtocol } from '../protocol/JsonProtocol.js';
