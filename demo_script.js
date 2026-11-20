@@ -11575,17 +11575,17 @@
         "umbrella_ask": [
           {
             "id": "mai_umbrella_name",
-            "text": "Cô có nhận ra cái tên được khắc trên cán ô không?",
+            "text": "Nếu tôi nhớ đúng, cái tên trên cán ô có thể gợi lại điều cô từng quên. Cô nhận ra nó chứ?",
             "jump": "name"
           },
           {
             "id": "mai_umbrella_owner",
-            "text": "Chiếc ô này vốn thuộc về ai?",
+            "text": "Cô còn nhớ chiếc ô này từng ở bên ai không?",
             "jump": "owner"
           },
           {
             "id": "mai_umbrella_accuse",
-            "text": "Cô có phải người thứ mười hai không?",
+            "text": "Có khi nào ký ức về người thứ mười hai đang lẫn với ký ức của cô?",
             "jump": "accuse"
           }
         ],
@@ -11741,17 +11741,17 @@
         "umbrella_ask": [
           {
             "id": "mai_umbrella_name",
-            "text": "Cô có nhận ra cái tên được khắc trên cán ô không?",
+            "text": "Tôi muốn đối chiếu tên khắc trên cán ô với hồ sơ. Cô nhận ra cái tên này chứ?",
             "jump": "name"
           },
           {
             "id": "mai_umbrella_owner",
-            "text": "Chiếc ô này vốn thuộc về ai?",
+            "text": "Hồ sơ có ghi chiếc ô thuộc về ai không, hay cô nhớ người từng sở hữu nó?",
             "jump": "owner"
           },
           {
             "id": "mai_umbrella_accuse",
-            "text": "Cô có phải người thứ mười hai không?",
+            "text": "Có bằng chứng nào cho thấy cô là người thứ mười hai, hay chỉ là ký ức của cô?",
             "jump": "accuse"
           }
         ],
@@ -11907,17 +11907,17 @@
         "umbrella_ask": [
           {
             "id": "mai_umbrella_name",
-            "text": "Cô có nhận ra cái tên được khắc trên cán ô không?",
+            "text": "Cái tên khắc trong cán ô đỏ—cô có nhận ra không?",
             "jump": "name"
           },
           {
             "id": "mai_umbrella_owner",
-            "text": "Chiếc ô này vốn thuộc về ai?",
+            "text": "Cô nhớ ai đã cầm chiếc ô này trước đêm sơ tán không?",
             "jump": "owner"
           },
           {
             "id": "mai_umbrella_accuse",
-            "text": "Cô có phải người thứ mười hai không?",
+            "text": "Cô nghĩ chiếc ô này có liên quan đến người thứ mười hai không?",
             "jump": "accuse"
           }
         ],
@@ -12221,17 +12221,17 @@
         "room_ask": [
           {
             "id": "hanh_room_belongings",
-            "text": "Những món đồ trong phòng thuộc về ai?",
+            "text": "Bà có nhớ những món đồ ấy từng thuộc về người bà chờ không?",
             "jump": "belongings"
           },
           {
             "id": "hanh_room_photo",
-            "text": "Bức ảnh hành lang có gì bất thường?",
+            "text": "Bà nhớ gì khi nhìn lại bức ảnh hành lang?",
             "jump": "photo"
           },
           {
             "id": "hanh_room_waiting",
-            "text": "Bà đã từng chờ ai trong căn phòng này?",
+            "text": "Bà có thể kể về người bà từng chờ, nếu điều đó không quá khó?",
             "jump": "waiting"
           }
         ],
@@ -12378,17 +12378,17 @@
         "room_ask": [
           {
             "id": "hanh_room_belongings",
-            "text": "Những món đồ trong phòng thuộc về ai?",
+            "text": "Sổ ghi chép có xác định chủ nhân những món đồ trong phòng không?",
             "jump": "belongings"
           },
           {
             "id": "hanh_room_photo",
-            "text": "Bức ảnh hành lang có gì bất thường?",
+            "text": "Tôi muốn đối chiếu bức ảnh hành lang với sổ. Có chi tiết nào bà biết?",
             "jump": "photo"
           },
           {
             "id": "hanh_room_waiting",
-            "text": "Bà đã từng chờ ai trong căn phòng này?",
+            "text": "Sổ có ghi người từng được chờ trong căn phòng này không?",
             "jump": "waiting"
           }
         ],
@@ -12535,17 +12535,17 @@
         "room_ask": [
           {
             "id": "hanh_room_belongings",
-            "text": "Những món đồ trong phòng thuộc về ai?",
+            "text": "Tôi đã vào phòng. Bà có thể nói những món đồ này từng thuộc về ai không?",
             "jump": "belongings"
           },
           {
             "id": "hanh_room_photo",
-            "text": "Bức ảnh hành lang có gì bất thường?",
+            "text": "Bức ảnh trong phòng có điều gì bà vẫn chưa muốn nói?",
             "jump": "photo"
           },
           {
             "id": "hanh_room_waiting",
-            "text": "Bà đã từng chờ ai trong căn phòng này?",
+            "text": "Bà đã chờ ai trong căn phòng này—và người ấy có trở về không?",
             "jump": "waiting"
           }
         ],
