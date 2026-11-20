@@ -281,11 +281,6 @@
       "value": false,
       "title": "Danh sách lớp đã xác minh"
     },
-    "evidence_corroborations": {
-      "type": "number",
-      "value": 0,
-      "title": "Các lần đối chiếu độc lập"
-    },
     "corroboration_transport_records": {
       "type": "boolean",
       "value": false,
@@ -8254,12 +8249,6 @@
           {
             "type": "set",
             "subtype": "state",
-            "target": "evidence_corroborations",
-            "value": 1
-          },
-          {
-            "type": "set",
-            "subtype": "state",
             "target": "corroboration_transport_records",
             "value": true
           }
@@ -9709,12 +9698,6 @@
           {
             "type": "set",
             "subtype": "state",
-            "target": "evidence_corroborations",
-            "value": 1
-          },
-          {
-            "type": "set",
-            "subtype": "state",
             "target": "corroboration_transport_records",
             "value": true
           }
@@ -9847,12 +9830,6 @@
             "subtype": "toast",
             "level": "success",
             "text": "Ảnh lớp và những cái tên còn sót lại xác nhận dấu vết quanh vòng cọc."
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "evidence_corroborations",
-            "value": 1
           },
           {
             "type": "set",
