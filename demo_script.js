@@ -629,14 +629,6 @@ export const DEMO_SCRIPT = {
             ]
           ]
       },
-      "stats": {
-        "light": {
-          "current": 4,
-          "max": 5,
-          "label": "Độ sáng",
-          "color": "#F5C451"
-        }
-      },
       "effect": {
         "use": [
           {
@@ -668,14 +660,6 @@ export const DEMO_SCRIPT = {
               "Không đọc được"
             ]
           ]
-      },
-      "stats": {
-        "legibility": {
-          "current": 3,
-          "max": 5,
-          "label": "Độ đọc được",
-          "color": "#8BC5FF"
-        }
       },
       "effect": {
         "use": []
@@ -747,26 +731,28 @@ export const DEMO_SCRIPT = {
       "icon": "notifications",
       "desc": "Quả lắc bằng kim loại nặng, bề mặt có vết va đập và một đầu còn dấu tháo khỏi trục. Nó cần được lắp lại tại cơ cấu chuông ở tháp nhà nguyện; kiểm tra vật phẩm không tự làm chuông rung.",
       "usage": {
-        "current": 0,
-        "max": 1,
-        "autoInc": false,
-        "status": [
-            [0,
-              "Chưa lắp"
-            ],
-            [100,
-              "Bị hỏng"
-            ]
-          ]
-      },
-      "stats": {
-        "integrity": {
-          "current": 3,
-          "max": 5,
-          "label": "Độ nguyên vẹn",
-          "color": "#F5C451"
-        }
-      },
+  "current": 0,
+  "max": 3,
+  "autoInc": false,
+  "status": [
+    [
+      0,
+      "Chưa lắp"
+    ],
+    [
+      33,
+      "Hư hại nhẹ"
+    ],
+    [
+      67,
+      "Hư hại nặng"
+    ],
+    [
+      100,
+      "Bị hỏng"
+    ]
+  ]
+},
       "effect": {
         "use": []
       }
@@ -794,14 +780,6 @@ export const DEMO_SCRIPT = {
               "Không phục dựng được"
             ]
           ]
-      },
-      "stats": {
-        "completeness": {
-          "current": 3,
-          "max": 5,
-          "label": "Độ hoàn chỉnh",
-          "color": "#8BC5FF"
-        }
       },
       "effect": {
         "use": []
@@ -859,14 +837,6 @@ export const DEMO_SCRIPT = {
             ]
           ]
       },
-      "stats": {
-        "coverage": {
-          "current": 4,
-          "max": 5,
-          "label": "Mức bao phủ",
-          "color": "#8BC5FF"
-        }
-      },
       "effect": {
         "use": []
       }
@@ -901,14 +871,6 @@ export const DEMO_SCRIPT = {
             ]
           ]
       },
-      "stats": {
-        "condition": {
-          "current": 4,
-          "max": 5,
-          "label": "Tình trạng dụng cụ",
-          "color": "#67D6A0"
-        }
-      },
       "effect": {
         "use": []
       }
@@ -933,14 +895,6 @@ export const DEMO_SCRIPT = {
               "Hở điện"
             ]
           ]
-      },
-      "stats": {
-        "condition": {
-          "current": 4,
-          "max": 5,
-          "label": "Tình trạng dây",
-          "color": "#67D6A0"
-        }
       },
       "effect": {
         "use": []
@@ -967,14 +921,6 @@ export const DEMO_SCRIPT = {
             ]
           ]
       },
-      "stats": {
-        "capacity": {
-          "current": 4,
-          "max": 5,
-          "label": "Khả năng chịu tải",
-          "color": "#67D6A0"
-        }
-      },
       "effect": {
         "use": []
       }
@@ -985,29 +931,32 @@ export const DEMO_SCRIPT = {
       "icon": "settings",
       "desc": "Lò xo thép còn đàn hồi lấy từ hộp bảo trì cối xay, có thể thay bộ phận hồi lực bị mất; dùng cùng chốt truyền động và bộ dụng cụ để sửa cơ cấu cối xay.",
       "usage": {
-        "current": 0,
-        "max": 2,
-        "autoInc": false,
-        "status": [
-            [0,
-              "Đàn hồi tốt"
-            ],
-            [50,
-              "Lực hồi yếu"
-            ],
-            [100,
-              "Mất đàn hồi"
-            ]
-          ]
-      },
-      "stats": {
-        "tension": {
-          "current": 4,
-          "max": 5,
-          "label": "Lực hồi",
-          "color": "#67D6A0"
-        }
-      },
+  "current": 0,
+  "max": 4,
+  "autoInc": false,
+  "status": [
+    [
+      0,
+      "Đàn hồi tốt"
+    ],
+    [
+      25,
+      "Lực hồi ổn"
+    ],
+    [
+      50,
+      "Lực hồi yếu"
+    ],
+    [
+      75,
+      "Rất yếu"
+    ],
+    [
+      100,
+      "Mất đàn hồi"
+    ]
+  ]
+},
       "effect": {
         "use": []
       }
@@ -1035,14 +984,6 @@ export const DEMO_SCRIPT = {
               "Không đối chiếu được"
             ]
           ]
-      },
-      "stats": {
-        "precision": {
-          "current": 4,
-          "max": 5,
-          "label": "Độ chính xác đối chiếu",
-          "color": "#8BC5FF"
-        }
       },
       "effect": {
         "use": []
@@ -1075,14 +1016,6 @@ export const DEMO_SCRIPT = {
             ]
           ]
       },
-      "stats": {
-        "precision": {
-          "current": 4,
-          "max": 5,
-          "label": "Độ chính xác kiểm tra",
-          "color": "#8BC5FF"
-        }
-      },
       "effect": {
         "use": []
       }
@@ -1111,14 +1044,6 @@ export const DEMO_SCRIPT = {
             ]
           ]
       },
-      "stats": {
-        "signal": {
-          "current": 3,
-          "max": 5,
-          "label": "Chất lượng tín hiệu",
-          "color": "#8BC5FF"
-        }
-      },
       "effect": {
         "use": []
       }
@@ -1143,14 +1068,6 @@ export const DEMO_SCRIPT = {
               "Không xác thực được"
             ]
           ]
-      },
-      "stats": {
-        "authenticity": {
-          "current": 4,
-          "max": 5,
-          "label": "Tính xác thực",
-          "color": "#A78BFA"
-        }
       },
       "effect": {
         "use": []
@@ -1182,14 +1099,6 @@ export const DEMO_SCRIPT = {
       },
       "effect": {
         "use": []
-      },
-      "stats": {
-        "integrity": {
-          "current": 3,
-          "max": 5,
-          "label": "Độ nguyên vẹn",
-          "color": "#F5C451"
-        }
       }
     },
     "evacuation_film": {
@@ -1244,14 +1153,6 @@ export const DEMO_SCRIPT = {
             ]
           ]
       },
-      "stats": {
-        "completeness": {
-          "current": 3,
-          "max": 5,
-          "label": "Độ đầy đủ",
-          "color": "#8BC5FF"
-        }
-      },
       "effect": {
         "use": []
       }
@@ -1262,29 +1163,32 @@ export const DEMO_SCRIPT = {
       "icon": "cable",
       "desc": "Đoạn dây đồng bị xoắn và có một đầu tuột khỏi mối nối. Vết xước cho thấy nó từng nằm trong cơ cấu truyền lực của tháp chuông; cần nối tại cơ cấu chuông ở tháp, kiểm tra vật phẩm không tự sửa cơ cấu.",
       "usage": {
-        "current": 0,
-        "max": 2,
-        "autoInc": false,
-        "status": [
-            [0,
-              "Nối chắc"
-            ],
-            [50,
-              "Tiếp xúc yếu"
-            ],
-            [100,
-              "Đứt mối nối"
-            ]
-          ]
-      },
-      "stats": {
-        "conductivity": {
-          "current": 4,
-          "max": 5,
-          "label": "Khả năng dẫn truyền",
-          "color": "#67D6A0"
-        }
-      },
+  "current": 0,
+  "max": 4,
+  "autoInc": false,
+  "status": [
+    [
+      0,
+      "Nối chắc"
+    ],
+    [
+      25,
+      "Tiếp xúc yếu"
+    ],
+    [
+      50,
+      "Tiếp xúc kém"
+    ],
+    [
+      75,
+      "Chập chờn"
+    ],
+    [
+      100,
+      "Đứt mối nối"
+    ]
+  ]
+},
       "effect": {
         "use": []
       }
@@ -1312,14 +1216,6 @@ export const DEMO_SCRIPT = {
               "Không xác minh được"
             ]
           ]
-      },
-      "stats": {
-        "verification": {
-          "current": 4,
-          "max": 5,
-          "label": "Mức xác minh",
-          "color": "#A78BFA"
-        }
       },
       "effect": {
         "use": []
@@ -1349,14 +1245,6 @@ export const DEMO_SCRIPT = {
             ]
           ]
       },
-      "stats": {
-        "accuracy": {
-          "current": 4,
-          "max": 5,
-          "label": "Độ chính xác",
-          "color": "#8BC5FF"
-        }
-      },
       "effect": {
         "use": []
       }
@@ -1382,14 +1270,6 @@ export const DEMO_SCRIPT = {
             ]
           ]
       },
-      "stats": {
-        "authenticity": {
-          "current": 4,
-          "max": 5,
-          "label": "Tính xác thực",
-          "color": "#A78BFA"
-        }
-      },
       "effect": {
         "use": []
       }
@@ -1414,14 +1294,6 @@ export const DEMO_SCRIPT = {
               "Mất cố định"
             ]
           ]
-      },
-      "stats": {
-        "integrity": {
-          "current": 3,
-          "max": 5,
-          "label": "Độ nguyên vẹn",
-          "color": "#67D6A0"
-        }
       },
       "effect": {
         "use": []
@@ -1451,14 +1323,6 @@ export const DEMO_SCRIPT = {
             ]
           ]
       },
-      "stats": {
-        "completeness": {
-          "current": 4,
-          "max": 5,
-          "label": "Độ đầy đủ",
-          "color": "#A78BFA"
-        }
-      },
       "effect": {
         "use": []
       }
@@ -1483,14 +1347,6 @@ export const DEMO_SCRIPT = {
               "Không xác minh được"
             ]
           ]
-      },
-      "stats": {
-        "verification": {
-          "current": 4,
-          "max": 5,
-          "label": "Mức xác minh",
-          "color": "#A78BFA"
-        }
       },
       "effect": {
         "use": []
@@ -3156,14 +3012,11 @@ export const DEMO_SCRIPT = {
             "text": "Sổ khách đã được ghi nhận; tên và ngày đến là manh mối mới."
           },
           {
-            "type": "item",
-            "subtype": "stats",
-            "target": "guestbook",
-            "exec": "add",
-            "property": "legibility",
-            "field": "current",
-            "value": -1
-          },
+  "type": "item",
+  "subtype": "usage",
+  "target": "guestbook",
+  "value": 1
+},
           {
             "type": "set",
             "subtype": "state",
@@ -3549,58 +3402,52 @@ export const DEMO_SCRIPT = {
       "requirement": {
         "logic": "AND",
         "check": [
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "bell_clapper"
-          },
-          {
-            "type": "state",
-            "property": "heard_bell",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "hymn_note"
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "bell_copper_wire"
-          },
-          {
-            "type": "stats",
-            "subtype": "item",
-            "target": "bell_copper_wire",
-            "property": "conductivity",
-            "field": "current",
-            "op": ">=",
-            "value": 3
-          },
-          {
-            "type": "stats",
-            "subtype": "item",
-            "target": "hymn_note",
-            "property": "completeness",
-            "field": "current",
-            "op": ">=",
-            "value": 3
-          },
-          {
-            "type": "stats",
-            "subtype": "item",
-            "target": "bell_clapper",
-            "property": "integrity",
-            "field": "current",
-            "op": ">=",
-            "value": 2
-          }
-        ]
+  {
+    "type": "item",
+    "subtype": "inventory",
+    "op": "has",
+    "value": "bell_clapper"
+  },
+  {
+    "type": "state",
+    "property": "heard_bell",
+    "op": "==",
+    "value": true
+  },
+  {
+    "type": "item",
+    "subtype": "inventory",
+    "op": "has",
+    "value": "hymn_note"
+  },
+  {
+    "type": "item",
+    "subtype": "inventory",
+    "op": "has",
+    "value": "bell_copper_wire"
+  },
+  {
+    "type": "item",
+    "subtype": "usage",
+    "target": "bell_copper_wire",
+    "op": "<",
+    "value": 2
+  },
+  {
+    "type": "item",
+    "subtype": "usage",
+    "target": "hymn_note",
+    "op": "<",
+    "value": 1
+  },
+  {
+    "type": "item",
+    "subtype": "usage",
+    "target": "bell_clapper",
+    "op": "<",
+    "value": 2
+  }
+]
       }
     },
     "action_check_desk": {
@@ -3968,15 +3815,6 @@ export const DEMO_SCRIPT = {
             "subtype": "state",
             "target": "clue_stakes",
             "value": true
-          },
-          {
-            "type": "item",
-            "subtype": "stats",
-            "target": "well_badge",
-            "exec": "add",
-            "property": "authenticity",
-            "field": "current",
-            "value": -1
           }
         ],
         "fail": [
@@ -4083,60 +3921,47 @@ export const DEMO_SCRIPT = {
       "requirement": {
         "logic": "AND",
         "check": [
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "clockwork_spring"
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "radio_toolkit"
-          },
-          {
-            "type": "item",
-            "subtype": "hand",
-            "op": "==",
-            "value": [
-              "mill_gear_pin"
-            ]
-          },
-          {
-            "type": "state",
-            "property": "clue_tunnel",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "stats",
-            "subtype": "item",
-            "target": "radio_toolkit",
-            "property": "condition",
-            "field": "current",
-            "op": ">=",
-            "value": 3
-          },
-          {
-            "type": "stats",
-            "subtype": "item",
-            "target": "clockwork_spring",
-            "property": "tension",
-            "field": "current",
-            "op": ">=",
-            "value": 3
-          },
-          {
-            "type": "stats",
-            "subtype": "item",
-            "target": "mill_gear_pin",
-            "property": "integrity",
-            "field": "current",
-            "op": ">=",
-            "value": 3
-          }
-        ]
+  {
+    "type": "item",
+    "subtype": "inventory",
+    "op": "has",
+    "value": "clockwork_spring"
+  },
+  {
+    "type": "item",
+    "subtype": "inventory",
+    "op": "has",
+    "value": "radio_toolkit"
+  },
+  {
+    "type": "item",
+    "subtype": "hand",
+    "op": "==",
+    "value": [
+      "mill_gear_pin"
+    ]
+  },
+  {
+    "type": "state",
+    "property": "clue_tunnel",
+    "op": "==",
+    "value": true
+  },
+  {
+    "type": "item",
+    "subtype": "usage",
+    "target": "radio_toolkit",
+    "op": "<",
+    "value": 2
+  },
+  {
+    "type": "item",
+    "subtype": "usage",
+    "target": "clockwork_spring",
+    "op": "<",
+    "value": 2
+  }
+]
       }
     },
     "action_inspect_tunnel_names": {
@@ -4649,22 +4474,13 @@ export const DEMO_SCRIPT = {
           {
             "logic": "OR",
             "check": [
-              {
-                "type": "stats",
-                "subtype": "item",
-                "target": "unpunched_ticket",
-                "property": "verification",
-                "field": "current",
-                "op": ">=",
-                "value": 1
-              },
-              {
-                "type": "state",
-                "property": "ticket_verified",
-                "op": "==",
-                "value": true
-              }
-            ]
+  {
+    "type": "state",
+    "property": "ticket_verified",
+    "op": "==",
+    "value": true
+  }
+]
           }
         ]
       }
@@ -5399,67 +5215,45 @@ export const DEMO_SCRIPT = {
       "requirement": {
         "logic": "AND",
         "check": [
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "radio_toolkit"
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "radio_crystal"
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "insulated_wire"
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "spare_fuse"
-          },
-          {
-            "type": "stats",
-            "subtype": "item",
-            "target": "radio_toolkit",
-            "property": "condition",
-            "field": "current",
-            "op": ">=",
-            "value": 3
-          },
-          {
-            "type": "stats",
-            "subtype": "item",
-            "target": "insulated_wire",
-            "property": "condition",
-            "field": "current",
-            "op": ">=",
-            "value": 3
-          },
-          {
-            "type": "stats",
-            "subtype": "item",
-            "target": "spare_fuse",
-            "property": "capacity",
-            "field": "current",
-            "op": ">=",
-            "value": 3
-          },
-          {
-            "type": "stats",
-            "subtype": "item",
-            "target": "radio_crystal",
-            "property": "signal",
-            "field": "current",
-            "op": ">=",
-            "value": 3
-          }
-        ]
+  {
+    "type": "item",
+    "subtype": "inventory",
+    "op": "has",
+    "value": "radio_toolkit"
+  },
+  {
+    "type": "item",
+    "subtype": "inventory",
+    "op": "has",
+    "value": "radio_crystal"
+  },
+  {
+    "type": "item",
+    "subtype": "inventory",
+    "op": "has",
+    "value": "insulated_wire"
+  },
+  {
+    "type": "item",
+    "subtype": "inventory",
+    "op": "has",
+    "value": "spare_fuse"
+  },
+  {
+    "type": "item",
+    "subtype": "usage",
+    "target": "radio_toolkit",
+    "op": "<",
+    "value": 2
+  },
+  {
+    "type": "item",
+    "subtype": "usage",
+    "target": "radio_crystal",
+    "op": "<",
+    "value": 1
+  }
+]
       },
       "effect": {
         "normal": [
@@ -5546,64 +5340,37 @@ export const DEMO_SCRIPT = {
       "requirement": {
         "logic": "AND",
         "check": [
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "map_fragment"
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "tracing_paper"
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "inspection_loupe"
-          },
-          {
-            "type": "state",
-            "property": "clue_seat_mark",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "state",
-            "property": "clue_class_clock",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "stats",
-            "subtype": "item",
-            "target": "map_fragment",
-            "property": "coverage",
-            "field": "current",
-            "op": ">=",
-            "value": 3
-          },
-          {
-            "type": "stats",
-            "subtype": "item",
-            "target": "tracing_paper",
-            "property": "precision",
-            "field": "current",
-            "op": ">=",
-            "value": 3
-          },
-          {
-            "type": "stats",
-            "subtype": "item",
-            "target": "inspection_loupe",
-            "property": "precision",
-            "field": "current",
-            "op": ">=",
-            "value": 3
-          }
-        ]
+  {
+    "type": "item",
+    "subtype": "inventory",
+    "op": "has",
+    "value": "map_fragment"
+  },
+  {
+    "type": "item",
+    "subtype": "inventory",
+    "op": "has",
+    "value": "tracing_paper"
+  },
+  {
+    "type": "item",
+    "subtype": "inventory",
+    "op": "has",
+    "value": "inspection_loupe"
+  },
+  {
+    "type": "state",
+    "property": "clue_seat_mark",
+    "op": "==",
+    "value": true
+  },
+  {
+    "type": "state",
+    "property": "clue_class_clock",
+    "op": "==",
+    "value": true
+  }
+]
       },
       "effect": {
         "normal": [
@@ -6739,36 +6506,34 @@ export const DEMO_SCRIPT = {
       "requirement": {
         "logic": "AND",
         "check": [
-          {
-            "type": "state",
-            "property": "room7_confirmed",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "item",
-            "subtype": "hand",
-            "op": "==",
-            "value": [
-              "spare_room_key"
-            ]
-          },
-          {
-            "type": "stats",
-            "subtype": "item",
-            "target": "spare_room_key",
-            "property": "integrity",
-            "field": "current",
-            "op": ">=",
-            "value": 2
-          },
-          {
-            "type": "state",
-            "property": "room7_lock_damaged",
-            "op": "==",
-            "value": false
-          }
-        ]
+  {
+    "type": "state",
+    "property": "room7_confirmed",
+    "op": "==",
+    "value": true
+  },
+  {
+    "type": "item",
+    "subtype": "hand",
+    "op": "==",
+    "value": [
+      "spare_room_key"
+    ]
+  },
+  {
+    "type": "item",
+    "subtype": "usage",
+    "target": "spare_room_key",
+    "op": "<",
+    "value": 2
+  },
+  {
+    "type": "state",
+    "property": "room7_lock_damaged",
+    "op": "==",
+    "value": false
+  }
+]
       }
     },
     "action_force_room7": {
@@ -6792,16 +6557,7 @@ export const DEMO_SCRIPT = {
           }
         ],
         "pass": [
-          {
-            "type": "item",
-            "subtype": "stats",
-            "target": "spare_room_key",
-            "exec": "add",
-            "property": "integrity",
-            "field": "current",
-            "value": -1
-          },
-          {
+                    {
             "type": "characters",
             "subtype": "edit_stats",
             "target": "player",
@@ -6911,43 +6667,41 @@ export const DEMO_SCRIPT = {
       "requirement": {
         "logic": "AND",
         "check": [
-          {
-            "type": "state",
-            "property": "room7_confirmed",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "spare_room_key"
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "radio_toolkit"
-          },
-          {
-            "type": "stats",
-            "subtype": "item",
-            "target": "spare_room_key",
-            "property": "integrity",
-            "field": "current",
-            "op": ">=",
-            "value": 1
-          },
-          {
-            "type": "stats",
-            "subtype": "characters",
-            "target": "player",
-            "property": "composure",
-            "field": "current",
-            "op": ">=",
-            "value": 1
-          }
-        ]
+  {
+    "type": "state",
+    "property": "room7_confirmed",
+    "op": "==",
+    "value": true
+  },
+  {
+    "type": "item",
+    "subtype": "inventory",
+    "op": "has",
+    "value": "spare_room_key"
+  },
+  {
+    "type": "item",
+    "subtype": "inventory",
+    "op": "has",
+    "value": "radio_toolkit"
+  },
+  {
+    "type": "item",
+    "subtype": "usage",
+    "target": "spare_room_key",
+    "op": "<",
+    "value": 3
+  },
+  {
+    "type": "stats",
+    "subtype": "characters",
+    "target": "player",
+    "property": "composure",
+    "field": "current",
+    "op": ">=",
+    "value": 1
+  }
+]
       }
     },
     "action_repair_room7_key": {
@@ -6964,30 +6718,18 @@ export const DEMO_SCRIPT = {
       "effect": {
         "normal": [],
         "pass": [
-          {
-            "type": "item",
-            "subtype": "stats",
-            "target": "spare_room_key",
-            "exec": "add",
-            "property": "integrity",
-            "field": "current",
-            "value": 2
-          },
-          {
+                    {
             "type": "item",
             "subtype": "usage",
             "target": "spare_room_key",
             "value": -1
           },
           {
-            "type": "item",
-            "subtype": "stats",
-            "target": "radio_toolkit",
-            "exec": "add",
-            "property": "condition",
-            "field": "current",
-            "value": -1
-          },
+  "type": "item",
+  "subtype": "usage",
+  "target": "radio_toolkit",
+  "value": 1
+},
           {
             "type": "set",
             "subtype": "state",
@@ -7112,16 +6854,7 @@ export const DEMO_SCRIPT = {
           }
         ],
         "pass": [
-          {
-            "type": "item",
-            "subtype": "stats",
-            "target": "radio_toolkit",
-            "exec": "add",
-            "property": "condition",
-            "field": "current",
-            "value": -1
-          },
-          {
+                    {
             "type": "set",
             "subtype": "state",
             "target": "room7_open",
@@ -7300,14 +7033,11 @@ export const DEMO_SCRIPT = {
         "normal": [],
         "pass": [
           {
-            "type": "item",
-            "subtype": "stats",
-            "target": "guestbook",
-            "exec": "add",
-            "property": "legibility",
-            "field": "current",
-            "value": 1
-          },
+  "type": "item",
+  "subtype": "usage",
+  "target": "guestbook",
+  "value": -1
+},
           {
             "type": "set",
             "subtype": "state",
@@ -7441,16 +7171,7 @@ export const DEMO_SCRIPT = {
           }
         ],
         "pass": [
-          {
-            "type": "item",
-            "subtype": "stats",
-            "target": "lantern",
-            "exec": "add",
-            "property": "light",
-            "field": "current",
-            "value": -1
-          },
-          {
+                    {
             "type": "set",
             "subtype": "state",
             "target": "clue_well_bottom_partial",
@@ -7508,36 +7229,34 @@ export const DEMO_SCRIPT = {
       "requirement": {
         "logic": "AND",
         "check": [
-          {
-            "type": "state",
-            "property": "clue_well",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "state",
-            "property": "clue_lantern",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "item",
-            "subtype": "hand",
-            "op": "==",
-            "value": [
-              "lantern"
-            ]
-          },
-          {
-            "type": "stats",
-            "subtype": "item",
-            "target": "lantern",
-            "property": "light",
-            "field": "current",
-            "op": ">=",
-            "value": 1
-          }
-        ]
+  {
+    "type": "state",
+    "property": "clue_well",
+    "op": "==",
+    "value": true
+  },
+  {
+    "type": "state",
+    "property": "clue_lantern",
+    "op": "==",
+    "value": true
+  },
+  {
+    "type": "item",
+    "subtype": "hand",
+    "op": "==",
+    "value": [
+      "lantern"
+    ]
+  },
+  {
+    "type": "item",
+    "subtype": "usage",
+    "target": "lantern",
+    "op": "<",
+    "value": 4
+  }
+]
       }
     },
     "action_recover_lantern": {
@@ -7554,30 +7273,18 @@ export const DEMO_SCRIPT = {
       "effect": {
         "normal": [],
         "pass": [
-          {
-            "type": "item",
-            "subtype": "stats",
-            "target": "lantern",
-            "exec": "add",
-            "property": "light",
-            "field": "current",
-            "value": 2
-          },
-          {
+                    {
             "type": "item",
             "subtype": "usage",
             "target": "lantern",
             "value": -1
           },
           {
-            "type": "item",
-            "subtype": "stats",
-            "target": "radio_toolkit",
-            "exec": "add",
-            "property": "condition",
-            "field": "current",
-            "value": -1
-          },
+  "type": "item",
+  "subtype": "usage",
+  "target": "radio_toolkit",
+  "value": 1
+},
           {
             "type": "set",
             "subtype": "state",
@@ -7893,16 +7600,7 @@ export const DEMO_SCRIPT = {
           }
         ],
         "pass": [
-          {
-            "type": "item",
-            "subtype": "stats",
-            "target": "guide_compass",
-            "exec": "add",
-            "property": "accuracy",
-            "field": "current",
-            "value": -1
-          },
-          {
+                    {
             "type": "characters",
             "subtype": "edit_stats",
             "target": "player",
@@ -7962,24 +7660,15 @@ export const DEMO_SCRIPT = {
       "requirement": {
         "logic": "AND",
         "check": [
-          {
-            "type": "item",
-            "subtype": "hand",
-            "op": "==",
-            "value": [
-              "guide_compass"
-            ]
-          },
-          {
-            "type": "stats",
-            "subtype": "item",
-            "target": "guide_compass",
-            "property": "accuracy",
-            "field": "current",
-            "op": ">=",
-            "value": 1
-          }
-        ]
+  {
+    "type": "item",
+    "subtype": "hand",
+    "op": "==",
+    "value": [
+      "guide_compass"
+    ]
+  }
+]
       }
     },
     "action_verify_forest_route": {
@@ -8075,25 +7764,7 @@ export const DEMO_SCRIPT = {
           }
         ],
         "pass": [
-          {
-            "type": "item",
-            "subtype": "stats",
-            "target": "evacuation_seal",
-            "exec": "add",
-            "property": "authenticity",
-            "field": "current",
-            "value": -1
-          },
-          {
-            "type": "item",
-            "subtype": "stats",
-            "target": "radio_toolkit",
-            "exec": "add",
-            "property": "condition",
-            "field": "current",
-            "value": -1
-          },
-          {
+                              {
             "type": "set",
             "subtype": "state",
             "target": "evidence_corrupted",
@@ -8270,25 +7941,7 @@ export const DEMO_SCRIPT = {
           }
         ],
         "pass": [
-          {
-            "type": "item",
-            "subtype": "stats",
-            "target": "radio_toolkit",
-            "exec": "add",
-            "property": "condition",
-            "field": "current",
-            "value": -1
-          },
-          {
-            "type": "item",
-            "subtype": "stats",
-            "target": "clockwork_spring",
-            "exec": "add",
-            "property": "tension",
-            "field": "current",
-            "value": -1
-          },
-          {
+                              {
             "type": "set",
             "subtype": "state",
             "target": "mill_powered_partial",
@@ -8351,60 +8004,47 @@ export const DEMO_SCRIPT = {
       "requirement": {
         "logic": "AND",
         "check": [
-          {
-            "type": "state",
-            "property": "clue_tunnel",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "radio_toolkit"
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "clockwork_spring"
-          },
-          {
-            "type": "item",
-            "subtype": "hand",
-            "op": "==",
-            "value": [
-              "mill_gear_pin"
-            ]
-          },
-          {
-            "type": "stats",
-            "subtype": "item",
-            "target": "radio_toolkit",
-            "property": "condition",
-            "field": "current",
-            "op": ">=",
-            "value": 1
-          },
-          {
-            "type": "stats",
-            "subtype": "item",
-            "target": "clockwork_spring",
-            "property": "tension",
-            "field": "current",
-            "op": ">=",
-            "value": 1
-          },
-          {
-            "type": "stats",
-            "subtype": "item",
-            "target": "mill_gear_pin",
-            "property": "integrity",
-            "field": "current",
-            "op": ">=",
-            "value": 1
-          }
-        ]
+  {
+    "type": "state",
+    "property": "clue_tunnel",
+    "op": "==",
+    "value": true
+  },
+  {
+    "type": "item",
+    "subtype": "inventory",
+    "op": "has",
+    "value": "radio_toolkit"
+  },
+  {
+    "type": "item",
+    "subtype": "inventory",
+    "op": "has",
+    "value": "clockwork_spring"
+  },
+  {
+    "type": "item",
+    "subtype": "hand",
+    "op": "==",
+    "value": [
+      "mill_gear_pin"
+    ]
+  },
+  {
+    "type": "item",
+    "subtype": "usage",
+    "target": "radio_toolkit",
+    "op": "<",
+    "value": 4
+  },
+  {
+    "type": "item",
+    "subtype": "usage",
+    "target": "clockwork_spring",
+    "op": "<",
+    "value": 4
+  }
+]
       }
     },
     "action_force_mill_repair": {
@@ -8428,16 +8068,7 @@ export const DEMO_SCRIPT = {
           }
         ],
         "pass": [
-          {
-            "type": "item",
-            "subtype": "stats",
-            "target": "radio_toolkit",
-            "exec": "add",
-            "property": "condition",
-            "field": "current",
-            "value": -1
-          },
-          {
+                    {
             "type": "characters",
             "subtype": "edit_stats",
             "target": "player",
@@ -8547,25 +8178,7 @@ export const DEMO_SCRIPT = {
             "target": "clockwork_spring",
             "value": -1
           },
-          {
-            "type": "item",
-            "subtype": "stats",
-            "target": "radio_toolkit",
-            "exec": "add",
-            "property": "condition",
-            "field": "current",
-            "value": 1
-          },
-          {
-            "type": "item",
-            "subtype": "stats",
-            "target": "clockwork_spring",
-            "exec": "add",
-            "property": "tension",
-            "field": "current",
-            "value": 1
-          },
-          {
+                              {
             "type": "set",
             "subtype": "state",
             "target": "mill_powered",
@@ -8718,16 +8331,7 @@ export const DEMO_SCRIPT = {
           }
         ],
         "pass": [
-          {
-            "type": "item",
-            "subtype": "stats",
-            "target": "radio_toolkit",
-            "exec": "add",
-            "property": "condition",
-            "field": "current",
-            "value": -1
-          },
-          {
+                    {
             "type": "characters",
             "subtype": "edit_stats",
             "target": "player",
@@ -9010,31 +8614,13 @@ export const DEMO_SCRIPT = {
             "target": "tracing_paper",
             "value": -1
           },
-          {
-            "type": "item",
-            "subtype": "stats",
-            "target": "tracing_paper",
-            "exec": "add",
-            "property": "precision",
-            "field": "current",
-            "value": 1
-          },
-          {
+                    {
             "type": "item",
             "subtype": "usage",
             "target": "inspection_loupe",
             "value": -1
           },
-          {
-            "type": "item",
-            "subtype": "stats",
-            "target": "inspection_loupe",
-            "exec": "add",
-            "property": "precision",
-            "field": "current",
-            "value": 1
-          },
-          {
+                    {
             "type": "set",
             "subtype": "state",
             "target": "map_incomplete",
@@ -9264,34 +8850,7 @@ export const DEMO_SCRIPT = {
           }
         ],
         "pass": [
-          {
-            "type": "item",
-            "subtype": "stats",
-            "target": "bell_copper_wire",
-            "exec": "add",
-            "property": "conductivity",
-            "field": "current",
-            "value": -1
-          },
-          {
-            "type": "item",
-            "subtype": "stats",
-            "target": "hymn_note",
-            "exec": "add",
-            "property": "completeness",
-            "field": "current",
-            "value": -1
-          },
-          {
-            "type": "item",
-            "subtype": "stats",
-            "target": "bell_clapper",
-            "exec": "add",
-            "property": "integrity",
-            "field": "current",
-            "value": -1
-          },
-          {
+                                        {
             "type": "characters",
             "subtype": "edit_stats",
             "target": "player",
@@ -9364,58 +8923,52 @@ export const DEMO_SCRIPT = {
       "requirement": {
         "logic": "AND",
         "check": [
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "bell_clapper"
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "bell_copper_wire"
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "hymn_note"
-          },
-          {
-            "type": "state",
-            "property": "heard_bell",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "stats",
-            "subtype": "item",
-            "target": "bell_copper_wire",
-            "property": "conductivity",
-            "field": "current",
-            "op": ">=",
-            "value": 1
-          },
-          {
-            "type": "stats",
-            "subtype": "item",
-            "target": "hymn_note",
-            "property": "completeness",
-            "field": "current",
-            "op": ">=",
-            "value": 1
-          },
-          {
-            "type": "stats",
-            "subtype": "item",
-            "target": "bell_clapper",
-            "property": "integrity",
-            "field": "current",
-            "op": ">=",
-            "value": 1
-          }
-        ]
+  {
+    "type": "item",
+    "subtype": "inventory",
+    "op": "has",
+    "value": "bell_clapper"
+  },
+  {
+    "type": "item",
+    "subtype": "inventory",
+    "op": "has",
+    "value": "bell_copper_wire"
+  },
+  {
+    "type": "item",
+    "subtype": "inventory",
+    "op": "has",
+    "value": "hymn_note"
+  },
+  {
+    "type": "state",
+    "property": "heard_bell",
+    "op": "==",
+    "value": true
+  },
+  {
+    "type": "item",
+    "subtype": "usage",
+    "target": "bell_copper_wire",
+    "op": "<",
+    "value": 4
+  },
+  {
+    "type": "item",
+    "subtype": "usage",
+    "target": "hymn_note",
+    "op": "<",
+    "value": 3
+  },
+  {
+    "type": "item",
+    "subtype": "usage",
+    "target": "bell_clapper",
+    "op": "<",
+    "value": 3
+  }
+]
       }
     },
     "action_correct_bell_signal": {
@@ -9439,24 +8992,12 @@ export const DEMO_SCRIPT = {
           }
         ],
         "pass": [
-          {
-            "type": "item",
-            "subtype": "stats",
-            "target": "bell_copper_wire",
-            "exec": "add",
-            "property": "conductivity",
-            "field": "current",
-            "value": 1
-          },
-          {
-            "type": "item",
-            "subtype": "stats",
-            "target": "hymn_note",
-            "exec": "add",
-            "property": "completeness",
-            "field": "current",
-            "value": 1
-          },
+                    {
+  "type": "item",
+  "subtype": "usage",
+  "target": "hymn_note",
+  "value": -1
+},
           {
             "type": "item",
             "subtype": "usage",
@@ -9543,14 +9084,11 @@ export const DEMO_SCRIPT = {
         ],
         "pass": [
           {
-            "type": "item",
-            "subtype": "stats",
-            "target": "hymn_note",
-            "exec": "add",
-            "property": "completeness",
-            "field": "current",
-            "value": 1
-          },
+  "type": "item",
+  "subtype": "usage",
+  "target": "hymn_note",
+  "value": -1
+},
           {
             "type": "set",
             "subtype": "state",
@@ -9636,25 +9174,7 @@ export const DEMO_SCRIPT = {
           }
         ],
         "pass": [
-          {
-            "type": "item",
-            "subtype": "stats",
-            "target": "radio_toolkit",
-            "exec": "add",
-            "property": "condition",
-            "field": "current",
-            "value": -1
-          },
-          {
-            "type": "item",
-            "subtype": "stats",
-            "target": "radio_crystal",
-            "exec": "add",
-            "property": "signal",
-            "field": "current",
-            "value": -1
-          },
-          {
+                              {
             "type": "characters",
             "subtype": "edit_stats",
             "target": "player",
@@ -9727,49 +9247,45 @@ export const DEMO_SCRIPT = {
       "requirement": {
         "logic": "AND",
         "check": [
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "radio_toolkit"
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "radio_crystal"
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "insulated_wire"
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "spare_fuse"
-          },
-          {
-            "type": "stats",
-            "subtype": "item",
-            "target": "radio_toolkit",
-            "property": "condition",
-            "field": "current",
-            "op": ">=",
-            "value": 1
-          },
-          {
-            "type": "stats",
-            "subtype": "item",
-            "target": "radio_crystal",
-            "property": "signal",
-            "field": "current",
-            "op": ">=",
-            "value": 1
-          }
-        ]
+  {
+    "type": "item",
+    "subtype": "inventory",
+    "op": "has",
+    "value": "radio_toolkit"
+  },
+  {
+    "type": "item",
+    "subtype": "inventory",
+    "op": "has",
+    "value": "radio_crystal"
+  },
+  {
+    "type": "item",
+    "subtype": "inventory",
+    "op": "has",
+    "value": "insulated_wire"
+  },
+  {
+    "type": "item",
+    "subtype": "inventory",
+    "op": "has",
+    "value": "spare_fuse"
+  },
+  {
+    "type": "item",
+    "subtype": "usage",
+    "target": "radio_toolkit",
+    "op": "<",
+    "value": 4
+  },
+  {
+    "type": "item",
+    "subtype": "usage",
+    "target": "radio_crystal",
+    "op": "<",
+    "value": 3
+  }
+]
       }
     },
     "action_diagnose_radio": {
@@ -9854,31 +9370,13 @@ export const DEMO_SCRIPT = {
       "effect": {
         "normal": [],
         "pass": [
-          {
-            "type": "item",
-            "subtype": "stats",
-            "target": "radio_toolkit",
-            "exec": "add",
-            "property": "condition",
-            "field": "current",
-            "value": 2
-          },
-          {
+                    {
             "type": "item",
             "subtype": "usage",
             "target": "radio_toolkit",
             "value": -1
           },
-          {
-            "type": "item",
-            "subtype": "stats",
-            "target": "insulated_wire",
-            "exec": "add",
-            "property": "condition",
-            "field": "current",
-            "value": 1
-          },
-          {
+                    {
             "type": "item",
             "subtype": "usage",
             "target": "insulated_wire",
@@ -10418,14 +9916,11 @@ export const DEMO_SCRIPT = {
         ],
         "pass": [
           {
-            "type": "item",
-            "subtype": "stats",
-            "target": "tunnel_manifest",
-            "exec": "add",
-            "property": "completeness",
-            "field": "current",
-            "value": 1
-          },
+  "type": "item",
+  "subtype": "usage",
+  "target": "tunnel_manifest",
+  "value": -1
+},
           {
             "type": "set",
             "subtype": "state",
