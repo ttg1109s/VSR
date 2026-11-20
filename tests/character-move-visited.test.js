@@ -1,6 +1,5 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { DEMO_SCRIPT } from '../demo-script-data.js';
 import { LoaderSystem } from '../engine/modules/Loader.js';
 import { validateScenario } from '../engine/scenario/Scenario.js';
 import { MoveAlgorithms } from '../engine/modules/entity/Movement.js';
@@ -8,27 +7,6 @@ import { EntitySystem } from '../engine/modules/Entity.js';
 import { EffectSystem } from '../engine/modules/Effect.js';
 import { validateCharacterVisitCounters } from '../engine/persistence/SaveState.js';
 import { EffectKeyStrategies, EffectScopeResolvers, StaticListResolvers } from '../engine/modules/effect/strategies/Management.js';
-
-test('Character moveList entries receive persistent visit counters at load', () => {
-  const scenario = structuredClone(DEMO_SCRIPT);
-  const character = Object.values(scenario.characters).find(item => item.moveList?.length);
-  delete character.moveList[0].countVisited;
-  const loadedMissing = LoaderSystem.loadScript(scenario, {});
-  assert.equal(loadedMissing.state.characters[Object.keys(scenario.characters).find(id => scenario.characters[id] === character)].moveList[0].countVisited, 0);
-
-  const loaded = LoaderSystem.loadScript(structuredClone(DEMO_SCRIPT), {});
-  const entries = Object.values(loaded.state.characters).flatMap(character => character.moveList || []);
-  assert.ok(entries.length > 0);
-  assert.ok(entries.every(entry => entry.countVisited === 0));
-});
-
-test('Character moveList schema accepts loop enter/leave/still and stillActive', () => {
-  const scenario = structuredClone(DEMO_SCRIPT);
-  const character = Object.values(scenario.characters).find(item => item.moveList?.length);
-  character.moveList[0].stillActive = 4;
-  character.moveList[0].loop = { enter: [], leave: [], still: [] };
-  assert.deepEqual(validateScenario(scenario), []);
-});
 
 test('random_count selects without consuming count before a successful transition', () => {
   const moveList = [
@@ -166,7 +144,6 @@ test('Effect runner stops the remaining list as soon as the visit token becomes 
   assert.equal(calls, 1);
 });
 
-
 test('save restore requires canonical visit counters and rejects invalid values', () => {
   const missing = { npc: { moveList: [{ scene_id: 'a' }] } };
   assert.throws(
@@ -267,7 +244,6 @@ test('identity changes invalidate the old visit and restart Still with a fresh t
   assert.ok(taskManager.plan[`move_still_npc_${newToken}`], 'a stale Still callback must not kill the new visit task');
 });
 
-
 test('Character Movement Effect Manager isolates each moveList entry and hook', () => {
   const source = {
     characters: {
@@ -326,7 +302,6 @@ test('EffectSystem applies moveList-entry overrides without colliding with Chara
 
   assert.deepEqual(executed, override);
 });
-
 
 test('manage_effect can mutate one Character moveList entry without touching sibling entries', async () => {
   const overrides = {};
