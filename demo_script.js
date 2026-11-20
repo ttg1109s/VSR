@@ -3787,7 +3787,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Cối xay nước",
         "buttonLabel": "Khởi động lại",
-        "desc": "Cối xay cần chốt truyền động, lò xo và bộ dụng cụ. Chất lượng các linh kiện phải đạt mức tối thiểu; dấu đường hầm từ Memory hoặc mảnh bản đồ từ Evidence đều cung cấp hướng dẫn."
+        "desc": "Cối xay cần chốt truyền động, lò xo và bộ dụng cụ còn đủ tốt. Dấu vết trong ký ức hoặc mảnh bản đồ đều có thể giúp bạn biết cách sửa."
       },
       "set": {
         "display": "show",
@@ -3993,7 +3993,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Tủ hồ sơ dưới đê",
         "buttonLabel": "Mở khóa",
-        "desc": "Tủ hồ sơ dưới đê lưu bản ghi sơ tán. Sau khi chọn phương thức điều tra và khôi phục dấu đường hầm, chìa khóa cho phép tiếp cận kho tư liệu."
+        "desc": "Tủ hồ sơ dưới đê lưu bản ghi sơ tán. Sau khi tìm được dấu đường hầm và chọn cách điều tra, chìa khóa sẽ giúp bạn tiếp cận kho tư liệu."
       },
       "set": {
         "display": "show",
@@ -4119,7 +4119,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Giải phóng tại sân ga",
         "buttonLabel": "Giải phóng",
-        "desc": "Hai tuyến bằng chứng và ký ức đều có thể dẫn đến giải phóng. Điều kiện của từng tuyến được giữ nguyên."
+        "desc": "Cả ký ức lẫn những bằng chứng bạn thu thập đều có thể dẫn đến giải phóng. Những gì bạn đã tìm được sẽ quyết định cách sự thật được hé lộ."
       },
       "set": {
         "display": "show",
@@ -4802,10 +4802,10 @@ export const DEMO_SCRIPT = {
     },
     "action_reach_station_memory": {
       "meta": {
-        "title": "Ga tàu 03:17 — ký ức",
+        "title": "Ga tàu 03:17 — theo ký ức",
         "buttonLabel": "Theo dấu ký ức",
         "buttonIcon": "train",
-        "desc": "Tuyến Memory dùng lời khai và dấu đường hầm thay cho danh sách vận chuyển và cuộn phim."
+        "desc": "Bạn lần theo lời khai và những dấu vết trong đường hầm, không cần dựa vào danh sách vận chuyển hay cuộn phim."
       },
       "set": {
         "display": "hide",
@@ -4916,8 +4916,8 @@ export const DEMO_SCRIPT = {
     "action_restore_radio_signal": {
       "meta": {
         "title": "Khôi phục tín hiệu phát thanh (tùy chọn)",
-        "buttonLabel": "Can thiệp mạch điện",
-        "desc": "Puzzle phụ tùy chọn: dùng bộ dụng cụ, dây, cầu chì và tinh thể có chất lượng tối thiểu để phục hồi tín hiệu. Việc sửa mạch không khóa tiến trình chính; cuộn tinh thể vẫn đủ để dò tín hiệu dưới ga."
+        "buttonLabel": "Sửa mạch điện",
+        "desc": "Bạn có thể thử sửa mạch bằng bộ dụng cụ, dây, cầu chì và tinh thể còn đủ tốt. Việc này không ảnh hưởng đến con đường chính; cuộn tinh thể vẫn có thể giúp dò tín hiệu dưới ga."
       },
       "set": {
         "display": "show",
@@ -5036,7 +5036,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Đối chiếu bản đồ",
         "buttonLabel": "Chồng giấy can",
-        "desc": "Chồng giấy can lên mảnh bản đồ và kiểm tra các ký hiệu. Độ bao phủ bản đồ, độ chính xác giấy can và kính phải đạt mức tối thiểu để xác nhận tuyến phụ dẫn đến khu vực dưới chân đê."
+        "desc": "Chồng giấy can lên mảnh bản đồ và kiểm tra các ký hiệu. Bản đồ, giấy can và kính lúp cần đủ rõ để xác nhận tuyến phụ dẫn đến khu vực dưới chân đê."
       },
       "set": {
         "display": "show",
@@ -6207,9 +6207,9 @@ export const DEMO_SCRIPT = {
     },
     "action_repair_room7_key": {
       "meta": {
-        "title": "Sửa chìa khóa phòng thứ bảy",
-        "buttonLabel": "Sửa chìa khóa",
-        "desc": "Dùng bộ dụng cụ để chỉnh lại đầu chìa và giảm Usage. Repair không reset Usage về 0."
+        "title": "Chỉnh lại chìa khóa phòng thứ bảy",
+        "buttonLabel": "Chỉnh chìa khóa",
+        "desc": "Dùng bộ dụng cụ chỉnh lại đầu chìa. Chìa khóa vẫn giữ mức hao mòn đã có, không trở lại như mới."
       },
       "set": {
         "display": "show",
@@ -6324,9 +6324,9 @@ export const DEMO_SCRIPT = {
     },
     "action_open_room7_alternative": {
       "meta": {
-        "title": "Mở phòng thứ bảy bằng phương án thay thế",
-        "buttonLabel": "Bypass cửa",
-        "desc": "Dựa vào dấu khóa, sơ đồ hoặc toolkit để bypass cửa khi chìa khóa không còn dùng được. Clue có thể không đầy đủ."
+        "title": "Mở phòng thứ bảy bằng cách khác",
+        "buttonLabel": "Thử mở cửa bằng cách khác",
+        "desc": "Dựa vào dấu khóa, sơ đồ hoặc bộ dụng cụ để mở cửa khi chìa khóa không còn dùng được. Những manh mối tìm được có thể vẫn chưa đầy đủ."
       },
       "set": {
         "display": "show",
@@ -6416,8 +6416,8 @@ export const DEMO_SCRIPT = {
     "action_inspect_damaged_lock": {
       "meta": {
         "title": "Kiểm tra khóa bị hư",
-        "buttonLabel": "Examine khóa",
-        "desc": "Quan sát vết cạy, đầu chìa và dấu mài để xác định cách bypass. Examine không tiêu hao Usage."
+        "buttonLabel": "Kiểm tra ổ khóa",
+        "desc": "Quan sát vết cạy, đầu chìa và dấu mài để tìm cách mở cửa khác. Việc kiểm tra không làm dụng cụ hao mòn."
       },
       "set": {
         "display": "show",
@@ -6539,7 +6539,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Đối chiếu sổ khách với ảnh",
         "buttonLabel": "Đối chiếu",
-        "desc": "Dùng class photo hoặc film để xác minh tên bị mất khỏi sổ."
+        "desc": "Dùng ảnh lớp hoặc cuộn phim để xác minh cái tên bị mất khỏi sổ khách."
       },
       "set": {
         "display": "show",
@@ -6597,7 +6597,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Soi bằng đèn yếu",
         "buttonLabel": "Soi một phần",
-        "desc": "Đèn còn ánh sáng nhưng không đủ rõ. Thao tác sẽ tiêu hao Usage và giảm Light."
+        "desc": "Đèn vẫn sáng nhưng không đủ rõ. Dùng tiếp sẽ làm đèn hao mòn thêm và ánh sáng yếu đi."
       },
       "set": {
         "display": "show",
@@ -6694,7 +6694,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Khôi phục đèn bão",
         "buttonLabel": "Chỉnh đèn",
-        "desc": "Thay dầu, chỉnh bấc và kiểm tra chụp kính để phục hồi Light."
+        "desc": "Thay dầu, chỉnh bấc và kiểm tra chụp kính để ánh sáng trở lại rõ hơn."
       },
       "set": {
         "display": "show",
@@ -6771,9 +6771,9 @@ export const DEMO_SCRIPT = {
     },
     "action_retrieve_well_badge_alternative": {
       "meta": {
-        "title": "Xác minh phù hiệu bằng evidence",
+        "title": "Xác minh phù hiệu bằng bằng chứng",
         "buttonLabel": "Đối chiếu phù hiệu",
-        "desc": "Nếu đèn hỏng, dùng tape/film hoặc dấu giếng để xác minh phù hiệu."
+        "desc": "Nếu đèn bão bị hỏng, dùng băng ghi âm, cuộn phim hoặc dấu vết ở giếng để xác minh phù hiệu."
       },
       "set": {
         "display": "show",
@@ -6869,7 +6869,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Nghe lại băng của Mai",
         "buttonLabel": "Nghe băng",
-        "desc": "Dùng băng ghi âm thay cho confession trực tiếp."
+        "desc": "Nghe băng ghi âm để tìm lời kể thay vì yêu cầu Mai phải trực tiếp khai lại."
       },
       "set": {
         "display": "show",
@@ -6918,7 +6918,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Xác minh sổ khách",
         "buttonLabel": "Đối chiếu sổ",
-        "desc": "Đối chiếu sổ với film hoặc class photo để xác minh phòng 7."
+        "desc": "Đối chiếu sổ khách với cuộn phim hoặc ảnh lớp để xác minh căn phòng thứ bảy."
       },
       "set": {
         "display": "show",
@@ -6970,7 +6970,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Theo la bàn không chắc chắn",
         "buttonLabel": "Theo dấu mờ",
-        "desc": "Dùng la bàn độ chính xác thấp; Usage và Accuracy giảm, Composure bị ảnh hưởng."
+        "desc": "La bàn chỉ hướng không thật chính xác. Đi theo nó có thể làm la bàn xuống cấp, khiến bạn khó giữ phương hướng và mất bình tĩnh."
       },
       "set": {
         "display": "show",
@@ -7062,7 +7062,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Xác minh tuyến rừng",
         "buttonLabel": "Đối chiếu tuyến",
-        "desc": "Dùng dấu sơn, Tunnel Names hoặc Manifest để xác minh tuyến không phụ thuộc la bàn."
+        "desc": "Dùng dấu sơn, tên trên tường hoặc danh sách vận chuyển để xác nhận tuyến đường, không cần dựa vào la bàn."
       },
       "set": {
         "display": "show",
@@ -7127,8 +7127,8 @@ export const DEMO_SCRIPT = {
     "action_force_seal": {
       "meta": {
         "title": "Cạy niêm phong hộp",
-        "buttonLabel": "Cạy seal",
-        "desc": "Cạy seal có thể làm hỏng authenticity và evidence."
+        "buttonLabel": "Cạy niêm phong",
+        "desc": "Cạy niêm phong có thể làm hỏng dấu xác thực và khiến bằng chứng mất giá trị."
       },
       "set": {
         "display": "show",
@@ -7219,9 +7219,9 @@ export const DEMO_SCRIPT = {
     },
     "action_verify_seal": {
       "meta": {
-        "title": "Xác minh seal bị hư",
-        "buttonLabel": "Đối chiếu seal",
-        "desc": "Đối chiếu seal bị hư với film, Manifest hoặc badge."
+        "title": "Xác minh con dấu bị hư",
+        "buttonLabel": "Đối chiếu con dấu",
+        "desc": "Đối chiếu con dấu bị hư với cuộn phim, danh sách vận chuyển hoặc phù hiệu."
       },
       "set": {
         "display": "show",
@@ -7276,7 +7276,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Sửa cối xay tạm thời",
         "buttonLabel": "Sửa tạm",
-        "desc": "Repair khi chất lượng một linh kiện thấp: tiêu hao Usage, giảm quality và tạo trạng thái partial."
+        "desc": "Nếu một linh kiện đã xuống cấp, bạn vẫn có thể thử sửa cối xay. Các linh kiện sẽ hao mòn thêm và máy chỉ hoạt động tạm thời."
       },
       "set": {
         "display": "show",
@@ -7407,9 +7407,9 @@ export const DEMO_SCRIPT = {
     },
     "action_force_mill_repair": {
       "meta": {
-        "title": "Cưỡng chế sửa cối xay",
-        "buttonLabel": "Cưỡng chế",
-        "desc": "Sửa cưỡng chế có thể làm hỏng toolkit và khiến An mất bình tĩnh."
+        "title": "Cưỡng ép sửa cối xay",
+        "buttonLabel": "Cưỡng ép sửa",
+        "desc": "Cố sửa cối xay bằng sức có thể làm hỏng bộ dụng cụ và khiến An mất bình tĩnh."
       },
       "set": {
         "display": "show",
@@ -7505,9 +7505,9 @@ export const DEMO_SCRIPT = {
     },
     "action_stabilize_mill": {
       "meta": {
-        "title": "Ổn định cối xay",
-        "buttonLabel": "Ổn định",
-        "desc": "Ổn định cối xay tạm bằng linh kiện và toolkit."
+        "title": "Giữ cối xay hoạt động tạm thời",
+        "buttonLabel": "Ổn định máy",
+        "desc": "Dùng linh kiện và bộ dụng cụ để giữ cối xay hoạt động trong thời gian ngắn."
       },
       "set": {
         "display": "show",
@@ -7591,9 +7591,9 @@ export const DEMO_SCRIPT = {
     },
     "action_bypass_mill": {
       "meta": {
-        "title": "Bỏ qua cối xay",
-        "buttonLabel": "Bypass",
-        "desc": "Đi theo evidence đường hầm mà không yêu cầu cối xay phải hoạt động."
+        "title": "Đi theo đường hầm, không qua cối xay",
+        "buttonLabel": "Đi theo đường hầm",
+        "desc": "Bạn có thể lần theo dấu vết dưới đê mà không cần khôi phục cối xay."
       },
       "set": {
         "display": "show",
@@ -7652,9 +7652,9 @@ export const DEMO_SCRIPT = {
     },
     "action_bypass_archive_lock": {
       "meta": {
-        "title": "Bypass khóa kho hồ sơ",
-        "buttonLabel": "Bypass khóa",
-        "desc": "Mở tủ hồ sơ bằng toolkit và evidence thay thế; route partial nếu thao tác cưỡng chế."
+        "title": "Mở tủ hồ sơ bằng cách khác",
+        "buttonLabel": "Mở tủ bằng cách khác",
+        "desc": "Dùng bộ dụng cụ và những bằng chứng thay thế để mở tủ hồ sơ khi chìa khóa không còn. Nếu phải cưỡng ép, kết quả có thể chỉ thu được một phần."
       },
       "set": {
         "display": "show",
@@ -7750,7 +7750,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Tái dựng hồ sơ bị thiếu",
         "buttonLabel": "Tái dựng",
-        "desc": "Đối chiếu Tunnel Manifest, Film và class register để tái dựng bản ghi."
+        "desc": "Đối chiếu danh sách đường hầm, cuộn phim và sổ điểm danh để khôi phục bản ghi."
       },
       "set": {
         "display": "show",
@@ -7825,9 +7825,9 @@ export const DEMO_SCRIPT = {
     },
     "action_open_archive_from_evidence": {
       "meta": {
-        "title": "Mở kho bằng evidence",
-        "buttonLabel": "Mở bằng evidence",
-        "desc": "Dùng Manifest, Film và Seal để mở kho khi Archive Key không còn."
+        "title": "Mở kho bằng bằng chứng",
+        "buttonLabel": "Mở bằng bằng chứng",
+        "desc": "Dùng danh sách vận chuyển, cuộn phim và con dấu để mở kho khi không còn chìa khóa."
       },
       "set": {
         "display": "show",
@@ -7904,7 +7904,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Tái đối chiếu bản đồ",
         "buttonLabel": "Tái đối chiếu",
-        "desc": "Dùng tracing paper và loupe phục hồi bản đồ thiếu."
+        "desc": "Dùng giấy can và kính lúp để khôi phục những phần bản đồ bị thiếu."
       },
       "set": {
         "display": "show",
@@ -7972,9 +7972,9 @@ export const DEMO_SCRIPT = {
     },
     "action_compare_evacuation_film": {
       "meta": {
-        "title": "Đối chiếu bản đồ bằng film",
-        "buttonLabel": "Đối chiếu film",
-        "desc": "Dùng film sơ tán xác minh tuyến dưới đê."
+        "title": "Đối chiếu bản đồ bằng cuộn phim",
+        "buttonLabel": "Đối chiếu cuộn phim",
+        "desc": "Dùng cuộn phim sơ tán để kiểm tra và xác nhận tuyến đường dưới đê."
       },
       "set": {
         "display": "show",
@@ -8031,9 +8031,9 @@ export const DEMO_SCRIPT = {
     },
     "action_verify_route_from_radio": {
       "meta": {
-        "title": "Xác minh tuyến từ radio",
-        "buttonLabel": "Xác minh radio",
-        "desc": "Dùng transcript hoặc radio evidence để xác minh tunnel route."
+        "title": "Xác minh tuyến đường từ radio",
+        "buttonLabel": "Đối chiếu tín hiệu",
+        "desc": "Dùng bản ghi phát thanh hoặc bằng chứng từ radio để xác nhận tuyến đường trong đường hầm."
       },
       "set": {
         "display": "show",
@@ -8083,9 +8083,9 @@ export const DEMO_SCRIPT = {
     },
     "action_ring_bell_imperfect": {
       "meta": {
-        "title": "Rung chuông không hoàn chỉnh",
+        "title": "Rung chuông với cơ cấu chưa hoàn chỉnh",
         "buttonLabel": "Rung chuông",
-        "desc": "Chấp nhận chất lượng thấp: Usage, Conductivity và Composure giảm; tín hiệu méo nhưng critical flag vẫn được đạt."
+        "desc": "Bạn chấp nhận cơ cấu chưa hoàn hảo. Dây và các bộ phận sẽ hao mòn, An có thể mất bình tĩnh, còn tiếng chuông sẽ bị méo."
       },
       "set": {
         "display": "show",
@@ -8239,7 +8239,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Sửa tín hiệu chuông",
         "buttonLabel": "Sửa tín hiệu",
-        "desc": "Repair wire và đối chiếu hymn để sửa tín hiệu bị méo."
+        "desc": "Sửa dây dẫn và đối chiếu bài thánh ca để điều chỉnh tiếng chuông bị méo."
       },
       "set": {
         "display": "show",
@@ -8330,7 +8330,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Tái dựng ghi chú thánh ca",
         "buttonLabel": "Tái dựng",
-        "desc": "Đối chiếu hymn với Guestbook, Class Register hoặc Keeper confession."
+        "desc": "Đối chiếu bài thánh ca với sổ khách, sổ điểm danh hoặc lời khai của người giữ nhà nguyện."
       },
       "set": {
         "display": "show",
@@ -8393,9 +8393,9 @@ export const DEMO_SCRIPT = {
     },
     "action_restore_radio_signal_partial": {
       "meta": {
-        "title": "Khôi phục radio tạm thời",
+        "title": "Khôi phục tín hiệu phát thanh tạm thời",
         "buttonLabel": "Sửa tạm",
-        "desc": "Tín hiệu yếu cho phép phục hồi partial; vật liệu và stats bị hao mòn."
+        "desc": "Tín hiệu yếu vẫn có thể được khôi phục, nhưng các vật liệu sẽ hao mòn thêm và kết quả không hoàn toàn ổn định."
       },
       "set": {
         "display": "show",
@@ -8546,9 +8546,9 @@ export const DEMO_SCRIPT = {
     },
     "action_diagnose_radio": {
       "meta": {
-        "title": "Chẩn đoán radio hỏng",
-        "buttonLabel": "Chẩn đoán",
-        "desc": "Chẩn đoán lỗi mạch để chọn repair hoặc alternative evidence."
+        "title": "Kiểm tra radio bị hỏng",
+        "buttonLabel": "Kiểm tra radio",
+        "desc": "Kiểm tra mạch điện để biết nên sửa radio hay tìm bằng chứng khác thay thế."
       },
       "set": {
         "display": "show",
@@ -8615,8 +8615,8 @@ export const DEMO_SCRIPT = {
     "action_repair_radio_toolkit": {
       "meta": {
         "title": "Sửa bộ dụng cụ radio",
-        "buttonLabel": "Sửa toolkit",
-        "desc": "Sửa toolkit và giảm Usage; không yêu cầu toolkit Condition cao."
+        "buttonLabel": "Sửa bộ dụng cụ",
+        "desc": "Sửa bộ dụng cụ và giảm mức hao mòn. Bạn không cần một bộ dụng cụ còn nguyên vẹn mới có thể thử."
       },
       "set": {
         "display": "show",
@@ -8686,9 +8686,9 @@ export const DEMO_SCRIPT = {
     },
     "action_listen_static": {
       "meta": {
-        "title": "Nghe tín hiệu tĩnh",
-        "buttonLabel": "Nghe static",
-        "desc": "Nghe bản tín hiệu partial và đối chiếu Tape/Film."
+        "title": "Nghe tín hiệu nhiễu",
+        "buttonLabel": "Nghe tín hiệu",
+        "desc": "Nghe phần tín hiệu còn lại và đối chiếu với băng ghi âm hoặc cuộn phim."
       },
       "set": {
         "display": "show",
@@ -8810,9 +8810,9 @@ export const DEMO_SCRIPT = {
     },
     "action_ground_with_radio": {
       "meta": {
-        "title": "Grounding bằng radio",
-        "buttonLabel": "Grounding",
-        "desc": "Dùng nhịp phát thanh ổn định để grounding; không cần tín hiệu hoàn hảo."
+        "title": "Lấy lại bình tĩnh theo nhịp phát thanh",
+        "buttonLabel": "Nghe nhịp phát thanh",
+        "desc": "Dựa vào nhịp phát thanh ổn định để lấy lại bình tĩnh; không cần tín hiệu phải hoàn hảo."
       },
       "set": {
         "display": "show",
@@ -8873,9 +8873,9 @@ export const DEMO_SCRIPT = {
     },
     "action_recover_with_mai": {
       "meta": {
-        "title": "Recovery cùng Mai",
+        "title": "Nói chuyện với Mai để lấy lại bình tĩnh",
         "buttonLabel": "Nói chuyện với Mai",
-        "desc": "Một cuộc nói chuyện an toàn giúp phục hồi Composure và tránh ép confession."
+        "desc": "Một cuộc nói chuyện an toàn giúp An bình tĩnh trở lại và tránh ép Mai phải khai điều cô chưa sẵn sàng kể."
       },
       "set": {
         "display": "show",
@@ -8954,9 +8954,9 @@ export const DEMO_SCRIPT = {
     },
     "action_recover_with_linh": {
       "meta": {
-        "title": "Recovery cùng Linh",
+        "title": "Nói chuyện riêng với Linh",
         "buttonLabel": "Nói chuyện riêng",
-        "desc": "Giữ privacy và tạo môi trường an toàn cho Linh."
+        "desc": "Tôn trọng sự riêng tư và tạo môi trường an toàn để Linh có thể nói chuyện."
       },
       "set": {
         "display": "show",
@@ -9036,8 +9036,8 @@ export const DEMO_SCRIPT = {
     "action_recover_character_trust": {
       "meta": {
         "title": "Khôi phục lòng tin nhân chứng",
-        "buttonLabel": "Khôi phục Trust",
-        "desc": "Đối chiếu evidence và giữ lời khai riêng để phục hồi Trust."
+        "buttonLabel": "Lấy lại lòng tin",
+        "desc": "Đối chiếu bằng chứng và tôn trọng lời khai riêng để xây dựng lại lòng tin."
       },
       "set": {
         "display": "show",
@@ -9116,9 +9116,9 @@ export const DEMO_SCRIPT = {
     },
     "action_reconstruct_manifest": {
       "meta": {
-        "title": "Tái dựng Manifest",
+        "title": "Tái dựng danh sách vận chuyển",
         "buttonLabel": "Tái dựng",
-        "desc": "Dùng Tunnel Names, Film hoặc Archive để tái dựng Manifest."
+        "desc": "Dùng tên trên tường, cuộn phim hoặc hồ sơ lưu trữ để khôi phục danh sách vận chuyển bị thiếu."
       },
       "set": {
         "display": "show",
@@ -9189,9 +9189,9 @@ export const DEMO_SCRIPT = {
     },
     "action_verify_evacuation_film": {
       "meta": {
-        "title": "Xác minh Film sơ tán",
-        "buttonLabel": "Đối chiếu film",
-        "desc": "Đối chiếu Film với Manifest hoặc class register."
+        "title": "Xác minh cuộn phim sơ tán",
+        "buttonLabel": "Đối chiếu cuộn phim",
+        "desc": "Đối chiếu cuộn phim với danh sách vận chuyển hoặc sổ điểm danh."
       },
       "set": {
         "display": "show",
@@ -9258,7 +9258,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Phục hồi thánh ca",
         "buttonLabel": "Phục hồi",
-        "desc": "Dùng Keeper confession hoặc guestbook để khôi phục clue hymn."
+        "desc": "Dùng lời khai của người giữ nhà nguyện hoặc sổ khách để khôi phục manh mối về bài thánh ca."
       },
       "set": {
         "display": "show",
@@ -9315,9 +9315,9 @@ export const DEMO_SCRIPT = {
     },
     "action_reconstruct_stakes_evidence": {
       "meta": {
-        "title": "Tái dựng evidence vòng cọc",
+        "title": "Tái dựng bằng chứng vòng cọc",
         "buttonLabel": "Tái dựng",
-        "desc": "Dùng class photo và Tunnel Names để corroborate vòng cọc."
+        "desc": "Dùng ảnh lớp và tên trên tường để xác nhận những dấu vết quanh vòng cọc."
       },
       "set": {
         "display": "show",
@@ -9390,7 +9390,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Xác minh dấu đường hầm",
         "buttonLabel": "Xác minh",
-        "desc": "Dùng Manifest, Archive hoặc Tunnel Names để xác minh tunnel clue."
+        "desc": "Dùng danh sách vận chuyển, hồ sơ lưu trữ hoặc tên trên tường để xác nhận manh mối đường hầm."
       },
       "set": {
         "display": "show",
@@ -9455,9 +9455,9 @@ export const DEMO_SCRIPT = {
     },
     "action_ending_release_partial": {
       "meta": {
-        "title": "Giải thoát với evidence partial",
+        "title": "Giải thoát khi bằng chứng còn thiếu",
         "buttonLabel": "Giải thoát",
-        "desc": "Nếu Release core đã đạt nhưng evidence còn partial, bạn vẫn có thể giải thoát người mắc kẹt."
+        "desc": "Nếu đã chuẩn bị những điều cần thiết để giải thoát, bạn vẫn có thể cứu người mắc kẹt dù một phần bằng chứng chưa được khôi phục đầy đủ."
       },
       "set": {
         "display": "show",
@@ -9532,9 +9532,9 @@ export const DEMO_SCRIPT = {
     },
     "action_ending_release_reconstructed": {
       "meta": {
-        "title": "Giải thoát sau tái dựng evidence",
+        "title": "Giải thoát sau khi tái dựng sự thật",
         "buttonLabel": "Giải thoát",
-        "desc": "Release core và corroboration đạt; ít nhất một recovery đã hoàn tất."
+        "desc": "Bạn đã chuẩn bị những điều cần thiết để giải thoát và khôi phục thêm bằng chứng từ các dấu vết còn sót lại."
       },
       "set": {
         "display": "show",
@@ -9617,7 +9617,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Xác minh vé tàu",
         "buttonLabel": "Xác minh vé",
-        "desc": "Đối chiếu ticket với Station Manifest hoặc Archive khi ticket quality thấp."
+        "desc": "Đối chiếu vé với danh sách hành khách hoặc hồ sơ lưu trữ khi dấu trên vé đã mờ."
       },
       "set": {
         "display": "show",
@@ -9676,9 +9676,9 @@ export const DEMO_SCRIPT = {
     },
     "action_reach_station_memory_evidence": {
       "meta": {
-        "title": "Đến ga bằng evidence tái dựng",
-        "buttonLabel": "Tái dựng tuyến",
-        "desc": "Alternative route dùng Film, Manifest và witness; Memory thấp không khóa ga."
+        "title": "Đến ga bằng cách tái dựng bằng chứng",
+        "buttonLabel": "Tái dựng tuyến đường",
+        "desc": "Bạn có thể lần đến ga bằng cuộn phim, danh sách vận chuyển và lời khai đối chiếu, ngay cả khi ký ức chưa rõ ràng."
       },
       "set": {
         "display": "show",
@@ -9740,9 +9740,9 @@ export const DEMO_SCRIPT = {
     },
     "action_reward_memory_roster": {
       "meta": {
-        "title": "Reward Memory — roster corroborated",
-        "buttonLabel": "Xác minh roster",
-        "desc": "Reward một lần khi roster được corroborate bằng class photo."
+        "title": "Đối chiếu danh sách lớp",
+        "buttonLabel": "Đối chiếu danh sách lớp",
+        "desc": "Một dấu vết mới được hé lộ khi danh sách lớp được đối chiếu với ảnh lớp."
       },
       "set": {
         "display": "show",
@@ -9803,9 +9803,9 @@ export const DEMO_SCRIPT = {
     },
     "action_reward_memory_tunnel": {
       "meta": {
-        "title": "Reward Memory — Tunnel Names",
-        "buttonLabel": "Xác minh Tunnel Names",
-        "desc": "Reward một lần khi Tunnel Names và Manifest được đối chiếu."
+        "title": "Đối chiếu tên trên tường",
+        "buttonLabel": "Đối chiếu tên",
+        "desc": "Một dấu vết mới được hé lộ khi tên trên tường được đối chiếu với danh sách vận chuyển."
       },
       "set": {
         "display": "show",
