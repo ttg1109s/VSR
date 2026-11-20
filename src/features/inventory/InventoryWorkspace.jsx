@@ -50,7 +50,7 @@ function InventoryItemCard({ item, onViewDetails, onToggleEquipment, onUseItem, 
           </div>
           {(item.equipped || item.broken) && (
             <span className={'vsr-inventory-item__status-badge' + (item.broken ? ' is-broken' : ' is-equipped')} aria-label={item.broken ? 'Broken' : 'Equipped'} title={item.broken ? 'Broken' : 'Equipped'}>
-              {item.broken ? 'Broken' : 'Equipped'}
+              {item.broken ? 'B' : 'E'}
             </span>
           )}
         </article>
