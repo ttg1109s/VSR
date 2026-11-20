@@ -4258,6 +4258,23 @@
             "value": true
           }
         ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "clue_roster_verified",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "map_fragment"
+          }
+        ]
       }
     },
     "action_open_archive": {
