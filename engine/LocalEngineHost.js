@@ -1,5 +1,5 @@
 import { GameEngine } from './GameEngine.js';
-import { DEMO_SCRIPT } from '../demo_script.js';
+import { DEMO_SCRIPT } from '../demo-script-data.js';
 import { normalizeScenario } from './scenario/Scenario.js';
 
 /**
