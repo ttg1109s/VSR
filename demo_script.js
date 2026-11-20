@@ -1919,7 +1919,8 @@ export const DEMO_SCRIPT = {
             "action_recover_with_linh",
             "action_recover_character_trust",
             "action_reward_memory_roster",
-            "action_find_classroom_supplies"
+            "action_find_classroom_supplies",
+            "action_find_inspection_loupe"
           ]
         },
         "router_classroom_archive_open": {
@@ -1952,7 +1953,8 @@ export const DEMO_SCRIPT = {
             "action_recover_with_linh",
             "action_recover_character_trust",
             "action_reward_memory_roster",
-            "action_find_classroom_supplies"
+            "action_find_classroom_supplies",
+            "action_find_inspection_loupe"
           ]
         }
       }
@@ -9864,9 +9866,9 @@ export const DEMO_SCRIPT = {
     },
     "action_find_classroom_supplies": {
       "meta": {
-        "title": "Tủ dụng cụ lớp học",
-        "buttonLabel": "Tìm vật dụng hữu ích",
-        "desc": "Trong tủ dụng cụ có bộ sửa chữa radio, giấy can và kính phóng đại. Bạn thu hồi các vật dụng có thể dùng để khôi phục thiết bị và đối chiếu dấu vết."
+        "title": "Dụng cụ và giấy can",
+        "buttonLabel": "Tìm vật dụng",
+        "desc": "Trong tủ có bộ dụng cụ sửa radio và giấy can để đối chiếu sơ đồ. Kính phóng đại được cất riêng và cần thu hồi bằng thao tác khác."
       },
       "set": {
         "display": "show"
@@ -9883,11 +9885,6 @@ export const DEMO_SCRIPT = {
             "type": "item",
             "subtype": "add",
             "target": "tracing_paper"
-          },
-          {
-            "type": "item",
-            "subtype": "add",
-            "target": "inspection_loupe"
           },
           {
             "type": "set",
@@ -10000,6 +9997,33 @@ export const DEMO_SCRIPT = {
             "subtype": "toast",
             "level": "success",
             "text": "Đã thu hồi lò xo và chốt bánh răng; lỗi truyền động được xác nhận."
+          }
+        ]
+      }
+    },
+    "action_find_inspection_loupe": {
+      "meta": {
+        "title": "Kính phóng đại",
+        "buttonLabel": "Lấy kính lúp",
+        "desc": "Kính phóng đại nhỏ trong hộp bảo quản dụng cụ giúp đọc dấu khắc và nét sửa trên vật chứng."
+      },
+      "set": {
+        "display": "show"
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "add",
+            "target": "inspection_loupe"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_find_inspection_loupe",
+            "property": "display",
+            "value": "hide"
           }
         ]
       }
