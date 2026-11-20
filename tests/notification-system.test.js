@@ -5,7 +5,7 @@ import { ActionSystem } from '../engine/modules/Action.js';
 import { GameEngine } from '../engine/GameEngine.js';
 import { TaskManager } from '../engine/runtime/TaskManager.js';
 import { normalizeScenario } from '../engine/scenario/Scenario.js';
-import { DEMO_SCRIPT } from '../demo_script.js';
+import { DEMO_SCRIPT } from '../demo-script-data.js';
 
 function makeProtocol() {
   const events = [];
