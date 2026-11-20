@@ -89,19 +89,18 @@ function InventoryItemDetails({ item, onBack, onToggleEquipment, busy }) {
   const usageRatio = usage && Number.isFinite(Number(usage.current)) && Number(usage.max) > 0
     ? Math.max(0, Math.min(100, (Number(usage.current) / Number(usage.max)) * 100))
     : null;
-  const usageStatus = item.broken
-    ? 'Broken'
-    : usageRatio !== null && Array.isArray(usage?.status) && usage.status.length > 0
-      ? (() => {
-        const statuses = usage.status
-          .map(entry => Array.isArray(entry) && entry.length >= 2 && Number.isFinite(Number(entry[0]))
-            ? { threshold: Number(entry[0]), label: String(entry[1]) }
-            : null)
-          .filter(Boolean)
-          .filter(entry => entry.label.toLowerCase() !== 'broken')
-          .sort((a, b) => a.threshold - b.threshold);
-        return statuses.find(entry => usageRatio <= entry.threshold)?.label || 'Normal';
-      })()
+  const usageStatus = usageRatio !== null && Array.isArray(usage?.status) && usage.status.length > 0
+    ? (() => {
+      const statuses = usage.status
+        .map(entry => Array.isArray(entry) && entry.length >= 2 && Number.isFinite(Number(entry[0]))
+          ? { threshold: Number(entry[0]), label: String(entry[1]) }
+          : null)
+        .filter(Boolean)
+        .sort((a, b) => a.threshold - b.threshold);
+      return statuses.find(entry => usageRatio <= entry.threshold)?.label || (item.broken ? 'Broken' : 'Normal');
+    })()
+    : item.broken
+      ? 'Broken'
       : usage
         ? 'Normal'
         : null;
