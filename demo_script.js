@@ -4347,7 +4347,7 @@
             "type": "notify",
             "title": "Tần số chưa ổn định",
             "level": "warning",
-            "text": "Cuộn tinh thể nằm trong túi chưa đủ. Bạn cần đưa nó lên tay, giữ đúng tần số rồi mới có thể tách giọng nói khỏi nhiễu.",
+            "text": "Bạn nhận ra cuộn tinh thể đang phát ra dao động cùng tần số với radio. Tuy nhiên, khi nó còn nằm trong túi, tín hiệu vẫn quá yếu để tách giọng nói khỏi nhiễu. Có lẽ cầm nó lên xem thử?",
             "req": {
               "logic": "AND",
               "check": [
