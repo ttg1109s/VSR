@@ -3980,12 +3980,6 @@
         "pass": [
           {
             "type": "set",
-            "subtype": "state",
-            "target": "knows_twelve",
-            "value": true
-          },
-          {
-            "type": "set",
             "subtype": "action",
             "target": "action_inspect_stakes",
             "property": "display",
@@ -3995,7 +3989,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Vòng cọc cho thấy khoảng trống của người thứ mười hai."
+            "text": "Vòng cọc thiếu mất người thứ mười hai. Người này là ai nhỉ?"
           }
         ]
       }
