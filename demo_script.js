@@ -649,14 +649,6 @@
           "value": 1
         }
       ],
-      "consume_action_confront_voice": [
-        {
-          "type": "item",
-          "subtype": "usage",
-          "target": "radio_crystal",
-          "value": 1
-        }
-      ],
       "consume_action_overlay_map": [
         {
           "type": "item",
@@ -843,7 +835,7 @@
           "value": 1
         }
       ],
-            "consume_action_listen_static": [
+      "consume_action_listen_static": [
         {
           "type": "item",
           "subtype": "usage",
@@ -4360,8 +4352,10 @@
             "value": "hide"
           },
           {
-            "type": "effect",
-            "ref": "consume_action_confront_voice"
+            "type": "item",
+            "subtype": "usage",
+            "target": "radio_crystal",
+            "value": 1
           },
           {
             "type": "goto",
@@ -4373,18 +4367,6 @@
             "subtype": "state",
             "target": "identity_verified_partial",
             "value": true
-          }
-        ],
-        "fail": [
-          {
-            "type": "effect",
-            "ref": "consume_action_confront_voice"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warning",
-            "text": "Tín hiệu dưới ga vẫn nằm ngoài tầm dò. Cuộn tinh thể có lẽ là thứ bạn cần để bắt đúng tần số."
           }
         ]
       },
