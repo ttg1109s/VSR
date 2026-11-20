@@ -6,7 +6,7 @@ export const DEMO_SCRIPT = {
     "desc": "Bạn tỉnh dậy giữa màn đêm của một ngôi làng bị mắc kẹt trong ký ức. Sương mù che khuất những con đường và tiếng loa rè rè vọng ra từ quảng trường. Hãy lần theo dấu vết qua các địa điểm trong làng — từ giếng đá, nhà trọ, nhà nguyện, trường học đến khu rừng, cối xay và đường hầm — để tìm sân ga xuất hiện lúc 03:17; sự thật được ghép lại sẽ quyết định ai được giải thoát.",
     "writer": "Nhóm phát triển bản demo VSR",
     "studio": "VSR",
-    "version": "2.1.0",
+    "version": "2.1.1",
     "language": "vi",
     "ageRating": "16+",
     "tags": [
@@ -20,10 +20,10 @@ export const DEMO_SCRIPT = {
     "entryScene": "scene_village",
     "entryCharacter": "player",
     "createdAt": "2026-11-15T00:00:00.000Z",
-    "updatedAt": "2026-11-16T00:00:00.000Z",
+    "updatedAt": "2026-11-20T00:00:00.000Z",
     "copyright": "Kịch bản demo gốc dành cho VSR Engine",
     "license": "Chưa cấp phép",
-    "notes": "Schema remediation: Router metadata normalized; recursive AND/OR requirements supported for endings while preserving single Actions; invalid player stat subtype corrected; missing bell state declared. Schema and runtime validation verified; recursive and flat requirement tests pass."
+    "notes": "Schema remediation: Router metadata normalized; recursive AND/OR requirements supported for endings while preserving single Actions; invalid player stat subtype corrected; missing bell state declared. Schema and runtime validation verified; recursive and flat requirement tests pass. Item-condition audit: evacuation_seal damage is now derived from item.usage; unused damage flags radio_toolkit_damaged, compass_damaged and bell_wire_damaged removed. Lantern and Room 7 key damage flags retained because usage does not uniquely encode their event semantics."
   },
   "globalStates": {
     "clue_lantern": {
@@ -42,27 +42,15 @@ export const DEMO_SCRIPT = {
       "type": "boolean",
       "value": false
     },
-    "trust_mai": {
-      "type": "number",
-      "value": 0
-    },
     "truth_fragments": {
       "type": "number",
       "value": 0
-    },
-    "final_choice": {
-      "type": "string",
-      "value": "undecided"
     },
     "school_choice": {
       "type": "string",
       "value": "undecided"
     },
     "clue_village_notice": {
-      "type": "boolean",
-      "value": false
-    },
-    "clue_school_evacuation_notice": {
       "type": "boolean",
       "value": false
     },
@@ -83,10 +71,6 @@ export const DEMO_SCRIPT = {
       "value": false
     },
     "clue_class_clock": {
-      "type": "boolean",
-      "value": false
-    },
-    "cellar_open": {
       "type": "boolean",
       "value": false
     },
@@ -122,18 +106,6 @@ export const DEMO_SCRIPT = {
       "type": "boolean",
       "value": false
     },
-    "radio_signal_restored": {
-      "type": "boolean",
-      "value": false
-    },
-    "evidence_broadcast": {
-      "type": "boolean",
-      "value": false
-    },
-    "evidence_well_badge": {
-      "type": "boolean",
-      "value": false
-    },
     "evidence_hidden_room": {
       "type": "boolean",
       "value": false
@@ -142,51 +114,11 @@ export const DEMO_SCRIPT = {
       "type": "boolean",
       "value": false
     },
-    "evidence_hymn_note": {
-      "type": "boolean",
-      "value": false
-    },
-    "evidence_bell_wire": {
-      "type": "boolean",
-      "value": false
-    },
-    "evidence_class_register": {
-      "type": "boolean",
-      "value": false
-    },
-    "evidence_forest_route": {
-      "type": "boolean",
-      "value": false
-    },
     "evidence_evacuation_seal": {
       "type": "boolean",
       "value": false
     },
-    "evidence_gear_pin": {
-      "type": "boolean",
-      "value": false
-    },
-    "evidence_tunnel_manifest": {
-      "type": "boolean",
-      "value": false
-    },
-    "evidence_station_ticket": {
-      "type": "boolean",
-      "value": false
-    },
     "room7_confirmed": {
-      "type": "boolean",
-      "value": false
-    },
-    "room7_open": {
-      "type": "boolean",
-      "value": false
-    },
-    "room7_opened_cleanly": {
-      "type": "boolean",
-      "value": false
-    },
-    "room7_forced": {
       "type": "boolean",
       "value": false
     },
@@ -202,27 +134,7 @@ export const DEMO_SCRIPT = {
       "type": "boolean",
       "value": false
     },
-    "room7_key_repaired": {
-      "type": "boolean",
-      "value": false
-    },
-    "room7_clue_partial": {
-      "type": "boolean",
-      "value": false
-    },
-    "room7_clue_verified": {
-      "type": "boolean",
-      "value": false
-    },
-    "room7_opened_alternative": {
-      "type": "boolean",
-      "value": false
-    },
     "player_panicked": {
-      "type": "boolean",
-      "value": false
-    },
-    "player_recovered": {
       "type": "boolean",
       "value": false
     },
@@ -242,10 +154,6 @@ export const DEMO_SCRIPT = {
       "type": "boolean",
       "value": false
     },
-    "mill_repair_failed": {
-      "type": "boolean",
-      "value": false
-    },
     "mill_repaired_partial": {
       "type": "boolean",
       "value": false
@@ -262,39 +170,11 @@ export const DEMO_SCRIPT = {
       "type": "boolean",
       "value": false
     },
-    "evidence_corrupted": {
-      "type": "boolean",
-      "value": false
-    },
-    "mai_confessed": {
-      "type": "boolean",
-      "value": false
-    },
-    "hanh_confessed": {
-      "type": "boolean",
-      "value": false
-    },
-    "keeper_confessed": {
-      "type": "boolean",
-      "value": false
-    },
     "linh_private_testimony": {
       "type": "boolean",
       "value": false
     },
     "npc_avoids_player": {
-      "type": "boolean",
-      "value": false
-    },
-    "npc_recovered_trust": {
-      "type": "boolean",
-      "value": false
-    },
-    "room7_clue_source": {
-      "type": "string",
-      "value": "none"
-    },
-    "clue_well_bottom_partial": {
       "type": "boolean",
       "value": false
     },
@@ -310,19 +190,7 @@ export const DEMO_SCRIPT = {
       "type": "boolean",
       "value": false
     },
-    "identity_verified": {
-      "type": "boolean",
-      "value": false
-    },
-    "echo_distorted": {
-      "type": "boolean",
-      "value": false
-    },
     "ticket_verified": {
-      "type": "boolean",
-      "value": false
-    },
-    "archive_opened_alternative": {
       "type": "boolean",
       "value": false
     },
@@ -330,31 +198,7 @@ export const DEMO_SCRIPT = {
       "type": "boolean",
       "value": false
     },
-    "release_partial": {
-      "type": "boolean",
-      "value": false
-    },
-    "release_reconstructed": {
-      "type": "boolean",
-      "value": false
-    },
-    "memory_reward_roster": {
-      "type": "boolean",
-      "value": false
-    },
     "memory_reward_tunnel": {
-      "type": "boolean",
-      "value": false
-    },
-    "memory_reward_well": {
-      "type": "boolean",
-      "value": false
-    },
-    "memory_reward_stakes": {
-      "type": "boolean",
-      "value": false
-    },
-    "resolve_reward_repair": {
       "type": "boolean",
       "value": false
     },
@@ -366,27 +210,7 @@ export const DEMO_SCRIPT = {
       "type": "boolean",
       "value": false
     },
-    "bell_wire_damaged": {
-      "type": "boolean",
-      "value": false
-    },
-    "compass_damaged": {
-      "type": "boolean",
-      "value": false
-    },
-    "seal_damaged": {
-      "type": "boolean",
-      "value": false
-    },
     "manifest_partial": {
-      "type": "boolean",
-      "value": false
-    },
-    "radio_toolkit_damaged": {
-      "type": "boolean",
-      "value": false
-    },
-    "map_verified": {
       "type": "boolean",
       "value": false
     },
@@ -395,18 +219,6 @@ export const DEMO_SCRIPT = {
       "value": false
     },
     "clue_roster_verified": {
-      "type": "boolean",
-      "value": false
-    },
-    "mill_powered_partial": {
-      "type": "boolean",
-      "value": false
-    },
-    "archive_reconstructed": {
-      "type": "boolean",
-      "value": false
-    },
-    "bell_rung_cleanly": {
       "type": "boolean",
       "value": false
     }
@@ -615,19 +427,23 @@ export const DEMO_SCRIPT = {
         "max": 3,
         "autoInc": false,
         "status": [
-            [0,
-              "Sáng ổn định"
-            ],
-            [33,
-              "Ánh sáng yếu"
-            ],
-            [67,
-              "Chập chờn"
-            ],
-            [100,
-              "Tắt hoàn toàn"
-            ]
+          [
+            0,
+            "Sáng ổn định"
+          ],
+          [
+            33,
+            "Ánh sáng yếu"
+          ],
+          [
+            67,
+            "Chập chờn"
+          ],
+          [
+            100,
+            "Tắt hoàn toàn"
           ]
+        ]
       },
       "effect": {
         "use": [
@@ -650,16 +466,19 @@ export const DEMO_SCRIPT = {
         "max": 2,
         "autoInc": false,
         "status": [
-            [0,
-              "Đọc rõ"
-            ],
-            [50,
-              "Khó đọc"
-            ],
-            [100,
-              "Không đọc được"
-            ]
+          [
+            0,
+            "Đọc rõ"
+          ],
+          [
+            50,
+            "Khó đọc"
+          ],
+          [
+            100,
+            "Không đọc được"
           ]
+        ]
       },
       "effect": {
         "use": []
@@ -675,19 +494,23 @@ export const DEMO_SCRIPT = {
         "max": 3,
         "autoInc": false,
         "status": [
-            [0,
-              "Âm thanh rõ"
-            ],
-            [33,
-              "Nhiễu nhẹ"
-            ],
-            [67,
-              "Nhiễu nặng"
-            ],
-            [100,
-              "Mất tín hiệu"
-            ]
+          [
+            0,
+            "Âm thanh rõ"
+          ],
+          [
+            33,
+            "Nhiễu nhẹ"
+          ],
+          [
+            67,
+            "Nhiễu nặng"
+          ],
+          [
+            100,
+            "Mất tín hiệu"
           ]
+        ]
       },
       "effect": {
         "use": []
@@ -703,16 +526,19 @@ export const DEMO_SCRIPT = {
         "max": 2,
         "autoInc": false,
         "status": [
-            [0,
-              "Dấu khắc rõ"
-            ],
-            [50,
-              "Khó nhận dạng"
-            ],
-            [100,
-              "Mất dấu khắc"
-            ]
+          [
+            0,
+            "Dấu khắc rõ"
+          ],
+          [
+            50,
+            "Khó nhận dạng"
+          ],
+          [
+            100,
+            "Mất dấu khắc"
           ]
+        ]
       },
       "effect": {
         "use": [
@@ -767,19 +593,23 @@ export const DEMO_SCRIPT = {
         "max": 3,
         "autoInc": false,
         "status": [
-            [0,
-              "Ảnh rõ nét"
-            ],
-            [33,
-              "Rách nhẹ"
-            ],
-            [67,
-              "Khó đối chiếu"
-            ],
-            [100,
-              "Không phục dựng được"
-            ]
+          [
+            0,
+            "Ảnh rõ nét"
+          ],
+          [
+            33,
+            "Rách nhẹ"
+          ],
+          [
+            67,
+            "Khó đối chiếu"
+          ],
+          [
+            100,
+            "Không phục dựng được"
           ]
+        ]
       },
       "effect": {
         "use": []
@@ -795,19 +625,23 @@ export const DEMO_SCRIPT = {
         "max": 3,
         "autoInc": false,
         "status": [
-            [0,
-              "Răng khóa tốt"
-            ],
-            [33,
-              "Mòn nhẹ"
-            ],
-            [67,
-              "Khó xoay"
-            ],
-            [100,
-              "Khóa bị hỏng"
-            ]
+          [
+            0,
+            "Răng khóa tốt"
+          ],
+          [
+            33,
+            "Mòn nhẹ"
+          ],
+          [
+            67,
+            "Khó xoay"
+          ],
+          [
+            100,
+            "Khóa bị hỏng"
           ]
+        ]
       },
       "effect": {
         "use": []
@@ -823,19 +657,23 @@ export const DEMO_SCRIPT = {
         "max": 3,
         "autoInc": false,
         "status": [
-            [0,
-              "Nét vẽ rõ"
-            ],
-            [33,
-              "Mực nhạt"
-            ],
-            [67,
-              "Khó đối chiếu"
-            ],
-            [100,
-              "Không đọc được"
-            ]
+          [
+            0,
+            "Nét vẽ rõ"
+          ],
+          [
+            33,
+            "Mực nhạt"
+          ],
+          [
+            67,
+            "Khó đối chiếu"
+          ],
+          [
+            100,
+            "Không đọc được"
           ]
+        ]
       },
       "effect": {
         "use": []
@@ -851,25 +689,31 @@ export const DEMO_SCRIPT = {
         "max": 5,
         "autoInc": false,
         "status": [
-            [0,
-              "Đầy đủ"
-            ],
-            [20,
-              "Hao mòn nhẹ"
-            ],
-            [40,
-              "Xuống cấp"
-            ],
-            [60,
-              "Khó sử dụng"
-            ],
-            [80,
-              "Hư hỏng nặng"
-            ],
-            [100,
-              "Không sử dụng được"
-            ]
+          [
+            0,
+            "Đầy đủ"
+          ],
+          [
+            20,
+            "Hao mòn nhẹ"
+          ],
+          [
+            40,
+            "Xuống cấp"
+          ],
+          [
+            60,
+            "Khó sử dụng"
+          ],
+          [
+            80,
+            "Hư hỏng nặng"
+          ],
+          [
+            100,
+            "Không sử dụng được"
           ]
+        ]
       },
       "effect": {
         "use": []
@@ -885,16 +729,19 @@ export const DEMO_SCRIPT = {
         "max": 2,
         "autoInc": false,
         "status": [
-            [0,
-              "Cách điện tốt"
-            ],
-            [50,
-              "Sắp hở dây"
-            ],
-            [100,
-              "Hở điện"
-            ]
+          [
+            0,
+            "Cách điện tốt"
+          ],
+          [
+            50,
+            "Sắp hở dây"
+          ],
+          [
+            100,
+            "Hở điện"
           ]
+        ]
       },
       "effect": {
         "use": []
@@ -910,16 +757,19 @@ export const DEMO_SCRIPT = {
         "max": 2,
         "autoInc": false,
         "status": [
-            [0,
-              "Còn tốt"
-            ],
-            [50,
-              "Chịu tải yếu"
-            ],
-            [100,
-              "Bị hỏng"
-            ]
+          [
+            0,
+            "Còn tốt"
+          ],
+          [
+            50,
+            "Chịu tải yếu"
+          ],
+          [
+            100,
+            "Bị hỏng"
           ]
+        ]
       },
       "effect": {
         "use": []
@@ -971,19 +821,23 @@ export const DEMO_SCRIPT = {
         "max": 3,
         "autoInc": false,
         "status": [
-            [0,
-              "Giấy sạch"
-            ],
-            [33,
-              "Chồng nét"
-            ],
-            [67,
-              "Khó đối chiếu"
-            ],
-            [100,
-              "Không đối chiếu được"
-            ]
+          [
+            0,
+            "Giấy sạch"
+          ],
+          [
+            33,
+            "Chồng nét"
+          ],
+          [
+            67,
+            "Khó đối chiếu"
+          ],
+          [
+            100,
+            "Không đối chiếu được"
           ]
+        ]
       },
       "effect": {
         "use": []
@@ -999,22 +853,27 @@ export const DEMO_SCRIPT = {
         "max": 4,
         "autoInc": false,
         "status": [
-            [0,
-              "Quan sát rõ"
-            ],
-            [25,
-              "Bám bụi"
-            ],
-            [50,
-              "Phóng đại yếu"
-            ],
-            [75,
-              "Khó quan sát"
-            ],
-            [100,
-              "Không sử dụng được"
-            ]
+          [
+            0,
+            "Quan sát rõ"
+          ],
+          [
+            25,
+            "Bám bụi"
+          ],
+          [
+            50,
+            "Phóng đại yếu"
+          ],
+          [
+            75,
+            "Khó quan sát"
+          ],
+          [
+            100,
+            "Không sử dụng được"
           ]
+        ]
       },
       "effect": {
         "use": []
@@ -1030,19 +889,23 @@ export const DEMO_SCRIPT = {
         "max": 3,
         "autoInc": false,
         "status": [
-            [0,
-              "Thu sóng tốt"
-            ],
-            [33,
-              "Tín hiệu yếu"
-            ],
-            [67,
-              "Thu sóng kém"
-            ],
-            [100,
-              "Mất tín hiệu"
-            ]
+          [
+            0,
+            "Thu sóng tốt"
+          ],
+          [
+            33,
+            "Tín hiệu yếu"
+          ],
+          [
+            67,
+            "Thu sóng kém"
+          ],
+          [
+            100,
+            "Mất tín hiệu"
           ]
+        ]
       },
       "effect": {
         "use": []
@@ -1058,16 +921,19 @@ export const DEMO_SCRIPT = {
         "max": 2,
         "autoInc": false,
         "status": [
-            [0,
-              "Dấu rõ nét"
-            ],
-            [50,
-              "Khó xác thực"
-            ],
-            [100,
-              "Không xác thực được"
-            ]
+          [
+            0,
+            "Dấu rõ nét"
+          ],
+          [
+            50,
+            "Khó xác thực"
+          ],
+          [
+            100,
+            "Không xác thực được"
           ]
+        ]
       },
       "effect": {
         "use": []
@@ -1083,19 +949,23 @@ export const DEMO_SCRIPT = {
         "max": 3,
         "autoInc": false,
         "status": [
-            [0,
-              "Răng khóa tốt"
-            ],
-            [33,
-              "Mòn nhẹ"
-            ],
-            [67,
-              "Khó xoay"
-            ],
-            [100,
-              "Không mở được"
-            ]
+          [
+            0,
+            "Răng khóa tốt"
+          ],
+          [
+            33,
+            "Mòn nhẹ"
+          ],
+          [
+            67,
+            "Khó xoay"
+          ],
+          [
+            100,
+            "Không mở được"
           ]
+        ]
       },
       "effect": {
         "use": []
@@ -1111,19 +981,23 @@ export const DEMO_SCRIPT = {
         "max": 3,
         "autoInc": false,
         "status": [
-            [0,
-              "Khung hình rõ"
-            ],
-            [33,
-              "Trầy nhẹ"
-            ],
-            [67,
-              "Khó phục dựng"
-            ],
-            [100,
-              "Không phục dựng được"
-            ]
+          [
+            0,
+            "Khung hình rõ"
+          ],
+          [
+            33,
+            "Trầy nhẹ"
+          ],
+          [
+            67,
+            "Khó phục dựng"
+          ],
+          [
+            100,
+            "Không phục dựng được"
           ]
+        ]
       },
       "effect": {
         "use": []
@@ -1139,19 +1013,23 @@ export const DEMO_SCRIPT = {
         "max": 3,
         "autoInc": false,
         "status": [
-            [0,
-              "Ghi chú rõ"
-            ],
-            [33,
-              "Mực nhòe"
-            ],
-            [67,
-              "Khó giải mã"
-            ],
-            [100,
-              "Không giải mã được"
-            ]
+          [
+            0,
+            "Ghi chú rõ"
+          ],
+          [
+            33,
+            "Mực nhòe"
+          ],
+          [
+            67,
+            "Khó giải mã"
+          ],
+          [
+            100,
+            "Không giải mã được"
           ]
+        ]
       },
       "effect": {
         "use": []
@@ -1203,19 +1081,23 @@ export const DEMO_SCRIPT = {
         "max": 3,
         "autoInc": false,
         "status": [
-            [0,
-              "Dữ liệu rõ"
-            ],
-            [33,
-              "Dòng bị nhòe"
-            ],
-            [67,
-              "Dữ liệu mờ"
-            ],
-            [100,
-              "Không xác minh được"
-            ]
+          [
+            0,
+            "Dữ liệu rõ"
+          ],
+          [
+            33,
+            "Dòng bị nhòe"
+          ],
+          [
+            67,
+            "Dữ liệu mờ"
+          ],
+          [
+            100,
+            "Không xác minh được"
           ]
+        ]
       },
       "effect": {
         "use": []
@@ -1231,19 +1113,23 @@ export const DEMO_SCRIPT = {
         "max": 3,
         "autoInc": false,
         "status": [
-            [0,
-              "Chỉ hướng chuẩn"
-            ],
-            [33,
-              "Sai lệch nhẹ"
-            ],
-            [67,
-              "Khó định hướng"
-            ],
-            [100,
-              "Mất phương hướng"
-            ]
+          [
+            0,
+            "Chỉ hướng chuẩn"
+          ],
+          [
+            33,
+            "Sai lệch nhẹ"
+          ],
+          [
+            67,
+            "Khó định hướng"
+          ],
+          [
+            100,
+            "Mất phương hướng"
           ]
+        ]
       },
       "effect": {
         "use": []
@@ -1259,16 +1145,19 @@ export const DEMO_SCRIPT = {
         "max": 2,
         "autoInc": false,
         "status": [
-            [0,
-              "Dấu rõ nét"
-            ],
-            [50,
-              "Dấu mờ"
-            ],
-            [100,
-              "Mất dấu"
-            ]
+          [
+            0,
+            "Dấu rõ nét"
+          ],
+          [
+            50,
+            "Dấu mờ"
+          ],
+          [
+            100,
+            "Mất dấu"
           ]
+        ]
       },
       "effect": {
         "use": []
@@ -1284,16 +1173,19 @@ export const DEMO_SCRIPT = {
         "max": 2,
         "autoInc": false,
         "status": [
-            [0,
-              "Chốt nguyên"
-            ],
-            [50,
-              "Cong lệch"
-            ],
-            [100,
-              "Mất cố định"
-            ]
+          [
+            0,
+            "Chốt nguyên"
+          ],
+          [
+            50,
+            "Cong lệch"
+          ],
+          [
+            100,
+            "Mất cố định"
           ]
+        ]
       },
       "effect": {
         "use": []
@@ -1309,19 +1201,23 @@ export const DEMO_SCRIPT = {
         "max": 3,
         "autoInc": false,
         "status": [
-            [0,
-              "Danh sách rõ"
-            ],
-            [33,
-              "Nhòe một phần"
-            ],
-            [67,
-              "Dữ liệu mờ"
-            ],
-            [100,
-              "Không đối chiếu được"
-            ]
+          [
+            0,
+            "Danh sách rõ"
+          ],
+          [
+            33,
+            "Nhòe một phần"
+          ],
+          [
+            67,
+            "Dữ liệu mờ"
+          ],
+          [
+            100,
+            "Không đối chiếu được"
           ]
+        ]
       },
       "effect": {
         "use": []
@@ -1337,16 +1233,19 @@ export const DEMO_SCRIPT = {
         "max": 2,
         "autoInc": false,
         "status": [
-            [0,
-              "Vé nguyên vẹn"
-            ],
-            [50,
-              "Khó xác minh"
-            ],
-            [100,
-              "Không xác minh được"
-            ]
+          [
+            0,
+            "Vé nguyên vẹn"
+          ],
+          [
+            50,
+            "Khó xác minh"
+          ],
+          [
+            100,
+            "Không xác minh được"
           ]
+        ]
       },
       "effect": {
         "use": []
@@ -2657,12 +2556,6 @@ export const DEMO_SCRIPT = {
             "field": "current",
             "mode": "add",
             "value": 1
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "mai_confessed",
-            "value": true
           }
         ]
       }
@@ -2703,12 +2596,6 @@ export const DEMO_SCRIPT = {
             "subtype": "toast",
             "level": "success",
             "text": "Đã phát hiện dấu vết tại giếng và khôi phục một mảnh ký ức."
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "memory_reward_well",
-            "value": true
           }
         ]
       }
@@ -2959,12 +2846,6 @@ export const DEMO_SCRIPT = {
             "field": "current",
             "mode": "add",
             "value": 1
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "hanh_confessed",
-            "value": true
           }
         ]
       }
@@ -3068,12 +2949,6 @@ export const DEMO_SCRIPT = {
       "effect": {
         "normal": [],
         "pass": [
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "cellar_open",
-            "value": true
-          },
           {
             "type": "notify",
             "subtype": "toast",
@@ -3263,12 +3138,6 @@ export const DEMO_SCRIPT = {
             "field": "current",
             "mode": "add",
             "value": 1
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "keeper_confessed",
-            "value": true
           }
         ]
       }
@@ -3382,12 +3251,6 @@ export const DEMO_SCRIPT = {
             "target": "action_ring_bell",
             "property": "display",
             "value": "hide"
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "bell_rung_cleanly",
-            "value": true
           }
         ],
         "fail": [
@@ -3539,12 +3402,6 @@ export const DEMO_SCRIPT = {
             "type": "set",
             "subtype": "state",
             "target": "clue_roster_verified",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "memory_reward_roster",
             "value": true
           }
         ]
@@ -3748,12 +3605,6 @@ export const DEMO_SCRIPT = {
             "subtype": "toast",
             "level": "success",
             "text": "Vòng cọc xác nhận khoảng trống của người thứ mười hai."
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "memory_reward_stakes",
-            "value": true
           }
         ]
       }
@@ -3909,12 +3760,6 @@ export const DEMO_SCRIPT = {
             "field": "current",
             "mode": "add",
             "value": 1
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "resolve_reward_repair",
-            "value": true
           }
         ]
       },
@@ -4173,12 +4018,6 @@ export const DEMO_SCRIPT = {
             "subtype": "toast",
             "level": "warning",
             "text": "Chưa có cuộn tinh thể thu sóng để dò đúng tần số của tín hiệu dưới ga."
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "echo_distorted",
-            "value": true
           }
         ]
       },
@@ -4208,12 +4047,6 @@ export const DEMO_SCRIPT = {
       "effect": {
         "normal": [],
         "pass": [
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "final_choice",
-            "value": "release"
-          },
           {
             "type": "goto",
             "subtype": "end",
@@ -4247,12 +4080,6 @@ export const DEMO_SCRIPT = {
       "effect": {
         "normal": [],
         "pass": [
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "final_choice",
-            "value": "release"
-          },
           {
             "type": "goto",
             "subtype": "end",
@@ -4325,12 +4152,6 @@ export const DEMO_SCRIPT = {
         "normal": [],
         "pass": [
           {
-            "type": "set",
-            "subtype": "state",
-            "target": "final_choice",
-            "value": "bury"
-          },
-          {
             "type": "goto",
             "subtype": "end",
             "target": "ending_bury"
@@ -4371,12 +4192,6 @@ export const DEMO_SCRIPT = {
       "effect": {
         "normal": [],
         "pass": [
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "final_choice",
-            "value": "echo"
-          },
           {
             "type": "goto",
             "subtype": "end",
@@ -4442,12 +4257,6 @@ export const DEMO_SCRIPT = {
         "normal": [],
         "pass": [
           {
-            "type": "set",
-            "subtype": "state",
-            "target": "final_choice",
-            "value": "depart"
-          },
-          {
             "type": "goto",
             "subtype": "end",
             "target": "ending_depart"
@@ -4474,13 +4283,13 @@ export const DEMO_SCRIPT = {
           {
             "logic": "OR",
             "check": [
-  {
-    "type": "state",
-    "property": "ticket_verified",
-    "op": "==",
-    "value": true
-  }
-]
+              {
+                "type": "state",
+                "property": "ticket_verified",
+                "op": "==",
+                "value": true
+              }
+            ]
           }
         ]
       }
@@ -4828,12 +4637,6 @@ export const DEMO_SCRIPT = {
         "pass": [
           {
             "type": "set",
-            "subtype": "state",
-            "target": "clue_school_evacuation_notice",
-            "value": true
-          },
-          {
-            "type": "set",
             "subtype": "action",
             "target": "action_inspect_evacuation_notice",
             "property": "display",
@@ -5038,12 +4841,6 @@ export const DEMO_SCRIPT = {
             "target": "action_find_radio_toolkit",
             "property": "display",
             "value": "hide"
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "radio_toolkit_damaged",
-            "value": false
           }
         ]
       }
@@ -5285,12 +5082,6 @@ export const DEMO_SCRIPT = {
         "pass": [
           {
             "type": "set",
-            "subtype": "state",
-            "target": "radio_signal_restored",
-            "value": true
-          },
-          {
-            "type": "set",
             "subtype": "action",
             "target": "action_restore_radio_signal",
             "property": "display",
@@ -5406,12 +5197,6 @@ export const DEMO_SCRIPT = {
             "subtype": "toast",
             "level": "success",
             "text": "Đối chiếu bản đồ thành công: tuyến đường dưới chân đê đã được xác nhận."
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "map_verified",
-            "value": true
           }
         ]
       }
@@ -5454,12 +5239,6 @@ export const DEMO_SCRIPT = {
           },
           {
             "type": "set",
-            "subtype": "state",
-            "target": "evidence_broadcast",
-            "value": true
-          },
-          {
-            "type": "set",
             "subtype": "action",
             "target": "action_decode_broadcast",
             "property": "display",
@@ -5475,12 +5254,6 @@ export const DEMO_SCRIPT = {
             "subtype": "toast",
             "level": "success",
             "text": "Bạn lấy được cuộn tinh thể và giải mã mạch phát thanh; trạng thái quảng trường đã thay đổi."
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "evidence_broadcast",
-            "value": true
           }
         ]
       }
@@ -5502,12 +5275,6 @@ export const DEMO_SCRIPT = {
             "type": "item",
             "subtype": "add",
             "target": "well_badge"
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "evidence_well_badge",
-            "value": true
           },
           {
             "type": "set",
@@ -5675,12 +5442,6 @@ export const DEMO_SCRIPT = {
           },
           {
             "type": "set",
-            "subtype": "state",
-            "target": "evidence_hymn_note",
-            "value": true
-          },
-          {
-            "type": "set",
             "subtype": "action",
             "target": "action_find_hymn_note",
             "property": "display",
@@ -5731,12 +5492,6 @@ export const DEMO_SCRIPT = {
           },
           {
             "type": "set",
-            "subtype": "state",
-            "target": "evidence_bell_wire",
-            "value": true
-          },
-          {
-            "type": "set",
             "subtype": "action",
             "target": "action_recover_bell_wire",
             "property": "display",
@@ -5752,12 +5507,6 @@ export const DEMO_SCRIPT = {
             "subtype": "toast",
             "level": "success",
             "text": "Đã thu hồi dây đồng chuông; cơ cấu chuông được cập nhật."
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "bell_wire_damaged",
-            "value": false
           }
         ]
       }
@@ -5785,12 +5534,6 @@ export const DEMO_SCRIPT = {
             "type": "item",
             "subtype": "add",
             "target": "class_register_copy"
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "evidence_class_register",
-            "value": true
           },
           {
             "type": "set",
@@ -5910,12 +5653,6 @@ export const DEMO_SCRIPT = {
           },
           {
             "type": "set",
-            "subtype": "state",
-            "target": "evidence_forest_route",
-            "value": true
-          },
-          {
-            "type": "set",
             "subtype": "action",
             "target": "action_collect_forest_compass",
             "property": "display",
@@ -5931,12 +5668,6 @@ export const DEMO_SCRIPT = {
             "subtype": "toast",
             "level": "success",
             "text": "Đã thu hồi la bàn dẫn đường và xác nhận tuyến qua rừng."
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "compass_damaged",
-            "value": false
           }
         ]
       }
@@ -5987,12 +5718,6 @@ export const DEMO_SCRIPT = {
             "subtype": "state",
             "target": "evidence_evacuation_seal",
             "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "seal_damaged",
-            "value": false
           }
         ]
       }
@@ -6025,12 +5750,6 @@ export const DEMO_SCRIPT = {
             "type": "item",
             "subtype": "add",
             "target": "mill_gear_pin"
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "evidence_gear_pin",
-            "value": true
           },
           {
             "type": "set",
@@ -6069,12 +5788,6 @@ export const DEMO_SCRIPT = {
             "type": "item",
             "subtype": "add",
             "target": "tunnel_manifest"
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "evidence_tunnel_manifest",
-            "value": true
           },
           {
             "type": "set",
@@ -6131,12 +5844,6 @@ export const DEMO_SCRIPT = {
             "type": "item",
             "subtype": "add",
             "target": "unpunched_ticket"
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "evidence_station_ticket",
-            "value": true
           },
           {
             "type": "set",
@@ -6356,12 +6063,6 @@ export const DEMO_SCRIPT = {
           },
           {
             "type": "set",
-            "subtype": "state",
-            "target": "room7_clue_source",
-            "value": "guestbook"
-          },
-          {
-            "type": "set",
             "subtype": "action",
             "target": "action_unlock_room7",
             "property": "display",
@@ -6436,18 +6137,6 @@ export const DEMO_SCRIPT = {
           }
         ],
         "pass": [
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "room7_open",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "room7_opened_cleanly",
-            "value": true
-          },
           {
             "type": "set",
             "subtype": "state",
@@ -6557,7 +6246,7 @@ export const DEMO_SCRIPT = {
           }
         ],
         "pass": [
-                    {
+          {
             "type": "characters",
             "subtype": "edit_stats",
             "target": "player",
@@ -6569,25 +6258,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "set",
             "subtype": "state",
-            "target": "room7_forced",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
             "target": "room7_lock_damaged",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "room7_open",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "room7_clue_partial",
             "value": true
           },
           {
@@ -6745,20 +6416,8 @@ export const DEMO_SCRIPT = {
           {
             "type": "set",
             "subtype": "state",
-            "target": "room7_key_repaired",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
             "target": "room7_lock_damaged",
             "value": false
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "room7_clue_verified",
-            "value": true
           },
           {
             "type": "set",
@@ -6854,30 +6513,6 @@ export const DEMO_SCRIPT = {
           }
         ],
         "pass": [
-                    {
-            "type": "set",
-            "subtype": "state",
-            "target": "room7_open",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "room7_opened_alternative",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "room7_clue_partial",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "room7_clue_verified",
-            "value": true
-          },
           {
             "type": "set",
             "subtype": "state",
@@ -6964,18 +6599,6 @@ export const DEMO_SCRIPT = {
       "effect": {
         "normal": [],
         "pass": [
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "room7_clue_verified",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "room7_clue_source",
-            "value": "damaged_lock"
-          },
           {
             "type": "set",
             "subtype": "action",
@@ -7107,12 +6730,6 @@ export const DEMO_SCRIPT = {
           {
             "type": "set",
             "subtype": "state",
-            "target": "room7_clue_verified",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
             "target": "guestbook_partial",
             "value": false
           },
@@ -7171,22 +6788,10 @@ export const DEMO_SCRIPT = {
           }
         ],
         "pass": [
-                    {
-            "type": "set",
-            "subtype": "state",
-            "target": "clue_well_bottom_partial",
-            "value": true
-          },
           {
             "type": "set",
             "subtype": "state",
             "target": "lantern_damaged",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "room7_clue_partial",
             "value": true
           },
           {
@@ -7293,12 +6898,6 @@ export const DEMO_SCRIPT = {
           },
           {
             "type": "set",
-            "subtype": "state",
-            "target": "clue_well_bottom_partial",
-            "value": false
-          },
-          {
-            "type": "set",
             "subtype": "action",
             "target": "action_recover_lantern",
             "property": "display",
@@ -7360,24 +6959,6 @@ export const DEMO_SCRIPT = {
         "pass": [
           {
             "type": "set",
-            "subtype": "state",
-            "target": "evidence_well_badge",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "clue_well_bottom_partial",
-            "value": false
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "room7_clue_verified",
-            "value": true
-          },
-          {
-            "type": "set",
             "subtype": "action",
             "target": "action_retrieve_well_badge_alternative",
             "property": "display",
@@ -7432,12 +7013,6 @@ export const DEMO_SCRIPT = {
           },
           {
             "type": "set",
-            "subtype": "state",
-            "target": "player_recovered",
-            "value": true
-          },
-          {
-            "type": "set",
             "subtype": "action",
             "target": "action_observe_mai",
             "property": "display",
@@ -7487,12 +7062,6 @@ export const DEMO_SCRIPT = {
         "pass": [
           {
             "type": "set",
-            "subtype": "state",
-            "target": "mai_confessed",
-            "value": true
-          },
-          {
-            "type": "set",
             "subtype": "action",
             "target": "action_listen_mai_tape",
             "property": "display",
@@ -7537,12 +7106,6 @@ export const DEMO_SCRIPT = {
             "type": "set",
             "subtype": "state",
             "target": "room7_confirmed",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "room7_clue_verified",
             "value": true
           },
           {
@@ -7600,7 +7163,7 @@ export const DEMO_SCRIPT = {
           }
         ],
         "pass": [
-                    {
+          {
             "type": "characters",
             "subtype": "edit_stats",
             "target": "player",
@@ -7753,28 +7316,16 @@ export const DEMO_SCRIPT = {
           {
             "type": "item",
             "subtype": "usage",
-            "target": "evacuation_seal",
-            "value": 1
-          },
-          {
-            "type": "item",
-            "subtype": "usage",
             "target": "radio_toolkit",
             "value": 1
           }
         ],
         "pass": [
-                              {
-            "type": "set",
-            "subtype": "state",
-            "target": "evidence_corrupted",
-            "value": true
-          },
           {
-            "type": "set",
-            "subtype": "state",
-            "target": "seal_damaged",
-            "value": true
+            "type": "item",
+            "subtype": "usage",
+            "target": "evacuation_seal",
+            "value": 1
           },
           {
             "type": "set",
@@ -7792,12 +7343,6 @@ export const DEMO_SCRIPT = {
             "type": "set",
             "subtype": "state",
             "target": "evidence_evacuation_seal",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "room7_clue_partial",
             "value": true
           },
           {
@@ -7870,12 +7415,6 @@ export const DEMO_SCRIPT = {
           },
           {
             "type": "set",
-            "subtype": "state",
-            "target": "evidence_corrupted",
-            "value": false
-          },
-          {
-            "type": "set",
             "subtype": "action",
             "target": "action_verify_seal",
             "property": "display",
@@ -7894,10 +7433,11 @@ export const DEMO_SCRIPT = {
         "logic": "AND",
         "check": [
           {
-            "type": "state",
-            "property": "seal_damaged",
-            "op": "==",
-            "value": true
+            "type": "item",
+            "subtype": "usage",
+            "target": "evacuation_seal",
+            "op": ">",
+            "value": 0
           },
           {
             "type": "item",
@@ -7941,12 +7481,6 @@ export const DEMO_SCRIPT = {
           }
         ],
         "pass": [
-                              {
-            "type": "set",
-            "subtype": "state",
-            "target": "mill_powered_partial",
-            "value": true
-          },
           {
             "type": "set",
             "subtype": "state",
@@ -8068,7 +7602,7 @@ export const DEMO_SCRIPT = {
           }
         ],
         "pass": [
-                    {
+          {
             "type": "characters",
             "subtype": "edit_stats",
             "target": "player",
@@ -8076,12 +7610,6 @@ export const DEMO_SCRIPT = {
             "field": "current",
             "mode": "add",
             "value": -1
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "mill_repair_failed",
-            "value": true
           },
           {
             "type": "set",
@@ -8178,7 +7706,7 @@ export const DEMO_SCRIPT = {
             "target": "clockwork_spring",
             "value": -1
           },
-                              {
+          {
             "type": "set",
             "subtype": "state",
             "target": "mill_powered",
@@ -8188,18 +7716,6 @@ export const DEMO_SCRIPT = {
             "type": "set",
             "subtype": "state",
             "target": "mill_repaired_partial",
-            "value": false
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "mill_powered_partial",
-            "value": false
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "mill_repair_failed",
             "value": false
           },
           {
@@ -8331,7 +7847,7 @@ export const DEMO_SCRIPT = {
           }
         ],
         "pass": [
-                    {
+          {
             "type": "characters",
             "subtype": "edit_stats",
             "target": "player",
@@ -8344,12 +7860,6 @@ export const DEMO_SCRIPT = {
             "type": "set",
             "subtype": "state",
             "target": "archive_open",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "archive_opened_alternative",
             "value": true
           },
           {
@@ -8448,12 +7958,6 @@ export const DEMO_SCRIPT = {
           {
             "type": "set",
             "subtype": "state",
-            "target": "archive_reconstructed",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
             "target": "archive_open",
             "value": true
           },
@@ -8539,12 +8043,6 @@ export const DEMO_SCRIPT = {
           {
             "type": "set",
             "subtype": "state",
-            "target": "archive_opened_alternative",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
             "target": "archive_partial",
             "value": false
           },
@@ -8614,13 +8112,13 @@ export const DEMO_SCRIPT = {
             "target": "tracing_paper",
             "value": -1
           },
-                    {
+          {
             "type": "item",
             "subtype": "usage",
             "target": "inspection_loupe",
             "value": -1
           },
-                    {
+          {
             "type": "set",
             "subtype": "state",
             "target": "map_incomplete",
@@ -8850,7 +8348,7 @@ export const DEMO_SCRIPT = {
           }
         ],
         "pass": [
-                                        {
+          {
             "type": "characters",
             "subtype": "edit_stats",
             "target": "player",
@@ -9174,7 +8672,7 @@ export const DEMO_SCRIPT = {
           }
         ],
         "pass": [
-                              {
+          {
             "type": "characters",
             "subtype": "edit_stats",
             "target": "player",
@@ -9370,13 +8868,13 @@ export const DEMO_SCRIPT = {
       "effect": {
         "normal": [],
         "pass": [
-                    {
+          {
             "type": "item",
             "subtype": "usage",
             "target": "radio_toolkit",
             "value": -1
           },
-                    {
+          {
             "type": "item",
             "subtype": "usage",
             "target": "insulated_wire",
@@ -9386,12 +8884,6 @@ export const DEMO_SCRIPT = {
             "type": "set",
             "subtype": "state",
             "target": "radio_damaged",
-            "value": false
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "radio_toolkit_damaged",
             "value": false
           },
           {
@@ -9532,12 +9024,6 @@ export const DEMO_SCRIPT = {
           },
           {
             "type": "set",
-            "subtype": "state",
-            "target": "player_recovered",
-            "value": true
-          },
-          {
-            "type": "set",
             "subtype": "action",
             "target": "action_rest_at_inn",
             "property": "display",
@@ -9592,12 +9078,6 @@ export const DEMO_SCRIPT = {
             "subtype": "state",
             "target": "player_panicked",
             "value": false
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "player_recovered",
-            "value": true
           },
           {
             "type": "set",
@@ -9682,12 +9162,6 @@ export const DEMO_SCRIPT = {
           },
           {
             "type": "set",
-            "subtype": "state",
-            "target": "npc_recovered_trust",
-            "value": true
-          },
-          {
-            "type": "set",
             "subtype": "action",
             "target": "action_recover_with_mai",
             "property": "display",
@@ -9769,12 +9243,6 @@ export const DEMO_SCRIPT = {
           },
           {
             "type": "set",
-            "subtype": "state",
-            "target": "npc_recovered_trust",
-            "value": true
-          },
-          {
-            "type": "set",
             "subtype": "action",
             "target": "action_recover_with_linh",
             "property": "display",
@@ -9853,12 +9321,6 @@ export const DEMO_SCRIPT = {
             "subtype": "state",
             "target": "npc_avoids_player",
             "value": false
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "npc_recovered_trust",
-            "value": true
           },
           {
             "type": "set",
@@ -10256,18 +9718,6 @@ export const DEMO_SCRIPT = {
         "normal": [],
         "pass": [
           {
-            "type": "set",
-            "subtype": "state",
-            "target": "final_choice",
-            "value": "release"
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "release_partial",
-            "value": true
-          },
-          {
             "type": "goto",
             "subtype": "end",
             "target": "ending_release_partial"
@@ -10344,18 +9794,6 @@ export const DEMO_SCRIPT = {
       "effect": {
         "normal": [],
         "pass": [
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "final_choice",
-            "value": "release"
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "release_reconstructed",
-            "value": true
-          },
           {
             "type": "goto",
             "subtype": "end",
@@ -10798,12 +10236,6 @@ export const DEMO_SCRIPT = {
               {
                 "type": "set",
                 "subtype": "state",
-                "target": "trust_mai",
-                "value": 1
-              },
-              {
-                "type": "set",
-                "subtype": "state",
                 "target": "knows_twelve",
                 "value": true
               },
@@ -10835,14 +10267,7 @@ export const DEMO_SCRIPT = {
             "id": "mai_gentle",
             "text": "Tôi không muốn ép cô kể điều cô chưa sẵn sàng.",
             "jump": "gentle",
-            "effect": [
-              {
-                "type": "set",
-                "subtype": "state",
-                "target": "trust_mai",
-                "value": 1
-              }
-            ]
+            "effect": []
           }
         ],
         "person_follow": [

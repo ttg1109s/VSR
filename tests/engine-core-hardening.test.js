@@ -1475,10 +1475,7 @@ test('demo progression gates are reachable and optional radio repair is explicit
 
   const radioRepair = DEMO_SCRIPT.actions.action_restore_radio_signal;
   assert.match(radioRepair.meta.title, /tùy chọn/);
-  assert.equal(radioRepair.effect.pass.some(effect =>
-    effect.type === 'set' && effect.subtype === 'state' &&
-    effect.target === 'radio_signal_restored' && effect.value === true
-  ), true);
+  assert.equal(DEMO_SCRIPT.globalStates.radio_signal_restored, undefined);
   assert.equal(DEMO_SCRIPT.actions.action_confront_voice.requirement.check.some(check =>
     check.type === 'item' && check.value === 'radio_crystal'
   ), true);
@@ -1533,16 +1530,14 @@ test('school Linh conversation action is one-shot to prevent repeated chat rewar
   ), true);
 });
 
-test('village notice and school evacuation notice use separate clue states', () => {
+test('village notice clue and inspection loupe reward remain wired', () => {
   assert.ok(DEMO_SCRIPT.globalStates.clue_village_notice);
-  assert.ok(DEMO_SCRIPT.globalStates.clue_school_evacuation_notice);
+  assert.equal(DEMO_SCRIPT.globalStates.clue_school_evacuation_notice, undefined);
   assert.equal(DEMO_SCRIPT.globalStates.clue_notice, undefined);
   assert.equal(DEMO_SCRIPT.actions.action_read_notice.effect.normal.some(effect =>
     effect.type === 'set' && effect.subtype === 'state' && effect.target === 'clue_village_notice'
   ), true);
-  assert.equal(DEMO_SCRIPT.actions.action_inspect_evacuation_notice.effect.pass.some(effect =>
-    effect.type === 'set' && effect.subtype === 'state' && effect.target === 'clue_school_evacuation_notice'
-  ), true);
+  assert.ok(DEMO_SCRIPT.actions.action_inspect_evacuation_notice);
   assert.equal(DEMO_SCRIPT.actions.action_find_inspection_loupe.effect.pass.some(effect =>
     effect.type === 'item' && effect.subtype === 'add' && effect.target === 'inspection_loupe'
   ), true);
