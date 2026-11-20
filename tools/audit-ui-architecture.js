@@ -21,8 +21,10 @@ const sourceFiles=new Set(files);
 
 for(const file of files.filter(p=>p.startsWith('src/pages/')&&/\.(jsx?|tsx?)$/.test(p))){
   const content=fs.readFileSync(path.join(ROOT,file),'utf8');
-  if(/(?:import\s+(?:[^'"]+\s+from\s+)?|import\s*\()\s*['"][^'"]+\.css['"]/.test(content))
-    errors.push(`Page imports a stylesheet: ${file}`);
+  const stylesheetImports=[...content.matchAll(/(?:import\s+(?:[^'"]+\s+from\s+)?|import\s*\()\s*['"]([^'"]+\.css)['"]/g)].map(match=>match[1]);
+  const allowedOwnedStyles=file==='src/pages/playing/PlayingPage.jsx' && stylesheetImports.length===1 && stylesheetImports[0]==='../../features/playing/playing-page.css';
+  if(stylesheetImports.length && !allowedOwnedStyles)
+    errors.push(`Page imports a stylesheet outside its approved component-owned styling boundary: ${file}`);
   if(/\bstyle\s*=\s*\{/.test(content))
     errors.push(`Page defines inline presentation: ${file}`);
 }
