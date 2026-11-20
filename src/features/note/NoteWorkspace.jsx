@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { DescriptionList, DescriptionListItem, Drawer, Input } from '../../design-system/index.js';
+import { DescriptionList, DescriptionListItem, Drawer, IconButton, Input } from '../../design-system/index.js';
 
 const STATE_GROUPS = [
   { type: 'boolean', label: 'Boolean' },
@@ -18,12 +18,18 @@ function BooleanValue({ value }) {
   );
 }
 
-function StateValue({ state }) {
-  if (state.type === 'boolean') return <BooleanValue value={state.value} />;
-  if (state.type === 'number') {
-    return <strong>{typeof state.value === 'number' ? state.value.toLocaleString('en-US', { maximumSignificantDigits: 21 }) : String(state.value ?? '—')}</strong>;
-  }
-  return <span>{state.value === '' || state.value === null || state.value === undefined ? '—' : String(state.value)}</span>;
+function StateValue({ state, copied, onCopy }) {
+  const displayValue = state.type === 'number'
+    ? (typeof state.value === 'number' ? state.value.toLocaleString('en-US', { maximumSignificantDigits: 21 }) : String(state.value ?? '—'))
+    : state.type === 'boolean'
+      ? String(state.value === true)
+      : (state.value === '' || state.value === null || state.value === undefined ? '—' : String(state.value));
+  return (
+    <span className="vsr-note-state-value">
+      {state.type === 'boolean' ? <BooleanValue value={state.value} /> : state.type === 'number' ? <strong>{displayValue}</strong> : <span>{displayValue}</span>}
+      <IconButton icon={copied ? 'check' : 'content_copy'} label={copied ? 'Copied state value' : 'Copy state value'} size="sm" onClick={() => onCopy(state)} />
+    </span>
+  );
 }
 
 function EmptyNoteState({ title, message }) {
@@ -38,6 +44,20 @@ function EmptyNoteState({ title, message }) {
 
 export default function NoteWorkspace({ snapshot, open = false, onClose }) {
   const [search, setSearch] = useState('');
+  const [copiedStateId, setCopiedStateId] = useState(null);
+  const [copyError, setCopyError] = useState('');
+  const copyStateValue = async state => {
+    const value = state.value === null || state.value === undefined ? '' : String(state.value);
+    try {
+      if (!navigator?.clipboard?.writeText) throw new Error('Clipboard unavailable');
+      await navigator.clipboard.writeText(value);
+      setCopiedStateId(state.id);
+      setCopyError('');
+    } catch {
+      setCopiedStateId(null);
+      setCopyError('Unable to copy this value. Clipboard permission may be unavailable.');
+    }
+  };
   const globalStates = snapshot?.state?.global;
   // Recompute when Engine publishes a new state revision even if an integration
   // reuses the global-state object reference.
@@ -79,13 +99,17 @@ export default function NoteWorkspace({ snapshot, open = false, onClose }) {
       lockScroll
     >
       <div className="vsr-stack vsr-stack--gap-3">
-        <Input
-          placeholder="Search states..."
-          leadingIcon="search"
-          type="search"
-          value={search}
-          onChange={event => setSearch(event.target.value)}
-        />
+        <div className="vsr-note-search">
+          <Input
+            placeholder="Search states..."
+            leadingIcon="search"
+            type="search"
+            value={search}
+            onChange={event => setSearch(event.target.value)}
+          />
+          {search && <IconButton icon="close" label="Clear state search" onClick={() => setSearch('')} />}
+        </div>
+        {copyError && <p className="vsr-note-copy-error" role="alert">{copyError}</p>}
         {!hasStates ? (
           <EmptyNoteState
             title="No global states"
@@ -104,7 +128,7 @@ export default function NoteWorkspace({ snapshot, open = false, onClose }) {
                 <DescriptionListItem
                   key={state.id}
                   label={state.title}
-                  value={<StateValue state={state} />}
+                  value={<StateValue state={state} copied={copiedStateId === state.id} onCopy={copyStateValue} />}
                   layout={state.type === 'string' ? 'stacked' : 'inline'}
                 />
               ))}
