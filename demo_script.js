@@ -206,11 +206,6 @@
       "value": false,
       "title": "Lời khai riêng của Linh"
     },
-    "npc_avoids_player": {
-      "type": "boolean",
-      "value": false,
-      "title": "NPC tránh người chơi"
-    },
     "mai_approach": {
       "type": "string",
       "value": "chưa tiếp cận",
@@ -9269,12 +9264,6 @@
             "property": "player_panicked",
             "op": "==",
             "value": true
-          },
-          {
-            "type": "state",
-            "property": "npc_avoids_player",
-            "op": "==",
-            "value": false
           }
         ]
       }
