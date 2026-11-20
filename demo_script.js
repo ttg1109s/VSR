@@ -45,12 +45,7 @@ export const DEMO_SCRIPT = {
     "truth_fragments": {
       "type": "number",
       "value": 0
-    },
-    "final_choice": {
-      "type": "string",
-      "value": "undecided"
-    },
-    "school_choice": {
+    },    "school_choice": {
       "type": "string",
       "value": "undecided"
     },
@@ -4052,12 +4047,6 @@ export const DEMO_SCRIPT = {
         "normal": [],
         "pass": [
           {
-            "type": "set",
-            "subtype": "state",
-            "target": "final_choice",
-            "value": "release"
-          },
-          {
             "type": "goto",
             "subtype": "end",
             "target": "ending_release"
@@ -4090,12 +4079,6 @@ export const DEMO_SCRIPT = {
       "effect": {
         "normal": [],
         "pass": [
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "final_choice",
-            "value": "release"
-          },
           {
             "type": "goto",
             "subtype": "end",
@@ -4168,12 +4151,6 @@ export const DEMO_SCRIPT = {
         "normal": [],
         "pass": [
           {
-            "type": "set",
-            "subtype": "state",
-            "target": "final_choice",
-            "value": "bury"
-          },
-          {
             "type": "goto",
             "subtype": "end",
             "target": "ending_bury"
@@ -4214,12 +4191,6 @@ export const DEMO_SCRIPT = {
       "effect": {
         "normal": [],
         "pass": [
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "final_choice",
-            "value": "echo"
-          },
           {
             "type": "goto",
             "subtype": "end",
@@ -4284,12 +4255,6 @@ export const DEMO_SCRIPT = {
       "effect": {
         "normal": [],
         "pass": [
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "final_choice",
-            "value": "depart"
-          },
           {
             "type": "goto",
             "subtype": "end",
@@ -9752,12 +9717,6 @@ export const DEMO_SCRIPT = {
         "normal": [],
         "pass": [
           {
-            "type": "set",
-            "subtype": "state",
-            "target": "final_choice",
-            "value": "release"
-          },
-          {
             "type": "goto",
             "subtype": "end",
             "target": "ending_release_partial"
@@ -9834,12 +9793,6 @@ export const DEMO_SCRIPT = {
       "effect": {
         "normal": [],
         "pass": [
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "final_choice",
-            "value": "release"
-          },
           {
             "type": "goto",
             "subtype": "end",
