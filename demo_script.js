@@ -9362,9 +9362,9 @@
     },
     "action_recover_character_trust": {
       "meta": {
-        "title": "Lòng tin nhân chứng",
-        "buttonLabel": "Lấy lại lòng tin",
-        "desc": "Những người từng tin bạn giờ đã có lý do để im lặng. Bằng chứng có thể làm sáng tỏ sự thật, nhưng chỉ sự tôn trọng dành cho những điều họ chưa muốn kể mới giúp nối lại mối quan hệ."
+        "title": "Khôi phục lòng tin",
+        "buttonLabel": "Đối thoại",
+        "desc": "Những người từng tin An giờ có lý do để giữ im lặng. Bằng chứng giúp làm sáng tỏ sự việc, nhưng chỉ khi An tôn trọng những điều họ chưa muốn kể, lòng tin mới có thể được nối lại."
       },
       "set": {
         "display": "show",
@@ -9418,7 +9418,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Linh dần tin bạn hơn khi bằng chứng được đưa ra mà ký ức riêng vẫn được tôn trọng."
+            "text": "Những người từng tránh An dần cởi mở hơn khi sự thật được làm rõ mà những ký ức riêng vẫn được tôn trọng."
           }
         ],
         "fail": []
