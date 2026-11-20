@@ -63,7 +63,7 @@ export function DescriptionList({layout='list',columns='auto',gap='comfortable',
 }
 export function DescriptionListItem({label,value,layout='stacked',span='auto',className}){
   if(value===null||value===undefined||value==='')return null;
-  return <div className={cx('vsr-description-list__row',layout==='inline'&&'vsr-description-list__row--inline',span==='full'&&'vsr-description-list__row--span-full',className)}>
+  return <div className={cx('vsr-description-list__row',layout==='inline'?'vsr-description-list__row--inline':'vsr-description-list__row--stacked',span==='full'&&'vsr-description-list__row--span-full',className)}>
     <dt className="vsr-description-list__term">{label}</dt>
     <dd className="vsr-description-list__detail">{value}</dd>
   </div>;
