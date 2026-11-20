@@ -1,0 +1,4 @@
+.vsr-note-search{display:flex;align-items:center;gap:var(--vsr-space-2);min-width:0}
+.vsr-note-search>.vsr-field{flex:1;min-width:0}
+.vsr-note-state-value{display:inline-flex;align-items:center;gap:var(--vsr-space-2);min-width:0}
+.vsr-note-copy-error{margin:0;color:var(--vsr-color-error);font-size:var(--vsr-font-size-caption)}
