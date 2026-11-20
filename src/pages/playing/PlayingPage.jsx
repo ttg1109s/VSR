@@ -136,6 +136,7 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
           <ActionNavigator
             activeIndex={actionNavigation.activeIndex}
             actionCount={actionNavigation.actionCount}
+            activeTitle={actionNavigation.activeTitle}
             onNavigate={index => actionCollectionRef.current?.scrollToIndex(index)}
           />
         )}
