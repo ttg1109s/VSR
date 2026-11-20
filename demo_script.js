@@ -705,9 +705,6 @@ export const DEMO_SCRIPT = {
             ]
           ]
       },
-      "stats": {
-
-      },
       "effect": {
         "use": []
       }
@@ -732,9 +729,6 @@ export const DEMO_SCRIPT = {
               "Mất dấu khắc"
             ]
           ]
-      },
-      "stats": {
-
       },
       "effect": {
         "use": [
@@ -1221,9 +1215,6 @@ export const DEMO_SCRIPT = {
               "Không phục dựng được"
             ]
           ]
-      },
-      "stats": {
-
       },
       "effect": {
         "use": []
