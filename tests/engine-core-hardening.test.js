@@ -1612,3 +1612,41 @@ test('LogicSystem preserves single-level requirement behavior', () => {
     logic: 'OR', check: [{ type: 'mock', pass: false }, { type: 'mock', pass: true }]
   }), { pass: true });
 });
+
+test('radio actions are distributed across routers and optional branches preserve the crystal for full repair', () => {
+  const radioIds = [
+    'action_decode_broadcast', 'action_restore_radio_signal', 'action_restore_radio_signal_partial',
+    'action_diagnose_radio', 'action_repair_radio_toolkit', 'action_listen_static',
+    'action_confront_voice', 'action_ground_with_radio', 'action_verify_route_from_radio',
+    'action_find_classroom_supplies', 'action_find_cellar_components'
+  ];
+  const placements = {};
+  for (const [sceneId, scene] of Object.entries(DEMO_SCRIPT.scenes)) {
+    for (const [routerId, router] of Object.entries(scene.routers)) {
+      const radioActions = router.actions.filter(actionId => radioIds.includes(actionId));
+      assert.ok(radioActions.length <= 2, `${sceneId}/${routerId} has ${radioActions.length} radio actions`);
+      for (const actionId of radioActions) {
+        assert.equal(placements[actionId], undefined, `${actionId} must have a single placement`);
+        placements[actionId] = [sceneId, routerId];
+      }
+    }
+  }
+  assert.deepEqual(placements, {
+    action_decode_broadcast: ['scene_village_square', 'router_square_fogbound'],
+    action_restore_radio_signal: ['scene_village_square', 'router_square_broadcast_decoded'],
+    action_find_classroom_supplies: ['scene_school_classroom_03', 'router_classroom_overview'],
+    action_find_cellar_components: ['scene_inn_cellar', 'router_cellar_open'],
+    action_restore_radio_signal_partial: ['scene_watermill', 'router_watermill_gear_inspected'],
+    action_diagnose_radio: ['scene_watermill', 'router_watermill_gear_inspected'],
+    action_repair_radio_toolkit: ['scene_classroom_blackboard', 'router_classroom_blackboard'],
+    action_listen_static: ['scene_inn', 'router_inn_hidden_room'],
+    action_verify_route_from_radio: ['scene_levee_tunnel', 'router_tunnel_manifest_found'],
+    action_confront_voice: ['scene_ghost_station', 'router_station_0317'],
+    action_ground_with_radio: ['scene_ghost_station', 'router_station_0317']
+  });
+  assert.deepEqual(DEMO_SCRIPT.templates.effects.consume_action_restore_radio_signal_partial.map(effect => effect.target),
+    ['radio_toolkit', 'insulated_wire', 'spare_fuse']);
+  assert.equal(DEMO_SCRIPT.templates.effects.consume_action_confront_voice, undefined);
+  const fullRepair = DEMO_SCRIPT.actions.action_restore_radio_signal.requirement.check;
+  assert.ok(fullRepair.some(check => check.target === 'radio_crystal' && check.subtype === 'usage' && check.op === '<' && check.value === 1));
+});

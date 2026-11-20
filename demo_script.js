@@ -605,15 +605,7 @@
           "value": 1
         }
       ],
-      "consume_action_confront_voice": [
-        {
-          "type": "item",
-          "subtype": "usage",
-          "target": "radio_crystal",
-          "value": 1
-        }
-      ],
-      "consume_action_restore_radio_signal": [
+            "consume_action_restore_radio_signal": [
         {
           "type": "item",
           "subtype": "usage",
@@ -830,12 +822,6 @@
           "type": "item",
           "subtype": "usage",
           "target": "radio_toolkit",
-          "value": 1
-        },
-        {
-          "type": "item",
-          "subtype": "usage",
-          "target": "radio_crystal",
           "value": 1
         },
         {
@@ -1883,9 +1869,9 @@
             "action_read_notice",
             "action_talk_mai",
             "action_enter_well",
-            "action_decode_broadcast",
             "action_observe_mai",
-            "action_listen_mai_tape"
+            "action_listen_mai_tape",
+            "action_decode_broadcast"
           ]
         },
         "router_square_broadcast_decoded": {
@@ -1903,9 +1889,9 @@
             "action_read_notice",
             "action_talk_mai",
             "action_enter_well",
-            "action_restore_radio_signal",
             "action_observe_mai",
-            "action_listen_mai_tape"
+            "action_listen_mai_tape",
+            "action_restore_radio_signal"
           ]
         }
       }
@@ -2024,7 +2010,8 @@
             "action_compare_guestbook_photo",
             "action_verify_guestbook",
             "action_rest_at_inn",
-            "action_recover_with_mai"
+            "action_recover_with_mai",
+            "action_listen_static"
           ]
         },
         "router_room7_forced": {
@@ -2124,8 +2111,7 @@
             "countVisited": 0
           },
           "actions": [
-            "action_search_cellar",
-            "action_find_cellar_components"
+            "action_search_cellar"
           ]
         }
       }
@@ -2286,17 +2272,11 @@
             "action_overlay_map",
             "action_retrace_map",
             "action_compare_evacuation_film",
-            "action_verify_route_from_radio",
-            "action_restore_radio_signal_partial",
-            "action_diagnose_radio",
-            "action_repair_radio_toolkit",
-            "action_listen_static",
             "action_rest_at_inn",
-            "action_ground_with_radio",
             "action_recover_with_linh",
             "action_reward_memory_roster",
-            "action_find_classroom_supplies",
-            "action_find_inspection_loupe"
+            "action_find_inspection_loupe",
+            "action_find_classroom_supplies"
           ]
         },
         "router_classroom_archive_open": {
@@ -2320,15 +2300,8 @@
             "action_overlay_map",
             "action_retrace_map",
             "action_compare_evacuation_film",
-            "action_verify_route_from_radio",
-            "action_restore_radio_signal_partial",
-            "action_diagnose_radio",
-            "action_repair_radio_toolkit",
-            "action_listen_static",
-            "action_ground_with_radio",
             "action_recover_with_linh",
             "action_reward_memory_roster",
-            "action_find_classroom_supplies",
             "action_find_inspection_loupe"
           ]
         }
@@ -2356,7 +2329,8 @@
             "countVisited": 0
           },
           "actions": [
-            "action_read_blackboard"
+            "action_read_blackboard",
+            "action_repair_radio_toolkit"
           ]
         },
         "router_classroom_erased": {
@@ -2540,7 +2514,9 @@
             "action_force_mill_repair",
             "action_stabilize_mill",
             "action_bypass_mill",
-            "action_find_mill_components"
+            "action_find_mill_components",
+            "action_restore_radio_signal_partial",
+            "action_diagnose_radio"
           ]
         }
       }
@@ -2609,7 +2585,8 @@
             "action_reconstruct_stakes_evidence",
             "action_verify_tunnel_clue",
             "action_reach_station_memory_evidence",
-            "action_reward_memory_tunnel"
+            "action_reward_memory_tunnel",
+            "action_verify_route_from_radio"
           ]
         }
       }
@@ -2639,18 +2616,16 @@
             "timerEnd": "still"
           },
           "actions": [
-            "action_confront_voice",
             "action_choose_fate",
             "action_ending_bury",
             "action_ending_echo",
             "action_ending_depart",
             "action_find_station_ticket",
-            "action_listen_static",
-            "action_diagnose_radio",
-            "action_ground_with_radio",
             "action_ending_release_partial",
             "action_ending_release_reconstructed",
-            "action_verify_ticket"
+            "action_verify_ticket",
+            "action_confront_voice",
+            "action_ground_with_radio"
           ]
         },
         "router_station_departure_records": {
@@ -2665,7 +2640,6 @@
             "countVisited": 0
           },
           "actions": [
-            "action_confront_voice",
             "action_choose_fate",
             "action_ending_bury",
             "action_ending_echo",
