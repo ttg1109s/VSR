@@ -5,6 +5,7 @@ on:
     branches:
       - engine-only
       - chore/remove-ui-keep-react-engine
+      - remediation/full-audit-hardening
   pull_request:
     branches:
       - engine-only
@@ -12,6 +13,10 @@ on:
 
 permissions:
   contents: read
+
+concurrency:
+  group: vsr-quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   engine:
@@ -23,6 +28,12 @@ jobs:
           node-version: 20
       - run: npm install --ignore-scripts --no-audit --no-fund
       - run: npm run schema:check
+      - run: npm run check:server
+      - run: npm run audit:ui
+      - run: npm run audit:safe-area
+      - run: npm run audit:deadcode
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:browser
       - run: npm test
       - run: npm run audit:state:strict
-      - run: npm run check:server
