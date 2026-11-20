@@ -982,7 +982,7 @@
       "desc": "Cuộn băng được bọc trong giấy dầu, nhãn ghi ngày đêm mất điện. Khi phát lại, giữa tiếng rè có một tín hiệu ngắn lặp lại.",
       "usage": {
         "current": 0,
-        "max": 3,
+        "max": 1,
         "autoInc": false,
         "status": [
           [
@@ -7189,6 +7189,13 @@
             "subtype": "inventory",
             "op": "has",
             "value": "tape"
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "tape",
+            "op": "<",
+            "value": 1
           }
         ]
       }
@@ -8996,6 +9003,13 @@
             "property": "radio_damaged",
             "op": "==",
             "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "tape",
+            "op": "<",
+            "value": 1
           }
         ]
       }
