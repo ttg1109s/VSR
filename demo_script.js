@@ -623,7 +623,7 @@
           "value": 1
         }
       ],
-      "consume_action_restore_radio_signal": [
+      "consume_action_restore_radio_components": [
         {
           "type": "item",
           "subtype": "usage",
@@ -646,6 +646,14 @@
           "type": "item",
           "subtype": "usage",
           "target": "spare_fuse",
+          "value": 1
+        }
+      ],
+      "consume_action_confront_voice": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "radio_crystal",
           "value": 1
         }
       ],
@@ -835,33 +843,7 @@
           "value": 1
         }
       ],
-      "consume_action_restore_radio_signal_partial": [
-        {
-          "type": "item",
-          "subtype": "usage",
-          "target": "radio_toolkit",
-          "value": 1
-        },
-        {
-          "type": "item",
-          "subtype": "usage",
-          "target": "radio_crystal",
-          "value": 1
-        },
-        {
-          "type": "item",
-          "subtype": "usage",
-          "target": "insulated_wire",
-          "value": 1
-        },
-        {
-          "type": "item",
-          "subtype": "usage",
-          "target": "spare_fuse",
-          "value": 1
-        }
-      ],
-      "consume_action_listen_static": [
+            "consume_action_listen_static": [
         {
           "type": "item",
           "subtype": "usage",
@@ -5269,7 +5251,7 @@
         "pass": [
           {
             "type": "effect",
-            "ref": "consume_action_restore_radio_signal"
+            "ref": "consume_action_restore_radio_components"
           },
           {
             "type": "set",
@@ -5309,7 +5291,7 @@
         "fail": [
           {
             "type": "effect",
-            "ref": "consume_action_restore_radio_signal"
+            "ref": "consume_action_restore_radio_components"
           }
         ]
       }
@@ -8709,7 +8691,7 @@
         "pass": [
           {
             "type": "effect",
-            "ref": "consume_action_restore_radio_signal_partial"
+            "ref": "consume_action_restore_radio_components"
           },
           {
             "type": "characters",
@@ -8756,7 +8738,7 @@
         "fail": [
           {
             "type": "effect",
-            "ref": "consume_action_restore_radio_signal_partial"
+            "ref": "consume_action_restore_radio_components"
           },
           {
             "type": "notify",
