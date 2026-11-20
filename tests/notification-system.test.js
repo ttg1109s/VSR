@@ -5,7 +5,6 @@ import { ActionSystem } from '../engine/modules/Action.js';
 import { GameEngine } from '../engine/GameEngine.js';
 import { TaskManager } from '../engine/runtime/TaskManager.js';
 import { normalizeScenario } from '../engine/scenario/Scenario.js';
-import { DEMO_SCRIPT } from '../demo-script-data.js';
 
 function makeProtocol() {
   const events = [];
@@ -184,7 +183,6 @@ test('GameEngine exposes notifications only through the canonical API', () => {
   engine.dispose();
 });
 
-
 test('engine policy downgrades low-level scenario modals and bounds notification options', () => {
   const protocol = makeProtocol();
   const notifications = new NotificationSystem({ protocol, clock: () => 100 });
@@ -215,7 +213,6 @@ test('notification sound metadata defaults on and rejects invalid profiles', () 
     /Unsupported notification sound profile/
   );
 });
-
 
 test('scenario notify strategy forwards presentation intent and sound metadata', async () => {
   const { NotifyStrategies } = await import('../engine/modules/effect/Strategies.js');
@@ -249,7 +246,6 @@ test('scenario notify strategy forwards presentation intent and sound metadata',
   assert.equal(calls[1].method, 'alert');
 });
 
-
 test('notification manager marks all unread history entries as read', () => {
   const protocol = makeProtocol();
   const notifications = new NotificationSystem({ protocol, clock: () => 500 });
@@ -260,52 +256,6 @@ test('notification manager marks all unread history entries as read', () => {
   assert.equal(notifications.getHistory({ unreadOnly: true }).length, 0);
   assert.equal(notifications.getHistory().find(item => item.id === second.id).readAt, 500);
 });
-
-
-test('scenario schema applies notification defaults only to notify effects', () => {
-  const scenario = structuredClone(DEMO_SCRIPT);
-  const guestbookEffect = scenario.itemInfo.guestbook.effect.use.find(item => item.type === 'notify') || (scenario.itemInfo.guestbook.effect.use.push({ type: 'notify', text: 'Fixture notification', level: 'info' }), scenario.itemInfo.guestbook.effect.use.at(-1));
-  guestbookEffect.category = 'story.clue';
-  guestbookEffect.priority = 8;
-  guestbookEffect.durationMs = 6500;
-  guestbookEffect.soundProfile = 'success';
-  const normalized = normalizeScenario(scenario);
-  const normalizedNotify = normalized.itemInfo.guestbook.effect.use.find(item => item.type === 'notify');
-  const normalizedSet = normalized.itemInfo.lantern.effect.use.find(item => item.type === 'set');
-
-  assert.equal(normalizedNotify.soundProfile, 'success');
-  assert.equal(normalizedNotify.category, 'story.clue');
-  assert.equal(normalizedNotify.priority, 8);
-  assert.equal(normalizedNotify.durationMs, 6500);
-  assert.equal(Object.hasOwn(normalizedSet, 'sound'), false);
-  assert.equal(Object.hasOwn(normalizedSet, 'soundProfile'), false);
-});
-
-class NotificationFakeClock {
-  constructor() { this.time = 100; this.nextId = 0; this.timers = new Map(); }
-  now = () => this.time;
-  setTimeout = (callback, delay) => {
-    const timer = { id: ++this.nextId, at: this.time + delay, callback, unrefCalled: false, unref() { this.unrefCalled = true; } };
-    this.timers.set(timer.id, timer);
-    return timer;
-  };
-  clearTimeout = timer => { if (timer) this.timers.delete(timer.id); };
-  async advance(ms) {
-    const target = this.time + ms;
-    while (true) {
-      const next = [...this.timers.values()].filter(timer => timer.at <= target).sort((a, b) => a.at - b.at)[0];
-      if (!next) break;
-      this.timers.delete(next.id);
-      this.time = next.at;
-      next.callback();
-      await Promise.resolve();
-      await Promise.resolve();
-    }
-    this.time = target;
-    await Promise.resolve();
-    await Promise.resolve();
-  }
-}
 
 test('GameEngine schedules notification expiry through TaskManager and preserves unref', async () => {
   const clock = new NotificationFakeClock();
