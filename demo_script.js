@@ -3095,7 +3095,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Đã phát hiện dấu vết tại giếng và khôi phục một mảnh ký ức."
+            "text": "Dưới đáy giếng, một dấu vết hiện ra. Ký ức tưởng đã mất cũng trở về."
           }
         ]
       }
@@ -3398,7 +3398,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Sổ khách đã được ghi nhận; tên và ngày đến là manh mối mới."
+            "text": "Cuốn sổ khách hé lộ một cái tên và ngày đến—hai chi tiết không thể bỏ qua."
           },
           {
             "type": "item",
@@ -3563,7 +3563,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Bạn ghi nhớ mật từ IM LANG và quy tắc ba hồi chuông."
+            "text": "Bạn nhớ được mật từ “IM LANG” và quy tắc ba hồi chuông."
           },
           {
             "type": "set",
@@ -3576,7 +3576,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "info",
-            "text": "Linh đã bảo vệ ký ức riêng; bạn đọc thánh ca như một dấu hiệu, không phải lời khai thay em.",
+            "text": "Linh giữ lại ký ức riêng. Bạn chỉ đọc thánh ca như một dấu hiệu, không ép em kể thêm.",
             "req": {
               "logic": "AND",
               "check": [
@@ -3593,7 +3593,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "info",
-            "text": "Bạn đối chiếu mật từ trong thánh ca với hồ sơ đã bảo toàn; chữ viết xác nhận một nghi thức bị che giấu.",
+            "text": "Mật từ trong thánh ca khớp với hồ sơ. Những dòng chữ hé lộ một nghi thức bị che giấu.",
             "req": {
               "logic": "AND",
               "check": [
@@ -3687,7 +3687,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Bạn giải được mã đồng hồ, khôi phục ký ức về tiếng chuông và lấy quả lắc."
+            "text": "Mã trên đồng hồ đã được giải. Tiếng chuông trở lại trong ký ức, và quả lắc nằm trong tay bạn."
           }
         ]
       }
@@ -3750,7 +3750,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Cơ cấu chuông chưa đủ bộ phận. Cần quả lắc, dây đồng, trang ghi chú trong thánh ca và xác nhận mã thời điểm trước khi rung."
+            "text": "Cơ cấu chuông vẫn thiếu vài phần. Quả lắc, dây đồng, trang ghi chú và thời điểm chính xác đều cần được tìm thấy."
           }
         ]
       },
@@ -3827,7 +3827,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Ảnh và hồ sơ mâu thuẫn. Bạn phải chọn bảo vệ ký ức của Linh hay giữ hồ sơ làm bằng chứng."
+            "text": "Ảnh và hồ sơ không khớp. Bạn phải quyết định: giữ gìn ký ức của Linh, hay giữ hồ sơ làm bằng chứng."
           },
           {
             "type": "set",
@@ -3885,7 +3885,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Đã đối chiếu sơ đồ chỗ ngồi: xác nhận có người thứ mười hai."
+            "text": "Sơ đồ chỗ ngồi cho thấy có một người thứ mười hai."
           },
           {
             "type": "set",
@@ -3948,7 +3948,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Bạn xác định được hướng đi an toàn qua rừng."
+            "text": "Bạn đã tìm được lối an toàn xuyên rừng."
           },
           {
             "type": "set",
@@ -3961,7 +3961,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "info",
-            "text": "Bạn lần theo dấu sơn như lời khai của người sống: tuyến đường không cần hồ sơ chính thức để tồn tại.",
+            "text": "Những vệt sơn dẫn bạn đi như lời nhắn của người còn sống. Không cần giấy tờ, con đường vẫn ở đó.",
             "req": {
               "logic": "AND",
               "check": [
@@ -3978,7 +3978,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "info",
-            "text": "Bạn đối chiếu các dấu sơn với tuyến sơ tán trong hồ sơ; một đoạn đường đã bị bỏ khỏi bản đồ chính thức.",
+            "text": "Các vệt sơn khớp với tuyến sơ tán trong hồ sơ. Một đoạn đường đã bị gạch khỏi bản đồ chính thức.",
             "req": {
               "logic": "AND",
               "check": [
@@ -4028,7 +4028,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Bạn vượt qua mê cung; lối ra dẫn về phía kho hồ sơ."
+            "text": "Bạn đã vượt qua mê cung. Phía trước là kho hồ sơ."
           },
           {
             "type": "set",
@@ -4047,7 +4047,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Bạn chưa có la bàn của người dẫn đường; các lối mòn thay đổi khiến việc lần đường bằng dấu sơn đơn thuần không đáng tin."
+            "text": "Không có la bàn, những lối mòn đổi hướng liên tục. Dấu sơn thôi không còn đủ để dẫn đường."
           }
         ]
       },
@@ -4100,7 +4100,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Vòng cọc xác nhận khoảng trống của người thứ mười hai."
+            "text": "Vòng cọc cho thấy khoảng trống của người thứ mười hai."
           }
         ]
       }
@@ -4145,7 +4145,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Bức ảnh hoàn chỉnh cho thấy Linh đứng giữa những người đã mất tích."
+            "text": "Trong bức ảnh đã ghép đủ, Linh đứng giữa những người mất tích."
           },
           {
             "type": "set",
@@ -4170,7 +4170,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Phù hiệu đội sơ tán chưa được tìm thấy. Dấu niêm phong trên hộp cần được đối chiếu trước khi mở."
+            "text": "Phù hiệu đội sơ tán vẫn chưa xuất hiện. Hãy tìm dấu niêm phong để đối chiếu trước khi mở chiếc hộp."
           }
         ]
       },
@@ -4232,7 +4232,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Cối xay đã hoạt động trở lại; một mảnh ký ức được khôi phục."
+            "text": "Cối xay quay trở lại. Một mảnh ký ức cũng theo đó trở về."
           },
           {
             "type": "characters",
@@ -4325,7 +4325,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Bạn phát hiện danh sách sơ tán bị sửa. Có mười hai cái tên, không phải mười một."
+            "text": "Danh sách sơ tán đã bị sửa: mười hai cái tên, không phải mười một."
           },
           {
             "type": "set",
@@ -4338,7 +4338,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "info",
-            "text": "Những cái tên trên tường là dấu vết được giữ lại ngoài hồ sơ; bạn không chép chúng thành danh sách công khai.",
+            "text": "Những cái tên trên tường được giữ lại ngoài hồ sơ. Bạn không chép chúng thành danh sách công khai.",
             "req": {
               "logic": "AND",
               "check": [
@@ -4355,7 +4355,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "info",
-            "text": "Danh sách khắc trên tường xác nhận hồ sơ đã bỏ sót một người; đây là đối chứng vật lý cho bản ghi.",
+            "text": "Dòng khắc trên tường xác nhận hồ sơ đã bỏ sót một người—một dấu vết không thể phủ nhận.",
             "req": {
               "logic": "AND",
               "check": [
@@ -4430,7 +4430,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Tủ hồ sơ đã mở. Bản ghi sơ tán trở thành nguồn chứng cứ."
+            "text": "Tủ hồ sơ mở ra. Bản ghi sơ tán giờ có thể được đối chiếu."
           },
           {
             "type": "set",
@@ -4530,7 +4530,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Chưa có cuộn tinh thể thu sóng để dò đúng tần số của tín hiệu dưới ga."
+            "text": "Bạn vẫn thiếu cuộn tinh thể để dò đúng tần số phát ra từ dưới ga."
           }
         ]
       },
@@ -4571,7 +4571,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Chưa đủ dấu vết để giải thoát. Có thể đi theo con đường bằng chứng — con dấu, hồ sơ, thánh ca, cọc gỗ và đường hầm — hoặc con đường ký ức, nếu đã chọn giữ ký ức và khôi phục các dấu mốc cần thiết."
+            "text": "Chưa đủ dấu vết để giải thoát. Con đường bằng chứng còn những dấu cần tìm; con đường ký ức cũng đòi hỏi bạn giữ lại ký ức và khôi phục các mốc đã mất."
           }
         ]
       },
@@ -4688,7 +4688,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Bạn chưa tìm thấy sổ khách; chưa thể xác định hồ sơ nào đang bị che giấu để đưa ra lựa chọn này."
+            "text": "Cuốn sổ khách vẫn chưa được tìm thấy. Bạn chưa biết hồ sơ nào đang bị che giấu để quyết định."
           }
         ]
       },
@@ -4729,7 +4729,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Cần biết về người thứ mười hai và có voice, testimony hoặc evidence thay thế."
+            "text": "Bạn cần biết về người thứ mười hai, cùng một lời kể, lời khai hoặc bằng chứng thay thế."
           }
         ]
       },
@@ -4793,7 +4793,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Bạn cần có vé tàu và xác minh được chuyến 03:17 từ bản kê hành khách."
+            "text": "Vé tàu chưa đủ. Bạn cần xác minh chuyến 03:17 từ bản kê hành khách."
           }
         ]
       },
@@ -5070,7 +5070,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Bạn xác nhận danh sách lớp bị xóa có chủ ý; các lựa chọn điều tra mới đã mở."
+            "text": "Danh sách lớp bị xóa không phải tai nạn. Những dấu vết mới đang mở ra."
           },
           {
             "type": "set",
@@ -5110,7 +5110,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Dấu khắc trên bàn xác nhận vị trí học sinh thứ mười hai."
+            "text": "Dấu khắc trên bàn cho thấy chỗ của học sinh thứ mười hai."
           }
         ]
       }
@@ -5144,7 +5144,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Bạn ghi nhận thời điểm 03:17 trên đồng hồ lớp."
+            "text": "Chiếc đồng hồ trong lớp dừng ở 03:17."
           }
         ]
       }
@@ -5172,7 +5172,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Thông báo xác nhận sĩ số mười hai học sinh."
+            "text": "Sĩ số được xác nhận: mười hai học sinh."
           }
         ]
       }
@@ -5223,7 +5223,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Lối tới sân ga chưa hiện ra: cần mở kho hồ sơ, có danh sách vận chuyển và cuộn phim sơ tán, đồng thời khôi phục thánh ca, vòng cọc và dấu đường hầm."
+            "text": "Sân ga vẫn khuất. Bạn cần kho hồ sơ, danh sách vận chuyển, cuộn phim sơ tán và những dấu mốc còn thiếu—thánh ca, vòng cọc, đường hầm."
           }
         ]
       },
@@ -5256,7 +5256,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Tuyến Memory cần mở kho hồ sơ, khôi phục dấu đường hầm, đọc thánh ca và xác định vòng cọc thứ mười hai."
+            "text": "Con đường ký ức vẫn chưa mở. Kho hồ sơ, đường hầm, thánh ca và vòng cọc thứ mười hai đang chờ được tìm thấy."
           }
         ]
       },
@@ -5322,7 +5322,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Cửa sập vẫn kẹt. Hãy khôi phục cối xay hoặc tìm được dấu đường hầm để mở lối xuống."
+            "text": "Cửa sập không nhúc nhích. Cối xay hoặc dấu đường hầm có thể giúp mở lối xuống."
           }
         ]
       },
@@ -5416,7 +5416,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Tiếng rè lắng xuống, tín hiệu cũ trở nên rõ ràng. Một giọng nói và dấu vết mới hiện ra."
+            "text": "Tiếng rè dịu dần. Tín hiệu cũ rõ lên, mang theo một giọng nói và dấu vết mới."
           },
           {
             "type": "set",
@@ -5518,7 +5518,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Đối chiếu bản đồ thành công: tuyến đường dưới chân đê đã được xác nhận."
+            "text": "Bản đồ khớp với dấu dưới chân đê. Con đường đã hiện rõ."
           }
         ],
         "fail": [
@@ -5574,7 +5574,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Bạn lấy được cuộn tinh thể và giải mã mạch phát thanh; trạng thái quảng trường đã thay đổi."
+            "text": "Cuộn tinh thể nằm trong tay bạn. Mạch phát thanh đã được giải, và quảng trường đổi khác."
           }
         ]
       }
@@ -5613,7 +5613,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Đã thu hồi phù hiệu đội sơ tán từ hốc giếng."
+            "text": "Bạn lấy được phù hiệu đội sơ tán từ hốc giếng."
           }
         ]
       },
@@ -5682,7 +5682,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Đã tìm thấy chìa khóa phòng thứ bảy. Cửa vẫn đóng; hãy xác minh và chọn cách mở."
+            "text": "Chìa khóa phòng thứ bảy đã tìm thấy. Cánh cửa vẫn đóng—hãy xác minh căn phòng rồi chọn cách mở."
           }
         ],
         "fail": []
@@ -5727,7 +5727,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Đã thu hồi cuộn phim sơ tán, một bằng chứng quan trọng."
+            "text": "Cuộn phim sơ tán đã được tìm thấy. Nó có thể giúp xác nhận những gì hồ sơ bỏ sót."
           }
         ]
       }
@@ -5765,7 +5765,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Đã tìm thấy ghi chú về ba hồi chuông và điều cấm hồi thứ tư."
+            "text": "Bạn tìm thấy ghi chú về ba hồi chuông—và lời cảnh báo đừng bao giờ rung hồi thứ tư."
           },
           {
             "type": "set",
@@ -5815,7 +5815,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Đã thu hồi dây đồng chuông; cơ cấu chuông được cập nhật."
+            "text": "Dây đồng chuông đã được lấy ra. Cơ cấu giờ có thêm một phần cần thiết."
           }
         ]
       }
@@ -5921,7 +5921,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Bạn chọn bảo toàn bản sao sổ điểm danh. Linh không còn chia sẻ toàn bộ ký ức; các hướng điều tra mới đã mở."
+            "text": "Bạn giữ lại bản sao sổ điểm danh. Linh khép lại một phần ký ức, nhưng những dấu vết khác vẫn còn."
           }
         ]
       },
@@ -5976,7 +5976,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Đã thu hồi la bàn dẫn đường và xác nhận tuyến qua rừng."
+            "text": "La bàn dẫn đường đã tìm thấy. Tuyến xuyên rừng giờ có thể được xác định."
           }
         ]
       }
@@ -6020,7 +6020,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Đã tìm thấy con dấu đội sơ tán, chứng cứ về danh sách chính thức."
+            "text": "Con dấu đội sơ tán nằm trong tay bạn—dấu xác nhận của danh sách chính thức."
           }
         ]
       }
@@ -6058,7 +6058,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Đã thu hồi danh sách vận chuyển trong đường hầm."
+            "text": "Danh sách vận chuyển trong đường hầm đã được tìm thấy."
           },
           {
             "type": "set",
@@ -6114,7 +6114,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Đã tìm thấy vé tàu 03:17, xác nhận chuyến tàu từng tồn tại."
+            "text": "Vé tàu 03:17 đã tìm thấy. Chuyến tàu ấy từng tồn tại."
           },
           {
             "type": "set",
@@ -6227,7 +6227,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Bạn chọn bảo vệ lời khai riêng của Linh; nhánh ký ức được giữ lại."
+            "text": "Bạn giữ kín lời khai của Linh. Những ký ức riêng vẫn được bảo vệ."
           },
           {
             "type": "characters",
@@ -6333,7 +6333,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Phòng thứ bảy đã được xác minh. Chọn cách mở cửa."
+            "text": "Bạn đã xác nhận căn phòng thứ bảy. Cánh cửa có thể được mở theo cách bạn chọn."
           }
         ],
         "fail": [
@@ -6341,7 +6341,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Cần tìm và đối chiếu sổ khách trước."
+            "text": "Trước hết, hãy tìm cuốn sổ khách và đối chiếu những gì nó ghi."
           }
         ]
       },
@@ -6422,7 +6422,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Phòng thứ bảy được mở bằng chìa khóa, không gây hư hại."
+            "text": "Chìa khóa xoay nhẹ. Phòng thứ bảy mở ra mà không làm hỏng ổ khóa."
           }
         ],
         "fail": [
@@ -6434,7 +6434,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Cần xác minh phòng 7, cầm chìa khóa, Integrity ≥2 và khóa chưa hỏng."
+            "text": "Bạn cần xác nhận phòng 7, giữ chìa khóa nguyên vẹn và có đủ sức để thử mở; ổ khóa chưa được phá."
           }
         ]
       },
@@ -6558,7 +6558,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Cửa bị cưỡng chế. Khóa và chìa khóa chịu hư hại; bằng chứng trong phòng chỉ được phát hiện một phần."
+            "text": "Cánh cửa bị cưỡng mở. Khóa và chìa khóa hư hại; bên trong chỉ lộ ra một phần dấu vết."
           },
           {
             "type": "set",
@@ -6576,7 +6576,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Bạn chưa đủ sức và dụng cụ để cạy cửa. Chìa khóa vẫn nguyên; hãy tìm bộ dụng cụ và xác nhận căn phòng trước."
+            "text": "Bạn chưa đủ sức hoặc dụng cụ để cạy cửa. Chìa khóa vẫn nguyên—hãy tìm bộ dụng cụ và xác nhận căn phòng trước."
           }
         ]
       },
@@ -6701,7 +6701,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Chìa khóa được chỉnh lại. Integrity tăng, Usage giảm một lượt; lịch sử hư hại vẫn được giữ."
+            "text": "Chìa khóa được chỉnh lại. Bạn có thêm sức, nhưng lần sử dụng đã mất và dấu hư hại cũ vẫn còn."
           }
         ],
         "fail": [
@@ -6709,7 +6709,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Bạn cần chiếc chìa khóa, bộ dụng cụ và phải biết ổ khóa đã hỏng đến mức nào."
+            "text": "Bạn cần chìa khóa, bộ dụng cụ và biết ổ khóa đã hư đến đâu trước khi thử."
           }
         ]
       },
@@ -6789,7 +6789,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Bạn mở được căn phòng bằng cách khác. Những vết trên ổ khóa cùng các dấu còn lại giúp xác nhận điều bạn nghi ngờ."
+            "text": "Một cách mở khác đã thành công. Những vết trên ổ khóa và dấu còn lại giúp bạn kiểm chứng điều mình nghi ngờ."
           }
         ],
         "fail": [
@@ -6801,7 +6801,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Chỉ có thể dùng cách mở khác khi chìa khóa đã gãy, căn phòng được xác nhận và bạn có bộ dụng cụ."
+            "text": "Chỉ có thể thử cách mở khác khi chìa khóa đã gãy, căn phòng được xác nhận và bộ dụng cụ ở trong tay."
           }
         ]
       },
@@ -6861,7 +6861,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Vết cạy trên cửa cho thấy căn phòng từng bị mở trái phép. Hãy đối chiếu với sơ đồ hoặc tìm cách mở khác."
+            "text": "Vết cạy trên cửa cho thấy ai đó từng mở căn phòng trái phép. Hãy đối chiếu sơ đồ hoặc tìm cách mở khác."
           }
         ],
         "fail": [
@@ -6869,7 +6869,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Chỉ xuất hiện khi khóa bị hư."
+            "text": "Dấu này chỉ hiện ra khi ổ khóa đã bị hư."
           }
         ]
       },
@@ -6928,7 +6928,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Sổ khách đã rõ hơn; phòng thứ bảy được xác minh."
+            "text": "Cuốn sổ khách đã sáng tỏ hơn. Phòng thứ bảy được xác nhận."
           }
         ],
         "fail": []
@@ -6986,7 +6986,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Phòng thứ bảy được xác minh bằng nguồn độc lập."
+            "text": "Một nguồn độc lập cũng xác nhận phòng thứ bảy."
           }
         ],
         "fail": []
@@ -7058,7 +7058,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Ánh sáng yếu chỉ hé lộ một phần ký hiệu. Cần recovery hoặc evidence thay thế."
+            "text": "Ánh sáng yếu chỉ để lộ một phần ký hiệu. Bạn cần khôi phục thêm dấu vết hoặc tìm bằng chứng khác."
           }
         ],
         "fail": [
@@ -7070,7 +7070,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Bạn cần đèn cầm tay và dấu vết phù hợp để soi phần còn khuất."
+            "text": "Hãy cầm đèn và tìm dấu vết phù hợp để soi phần còn khuất."
           }
         ]
       },
@@ -7157,7 +7157,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Đèn được khôi phục; có thể thử soi lại."
+            "text": "Đèn đã được khôi phục. Bạn có thể thử soi lại."
           }
         ],
         "fail": []
@@ -7211,7 +7211,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Phù hiệu được xác minh bằng evidence thay thế."
+            "text": "Phù hiệu đã được xác nhận bằng một dấu vết khác."
           }
         ],
         "fail": []
@@ -7278,7 +7278,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Bạn ghi nhận dấu hiệu từ xa. Mai không còn là đối tượng tiếp cận trực tiếp trong nhánh này."
+            "text": "Mai khẽ nhìn về phía giếng rồi quay đi. Mảnh giấy trong tay cô bị vò chặt hơn."
           }
         ],
         "fail": []
@@ -7324,7 +7324,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Băng ghi âm cung cấp lời khai gián tiếp."
+            "text": "Cuộn băng mang đến lời kể từ xa, không phải cuộc trò chuyện trực tiếp."
           }
         ],
         "fail": [
@@ -7375,7 +7375,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Sổ khách được xác minh bằng nguồn độc lập."
+            "text": "Cuốn sổ khách đã được đối chiếu với một nguồn khác."
           }
         ],
         "fail": []
@@ -7461,7 +7461,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Đường rừng mới hiện ra một đoạn. Hãy đối chiếu thêm dấu chân, bản đồ hoặc lời kể để biết nó dẫn đến đâu."
+            "text": "Một đoạn đường rừng mới hiện ra. Dấu chân, bản đồ hoặc lời kể có thể cho biết nó dẫn đến đâu."
           }
         ],
         "fail": [
@@ -7473,7 +7473,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Cần la bàn đang cầm."
+            "text": "La bàn phải ở trong tay bạn mới có thể lần theo hướng này."
           }
         ]
       },
@@ -7534,7 +7534,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Tuyến rừng được xác minh bằng evidence."
+            "text": "Dấu đường rừng đã được xác nhận bằng bằng chứng."
           }
         ],
         "fail": []
@@ -7617,7 +7617,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Con dấu bị rách khi bạn mở hộp. Bên trong vẫn còn một phần giấy tờ, nhưng vài dòng đã mất."
+            "text": "Con dấu rách khi chiếc hộp mở ra. Một phần giấy tờ vẫn còn, nhưng vài dòng đã mất."
           }
         ],
         "fail": [
@@ -7629,7 +7629,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Bạn cần con dấu và bộ dụng cụ để mở hộp mà không làm hỏng thêm những gì bên trong."
+            "text": "Hãy tìm con dấu và bộ dụng cụ để mở hộp mà không làm hỏng thêm giấy tờ."
           }
         ]
       },
@@ -7682,7 +7682,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Evidence seal được corroborate bằng film."
+            "text": "Cuộn phim giúp xác nhận dấu con dấu bị rách."
           }
         ],
         "fail": []
@@ -7766,7 +7766,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Cối xay chạy tạm; tuyến đường hầm vẫn tiếp tục."
+            "text": "Cối xay chỉ chạy tạm thời. Dấu đường hầm vẫn dẫn tiếp."
           }
         ],
         "fail": [
@@ -7778,7 +7778,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Thiếu dụng cụ, lò xo, chốt truyền động hoặc dấu đường hầm để sửa cối xay."
+            "text": "Bạn còn thiếu dụng cụ, lò xo, chốt truyền động hoặc dấu đường hầm để sửa cối xay."
           }
         ]
       },
@@ -7892,7 +7892,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Cơ cấu không chịu khớp. Bộ dụng cụ bị quá tải, bạn mất bình tĩnh; vẫn còn cách lần theo đường hầm mà không cần cối xay."
+            "text": "Cơ cấu không khớp. Bộ dụng cụ quá tải, bạn mất bình tĩnh; vẫn có thể lần theo đường hầm mà không cần cối xay."
           }
         ],
         "fail": [
@@ -7904,7 +7904,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Bạn phải cầm bộ dụng cụ và có đủ linh kiện để thử sửa cơ cấu."
+            "text": "Hãy cầm bộ dụng cụ và tìm đủ linh kiện trước khi thử sửa cơ cấu."
           }
         ]
       },
@@ -7988,7 +7988,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Cối xay được ổn định; tuyến chính tiếp tục."
+            "text": "Cối xay đã ổn định。Lối chính vẫn thông."
           }
         ],
         "fail": [
@@ -8066,7 +8066,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Bạn lần theo dấu dưới chân đê, bỏ qua cối xay. Lối xuống đường hầm vẫn còn."
+            "text": "Bạn lần theo dấu dưới chân đê, bỏ lại cối xay. Lối xuống đường hầm vẫn còn đó."
           }
         ],
         "fail": []
@@ -8140,7 +8140,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Bạn ép được cánh tủ bật ra. Một vài trang bị rách và mất góc, nhưng những gì còn lại vẫn đủ để tiếp tục lần theo dấu người sơ tán."
+            "text": "Tủ bật mở dưới sức ép. Một vài trang rách mất góc, nhưng phần còn lại vẫn đủ để lần theo dấu người sơ tán."
           },
           {
             "type": "set",
@@ -8166,7 +8166,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Bạn cần dấu đường hầm, bộ dụng cụ và phải quyết định cách lần theo sự thật trước khi thử mở tủ."
+            "text": "Hãy tìm dấu đường hầm và bộ dụng cụ, rồi quyết định cách lần theo sự thật trước khi mở tủ."
           }
         ]
       },
@@ -8239,7 +8239,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Danh sách đường hầm, cuộn phim và sổ điểm danh khớp nhau. Những cái tên bị xóa đã trở lại trong hồ sơ."
+            "text": "Danh sách đường hầm, cuộn phim và sổ điểm danh khớp nhau. Những cái tên từng bị xóa đã trở lại hồ sơ."
           },
           {
             "type": "set",
@@ -8318,7 +8318,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Danh sách, cuộn phim và các dấu vết đối chiếu đã giúp mở tủ hồ sơ."
+            "text": "Danh sách, cuộn phim và dấu vết đối chiếu đã giúp bạn mở tủ hồ sơ."
           },
           {
             "type": "set",
@@ -8419,7 +8419,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Tuyến bản đồ được xác minh."
+            "text": "Tuyến đường trên bản đồ đã được xác nhận."
           }
         ],
         "fail": []
@@ -8481,7 +8481,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Tuyến được xác minh bằng film."
+            "text": "Cuộn phim xác nhận tuyến đường."
           }
         ],
         "fail": [
@@ -8538,7 +8538,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Tuyến được xác minh bằng tín hiệu."
+            "text": "Tín hiệu xác nhận tuyến đường."
           }
         ],
         "fail": []
@@ -8630,7 +8630,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Chuông vang méo. Critical flag bell_rung vẫn đạt; có thể sửa tín hiệu."
+            "text": "Chuông vang lên, nhưng âm thanh méo mó. Dấu vết lần rung chuông vẫn còn; bạn có thể sửa tín hiệu."
           },
           {
             "type": "set",
@@ -8649,7 +8649,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Cần các bộ phận và xác nhận mã chuông."
+            "text": "Cơ cấu chuông còn thiếu bộ phận và mã xác nhận."
           }
         ]
       },
@@ -8757,7 +8757,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Tín hiệu được chỉnh lại; lịch sử rung chuông imperfect vẫn được lưu."
+            "text": "Tín hiệu chuông đã được chỉnh lại. Dù vậy, lần rung méo trước đó vẫn để lại dấu vết."
           }
         ],
         "fail": [
@@ -8836,7 +8836,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Ghi chú thánh ca được tái dựng."
+            "text": "Những ghi chú trong thánh ca đã được khôi phục."
           }
         ],
         "fail": [
@@ -8940,7 +8940,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Radio chỉ bắt được một đoạn tín hiệu. Cuộn băng hoặc phim có thể giúp nhận ra giọng nói đang phát."
+            "text": "Radio chỉ bắt được một đoạn âm thanh. Cuộn băng hoặc phim có thể giúp nhận ra giọng nói."
           }
         ],
         "fail": [
@@ -8952,7 +8952,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Cần đủ vật liệu radio."
+            "text": "Radio vẫn thiếu vật liệu để sửa."
           }
         ]
       },
@@ -9045,7 +9045,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Radio hỏng được chẩn đoán; repair và alternative evidence đã mở."
+            "text": "Bạn đã xác định được radio hỏng ở đâu. Có thể sửa nó hoặc tìm bằng chứng thay thế."
           }
         ],
         "fail": []
@@ -9111,7 +9111,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Bộ dụng cụ đã được sửa lại, có thể dùng cho những cơ cấu khác."
+            "text": "Bộ dụng cụ đã được sửa. Bạn có thể dùng nó với những cơ cấu khác."
           }
         ],
         "fail": []
@@ -9181,7 +9181,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Đoạn tín hiệu yếu khớp với tiếng ghi trên cuộn băng."
+            "text": "Đoạn tín hiệu yếu khớp với âm thanh trên cuộn băng."
           }
         ],
         "fail": [
@@ -9249,7 +9249,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "An bình tĩnh lại."
+            "text": "An dần bình tĩnh lại."
           }
         ],
         "fail": []
@@ -9306,7 +9306,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Nhịp radio giúp An ổn định."
+            "text": "Nhịp radio giúp An lấy lại bình tĩnh."
           }
         ],
         "fail": []
@@ -9387,7 +9387,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Mai hỗ trợ An; Trust và Fear được điều chỉnh."
+            "text": "Mai giúp An. Giữa họ, lòng tin và nỗi sợ đã thay đổi."
           }
         ],
         "fail": []
@@ -9468,7 +9468,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Recovery cùng Linh hoàn tất."
+            "text": "Bạn và Linh đã cùng khôi phục một ký ức."
           }
         ],
         "fail": []
@@ -9549,7 +9549,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Lòng tin được phục hồi thông qua evidence và privacy."
+            "text": "Linh dần tin bạn hơn khi bằng chứng được đưa ra mà ký ức riêng vẫn được tôn trọng."
           }
         ],
         "fail": []
@@ -9619,7 +9619,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Manifest được tái dựng."
+            "text": "Bản kê hành khách đã được dựng lại."
           }
         ],
         "fail": [
@@ -9688,7 +9688,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Khung hình trên cuộn phim khớp với danh sách vận chuyển. Hai dấu vết độc lập cùng chỉ về một chuyến đi."
+            "text": "Khung hình trên phim khớp với danh sách vận chuyển. Hai dấu vết độc lập cùng chỉ về chuyến đi ấy."
           },
           {
             "type": "set",
@@ -9755,7 +9755,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Clue hymn được phục hồi từ evidence."
+            "text": "Dấu vết trong thánh ca đã được khôi phục từ bằng chứng."
           }
         ],
         "fail": [
@@ -9824,7 +9824,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Ảnh lớp và những cái tên còn sót xác nhận dấu vết quanh vòng cọc."
+            "text": "Ảnh lớp và những cái tên còn sót lại xác nhận dấu vết quanh vòng cọc."
           },
           {
             "type": "set",
@@ -9905,7 +9905,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Tunnel clue được xác minh."
+            "text": "Dấu đường hầm đã được xác nhận."
           }
         ],
         "fail": [
@@ -9958,7 +9958,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Bạn cần mở kho hồ sơ, làm chuông vang và tìm ít nhất một dấu vết. Nếu đã khôi phục đủ con dấu, thánh ca, vòng cọc và đường hầm, hãy chọn con đường giải thoát hoàn chỉnh."
+            "text": "Bạn cần mở kho hồ sơ, làm chuông vang và tìm ít nhất một dấu vết. Nếu đã có con dấu, thánh ca, vòng cọc và đường hầm, con đường giải thoát hoàn chỉnh sẽ hiện ra."
           }
         ]
       },
@@ -10074,7 +10074,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Bạn cần hoàn tất các dấu mốc giải thoát, khôi phục ký ức và đối chiếu ít nhất hai nhóm bằng chứng độc lập."
+            "text": "Hãy hoàn tất các dấu mốc giải thoát, khôi phục ký ức và đối chiếu ít nhất hai nhóm bằng chứng độc lập."
           }
         ]
       },
@@ -10173,7 +10173,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Vé được xác minh bằng Manifest."
+            "text": "Bản kê hành khách xác nhận chiếc vé."
           }
         ],
         "fail": [
@@ -10224,7 +10224,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Những dấu vết trên phim, hồ sơ và lời kể ghép thành con đường dẫn đến ga 03:17."
+            "text": "Những khung phim, hồ sơ và lời kể ghép lại thành con đường dẫn tới ga 03:17."
           }
         ],
         "fail": []
@@ -10424,7 +10424,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Đã thu hồi bộ dụng cụ sửa chữa, giấy can và kính phóng đại."
+            "text": "Bạn tìm thấy bộ dụng cụ sửa chữa, giấy can và kính phóng đại."
           }
         ]
       }
@@ -10468,7 +10468,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Đã thu hồi dây cách nhiệt và cầu chì dự phòng."
+            "text": "Dây cách nhiệt và cầu chì dự phòng đã được tìm thấy."
           }
         ]
       }
@@ -10523,7 +10523,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Đã thu hồi lò xo và chốt bánh răng; lỗi truyền động được xác nhận."
+            "text": "Lò xo và chốt bánh răng đã tìm thấy. Lỗi truyền động được xác nhận."
           }
         ]
       }
@@ -10695,7 +10695,7 @@
                 "type": "notify",
                 "subtype": "toast",
                 "level": "success",
-                "text": "Mai trao chiếc ô đỏ. Bên trong cán ô có khắc tên người thứ mười hai."
+                "text": "Mai trao cho bạn chiếc ô đỏ. Trong cán ô, cái tên của người thứ mười hai được khắc kín."
               }
             ]
           },
@@ -10881,7 +10881,7 @@
                 "type": "notify",
                 "subtype": "toast",
                 "level": "success",
-                "text": "Bà Hạnh xác nhận cuốn sổ ghi những người chưa thể rời làng."
+                "text": "Bà Hạnh xác nhận cuốn sổ ghi lại những người chưa thể rời khỏi làng."
               }
             ]
           },
@@ -11061,7 +11061,7 @@
                 "type": "notify",
                 "subtype": "toast",
                 "level": "success",
-                "text": "Người giữ nhà nguyện nói về ý nghĩa của ba hồi chuông và điều ông sợ ở hồi thứ tư."
+                "text": "Người giữ nhà nguyện kể về ba hồi chuông—và điều ông sợ sẽ xảy ra nếu hồi thứ tư vang lên."
               }
             ]
           },
@@ -11252,7 +11252,7 @@
                 "type": "notify",
                 "subtype": "toast",
                 "level": "success",
-                "text": "Tín hiệu tiết lộ một giả thuyết về ngôi làng, nhưng không chứng minh đó là toàn bộ sự thật."
+                "text": "Tín hiệu đưa ra một giả thuyết về ngôi làng. Nhưng vẫn còn những điều chưa được chứng minh."
               }
             ]
           }
