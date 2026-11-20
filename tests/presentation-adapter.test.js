@@ -427,10 +427,10 @@ test('chat action starts the umbrella follow-up without duplicating completed th
     const completedHistory = structuredClone(client.getSnapshot().session.chat.history.chat_mai);
     assert.equal(completedHistory.length, 6);
     assert.deepEqual(completedHistory.map(line => line.text), [
-      'Nếu nghe loa gọi tên mình, đừng trả lời.',
-      'Đêm đó có mười hai người biến mất. Sáng hôm sau, mọi người chỉ nhớ mười một.',
+      'Nếu loa gọi đúng tên cậu, đừng trả lời. Dù giọng nói ấy nghe quen đến đâu.',
+      'Đêm sơ tán, mười hai người biến mất. Nhưng sáng hôm sau, cả làng chỉ nhớ đến mười một người. Tôi không biết ai đã bị bỏ lại trong ký ức.',
       'Cô nói mười hai người biến mất. Người thứ mười hai là ai?',
-      'Tôi đã nhìn thấy người thứ mười hai đi xuống giếng. Nhưng đó là tôi.',
+      'Tôi đã thấy người thứ mười hai đi xuống giếng. Tôi cứ nghĩ mình nhìn thấy người ấy… cho đến khi nhận ra trong ký ức, người bước xuống là tôi.',
       'Khi nói “đó là tôi”, cô muốn nói mình đã đi xuống giếng?',
       'Tôi nhớ mình đứng ở miệng giếng. Nhưng tôi không biết đó là ký ức của tôi, hay ký ức của người đã bị xóa.'
     ]);
