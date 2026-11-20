@@ -6,7 +6,7 @@ export { verifyPassword } from './modules/password/verify.js';
 
 export { TaskManager, Loop } from './runtime/TaskManager.js';
 export { LoaderSystem } from './modules/Loader.js';
-export { DEMO_SCRIPT } from '../demo_script.js';
+export { DEMO_SCRIPT } from '../demo-script-data.js';
 
 export { normalizeScenario, validateScenario, ScenarioValidationError, SCENARIO_FORMAT_VERSION } from './scenario/Scenario.js';
 export { createSaveEnvelope, normalizeSaveEnvelope, SAVE_VERSION } from './persistence/SaveState.js';
