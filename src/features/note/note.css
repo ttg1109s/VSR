@@ -3,7 +3,4 @@
 .vsr-note-state-value{display:flex;align-items:center;gap:var(--vsr-space-2);width:auto;min-width:0}
 .vsr-note-copy-error{margin:0;color:var(--vsr-color-error);font-size:var(--vsr-font-size-caption)}
 .vsr-note-state-value>span:first-child{flex:0 1 auto;min-width:0}
-.vsr-note-state-row .vsr-description-list__term{overflow-wrap:normal;word-break:normal}
-.vsr-note-state-row .vsr-description-list__detail{overflow-wrap:break-word;text-align:start}
-.vsr-note-state-row .vsr-note-state-value{width:auto;max-width:100%}
 .vsr-note-state-value>.vsr-icon-button{flex:0 0 auto}
