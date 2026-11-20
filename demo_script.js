@@ -12686,13 +12686,6 @@
               {
                 "type": "set",
                 "subtype": "action",
-                "target": "action_choose_fate",
-                "property": "display",
-                "value": "show"
-              },
-              {
-                "type": "set",
-                "subtype": "action",
                 "target": "action_reach_station_memory",
                 "property": "display",
                 "value": "show"
@@ -12710,41 +12703,6 @@
                 "target": "action_reach_station_memory",
                 "property": "display",
                 "value": "hide"
-              },
-              {
-                "type": "set",
-                "subtype": "action",
-                "target": "action_recover_class_register",
-                "property": "display",
-                "value": "show"
-              },
-              {
-                "type": "set",
-                "subtype": "action",
-                "target": "action_reach_station",
-                "property": "display",
-                "value": "show"
-              },
-              {
-                "type": "set",
-                "subtype": "action",
-                "target": "action_decode_roster",
-                "property": "display",
-                "value": "show"
-              },
-              {
-                "type": "set",
-                "subtype": "action",
-                "target": "action_overlay_map",
-                "property": "display",
-                "value": "show"
-              },
-              {
-                "type": "set",
-                "subtype": "action",
-                "target": "action_choose_fate",
-                "property": "display",
-                "value": "show"
               }
             ]
           }
