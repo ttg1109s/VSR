@@ -1732,8 +1732,7 @@ export const DEMO_SCRIPT = {
           "actions": [
             "action_search_cellar",
             "action_find_evacuation_film",
-            "action_find_insulated_wire",
-            "action_find_spare_fuse"
+            "action_find_cellar_components"
           ]
         },
         "router_cellar_recording_found": {
@@ -1749,8 +1748,7 @@ export const DEMO_SCRIPT = {
           },
           "actions": [
             "action_search_cellar",
-            "action_find_insulated_wire",
-            "action_find_spare_fuse"
+            "action_find_cellar_components"
           ]
         }
       }
@@ -1908,9 +1906,6 @@ export const DEMO_SCRIPT = {
             "action_inspect_evacuation_notice",
             "action_check_desk",
             "action_talk_linh",
-            "action_find_radio_toolkit",
-            "action_find_tracing_paper",
-            "action_find_inspection_loupe",
             "action_overlay_map",
             "action_retrace_map",
             "action_compare_evacuation_film",
@@ -1923,7 +1918,8 @@ export const DEMO_SCRIPT = {
             "action_ground_with_radio",
             "action_recover_with_linh",
             "action_recover_character_trust",
-            "action_reward_memory_roster"
+            "action_reward_memory_roster",
+            "action_find_classroom_supplies"
           ]
         },
         "router_classroom_archive_open": {
@@ -1944,9 +1940,6 @@ export const DEMO_SCRIPT = {
             "action_check_desk",
             "action_talk_linh",
             "action_decode_roster",
-            "action_find_radio_toolkit",
-            "action_find_tracing_paper",
-            "action_find_inspection_loupe",
             "action_overlay_map",
             "action_retrace_map",
             "action_compare_evacuation_film",
@@ -1958,7 +1951,8 @@ export const DEMO_SCRIPT = {
             "action_ground_with_radio",
             "action_recover_with_linh",
             "action_recover_character_trust",
-            "action_reward_memory_roster"
+            "action_reward_memory_roster",
+            "action_find_classroom_supplies"
           ]
         }
       }
@@ -2130,12 +2124,11 @@ export const DEMO_SCRIPT = {
           },
           "actions": [
             "action_repair_mill",
-            "action_find_gear_pin",
-            "action_find_clockwork_spring",
             "action_repair_mill_partial",
             "action_force_mill_repair",
             "action_stabilize_mill",
-            "action_bypass_mill"
+            "action_bypass_mill",
+            "action_find_mill_components"
           ]
         },
         "router_watermill_running": {
@@ -2166,11 +2159,11 @@ export const DEMO_SCRIPT = {
           },
           "actions": [
             "action_repair_mill",
-            "action_find_clockwork_spring",
             "action_repair_mill_partial",
             "action_force_mill_repair",
             "action_stabilize_mill",
-            "action_bypass_mill"
+            "action_bypass_mill",
+            "action_find_mill_components"
           ]
         }
       }
@@ -2271,7 +2264,6 @@ export const DEMO_SCRIPT = {
           "actions": [
             "action_confront_voice",
             "action_choose_fate",
-            "action_choose_fate_memory",
             "action_ending_bury",
             "action_ending_echo",
             "action_ending_depart",
@@ -2299,7 +2291,6 @@ export const DEMO_SCRIPT = {
           "actions": [
             "action_confront_voice",
             "action_choose_fate",
-            "action_choose_fate_memory",
             "action_ending_bury",
             "action_ending_echo",
             "action_ending_depart",
@@ -3034,12 +3025,6 @@ export const DEMO_SCRIPT = {
           {
             "type": "set",
             "subtype": "state",
-            "target": "found_guestbook",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
             "target": "room7_confirmed",
             "value": false
           }
@@ -3216,12 +3201,6 @@ export const DEMO_SCRIPT = {
                 }
               ]
             }
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "clue_hymn",
-            "value": true
           }
         ]
       }
@@ -3997,18 +3976,6 @@ export const DEMO_SCRIPT = {
             "type": "set",
             "subtype": "state",
             "target": "memory_reward_tunnel",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "knows_twelve",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "clue_tunnel",
             "value": true
           },
           {
@@ -4944,186 +4911,6 @@ export const DEMO_SCRIPT = {
         ]
       }
     },
-    "action_find_radio_toolkit": {
-      "meta": {
-        "title": "Bộ dụng cụ sửa chữa",
-        "buttonLabel": "Lấy bộ dụng cụ",
-        "desc": "Trong ngăn tủ giáo viên có bộ tua vít cách điện, kìm và đầu dò mạch, đủ để tháo thiết bị mà không làm hỏng linh kiện."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "item",
-            "subtype": "add",
-            "target": "radio_toolkit"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_find_radio_toolkit",
-            "property": "display",
-            "value": "hide"
-          }
-        ]
-      }
-    },
-    "action_find_tracing_paper": {
-      "meta": {
-        "title": "Giấy can",
-        "buttonLabel": "Nhặt lên",
-        "desc": "Tờ giấy can sạch được kẹp cạnh bản vẽ sơ đồ cũ, có thể chép chồng ký hiệu để đối chiếu bản đồ."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "item",
-            "subtype": "add",
-            "target": "tracing_paper"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_find_tracing_paper",
-            "property": "display",
-            "value": "hide"
-          }
-        ]
-      }
-    },
-    "action_find_inspection_loupe": {
-      "meta": {
-        "title": "Kính phóng đại",
-        "buttonLabel": "Lấy kính lúp",
-        "desc": "Kính phóng đại nhỏ trong hộp bảo quản dụng cụ có thể giúp đọc dấu khắc và nét sửa trên vật chứng."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "item",
-            "subtype": "add",
-            "target": "inspection_loupe"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_find_inspection_loupe",
-            "property": "display",
-            "value": "hide"
-          }
-        ]
-      }
-    },
-    "action_find_insulated_wire": {
-      "meta": {
-        "title": "Cuộn dây cách nhiệt",
-        "buttonLabel": "Lấy dây cách điện",
-        "desc": "Sau thùng rượu rỗng là cuộn dây cách nhiệt còn dùng được, có thể thay đoạn dây đứt trong thiết bị cũ."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "item",
-            "subtype": "add",
-            "target": "insulated_wire"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_find_insulated_wire",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "radio_damaged",
-            "value": false
-          }
-        ]
-      }
-    },
-    "action_find_spare_fuse": {
-      "meta": {
-        "title": "Cầu chì dự phòng",
-        "buttonLabel": "Nhặt lên",
-        "desc": "Hộp linh kiện cũ chứa cầu chì sứ dự phòng còn nguyên, được giữ riêng khỏi dây dẫn đã hỏng."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "item",
-            "subtype": "add",
-            "target": "spare_fuse"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_find_spare_fuse",
-            "property": "display",
-            "value": "hide"
-          }
-        ]
-      }
-    },
-    "action_find_clockwork_spring": {
-      "meta": {
-        "title": "Lò xo cơ khí",
-        "buttonLabel": "Lấy lò xo cơ khí",
-        "desc": "Hộp bảo trì có lò xo thép còn đàn hồi; cần bộ dụng cụ để mở hộp và lấy linh kiện."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "radio_toolkit"
-          }
-        ]
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "item",
-            "subtype": "add",
-            "target": "clockwork_spring"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_find_clockwork_spring",
-            "property": "display",
-            "value": "hide"
-          }
-        ]
-      }
-    },
     "action_restore_radio_signal": {
       "meta": {
         "title": "Khôi phục tín hiệu phát thanh (tùy chọn)",
@@ -5349,14 +5136,7 @@ export const DEMO_SCRIPT = {
         ]
       },
       "effect": {
-        "normal": [
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "radio_crystal",
-            "value": 1
-          }
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "item",
@@ -5533,18 +5313,6 @@ export const DEMO_SCRIPT = {
             "subtype": "toast",
             "level": "success",
             "text": "Đã thu hồi cuộn phim sơ tán, một bằng chứng quan trọng."
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "evidence_evacuation_film",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "evidence_evacuation_film",
-            "value": true
           }
         ]
       }
@@ -5727,7 +5495,7 @@ export const DEMO_SCRIPT = {
             "subtype": "action",
             "target": "action_choose_fate",
             "property": "display",
-            "value": "hide"
+            "value": "show"
           },
           {
             "type": "goto",
@@ -5838,62 +5606,6 @@ export const DEMO_SCRIPT = {
             "subtype": "toast",
             "level": "success",
             "text": "Đã tìm thấy con dấu đội sơ tán, chứng cứ về danh sách chính thức."
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "evidence_evacuation_seal",
-            "value": true
-          }
-        ]
-      }
-    },
-    "action_find_gear_pin": {
-      "meta": {
-        "title": "Chốt bánh răng cối xay",
-        "buttonLabel": "Lấy chốt bánh răng",
-        "desc": "Hộp bánh răng dưới sàn cối xay bị kẹt. Bộ dụng cụ cần thiết để mở nắp và lấy chốt truyền động bị cong."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "radio_toolkit"
-          }
-        ]
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "item",
-            "subtype": "add",
-            "target": "mill_gear_pin"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_find_gear_pin",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "goto",
-            "subtype": "router",
-            "target": "router_watermill_gear_inspected"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Đã lấy chốt bánh răng; trạng thái kiểm tra cối xay được cập nhật."
           }
         ]
       }
@@ -5994,12 +5706,6 @@ export const DEMO_SCRIPT = {
             "subtype": "state",
             "target": "ticket_verified",
             "value": false
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "ticket_verified",
-            "value": false
           }
         ]
       }
@@ -6067,7 +5773,7 @@ export const DEMO_SCRIPT = {
             "subtype": "action",
             "target": "action_choose_fate",
             "property": "display",
-            "value": "hide"
+            "value": "show"
           },
           {
             "type": "set",
@@ -10152,6 +9858,148 @@ export const DEMO_SCRIPT = {
             "property": "clue_tunnel",
             "op": "==",
             "value": true
+          }
+        ]
+      }
+    },
+    "action_find_classroom_supplies": {
+      "meta": {
+        "title": "Tủ dụng cụ lớp học",
+        "buttonLabel": "Tìm vật dụng hữu ích",
+        "desc": "Trong tủ dụng cụ có bộ sửa chữa radio, giấy can và kính phóng đại. Bạn thu hồi các vật dụng có thể dùng để khôi phục thiết bị và đối chiếu dấu vết."
+      },
+      "set": {
+        "display": "show"
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "add",
+            "target": "radio_toolkit"
+          },
+          {
+            "type": "item",
+            "subtype": "add",
+            "target": "tracing_paper"
+          },
+          {
+            "type": "item",
+            "subtype": "add",
+            "target": "inspection_loupe"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_find_classroom_supplies",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Đã thu hồi bộ dụng cụ sửa chữa, giấy can và kính phóng đại."
+          }
+        ]
+      }
+    },
+    "action_find_cellar_components": {
+      "meta": {
+        "title": "Linh kiện trong hầm",
+        "buttonLabel": "Thu hồi vật tư",
+        "desc": "Trong các thùng và ngăn bảo trì có cuộn dây cách nhiệt cùng cầu chì sứ dự phòng. Cả hai đều có thể dùng để sửa radio bị hỏng."
+      },
+      "set": {
+        "display": "show"
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "add",
+            "target": "insulated_wire"
+          },
+          {
+            "type": "item",
+            "subtype": "add",
+            "target": "spare_fuse"
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "radio_damaged",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_find_cellar_components",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Đã thu hồi dây cách nhiệt và cầu chì dự phòng."
+          }
+        ]
+      }
+    },
+    "action_find_mill_components": {
+      "meta": {
+        "title": "Hộp bảo trì cối xay",
+        "buttonLabel": "Mở hộp và thu hồi linh kiện",
+        "desc": "Với bộ dụng cụ sửa chữa, bạn mở hộp bảo trì và thu hồi lò xo cơ khí cùng chốt bánh răng. Chốt bị cong, giải thích vì sao cối xay dừng hoạt động."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "radio_toolkit"
+          }
+        ]
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "add",
+            "target": "clockwork_spring"
+          },
+          {
+            "type": "item",
+            "subtype": "add",
+            "target": "mill_gear_pin"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_find_mill_components",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "goto",
+            "subtype": "router",
+            "target": "router_watermill_gear_inspected"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Đã thu hồi lò xo và chốt bánh răng; lỗi truyền động được xác nhận."
           }
         ]
       }
