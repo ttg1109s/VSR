@@ -4342,7 +4342,25 @@
         "readDesc": true
       },
       "effect": {
-        "normal": [],
+        "normal": [
+          {
+            "type": "notify",
+            "title": "Tần số chưa ổn định",
+            "level": "warning",
+            "text": "Cuộn tinh thể nằm trong túi chưa đủ. Bạn cần đưa nó lên tay, giữ đúng tần số rồi mới có thể tách giọng nói khỏi nhiễu.",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "item",
+                  "subtype": "inventory",
+                  "op": "has",
+                  "value": "radio_crystal"
+                }
+              ]
+            }
+          }
+        ],
         "pass": [
           {
             "type": "set",
@@ -4375,9 +4393,11 @@
         "check": [
           {
             "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "radio_crystal"
+            "subtype": "hand",
+            "op": "==",
+            "value": [
+              "radio_crystal"
+            ]
           }
         ]
       }
