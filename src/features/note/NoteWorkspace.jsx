@@ -46,7 +46,7 @@ export default function NoteWorkspace({ snapshot, open = false, onClose }) {
     if (!globalStates || typeof globalStates !== 'object' || Array.isArray(globalStates)) return [];
     return Object.entries(globalStates).map(([id, state]) => ({
       id,
-      title: typeof state?.title === 'string' && state.title.trim() ? state.title : id,
+      title: typeof state?.title === 'string' && state.title.trim() ? state.title.trim() : id,
       type: state?.type,
       value: state?.value
     }));
