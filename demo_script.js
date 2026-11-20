@@ -647,6 +647,13 @@
           "subtype": "usage",
           "target": "spare_fuse",
           "value": 1
+        },
+        {
+          "type": "set",
+          "subtype": "action",
+          "target": "action_confront_voice",
+          "property": "display",
+          "value": "show"
         }
       ],
       "consume_action_overlay_map": [
@@ -4337,7 +4344,7 @@
         "desc": "Từ đường ray vang lên một tín hiệu méo tiếng, lặp lại nhịp phát thanh từng phát ở quảng trường. Cuộn tinh thể thu sóng lấy từ hộp loa có thể dò lại đúng tần số để tách giọng nói khỏi nhiễu. Đằng sau tín hiệu là một câu hỏi không chỉ về việc ai được cứu, mà còn về ký ức nào sẽ được giữ lại."
       },
       "set": {
-        "display": "show",
+        "display": "hide",
         "requirement": true,
         "readDesc": true
       },
@@ -5272,12 +5279,6 @@
             "type": "set",
             "subtype": "state",
             "target": "voice_revealed",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "identity_verified_partial",
             "value": true
           },
           {
@@ -8838,12 +8839,6 @@
             "subtype": "toast",
             "level": "success",
             "text": "Mạch radio đã ổn định. Đoạn băng và tín hiệu khớp nhau; giọng nói cùng danh tính được xác minh sơ bộ. Tuyến sửa tạm đã hội tụ với tuyến sửa hoàn chỉnh."
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "identity_verified_partial",
-            "value": true
           },
           {
             "type": "set",
