@@ -9622,6 +9622,13 @@ export const DEMO_SCRIPT = {
             "subtype": "toast",
             "level": "success",
             "text": "Chuông vang méo. Critical flag bell_rung vẫn đạt; có thể sửa tín hiệu."
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_ring_bell_imperfect",
+            "property": "display",
+            "value": "hide"
           }
         ],
         "fail": [
