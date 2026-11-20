@@ -4571,7 +4571,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Những dấu vết hiện có chưa đủ để đưa mọi người ra khỏi vòng mắc kẹt. Nếu chọn bằng chứng, bạn còn phải tìm những hồ sơ bị thiếu; nếu chọn ký ức, hãy giữ lại những gì đã nhớ và khôi phục các mốc đã mất."
+            "text": "Những dấu mốc cần thiết vẫn chưa hoàn tất. Hãy tiếp tục đối chiếu hồ sơ, khôi phục các dấu vết và xác nhận những gì ký ức còn giữ lại."
           }
         ]
       },
