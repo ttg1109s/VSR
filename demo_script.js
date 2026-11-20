@@ -7800,17 +7800,17 @@ export const DEMO_SCRIPT = {
           {
             "type": "item",
             "subtype": "usage",
-            "target": "evacuation_seal",
-            "value": 1
-          },
-          {
-            "type": "item",
-            "subtype": "usage",
             "target": "radio_toolkit",
             "value": 1
           }
         ],
         "pass": [
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "evacuation_seal",
+            "value": 1
+          },
           {
             "type": "set",
             "subtype": "state",
