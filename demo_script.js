@@ -9453,7 +9453,7 @@
             "type": "state",
             "property": "clue_stakes",
             "op": "==",
-            "value": false
+            "value": true
           },
           {
             "type": "item",
