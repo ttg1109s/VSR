@@ -2,23 +2,36 @@ name: Engine quality
 
 on:
   push:
-    branches: [engine-only, ui-rebuild, feature/restore-password-domain, feature/schema-as-source-of-truth, audit/remediation-and-deadcode-cleanup]
+    branches: [engine-only, ui-rebuild, feature/restore-password-domain, feature/schema-as-source-of-truth, audit/remediation-and-deadcode-cleanup, remediation/full-audit-hardening]
   pull_request:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: engine-quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  node:
+  quality:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npm install --ignore-scripts --no-audit --no-fund
+          cache: npm
+      # package-lock.json is not currently tracked on engine-only. Use a
+      # deterministic npm install until the lockfile is committed, then switch
+      # to npm ci as a separately verifiable dependency-baseline change.
+      - name: Install dependencies
+        run: npm install --ignore-scripts --no-audit --no-fund
       - run: npm run schema:check
       - run: npm run check:server
       - run: npm run audit:ui
       - run: npm run audit:safe-area
       - run: npm run audit:deadcode
+      - run: npm run build
       - run: npx playwright install --with-deps chromium
       - run: npm run test:browser
       - run: npm test
