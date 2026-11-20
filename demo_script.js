@@ -12763,8 +12763,8 @@
         ],
         "linh_stage2": [
           {
-            "id": "linh_accept_tunnel_memory",
-            "text": "Anh sẽ giữ chi tiết đường hầm như một phần ký ức cần được kiểm tra.",
+            "id": "linh_commit_memory",
+            "text": "Anh sẽ giữ kín lời khai của em, để ký ức được bảo vệ trước khi đối chiếu.",
             "jump": "stage3",
             "effect": [
               {
@@ -12776,8 +12776,8 @@
             ]
           },
           {
-            "id": "linh_check_tunnel_clue",
-            "text": "Anh sẽ xem đường hầm là một dấu vết để đối chiếu, không chỉ là lời kể.",
+            "id": "linh_commit_evidence",
+            "text": "Anh sẽ cho phép đối chiếu với hồ sơ, nhưng không xem hồ sơ là toàn bộ sự thật.",
             "jump": "stage3",
             "effect": [
               {
@@ -12791,9 +12791,37 @@
         ],
         "linh_stage3": [
           {
-            "id": "linh_tunnel_as_memory",
-            "text": "Để chi tiết đường hầm ở lại như một ký ức cần được giữ.",
+            "id": "linh_accept_tunnel_memory",
+            "text": "Anh sẽ giữ chi tiết đường hầm như một phần ký ức cần được kiểm tra.",
             "jump": "stage4",
+            "effect": [
+              {
+                "type": "set",
+                "subtype": "state",
+                "target": "clue_tunnel",
+                "value": true
+              }
+            ]
+          },
+          {
+            "id": "linh_check_tunnel_clue",
+            "text": "Anh sẽ xem đường hầm là một dấu vết để đối chiếu, không chỉ là lời kể.",
+            "jump": "stage4",
+            "effect": [
+              {
+                "type": "set",
+                "subtype": "state",
+                "target": "clue_tunnel",
+                "value": true
+              }
+            ]
+          }
+        ],
+        "linh_stage4": [
+          {
+            "id": "linh_reconstruct_memory",
+            "text": "Mình thử ghép lại ký ức, từng chi tiết một.",
+            "jump": "final",
             "effect": [
               {
                 "type": "set",
@@ -12804,9 +12832,9 @@
             ]
           },
           {
-            "id": "linh_tunnel_as_clue",
-            "text": "Xem đường hầm là dấu vết cần kiểm chứng.",
-            "jump": "stage4",
+            "id": "linh_reconstruct_carefully",
+            "text": "Anh sẽ giúp em nhớ lại, nhưng không ép em phải hoàn tất ngay.",
+            "jump": "final",
             "effect": [
               {
                 "type": "set",
