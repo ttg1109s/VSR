@@ -29,7 +29,7 @@ export const DEMO_SCRIPT = {
     "clue_lantern": {
       "type": "boolean",
       "value": false,
-      "title": "Đèn lồng"
+      "title": "Đã soi dấu bằng đèn lồng"
     },
     "heard_bell": {
       "type": "boolean",
@@ -53,7 +53,7 @@ export const DEMO_SCRIPT = {
     },
     "school_choice": {
       "type": "string",
-      "value": "undecided",
+      "value": "chưa_quyết_định",
       "title": "Lựa chọn trường học"
     },
     "clue_village_notice": {
@@ -336,7 +336,7 @@ export const DEMO_SCRIPT = {
             "type": "state",
             "property": "school_choice",
             "op": "==",
-            "value": "undecided"
+            "value": "chưa_quyết_định"
           }
         ]
       },
@@ -347,7 +347,7 @@ export const DEMO_SCRIPT = {
             "type": "state",
             "property": "school_choice",
             "op": "==",
-            "value": "memory"
+            "value": "ký_ức"
           }
         ]
       },
@@ -358,7 +358,7 @@ export const DEMO_SCRIPT = {
             "type": "state",
             "property": "school_choice",
             "op": "==",
-            "value": "evidence"
+            "value": "bằng_chứng"
           }
         ]
       },
@@ -2468,7 +2468,7 @@ export const DEMO_SCRIPT = {
                   "type": "state",
                   "property": "school_choice",
                   "op": "==",
-                  "value": "memory"
+                  "value": "ký_ức"
                 }
               ]
             }
@@ -2490,7 +2490,7 @@ export const DEMO_SCRIPT = {
                   "type": "state",
                   "property": "school_choice",
                   "op": "==",
-                  "value": "evidence"
+                  "value": "bằng_chứng"
                 }
               ]
             }
@@ -2590,7 +2590,7 @@ export const DEMO_SCRIPT = {
                   "type": "state",
                   "property": "school_choice",
                   "op": "==",
-                  "value": "undecided"
+                  "value": "chưa_quyết_định"
                 }
               ]
             }
@@ -2758,7 +2758,7 @@ export const DEMO_SCRIPT = {
                   "type": "state",
                   "property": "school_choice",
                   "op": "==",
-                  "value": "memory"
+                  "value": "ký_ức"
                 }
               ]
             }
@@ -2780,7 +2780,7 @@ export const DEMO_SCRIPT = {
                   "type": "state",
                   "property": "school_choice",
                   "op": "==",
-                  "value": "evidence"
+                  "value": "bằng_chứng"
                 }
               ]
             }
@@ -2802,7 +2802,7 @@ export const DEMO_SCRIPT = {
                   "type": "state",
                   "property": "school_choice",
                   "op": "==",
-                  "value": "undecided"
+                  "value": "chưa_quyết_định"
                 }
               ]
             }
@@ -3131,7 +3131,7 @@ export const DEMO_SCRIPT = {
                   "type": "state",
                   "property": "school_choice",
                   "op": "==",
-                  "value": "memory"
+                  "value": "ký_ức"
                 }
               ]
             }
@@ -3148,7 +3148,7 @@ export const DEMO_SCRIPT = {
                   "type": "state",
                   "property": "school_choice",
                   "op": "==",
-                  "value": "evidence"
+                  "value": "bằng_chứng"
                 }
               ]
             }
@@ -3468,7 +3468,7 @@ export const DEMO_SCRIPT = {
             "type": "state",
             "property": "school_choice",
             "op": "==",
-            "value": "evidence"
+            "value": "bằng_chứng"
           }
         ]
       }
@@ -3523,7 +3523,7 @@ export const DEMO_SCRIPT = {
                   "type": "state",
                   "property": "school_choice",
                   "op": "==",
-                  "value": "memory"
+                  "value": "ký_ức"
                 }
               ]
             }
@@ -3540,7 +3540,7 @@ export const DEMO_SCRIPT = {
                   "type": "state",
                   "property": "school_choice",
                   "op": "==",
-                  "value": "evidence"
+                  "value": "bằng_chứng"
                 }
               ]
             }
@@ -3907,7 +3907,7 @@ export const DEMO_SCRIPT = {
                   "type": "state",
                   "property": "school_choice",
                   "op": "==",
-                  "value": "memory"
+                  "value": "ký_ức"
                 }
               ]
             }
@@ -3924,7 +3924,7 @@ export const DEMO_SCRIPT = {
                   "type": "state",
                   "property": "school_choice",
                   "op": "==",
-                  "value": "evidence"
+                  "value": "bằng_chứng"
                 }
               ]
             }
@@ -4023,7 +4023,7 @@ export const DEMO_SCRIPT = {
             "type": "state",
             "property": "school_choice",
             "op": "!=",
-            "value": "undecided"
+            "value": "chưa_quyết_định"
           }
         ]
       }
@@ -4151,7 +4151,7 @@ export const DEMO_SCRIPT = {
             "type": "state",
             "property": "school_choice",
             "op": "==",
-            "value": "memory"
+            "value": "ký_ức"
           },
           {
             "type": "state",
@@ -4790,7 +4790,7 @@ export const DEMO_SCRIPT = {
             "type": "state",
             "property": "school_choice",
             "op": "==",
-            "value": "memory"
+            "value": "ký_ức"
           },
           {
             "type": "state",
@@ -5577,7 +5577,7 @@ export const DEMO_SCRIPT = {
             "type": "set",
             "subtype": "state",
             "target": "school_choice",
-            "value": "evidence"
+            "value": "bằng_chứng"
           },
           {
             "type": "item",
@@ -5678,7 +5678,7 @@ export const DEMO_SCRIPT = {
             "type": "state",
             "property": "school_choice",
             "op": "==",
-            "value": "undecided"
+            "value": "chưa_quyết_định"
           }
         ]
       }
@@ -5944,7 +5944,7 @@ export const DEMO_SCRIPT = {
             "type": "set",
             "subtype": "state",
             "target": "school_choice",
-            "value": "memory"
+            "value": "ký_ức"
           },
           {
             "type": "set",
@@ -6085,7 +6085,7 @@ export const DEMO_SCRIPT = {
             "type": "state",
             "property": "school_choice",
             "op": "==",
-            "value": "undecided"
+            "value": "chưa_quyết_định"
           }
         ]
       }
@@ -7966,7 +7966,7 @@ export const DEMO_SCRIPT = {
             "type": "state",
             "property": "school_choice",
             "op": "!=",
-            "value": "undecided"
+            "value": "chưa_quyết_định"
           }
         ]
       }
@@ -8136,7 +8136,7 @@ export const DEMO_SCRIPT = {
             "type": "state",
             "property": "school_choice",
             "op": "!=",
-            "value": "undecided"
+            "value": "chưa_quyết_định"
           }
         ]
       }
