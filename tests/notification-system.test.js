@@ -136,7 +136,7 @@ test('action blocked by unread description emits a deduplicated not_read notific
       id: 'inspect', meta: { desc: 'Description' }, set: {}
     }],
     getConfig: key => key === 'allDescRead',
-    notifyActionFailure: (...args) => calls.push(args),
+    notifyActionFailure: ActionSystem.notifyActionFailure,
     checkHardLock: () => false
   };
   const result = await ActionSystem.handleAction.call(engine, 'inspect');
