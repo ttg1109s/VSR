@@ -4365,6 +4365,11 @@
             "value": 1
           },
           {
+            "type": "item",
+            "subtype": "remove",
+            "target": "radio_crystal"
+          },
+          {
             "type": "goto",
             "subtype": "chat",
             "target": "chat_voice"
