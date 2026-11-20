@@ -1996,8 +1996,7 @@
             "action_compare_guestbook_photo",
             "action_verify_guestbook",
             "action_rest_at_inn",
-            "action_recover_with_mai",
-            "action_recover_character_trust"
+            "action_recover_with_mai"
           ]
         },
         "router_inn_hidden_room": {
@@ -2025,8 +2024,7 @@
             "action_compare_guestbook_photo",
             "action_verify_guestbook",
             "action_rest_at_inn",
-            "action_recover_with_mai",
-            "action_recover_character_trust"
+            "action_recover_with_mai"
           ]
         },
         "router_room7_forced": {
@@ -2054,8 +2052,7 @@
             "action_compare_guestbook_photo",
             "action_verify_guestbook",
             "action_rest_at_inn",
-            "action_recover_with_mai",
-            "action_recover_character_trust"
+            "action_recover_with_mai"
           ]
         },
         "router_room7_repaired": {
@@ -2083,8 +2080,7 @@
             "action_compare_guestbook_photo",
             "action_verify_guestbook",
             "action_rest_at_inn",
-            "action_recover_with_mai",
-            "action_recover_character_trust"
+            "action_recover_with_mai"
           ]
         }
       }
@@ -2298,7 +2294,6 @@
             "action_rest_at_inn",
             "action_ground_with_radio",
             "action_recover_with_linh",
-            "action_recover_character_trust",
             "action_reward_memory_roster",
             "action_find_classroom_supplies",
             "action_find_inspection_loupe"
@@ -2332,7 +2327,6 @@
             "action_listen_static",
             "action_ground_with_radio",
             "action_recover_with_linh",
-            "action_recover_character_trust",
             "action_reward_memory_roster",
             "action_find_classroom_supplies",
             "action_find_inspection_loupe"
@@ -2654,7 +2648,6 @@
             "action_listen_static",
             "action_diagnose_radio",
             "action_ground_with_radio",
-            "action_recover_character_trust",
             "action_ending_release_partial",
             "action_ending_release_reconstructed",
             "action_verify_ticket"
