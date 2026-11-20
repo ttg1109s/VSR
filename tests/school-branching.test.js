@@ -61,13 +61,14 @@ test('roster decoding is Evidence-only and gives map progression', () => {
   assert.ok(actions.action_decode_roster.effect.pass.some(e => e.type === 'item' && e.target === 'map_fragment'));
 });
 
-test('Memory has dedicated station and release Actions with flat requirements', () => {
+test('Memory has dedicated station Action and canonical release Action with flat requirements', () => {
   const station = actions.action_reach_station_memory;
-  const ending = actions.action_choose_fate_memory;
+  const ending = actions.action_choose_fate;
   assert.ok(station && ending);
-  for (const id of ['action_reach_station_memory', 'action_choose_fate_memory']) requirementChecks(id);
+  assert.equal(actions.action_choose_fate_memory, undefined);
+  requirementChecks('action_reach_station_memory');
   assert.ok(requirementChecks('action_reach_station_memory').some(c => c.property === 'school_choice' && c.value === 'ký ức'));
-  assert.ok(requirementChecks('action_choose_fate_memory').some(c => c.property === 'school_choice' && c.value === 'ký ức'));
+  assert.ok(ending.requirement.check.some(branch => branch.logic === 'AND' && branch.check?.some(c => c.property === 'school_choice' && c.value === 'ký ức'));
 });
 
 test('Evidence progression templates remain flat and evidence-gated', () => {
@@ -88,14 +89,15 @@ test('both station router states expose Memory route Action', () => {
   assert.ok(refs.length >= 2, 'Memory station Action should be reachable from both tunnel routers');
 });
 
-test('Memory ending Action is available in station routers', () => {
+test('canonical release Action is available in both station routers', () => {
   const refs = [];
   for (const [sceneId, scene] of Object.entries(DEMO_SCRIPT.scenes)) {
     for (const [routerId, router] of Object.entries(scene.routers || {})) {
-      if (router.actions?.includes('action_choose_fate_memory')) refs.push(`${sceneId}.${routerId}`);
+      if (router.actions?.includes('action_choose_fate')) refs.push(`${sceneId}.${routerId}`);
+      assert.ok(!router.actions?.includes('action_choose_fate_memory'), `${sceneId}.${routerId} references deleted Action`);
     }
   }
-  assert.ok(refs.length >= 2, 'Memory release Action should be exposed in both station routers');
+  assert.ok(refs.length >= 2, 'canonical release Action should be exposed in both station routers');
 });
 
 
@@ -112,11 +114,20 @@ test('commitment updates branch Action visibility in both directions', () => {
   const evidence = actions.action_recover_class_register.effect.pass;
   const hasDisplay = (list, id, value) => list.some(e => e.type === 'set' && e.subtype === 'action' && e.target === id && e.property === 'display' && e.value === value);
   assert.ok(hasDisplay(memory, 'action_reach_station', 'hide'));
-  assert.ok(hasDisplay(memory, 'action_choose_fate', 'hide'));
   assert.ok(hasDisplay(memory, 'action_reach_station_memory', 'show'));
-  assert.ok(hasDisplay(memory, 'action_choose_fate_memory', 'show'));
   assert.ok(hasDisplay(evidence, 'action_reach_station_memory', 'hide'));
-  assert.ok(hasDisplay(evidence, 'action_choose_fate_memory', 'hide'));
   assert.ok(hasDisplay(evidence, 'action_reach_station', 'show'));
   assert.ok(hasDisplay(evidence, 'action_choose_fate', 'show'));
+});
+
+
+test('demo consolidates redundant item pickup Actions', () => {
+  for (const id of ['action_find_classroom_supplies', 'action_find_cellar_components', 'action_find_mill_components']) assert.ok(actions[id], `Missing consolidated Action ${id}`);
+  for (const id of ['action_find_radio_toolkit','action_find_tracing_paper','action_find_inspection_loupe','action_find_insulated_wire','action_find_spare_fuse','action_find_clockwork_spring','action_find_gear_pin']) assert.equal(actions[id], undefined, `Expected removed pickup Action ${id}`);
+  const school = actions.action_find_classroom_supplies.effect.pass;
+  for (const item of ['radio_toolkit','tracing_paper','inspection_loupe']) assert.ok(school.some(e=>e.type==='item'&&e.subtype==='add'&&e.target===item));
+  const cellar = actions.action_find_cellar_components.effect.pass;
+  for (const item of ['insulated_wire','spare_fuse']) assert.ok(cellar.some(e=>e.type==='item'&&e.subtype==='add'&&e.target===item));
+  const mill = actions.action_find_mill_components.effect.pass;
+  for (const item of ['clockwork_spring','mill_gear_pin']) assert.ok(mill.some(e=>e.type==='item'&&e.subtype==='add'&&e.target===item));
 });
