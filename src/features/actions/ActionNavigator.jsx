@@ -9,7 +9,7 @@ const getVisibleDotCount = () => {
   return 5;
 };
 
-export default function ActionNavigator({ activeIndex = 0, actionCount = 0, onNavigate }) {
+export default function ActionNavigator({ activeIndex = 0, actionCount = 0, activeTitle = '', onNavigate }) {
   const [visibleDotCount, setVisibleDotCount] = useState(getVisibleDotCount);
 
   useEffect(() => {
@@ -52,6 +52,10 @@ export default function ActionNavigator({ activeIndex = 0, actionCount = 0, onNa
 
   return (
     <section className="vsr-action-navigator" aria-label="Action navigation">
+      <div className="vsr-action-navigator__summary" aria-live="polite" aria-atomic="true">
+        <span className="vsr-action-navigator__count">Action {safeActiveIndex + 1} of {actionCount}</span>
+        {activeTitle && <span className="vsr-action-navigator__title" title={activeTitle}>{activeTitle}</span>}
+      </div>
       <div className="vsr-action-navigator__controls">
         <IconButton
           className="vsr-action-navigator__arrow"
