@@ -14,10 +14,10 @@ function requirementChecks(actionId) {
   return req.check;
 }
 
-test('school branch state starts undecided and does not overwrite ending choice', () => {
+test('school branch state starts undecided', () => {
   assert.equal(states.school_choice?.type, 'string');
   assert.equal(states.school_choice?.value, 'undecided');
-  assert.equal(states.final_choice?.value, 'undecided');
+  assert.equal(states.final_choice, undefined);
 });
 
 test('school commitment Actions require undecided and clue conflict', () => {
