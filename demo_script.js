@@ -280,6 +280,11 @@
       "type": "boolean",
       "value": false,
       "title": "Danh sách lớp đã xác minh"
+    },
+    "evidence_corroborations": {
+      "type": "number",
+      "value": 0,
+      "title": "Các lần đối chiếu độc lập"
     }
   },
   "templates": {
@@ -8229,7 +8234,13 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Hồ sơ được tái dựng từ nhiều nguồn độc lập."
+            "text": "Danh sách đường hầm, cuộn phim và sổ điểm danh khớp nhau. Những cái tên bị xóa đã trở lại trong hồ sơ."
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "evidence_corroborations",
+            "value": 1
           }
         ],
         "fail": [
@@ -9672,7 +9683,13 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Film sơ tán được xác minh."
+            "text": "Khung hình trên cuộn phim khớp với danh sách vận chuyển. Hai dấu vết độc lập cùng chỉ về một chuyến đi."
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "evidence_corroborations",
+            "value": 1
           }
         ],
         "fail": [
@@ -9802,7 +9819,13 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Evidence vòng cọc được tái dựng."
+            "text": "Ảnh lớp và những cái tên còn sót xác nhận dấu vết quanh vòng cọc."
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "evidence_corroborations",
+            "value": 1
           }
         ],
         "fail": [
@@ -9909,7 +9932,7 @@
       "meta": {
         "title": "Giải thoát khi bằng chứng còn thiếu",
         "buttonLabel": "Giải thoát",
-        "desc": "Nếu đã chuẩn bị những điều cần thiết để giải thoát và từng rung chuông lệch nhịp, bạn vẫn có thể cứu người mắc kẹt dù một phần dấu vết chưa được khôi phục đầy đủ."
+        "desc": "Nếu chuông đã vang, kho hồ sơ đã mở và bạn tìm được ít nhất một dấu vết nhưng chưa khôi phục đủ con dấu, thánh ca, vòng cọc và đường hầm, bạn có thể giải thoát những người còn mắc kẹt — dù sự thật vẫn thiếu những mảnh quan trọng."
       },
       "set": {
         "display": "show",
@@ -9930,7 +9953,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Chưa đủ điều kiện để giải thoát trong tình trạng dấu vết còn dang dở. Cần hoàn tất các điều kiện chính và từng rung chuông lệch nhịp."
+            "text": "Bạn cần mở kho hồ sơ, làm chuông vang và tìm ít nhất một dấu vết. Nếu đã khôi phục đủ con dấu, thánh ca, vòng cọc và đường hầm, hãy chọn con đường giải thoát hoàn chỉnh."
           }
         ]
       },
@@ -9951,33 +9974,72 @@
           },
           {
             "type": "state",
-            "property": "evidence_evacuation_seal",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "state",
-            "property": "clue_hymn",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "state",
-            "property": "clue_stakes",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "state",
-            "property": "clue_tunnel",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "state",
             "property": "bell_rung_imperfectly",
             "op": "==",
             "value": true
+          },
+          {
+            "logic": "OR",
+            "check": [
+              {
+                "type": "state",
+                "property": "evidence_evacuation_seal",
+                "op": "==",
+                "value": true
+              },
+              {
+                "type": "state",
+                "property": "clue_hymn",
+                "op": "==",
+                "value": true
+              },
+              {
+                "type": "state",
+                "property": "clue_stakes",
+                "op": "==",
+                "value": true
+              },
+              {
+                "type": "state",
+                "property": "clue_tunnel",
+                "op": "==",
+                "value": true
+              }
+            ]
+          },
+          {
+            "logic": "NOT",
+            "check": [
+              {
+                "logic": "AND",
+                "check": [
+                  {
+                    "type": "state",
+                    "property": "evidence_evacuation_seal",
+                    "op": "==",
+                    "value": true
+                  },
+                  {
+                    "type": "state",
+                    "property": "clue_hymn",
+                    "op": "==",
+                    "value": true
+                  },
+                  {
+                    "type": "state",
+                    "property": "clue_stakes",
+                    "op": "==",
+                    "value": true
+                  },
+                  {
+                    "type": "state",
+                    "property": "clue_tunnel",
+                    "op": "==",
+                    "value": true
+                  }
+                ]
+              }
+            ]
           }
         ]
       }
@@ -9986,7 +10048,7 @@
       "meta": {
         "title": "Giải thoát sau khi tái dựng sự thật",
         "buttonLabel": "Giải thoát",
-        "desc": "Bạn đã chuẩn bị những điều cần thiết để giải thoát và đối chiếu thêm các dấu vết, khôi phục phần ký ức còn thiếu."
+        "desc": "Bạn đã chuẩn bị những điều cần thiết để giải thoát, đối chiếu ít nhất hai nhóm bằng chứng độc lập và khôi phục phần ký ức còn thiếu."
       },
       "set": {
         "display": "show",
@@ -10007,7 +10069,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Cần hoàn tất các dấu mốc giải thoát, xác minh thêm bằng chứng và khôi phục ký ức."
+            "text": "Bạn cần hoàn tất các dấu mốc giải thoát, khôi phục ký ức và đối chiếu ít nhất hai nhóm bằng chứng độc lập."
           }
         ]
       },
@@ -10061,6 +10123,12 @@
             "property": "memory_reconstructed",
             "op": "==",
             "value": true
+          },
+          {
+            "type": "state",
+            "property": "evidence_corroborations",
+            "op": ">=",
+            "value": 2
           }
         ]
       }
