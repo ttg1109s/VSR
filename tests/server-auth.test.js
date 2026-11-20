@@ -11,11 +11,11 @@ async function availablePort() {
   return port;
 }
 
-async function startServer(extraEnv = {}) {
+async function startServer() {
   const port = await availablePort();
   const child = spawn(process.execPath, ['server/index.js'], {
     cwd: process.cwd(),
-    env: { ...process.env, VSR_HOST: '127.0.0.1', VSR_PORT: String(port), ...extraEnv },
+    env: { ...process.env, VSR_HOST: '0.0.0.0', VSR_PORT: String(port), VSR_API_TOKEN: 'test-secret' },
     stdio: 'ignore'
   });
   const base = `http://127.0.0.1:${port}/api`;
@@ -36,24 +36,21 @@ async function stopServer(child) {
   await new Promise(resolve => child.once('exit', resolve));
 }
 
-test('non-loopback deployment rejects unauthenticated snapshot, command, demo and SSE requests', async () => {
-  const { child, base } = await startServer({ VSR_HOST: '0.0.0.0', VSR_API_TOKEN: 'test-secret' });
+test('non-loopback deployment rejects unauthenticated protected HTTP routes and SSE', async () => {
+  const { child, base } = await startServer();
   try {
-    const health = await fetch(`${base}/health`);
-    assert.equal(health.status, 200);
-
-    for (const [url, options] of [
+    assert.equal((await fetch(`${base}/health`)).status, 200);
+    const routes = [
       [`${base}/snapshot`, {}],
       [`${base}/demo-scenario`, {}],
       [`${base}/events`, {}],
       [`${base}/command`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' }]
-    ]) {
-      const response = await fetch(url, options);
-      assert.equal(response.status, 401, `${url} must require authentication`);
+    ];
+    for (const [url, options] of routes) {
+      assert.equal((await fetch(url, options)).status, 401, `${url} must require authentication`);
     }
-
-    for (const url of [`${base}/snapshot`, `${base}/demo-scenario`]) {
-      const response = await fetch(url, { headers: { authorization: 'Bearer test-secret' } });
+    for (const route of ['snapshot', 'demo-scenario']) {
+      const response = await fetch(`${base}/${route}`, { headers: { authorization: 'Bearer test-secret' } });
       assert.equal(response.status, 200);
     }
   } finally {
