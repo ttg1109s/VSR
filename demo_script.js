@@ -4349,25 +4349,7 @@
         "readDesc": true
       },
       "effect": {
-        "normal": [
-          {
-            "type": "notify",
-            "title": "Tần số chưa ổn định",
-            "level": "warning",
-            "text": "Bạn nhận ra cuộn tinh thể đang phát ra dao động cùng tần số với radio. Tuy nhiên, khi nó còn nằm trong túi, tín hiệu vẫn quá yếu để tách giọng nói khỏi nhiễu. Có lẽ cầm nó lên xem thử?",
-            "req": {
-              "logic": "AND",
-              "check": [
-                {
-                  "type": "item",
-                  "subtype": "inventory",
-                  "op": "has",
-                  "value": "radio_crystal"
-                }
-              ]
-            }
-          }
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "set",
@@ -4392,6 +4374,25 @@
             "subtype": "state",
             "target": "identity_verified_partial",
             "value": true
+          }
+        ],
+        "fail": [
+          {
+            "type": "notify",
+            "title": "Tần số chưa ổn định",
+            "level": "warning",
+            "text": "Bạn nhận ra cuộn tinh thể đang phát ra dao động cùng tần số với radio. Tuy nhiên, khi nó còn nằm trong túi, tín hiệu vẫn quá yếu để tách giọng nói khỏi nhiễu. Có lẽ cầm nó lên xem thử?",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "item",
+                  "subtype": "inventory",
+                  "op": "has",
+                  "value": "radio_crystal"
+                }
+              ]
+            }
           }
         ]
       },
