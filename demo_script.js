@@ -4001,6 +4001,23 @@
                 }
               ]
             }
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "info",
+            "text": "Tôi nhìn bãi cọc và chiếc cọc gỗ trống tại vị trí thứ mười hai cảm thấy nghẹn lại.",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "state",
+                  "property": "knows_twelve",
+                  "op": "==",
+                  "value": true
+                }
+              ]
+            }
           }
         ]
       }
