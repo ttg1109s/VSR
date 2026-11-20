@@ -8763,13 +8763,6 @@
             "subtype": "toast",
             "level": "success",
             "text": "Radio chỉ bắt được một đoạn âm thanh. Hãy đối chiếu tín hiệu bằng cuộn băng, rồi ổn định mạch để xác minh giọng nói."
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_diagnose_radio",
-            "property": "display",
-            "value": "hide"
           }
         ],
         "fail": [
