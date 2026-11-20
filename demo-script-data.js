@@ -1,4 +1,6 @@
 import { readFileSync } from 'node:fs';
 
-// Canonical demo scenario remains JSON text in demo_script.js (extension intentionally retained).
-export const DEMO_SCRIPT = JSON.parse(readFileSync(new URL('./demo_script.js', import.meta.url), 'utf8'));
+// The canonical demo scenario intentionally remains in demo_script.js.
+// It is JSON-shaped data with a JavaScript-style trailing semicolon.
+const source = readFileSync(new URL('./demo_script.js', import.meta.url), 'utf8').trim();
+export const DEMO_SCRIPT = JSON.parse(source.replace(/;\s*$/, ''));
