@@ -67,7 +67,7 @@ test('Memory has dedicated station Action and canonical release Action with flat
   assert.ok(station && ending);
   assert.equal(actions.action_choose_fate_memory, undefined);
   requirementChecks('action_reach_station_memory');
-  assert.ok(requirementChecks('action_reach_station_memory').some(c => c.property === 'school_choice' && c.value === 'ký ức'));
+  assert.ok(requirementChecks('action_reach_station_memory').some(c => c.property === 'school_choice' && c.value === 'ký ức')));
   assert.ok(ending.requirement.check.some(branch => branch.logic === 'AND' && branch.check?.some(c => c.property === 'school_choice' && c.value === 'ký ức'));
 });
 
@@ -122,10 +122,11 @@ test('commitment updates branch Action visibility in both directions', () => {
 
 
 test('demo consolidates redundant item pickup Actions', () => {
-  for (const id of ['action_find_classroom_supplies', 'action_find_cellar_components', 'action_find_mill_components']) assert.ok(actions[id], `Missing consolidated Action ${id}`);
-  for (const id of ['action_find_radio_toolkit','action_find_tracing_paper','action_find_inspection_loupe','action_find_insulated_wire','action_find_spare_fuse','action_find_clockwork_spring','action_find_gear_pin']) assert.equal(actions[id], undefined, `Expected removed pickup Action ${id}`);
+  for (const id of ['action_find_classroom_supplies', 'action_find_inspection_loupe', 'action_find_cellar_components', 'action_find_mill_components']) assert.ok(actions[id], `Missing consolidated Action ${id}`);
+  for (const id of ['action_find_radio_toolkit','action_find_tracing_paper','action_find_insulated_wire','action_find_spare_fuse','action_find_clockwork_spring','action_find_gear_pin']) assert.equal(actions[id], undefined, `Expected removed pickup Action ${id}`);
   const school = actions.action_find_classroom_supplies.effect.pass;
-  for (const item of ['radio_toolkit','tracing_paper','inspection_loupe']) assert.ok(school.some(e=>e.type==='item'&&e.subtype==='add'&&e.target===item));
+  for (const item of ['radio_toolkit','tracing_paper']) assert.ok(school.some(e=>e.type==='item'&&e.subtype==='add'&&e.target===item));
+  assert.ok(actions.action_find_inspection_loupe.effect.pass.some(e=>e.type==='item'&&e.subtype==='add'&&e.target==='inspection_loupe'));
   const cellar = actions.action_find_cellar_components.effect.pass;
   for (const item of ['insulated_wire','spare_fuse']) assert.ok(cellar.some(e=>e.type==='item'&&e.subtype==='add'&&e.target===item));
   const mill = actions.action_find_mill_components.effect.pass;
