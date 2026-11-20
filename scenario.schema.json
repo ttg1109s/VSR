@@ -4054,26 +4054,49 @@
                   "properties": {
                     "subtype": {
                       "const": "hand"
+                    },
+                    "op": {
+                      "const": "=="
                     }
                   },
                   "required": [
-                    "subtype"
+                    "subtype",
+                    "op"
                   ]
                 },
                 "then": {
                   "properties": {
-                    "op": {
-                      "enum": [
-                        "==",
-                        "has",
-                        "!has"
-                      ]
-                    },
                     "value": {
                       "type": "array",
                       "items": {
                         "type": "string"
                       }
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "subtype": {
+                      "const": "hand"
+                    },
+                    "op": {
+                      "enum": [
+                        "has",
+                        "!has"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "subtype",
+                    "op"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "value": {
+                      "type": "string"
                     }
                   }
                 }
