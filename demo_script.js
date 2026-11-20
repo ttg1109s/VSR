@@ -4148,9 +4148,9 @@ export const DEMO_SCRIPT = {
     },
     "action_choose_fate": {
       "meta": {
-        "title": "Quyết định số phận",
+        "title": "Giải phóng tại sân ga",
         "buttonLabel": "Giải phóng",
-        "desc": "Sân ga 03:17 là điểm cuối của tuyến sơ tán và cũng là nơi những lời kể rời rạc hội tụ. Những gì được tìm thấy trong giếng, nhà nguyện, trường học và kho hồ sơ cho thấy ký ức của làng đã bị thay đổi có chủ đích. Quyết định ở đây không đơn thuần là chọn một lối ra; nó xác định liệu sự thật được trả lại, bị chôn vùi hay tiếp tục tồn tại như một tiếng vọng."
+        "desc": "Hai tuyến bằng chứng và ký ức đều có thể dẫn đến giải phóng. Điều kiện của từng tuyến được giữ nguyên."
       },
       "set": {
         "display": "show",
@@ -4176,76 +4176,89 @@ export const DEMO_SCRIPT = {
         ]
       },
       "requirement": {
-        "ref": "release_ready"
-      }
-    },
-    "action_choose_fate_memory": {
-      "meta": {
-        "title": "Giải thoát — tuyến ký ức",
-        "buttonLabel": "Giải phóng",
-        "desc": "Dựa trên ký ức nhân chứng, dấu đường hầm và những gì đã khôi phục, bạn chọn giải phóng người bị mắc kẹt."
-      },
-      "set": {
-        "display": "hide",
-        "requirement": true,
-        "readDesc": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "goto",
-            "subtype": "end",
-            "target": "ending_release"
-          }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warning",
-            "text": "Tuyến Memory cần rung chuông, mở kho hồ sơ và khôi phục dấu đường hầm, thánh ca cùng vòng cọc."
-          }
-        ]
-      },
-      "requirement": {
-        "logic": "AND",
+        "logic": "OR",
         "check": [
           {
-            "type": "state",
-            "property": "school_choice",
-            "op": "==",
-            "value": "ký ức"
+            "logic": "AND",
+            "check": [
+              {
+                "type": "state",
+                "property": "bell_rung",
+                "op": "==",
+                "value": true
+              },
+              {
+                "type": "state",
+                "property": "archive_open",
+                "op": "==",
+                "value": true
+              },
+              {
+                "type": "state",
+                "property": "evidence_evacuation_seal",
+                "op": "==",
+                "value": true
+              },
+              {
+                "type": "state",
+                "property": "clue_hymn",
+                "op": "==",
+                "value": true
+              },
+              {
+                "type": "state",
+                "property": "clue_stakes",
+                "op": "==",
+                "value": true
+              },
+              {
+                "type": "state",
+                "property": "clue_tunnel",
+                "op": "==",
+                "value": true
+              }
+            ]
           },
           {
-            "type": "state",
-            "property": "bell_rung",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "state",
-            "property": "archive_open",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "state",
-            "property": "clue_tunnel",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "state",
-            "property": "clue_hymn",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "state",
-            "property": "clue_stakes",
-            "op": "==",
-            "value": true
+            "logic": "AND",
+            "check": [
+              {
+                "type": "state",
+                "property": "school_choice",
+                "op": "==",
+                "value": "ký ức"
+              },
+              {
+                "type": "state",
+                "property": "bell_rung",
+                "op": "==",
+                "value": true
+              },
+              {
+                "type": "state",
+                "property": "archive_open",
+                "op": "==",
+                "value": true
+              },
+              {
+                "type": "state",
+                "property": "clue_tunnel",
+                "op": "==",
+                "value": true
+              },
+              {
+                "type": "state",
+                "property": "clue_hymn",
+                "op": "==",
+                "value": true
+              },
+              {
+                "type": "state",
+                "property": "clue_stakes",
+                "op": "==",
+                "value": true
+              }
+            ]
           }
         ]
       }
@@ -5712,7 +5725,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "set",
             "subtype": "action",
-            "target": "action_choose_fate_memory",
+            "target": "action_choose_fate",
             "property": "display",
             "value": "hide"
           },
@@ -6080,7 +6093,7 @@ export const DEMO_SCRIPT = {
           {
             "type": "set",
             "subtype": "action",
-            "target": "action_choose_fate_memory",
+            "target": "action_choose_fate",
             "property": "display",
             "value": "show"
           },
