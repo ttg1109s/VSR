@@ -47,6 +47,7 @@ export const STATE_SCHEMA = Object.freeze({
   stopEffectWhenChat: ['runtime', 'config.stopEffectWhenChat'],
 
   // Global variables live under state.global after Loader normalization.
+  'globalState.title': ['runtime', 'global.[id].title'],
   'globalState.type': ['runtime', 'global.[id].type'],
   'globalState.value': ['runtime', 'global.[id].value'],
 

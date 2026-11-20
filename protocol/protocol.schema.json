@@ -108,6 +108,33 @@
                 "entryCharacter": {
                   "type": "string",
                   "description": "Current runtime identity; may change while Faker is active."
+                },
+                "global": {
+                  "type": "object",
+                  "description": "Runtime global states. Each state includes its type, value, and optional human-readable title.",
+                  "additionalProperties": {
+                    "type": "object",
+                    "required": [
+                      "type",
+                      "value"
+                    ],
+                    "properties": {
+                      "title": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "boolean",
+                          "number",
+                          "string"
+                        ]
+                      },
+                      "value": {}
+                    },
+                    "additionalProperties": true
+                  }
                 }
               }
             },

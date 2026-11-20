@@ -28,199 +28,248 @@ export const DEMO_SCRIPT = {
   "globalStates": {
     "clue_lantern": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Đèn lồng"
     },
     "heard_bell": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Đã nghe tiếng chuông"
     },
     "found_guestbook": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Tìm thấy sổ khách"
     },
     "knows_twelve": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Biết con số mười hai"
     },
     "truth_fragments": {
       "type": "number",
-      "value": 0
+      "value": 0,
+      "title": "Mảnh sự thật"
     },
     "school_choice": {
       "type": "string",
-      "value": "undecided"
+      "value": "undecided",
+      "title": "Lựa chọn trường học"
     },
     "clue_village_notice": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Thông báo làng"
     },
     "clue_tape": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Cuộn băng"
     },
     "clue_photo": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Bức ảnh"
     },
     "clue_roster": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Danh sách lớp"
     },
     "clue_seat_mark": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Dấu trên ghế"
     },
     "clue_class_clock": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Đồng hồ lớp"
     },
     "mill_powered": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Nhà máy có điện"
     },
     "archive_open": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Kho lưu trữ mở"
     },
     "voice_revealed": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Giọng nói được hé lộ"
     },
     "clue_tunnel": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Manh mối đường hầm"
     },
     "clue_well": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Manh mối giếng"
     },
     "bell_rung": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Chuông đã rung"
     },
     "clue_hymn": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Bài thánh ca"
     },
     "clue_stakes": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Các cọc gỗ"
     },
     "evidence_hidden_room": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Bằng chứng phòng kín"
     },
     "evidence_evacuation_film": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Phim sơ tán"
     },
     "evidence_evacuation_seal": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Con dấu sơ tán"
     },
     "room7_confirmed": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Xác nhận phòng 7"
     },
     "room7_lock_damaged": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Khóa phòng 7 hỏng"
     },
     "room7_key_damaged": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Chìa khóa phòng 7 hư"
     },
     "room7_key_broken": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Chìa khóa phòng 7 gãy"
     },
     "player_panicked": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Người chơi hoảng loạn"
     },
     "memory_reconstructed": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Ký ức tái dựng"
     },
     "lantern_damaged": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Đèn lồng hư hại"
     },
     "radio_damaged": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Radio hư hại"
     },
     "map_incomplete": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Bản đồ chưa hoàn chỉnh"
     },
     "mill_repaired_partial": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Nhà máy sửa chữa một phần"
     },
     "bell_rung_imperfectly": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Chuông rung không hoàn chỉnh"
     },
     "bell_signal_distorted": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Tín hiệu chuông méo"
     },
     "archive_partial": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Kho lưu trữ mở một phần"
     },
     "linh_private_testimony": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Lời khai riêng của Linh"
     },
     "npc_avoids_player": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "NPC tránh người chơi"
     },
     "forest_route_partial": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Đường rừng chưa hoàn chỉnh"
     },
     "radio_signal_partial": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Tín hiệu radio yếu"
     },
     "identity_verified_partial": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Danh tính xác minh một phần"
     },
     "ticket_verified": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Vé đã xác minh"
     },
     "evidence_verified": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Bằng chứng đã xác minh"
     },
     "memory_reward_tunnel": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Ký ức phần thưởng đường hầm"
     },
     "guestbook_partial": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Sổ khách chưa hoàn chỉnh"
     },
     "hymn_partial": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Thánh ca chưa hoàn chỉnh"
     },
     "manifest_partial": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Danh sách vận chuyển chưa hoàn chỉnh"
     },
     "clue_tunnel_partial": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Manh mối đường hầm chưa đủ"
     },
     "clue_roster_verified": {
       "type": "boolean",
-      "value": false
+      "value": false,
+      "title": "Danh sách lớp đã xác minh"
     }
   },
   "templates": {

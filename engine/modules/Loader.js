@@ -57,6 +57,9 @@ export const LoaderSystem = {
 
         state.meta = JSON.parse(JSON.stringify(script.meta || {}));
         state.global = JSON.parse(JSON.stringify(script.globalStates || {}));
+        for (const [globalStateId, globalState] of Object.entries(state.global)) {
+            if (typeof globalState.title !== 'string' || !globalState.title.trim()) globalState.title = globalStateId;
+        }
         state.characters = JSON.parse(JSON.stringify(script.characters || {}));
         state.config = JSON.parse(JSON.stringify(script.config || {}));
 

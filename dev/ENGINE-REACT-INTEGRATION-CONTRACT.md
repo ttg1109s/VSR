@@ -68,7 +68,7 @@ Adapter không chịu trách nhiệm:
 
 ### 2.3. React UI — presentation và ý định người dùng
 
-React chịu trách nhiệm:
+Global State projection: mỗi entry trong `snapshot.state.global` có `type`, `value` và `title` (tên hiển thị). UI nên dùng `title` để trình bày, đồng thời giữ `id` làm khóa kỹ thuật; scenario cũ không khai báo `title` sẽ được Engine chuẩn hóa thành chính ID.\n\nReact chịu trách nhiệm:
 
 - Hiển thị snapshot và các trạng thái presentation/session mà protocol cung cấp.
 - Chuyển thao tác người dùng thành command qua application integration layer.

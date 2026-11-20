@@ -314,7 +314,12 @@
               "string"
             ]
           },
-          "value": {}
+          "value": {},
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Human-readable display title for this global state."
+          }
         }
       }
     },
@@ -5286,8 +5291,12 @@
     },
     "requirement_node": {
       "oneOf": [
-        { "$ref": "#/definitions/requirement_check" },
-        { "$ref": "#/definitions/requirement_definition" }
+        {
+          "$ref": "#/definitions/requirement_check"
+        },
+        {
+          "$ref": "#/definitions/requirement_definition"
+        }
       ]
     },
     "requirement_definition": {

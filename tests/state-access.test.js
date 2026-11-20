@@ -27,7 +27,7 @@ test('StateAccess updates runtime values through its write API', () => {
   assert.deepEqual(engine.state.characters.player.inventory, ['key', 'map']);
 });
 
-test('source namespace remains read-only', () => {
+test('global state title is available through StateAccess', () => {\n  const engine = makeEngine();\n  engine.state.global = { clue: { title: 'Clue title', type: 'boolean', value: false } };\n  const state = createStateAccess(engine);\n  assert.equal(state.get('globalState.title', { id: 'clue' }), 'Clue title');\n});\n\ntest('source namespace remains read-only', () => {
   const state = createStateAccess(makeEngine());
   assert.throws(() => state.set('meta.title', 'Changed', {}, { namespace: 'source' }), {
     code: 'READ_ONLY_NAMESPACE'
