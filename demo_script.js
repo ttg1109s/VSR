@@ -644,16 +644,16 @@ export const DEMO_SCRIPT = {
         "autoInc": false,
         "status": [
             [0,
-              "Ánh sáng ổn định"
+              "Sáng ổn định"
             ],
             [33,
               "Ánh sáng yếu"
             ],
             [67,
-              "Sắp tắt"
+              "Chập chờn"
             ],
             [100,
-              "Ánh sáng tắt hoàn toàn"
+              "Tắt hoàn toàn"
             ]
           ]
       },
@@ -687,13 +687,13 @@ export const DEMO_SCRIPT = {
         "autoInc": false,
         "status": [
             [0,
-              "Trang còn rõ"
+              "Đọc rõ"
             ],
             [50,
               "Khó đọc"
             ],
             [100,
-              "Không còn đọc được"
+              "Không đọc được"
             ]
           ]
       },
@@ -720,16 +720,16 @@ export const DEMO_SCRIPT = {
         "autoInc": false,
         "status": [
             [0,
-              "Băng nguyên tín hiệu"
+              "Âm thanh rõ"
             ],
             [33,
-              "Có nhiễu nhẹ"
+              "Nhiễu nhẹ"
             ],
             [67,
-              "Sắp mất tín hiệu"
+              "Nhiễu nặng"
             ],
             [100,
-              "Mất tín hiệu hoàn toàn"
+              "Mất tín hiệu"
             ]
           ]
       },
@@ -762,7 +762,7 @@ export const DEMO_SCRIPT = {
               "Khó nhận dạng"
             ],
             [100,
-              "Dấu khắc mất hoàn toàn"
+              "Mất dấu khắc"
             ]
           ]
       },
@@ -799,7 +799,7 @@ export const DEMO_SCRIPT = {
               "Chưa lắp"
             ],
             [100,
-              "Quả lắc hỏng"
+              "Bị hỏng"
             ]
           ]
       },
@@ -826,16 +826,16 @@ export const DEMO_SCRIPT = {
         "autoInc": false,
         "status": [
             [0,
-              "Ảnh còn nguyên dấu"
+              "Ảnh rõ nét"
             ],
             [33,
-              "Mé rách lan rộng"
+              "Rách nhẹ"
             ],
             [67,
               "Khó đối chiếu"
             ],
             [100,
-              "Ảnh không thể phục dựng"
+              "Không phục dựng được"
             ]
           ]
       },
@@ -862,16 +862,16 @@ export const DEMO_SCRIPT = {
         "autoInc": false,
         "status": [
             [0,
-              "Răng khóa nguyên"
+              "Răng khóa tốt"
             ],
             [33,
               "Mòn nhẹ"
             ],
             [67,
-              "Khó xoay khóa"
+              "Khó xoay"
             ],
             [100,
-              "Không thể mở khóa"
+              "Khóa bị hỏng"
             ]
           ]
       },
@@ -899,7 +899,7 @@ export const DEMO_SCRIPT = {
               "Khó đối chiếu"
             ],
             [100,
-              "Không thể đọc bản đồ"
+              "Không đọc được"
             ]
           ]
       },
@@ -926,22 +926,22 @@ export const DEMO_SCRIPT = {
         "autoInc": false,
         "status": [
             [0,
-              "Đủ dụng cụ"
+              "Đầy đủ"
             ],
             [20,
-              "Thiếu/hao mòn nhẹ"
+              "Hao mòn nhẹ"
             ],
             [40,
-              "Dụng cụ xuống cấp"
+              "Xuống cấp"
             ],
             [60,
-              "Sắp không dùng được"
+              "Khó sử dụng"
             ],
             [80,
-              "Suy giảm nghiêm trọng"
+              "Hư hỏng nặng"
             ],
             [100,
-              "Bộ dụng cụ không hoạt động"
+              "Không sử dụng được"
             ]
           ]
       },
@@ -971,10 +971,10 @@ export const DEMO_SCRIPT = {
               "Cách điện tốt"
             ],
             [50,
-              "Nguy cơ hở dây"
+              "Sắp hở dây"
             ],
             [100,
-              "Dây mất cách điện"
+              "Hở điện"
             ]
           ]
       },
@@ -1001,13 +1001,13 @@ export const DEMO_SCRIPT = {
         "autoInc": false,
         "status": [
             [0,
-              "Cầu chì còn tốt"
+              "Còn tốt"
             ],
             [50,
-              "Khả năng chịu tải yếu"
+              "Chịu tải yếu"
             ],
             [100,
-              "Cầu chì hỏng"
+              "Bị hỏng"
             ]
           ]
       },
@@ -1034,13 +1034,13 @@ export const DEMO_SCRIPT = {
         "autoInc": false,
         "status": [
             [0,
-              "Độ đàn hồi tốt"
+              "Đàn hồi tốt"
             ],
             [50,
               "Lực hồi yếu"
             ],
             [100,
-              "Lò xo mất tác dụng"
+              "Mất đàn hồi"
             ]
           ]
       },
@@ -1067,16 +1067,16 @@ export const DEMO_SCRIPT = {
         "autoInc": false,
         "status": [
             [0,
-              "Bản can sạch"
+              "Giấy sạch"
             ],
             [33,
-              "Có vết chồng nét"
+              "Chồng nét"
             ],
             [67,
-              "Khó dùng để đối chiếu"
+              "Khó đối chiếu"
             ],
             [100,
-              "Không thể đối chiếu"
+              "Không đối chiếu được"
             ]
           ]
       },
@@ -1103,19 +1103,19 @@ export const DEMO_SCRIPT = {
         "autoInc": false,
         "status": [
             [0,
-              "Kính rõ"
+              "Quan sát rõ"
             ],
             [25,
-              "Bám bụi nhẹ"
+              "Bám bụi"
             ],
             [50,
-              "Độ phóng đại giảm"
+              "Phóng đại yếu"
             ],
             [75,
               "Khó quan sát"
             ],
             [100,
-              "Kính không còn sử dụng được"
+              "Không sử dụng được"
             ]
           ]
       },
@@ -1142,16 +1142,16 @@ export const DEMO_SCRIPT = {
         "autoInc": false,
         "status": [
             [0,
-              "Tần số ổn định"
+              "Thu sóng tốt"
             ],
             [33,
-              "Tín hiệu suy yếu"
+              "Tín hiệu yếu"
             ],
             [67,
-              "Gần mất khả năng thu"
+              "Thu sóng kém"
             ],
             [100,
-              "Không thu được tín hiệu"
+              "Mất tín hiệu"
             ]
           ]
       },
@@ -1178,13 +1178,13 @@ export const DEMO_SCRIPT = {
         "autoInc": false,
         "status": [
             [0,
-              "Dấu đóng rõ"
+              "Dấu rõ nét"
             ],
             [50,
               "Khó xác thực"
             ],
             [100,
-              "Không thể xác thực"
+              "Không xác thực được"
             ]
           ]
       },
@@ -1211,16 +1211,16 @@ export const DEMO_SCRIPT = {
         "autoInc": false,
         "status": [
             [0,
-              "Răng khóa nguyên"
+              "Răng khóa tốt"
             ],
             [33,
               "Mòn nhẹ"
             ],
             [67,
-              "Sắp không mở được"
+              "Khó xoay"
             ],
             [100,
-              "Không thể mở cửa"
+              "Không mở được"
             ]
           ]
       },
@@ -1250,13 +1250,13 @@ export const DEMO_SCRIPT = {
               "Khung hình rõ"
             ],
             [33,
-              "Trầy xước nhẹ"
+              "Trầy nhẹ"
             ],
             [67,
               "Khó phục dựng"
             ],
             [100,
-              "Không thể phục dựng hình"
+              "Không phục dựng được"
             ]
           ]
       },
@@ -1283,16 +1283,16 @@ export const DEMO_SCRIPT = {
         "autoInc": false,
         "status": [
             [0,
-              "Ghi chú đầy đủ"
+              "Ghi chú rõ"
             ],
             [33,
-              "Mực nhòe nhẹ"
+              "Mực nhòe"
             ],
             [67,
               "Khó giải mã"
             ],
             [100,
-              "Không thể giải mã"
+              "Không giải mã được"
             ]
           ]
       },
@@ -1319,13 +1319,13 @@ export const DEMO_SCRIPT = {
         "autoInc": false,
         "status": [
             [0,
-              "Mối nối tốt"
+              "Nối chắc"
             ],
             [50,
-              "Tiếp xúc chập chờn"
+              "Tiếp xúc yếu"
             ],
             [100,
-              "Mối nối đứt hoàn toàn"
+              "Đứt mối nối"
             ]
           ]
       },
@@ -1352,16 +1352,16 @@ export const DEMO_SCRIPT = {
         "autoInc": false,
         "status": [
             [0,
-              "Bản đối chiếu rõ"
+              "Dữ liệu rõ"
             ],
             [33,
-              "Một số dòng nhòe"
+              "Dòng bị nhòe"
             ],
             [67,
-              "Gần mất dữ liệu"
+              "Dữ liệu mờ"
             ],
             [100,
-              "Không thể xác minh dữ liệu"
+              "Không xác minh được"
             ]
           ]
       },
@@ -1388,7 +1388,7 @@ export const DEMO_SCRIPT = {
         "autoInc": false,
         "status": [
             [0,
-              "Chỉ hướng chính xác"
+              "Chỉ hướng chuẩn"
             ],
             [33,
               "Sai lệch nhẹ"
@@ -1397,7 +1397,7 @@ export const DEMO_SCRIPT = {
               "Khó định hướng"
             ],
             [100,
-              "Không thể định hướng"
+              "Mất phương hướng"
             ]
           ]
       },
@@ -1424,13 +1424,13 @@ export const DEMO_SCRIPT = {
         "autoInc": false,
         "status": [
             [0,
-              "Dấu niêm xác thực"
+              "Dấu rõ nét"
             ],
             [50,
-              "Dấu khó nhận"
+              "Dấu mờ"
             ],
             [100,
-              "Dấu niêm mất hiệu lực"
+              "Mất dấu"
             ]
           ]
       },
@@ -1460,10 +1460,10 @@ export const DEMO_SCRIPT = {
               "Chốt nguyên"
             ],
             [50,
-              "Biến dạng rõ"
+              "Cong lệch"
             ],
             [100,
-              "Chốt không còn giữ trục"
+              "Mất cố định"
             ]
           ]
       },
@@ -1493,13 +1493,13 @@ export const DEMO_SCRIPT = {
               "Danh sách rõ"
             ],
             [33,
-              "Một phần bị nhòe"
+              "Nhòe một phần"
             ],
             [67,
-              "Gần mất dữ liệu"
+              "Dữ liệu mờ"
             ],
             [100,
-              "Không thể đối chiếu danh sách"
+              "Không đối chiếu được"
             ]
           ]
       },
@@ -1526,13 +1526,13 @@ export const DEMO_SCRIPT = {
         "autoInc": false,
         "status": [
             [0,
-              "Vé còn nguyên"
+              "Vé nguyên vẹn"
             ],
             [50,
               "Khó xác minh"
             ],
             [100,
-              "Không thể xác minh vé"
+              "Không xác minh được"
             ]
           ]
       },
