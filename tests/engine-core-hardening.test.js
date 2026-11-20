@@ -1616,7 +1616,7 @@ test('LogicSystem preserves single-level requirement behavior', () => {
 test('radio actions are distributed across routers and optional branches preserve the crystal for full repair', () => {
   const radioIds = [
     'action_decode_broadcast', 'action_restore_radio_signal', 'action_restore_radio_signal_partial',
-    'action_diagnose_radio', 'action_repair_radio_toolkit', 'action_listen_static',
+    'action_repair_radio_toolkit', 'action_listen_static',
     'action_confront_voice', 'action_ground_with_radio', 'action_verify_route_from_radio',
     'action_find_classroom_supplies', 'action_find_cellar_components'
   ];
@@ -1637,7 +1637,6 @@ test('radio actions are distributed across routers and optional branches preserv
     action_find_classroom_supplies: ['scene_school_classroom_03', 'router_classroom_overview'],
     action_find_cellar_components: ['scene_inn_cellar', 'router_cellar_open'],
     action_restore_radio_signal_partial: ['scene_watermill', 'router_watermill_gear_inspected'],
-    action_diagnose_radio: ['scene_watermill', 'router_watermill_gear_inspected'],
     action_repair_radio_toolkit: ['scene_classroom_blackboard', 'router_classroom_blackboard'],
     action_listen_static: ['scene_inn', 'router_inn_hidden_room'],
     action_verify_route_from_radio: ['scene_levee_tunnel', 'router_tunnel_manifest_found'],
@@ -1645,8 +1644,18 @@ test('radio actions are distributed across routers and optional branches preserv
     action_ground_with_radio: ['scene_ghost_station', 'router_station_0317']
   });
   assert.deepEqual(DEMO_SCRIPT.templates.effects.consume_action_restore_radio_signal_partial.map(effect => effect.target),
-    ['radio_toolkit', 'insulated_wire', 'spare_fuse']);
+    ['radio_toolkit', 'radio_crystal', 'insulated_wire', 'spare_fuse']);
   assert.equal(DEMO_SCRIPT.templates.effects.consume_action_confront_voice, undefined);
+  const partialRadio = DEMO_SCRIPT.actions.action_restore_radio_signal_partial.effect.pass;
+  assert.ok(partialRadio.some(effect => effect.type === 'set' && effect.subtype === 'state' && effect.target === 'radio_damaged' && effect.value === true));
+  assert.ok(!partialRadio.some(effect => effect.type === 'set' && effect.subtype === 'state' && effect.target === 'voice_revealed'));
+  const listenStatic = DEMO_SCRIPT.actions.action_listen_static;
+  assert.ok(listenStatic.effect.pass.some(effect => effect.type === 'set' && effect.subtype === 'state' && effect.target === 'radio_static_matched' && effect.value === true));
+  assert.ok(listenStatic.effect.pass.some(effect => effect.type === 'set' && effect.subtype === 'action' && effect.target === 'action_repair_radio_toolkit' && effect.property === 'display' && effect.value === 'show'));
+  const repairRadio = DEMO_SCRIPT.actions.action_repair_radio_toolkit;
+  assert.ok(repairRadio.requirement.check.some(check => check.property === 'radio_static_matched' && check.value === true));
+  assert.ok(repairRadio.effect.pass.some(effect => effect.type === 'set' && effect.subtype === 'state' && effect.target === 'identity_verified_partial' && effect.value === true));
+  assert.ok(repairRadio.effect.pass.some(effect => effect.type === 'set' && effect.subtype === 'state' && effect.target === 'radio_signal_partial' && effect.value === false));
   const fullRepair = DEMO_SCRIPT.actions.action_restore_radio_signal.requirement.check;
   assert.ok(fullRepair.some(check => check.target === 'radio_crystal' && check.subtype === 'usage' && check.op === '<' && check.value === 1));
 });
