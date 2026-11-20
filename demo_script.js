@@ -280,6 +280,11 @@
       "type": "boolean",
       "value": false,
       "title": "Đối chiếu ảnh lớp"
+    },
+    "radio_static_matched": {
+      "type": "boolean",
+      "value": false,
+      "title": "Tín hiệu radio đã đối chiếu"
     }
   },
   "templates": {
@@ -605,7 +610,7 @@
           "value": 1
         }
       ],
-            "consume_action_restore_radio_signal": [
+      "consume_action_restore_radio_signal": [
         {
           "type": "item",
           "subtype": "usage",
@@ -822,6 +827,12 @@
           "type": "item",
           "subtype": "usage",
           "target": "radio_toolkit",
+          "value": 1
+        },
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "radio_crystal",
           "value": 1
         },
         {
@@ -2515,8 +2526,7 @@
             "action_stabilize_mill",
             "action_bypass_mill",
             "action_find_mill_components",
-            "action_restore_radio_signal_partial",
-            "action_diagnose_radio"
+            "action_restore_radio_signal_partial"
           ]
         }
       }
@@ -8699,7 +8709,7 @@
       "meta": {
         "title": "Khôi phục tín hiệu phát thanh tạm thời",
         "buttonLabel": "Sửa tạm",
-        "desc": "Tín hiệu yếu vẫn có thể được khôi phục, nhưng các vật liệu sẽ hao mòn thêm và kết quả không hoàn toàn ổn định."
+        "desc": "Khôi phục tạm tín hiệu bằng bộ dụng cụ, tinh thể, dây và cầu chì. Mạch chỉ bắt được một đoạn âm thanh; phải đối chiếu cuộn băng rồi ổn định radio ở bước tiếp theo."
       },
       "set": {
         "display": "show",
@@ -8731,18 +8741,6 @@
           {
             "type": "set",
             "subtype": "state",
-            "target": "voice_revealed",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "identity_verified_partial",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
             "target": "radio_damaged",
             "value": true
           },
@@ -8756,13 +8754,6 @@
           {
             "type": "set",
             "subtype": "action",
-            "target": "action_repair_radio_toolkit",
-            "property": "display",
-            "value": "show"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
             "target": "action_listen_static",
             "property": "display",
             "value": "show"
@@ -8771,7 +8762,14 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Radio chỉ bắt được một đoạn âm thanh. Cuộn băng hoặc phim có thể giúp nhận ra giọng nói."
+            "text": "Radio chỉ bắt được một đoạn âm thanh. Hãy đối chiếu tín hiệu bằng cuộn băng, rồi ổn định mạch để xác minh giọng nói."
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_diagnose_radio",
+            "property": "display",
+            "value": "hide"
           }
         ],
         "fail": [
@@ -8831,82 +8829,14 @@
         ]
       }
     },
-    "action_diagnose_radio": {
-      "meta": {
-        "title": "Kiểm tra radio bị hỏng",
-        "buttonLabel": "Kiểm tra radio",
-        "desc": "Tiếng rè phát ra từ chiếc radio ngắt quãng rồi tắt hẳn. Mùi linh kiện cháy còn vương trên lớp vỏ, nhưng bên trong vẫn có một âm thanh yếu ớt như đang cố truyền đi điều gì đó."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true,
-        "readDesc": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "radio_signal_partial",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_repair_radio_toolkit",
-            "property": "display",
-            "value": "show"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_listen_static",
-            "property": "display",
-            "value": "show"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_diagnose_radio",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Bạn đã xác định được radio hỏng ở đâu. Có thể sửa nó hoặc tìm bằng chứng thay thế."
-          }
-        ],
-        "fail": []
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "state",
-            "property": "radio_damaged",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "radio_toolkit"
-          }
-        ]
-      }
-    },
     "action_repair_radio_toolkit": {
       "meta": {
-        "title": "Sửa bộ dụng cụ radio",
-        "buttonLabel": "Sửa bộ dụng cụ",
-        "desc": "Sửa bộ dụng cụ và giảm mức hao mòn. Bạn không cần một bộ dụng cụ còn nguyên vẹn mới có thể thử."
+        "title": "Ổn định mạch radio",
+        "buttonLabel": "Sửa radio",
+        "desc": "Sau khi đối chiếu tín hiệu với cuộn băng, dùng bộ dụng cụ và dây cách điện để ổn định mạch radio. Đây là bước cuối của tuyến sửa tạm; khi hoàn tất, kết quả hội tụ với tuyến sửa hoàn chỉnh."
       },
       "set": {
-        "display": "show",
+        "display": "hide",
         "requirement": true,
         "readDesc": true
       },
@@ -8942,7 +8872,19 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Bộ dụng cụ đã được sửa. Bạn có thể dùng nó với những cơ cấu khác."
+            "text": "Mạch radio đã ổn định. Đoạn băng và tín hiệu khớp nhau; giọng nói cùng danh tính được xác minh sơ bộ. Tuyến sửa tạm đã hội tụ với tuyến sửa hoàn chỉnh."
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "identity_verified_partial",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "radio_signal_partial",
+            "value": false
           }
         ],
         "fail": []
@@ -8967,6 +8909,18 @@
             "subtype": "inventory",
             "op": "has",
             "value": "insulated_wire"
+          },
+          {
+            "type": "state",
+            "property": "radio_static_matched",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "radio_signal_partial",
+            "op": "==",
+            "value": true
           }
         ]
       }
@@ -8975,7 +8929,7 @@
       "meta": {
         "title": "Nghe tín hiệu nhiễu",
         "buttonLabel": "Nghe tín hiệu",
-        "desc": "Nghe phần tín hiệu còn lại và đối chiếu với băng ghi âm hoặc cuộn phim."
+        "desc": "Dùng cuộn băng ghi âm để đối chiếu đoạn tín hiệu yếu. Khi khớp được nhịp và giọng nói, bạn mới có thể sửa ổn định mạch radio."
       },
       "set": {
         "display": "show",
@@ -8997,12 +8951,6 @@
           },
           {
             "type": "set",
-            "subtype": "state",
-            "target": "identity_verified_partial",
-            "value": true
-          },
-          {
-            "type": "set",
             "subtype": "action",
             "target": "action_listen_static",
             "property": "display",
@@ -9012,7 +8960,20 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Đoạn tín hiệu yếu khớp với âm thanh trên cuộn băng."
+            "text": "Đoạn tín hiệu trên radio khớp với cuộn băng. Giọng nói đã được nhận diện sơ bộ; cần ổn định mạch trước khi xác minh hoàn tất."
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "radio_static_matched",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_repair_radio_toolkit",
+            "property": "display",
+            "value": "show"
           }
         ],
         "fail": [
@@ -9036,6 +8997,12 @@
             "subtype": "inventory",
             "op": "has",
             "value": "tape"
+          },
+          {
+            "type": "state",
+            "property": "radio_damaged",
+            "op": "==",
+            "value": true
           }
         ]
       }
