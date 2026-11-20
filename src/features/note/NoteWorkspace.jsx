@@ -62,7 +62,7 @@ export default function NoteWorkspace({ snapshot, open = false, onClose }) {
         group.label,
         state.type,
         state.value === null || state.value === undefined ? '' : String(state.value)
-      ].join(' ').toLocaleLowerCase().includes(query))
+      ].join(' ').toLocaleLowerCase().includes(query)))
     })).filter(group => group.states.length > 0);
   }, [states, search]);
 
