@@ -402,41 +402,130 @@ export class JsonProtocol{
  publishSnapshot(engine,reason='state.changed'){return this.commitState(engine,reason);}
  getEventsSince(rev=0){if(!Number.isInteger(rev)||rev<0)throw new TypeError('stateRevision must be non-negative.');const first=this.eventLog[0],gap=!!first&&first.stateRevision>rev+1;return{gap,currentRevision:this.stateRevision,currentStateRevision:this.stateRevision,events:gap?[]:this.eventLog.filter(e=>e.stateRevision>rev).map(event => cloneJsonValue(event))};}
  getEventsAfter(seq=0){if(!Number.isInteger(seq)||seq<0)throw new TypeError('sequence must be non-negative.');const first=this.eventLog[0]?.sequence??this.eventSequence+1,gap=seq<first-1;return{gap,currentSequence:this.eventSequence,currentStateRevision:this.stateRevision,events:gap?[]:this.eventLog.filter(e=>e.sequence>seq).map(event => cloneJsonValue(event))};}
- #remember(key,ack){this.commandResults.set(key,ack);if(this.commandResults.size>this.maxRememberedCommands)this.commandResults.delete(this.commandResults.keys().next().value);return cloneJsonValue(ack);}
- dispatch(command,context={}){const run=this.dispatchQueue.then(()=>this.#dispatch(command,context));this.dispatchQueue=run.then(()=>undefined,()=>undefined);return run;}
- async #dispatch(command,context){
-  if(!command||typeof command!=='object'||Array.isArray(command)||command.protocol!=='vsr'||command.protocolVersion!==this.protocolVersion||command.type!=='command'||typeof command.command!=='string')throw new TypeError('Invalid VSR command envelope.');
-  if(typeof command.commandId!=='string'||!command.commandId.trim())throw new TypeError('commandId is required.');
-  const expected=command.expectedStateRevision??command.expectedRevision;
-  if(expected!==undefined&&(!Number.isInteger(expected)||expected<0))throw new TypeError('expectedStateRevision must be non-negative.');
-  if(command.payload!==undefined&&(!command.payload||typeof command.payload!=='object'||Array.isArray(command.payload)))throw new TypeError('Command payload must be an object.');
-  const payload=command.payload===undefined?{}:cloneJsonValue(command.payload);
-
-  // Authorize before reading idempotency storage so rejected callers cannot
-  // replay a known commandId to retrieve a prior acknowledgement.
-  let authorized=true;
-  if(this.authorizeCommand) {
-   try { authorized=!!(await this.authorizeCommand({command:command.command,payload,context})); }
-   catch (_) { authorized=false; }
+ #remember(key, requestFingerprint, ack) {
+  this.commandResults.set(key, { requestFingerprint, ack: cloneJsonValue(ack) });
+  if (this.commandResults.size > this.maxRememberedCommands) {
+   this.commandResults.delete(this.commandResults.keys().next().value);
   }
-  const principalId=context?.principal?.id??context?.principalId??null;
-  if(this.requireAuthorization&&(principalId===null||String(principalId).trim()===''))authorized=false;
-  if(!authorized) {
-   return {protocol:'vsr',protocolVersion:this.protocolVersion,type:'ack',commandId:command.commandId,ok:false,error:{code:'FORBIDDEN'},revision:this.stateRevision,stateRevision:this.stateRevision};
-  }
-  const idempotencyKey=principalId===null?command.commandId:`${String(principalId)}:${command.commandId}`;
-  if(this.commandResults.has(idempotencyKey))return cloneJsonValue(this.commandResults.get(idempotencyKey));
-  if(expected!==undefined&&expected!==this.stateRevision)return this.#remember(idempotencyKey,{protocol:'vsr',protocolVersion:this.protocolVersion,type:'ack',commandId:command.commandId,ok:false,error:{code:'REVISION_CONFLICT',expected,actual:this.stateRevision},revision:this.stateRevision,stateRevision:this.stateRevision});
-  const handler=this.commandHandlers.get(command.command);
-  if(!handler)return this.#remember(idempotencyKey,{protocol:'vsr',protocolVersion:this.protocolVersion,type:'ack',commandId:command.commandId,ok:false,error:{code:'UNKNOWN_COMMAND',command:command.command},revision:this.stateRevision,stateRevision:this.stateRevision});
-  const revisionBefore=this.stateRevision;this.publish('command.accepted',{commandId:command.commandId,command:command.command});
-  try{const result=await handler(payload,context);await this.onCommandSuccess?.({command:command.command,payload,context,revisionBefore});this.publish('command.completed',{commandId:command.commandId,command:command.command});return this.#remember(idempotencyKey,{protocol:'vsr',protocolVersion:this.protocolVersion,type:'ack',commandId:command.commandId,ok:true,revision:this.stateRevision,stateRevision:this.stateRevision,result:result===undefined?null:cloneJsonValue(result)});}
-  catch(error){this.publish('command.failed',{commandId:command.commandId,command:command.command,code:error?.code||'COMMAND_FAILED',message:error?.message||String(error)});return this.#remember(idempotencyKey,{protocol:'vsr',protocolVersion:this.protocolVersion,type:'ack',commandId:command.commandId,ok:false,error:{code:error?.code||'COMMAND_FAILED',message:error?.message||String(error)},revision:this.stateRevision,stateRevision:this.stateRevision});}
+  return cloneJsonValue(ack);
  }
- createCommand(command,payload={}, {commandId,expectedRevision,expectedStateRevision}={}){
-  if(typeof command!=='string'||!command.trim()||!payload||typeof payload!=='object'||Array.isArray(payload))throw new TypeError('Invalid command name or payload.');
-  const expected=expectedStateRevision??expectedRevision;if(expected!==undefined&&(!Number.isInteger(expected)||expected<0))throw new TypeError('expectedStateRevision must be non-negative.');
-  const out={protocol:'vsr',protocolVersion:this.protocolVersion,type:'command',commandId:commandId||id('cmd',++this.commandSequence),command,payload:cloneJsonValue(payload)};
-  if(expected!==undefined)out.expectedStateRevision=expected;return out;
+ dispatch(command, context = {}) {
+  const run = this.dispatchQueue.then(() => this.#dispatch(command, context));
+  this.dispatchQueue = run.then(() => undefined, () => undefined);
+  return run;
+ }
+  async #dispatch(command, context) {
+    if (!command || typeof command !== 'object' || Array.isArray(command) ||
+        command.protocol !== 'vsr' || command.protocolVersion !== this.protocolVersion ||
+        command.type !== 'command' || typeof command.command !== 'string') {
+      throw new TypeError('Invalid VSR command envelope.');
+    }
+    if (typeof command.commandId !== 'string' || !command.commandId.trim()) {
+      throw new TypeError('commandId is required.');
+    }
+    const expected = command.expectedStateRevision ?? command.expectedRevision;
+    if (expected !== undefined && (!Number.isInteger(expected) || expected < 0)) {
+      throw new TypeError('expectedStateRevision must be non-negative.');
+    }
+    if (command.payload !== undefined && (!command.payload || typeof command.payload !== 'object' || Array.isArray(command.payload))) {
+      throw new TypeError('Command payload must be an object.');
+    }
+    const payload = command.payload === undefined ? {} : cloneJsonValue(command.payload);
+
+    // Authenticate/authorize before consulting idempotency state.
+    let authorized = true;
+    if (this.authorizeCommand) {
+      try {
+        authorized = !!(await this.authorizeCommand({ command: command.command, payload, context }));
+      } catch {
+        authorized = false;
+      }
+    }
+    const principalId = context?.principal?.id ?? context?.principalId ?? null;
+    if (this.requireAuthorization && (principalId === null || String(principalId).trim() === '')) authorized = false;
+    if (!authorized) {
+      return {
+        protocol: 'vsr', protocolVersion: this.protocolVersion, type: 'ack',
+        commandId: command.commandId, ok: false, error: { code: 'FORBIDDEN' },
+        revision: this.stateRevision, stateRevision: this.stateRevision
+      };
+    }
+
+    // Principal isolation prevents one caller from replaying another caller's
+    // result. A command ID reused with a different payload is rejected.
+    const idempotencyKey = principalId === null ? command.commandId : `${String(principalId)}:${command.commandId}`;
+    const requestFingerprint = JSON.stringify({ command: command.command, payload });
+    const previous = this.commandResults.get(idempotencyKey);
+    if (previous) {
+      if (previous.requestFingerprint !== requestFingerprint) {
+        return {
+          protocol: 'vsr', protocolVersion: this.protocolVersion, type: 'ack',
+          commandId: command.commandId, ok: false,
+          error: { code: 'IDEMPOTENCY_KEY_REUSED', message: 'commandId was already used for a different command payload.' },
+          revision: this.stateRevision, stateRevision: this.stateRevision
+        };
+      }
+      return cloneJsonValue(previous.ack);
+    }
+
+    // A stale revision is not an execution result. Do not cache it under the
+    // command ID; callers must refresh and explicitly decide whether to issue
+    // a new mutation with a new command ID.
+    if (expected !== undefined && expected !== this.stateRevision) {
+      return {
+        protocol: 'vsr', protocolVersion: this.protocolVersion, type: 'ack',
+        commandId: command.commandId, ok: false,
+        error: { code: 'REVISION_CONFLICT', expected, actual: this.stateRevision },
+        revision: this.stateRevision, stateRevision: this.stateRevision
+      };
+    }
+
+    const handler = this.commandHandlers.get(command.command);
+    if (!handler) {
+      return this.#remember(idempotencyKey, requestFingerprint, {
+        protocol: 'vsr', protocolVersion: this.protocolVersion, type: 'ack',
+        commandId: command.commandId, ok: false,
+        error: { code: 'UNKNOWN_COMMAND', command: command.command },
+        revision: this.stateRevision, stateRevision: this.stateRevision
+      });
+    }
+
+    const revisionBefore = this.stateRevision;
+    this.publish('command.accepted', { commandId: command.commandId, command: command.command });
+    try {
+      const result = await handler(payload, context);
+      await this.onCommandSuccess?.({ command: command.command, payload, context, revisionBefore });
+      this.publish('command.completed', { commandId: command.commandId, command: command.command });
+      return this.#remember(idempotencyKey, requestFingerprint, {
+        protocol: 'vsr', protocolVersion: this.protocolVersion, type: 'ack',
+        commandId: command.commandId, ok: true, revision: this.stateRevision,
+        stateRevision: this.stateRevision, result: result === undefined ? null : cloneJsonValue(result)
+      });
+    } catch (error) {
+      this.publish('command.failed', {
+        commandId: command.commandId, command: command.command,
+        code: error?.code || 'COMMAND_FAILED', message: error?.message || String(error)
+      });
+      return this.#remember(idempotencyKey, requestFingerprint, {
+        protocol: 'vsr', protocolVersion: this.protocolVersion, type: 'ack',
+        commandId: command.commandId, ok: false,
+        error: { code: error?.code || 'COMMAND_FAILED', message: error?.message || String(error) },
+        revision: this.stateRevision, stateRevision: this.stateRevision
+      });
+    }
+  }
+
+ createCommand(command, payload = {}, { commandId, expectedRevision, expectedStateRevision } = {}) {
+  if (typeof command !== 'string' || !command.trim() || !payload || typeof payload !== 'object' || Array.isArray(payload)) {
+   throw new TypeError('Invalid command name or payload.');
+  }
+  const expected = expectedStateRevision ?? expectedRevision;
+  if (expected !== undefined && (!Number.isInteger(expected) || expected < 0)) {
+   throw new TypeError('expectedStateRevision must be non-negative.');
+  }
+  const out = { protocol: 'vsr', protocolVersion: this.protocolVersion, type: 'command',
+   commandId: commandId || id('cmd', ++this.commandSequence), command, payload: cloneJsonValue(payload) };
+  if (expected !== undefined) out.expectedStateRevision = expected;
+  return out;
  }
 }
