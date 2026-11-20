@@ -2509,7 +2509,7 @@ export const DEMO_SCRIPT = {
     },
     "action_talk_mai": {
       "meta": {
-        "title": "Trò chuyện với Mai",
+        "title": "Mai",
         "buttonLabel": "Trò chuyện",
         "desc": "Mai đứng gần quảng trường nhưng luôn giữ khoảng cách với giếng đá. Những gì cô sẵn sàng kể thay đổi theo các manh mối bạn đã tìm được."
       },
@@ -6239,9 +6239,9 @@ export const DEMO_SCRIPT = {
     },
     "action_repair_room7_key": {
       "meta": {
-        "title": "Chỉnh lại chìa khóa phòng thứ bảy",
+        "title": "Chìa khóa phòng thứ bảy",
         "buttonLabel": "Chỉnh chìa khóa",
-        "desc": "Dùng bộ dụng cụ chỉnh lại đầu chìa. Chìa khóa vẫn giữ mức hao mòn đã có, không trở lại như mới."
+        "desc": "Đầu chìa số bảy đã cong sau những lần cố mở cửa. Những vết xước cũ vẫn còn nguyên, nhưng các rãnh kim loại có thể vừa khít với ổ khóa thêm một lần nữa."
       },
       "set": {
         "display": "show",
@@ -6503,9 +6503,9 @@ export const DEMO_SCRIPT = {
     },
     "action_dry_guestbook": {
       "meta": {
-        "title": "Làm khô sổ khách",
+        "title": "Sổ khách bị ẩm",
         "buttonLabel": "Làm khô sổ",
-        "desc": "Làm khô giấy và phục hồi độ đọc được."
+        "desc": "Hơi ẩm đã khiến những dòng chữ trên trang giấy nhòe đi. Một vài cái tên chỉ còn hiện ra dưới ánh đèn, trong khi mực ở những trang cuối dường như vẫn chưa khô hẳn."
       },
       "set": {
         "display": "show",
@@ -7112,7 +7112,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Xác minh tuyến rừng",
         "buttonLabel": "Đối chiếu tuyến",
-        "desc": "Dùng dấu sơn, tên trên tường hoặc danh sách vận chuyển để xác nhận tuyến đường, không cần dựa vào la bàn."
+        "desc": "Những vệt sơn trong rừng, cái tên trên tường đường hầm và danh sách vận chuyển dường như cùng chỉ về một hướng. Ba dấu vết vốn nằm ở những nơi cách xa nhau lại đang kể cùng một câu chuyện."
       },
       "set": {
         "display": "show",
@@ -7798,7 +7798,7 @@ export const DEMO_SCRIPT = {
     },
     "action_reconstruct_archive_record": {
       "meta": {
-        "title": "Tái dựng hồ sơ bị thiếu",
+        "title": "Hồ sơ sơ tán thiếu",
         "buttonLabel": "Tái dựng",
         "desc": "Đối chiếu danh sách đường hầm, cuộn phim và sổ điểm danh để khôi phục bản ghi."
       },
@@ -8598,7 +8598,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Kiểm tra radio bị hỏng",
         "buttonLabel": "Kiểm tra radio",
-        "desc": "Kiểm tra mạch điện để biết nên sửa radio hay tìm bằng chứng khác thay thế."
+        "desc": "Tiếng rè phát ra từ chiếc radio ngắt quãng rồi tắt hẳn. Mùi linh kiện cháy còn vương trên lớp vỏ, nhưng bên trong vẫn có một âm thanh yếu ớt như đang cố truyền đi điều gì đó."
       },
       "set": {
         "display": "show",
@@ -8923,7 +8923,7 @@ export const DEMO_SCRIPT = {
     },
     "action_recover_with_mai": {
       "meta": {
-        "title": "Nói chuyện với Mai để lấy lại bình tĩnh",
+        "title": "Cuộc trò chuyện với Mai",
         "buttonLabel": "Nói chuyện với Mai",
         "desc": "Một cuộc nói chuyện an toàn giúp An bình tĩnh trở lại và tránh ép Mai phải khai điều cô chưa sẵn sàng kể."
       },
@@ -9085,9 +9085,9 @@ export const DEMO_SCRIPT = {
     },
     "action_recover_character_trust": {
       "meta": {
-        "title": "Khôi phục lòng tin nhân chứng",
+        "title": "Lòng tin nhân chứng",
         "buttonLabel": "Lấy lại lòng tin",
-        "desc": "Đối chiếu bằng chứng và tôn trọng lời khai riêng để xây dựng lại lòng tin."
+        "desc": "Những người từng tin bạn giờ đã có lý do để im lặng. Bằng chứng có thể làm sáng tỏ sự thật, nhưng chỉ sự tôn trọng dành cho những điều họ chưa muốn kể mới giúp nối lại mối quan hệ."
       },
       "set": {
         "display": "show",
@@ -9166,7 +9166,7 @@ export const DEMO_SCRIPT = {
     },
     "action_reconstruct_manifest": {
       "meta": {
-        "title": "Tái dựng danh sách vận chuyển",
+        "title": "Danh sách vận chuyển",
         "buttonLabel": "Tái dựng",
         "desc": "Dùng tên trên tường, cuộn phim hoặc hồ sơ lưu trữ để khôi phục danh sách vận chuyển bị thiếu."
       },
@@ -9438,7 +9438,7 @@ export const DEMO_SCRIPT = {
     },
     "action_verify_tunnel_clue": {
       "meta": {
-        "title": "Xác minh dấu đường hầm",
+        "title": "Dấu đường hầm",
         "buttonLabel": "Xác minh",
         "desc": "Dùng danh sách vận chuyển, hồ sơ lưu trữ hoặc tên trên tường để xác nhận manh mối đường hầm."
       },
