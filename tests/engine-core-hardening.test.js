@@ -1587,3 +1587,39 @@ test('requirement failure publishes an unlocked Action snapshot after notify eff
     engine.dispose();
   }
 });
+
+
+test('LogicSystem evaluates nested requirement groups recursively', () => {
+  const fake = {
+    src: {},
+    checkSingle(check) { return { pass: check.pass === true }; },
+    evaluateRequirementNode: LogicSystem.evaluateRequirementNode
+  };
+  const requirement = {
+    logic: 'AND',
+    check: [
+      { type: 'mock', pass: true },
+      { logic: 'OR', check: [
+        { type: 'mock', pass: false },
+        { logic: 'AND', check: [
+          { type: 'mock', pass: true },
+          { type: 'mock', pass: true }
+        ] }
+      ] }
+    ]
+  };
+  assert.deepEqual(LogicSystem.checkReq.call(fake, requirement), { pass: true });
+  requirement.check[1].check[1].check[1].pass = false;
+  assert.deepEqual(LogicSystem.checkReq.call(fake, requirement), { pass: false });
+});
+
+test('LogicSystem preserves single-level requirement behavior', () => {
+  const fake = {
+    src: {},
+    checkSingle(check) { return { pass: check.pass === true }; },
+    evaluateRequirementNode: LogicSystem.evaluateRequirementNode
+  };
+  assert.deepEqual(LogicSystem.checkReq.call(fake, {
+    logic: 'OR', check: [{ type: 'mock', pass: false }, { type: 'mock', pass: true }]
+  }), { pass: true });
+});
