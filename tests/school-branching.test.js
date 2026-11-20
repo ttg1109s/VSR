@@ -68,7 +68,7 @@ test('Memory has dedicated station Action and canonical release Action with flat
   assert.equal(actions.action_choose_fate_memory, undefined);
   requirementChecks('action_reach_station_memory');
   assert.ok(requirementChecks('action_reach_station_memory').some(c => c.property === 'school_choice' && c.value === 'ký ức')));
-  assert.ok(ending.requirement.check.some(branch => branch.logic === 'AND' && branch.check?.some(c => c.property === 'school_choice' && c.value === 'ký ức'));
+  assert.ok(ending.requirement.check.some(branch => branch.logic === 'AND' && branch.check?.some(c => c.property === 'school_choice' && c.value === 'ký ức')));
 });
 
 test('Evidence progression templates remain flat and evidence-gated', () => {
