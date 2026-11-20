@@ -226,17 +226,9 @@ export const DEMO_SCRIPT = {
       "type": "boolean",
       "value": false
     },
-    "memory_fragmented": {
-      "type": "boolean",
-      "value": false
-    },
     "memory_reconstructed": {
       "type": "boolean",
       "value": false
-    },
-    "forced_attempt_count": {
-      "type": "number",
-      "value": 0
     },
     "lantern_damaged": {
       "type": "boolean",
@@ -346,10 +338,6 @@ export const DEMO_SCRIPT = {
       "type": "boolean",
       "value": false
     },
-    "recovery_milestone": {
-      "type": "number",
-      "value": 0
-    },
     "memory_reward_roster": {
       "type": "boolean",
       "value": false
@@ -370,19 +358,11 @@ export const DEMO_SCRIPT = {
       "type": "boolean",
       "value": false
     },
-    "composure_recovery_reward": {
-      "type": "boolean",
-      "value": false
-    },
     "guestbook_partial": {
       "type": "boolean",
       "value": false
     },
     "hymn_partial": {
-      "type": "boolean",
-      "value": false
-    },
-    "film_damaged": {
       "type": "boolean",
       "value": false
     },
@@ -406,10 +386,6 @@ export const DEMO_SCRIPT = {
       "type": "boolean",
       "value": false
     },
-    "spare_fuse_used_up": {
-      "type": "boolean",
-      "value": false
-    },
     "map_verified": {
       "type": "boolean",
       "value": false
@@ -423,10 +399,6 @@ export const DEMO_SCRIPT = {
       "value": false
     },
     "mill_powered_partial": {
-      "type": "boolean",
-      "value": false
-    },
-    "tunnel_entry_damaged": {
       "type": "boolean",
       "value": false
     },
@@ -734,12 +706,7 @@ export const DEMO_SCRIPT = {
           ]
       },
       "stats": {
-        "clarity": {
-          "current": 3,
-          "max": 5,
-          "label": "Độ rõ âm thanh",
-          "color": "#8BC5FF"
-        }
+
       },
       "effect": {
         "use": []
@@ -767,12 +734,7 @@ export const DEMO_SCRIPT = {
           ]
       },
       "stats": {
-        "identification": {
-          "current": 4,
-          "max": 5,
-          "label": "Khả năng nhận dạng",
-          "color": "#A78BFA"
-        }
+
       },
       "effect": {
         "use": [
@@ -1261,12 +1223,7 @@ export const DEMO_SCRIPT = {
           ]
       },
       "stats": {
-        "clarity": {
-          "current": 3,
-          "max": 5,
-          "label": "Độ rõ hình ảnh",
-          "color": "#8BC5FF"
-        }
+
       },
       "effect": {
         "use": []
