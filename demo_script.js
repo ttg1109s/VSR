@@ -1393,7 +1393,31 @@
         ]
       },
       "effect": {
-        "use": []
+        "use": [],
+        "equip": [
+          {
+            "type": "characters",
+            "subtype": "edit_stats",
+            "target": "player",
+            "property": "composure",
+            "field": "current",
+            "mode": "add",
+            "value": -1,
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "set",
+                  "subtype": "action",
+                  "target": "action_confront_voice",
+                  "property": "display",
+                  "op": "==",
+                  "value": "show"
+                }
+              ]
+            }
+          }
+        ]
       }
     },
     "well_badge": {
