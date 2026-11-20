@@ -4595,7 +4595,7 @@
       "meta": {
         "title": "Tiếng vọng thứ mười hai",
         "buttonLabel": "Ở lại và lắng nghe",
-        "desc": "Tiếng vọng thứ mười hai không thuộc về bản ghi phát thanh thông thường. Nó gắn với người đã bị xóa khỏi danh sách và vẫn còn hiện diện trong ký ức của một số nhân chứng. Ở lại đồng nghĩa với việc chấp nhận nghe hết câu chuyện, kể cả khi ranh giới giữa người sống và ký ức không còn rõ ràng."
+        "desc": "Tiếng vọng thứ mười hai không phải một bản ghi thông thường. Giữa những tiếng nhiễu, bạn nghe thấy giọng của người mà mình luôn tin tưởng nhất. Bản ghi chứa lời thú nhận về người thứ mười hai — và một việc kinh hoàng mà người ấy đã làm, nhưng chưa từng kể cho bạn."
       },
       "set": {
         "display": "show",
@@ -12891,7 +12891,7 @@
     },
     "ending_echo": {
       "title": "Tiếng Vọng Thứ Mười Hai",
-      "desc": "Bạn trả lời tiếng loa. Ngôi làng nhận ra bạn là mảnh ký ức bị thiếu và giữ bạn lại để lấp đầy chỗ trống."
+      "desc": "Giữa những tiếng nhiễu, bạn nhận ra giọng nói quen thuộc của người mình luôn tin tưởng nhất. “Anh bảo tôi xóa tên cô ấy. Anh nói nếu còn ai nhớ đến cô ấy, chúng ta sẽ không bao giờ rời khỏi nơi này.” Một khoảng im lặng. “Nhưng anh chưa từng cứu cô ấy. Anh là người đã khóa cánh cửa.” Bản ghi kết thúc. Bạn nhận ra người đã dẫn mình đi tìm sự thật có thể chính là kẻ gây ra bi kịch — và mọi lời họ từng nói với bạn đều có thể là một lời nói dối."
     },
     "ending_depart": {
       "title": "Chuyến Tàu Lúc 03:17",
