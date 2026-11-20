@@ -5,7 +5,7 @@ import { createStateAccess } from '../state/StateAccess.js';
 function makeEngine() {
   return {
     src: { meta: { title: 'Scenario' } },
-    state: { sceneId: 'start', characters: { player: { inventory: ['key'] } } },
+    state: { sceneId: 'start', characters: { player: { inventory: ['key'] } }, global: { clue: { title: 'Clue title', type: 'boolean', value: false } } },
     chatState: null,
     pendingPasswordAction: null,
     commitState() {}
@@ -29,7 +29,6 @@ test('StateAccess updates runtime values through its write API', () => {
 
 test('global state title is available through StateAccess', () => {
   const engine = makeEngine();
-  engine.state.global = { clue: { title: 'Clue title', type: 'boolean', value: false } };
   const state = createStateAccess(engine);
   assert.equal(state.get('globalState.title', { id: 'clue' }), 'Clue title');
 });
