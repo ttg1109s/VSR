@@ -9080,9 +9080,9 @@
     },
     "action_rest_at_inn": {
       "meta": {
-        "title": "Nghỉ tại nhà trọ",
-        "buttonLabel": "Nghỉ",
-        "desc": "Nghỉ ngắn trong không gian an toàn để phục hồi Composure."
+        "title": "Lấy lại bình tĩnh",
+        "buttonLabel": "Nghỉ một lát",
+        "desc": "An nghỉ một lát, chờ cho cảm giác bất an dịu xuống."
       },
       "set": {
         "display": "show",
