@@ -10572,11 +10572,11 @@
           "line": [
             {
               "char_id": "mai",
-              "text": "Nếu nghe loa gọi tên mình, đừng trả lời."
+              "text": "Nếu loa gọi đúng tên cậu, đừng trả lời. Dù giọng nói ấy nghe quen đến đâu."
             },
             {
               "char_id": "mai",
-              "text": "Đêm đó có mười hai người biến mất. Sáng hôm sau, mọi người chỉ nhớ mười một."
+              "text": "Đêm sơ tán, mười hai người biến mất. Nhưng sáng hôm sau, cả làng chỉ nhớ đến mười một người. Tôi không biết ai đã bị bỏ lại trong ký ức."
             }
           ],
           "choice_id": "reply",
@@ -10586,7 +10586,7 @@
           "line": [
             {
               "char_id": "mai",
-              "text": "Tôi đã nhìn thấy người thứ mười hai đi xuống giếng. Nhưng đó là tôi."
+              "text": "Tôi đã thấy người thứ mười hai đi xuống giếng. Tôi cứ nghĩ mình nhìn thấy người ấy… cho đến khi nhận ra trong ký ức, người bước xuống là tôi."
             }
           ],
           "choice_id": "person_follow",
@@ -10596,7 +10596,7 @@
           "line": [
             {
               "char_id": "mai",
-              "text": "Tôi nghe tiếng động dưới giếng vào đúng đêm sơ tán. Không ai tin tôi, vì sáng hôm sau giếng đã cạn."
+              "text": "Đêm sơ tán, tôi nghe tiếng động dưới giếng. Sáng hôm sau, giếng cạn trơ đáy. Tôi kể lại, nhưng chẳng ai tin—họ bảo đêm đó không có chuyện gì xảy ra."
             }
           ],
           "choice_id": "well_follow",
@@ -10606,7 +10606,7 @@
           "line": [
             {
               "char_id": "mai",
-              "text": "Cảm ơn. Người ta thường hỏi dồn cho đến khi tôi phải nói điều mà chính mình cũng không chắc."
+              "text": "Cảm ơn cậu. Người ta cứ hỏi mãi, đến lúc tôi nói ra điều gì đó chỉ để họ thôi hỏi. Rồi chính tôi cũng không biết mình còn tin lời ấy không."
             }
           ],
           "choice_id": "gentle_follow",
@@ -10764,11 +10764,11 @@
           "line": [
             {
               "char_id": "hanh",
-              "text": "Phòng của cậu đã được chuẩn bị từ trước."
+              "text": "Phòng của cậu đã được dọn sẵn."
             },
             {
               "char_id": "hanh",
-              "text": "Tôi không nhớ ai đã đặt phòng. Chỉ biết chìa khóa được để đúng chỗ như thể cậu chưa từng rời đi."
+              "text": "Tôi không nhớ ai đặt phòng. Chìa khóa vẫn nằm đúng chỗ—như thể cậu chỉ đi đâu đó một lúc rồi sẽ quay về."
             }
           ],
           "choice_id": "ask",
@@ -10944,11 +10944,11 @@
           "line": [
             {
               "char_id": "keeper",
-              "text": "Chuông không gọi người chết. Nó gọi những người còn nhớ."
+              "text": "Chuông không gọi người chết. Nó gọi những người còn nhớ—ít nhất, đó là điều tôi vẫn tự nhắc mình."
             },
             {
               "char_id": "keeper",
-              "text": "Đêm sơ tán, tôi đã nghe đủ ba hồi. Nhưng sáng hôm sau, có người nói họ nghe thấy hồi thứ tư."
+              "text": "Đêm sơ tán, tôi nghe đủ ba hồi chuông. Sáng hôm sau, có người quả quyết đã nghe hồi thứ tư. Tôi không biết họ nghe thật, hay chỉ nhớ điều mình sợ."
             }
           ],
           "choice_id": "ask",
@@ -11177,7 +11177,7 @@
           "line": [
             {
               "char_id": "voice",
-              "text": "Tôi không biết cậu là ai trong đêm đó. Tôi chỉ biết có một chỗ trống trong danh sách, và mọi người đều tìm cách gọi nó bằng một cái tên khác."
+              "text": "Tôi không biết cậu là ai trong đêm ấy. Chỉ có một chỗ trống trong danh sách—và mỗi người lại gọi chỗ trống đó bằng một cái tên khác."
             }
           ],
           "choiced": false
@@ -11195,7 +11195,7 @@
           "line": [
             {
               "char_id": "voice",
-              "text": "Đừng tin tôi chỉ vì tôi nói được điều cậu chưa biết. Tôi cũng chỉ là một mảnh ghi âm, mắc kẹt trong thứ tự phát lại."
+              "text": "Đừng tin tôi chỉ vì tôi biết những điều cậu chưa biết. Tôi chỉ là một đoạn ghi âm, bị mắc kẹt giữa những lần phát lại."
             }
           ],
           "choiced": false
@@ -12772,7 +12772,7 @@
           "line": [
             {
               "char_id": "linh",
-              "text": "Anh tìm thấy bức ảnh rồi à? Đừng nhìn vào chỗ bị xé trước. Hãy đếm những chiếc ghế."
+              "text": "Anh tìm thấy ảnh rồi à? Đừng nhìn chỗ bị xé vội. Đếm ghế trước đi—đôi khi thứ còn nguyên lại nói nhiều hơn thứ bị mất."
             },
             {
               "char_id": "linh",
