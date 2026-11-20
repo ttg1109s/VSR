@@ -99,3 +99,32 @@ test('JsonClient can preserve a command identity when retrying a timed-out reque
     client.dispose();
   }
 });
+
+
+test('revision conflicts are not cached under the command id', async () => {
+  const protocol = new JsonProtocol();
+  let calls = 0;
+  protocol.registerCommand('state.increment', async () => ({ count: ++calls }));
+  protocol.stateRevision = 4;
+  const stale = command(protocol, 'state.increment', 'conflict-retry', 3);
+  const conflict = await protocol.dispatch(stale);
+  assert.equal(conflict.error.code, 'REVISION_CONFLICT');
+
+  const current = command(protocol, 'state.increment', 'conflict-retry', 4);
+  const accepted = await protocol.dispatch(current);
+  assert.equal(accepted.ok, true);
+  assert.equal(calls, 1);
+});
+
+test('reusing an idempotency key with a different command or payload is rejected', async () => {
+  const protocol = new JsonProtocol();
+  let calls = 0;
+  protocol.registerCommand('counter.add', async payload => ({ count: calls += payload.amount }));
+  const first = protocol.createCommand('counter.add', { amount: 2 }, { commandId: 'same-id' });
+  const changed = protocol.createCommand('counter.add', { amount: 9 }, { commandId: 'same-id' });
+  assert.equal((await protocol.dispatch(first, { principalId: 'user-a' })).ok, true);
+  const rejected = await protocol.dispatch(changed, { principalId: 'user-a' });
+  assert.equal(rejected.ok, false);
+  assert.equal(rejected.error.code, 'IDEMPOTENCY_KEY_REUSED');
+  assert.equal(calls, 2);
+});
