@@ -4196,7 +4196,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Danh sách sơ tán đã bị sửa: mười hai cái tên, không phải mười một."
+            "text": "Những cái tên trên tường khớp với sơ đồ và mảnh bản đồ. Bạn đã nhận ra danh tính người thứ mười hai—cái tên bị xóa khỏi mọi hồ sơ chính thức."
           },
           {
             "type": "set",
@@ -4209,7 +4209,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "info",
-            "text": "Những cái tên trên tường được giữ lại ngoài hồ sơ. Bạn không chép chúng thành danh sách công khai.",
+            "text": "Bạn đã nhớ ra cái tên ấy. Nhưng những gì được giữ lại trên tường đường hầm sẽ không được đưa vào hồ sơ công khai.",
             "req": {
               "logic": "AND",
               "check": [
@@ -4226,7 +4226,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "info",
-            "text": "Dòng khắc trên tường xác nhận hồ sơ đã bỏ sót một người—một dấu vết không thể phủ nhận.",
+            "text": "Danh tính người thứ mười hai đã được xác định. Những dấu vết trên tường, sơ đồ và mảnh bản đồ khớp với nhau—đây là bằng chứng về người đã bị xóa khỏi hồ sơ.",
             "req": {
               "logic": "AND",
               "check": [
