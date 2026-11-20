@@ -643,24 +643,19 @@ export const DEMO_SCRIPT = {
         "max": 3,
         "autoInc": false,
         "status": [
-          [
-            0,
+          [0,
             "Ánh sáng ổn định"
           ],
-          [
-            40,
+          [25,
             "Ánh sáng yếu"
           ],
-          [
-            75,
+          [50,
             "Chập chờn"
           ],
-          [
-            99,
+          [75,
             "Sắp tắt"
           ],
-          [
-            100,
+          [100,
             "Ánh sáng tắt hoàn toàn"
           ]
         ]
@@ -694,24 +689,19 @@ export const DEMO_SCRIPT = {
         "max": 2,
         "autoInc": false,
         "status": [
-          [
-            0,
+          [0,
             "Trang còn rõ"
           ],
-          [
-            40,
+          [25,
             "Mực nhòe nhẹ"
           ],
-          [
-            75,
+          [50,
             "Khó đọc"
           ],
-          [
-            99,
+          [75,
             "Gần mất chữ"
           ],
-          [
-            100,
+          [100,
             "Không còn đọc được"
           ]
         ]
@@ -738,24 +728,19 @@ export const DEMO_SCRIPT = {
         "max": 3,
         "autoInc": false,
         "status": [
-          [
-            0,
+          [0,
             "Băng nguyên tín hiệu"
           ],
-          [
-            40,
+          [25,
             "Có nhiễu nhẹ"
           ],
-          [
-            75,
+          [50,
             "Nhiễu nặng"
           ],
-          [
-            99,
+          [75,
             "Sắp mất tín hiệu"
           ],
-          [
-            100,
+          [100,
             "Mất tín hiệu hoàn toàn"
           ]
         ]
@@ -782,24 +767,19 @@ export const DEMO_SCRIPT = {
         "max": 2,
         "autoInc": false,
         "status": [
-          [
-            0,
+          [0,
             "Dấu khắc rõ"
           ],
-          [
-            40,
+          [25,
             "Dấu khắc mờ"
           ],
-          [
-            75,
+          [50,
             "Khó nhận dạng"
           ],
-          [
-            99,
+          [75,
             "Dấu gần mất"
           ],
-          [
-            100,
+          [100,
             "Dấu khắc mất hoàn toàn"
           ]
         ]
@@ -833,16 +813,13 @@ export const DEMO_SCRIPT = {
         "max": 1,
         "autoInc": false,
         "status": [
-          [
-            0,
+          [0,
             "Chưa lắp"
           ],
-          [
-            99,
+          [50,
             "Đã chịu va chạm"
           ],
-          [
-            100,
+          [100,
             "Quả lắc hỏng"
           ]
         ]
@@ -869,24 +846,19 @@ export const DEMO_SCRIPT = {
         "max": 3,
         "autoInc": false,
         "status": [
-          [
-            0,
+          [0,
             "Ảnh còn nguyên dấu"
           ],
-          [
-            40,
+          [25,
             "Mé rách lan rộng"
           ],
-          [
-            75,
+          [50,
             "Chi tiết mờ"
           ],
-          [
-            99,
+          [75,
             "Khó đối chiếu"
           ],
-          [
-            100,
+          [100,
             "Ảnh không thể phục dựng"
           ]
         ]
@@ -913,24 +885,19 @@ export const DEMO_SCRIPT = {
         "max": 3,
         "autoInc": false,
         "status": [
-          [
-            0,
+          [0,
             "Răng khóa nguyên"
           ],
-          [
-            40,
+          [25,
             "Mòn nhẹ"
           ],
-          [
-            75,
+          [50,
             "Răng khóa biến dạng"
           ],
-          [
-            99,
+          [75,
             "Khó xoay khóa"
           ],
-          [
-            100,
+          [100,
             "Không thể mở khóa"
           ]
         ]
@@ -949,24 +916,19 @@ export const DEMO_SCRIPT = {
         "max": 3,
         "autoInc": false,
         "status": [
-          [
-            0,
+          [0,
             "Nét vẽ rõ"
           ],
-          [
-            40,
+          [25,
             "Mực nhạt"
           ],
-          [
-            75,
+          [50,
             "Tuyến đường mờ"
           ],
-          [
-            99,
+          [75,
             "Khó đối chiếu"
           ],
-          [
-            100,
+          [100,
             "Không thể đọc bản đồ"
           ]
         ]
@@ -993,24 +955,19 @@ export const DEMO_SCRIPT = {
         "max": 5,
         "autoInc": false,
         "status": [
-          [
-            0,
+          [0,
             "Đủ dụng cụ"
           ],
-          [
-            20,
+          [25,
             "Thiếu/hao mòn nhẹ"
           ],
-          [
-            60,
+          [50,
             "Dụng cụ xuống cấp"
           ],
-          [
-            99,
+          [75,
             "Sắp không dùng được"
           ],
-          [
-            100,
+          [100,
             "Bộ dụng cụ không hoạt động"
           ]
         ]
@@ -1037,24 +994,19 @@ export const DEMO_SCRIPT = {
         "max": 2,
         "autoInc": false,
         "status": [
-          [
-            0,
+          [0,
             "Cách điện tốt"
           ],
-          [
-            40,
+          [25,
             "Lớp cách điện mòn"
           ],
-          [
-            75,
+          [50,
             "Nguy cơ hở dây"
           ],
-          [
-            99,
+          [75,
             "Gần đứt"
           ],
-          [
-            100,
+          [100,
             "Dây mất cách điện"
           ]
         ]
@@ -1081,24 +1033,19 @@ export const DEMO_SCRIPT = {
         "max": 2,
         "autoInc": false,
         "status": [
-          [
-            0,
+          [0,
             "Cầu chì còn tốt"
           ],
-          [
-            40,
+          [25,
             "Đã dùng một phần"
           ],
-          [
-            75,
+          [50,
             "Khả năng chịu tải yếu"
           ],
-          [
-            99,
+          [75,
             "Sắp quá tải"
           ],
-          [
-            100,
+          [100,
             "Cầu chì hỏng"
           ]
         ]
@@ -1125,24 +1072,19 @@ export const DEMO_SCRIPT = {
         "max": 2,
         "autoInc": false,
         "status": [
-          [
-            0,
+          [0,
             "Độ đàn hồi tốt"
           ],
-          [
-            40,
+          [25,
             "Mất lực hồi nhẹ"
           ],
-          [
-            75,
+          [50,
             "Lực hồi yếu"
           ],
-          [
-            99,
+          [75,
             "Gần mất đàn hồi"
           ],
-          [
-            100,
+          [100,
             "Lò xo mất tác dụng"
           ]
         ]
@@ -1169,24 +1111,19 @@ export const DEMO_SCRIPT = {
         "max": 3,
         "autoInc": false,
         "status": [
-          [
-            0,
+          [0,
             "Bản can sạch"
           ],
-          [
-            40,
+          [25,
             "Có vết chồng nét"
           ],
-          [
-            75,
+          [50,
             "Nét đối chiếu rối"
           ],
-          [
-            99,
+          [75,
             "Khó dùng để đối chiếu"
           ],
-          [
-            100,
+          [100,
             "Không thể đối chiếu"
           ]
         ]
@@ -1213,24 +1150,19 @@ export const DEMO_SCRIPT = {
         "max": 4,
         "autoInc": false,
         "status": [
-          [
-            0,
+          [0,
             "Kính rõ"
           ],
-          [
-            25,
+          [25,
             "Bám bụi nhẹ"
           ],
-          [
-            60,
+          [50,
             "Độ phóng đại giảm"
           ],
-          [
-            99,
+          [75,
             "Khó quan sát"
           ],
-          [
-            100,
+          [100,
             "Kính không còn sử dụng được"
           ]
         ]
@@ -1257,24 +1189,19 @@ export const DEMO_SCRIPT = {
         "max": 3,
         "autoInc": false,
         "status": [
-          [
-            0,
+          [0,
             "Tần số ổn định"
           ],
-          [
-            40,
+          [25,
             "Tín hiệu suy yếu"
           ],
-          [
-            75,
+          [50,
             "Tần số nhiễu"
           ],
-          [
-            99,
+          [75,
             "Gần mất khả năng thu"
           ],
-          [
-            100,
+          [100,
             "Không thu được tín hiệu"
           ]
         ]
@@ -1301,24 +1228,19 @@ export const DEMO_SCRIPT = {
         "max": 2,
         "autoInc": false,
         "status": [
-          [
-            0,
+          [0,
             "Dấu đóng rõ"
           ],
-          [
-            40,
+          [25,
             "Dấu đóng mờ"
           ],
-          [
-            75,
+          [50,
             "Khó xác thực"
           ],
-          [
-            99,
+          [75,
             "Dấu gần mất"
           ],
-          [
-            100,
+          [100,
             "Không thể xác thực"
           ]
         ]
@@ -1345,24 +1267,19 @@ export const DEMO_SCRIPT = {
         "max": 3,
         "autoInc": false,
         "status": [
-          [
-            0,
+          [0,
             "Răng khóa nguyên"
           ],
-          [
-            40,
+          [25,
             "Mòn nhẹ"
           ],
-          [
-            75,
+          [50,
             "Cong/khuyết răng"
           ],
-          [
-            99,
+          [75,
             "Sắp không mở được"
           ],
-          [
-            100,
+          [100,
             "Không thể mở cửa"
           ]
         ]
@@ -1389,24 +1306,19 @@ export const DEMO_SCRIPT = {
         "max": 3,
         "autoInc": false,
         "status": [
-          [
-            0,
+          [0,
             "Khung hình rõ"
           ],
-          [
-            40,
+          [25,
             "Trầy xước nhẹ"
           ],
-          [
-            75,
+          [50,
             "Hình ảnh mờ"
           ],
-          [
-            99,
+          [75,
             "Khó phục dựng"
           ],
-          [
-            100,
+          [100,
             "Không thể phục dựng hình"
           ]
         ]
@@ -1433,24 +1345,19 @@ export const DEMO_SCRIPT = {
         "max": 3,
         "autoInc": false,
         "status": [
-          [
-            0,
+          [0,
             "Ghi chú đầy đủ"
           ],
-          [
-            40,
+          [25,
             "Mực nhòe nhẹ"
           ],
-          [
-            75,
+          [50,
             "Thiếu đoạn"
           ],
-          [
-            99,
+          [75,
             "Khó giải mã"
           ],
-          [
-            100,
+          [100,
             "Không thể giải mã"
           ]
         ]
@@ -1477,24 +1384,19 @@ export const DEMO_SCRIPT = {
         "max": 2,
         "autoInc": false,
         "status": [
-          [
-            0,
+          [0,
             "Mối nối tốt"
           ],
-          [
-            40,
+          [25,
             "Dây xoắn yếu"
           ],
-          [
-            75,
+          [50,
             "Tiếp xúc chập chờn"
           ],
-          [
-            99,
+          [75,
             "Gần đứt mối nối"
           ],
-          [
-            100,
+          [100,
             "Mối nối đứt hoàn toàn"
           ]
         ]
@@ -1521,24 +1423,19 @@ export const DEMO_SCRIPT = {
         "max": 3,
         "autoInc": false,
         "status": [
-          [
-            0,
+          [0,
             "Bản đối chiếu rõ"
           ],
-          [
-            40,
+          [25,
             "Một số dòng nhòe"
           ],
-          [
-            75,
+          [50,
             "Khó xác minh tên"
           ],
-          [
-            99,
+          [75,
             "Gần mất dữ liệu"
           ],
-          [
-            100,
+          [100,
             "Không thể xác minh dữ liệu"
           ]
         ]
@@ -1565,24 +1462,19 @@ export const DEMO_SCRIPT = {
         "max": 3,
         "autoInc": false,
         "status": [
-          [
-            0,
+          [0,
             "Chỉ hướng chính xác"
           ],
-          [
-            40,
+          [25,
             "Sai lệch nhẹ"
           ],
-          [
-            75,
+          [50,
             "Kim dao động"
           ],
-          [
-            99,
+          [75,
             "Khó định hướng"
           ],
-          [
-            100,
+          [100,
             "Không thể định hướng"
           ]
         ]
@@ -1609,24 +1501,19 @@ export const DEMO_SCRIPT = {
         "max": 2,
         "autoInc": false,
         "status": [
-          [
-            0,
+          [0,
             "Dấu niêm xác thực"
           ],
-          [
-            40,
+          [25,
             "Mặt dấu mòn"
           ],
-          [
-            75,
+          [50,
             "Dấu khó nhận"
           ],
-          [
-            99,
+          [75,
             "Gần mất dấu"
           ],
-          [
-            100,
+          [100,
             "Dấu niêm mất hiệu lực"
           ]
         ]
@@ -1653,24 +1540,19 @@ export const DEMO_SCRIPT = {
         "max": 2,
         "autoInc": false,
         "status": [
-          [
-            0,
+          [0,
             "Chốt nguyên"
           ],
-          [
-            40,
+          [25,
             "Cong nhẹ"
           ],
-          [
-            75,
+          [50,
             "Biến dạng rõ"
           ],
-          [
-            99,
+          [75,
             "Sắp không giữ được trục"
           ],
-          [
-            100,
+          [100,
             "Chốt không còn giữ trục"
           ]
         ]
@@ -1697,24 +1579,19 @@ export const DEMO_SCRIPT = {
         "max": 3,
         "autoInc": false,
         "status": [
-          [
-            0,
+          [0,
             "Danh sách rõ"
           ],
-          [
-            40,
+          [25,
             "Một phần bị nhòe"
           ],
-          [
-            75,
+          [50,
             "Khó đối chiếu lượt"
           ],
-          [
-            99,
+          [75,
             "Gần mất dữ liệu"
           ],
-          [
-            100,
+          [100,
             "Không thể đối chiếu danh sách"
           ]
         ]
@@ -1741,24 +1618,19 @@ export const DEMO_SCRIPT = {
         "max": 2,
         "autoInc": false,
         "status": [
-          [
-            0,
+          [0,
             "Vé còn nguyên"
           ],
-          [
-            40,
+          [25,
             "Thông tin mờ nhẹ"
           ],
-          [
-            75,
+          [50,
             "Khó xác minh"
           ],
-          [
-            99,
+          [75,
             "Thông tin gần mất"
           ],
-          [
-            100,
+          [100,
             "Không thể xác minh vé"
           ]
         ]
