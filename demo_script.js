@@ -12479,11 +12479,39 @@
           "choice_id": "linh_stage1",
           "choiced": false
         },
+        "memory_route": {
+          "line": [
+            {
+              "char_id": "linh",
+              "text": "Anh chọn bảo vệ ký ức của em. Cảm ơn anh. Nhưng giữ riêng không có nghĩa là bỏ qua những dấu vết còn lại."
+            },
+            {
+              "char_id": "linh",
+              "text": "Có vài việc anh vẫn có thể làm—đừng ép chúng thành bằng chứng trước khi em sẵn sàng."
+            }
+          ],
+          "choice_id": "linh_route_follow",
+          "choiced": false
+        },
+        "evidence_route": {
+          "line": [
+            {
+              "char_id": "linh",
+              "text": "Anh muốn đối chiếu lời em với hồ sơ. Em hiểu, dù em vẫn sợ những gì giấy tờ có thể làm với một ký ức."
+            },
+            {
+              "char_id": "linh",
+              "text": "Nếu đi theo cách ấy, hãy kiểm tra từng dấu vết. Đừng để một bản ghi quyết định thay tất cả."
+            }
+          ],
+          "choice_id": "linh_route_follow",
+          "choiced": false
+        },
         "stage2": {
           "line": [
             {
               "char_id": "linh",
-              "text": "Em hiểu. Dù anh chọn cách nào, vẫn còn một điều em nhớ rất rõ: con đường phía sau trường dẫn đến đường hầm."
+              "text": "Dù anh chọn cách nào, vẫn còn một điều em nhớ rất rõ: con đường phía sau trường dẫn đến đường hầm."
             },
             {
               "char_id": "linh",
@@ -12501,7 +12529,7 @@
             },
             {
               "char_id": "linh",
-              "text": "Nếu anh muốn, mình có thể thử ghép lại mảnh cuối. Nhưng em không hứa rằng khi nhớ đủ, mọi chuyện sẽ dễ chịu hơn."
+              "text": "Mình đã có thêm một mảnh. Nhưng còn một điều cuối cùng: anh muốn giúp em ghép ký ức ấy lại, hay để nó ở trạng thái chưa hoàn chỉnh?"
             }
           ],
           "choice_id": "linh_stage3",
@@ -12512,8 +12540,22 @@
             {
               "char_id": "linh",
               "text": "Vậy là em đã nói hết những gì có thể nói lúc này. Anh đừng xem một lời kể là toàn bộ sự thật; hãy đối chiếu nó với những gì tìm thấy ở trường."
+            },
+            {
+              "char_id": "linh",
+              "text": "Em sẽ ở đây. Nếu anh tìm được điều gì mới, hãy quay lại—có thể lúc ấy em sẽ nhớ thêm."
             }
           ],
+          "choiced": false
+        },
+        "stage4": {
+          "line": [
+            {
+              "char_id": "linh",
+              "text": "Mình đã lần theo những dấu vết ấy. Nếu anh muốn, giờ có thể thử ghép lại phần ký ức cuối cùng—nhưng không cần ép nó phải hoàn chỉnh."
+            }
+          ],
+          "choice_id": "linh_stage4",
           "choiced": false
         }
       },
@@ -12571,90 +12613,6 @@
             "jump": "proof"
           }
         ],
-        "linh_stage1": [
-          {
-            "id": "linh_protect_memory",
-            "text": "Anh sẽ giữ kín lời khai của em, không biến ký ức riêng thành vật chứng công khai.",
-            "jump": "stage2",
-            "effect": [
-              {
-                "type": "set",
-                "subtype": "state",
-                "target": "school_choice",
-                "value": "ký ức"
-              }
-            ]
-          },
-          {
-            "id": "linh_allow_evidence",
-            "text": "Anh sẽ cho phép đối chiếu lời em với hồ sơ, nhưng không xem hồ sơ là toàn bộ sự thật.",
-            "jump": "stage2",
-            "effect": [
-              {
-                "type": "set",
-                "subtype": "state",
-                "target": "school_choice",
-                "value": "bằng chứng"
-              }
-            ]
-          }
-        ],
-        "linh_stage2": [
-          {
-            "id": "linh_accept_tunnel_memory",
-            "text": "Anh sẽ giữ chi tiết đường hầm như một phần ký ức cần được kiểm tra.",
-            "jump": "stage3",
-            "effect": [
-              {
-                "type": "set",
-                "subtype": "state",
-                "target": "clue_tunnel",
-                "value": true
-              }
-            ]
-          },
-          {
-            "id": "linh_check_tunnel_clue",
-            "text": "Anh sẽ xem đường hầm là một dấu vết để đối chiếu, không chỉ là lời kể.",
-            "jump": "stage3",
-            "effect": [
-              {
-                "type": "set",
-                "subtype": "state",
-                "target": "clue_tunnel",
-                "value": true
-              }
-            ]
-          }
-        ],
-        "linh_stage3": [
-          {
-            "id": "linh_reconstruct_memory",
-            "text": "Mình thử ghép lại ký ức, từng chi tiết một.",
-            "jump": "final",
-            "effect": [
-              {
-                "type": "set",
-                "subtype": "state",
-                "target": "memory_reconstructed",
-                "value": true
-              }
-            ]
-          },
-          {
-            "id": "linh_reconstruct_carefully",
-            "text": "Anh sẽ giúp em nhớ lại, nhưng không ép em phải hoàn tất ngay.",
-            "jump": "final",
-            "effect": [
-              {
-                "type": "set",
-                "subtype": "state",
-                "target": "memory_reconstructed",
-                "value": true
-              }
-            ]
-          }
-        ],
         "photo_stage1": [
           {
             "id": "linh_photo_continue1",
@@ -12689,6 +12647,174 @@
             "id": "linh_teacher_continue2",
             "text": "Em không cần phải trả lời vội.",
             "jump": "stage1"
+          }
+        ],
+        "linh_stage1": [
+          {
+            "id": "linh_protect_memory",
+            "text": "Anh sẽ giữ kín lời khai của em, không biến ký ức riêng thành vật chứng công khai.",
+            "jump": "memory_route",
+            "effect": [
+              {
+                "type": "set",
+                "subtype": "action",
+                "target": "action_recover_class_register",
+                "property": "display",
+                "value": "hide"
+              },
+              {
+                "type": "set",
+                "subtype": "action",
+                "target": "action_reach_station",
+                "property": "display",
+                "value": "hide"
+              },
+              {
+                "type": "set",
+                "subtype": "action",
+                "target": "action_decode_roster",
+                "property": "display",
+                "value": "hide"
+              },
+              {
+                "type": "set",
+                "subtype": "action",
+                "target": "action_overlay_map",
+                "property": "display",
+                "value": "hide"
+              },
+              {
+                "type": "set",
+                "subtype": "action",
+                "target": "action_choose_fate",
+                "property": "display",
+                "value": "show"
+              },
+              {
+                "type": "set",
+                "subtype": "action",
+                "target": "action_reach_station_memory",
+                "property": "display",
+                "value": "show"
+              }
+            ]
+          },
+          {
+            "id": "linh_allow_evidence",
+            "text": "Anh sẽ cho phép đối chiếu lời em với hồ sơ, nhưng không xem hồ sơ là toàn bộ sự thật.",
+            "jump": "evidence_route",
+            "effect": [
+              {
+                "type": "set",
+                "subtype": "action",
+                "target": "action_reach_station_memory",
+                "property": "display",
+                "value": "hide"
+              },
+              {
+                "type": "set",
+                "subtype": "action",
+                "target": "action_recover_class_register",
+                "property": "display",
+                "value": "show"
+              },
+              {
+                "type": "set",
+                "subtype": "action",
+                "target": "action_reach_station",
+                "property": "display",
+                "value": "show"
+              },
+              {
+                "type": "set",
+                "subtype": "action",
+                "target": "action_decode_roster",
+                "property": "display",
+                "value": "show"
+              },
+              {
+                "type": "set",
+                "subtype": "action",
+                "target": "action_overlay_map",
+                "property": "display",
+                "value": "show"
+              },
+              {
+                "type": "set",
+                "subtype": "action",
+                "target": "action_choose_fate",
+                "property": "display",
+                "value": "show"
+              }
+            ]
+          }
+        ],
+        "linh_route_follow": [
+          {
+            "id": "linh_route_continue1",
+            "text": "Anh sẽ tiếp tục lắng nghe, chưa vội kết luận.",
+            "jump": "stage2"
+          },
+          {
+            "id": "linh_route_continue2",
+            "text": "Em cứ kể thêm. Quyết định này chưa kết thúc cuộc trò chuyện.",
+            "jump": "stage2"
+          }
+        ],
+        "linh_stage2": [
+          {
+            "id": "linh_accept_tunnel_memory",
+            "text": "Anh sẽ giữ chi tiết đường hầm như một phần ký ức cần được kiểm tra.",
+            "jump": "stage3",
+            "effect": [
+              {
+                "type": "set",
+                "subtype": "state",
+                "target": "school_choice",
+                "value": "ký ức"
+              }
+            ]
+          },
+          {
+            "id": "linh_check_tunnel_clue",
+            "text": "Anh sẽ xem đường hầm là một dấu vết để đối chiếu, không chỉ là lời kể.",
+            "jump": "stage3",
+            "effect": [
+              {
+                "type": "set",
+                "subtype": "state",
+                "target": "school_choice",
+                "value": "bằng chứng"
+              }
+            ]
+          }
+        ],
+        "linh_stage3": [
+          {
+            "id": "linh_tunnel_as_memory",
+            "text": "Để chi tiết đường hầm ở lại như một ký ức cần được giữ.",
+            "jump": "stage4",
+            "effect": [
+              {
+                "type": "set",
+                "subtype": "state",
+                "target": "memory_reconstructed",
+                "value": true
+              }
+            ]
+          },
+          {
+            "id": "linh_tunnel_as_clue",
+            "text": "Xem đường hầm là dấu vết cần kiểm chứng.",
+            "jump": "stage4",
+            "effect": [
+              {
+                "type": "set",
+                "subtype": "state",
+                "target": "memory_reconstructed",
+                "value": true
+              }
+            ]
           }
         ]
       }
