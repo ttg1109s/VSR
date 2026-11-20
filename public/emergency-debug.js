@@ -34,10 +34,11 @@
   function toggle() { opened = !opened; panel.style.display = opened ? 'flex' : 'none'; }
   function init() {
     if (!document.body) return;
+    var debugEnabled = new URLSearchParams(window.location.search).get('debug') === '1';
     var launcher = document.createElement('button');
     launcher.textContent = 'SAFE DEBUG';
     launcher.setAttribute('aria-label', 'Open emergency debug log');
-    launcher.style.cssText = 'position:fixed;right:14px;bottom:76px;z-index:2147483647;background:#7c2d12;color:#fff;border:1px solid #fb923c;border-radius:10px;padding:11px 14px;font:bold 12px system-ui;box-shadow:0 4px 18px #0008;cursor:pointer';
+    launcher.style.cssText = 'position:fixed;right:14px;bottom:76px;z-index:2147483647;background:#7c2d12;color:#fff;border:1px solid #fb923c;border-radius:10px;padding:11px 14px;font:bold 12px system-ui;box-shadow:0 4px 18px #0008;cursor:pointer;display:' + (debugEnabled ? 'block' : 'none') + ';'
     launcher.onclick = toggle;
     panel = document.createElement('div');
     panel.style.cssText = 'display:none;position:fixed;z-index:2147483646;right:12px;bottom:124px;width:min(92vw,600px);height:min(65vh,520px);background:#111827;color:#f9fafb;border:1px solid #4b5563;border-radius:12px;box-shadow:0 12px 40px #000a;flex-direction:column;overflow:hidden;font-family:system-ui';
