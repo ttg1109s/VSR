@@ -436,7 +436,14 @@ test('chat action starts the umbrella follow-up without duplicating completed th
     ]);
     assert.equal(host.engine.state.chats.chat_mai.set.read, true);
 
-    // The reusable action advances to the scenario's umbrella follow-up thread.
+    // The current demo grants the red umbrella from the first chat choice.
+    // The follow-up branch is unlocked by using it, not merely receiving it.
+    const ownerId = host.engine.state.get('entryCharacter') || 'player';
+    const inventory = host.engine.state.getRuntimeSnapshot('characters.[id].inventory', { id: ownerId }) || [];
+    assert.ok(inventory.includes('red_umbrella'), 'the first Mai conversation grants the red umbrella');
+    await client.useItem('red_umbrella');
+
+    // After the gameplay item-use step, the reusable action opens the umbrella follow-up.
     const viewEvents = [];
     const unsubscribe = client.subscribe(message => {
       if (message.type === 'event' && message.event?.event === 'presentation.chat.viewRequested') {
