@@ -201,11 +201,6 @@
       "value": false,
       "title": "Kho lưu trữ mở một phần"
     },
-    "linh_private_testimony": {
-      "type": "boolean",
-      "value": false,
-      "title": "Lời khai riêng của Linh"
-    },
     "mai_approach": {
       "type": "string",
       "value": "chưa tiếp cận",
@@ -4633,12 +4628,6 @@
                 "property": "identity_verified_partial",
                 "op": "==",
                 "value": true
-              },
-              {
-                "type": "state",
-                "property": "linh_private_testimony",
-                "op": "==",
-                "value": true
               }
             ]
           }
@@ -6120,12 +6109,6 @@
             "field": "current",
             "mode": "add",
             "value": -1
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "linh_private_testimony",
-            "value": true
           },
           {
             "type": "set",
@@ -9266,12 +9249,6 @@
           {
             "type": "state",
             "property": "player_panicked",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "state",
-            "property": "linh_private_testimony",
             "op": "==",
             "value": true
           }
