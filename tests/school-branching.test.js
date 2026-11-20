@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { DEMO_SCRIPT } from '../demo_script.js';
+import { DEMO_SCRIPT } from '../demo-script-data.js';
 
 const actions = DEMO_SCRIPT.actions;
 const states = DEMO_SCRIPT.globalStates;
