@@ -39,6 +39,9 @@ function EmptyNoteState({ title, message }) {
 export default function NoteWorkspace({ snapshot, open = false, onClose }) {
   const [search, setSearch] = useState('');
   const globalStates = snapshot?.state?.global;
+  // Recompute when Engine publishes a new state revision even if an integration
+  // reuses the global-state object reference.
+  const stateRevision = snapshot?.stateRevision ?? snapshot?.revision ?? null;
   const states = useMemo(() => {
     if (!globalStates || typeof globalStates !== 'object' || Array.isArray(globalStates)) return [];
     return Object.entries(globalStates).map(([id, state]) => ({
@@ -47,7 +50,7 @@ export default function NoteWorkspace({ snapshot, open = false, onClose }) {
       type: state?.type,
       value: state?.value
     }));
-  }, [globalStates]);
+  }, [globalStates, stateRevision]);
 
   const filteredGroups = useMemo(() => {
     const query = search.trim().toLocaleLowerCase();
@@ -57,7 +60,7 @@ export default function NoteWorkspace({ snapshot, open = false, onClose }) {
         state.title,
         state.id,
         state.value === null || state.value === undefined ? '' : String(state.value)
-      ].join(' ').toLocaleLowerCase().includes(query)))
+      ].join(' ').toLocaleLowerCase().includes(query))
     })).filter(group => group.states.length > 0);
   }, [states, search]);
 
