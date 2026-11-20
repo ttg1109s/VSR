@@ -447,6 +447,24 @@
             "value": true
           }
         ]
+      },
+      "tape_available": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "tape"
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "tape",
+            "op": "<",
+            "value": 1
+          }
+        ]
       }
     },
     "effects": {
@@ -7182,22 +7200,7 @@
         ]
       },
       "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "tape"
-          },
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "tape",
-            "op": "<",
-            "value": 1
-          }
-        ]
+        "ref": "tape_available"
       }
     },
     "action_verify_guestbook": {
@@ -8993,23 +8996,13 @@
             "value": true
           },
           {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "tape"
+            "ref": "tape_available"
           },
           {
             "type": "state",
             "property": "radio_damaged",
             "op": "==",
             "value": true
-          },
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "tape",
-            "op": "<",
-            "value": 1
           }
         ]
       }
