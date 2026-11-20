@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { DEMO_SCRIPT } from '../demo_script.js';
+import { DEMO_SCRIPT } from '../demo-script-data.js';
 import { LoaderSystem } from '../engine/modules/Loader.js';
 import { validateScenario } from '../engine/scenario/Scenario.js';
 import { MoveAlgorithms } from '../engine/modules/entity/Movement.js';
