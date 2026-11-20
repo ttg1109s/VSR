@@ -33,7 +33,7 @@ function InventoryItemCard({ item, onViewDetails, onToggleEquipment, onUseItem, 
           className="vsr-card vsr-inventory-item"
           role="button"
           tabIndex={0}
-          aria-label={`${item.name || 'Item'}${item.equipped ? ', equipped' : ''}. Open item actions`}
+          aria-label={`${item.name || 'Item'}${item.equipped ? ', equipped' : ''}${item.broken ? ', broken' : ''}. Open item actions`}
           onKeyDown={event => {
             if (event.key === 'Enter' || event.key === ' ') {
               event.preventDefault();
@@ -48,9 +48,9 @@ function InventoryItemCard({ item, onViewDetails, onToggleEquipment, onUseItem, 
             <h3 title={item.name || ''}>{item.name}</h3>
             {categoryLabel && <p title={categoryLabel} className="vsr-text-secondary">{categoryLabel}</p>}
           </div>
-          {item.equipped && (
-            <span className="vsr-inventory-item__equipped-badge" aria-label="Equipped" title="Equipped">
-              E
+          {(item.equipped || item.broken) && (
+            <span className={'vsr-inventory-item__status-badge' + (item.broken ? ' is-broken' : ' is-equipped')} aria-label={item.broken ? 'Broken' : 'Equipped'} title={item.broken ? 'Broken' : 'Equipped'}>
+              {item.broken ? 'Broken' : 'Equipped'}
             </span>
           )}
         </article>
