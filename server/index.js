@@ -14,7 +14,7 @@ const engine = new GameEngine({
   requireAuthorization: true,
   authorizeCommand: ({ context }) => Boolean(context?.principal?.id)
 });
-const clients = new Map();
+const clients = new Set();
 
 function sendJson(response, status, value) {
   response.writeHead(status, {
@@ -39,10 +39,8 @@ function authorizeRequest(request) {
 
 function publishToClients(message) {
   const frame = `id: ${message.sequence || ''}\ndata: ${JSON.stringify(message)}\n\n`;
-  for (const [response, client] of clients) {
+  for (const response of clients) {
     try {
-      // A long-lived stream is revoked when its authenticated credential is
-      // rotated. The server never accepts credentials in a URL query string.
       response.write(frame);
     } catch {
       clients.delete(response);
@@ -63,7 +61,7 @@ async function readJson(request) {
   return JSON.parse(Buffer.concat(chunks).toString('utf8'));
 }
 
-function openEventStream(request, response, principal) {
+function openEventStream(request, response) {
   response.writeHead(200, {
     'content-type': 'text/event-stream; charset=utf-8',
     'cache-control': 'no-cache, no-transform',
@@ -71,7 +69,7 @@ function openEventStream(request, response, principal) {
     'x-accel-buffering': 'no'
   });
   response.flushHeaders?.();
-  clients.set(response, { principalId: principal.id });
+  clients.add(response);
   response.on('close', () => clients.delete(response));
 
   const lastId = Number(request.headers['last-event-id'] || 0);
@@ -100,7 +98,7 @@ const server = createServer(async (request, response) => {
   if (request.method === 'GET' && url.pathname === '/api/snapshot') {
     return sendJson(response, 200, engine.protocol.createSnapshot(engine));
   }
-  if (request.method === 'GET' && url.pathname === '/api/events') return openEventStream(request, response, principal);
+  if (request.method === 'GET' && url.pathname === '/api/events') return openEventStream(request, response);
   if (request.method === 'POST' && url.pathname === '/api/command') {
     try {
       const command = await readJson(request);
@@ -122,7 +120,7 @@ server.listen(port, host, () => {
 });
 
 function shutdown() {
-  for (const client of clients.keys()) client.end();
+  for (const client of clients) client.end();
   clients.clear();
   engine.dispose();
   server.close(() => process.exit(0));
