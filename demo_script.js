@@ -285,6 +285,16 @@
       "type": "number",
       "value": 0,
       "title": "Các lần đối chiếu độc lập"
+    },
+    "corroboration_transport_records": {
+      "type": "boolean",
+      "value": false,
+      "title": "Đối chiếu hồ sơ vận chuyển"
+    },
+    "corroboration_class_photo": {
+      "type": "boolean",
+      "value": false,
+      "title": "Đối chiếu ảnh lớp"
     }
   },
   "templates": {
@@ -8246,6 +8256,12 @@
             "subtype": "state",
             "target": "evidence_corroborations",
             "value": 1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "corroboration_transport_records",
+            "value": true
           }
         ],
         "fail": [
@@ -9695,6 +9711,12 @@
             "subtype": "state",
             "target": "evidence_corroborations",
             "value": 1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "corroboration_transport_records",
+            "value": true
           }
         ],
         "fail": [
@@ -9831,6 +9853,12 @@
             "subtype": "state",
             "target": "evidence_corroborations",
             "value": 1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "corroboration_class_photo",
+            "value": true
           }
         ],
         "fail": [
@@ -10130,10 +10158,21 @@
             "value": true
           },
           {
-            "type": "state",
-            "property": "evidence_corroborations",
-            "op": ">=",
-            "value": 2
+            "logic": "AND",
+            "check": [
+              {
+                "type": "state",
+                "property": "corroboration_transport_records",
+                "op": "==",
+                "value": true
+              },
+              {
+                "type": "state",
+                "property": "corroboration_class_photo",
+                "op": "==",
+                "value": true
+              }
+            ]
           }
         ]
       }
