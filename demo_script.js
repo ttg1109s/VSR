@@ -1493,6 +1493,66 @@ export const DEMO_SCRIPT = {
             "action_recover_with_mai",
             "action_recover_character_trust"
           ]
+        },
+        "router_room7_forced": {
+          "meta": {
+            "sceneID": "scene_inn",
+            "subTitleStatus": "Bất an",
+            "desc": "Cửa đã bị cưỡng chế; clue partial và recovery/alternative routes khả dụng.",
+            "title": "Phòng thứ bảy — cửa bị cưỡng chế"
+          },
+          "set": {
+            "blocked": false,
+            "visited": false,
+            "countVisited": 0
+          },
+          "actions": [
+            "action_talk_hanh",
+            "action_open_guestbook",
+            "action_unlock_cellar",
+            "action_confirm_room7",
+            "action_unlock_room7",
+            "action_force_room7",
+            "action_repair_room7_key",
+            "action_open_room7_alternative",
+            "action_inspect_damaged_lock",
+            "action_dry_guestbook",
+            "action_compare_guestbook_photo",
+            "action_verify_guestbook",
+            "action_rest_at_inn",
+            "action_recover_with_mai",
+            "action_recover_character_trust"
+          ]
+        },
+        "router_room7_repaired": {
+          "meta": {
+            "sceneID": "scene_inn",
+            "subTitleStatus": "Bất an",
+            "desc": "Chìa khóa và khóa đã được phục hồi.",
+            "title": "Nhà trọ — chìa khóa được sửa"
+          },
+          "set": {
+            "blocked": false,
+            "visited": false,
+            "countVisited": 0
+          },
+          "actions": [
+            "action_talk_hanh",
+            "action_open_guestbook",
+            "action_unlock_cellar",
+            "action_confirm_room7",
+            "action_unlock_room7",
+            "action_force_room7",
+            "action_repair_room7_key",
+            "action_open_room7_alternative",
+            "action_inspect_damaged_lock",
+            "action_dry_guestbook",
+            "action_compare_guestbook_photo",
+            "action_verify_guestbook",
+            "action_rest_at_inn",
+            "action_recover_with_mai",
+            "action_recover_character_trust"
+          ]
         }
       }
     },
@@ -6534,6 +6594,12 @@ export const DEMO_SCRIPT = {
             "subtype": "toast",
             "level": "success",
             "text": "Cửa bị cưỡng chế. Khóa và chìa khóa chịu hư hại; bằng chứng trong phòng chỉ được phát hiện một phần."
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "room7_key_broken",
+            "value": true
           }
         ],
         "fail": [
