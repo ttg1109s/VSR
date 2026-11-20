@@ -16,14 +16,18 @@ async function startServer() {
   const child = spawn(process.execPath, ['server/index.js'], {
     cwd: process.cwd(),
     env: { ...process.env, VSR_HOST: '127.0.0.1', VSR_PORT: String(port), VSR_API_TOKEN: 'test-secret' },
-    stdio: 'ignore'
+    stdio: ['ignore', 'pipe', 'pipe']
   });
+  let serverOutput = '';
+  child.stdout.on('data', chunk => { serverOutput += chunk.toString(); });
+  child.stderr.on('data', chunk => { serverOutput += chunk.toString(); });
   const base = `http://127.0.0.1:${port}/api`;
   for (let attempt = 0; attempt < 50; attempt++) {
     try {
       const response = await fetch(`${base}/health`);
-      if (response.ok) return { child, base };
+      if (response.ok) return { child, base, getServerOutput: () => serverOutput };
     } catch {}
+    if (child.exitCode !== null) throw new Error(`Engine HTTP service exited during startup (code ${child.exitCode}).\n${serverOutput}`);
     await new Promise(resolve => setTimeout(resolve, 100));
   }
   child.kill('SIGTERM');
@@ -37,7 +41,7 @@ async function stopServer(child) {
 }
 
 test('token-configured server rejects unauthenticated protected HTTP routes and SSE', async () => {
-  const { child, base } = await startServer();
+  const { child, base, getServerOutput } = await startServer();
   try {
     assert.equal((await fetch(`${base}/health`)).status, 200);
     const routes = [
@@ -50,7 +54,12 @@ test('token-configured server rejects unauthenticated protected HTTP routes and 
       assert.equal((await fetch(url, options)).status, 401, `${url} must require authentication`);
     }
     for (const route of ['snapshot', 'demo-scenario']) {
-      const response = await fetch(`${base}/${route}`, { headers: { authorization: 'Bearer test-secret' } });
+      let response;
+      try {
+        response = await fetch(`${base}/${route}`, { headers: { authorization: 'Bearer test-secret' } });
+      } catch (error) {
+        throw new Error(`Authenticated ${route} request failed: ${error.message}\nServer output:\n${getServerOutput()}`);
+      }
       assert.equal(response.status, 200);
     }
   } finally {
