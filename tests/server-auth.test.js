@@ -15,7 +15,7 @@ async function startServer() {
   const port = await availablePort();
   const child = spawn(process.execPath, ['server/index.js'], {
     cwd: process.cwd(),
-    env: { ...process.env, VSR_HOST: '0.0.0.0', VSR_PORT: String(port), VSR_API_TOKEN: 'test-secret' },
+    env: { ...process.env, VSR_HOST: '127.0.0.1', VSR_PORT: String(port), VSR_API_TOKEN: 'test-secret' },
     stdio: 'ignore'
   });
   const base = `http://127.0.0.1:${port}/api`;
@@ -36,7 +36,7 @@ async function stopServer(child) {
   await new Promise(resolve => child.once('exit', resolve));
 }
 
-test('non-loopback deployment rejects unauthenticated protected HTTP routes and SSE', async () => {
+test('token-configured server rejects unauthenticated protected HTTP routes and SSE', async () => {
   const { child, base } = await startServer();
   try {
     assert.equal((await fetch(`${base}/health`)).status, 200);
