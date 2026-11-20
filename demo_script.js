@@ -3024,6 +3024,27 @@
         ],
         "pass": [
           {
+            "type": "characters",
+            "subtype": "edit_stats",
+            "target": "mai",
+            "property": "trust",
+            "field": "current",
+            "mode": "add",
+            "value": 1,
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "action_count",
+                  "target": "action_talk_mai",
+                  "phase": "pass",
+                  "op": "==",
+                  "value": 1
+                }
+              ]
+            }
+          },
+          {
             "type": "set",
             "subtype": "state",
             "target": "mai_approach",
