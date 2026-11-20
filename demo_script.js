@@ -3989,7 +3989,18 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Vòng cọc thiếu mất người thứ mười hai. Người này là ai nhỉ?"
+            "text": "Vòng cọc thiếu mất người thứ mười hai. Người này là ai nhỉ?",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "state",
+                  "property": "knows_twelve",
+                  "op": "==",
+                  "value": false
+                }
+              ]
+            }
           }
         ]
       }
@@ -4196,18 +4207,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Những cái tên trên tường khớp với sơ đồ và mảnh bản đồ. Bạn đã nhận ra danh tính người thứ mười hai—cái tên bị xóa khỏi mọi hồ sơ chính thức.",
-            "req": {
-              "logic": "AND",
-              "check": [
-                {
-                  "type": "state",
-                  "property": "knows_twelve",
-                  "op": "==",
-                  "value": false
-                }
-              ]
-            }
+            "text": "Những cái tên trên tường khớp với sơ đồ và mảnh bản đồ. Bạn đã nhận ra danh tính người thứ mười hai—cái tên bị xóa khỏi mọi hồ sơ chính thức."
           },
           {
             "type": "set",
