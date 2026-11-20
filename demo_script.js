@@ -461,6 +461,70 @@ export const DEMO_SCRIPT = {
           "level": "warning",
           "text": "Sương đang dày lên. Thời gian ở lại không còn nhiều."
         }
+      ],
+      "recover_hymn": [
+        {
+          "type": "set",
+          "subtype": "state",
+          "target": "hymn_partial",
+          "value": false
+        },
+        {
+          "type": "set",
+          "subtype": "state",
+          "target": "clue_hymn",
+          "value": true
+        }
+      ],
+      "open_archive": [
+        {
+          "type": "set",
+          "subtype": "state",
+          "target": "archive_partial",
+          "value": false
+        },
+        {
+          "type": "set",
+          "subtype": "state",
+          "target": "archive_open",
+          "value": true
+        }
+      ],
+      "verify_room7": [
+        {
+          "type": "set",
+          "subtype": "state",
+          "target": "room7_confirmed",
+          "value": true
+        }
+      ],
+      "open_room7_success": [
+        {
+          "type": "set",
+          "subtype": "state",
+          "target": "evidence_hidden_room",
+          "value": true
+        }
+      ],
+      "complete_tunnel_route": [
+        {
+          "type": "set",
+          "subtype": "state",
+          "target": "map_incomplete",
+          "value": false
+        },
+        {
+          "type": "set",
+          "subtype": "state",
+          "target": "clue_tunnel_partial",
+          "value": false
+        },
+        {
+          "type": "set",
+          "subtype": "state",
+          "target": "clue_tunnel",
+          "value": true
+        }
       ]
     },
     "automation": {}
@@ -6187,10 +6251,8 @@ export const DEMO_SCRIPT = {
         ],
         "pass": [
           {
-            "type": "set",
-            "subtype": "state",
-            "target": "evidence_hidden_room",
-            "value": true
+            "type": "effect",
+            "ref": "open_room7_success"
           },
           {
             "type": "set",
@@ -6317,10 +6379,8 @@ export const DEMO_SCRIPT = {
             "value": true
           },
           {
-            "type": "set",
-            "subtype": "state",
-            "target": "evidence_hidden_room",
-            "value": true
+            "type": "effect",
+            "ref": "open_room7_success"
           },
           {
             "type": "set",
@@ -6563,10 +6623,8 @@ export const DEMO_SCRIPT = {
         ],
         "pass": [
           {
-            "type": "set",
-            "subtype": "state",
-            "target": "evidence_hidden_room",
-            "value": true
+            "type": "effect",
+            "ref": "open_room7_success"
           },
           {
             "type": "set",
@@ -6771,10 +6829,8 @@ export const DEMO_SCRIPT = {
         "normal": [],
         "pass": [
           {
-            "type": "set",
-            "subtype": "state",
-            "target": "room7_confirmed",
-            "value": true
+            "type": "effect",
+            "ref": "verify_room7"
           },
           {
             "type": "set",
@@ -7152,10 +7208,8 @@ export const DEMO_SCRIPT = {
         "normal": [],
         "pass": [
           {
-            "type": "set",
-            "subtype": "state",
-            "target": "room7_confirmed",
-            "value": true
+            "type": "effect",
+            "ref": "verify_room7"
           },
           {
             "type": "set",
@@ -7999,16 +8053,8 @@ export const DEMO_SCRIPT = {
         ],
         "pass": [
           {
-            "type": "set",
-            "subtype": "state",
-            "target": "archive_partial",
-            "value": false
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "archive_open",
-            "value": true
+            "type": "effect",
+            "ref": "open_archive"
           },
           {
             "type": "set",
@@ -8084,16 +8130,8 @@ export const DEMO_SCRIPT = {
         ],
         "pass": [
           {
-            "type": "set",
-            "subtype": "state",
-            "target": "archive_open",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "archive_partial",
-            "value": false
+            "type": "effect",
+            "ref": "open_archive"
           },
           {
             "type": "set",
@@ -8168,22 +8206,8 @@ export const DEMO_SCRIPT = {
             "value": -1
           },
           {
-            "type": "set",
-            "subtype": "state",
-            "target": "map_incomplete",
-            "value": false
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "clue_tunnel_partial",
-            "value": false
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "clue_tunnel",
-            "value": true
+            "type": "effect",
+            "ref": "complete_tunnel_route"
           },
           {
             "type": "set",
@@ -8247,22 +8271,8 @@ export const DEMO_SCRIPT = {
         ],
         "pass": [
           {
-            "type": "set",
-            "subtype": "state",
-            "target": "map_incomplete",
-            "value": false
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "clue_tunnel_partial",
-            "value": false
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "clue_tunnel",
-            "value": true
+            "type": "effect",
+            "ref": "complete_tunnel_route"
           },
           {
             "type": "set",
@@ -8313,22 +8323,8 @@ export const DEMO_SCRIPT = {
         "normal": [],
         "pass": [
           {
-            "type": "set",
-            "subtype": "state",
-            "target": "map_incomplete",
-            "value": false
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "clue_tunnel_partial",
-            "value": false
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "clue_tunnel",
-            "value": true
+            "type": "effect",
+            "ref": "complete_tunnel_route"
           },
           {
             "type": "set",
@@ -8637,16 +8633,8 @@ export const DEMO_SCRIPT = {
             "value": -1
           },
           {
-            "type": "set",
-            "subtype": "state",
-            "target": "hymn_partial",
-            "value": false
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "clue_hymn",
-            "value": true
+            "type": "effect",
+            "ref": "recover_hymn"
           },
           {
             "type": "set",
@@ -9567,16 +9555,8 @@ export const DEMO_SCRIPT = {
         ],
         "pass": [
           {
-            "type": "set",
-            "subtype": "state",
-            "target": "clue_hymn",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "hymn_partial",
-            "value": false
+            "type": "effect",
+            "ref": "recover_hymn"
           },
           {
             "type": "set",
