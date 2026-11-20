@@ -23,7 +23,7 @@ export const DEMO_SCRIPT = {
     "updatedAt": "2026-11-16T00:00:00.000Z",
     "copyright": "Kịch bản demo gốc dành cho VSR Engine",
     "license": "Chưa cấp phép",
-    "notes": "Schema remediation: Router metadata normalized; compound ending requirements represented as explicit alternative Actions to preserve original AND/OR intent; invalid player stat subtype corrected; missing bell state declared. JSON-level verification performed; engine runtime validation remains pending."
+    "notes": "Schema remediation: Router metadata normalized; recursive AND/OR requirements supported for endings while preserving single Actions; invalid player stat subtype corrected; missing bell state declared. Schema and runtime validation verified; recursive and flat requirement tests pass."
   },
   "globalStates": {
     "clue_lantern": {
