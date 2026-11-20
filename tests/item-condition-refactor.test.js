@@ -7,7 +7,50 @@ const removedConditionStates = [
   'radio_toolkit_damaged',
   'compass_damaged',
   'bell_wire_damaged',
-  'seal_damaged'
+  'seal_damaged',
+  'identity_verified',
+  'trust_mai',
+  'final_choice',
+  'clue_school_evacuation_notice',
+  'cellar_open',
+  'radio_signal_restored',
+  'evidence_broadcast',
+  'evidence_well_badge',
+  'evidence_hymn_note',
+  'evidence_bell_wire',
+  'evidence_class_register',
+  'evidence_forest_route',
+  'evidence_gear_pin',
+  'evidence_tunnel_manifest',
+  'evidence_station_ticket',
+  'room7_open',
+  'room7_opened_cleanly',
+  'room7_forced',
+  'room7_key_repaired',
+  'room7_clue_partial',
+  'room7_clue_verified',
+  'room7_opened_alternative',
+  'room7_clue_source',
+  'player_recovered',
+  'mill_repair_failed',
+  'evidence_corrupted',
+  'mai_confessed',
+  'hanh_confessed',
+  'keeper_confessed',
+  'npc_recovered_trust',
+  'clue_well_bottom_partial',
+  'echo_distorted',
+  'archive_opened_alternative',
+  'release_partial',
+  'release_reconstructed',
+  'memory_reward_roster',
+  'memory_reward_well',
+  'memory_reward_stakes',
+  'resolve_reward_repair',
+  'map_verified',
+  'mill_powered_partial',
+  'archive_reconstructed',
+  'bell_rung_cleanly'
 ];
 
 function collectReferences(node, out = []) {
@@ -22,7 +65,7 @@ function collectReferences(node, out = []) {
   return out;
 }
 
-test('item-condition refactor preserves schema and removes redundant/dead condition flags', () => {
+test('item-condition refactor plus audited write-only-state cleanup preserves schema', () => {
   assert.deepEqual(validateScenario(DEMO_SCRIPT), []);
 
   for (const stateId of removedConditionStates) {
