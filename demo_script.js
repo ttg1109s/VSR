@@ -4360,12 +4360,6 @@
           },
           {
             "type": "item",
-            "subtype": "usage",
-            "target": "radio_crystal",
-            "value": 1
-          },
-          {
-            "type": "item",
             "subtype": "remove",
             "target": "radio_crystal"
           },
