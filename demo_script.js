@@ -7192,12 +7192,7 @@
             "text": "Cuộn băng mang đến lời kể từ xa, không phải cuộc trò chuyện trực tiếp."
           }
         ],
-        "fail": [
-          {
-            "type": "effect",
-            "ref": "consume_action_listen_mai_tape"
-          }
-        ]
+        "fail": []
       },
       "requirement": {
         "ref": "tape_available"
