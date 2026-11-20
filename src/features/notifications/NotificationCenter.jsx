@@ -10,7 +10,7 @@ const FILTERS = [
   { value: 'story', label: 'Story' }
 ];
 
-const levelTone = level => ({
+const levelLabel = level => ({\n  danger: 'Critical',\n  warning: 'Warning',\n  special: 'Special',\n  success: 'Success',\n  info: 'Info'\n}[level] || 'Info');\n\nconst levelTone = level => ({
   success: 'success',
   warning: 'warning',
   danger: 'danger',
@@ -231,7 +231,10 @@ export default function NotificationCenter({
                       <div className="vsr-notification-item__body">
                         <div className="vsr-notification-item__heading">
                           <strong>{item.title || 'Notification'}</strong>
-                          {!item.read && <Badge tone={tone === 'danger' ? 'warning' : 'info'} size="lg">New</Badge>}
+                          <Badge tone={tone} size="sm" aria-label={'Priority ' + (item.priority ?? levelLabel(item.level))}>
+                            {typeof item.priority === 'number' ? 'P' + item.priority : levelLabel(item.level)}
+                          </Badge>
+                          {!item.read && <Badge tone={tone} size="lg">New</Badge>}
                         </div>
                         <p>{item.message}</p>
                         {validTimestamp && <time className="vsr-notification-item__timestamp" dateTime={timestamp.toISOString()}>{formatRelativeTime(timestamp)}</time>}
