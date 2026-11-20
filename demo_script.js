@@ -12412,7 +12412,7 @@
               "text": "Chiếc cặp màu xanh có một miếng vá hình ngôi sao. Em đã khâu nó vào hôm trước ngày sơ tán."
             }
           ],
-          "choice_id": "linh_stage1",
+          "choice_id": "photo_stage1",
           "choiced": false
         },
         "seat": {
@@ -12422,7 +12422,7 @@
               "text": "Chỗ ngồi ấy không trống. Có người ngồi đó, nhưng khi chụp ảnh mọi người đều quay mặt về phía máy ảnh như thể không thấy."
             }
           ],
-          "choice_id": "linh_stage1",
+          "choice_id": "photo_stage1",
           "choiced": false
         },
         "letters": {
@@ -12432,7 +12432,7 @@
               "text": "Em từng viết tên ấy lên bảng. Khi quay lại, chữ đã bị lau sạch, nhưng bụi phấn vẫn còn vết lõm."
             }
           ],
-          "choice_id": "linh_stage1",
+          "choice_id": "name_stage1",
           "choiced": false
         },
         "roll": {
@@ -12442,7 +12442,7 @@
               "text": "Sổ điểm danh có mười hai dòng. Dòng cuối không bị xé; nó bị phủ một lớp mực dày đến mức giấy gần thủng."
             }
           ],
-          "choice_id": "linh_stage1",
+          "choice_id": "name_stage1",
           "choiced": false
         },
         "fear": {
@@ -12452,7 +12452,7 @@
               "text": "Em sợ nếu đọc đúng tên, người đó sẽ phải quay lại. Nhưng em cũng sợ nếu không ai đọc, người đó sẽ biến mất lần nữa."
             }
           ],
-          "choice_id": "linh_stage1",
+          "choice_id": "teacher_stage1",
           "choiced": false
         },
         "proof": {
@@ -12462,7 +12462,7 @@
               "text": "Hãy lấy bản sao sổ điểm danh và so với tấm ảnh. Đừng chỉ dựa vào điều em nhớ."
             }
           ],
-          "choice_id": "linh_stage1",
+          "choice_id": "teacher_stage1",
           "choiced": false
         },
         "stage1": {
@@ -12653,6 +12653,42 @@
                 "value": true
               }
             ]
+          }
+        ],
+        "photo_stage1": [
+          {
+            "id": "linh_photo_continue1",
+            "text": "Em còn nhớ thêm chi tiết nào khác không?",
+            "jump": "stage1"
+          },
+          {
+            "id": "linh_photo_continue2",
+            "text": "Anh muốn nghe em kể thêm trước khi quyết định.",
+            "jump": "stage1"
+          }
+        ],
+        "name_stage1": [
+          {
+            "id": "linh_name_continue1",
+            "text": "Em cứ kể tiếp, chưa cần phải chọn ngay.",
+            "jump": "stage1"
+          },
+          {
+            "id": "linh_name_continue2",
+            "text": "Anh sẽ không kết luận chỉ từ một cái tên.",
+            "jump": "stage1"
+          }
+        ],
+        "teacher_stage1": [
+          {
+            "id": "linh_teacher_continue1",
+            "text": "Anh muốn nghe thêm trước khi đưa ra quyết định.",
+            "jump": "stage1"
+          },
+          {
+            "id": "linh_teacher_continue2",
+            "text": "Em không cần phải trả lời vội.",
+            "jump": "stage1"
           }
         ]
       }
