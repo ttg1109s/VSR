@@ -6,7 +6,7 @@ export const DEMO_SCRIPT = {
     "desc": "Bạn tỉnh dậy giữa màn đêm của một ngôi làng bị mắc kẹt trong ký ức. Sương mù che khuất những con đường và tiếng loa rè rè vọng ra từ quảng trường. Hãy lần theo dấu vết qua các địa điểm trong làng — từ giếng đá, nhà trọ, nhà nguyện, trường học đến khu rừng, cối xay và đường hầm — để tìm sân ga xuất hiện lúc 03:17; sự thật được ghép lại sẽ quyết định ai được giải thoát.",
     "writer": "Nhóm phát triển bản demo VSR",
     "studio": "VSR",
-    "version": "2.1.0",
+    "version": "2.1.1",
     "language": "vi",
     "ageRating": "16+",
     "tags": [
@@ -20,10 +20,10 @@ export const DEMO_SCRIPT = {
     "entryScene": "scene_village",
     "entryCharacter": "player",
     "createdAt": "2026-11-15T00:00:00.000Z",
-    "updatedAt": "2026-11-16T00:00:00.000Z",
+    "updatedAt": "2026-11-20T00:00:00.000Z",
     "copyright": "Kịch bản demo gốc dành cho VSR Engine",
     "license": "Chưa cấp phép",
-    "notes": "Schema remediation: Router metadata normalized; recursive AND/OR requirements supported for endings while preserving single Actions; invalid player stat subtype corrected; missing bell state declared. Schema and runtime validation verified; recursive and flat requirement tests pass."
+    "notes": "Schema remediation: Router metadata normalized; recursive AND/OR requirements supported for endings while preserving single Actions; invalid player stat subtype corrected; missing bell state declared. Schema and runtime validation verified; recursive and flat requirement tests pass. Item-condition audit: evacuation_seal damage is now derived from item.usage; unused damage flags radio_toolkit_damaged, compass_damaged and bell_wire_damaged removed. Lantern and Room 7 key damage flags retained because usage does not uniquely encode their event semantics."
   },
   "globalStates": {
     "clue_lantern": {
@@ -366,23 +366,7 @@ export const DEMO_SCRIPT = {
       "type": "boolean",
       "value": false
     },
-    "bell_wire_damaged": {
-      "type": "boolean",
-      "value": false
-    },
-    "compass_damaged": {
-      "type": "boolean",
-      "value": false
-    },
-    "seal_damaged": {
-      "type": "boolean",
-      "value": false
-    },
     "manifest_partial": {
-      "type": "boolean",
-      "value": false
-    },
-    "radio_toolkit_damaged": {
       "type": "boolean",
       "value": false
     },
@@ -5125,12 +5109,6 @@ export const DEMO_SCRIPT = {
             "target": "action_find_radio_toolkit",
             "property": "display",
             "value": "hide"
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "radio_toolkit_damaged",
-            "value": false
           }
         ]
       }
@@ -5839,12 +5817,6 @@ export const DEMO_SCRIPT = {
             "subtype": "toast",
             "level": "success",
             "text": "Đã thu hồi dây đồng chuông; cơ cấu chuông được cập nhật."
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "bell_wire_damaged",
-            "value": false
           }
         ]
       }
@@ -6018,12 +5990,6 @@ export const DEMO_SCRIPT = {
             "subtype": "toast",
             "level": "success",
             "text": "Đã thu hồi la bàn dẫn đường và xác nhận tuyến qua rừng."
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "compass_damaged",
-            "value": false
           }
         ]
       }
@@ -6074,12 +6040,6 @@ export const DEMO_SCRIPT = {
             "subtype": "state",
             "target": "evidence_evacuation_seal",
             "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "seal_damaged",
-            "value": false
           }
         ]
       }
@@ -7860,12 +7820,6 @@ export const DEMO_SCRIPT = {
           {
             "type": "set",
             "subtype": "state",
-            "target": "seal_damaged",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
             "target": "clue_photo",
             "value": true
           },
@@ -7981,10 +7935,11 @@ export const DEMO_SCRIPT = {
         "logic": "AND",
         "check": [
           {
-            "type": "state",
-            "property": "seal_damaged",
-            "op": "==",
-            "value": true
+            "type": "item",
+            "subtype": "usage",
+            "target": "evacuation_seal",
+            "op": ">",
+            "value": 0
           },
           {
             "type": "item",
@@ -9473,12 +9428,6 @@ export const DEMO_SCRIPT = {
             "type": "set",
             "subtype": "state",
             "target": "radio_damaged",
-            "value": false
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "radio_toolkit_damaged",
             "value": false
           },
           {
