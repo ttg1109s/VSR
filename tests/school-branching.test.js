@@ -97,8 +97,10 @@ test('Memory ending Action is available in station routers', () => {
   }
   assert.ok(refs.length >= 2, 'Memory release Action should be exposed in both station routers');
 });
-\n\ntest('plaza and inn dialogue react to the irreversible branch', () => {
-  for (const chatId of ['chat_mai_memory', 'chat_mai_evidence', 'chat_hanh_memory', 'chat_hanh_evidence']) assert.ok(DEMO_SCRIPT.chats[chatId], `Missing branch chat ${chatId}`);
+
+
+test('plaza and inn dialogue react to the irreversible branch', () => {
+  for (const chatId of ['chat_mai_memory', 'chat_mai_evidence', 'chat_hanh_memory', 'chat_hanh_evidence']) assert.ok(DEMO_SCRIPT.chat[chatId], `Missing branch chat ${chatId}`);
   assert.ok(actions.action_talk_mai.effect.normal.some(e => e.target === 'chat_mai_memory' && e.req?.check?.some(c => c.property === 'school_choice' && c.value === 'memory')));
   assert.ok(actions.action_talk_mai.effect.normal.some(e => e.target === 'chat_mai_evidence' && e.req?.check?.some(c => c.property === 'school_choice' && c.value === 'evidence')));
   assert.ok(actions.action_talk_hanh.effect.normal.some(e => e.target === 'chat_hanh_memory' && e.req?.check?.some(c => c.property === 'school_choice' && c.value === 'memory')));
