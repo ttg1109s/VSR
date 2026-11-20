@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { DEMO_SCRIPT } from '../demo_script.js';
+import demoScriptSource from '../demo_script.js?raw';
+const DEMO_SCRIPT = JSON.parse(demoScriptSource);
 import { JsonClient } from '../client/adapters/JsonClient.js';
 import { WorkerJsonTransport } from '../client/adapters/WorkerJsonTransport.js';
 import HomePage from './pages/home/HomePage.jsx';
