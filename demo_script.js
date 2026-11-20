@@ -2795,7 +2795,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Ánh sáng của đèn bão có thể làm lộ những dấu vết ẩn trong sương.",
+            "text": "Ánh đèn bão xuyên qua màn sương. Có lẽ những gì đang bị che khuất sẽ hiện ra dưới ánh sáng này.",
             "req": {
               "logic": "AND",
               "check": [
@@ -2859,7 +2859,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Những dòng chữ vẫn chưa khơi lại đủ ký ức. Hãy tìm thêm manh mối rồi quay lại."
+            "text": "Những dòng chữ vẫn rời rạc, chưa đủ để gợi lại điều bạn đã quên. Có lẽ một dấu vết khác sẽ giúp chúng nối liền."
           }
         ]
       }
@@ -3152,7 +3152,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Ánh sáng chưa được kích hoạt; hãy tìm và khôi phục manh mối liên quan đến chiếc đèn trước khi soi đáy giếng."
+            "text": "Đèn vẫn chưa đủ sáng để soi xuống giếng. Bạn cần tìm lại dấu vết liên quan đến nó trước."
           }
         ]
       },
@@ -3468,7 +3468,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Cửa hầm dùng mật mã riêng. Chìa khóa phòng thứ bảy không phải chìa khóa hầm."
+            "text": "Chìa khóa phòng thứ bảy không vừa ổ khóa này. Cửa hầm dường như chờ một mật mã khác."
           }
         ]
       },
@@ -3750,7 +3750,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Cơ cấu chuông vẫn thiếu vài phần. Quả lắc, dây đồng, trang ghi chú và thời điểm chính xác đều cần được tìm thấy."
+            "text": "Cơ cấu chuông chưa hoàn chỉnh. Quả lắc, dây đồng và ghi chú vẫn còn thiếu; cả thời điểm rung chuông cũng phải chính xác."
           }
         ]
       },
@@ -4047,7 +4047,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Không có la bàn, những lối mòn đổi hướng liên tục. Dấu sơn thôi không còn đủ để dẫn đường."
+            "text": "Không có la bàn, những lối mòn cứ dẫn bạn vòng trở lại. Dấu sơn đã không còn đủ để xác định hướng đi."
           }
         ]
       },
@@ -4170,7 +4170,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Phù hiệu đội sơ tán vẫn chưa xuất hiện. Hãy tìm dấu niêm phong để đối chiếu trước khi mở chiếc hộp."
+            "text": "Bạn vẫn chưa tìm thấy phù hiệu đội sơ tán. Dấu niêm phong có thể giúp xác định chiếc hộp này trước khi mở."
           }
         ]
       },
@@ -4530,7 +4530,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Bạn vẫn thiếu cuộn tinh thể để dò đúng tần số phát ra từ dưới ga."
+            "text": "Tín hiệu dưới ga vẫn nằm ngoài tầm dò. Cuộn tinh thể có lẽ là thứ bạn cần để bắt đúng tần số."
           }
         ]
       },
@@ -4571,7 +4571,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Chưa đủ dấu vết để giải thoát. Con đường bằng chứng còn những dấu cần tìm; con đường ký ức cũng đòi hỏi bạn giữ lại ký ức và khôi phục các mốc đã mất."
+            "text": "Những dấu vết hiện có chưa đủ để đưa mọi người ra khỏi vòng mắc kẹt. Nếu chọn bằng chứng, bạn còn phải tìm những hồ sơ bị thiếu; nếu chọn ký ức, hãy giữ lại những gì đã nhớ và khôi phục các mốc đã mất."
           }
         ]
       },
@@ -5223,7 +5223,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Sân ga vẫn khuất. Bạn cần kho hồ sơ, danh sách vận chuyển, cuộn phim sơ tán và những dấu mốc còn thiếu—thánh ca, vòng cọc, đường hầm."
+            "text": "Sân ga vẫn chưa hiện ra. Kho hồ sơ, danh sách vận chuyển và cuộn phim sơ tán còn phải được tìm thấy; thánh ca, vòng cọc và đường hầm cũng chưa thể bỏ qua."
           }
         ]
       },
