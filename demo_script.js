@@ -216,6 +216,16 @@ export const DEMO_SCRIPT = {
       "value": false,
       "title": "NPC tránh người chơi"
     },
+    "mai_approach": {
+      "type": "string",
+      "value": "none",
+      "title": "Cách tiếp cận Mai"
+    },
+    "clue_mai_observation": {
+      "type": "boolean",
+      "value": false,
+      "title": "Dấu hiệu quan sát Mai"
+    },
     "forest_route_partial": {
       "type": "boolean",
       "value": false,
@@ -2499,12 +2509,14 @@ export const DEMO_SCRIPT = {
     },
     "action_talk_mai": {
       "meta": {
-        "title": "Mai",
+        "title": "Trò chuyện với Mai",
         "buttonLabel": "Trò chuyện",
         "desc": "Mai đứng gần quảng trường nhưng luôn giữ khoảng cách với giếng đá. Những gì cô sẵn sàng kể thay đổi theo các manh mối bạn đã tìm được."
       },
       "set": {
-        "display": "show"
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
       },
       "effect": {
         "normal": [
@@ -2654,6 +2666,26 @@ export const DEMO_SCRIPT = {
           }
         ],
         "pass": [
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "mai_approach",
+            "value": "talk"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_talk_mai",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_observe_mai",
+            "property": "display",
+            "value": "hide"
+          },
           {
             "type": "characters",
             "subtype": "edit_stats",
@@ -6821,7 +6853,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Quan sát Mai từ xa",
         "buttonLabel": "Quan sát",
-        "desc": "Không ép Mai kể chuyện. Quan sát hành vi và ghi nhận dấu hiệu, không làm thay đổi Trust."
+        "desc": "Giữ khoảng cách và theo dõi hành vi của Mai. Lựa chọn này thay thế việc trò chuyện trực tiếp, ghi nhận một dấu hiệu để tiếp tục điều tra."
       },
       "set": {
         "display": "show",
@@ -6834,8 +6866,14 @@ export const DEMO_SCRIPT = {
           {
             "type": "set",
             "subtype": "state",
-            "target": "npc_avoids_player",
-            "value": false
+            "target": "mai_approach",
+            "value": "observe"
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_mai_observation",
+            "value": true
           },
           {
             "type": "set",
@@ -6845,10 +6883,22 @@ export const DEMO_SCRIPT = {
             "value": "hide"
           },
           {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_talk_mai",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "goto",
+            "subtype": "chat",
+            "target": "chat_mai_observation"
+          },
+          {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Bạn giữ khoảng cách an toàn; có thể tiếp tục bằng evidence."
+            "text": "Bạn ghi nhận dấu hiệu từ xa. Mai không còn là đối tượng tiếp cận trực tiếp trong nhánh này."
           }
         ],
         "fail": []
@@ -6858,9 +6908,9 @@ export const DEMO_SCRIPT = {
         "check": [
           {
             "type": "state",
-            "property": "npc_avoids_player",
+            "property": "mai_approach",
             "op": "==",
-            "value": true
+            "value": "none"
           }
         ]
       }
@@ -10764,6 +10814,63 @@ export const DEMO_SCRIPT = {
             "id": "voice_village_question",
             "text": "Nếu ký ức có thể nói dối, làm sao tôi biết đâu là sự thật?",
             "jump": "village_question"
+          }
+        ]
+      }
+    },
+    "chat_mai_observation": {
+      "meta": {
+        "title": "Mai — Dấu hiệu từ xa",
+        "loop": false,
+        "sender": "mai",
+        "entry": "start",
+        "to": ["player"]
+      },
+      "block": {
+        "start": {
+          "line": [
+            {
+              "char_id": "$communication",
+              "text": "Bạn không tiến lại gần. Mai nhiều lần nhìn về phía giếng rồi quay đi, nhưng khi loa phát thanh rè lên, cô lại kiểm tra một mảnh giấy gấp trong tay."
+            },
+            {
+              "char_id": "$communication",
+              "text": "Từ khoảng cách này, bạn không thể đọc được nội dung. Tuy nhiên, hành vi của Mai cho thấy giếng và bản ghi phát thanh có liên quan đến cùng một ký ức. Bạn ghi nhận dấu hiệu, không suy diễn lời khai."
+            }
+          ],
+          "choice_id": "mai_observation_follow",
+          "choiced": false
+        },
+        "records": {
+          "line": [
+            {
+              "char_id": "$communication",
+              "text": "Dấu hiệu này có thể được đối chiếu với hồ sơ sơ tán hoặc danh sách lớp. Hãy tìm nguồn độc lập trước khi kết luận Mai đang nhớ điều gì."
+            }
+          ],
+          "choiced": false
+        },
+        "well": {
+          "line": [
+            {
+              "char_id": "$communication",
+              "text": "Mai tránh nhìn xuống giếng nhưng không rời quảng trường. Đây chỉ là dấu hiệu hành vi; nó không chứng minh cô từng ở dưới giếng hay là người thứ mười hai."
+            }
+          ],
+          "choiced": false
+        }
+      },
+      "choice": {
+        "mai_observation_follow": [
+          {
+            "id": "mai_observation_records",
+            "text": "Đối chiếu hành vi này với hồ sơ sơ tán.",
+            "jump": "records"
+          },
+          {
+            "id": "mai_observation_well",
+            "text": "Ghi nhận việc Mai tránh nhìn giếng, chưa kết luận.",
+            "jump": "well"
           }
         ]
       }
