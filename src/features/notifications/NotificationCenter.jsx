@@ -10,7 +10,15 @@ const FILTERS = [
   { value: 'story', label: 'Story' }
 ];
 
-const levelLabel = level => ({\n  danger: 'Critical',\n  warning: 'Warning',\n  special: 'Special',\n  success: 'Success',\n  info: 'Info'\n}[level] || 'Info');\n\nconst levelTone = level => ({
+const levelLabel = level => ({
+  danger: 'Critical',
+  warning: 'Warning',
+  special: 'Special',
+  success: 'Success',
+  info: 'Info'
+}[level] || 'Info');
+
+const levelTone = level => ({
   success: 'success',
   warning: 'warning',
   danger: 'danger',
