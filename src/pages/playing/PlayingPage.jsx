@@ -147,12 +147,12 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
             setActiveNavigation(noteOpen ? null : 'note');
             return;
           }
-          if (value === 'inventor') {
+          if (value === 'inventory') {
             setNoteOpen(false);
             setInventoryOpen(current => !current);
             setContactOpen(false);
             setNotificationOpen(false);
-            setActiveNavigation(inventoryOpen ? null : 'inventor');
+            setActiveNavigation(inventoryOpen ? null : 'inventory');
             return;
           }
           if (value === 'notify') {
@@ -171,7 +171,7 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
         }}
         items={[
           { value: 'note', label: 'Note', icon: 'sticky_note_2' },
-          ...(snapshot?.presentation?.inventory?.enabled !== false ? [{ value: 'inventor', label: 'Inventory', icon: 'inventory_2' }] : []),
+          ...(snapshot?.presentation?.inventory?.enabled !== false ? [{ value: 'inventory', label: 'Inventory', icon: 'inventory_2' }] : []),
           { value: 'contact', label: 'Contact', icon: 'contacts' },
           { value: 'notify', label: 'Notify', icon: 'notifications', badge: unreadCount, badgeLabel: 'unread notifications' }
         ]}
