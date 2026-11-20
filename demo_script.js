@@ -7254,7 +7254,7 @@ export const DEMO_SCRIPT = {
     "subtype": "usage",
     "target": "lantern",
     "op": "<",
-    "value": 4
+    "value": 3
   }
 ]
       }
