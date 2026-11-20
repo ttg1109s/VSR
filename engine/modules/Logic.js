@@ -184,26 +184,23 @@ export const LogicSystem = {
         if (req === null || req === undefined) {
             return { pass: false, type: 'invalid_requirement' };
         }
-
-        let definition = req;
-        if (req && typeof req === 'object' && typeof req.ref === 'string') {
-            definition = this.src?.templates?.requirements?.[req.ref];
-        }
-        if (
-            !definition ||
-            typeof definition !== 'object' ||
-            Array.isArray(definition) ||
-            !Object.prototype.hasOwnProperty.call(definition, 'logic') ||
-            !Array.isArray(definition.check) ||
-            definition.check.length === 0
-        ) {
-            return { pass: false, type: 'invalid_requirement' };
-        }
-
-        return this.evaluateRequirementNode(definition);
+        return this.evaluateRequirementNode(req, []);
     },
 
-    evaluateRequirementNode(node) {
+    evaluateRequirementNode(node, refStack = []) {
+        if (node && typeof node === 'object' && !Array.isArray(node) &&
+            typeof node.ref === 'string') {
+            const ref = node.ref;
+            if (refStack.includes(ref)) {
+                return { pass: false, type: 'invalid_requirement' };
+            }
+            const definition = this.src?.templates?.requirements?.[ref];
+            if (!definition) {
+                return { pass: false, type: 'invalid_requirement' };
+            }
+            return this.evaluateRequirementNode(definition, [...refStack, ref]);
+        }
+
         if (!node || typeof node !== 'object' || Array.isArray(node) ||
             !Object.prototype.hasOwnProperty.call(node, 'logic') ||
             !Array.isArray(node.check) || node.check.length === 0) {
@@ -212,9 +209,9 @@ export const LogicSystem = {
 
         const results = node.check.map(child => {
             if (child && typeof child === 'object' && !Array.isArray(child) &&
-                Object.prototype.hasOwnProperty.call(child, 'logic') &&
-                Array.isArray(child.check)) {
-                return this.evaluateRequirementNode(child);
+                (typeof child.ref === 'string' ||
+                (Object.prototype.hasOwnProperty.call(child, 'logic') && Array.isArray(child.check)))) {
+                return this.evaluateRequirementNode(child, refStack);
             }
             return this.checkSingle(child);
         });
