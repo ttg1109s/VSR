@@ -16,20 +16,10 @@ const CAROUSEL_OPTIONS={
 
 
 
-function shuffled(items){
- const result=[...items];
- for(let i=result.length-1;i>0;i--){
-  const j=Math.floor(Math.random()*(i+1));
-  [result[i],result[j]]=[result[j],result[i]];
- }
- return result;
-}
-
 const ActionCollection=forwardRef(function ActionCollection({actions=EMPTY_ACTIONS,client,passwordChallenge=null,onError,sceneId=null,onNavigationStateChange},ref){
  const[pending,setPending]=useState(()=>new Set()),cache=useRef(new Map());
  const busyDelayControllers=useRef(new Set());
  useEffect(()=>()=>{for(const controller of busyDelayControllers.current)controller.abort();busyDelayControllers.current.clear();},[]);
- const [order,setOrder]=useState({sceneId:null,keys:[]});
  const [carouselRef,emblaApi]=useEmblaCarousel(CAROUSEL_OPTIONS);
  const [activeIndex,setActiveIndex]=useState(0);
  const stable=useMemo(()=> (Array.isArray(actions)?actions:[]).map(a=>{
@@ -40,21 +30,7 @@ const ActionCollection=forwardRef(function ActionCollection({actions=EMPTY_ACTIO
   const next=new Map(stable.map(a=>[a.key||a.id,a]));
   cache.current=next;
  },[stable]);
- useEffect(()=>{
-  const keys=stable.map(a=>a.key||a.id);
-  setOrder(previous=>{
-   if(previous.sceneId!==sceneId)return {sceneId,keys:shuffled(keys)};
-   const retained=previous.keys.filter(k=>keys.includes(k));
-   const known=new Set(retained);
-   const nextKeys=[...retained,...shuffled(keys.filter(k=>!known.has(k)))];
-   if(nextKeys.length===previous.keys.length&&nextKeys.every((key,index)=>key===previous.keys[index]))return previous;
-   return {sceneId,keys:nextKeys};
-  });
- },[stable,sceneId]);
- const ordered=useMemo(()=>{
-  const byKey=new Map(stable.map(a=>[a.key||a.id,a]));
-  return order.keys.map(k=>byKey.get(k)).filter(Boolean);
- },[stable,order]);
+ const ordered=stable;
  const scrollToIndex=useCallback((index)=>{
   if(!ordered.length||!emblaApi||!Number.isFinite(index))return;
   const next=(index+ordered.length)%ordered.length;
