@@ -6890,15 +6890,15 @@ export const DEMO_SCRIPT = {
             "value": "hide"
           },
           {
-            "type": "goto",
-            "subtype": "chat",
-            "target": "chat_mai_observation"
-          },
-          {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
             "text": "Bạn ghi nhận dấu hiệu từ xa. Mai không còn là đối tượng tiếp cận trực tiếp trong nhánh này."
+          },
+          {
+            "type": "goto",
+            "subtype": "chat",
+            "target": "chat_mai_observation"
           }
         ],
         "fail": []
