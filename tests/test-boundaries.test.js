@@ -16,7 +16,7 @@ function walk(directory) {
 
 test('Engine tests do not depend on Demo scenario data', () => {
   const violations = walk(root)
-    .filter(path => !path.endsWith(demoSchemaTest))
+    .filter(path => !path.endsWith(demoSchemaTest) && !path.endsWith('test-boundaries.test.js'))
     .flatMap(path => {
       const source = readFileSync(path, 'utf8');
       return forbidden.test(source) ? [path.replace(root, 'tests/')] : [];
