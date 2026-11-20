@@ -164,7 +164,8 @@ test('a global action cannot be triggered unless the active router references it
       scenes: { start: { routers: { main: { actions: [] } } } },
       actions: { hidden: { meta: { title: 'Hidden' }, set: { display: 'show' } } }
     },
-    getEffectiveActions: ActionSystem.getEffectiveActions
+    getEffectiveActions: ActionSystem.getEffectiveActions,
+    notifyActionFailure() {}
   };
   assert.deepEqual(await ActionSystem.handleAction.call(engine, 'hidden'), { success: false, reason: 'action_not_found' });
 });
@@ -265,7 +266,7 @@ test('the canonical demo scenario satisfies the schema and semantic contract', (
   assert.deepEqual(validateScenario(DEMO_SCRIPT), []);
   const normalized = normalizeScenario(DEMO_SCRIPT);
   assert.equal(normalized.formatVersion, 1);
-  assert.equal(normalized.meta.entryScene, 'scene_village_square');
+  assert.equal(normalized.meta.entryScene, 'scene_village');
 });
 
 test('global state declarations require values that match their declared type', () => {
@@ -312,12 +313,12 @@ test('choice IDs are unique within each chat while separate chats may reuse them
     { id: 'shared_choice', text: 'Continue', jump: 'first' }
   ];
   scenario.chat.first = {
-    meta: { loop: false, entry: 'first' },
+    meta: { loop: false, entry: 'first', to: ['player'] },
     block: { first: { line: [], choice_id: 'answer' } },
     choice: { answer: sharedChoices }
   };
   scenario.chat.second = {
-    meta: { loop: false, entry: 'first' },
+    meta: { loop: false, entry: 'first', to: ['player'] },
     block: { first: { line: [], choice_id: 'answer' } },
     choice: { answer: sharedChoices.map(choice => ({ ...choice })) }
   };
@@ -1536,7 +1537,7 @@ test('village notice and school evacuation notice use separate clue states', () 
   assert.ok(DEMO_SCRIPT.globalStates.clue_village_notice);
   assert.ok(DEMO_SCRIPT.globalStates.clue_school_evacuation_notice);
   assert.equal(DEMO_SCRIPT.globalStates.clue_notice, undefined);
-  assert.equal(DEMO_SCRIPT.actions.action_read_notice.effect.pass.some(effect =>
+  assert.equal(DEMO_SCRIPT.actions.action_read_notice.effect.normal.some(effect =>
     effect.type === 'set' && effect.subtype === 'state' && effect.target === 'clue_village_notice'
   ), true);
   assert.equal(DEMO_SCRIPT.actions.action_inspect_evacuation_notice.effect.pass.some(effect =>
@@ -1550,6 +1551,7 @@ test('village notice and school evacuation notice use separate clue states', () 
 
 test('requirement failure publishes an unlocked Action snapshot after notify effects', async () => {
   const scenario = validScenario();
+  scenario.globalStates.clue_tunnel = { type: 'boolean', value: false };
   scenario.actions.map_check = {
     meta: { title: 'Map overlay' },
     set: { display: 'show', requirement: true },
