@@ -118,11 +118,17 @@
   grid-template-columns: minmax(0, 1fr);
 }
 .vsr-description-list__row--inline {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+  display: flex;
   align-items: baseline;
+  justify-content: space-between;
   gap: var(--vsr-space-3);
 }
+.vsr-description-list__row--inline .vsr-description-list__term {
+  flex: 1 1 auto;
+}
 .vsr-description-list__row--inline .vsr-description-list__detail {
+  flex: 0 1 auto;
+  max-width: 55%;
   text-align: end;
 }
 .vsr-description-list__row--span-full { grid-column: 1 / -1; }
@@ -139,9 +145,6 @@
 @media (max-width: 599px) {
   .vsr-description-list--columns-2,
   .vsr-description-list--columns-3 { grid-template-columns: minmax(0, 1fr); }
-  .vsr-description-list__row--inline {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
-  }
 }
 
 /* Reusable content and metadata patterns. */
