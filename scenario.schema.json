@@ -4063,7 +4063,10 @@
                 "then": {
                   "properties": {
                     "op": {
-                      "const": "=="
+                      "enum": [
+                        "==",
+                        "hasAll"
+                      ]
                     },
                     "value": {
                       "type": "array",
