@@ -45,7 +45,8 @@ export const DEMO_SCRIPT = {
     "truth_fragments": {
       "type": "number",
       "value": 0
-    },    "school_choice": {
+    },
+    "school_choice": {
       "type": "string",
       "value": "undecided"
     },
