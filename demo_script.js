@@ -23,7 +23,7 @@ export const DEMO_SCRIPT = {
     "updatedAt": "2026-11-16T00:00:00.000Z",
     "copyright": "Kịch bản demo gốc dành cho VSR Engine",
     "license": "Chưa cấp phép",
-    "notes": "Structural rewrite: every distinct physical location is a Scene; each Router represents a state/presentation of that space; Actions encode interaction, state changes and navigation. Consequence system expanded across all phases: item quality/usage, recovery branches, character stats, alternative evidence and ending variants. No runtime test suite was run as requested."
+    "notes": "Schema remediation: Router metadata normalized; compound ending requirements represented as explicit alternative Actions to preserve original AND/OR intent; invalid player stat subtype corrected; missing bell state declared. JSON-level verification performed; engine runtime validation remains pending."
   },
   "globalStates": {
     "clue_lantern": {
@@ -431,6 +431,10 @@ export const DEMO_SCRIPT = {
       "value": false
     },
     "archive_reconstructed": {
+      "type": "boolean",
+      "value": false
+    },
+    "bell_rung_cleanly": {
       "type": "boolean",
       "value": false
     }
@@ -2059,8 +2063,7 @@ export const DEMO_SCRIPT = {
           "meta": {
             "sceneID": "scene_inn",
             "subTitleStatus": "Bất an",
-            "desc": "Cửa đã bị cưỡng chế; clue partial và recovery/alternative routes khả dụng.",
-            "title": "Phòng thứ bảy — cửa bị cưỡng chế"
+            "desc": "Phòng thứ bảy — cửa bị cưỡng chế. Cửa đã bị cưỡng chế; clue partial và recovery/alternative routes khả dụng."
           },
           "set": {
             "blocked": false,
@@ -2089,8 +2092,7 @@ export const DEMO_SCRIPT = {
           "meta": {
             "sceneID": "scene_inn",
             "subTitleStatus": "Bất an",
-            "desc": "Chìa khóa và khóa đã được phục hồi.",
-            "title": "Nhà trọ — chìa khóa được sửa"
+            "desc": "Nhà trọ — chìa khóa được sửa. Chìa khóa và khóa đã được phục hồi."
           },
           "set": {
             "blocked": false,
@@ -2683,7 +2685,10 @@ export const DEMO_SCRIPT = {
             "action_choose_fate_memory",
             "action_ending_bury",
             "action_ending_echo",
+            "action_ending_echo_partial",
+            "action_ending_echo_testimony",
             "action_ending_depart",
+            "action_ending_depart_verified",
             "action_find_station_ticket",
             "action_listen_static",
             "action_diagnose_radio",
@@ -2711,7 +2716,10 @@ export const DEMO_SCRIPT = {
             "action_choose_fate_memory",
             "action_ending_bury",
             "action_ending_echo",
+            "action_ending_echo_partial",
+            "action_ending_echo_testimony",
             "action_ending_depart",
+            "action_ending_depart_verified",
             "action_ending_release_partial",
             "action_ending_release_reconstructed",
             "action_verify_ticket"
@@ -4854,27 +4862,10 @@ export const DEMO_SCRIPT = {
             "value": true
           },
           {
-            "logic": "OR",
-            "check": [
-              {
-                "type": "state",
-                "property": "voice_revealed",
-                "op": "==",
-                "value": true
-              },
-              {
-                "type": "state",
-                "property": "identity_verified_partial",
-                "op": "==",
-                "value": true
-              },
-              {
-                "type": "state",
-                "property": "linh_private_testimony",
-                "op": "==",
-                "value": true
-              }
-            ]
+            "type": "state",
+            "property": "voice_revealed",
+            "op": "==",
+            "value": true
           }
         ]
       }
@@ -4924,24 +4915,13 @@ export const DEMO_SCRIPT = {
             "value": "unpunched_ticket"
           },
           {
-            "logic": "OR",
-            "check": [
-              {
-                "type": "stats",
-                "subtype": "item",
-                "target": "unpunched_ticket",
-                "property": "verification",
-                "field": "current",
-                "op": ">=",
-                "value": 1
-              },
-              {
-                "type": "state",
-                "property": "ticket_verified",
-                "op": "==",
-                "value": true
-              }
-            ]
+            "type": "stats",
+            "subtype": "item",
+            "target": "unpunched_ticket",
+            "property": "verification",
+            "field": "current",
+            "op": ">=",
+            "value": 1
           }
         ]
       }
@@ -7217,7 +7197,7 @@ export const DEMO_SCRIPT = {
           },
           {
             "type": "stats",
-            "subtype": "character",
+            "subtype": "characters",
             "target": "player",
             "property": "composure",
             "field": "current",
@@ -11445,6 +11425,165 @@ export const DEMO_SCRIPT = {
           {
             "type": "state",
             "property": "clue_tunnel",
+            "op": "==",
+            "value": true
+          }
+        ]
+      }
+    },
+    "action_ending_echo_partial": {
+      "meta": {
+        "title": "Ở lại — xác minh danh tính",
+        "buttonLabel": "Ở lại — xác minh danh tính",
+        "desc": "Danh tính người thứ mười hai đã được xác minh một phần. Tiếng vọng thứ mười hai không thuộc về bản ghi phát thanh thông thường. Nó gắn với người đã bị xóa khỏi danh sách và vẫn còn hiện diện trong ký ức của một số nhân chứng. Ở lại đồng nghĩa với việc chấp nhận nghe hết câu chuyện, kể cả khi ranh giới giữa người sống và ký ức không còn rõ ràng."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "final_choice",
+            "value": "echo"
+          },
+          {
+            "type": "goto",
+            "subtype": "end",
+            "target": "ending_echo"
+          }
+        ],
+        "fail": [
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "warning",
+            "text": "Cần biết về người thứ mười hai và có voice, testimony hoặc evidence thay thế."
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "knows_twelve",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "identity_verified_partial",
+            "op": "==",
+            "value": true
+          }
+        ]
+      }
+    },
+    "action_ending_echo_testimony": {
+      "meta": {
+        "title": "Ở lại — lời chứng của Linh",
+        "buttonLabel": "Ở lại — lời chứng của Linh",
+        "desc": "Lời chứng riêng của Linh xác nhận sự hiện diện của người thứ mười hai. Tiếng vọng thứ mười hai không thuộc về bản ghi phát thanh thông thường. Nó gắn với người đã bị xóa khỏi danh sách và vẫn còn hiện diện trong ký ức của một số nhân chứng. Ở lại đồng nghĩa với việc chấp nhận nghe hết câu chuyện, kể cả khi ranh giới giữa người sống và ký ức không còn rõ ràng."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "final_choice",
+            "value": "echo"
+          },
+          {
+            "type": "goto",
+            "subtype": "end",
+            "target": "ending_echo"
+          }
+        ],
+        "fail": [
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "warning",
+            "text": "Cần biết về người thứ mười hai và có voice, testimony hoặc evidence thay thế."
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "knows_twelve",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "linh_private_testimony",
+            "op": "==",
+            "value": true
+          }
+        ]
+      }
+    },
+    "action_ending_depart_verified": {
+      "meta": {
+        "title": "Chuyến tàu 03:17 — xác minh hồ sơ",
+        "buttonLabel": "Lên tàu (hồ sơ đã xác minh)",
+        "desc": "Vé đã được xác minh bằng hồ sơ Manifest. Chuyến tàu 03:17 dừng ở sân ga không có trên bản đồ. Tấm vé chưa bị xé là bằng chứng duy nhất cho phép bạn bước lên, nhưng nó không nói rõ chuyến tàu sẽ đưa ai đi và bỏ ai lại. Rời khỏi làng có thể chấm dứt hành trình của bạn mà không giải quyết những điều đã xảy ra."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "final_choice",
+            "value": "depart"
+          },
+          {
+            "type": "goto",
+            "subtype": "end",
+            "target": "ending_depart"
+          }
+        ],
+        "fail": [
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "warning",
+            "text": "Cần ticket hoặc xác minh ticket bằng Manifest."
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "unpunched_ticket"
+          },
+          {
+            "type": "state",
+            "property": "ticket_verified",
             "op": "==",
             "value": true
           }
