@@ -21,7 +21,7 @@ function BooleanValue({ value }) {
 function StateValue({ state }) {
   if (state.type === 'boolean') return <BooleanValue value={state.value} />;
   if (state.type === 'number') {
-    return <strong>{typeof state.value === 'number' ? state.value.toLocaleString('en-US') : String(state.value ?? '—')}</strong>;
+    return <strong>{typeof state.value === 'number' ? state.value.toLocaleString('en-US', { maximumSignificantDigits: 21 }) : String(state.value ?? '—')}</strong>;
   }
   return <span>{state.value === '' || state.value === null || state.value === undefined ? '—' : String(state.value)}</span>;
 }
@@ -59,6 +59,8 @@ export default function NoteWorkspace({ snapshot, open = false, onClose }) {
       states: states.filter(state => state.type === group.type && (!query || [
         state.title,
         state.id,
+        group.label,
+        state.type,
         state.value === null || state.value === undefined ? '' : String(state.value)
       ].join(' ').toLocaleLowerCase().includes(query))
     })).filter(group => group.states.length > 0);
