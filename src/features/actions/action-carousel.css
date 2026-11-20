@@ -6,7 +6,6 @@
 .vsr-action-carousel__slide{flex:0 0 clamp(320px,42vw,480px);min-width:0;margin-inline-end:var(--vsr-space-4);scroll-snap-align:start}
 .vsr-action-carousel__slide>.vsr-action-card{height:100%;box-sizing:border-box}
 @media(max-width:599px){
- /* Keep the active action dominant while exposing the next slide as a swipe cue. */
- .vsr-action-carousel__slide{flex-basis:calc(100% - 52px);max-width:none}
+ .vsr-action-carousel__slide{flex-basis:100%;max-width:none}
  .vsr-action-carousel__viewport{margin-right:0;padding-right:0}
 }
