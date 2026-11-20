@@ -89,6 +89,10 @@ function InventoryItemDetails({ item, onBack, onToggleEquipment, busy }) {
   const usageRatio = usage && Number.isFinite(Number(usage.current)) && Number(usage.max) > 0
     ? Math.max(0, Math.min(100, (Number(usage.current) / Number(usage.max)) * 100))
     : null;
+  const usageRemainingRatio = usageRatio !== null ? 100 - usageRatio : null;
+  const usageRemainingCount = usage && Number(usage.max) > 0 && Number.isFinite(Number(usage.current))
+    ? Math.max(0, Math.min(Number(usage.max), Number(usage.max) - Number(usage.current)))
+    : null;
   const usageStatus = usageRatio !== null && Array.isArray(usage?.status) && usage.status.length > 0
     ? (() => {
       const statuses = usage.status
@@ -130,9 +134,9 @@ function InventoryItemDetails({ item, onBack, onToggleEquipment, busy }) {
           <h3><span className="material-symbols-rounded" aria-hidden="true">bar_chart</span>Status</h3>
           <div className="vsr-inventory-item-details__metric">
             <span className="vsr-text-secondary">{usageStatus || 'Normal'}</span>
-            <strong>{usage.current} / {usage.max}</strong>
+            <strong>{usageRemainingCount !== null ? `${usageRemainingCount} / ${usage.max}` : `${usage.current} / ${usage.max}`}</strong>
           </div>
-          {usageRatio !== null && <div className="vsr-inventory-item-details__progress" role="progressbar" aria-valuenow={usageRatio} aria-valuemin="0" aria-valuemax="100" aria-label="Status"><span className={item.broken ? 'is-broken' : ''} style={{ width: `${usageRatio}%` }} /></div>}
+          {usageRemainingRatio !== null && <div className="vsr-inventory-item-details__progress" role="progressbar" aria-valuenow={usageRemainingRatio} aria-valuemin="0" aria-valuemax="100" aria-label="Remaining condition"><span className={item.broken ? 'is-broken' : ''} style={{ width: `${usageRemainingRatio}%` }} /></div>}
           {item.broken && <p className="vsr-inventory-item-details__warning"><span className="material-symbols-rounded" aria-hidden="true">error</span>Broken</p>}
 
         </section>
