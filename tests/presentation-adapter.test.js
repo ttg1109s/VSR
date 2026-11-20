@@ -61,19 +61,18 @@ test('browser client consumes JSON snapshots and only the active router projecti
   const client = new JsonClient(host);
   try {
     const snapshot = await client.initialize(JSON.parse(host.getDemoScenario()));
-    assert.equal(snapshot.game.sceneId, 'scene_village_square');
-    assert.equal(snapshot.game.routerId, 'router_square_fogbound');
+    assert.equal(snapshot.game.sceneId, 'scene_village');
+    assert.equal(snapshot.game.routerId, 'router_village_night');
     assert.deepEqual(snapshot.presentation.actions.map(action => action.id), [
-      'action_read_notice', 'action_talk_mai', 'action_enter_well', 'action_travel_inn',
-      'action_travel_chapel', 'action_travel_school', 'action_travel_forest', 'action_decode_broadcast'
+      'action_village_square', 'action_travel_inn', 'action_travel_chapel',
+      'action_travel_school', 'action_travel_forest'
     ]);
-    assert.equal(snapshot.presentation.actions.some(action => action.id === 'action_inspect_well'), false);
     assert.equal(Object.hasOwn(snapshot, 'source'), false);
     assert.equal(Object.hasOwn(snapshot.state.session || {}, 'passwordChallenge'), false);
 
     const events = [];
     client.subscribe(message => events.push(message));
-    await client.markActionRead('scene_village_square_router_square_fogbound_action_read_notice');
+    await client.markActionRead('scene_village_router_village_night_action_village_square');
     assert.ok(events.some(message => message.type === 'state' && message.changedKeys.includes('stateRevision')));
   } finally {
     client.dispose();
@@ -195,7 +194,7 @@ test('Contact consumes the live, read-only character projection from Engine snap
       : snapshot.state.entryCharacter);
     assert.ok(mai);
     assert.equal(mai.name, 'Mai');
-    assert.equal(mai.presence, 'present');
+    assert.equal(mai.presence, 'away');
     assert.ok(mai.stats.trust);
     assert.deepEqual(mai.relationshipWithPlayer, {
       hasRelationship: false,
@@ -281,7 +280,9 @@ test('an Action goto chat effect projects the active contact and thread for Reac
   const host = new LocalEngineHost();
   const client = new JsonClient(host);
   try {
-    const initial = await client.initialize(JSON.parse(host.getDemoScenario()));
+    const scenario = JSON.parse(host.getDemoScenario());
+    scenario.meta.entryScene = 'scene_village_square';
+    const initial = await client.initialize(scenario);
     const action = initial.presentation.actions.find(item => item.id === 'action_talk_mai');
     assert.ok(action, 'the demo exposes the Mai conversation action');
 
@@ -389,7 +390,9 @@ test('chat action starts the umbrella follow-up without duplicating completed th
   const host = new LocalEngineHost();
   const client = new JsonClient(host);
   try {
-    const initial = await client.initialize(JSON.parse(host.getDemoScenario()));
+    const scenario = JSON.parse(host.getDemoScenario());
+    scenario.meta.entryScene = 'scene_village_square';
+    const initial = await client.initialize(scenario);
     const action = initial.presentation.actions.find(item => item.id === 'action_talk_mai');
     assert.ok(action, 'the demo exposes the Mai conversation action');
 
@@ -462,7 +465,9 @@ test('reopening an unread thread resumes from saved step without replaying persi
   const host = new LocalEngineHost();
   const client = new JsonClient(host);
   try {
-    await client.initialize(JSON.parse(host.getDemoScenario()));
+    const scenario = JSON.parse(host.getDemoScenario());
+    scenario.meta.entryScene = 'scene_village_square';
+    await client.initialize(scenario);
     const chat = JSON.parse(JSON.stringify(host.engine.src.chat.chat_mai));
     chat.set = {
       ...(chat.set || {}),
