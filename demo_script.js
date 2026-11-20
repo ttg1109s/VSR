@@ -795,16 +795,13 @@ export const DEMO_SCRIPT = {
         "max": 1,
         "autoInc": false,
         "status": [
-          [0,
-            "Chưa lắp"
-          ],
-          [50,
-            "Đã chịu va chạm"
-          ],
-          [100,
-            "Quả lắc hỏng"
+            [0,
+              "Chưa lắp"
+            ],
+            [100,
+              "Quả lắc hỏng"
+            ]
           ]
-        ]
       },
       "stats": {
         "integrity": {
