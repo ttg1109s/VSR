@@ -78,12 +78,24 @@ const ItemStrategies = {
             return !usage || usage.current < usage.max;
         });
 
-        // [UPDATED] Strict Check for Hand (Order & Exact Items)
-        // If op is equality, verify strict array match
+        // Equality remains strict: same items, multiplicity, and order.
         if (op === '==') {
             const compareVal = Array.isArray(val) ? val : [val];
-            // Convert to string to ensure exact items and order
             return JSON.stringify(validHand) === JSON.stringify(compareVal);
+        }
+
+        // hasAll is unordered and permits extra held items, while preserving
+        // multiplicity when the requirement contains duplicate item IDs.
+        if (op === 'hasAll') {
+            const required = Array.isArray(val) ? val : [val];
+            const counts = new Map();
+            for (const id of validHand) counts.set(id, (counts.get(id) || 0) + 1);
+            for (const id of required) {
+                const count = counts.get(id) || 0;
+                if (count < 1) return false;
+                counts.set(id, count - 1);
+            }
+            return true;
         }
 
         return Operations[op]?.(validHand, val) ?? false;
