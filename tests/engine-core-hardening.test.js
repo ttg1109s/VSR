@@ -1566,7 +1566,7 @@ test('requirement failure publishes an unlocked Action snapshot after notify eff
   const engine = new GameEngine();
   const snapshots = [];
   const unsubscribe = engine.protocol.subscribe(event => {
-    if (event.type === 'state.snapshot') snapshots.push(event.payload.snapshot);
+    if (event.event === 'state.snapshot') snapshots.push(event.payload.snapshot);
   });
   try {
     await engine.init(scenario);
