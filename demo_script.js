@@ -2063,7 +2063,7 @@ export const DEMO_SCRIPT = {
           "meta": {
             "sceneID": "scene_inn",
             "subTitleStatus": "Bất an",
-            "desc": "Phòng thứ bảy — cửa bị cưỡng chế. Cửa đã bị cưỡng chế; clue partial và recovery/alternative routes khả dụng."
+            "desc": "Cửa phòng thứ bảy đã bị cưỡng chế mở, khiến việc tiếp cận căn phòng để lại hậu quả và dấu vết không hoàn chỉnh. Dù manh mối thu được còn thiếu, người chơi vẫn có thể tiếp tục điều tra, khôi phục tình trạng và tìm những hướng tiếp cận thay thế."
           },
           "set": {
             "blocked": false,
@@ -2092,7 +2092,7 @@ export const DEMO_SCRIPT = {
           "meta": {
             "sceneID": "scene_inn",
             "subTitleStatus": "Bất an",
-            "desc": "Nhà trọ — chìa khóa được sửa. Chìa khóa và khóa đã được phục hồi."
+            "desc": "Chìa khóa và ổ khóa phòng thứ bảy đã được phục hồi. Người chơi có thể tiếp tục khám phá căn phòng bằng chìa khóa, đồng thời đối chiếu những dấu vết còn lại để làm rõ sự việc."
           },
           "set": {
             "blocked": false,
