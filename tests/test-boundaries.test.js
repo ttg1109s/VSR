@@ -5,7 +5,7 @@ import { join } from 'node:path';
 
 const root = new URL('.', import.meta.url).pathname;
 const demoSchemaTest = 'demo/demo-schema.test.js';
-const forbidden = /demo-script-data\.js|demo_script\.js|\bDEMO_SCRIPT\b/;
+const forbidden = /demo-script-data\.js|demo_script\.js|\bDEMO_SCRIPT\b|\bgetDemoScenario\b|\bLocalEngineHost\b/;
 
 function walk(directory) {
   return readdirSync(directory, { withFileTypes: true }).flatMap(entry => {
