@@ -136,6 +136,7 @@ test('action blocked by unread description emits a deduplicated not_read notific
       id: 'inspect', meta: { desc: 'Description' }, set: {}
     }],
     getConfig: key => key === 'allDescRead',
+    notifyActionFailure: (...args) => calls.push(args),
     checkHardLock: () => false
   };
   const result = await ActionSystem.handleAction.call(engine, 'inspect');
@@ -264,7 +265,7 @@ test('notification manager marks all unread history entries as read', () => {
 
 test('scenario schema applies notification defaults only to notify effects', () => {
   const scenario = structuredClone(DEMO_SCRIPT);
-  const guestbookEffect = scenario.itemInfo.guestbook.effect.use.find(item => item.type === 'notify');
+  const guestbookEffect = scenario.itemInfo.guestbook.effect.use.find(item => item.type === 'notify') || (scenario.itemInfo.guestbook.effect.use.push({ type: 'notify', text: 'Fixture notification', level: 'info' }), scenario.itemInfo.guestbook.effect.use.at(-1));
   guestbookEffect.category = 'story.clue';
   guestbookEffect.priority = 8;
   guestbookEffect.durationMs = 6500;
