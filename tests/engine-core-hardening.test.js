@@ -17,28 +17,7 @@ import { normalizeSaveEnvelope } from '../engine/persistence/SaveState.js';
 import { JsonProtocol } from '../protocol/JsonProtocol.js';
 
 function validScenario() {
-  return {
-    formatVersion: 1,
-    meta: {
-      title: 'Test', desc: 'Test scenario', version: '1.0.0',
-      language: 'vi', writer: null, ageRating: '13+', tags: [], entryScene: 'start'
-    },
-    globalStates: {}, templates: {}, itemInfo: {}, passwords: {},
-    scenes: {
-      start: {
-        meta: { title: 'Start' },
-        set: { activeRouterId: 'main' },
-        routers: {
-          main: {
-            meta: { subTitleStatus: 'Main' },
-            set: { blocked: false, visited: false, countVisited: 0 },
-            actions: ['test_action']
-          }
-        }
-      }
-    },
-    actions: { test_action: { meta: { title: 'Test Action' }, set: { display: 'show' } } }, chat: {}, characters: {}, endings: {}, config: {}
-  };
+  return JSON.parse(readFileSync(new URL('./fixtures/engine/minimal-scenario.json', import.meta.url), 'utf8'));
 }
 
 test('engine.init can load a scenario without entering its entry scene', async () => {
