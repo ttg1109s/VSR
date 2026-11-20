@@ -1481,24 +1481,16 @@ test('demo progression gates are reachable and optional radio repair is explicit
   ), true);
 });
 
-test('all truth-fragment granting actions are one-shot and hide themselves', () => {
-  const grantingActions = Object.entries(DEMO_SCRIPT.actions).filter(([actionId, action]) =>
+test('demo no longer writes the retired truth-fragments state', () => {
+  const legacyStateWrites = Object.entries(DEMO_SCRIPT.actions).flatMap(([actionId, action]) =>
     [
       ...(action.effect?.normal || []),
       ...(action.effect?.pass || [])
-    ].some(effect => effect.type === 'set' && effect.subtype === 'state' &&
+    ].filter(effect => effect.type === 'set' && effect.subtype === 'state' &&
       effect.target === 'truth_fragments')
+      .map(effect => actionId)
   );
-  assert.ok(grantingActions.length > 0);
-  for (const [actionId, action] of grantingActions) {
-    const hidesSelf = [
-      ...(action.effect.normal || []),
-      ...(action.effect.pass || [])
-    ].some(effect => effect.type === 'set' && effect.subtype === 'action' &&
-      effect.target === actionId && effect.property === 'display' &&
-      effect.value === 'hide');
-    assert.equal(hidesSelf, true, actionId);
-  }
+  assert.deepEqual(legacyStateWrites, []);
 });
 
 
