@@ -654,6 +654,10 @@ export const DEMO_SCRIPT = {
           [
             99,
             "Sắp tắt"
+          ],
+          [
+            100,
+            "Ánh sáng tắt hoàn toàn"
           ]
         ]
       },
@@ -701,6 +705,10 @@ export const DEMO_SCRIPT = {
           [
             99,
             "Gần mất chữ"
+          ],
+          [
+            100,
+            "Không còn đọc được"
           ]
         ]
       },
@@ -741,6 +749,10 @@ export const DEMO_SCRIPT = {
           [
             99,
             "Sắp mất tín hiệu"
+          ],
+          [
+            100,
+            "Mất tín hiệu hoàn toàn"
           ]
         ]
       },
@@ -781,6 +793,10 @@ export const DEMO_SCRIPT = {
           [
             99,
             "Dấu gần mất"
+          ],
+          [
+            100,
+            "Dấu khắc mất hoàn toàn"
           ]
         ]
       },
@@ -820,6 +836,10 @@ export const DEMO_SCRIPT = {
           [
             99,
             "Đã chịu va chạm"
+          ],
+          [
+            100,
+            "Quả lắc hỏng"
           ]
         ]
       },
@@ -860,6 +880,10 @@ export const DEMO_SCRIPT = {
           [
             99,
             "Khó đối chiếu"
+          ],
+          [
+            100,
+            "Ảnh không thể phục dựng"
           ]
         ]
       },
@@ -900,6 +924,10 @@ export const DEMO_SCRIPT = {
           [
             99,
             "Khó xoay khóa"
+          ],
+          [
+            100,
+            "Không thể mở khóa"
           ]
         ]
       },
@@ -932,6 +960,10 @@ export const DEMO_SCRIPT = {
           [
             99,
             "Khó đối chiếu"
+          ],
+          [
+            100,
+            "Không thể đọc bản đồ"
           ]
         ]
       },
@@ -972,6 +1004,10 @@ export const DEMO_SCRIPT = {
           [
             99,
             "Sắp không dùng được"
+          ],
+          [
+            100,
+            "Bộ dụng cụ không hoạt động"
           ]
         ]
       },
@@ -1012,6 +1048,10 @@ export const DEMO_SCRIPT = {
           [
             99,
             "Gần đứt"
+          ],
+          [
+            100,
+            "Dây mất cách điện"
           ]
         ]
       },
@@ -1052,6 +1092,10 @@ export const DEMO_SCRIPT = {
           [
             99,
             "Sắp quá tải"
+          ],
+          [
+            100,
+            "Cầu chì hỏng"
           ]
         ]
       },
@@ -1092,6 +1136,10 @@ export const DEMO_SCRIPT = {
           [
             99,
             "Gần mất đàn hồi"
+          ],
+          [
+            100,
+            "Lò xo mất tác dụng"
           ]
         ]
       },
@@ -1132,6 +1180,10 @@ export const DEMO_SCRIPT = {
           [
             99,
             "Khó dùng để đối chiếu"
+          ],
+          [
+            100,
+            "Không thể đối chiếu"
           ]
         ]
       },
@@ -1172,6 +1224,10 @@ export const DEMO_SCRIPT = {
           [
             99,
             "Khó quan sát"
+          ],
+          [
+            100,
+            "Kính không còn sử dụng được"
           ]
         ]
       },
@@ -1212,6 +1268,10 @@ export const DEMO_SCRIPT = {
           [
             99,
             "Gần mất khả năng thu"
+          ],
+          [
+            100,
+            "Không thu được tín hiệu"
           ]
         ]
       },
@@ -1252,6 +1312,10 @@ export const DEMO_SCRIPT = {
           [
             99,
             "Dấu gần mất"
+          ],
+          [
+            100,
+            "Không thể xác thực"
           ]
         ]
       },
@@ -1292,6 +1356,10 @@ export const DEMO_SCRIPT = {
           [
             99,
             "Sắp không mở được"
+          ],
+          [
+            100,
+            "Không thể mở cửa"
           ]
         ]
       },
@@ -1332,6 +1400,10 @@ export const DEMO_SCRIPT = {
           [
             99,
             "Khó phục dựng"
+          ],
+          [
+            100,
+            "Không thể phục dựng hình"
           ]
         ]
       },
@@ -1372,6 +1444,10 @@ export const DEMO_SCRIPT = {
           [
             99,
             "Khó giải mã"
+          ],
+          [
+            100,
+            "Không thể giải mã"
           ]
         ]
       },
@@ -1412,6 +1488,10 @@ export const DEMO_SCRIPT = {
           [
             99,
             "Gần đứt mối nối"
+          ],
+          [
+            100,
+            "Mối nối đứt hoàn toàn"
           ]
         ]
       },
@@ -1452,6 +1532,10 @@ export const DEMO_SCRIPT = {
           [
             99,
             "Gần mất dữ liệu"
+          ],
+          [
+            100,
+            "Không thể xác minh dữ liệu"
           ]
         ]
       },
@@ -1492,6 +1576,10 @@ export const DEMO_SCRIPT = {
           [
             99,
             "Khó định hướng"
+          ],
+          [
+            100,
+            "Không thể định hướng"
           ]
         ]
       },
@@ -1532,6 +1620,10 @@ export const DEMO_SCRIPT = {
           [
             99,
             "Gần mất dấu"
+          ],
+          [
+            100,
+            "Dấu niêm mất hiệu lực"
           ]
         ]
       },
@@ -1572,6 +1664,10 @@ export const DEMO_SCRIPT = {
           [
             99,
             "Sắp không giữ được trục"
+          ],
+          [
+            100,
+            "Chốt không còn giữ trục"
           ]
         ]
       },
@@ -1612,6 +1708,10 @@ export const DEMO_SCRIPT = {
           [
             99,
             "Gần mất dữ liệu"
+          ],
+          [
+            100,
+            "Không thể đối chiếu danh sách"
           ]
         ]
       },
@@ -1652,6 +1752,10 @@ export const DEMO_SCRIPT = {
           [
             99,
             "Thông tin gần mất"
+          ],
+          [
+            100,
+            "Không thể xác minh vé"
           ]
         ]
       },
