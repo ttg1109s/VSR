@@ -6041,116 +6041,9 @@
         "normal": [],
         "pass": [
           {
-            "type": "set",
-            "subtype": "state",
-            "target": "school_choice",
-            "value": "ký ức"
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "clue_tunnel",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_talk_linh",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_recover_class_register",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_reach_station",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_choose_fate",
-            "property": "display",
-            "value": "show"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_decode_roster",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_overlay_map",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_reach_station_memory",
-            "property": "display",
-            "value": "show"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_choose_fate",
-            "property": "display",
-            "value": "show"
-          },
-          {
             "type": "goto",
             "subtype": "chat",
             "target": "chat_linh"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Bạn giữ kín lời khai của Linh. Những ký ức riêng vẫn được bảo vệ."
-          },
-          {
-            "type": "characters",
-            "subtype": "edit_stats",
-            "target": "linh",
-            "property": "memory",
-            "field": "current",
-            "mode": "add",
-            "value": 1
-          },
-          {
-            "type": "characters",
-            "subtype": "edit_stats",
-            "target": "linh",
-            "property": "trust",
-            "field": "current",
-            "mode": "add",
-            "value": 1
-          },
-          {
-            "type": "characters",
-            "subtype": "edit_stats",
-            "target": "linh",
-            "property": "fear",
-            "field": "current",
-            "mode": "add",
-            "value": -1
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "memory_reconstructed",
-            "value": true
           }
         ]
       },
@@ -12583,6 +12476,113 @@
             "id": "linh_teacher",
             "text": "Cô giáo đã làm gì khi đến dòng cuối?",
             "jump": "teacher"
+          },
+          {
+            "id": "linh_protect_memory",
+            "text": "Anh sẽ giữ kín lời khai của em. Những ký ức này sẽ không bị biến thành vật chứng công khai.",
+            "jump": "proof",
+            "effect": [
+              {
+                "type": "set",
+                "subtype": "state",
+                "target": "school_choice",
+                "value": "ký ức"
+              },
+              {
+                "type": "set",
+                "subtype": "state",
+                "target": "clue_tunnel",
+                "value": true
+              },
+              {
+                "type": "set",
+                "subtype": "action",
+                "target": "action_recover_class_register",
+                "property": "display",
+                "value": "hide"
+              },
+              {
+                "type": "set",
+                "subtype": "action",
+                "target": "action_reach_station",
+                "property": "display",
+                "value": "hide"
+              },
+              {
+                "type": "set",
+                "subtype": "action",
+                "target": "action_choose_fate",
+                "property": "display",
+                "value": "show"
+              },
+              {
+                "type": "set",
+                "subtype": "action",
+                "target": "action_decode_roster",
+                "property": "display",
+                "value": "hide"
+              },
+              {
+                "type": "set",
+                "subtype": "action",
+                "target": "action_overlay_map",
+                "property": "display",
+                "value": "hide"
+              },
+              {
+                "type": "set",
+                "subtype": "action",
+                "target": "action_reach_station_memory",
+                "property": "display",
+                "value": "show"
+              },
+              {
+                "type": "set",
+                "subtype": "action",
+                "target": "action_choose_fate",
+                "property": "display",
+                "value": "show"
+              },
+              {
+                "type": "notify",
+                "subtype": "toast",
+                "level": "success",
+                "text": "Bạn giữ kín lời khai của Linh. Những ký ức riêng vẫn được bảo vệ."
+              },
+              {
+                "type": "characters",
+                "subtype": "edit_stats",
+                "target": "linh",
+                "property": "memory",
+                "field": "current",
+                "mode": "add",
+                "value": 1
+              },
+              {
+                "type": "characters",
+                "subtype": "edit_stats",
+                "target": "linh",
+                "property": "trust",
+                "field": "current",
+                "mode": "add",
+                "value": 1
+              },
+              {
+                "type": "characters",
+                "subtype": "edit_stats",
+                "target": "linh",
+                "property": "fear",
+                "field": "current",
+                "mode": "add",
+                "value": -1
+              },
+              {
+                "type": "set",
+                "subtype": "state",
+                "target": "memory_reconstructed",
+                "value": true
+              }
+            ]
           }
         ],
         "photo_follow": [
