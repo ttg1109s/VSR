@@ -1,4 +1,4 @@
-export const DEMO_SCRIPT = {
+{
   "formatVersion": 1,
   "meta": {
     "title": "NGÔI LÀNG KHÔNG TIẾNG ĐỘNG",
@@ -534,6 +534,388 @@ export const DEMO_SCRIPT = {
           "subtype": "state",
           "target": "clue_tunnel",
           "value": true
+        }
+      ],
+      "consume_action_use_lantern": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "lantern",
+          "value": 1
+        }
+      ],
+      "consume_action_ring_bell": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "bell_copper_wire",
+          "value": 1
+        },
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "hymn_note",
+          "value": 1
+        },
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "bell_clapper",
+          "value": 1
+        }
+      ],
+      "consume_action_decode_roster": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "class_register_copy",
+          "value": 1
+        }
+      ],
+      "consume_action_maze_path": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "guide_compass",
+          "value": 1
+        }
+      ],
+      "consume_action_find_hidden_box": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "well_badge",
+          "value": 1
+        }
+      ],
+      "consume_action_repair_mill": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "radio_toolkit",
+          "value": 1
+        },
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "clockwork_spring",
+          "value": 1
+        },
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "mill_gear_pin",
+          "value": 1
+        }
+      ],
+      "consume_action_open_archive": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "archive_key",
+          "value": 1
+        }
+      ],
+      "consume_action_confront_voice": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "radio_crystal",
+          "value": 1
+        }
+      ],
+      "consume_action_restore_radio_signal": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "radio_toolkit",
+          "value": 1
+        },
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "radio_crystal",
+          "value": 1
+        },
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "insulated_wire",
+          "value": 1
+        },
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "spare_fuse",
+          "value": 1
+        }
+      ],
+      "consume_action_overlay_map": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "tracing_paper",
+          "value": 1
+        },
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "inspection_loupe",
+          "value": 1
+        }
+      ],
+      "consume_action_unlock_room7": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "spare_room_key",
+          "value": 1
+        }
+      ],
+      "consume_action_force_room7": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "spare_room_key",
+          "value": 1
+        }
+      ],
+      "consume_action_open_room7_alternative": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "radio_toolkit",
+          "value": 1
+        }
+      ],
+      "consume_action_use_lantern_dim": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "lantern",
+          "value": 1
+        }
+      ],
+      "consume_action_listen_mai_tape": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "tape",
+          "value": 1
+        }
+      ],
+      "consume_action_follow_compass_uncertain": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "guide_compass",
+          "value": 1
+        }
+      ],
+      "consume_action_force_seal": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "radio_toolkit",
+          "value": 1
+        }
+      ],
+      "consume_action_repair_mill_partial": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "radio_toolkit",
+          "value": 1
+        },
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "clockwork_spring",
+          "value": 1
+        },
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "mill_gear_pin",
+          "value": 1
+        }
+      ],
+      "consume_action_force_mill_repair": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "radio_toolkit",
+          "value": 1
+        }
+      ],
+      "consume_action_stabilize_mill": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "radio_toolkit",
+          "value": 1
+        }
+      ],
+      "consume_action_bypass_archive_lock": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "radio_toolkit",
+          "value": 1
+        }
+      ],
+      "consume_action_reconstruct_archive_record": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "tunnel_manifest",
+          "value": 1
+        },
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "evacuation_film",
+          "value": 1
+        }
+      ],
+      "consume_action_open_archive_from_evidence": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "tunnel_manifest",
+          "value": 1
+        },
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "evacuation_film",
+          "value": 1
+        }
+      ],
+      "consume_action_compare_evacuation_film": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "evacuation_film",
+          "value": 1
+        }
+      ],
+      "consume_action_ring_bell_imperfect": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "bell_copper_wire",
+          "value": 1
+        },
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "hymn_note",
+          "value": 1
+        },
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "bell_clapper",
+          "value": 1
+        }
+      ],
+      "consume_action_correct_bell_signal": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "radio_toolkit",
+          "value": 1
+        }
+      ],
+      "consume_action_restore_hymn_note": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "guestbook",
+          "value": 1
+        }
+      ],
+      "consume_action_restore_radio_signal_partial": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "radio_toolkit",
+          "value": 1
+        },
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "radio_crystal",
+          "value": 1
+        },
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "insulated_wire",
+          "value": 1
+        },
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "spare_fuse",
+          "value": 1
+        }
+      ],
+      "consume_action_listen_static": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "tape",
+          "value": 1
+        }
+      ],
+      "consume_action_reconstruct_manifest": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "evacuation_film",
+          "value": 1
+        }
+      ],
+      "consume_action_verify_evacuation_film": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "tunnel_manifest",
+          "value": 1
+        }
+      ],
+      "consume_action_recover_hymn": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "guestbook",
+          "value": 1
+        }
+      ],
+      "consume_action_reconstruct_stakes_evidence": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "class_photo",
+          "value": 1
+        }
+      ],
+      "consume_action_verify_tunnel_clue": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "tunnel_manifest",
+          "value": 1
+        }
+      ],
+      "consume_action_verify_ticket": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "tunnel_manifest",
+          "value": 1
         }
       ]
     },
@@ -2426,25 +2808,6 @@ export const DEMO_SCRIPT = {
             "type": "set",
             "subtype": "action",
             "target": "action_read_notice",
-            "property": "requirement",
-            "value": true,
-            "req": {
-              "logic": "AND",
-              "check": [
-                {
-                  "type": "action_count",
-                  "target": "action_read_notice",
-                  "phase": "normal",
-                  "op": "==",
-                  "value": 1
-                }
-              ]
-            }
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_read_notice",
             "property": "display",
             "value": "hide",
             "req": {
@@ -2476,27 +2839,16 @@ export const DEMO_SCRIPT = {
                 }
               ]
             }
-          }
-        ],
-        "pass": [
+          },
           {
-            "type": "goto",
-            "subtype": "chat",
-            "target": "chat_notice_memory",
-            "req": {
-              "logic": "AND",
-              "check": [
-                {
-                  "type": "action_count",
-                  "target": "action_read_notice",
-                  "phase": "normal",
-                  "op": ">=",
-                  "value": 2
-                }
-              ]
-            }
+            "type": "set",
+            "subtype": "action",
+            "target": "action_read_notice",
+            "property": "display",
+            "value": "hide"
           }
         ],
+        "pass": [],
         "fail": [
           {
             "type": "notify",
@@ -2515,7 +2867,7 @@ export const DEMO_SCRIPT = {
       },
       "set": {
         "display": "show",
-        "requirement": true,
+        "requirement": false,
         "readDesc": true
       },
       "effect": {
@@ -2750,15 +3102,12 @@ export const DEMO_SCRIPT = {
         "readDesc": true
       },
       "effect": {
-        "normal": [
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "lantern",
-            "value": 1
-          }
-        ],
+        "normal": [],
         "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_use_lantern"
+          },
           {
             "type": "set",
             "subtype": "state",
@@ -2785,6 +3134,10 @@ export const DEMO_SCRIPT = {
           }
         ],
         "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_use_lantern"
+          },
           {
             "type": "notify",
             "subtype": "toast",
@@ -2976,6 +3329,13 @@ export const DEMO_SCRIPT = {
           }
         ],
         "pass": [
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_talk_hanh",
+            "property": "display",
+            "value": "hide"
+          },
           {
             "type": "characters",
             "subtype": "edit_stats",
@@ -3252,6 +3612,13 @@ export const DEMO_SCRIPT = {
         "normal": [],
         "pass": [
           {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_talk_keeper",
+            "property": "display",
+            "value": "hide"
+          },
+          {
             "type": "goto",
             "subtype": "chat",
             "target": "chat_keeper"
@@ -3327,27 +3694,12 @@ export const DEMO_SCRIPT = {
         "readDesc": true
       },
       "effect": {
-        "normal": [
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "bell_copper_wire",
-            "value": 1
-          },
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "hymn_note",
-            "value": 1
-          },
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "bell_clapper",
-            "value": 1
-          }
-        ],
+        "normal": [],
         "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_ring_bell"
+          },
           {
             "type": "item",
             "subtype": "remove",
@@ -3380,6 +3732,10 @@ export const DEMO_SCRIPT = {
           }
         ],
         "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_ring_bell"
+          },
           {
             "type": "notify",
             "subtype": "toast",
@@ -3485,15 +3841,12 @@ export const DEMO_SCRIPT = {
         "readDesc": true
       },
       "effect": {
-        "normal": [
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "class_register_copy",
-            "value": 1
-          }
-        ],
+        "normal": [],
         "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_decode_roster"
+          },
           {
             "type": "set",
             "subtype": "state",
@@ -3529,6 +3882,12 @@ export const DEMO_SCRIPT = {
             "subtype": "state",
             "target": "clue_roster_verified",
             "value": true
+          }
+        ],
+        "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_decode_roster"
           }
         ]
       },
@@ -3638,15 +3997,12 @@ export const DEMO_SCRIPT = {
         "readDesc": true
       },
       "effect": {
-        "normal": [
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "guide_compass",
-            "value": 1
-          }
-        ],
+        "normal": [],
         "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_maze_path"
+          },
           {
             "type": "set",
             "subtype": "state",
@@ -3673,6 +4029,10 @@ export const DEMO_SCRIPT = {
           }
         ],
         "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_maze_path"
+          },
           {
             "type": "notify",
             "subtype": "toast",
@@ -3748,15 +4108,12 @@ export const DEMO_SCRIPT = {
         "readDesc": true
       },
       "effect": {
-        "normal": [
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "well_badge",
-            "value": 1
-          }
-        ],
+        "normal": [],
         "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_find_hidden_box"
+          },
           {
             "type": "set",
             "subtype": "state",
@@ -3796,6 +4153,10 @@ export const DEMO_SCRIPT = {
         ],
         "fail": [
           {
+            "type": "effect",
+            "ref": "consume_action_find_hidden_box"
+          },
+          {
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
@@ -3827,27 +4188,12 @@ export const DEMO_SCRIPT = {
         "readDesc": true
       },
       "effect": {
-        "normal": [
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "radio_toolkit",
-            "value": 1
-          },
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "clockwork_spring",
-            "value": 1
-          },
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "mill_gear_pin",
-            "value": 1
-          }
-        ],
+        "normal": [],
         "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_repair_mill"
+          },
           {
             "type": "set",
             "subtype": "state",
@@ -3886,6 +4232,12 @@ export const DEMO_SCRIPT = {
             "field": "current",
             "mode": "add",
             "value": 1
+          }
+        ],
+        "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_repair_mill"
           }
         ]
       },
@@ -4033,15 +4385,18 @@ export const DEMO_SCRIPT = {
         "readDesc": true
       },
       "effect": {
-        "normal": [
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "archive_key",
-            "value": 1
-          }
-        ],
+        "normal": [],
         "pass": [
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "archive_partial",
+            "value": false
+          },
+          {
+            "type": "effect",
+            "ref": "consume_action_open_archive"
+          },
           {
             "type": "set",
             "subtype": "state",
@@ -4066,12 +4421,38 @@ export const DEMO_SCRIPT = {
             "subtype": "toast",
             "level": "success",
             "text": "Tủ hồ sơ đã mở. Bản ghi sơ tán trở thành nguồn chứng cứ."
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_bypass_archive_lock",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_open_archive_from_evidence",
+            "property": "display",
+            "value": "hide"
+          }
+        ],
+        "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_open_archive"
           }
         ]
       },
       "requirement": {
         "logic": "AND",
         "check": [
+          {
+            "type": "state",
+            "property": "archive_open",
+            "op": "==",
+            "value": false
+          },
           {
             "type": "item",
             "subtype": "inventory",
@@ -4105,15 +4486,19 @@ export const DEMO_SCRIPT = {
         "readDesc": true
       },
       "effect": {
-        "normal": [
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "radio_crystal",
-            "value": 1
-          }
-        ],
+        "normal": [],
         "pass": [
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_confront_voice",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "effect",
+            "ref": "consume_action_confront_voice"
+          },
           {
             "type": "goto",
             "subtype": "chat",
@@ -4127,6 +4512,10 @@ export const DEMO_SCRIPT = {
           }
         ],
         "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_confront_voice"
+          },
           {
             "type": "notify",
             "subtype": "toast",
@@ -4172,7 +4561,7 @@ export const DEMO_SCRIPT = {
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Các điều kiện giải thoát chưa hội đủ: cần rung chuông, mở kho hồ sơ, có con dấu sơ tán và khôi phục thánh ca, vòng cọc cùng dấu đường hầm."
+            "text": "Chưa đủ dấu vết để giải thoát. Có thể đi theo con đường bằng chứng — con dấu, hồ sơ, thánh ca, cọc gỗ và đường hầm — hoặc con đường ký ức, nếu đã chọn giữ ký ức và khôi phục các dấu mốc cần thiết."
           }
         ]
       },
@@ -4394,7 +4783,7 @@ export const DEMO_SCRIPT = {
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Cần ticket hoặc xác minh ticket bằng Manifest."
+            "text": "Bạn cần có vé tàu và xác minh được chuyến 03:17 từ bản kê hành khách."
           }
         ]
       },
@@ -4923,7 +5312,7 @@ export const DEMO_SCRIPT = {
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Cơ cấu truyền động chưa hoạt động; bánh xe cối xay phải được sửa và khởi động trước khi cửa sập có thể nâng lên."
+            "text": "Cửa sập vẫn kẹt. Hãy khôi phục cối xay hoặc tìm được dấu đường hầm để mở lối xuống."
           }
         ]
       },
@@ -5000,33 +5389,12 @@ export const DEMO_SCRIPT = {
         ]
       },
       "effect": {
-        "normal": [
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "radio_toolkit",
-            "value": 1
-          },
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "radio_crystal",
-            "value": 1
-          },
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "insulated_wire",
-            "value": 1
-          },
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "spare_fuse",
-            "value": 1
-          }
-        ],
+        "normal": [],
         "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_restore_radio_signal"
+          },
           {
             "type": "set",
             "subtype": "action",
@@ -5038,7 +5406,7 @@ export const DEMO_SCRIPT = {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Tín hiệu phát thanh đã được khôi phục; manh mối phụ được mở."
+            "text": "Tiếng rè lắng xuống, tín hiệu cũ trở nên rõ ràng. Một giọng nói và dấu vết mới hiện ra."
           },
           {
             "type": "set",
@@ -5060,6 +5428,12 @@ export const DEMO_SCRIPT = {
             "field": "current",
             "mode": "add",
             "value": 1
+          }
+        ],
+        "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_restore_radio_signal"
           }
         ]
       }
@@ -5111,21 +5485,12 @@ export const DEMO_SCRIPT = {
         ]
       },
       "effect": {
-        "normal": [
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "tracing_paper",
-            "value": 1
-          },
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "inspection_loupe",
-            "value": 1
-          }
-        ],
+        "normal": [],
         "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_overlay_map"
+          },
           {
             "type": "set",
             "subtype": "state",
@@ -5144,6 +5509,12 @@ export const DEMO_SCRIPT = {
             "subtype": "toast",
             "level": "success",
             "text": "Đối chiếu bản đồ thành công: tuyến đường dưới chân đê đã được xác nhận."
+          }
+        ],
+        "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_overlay_map"
           }
         ]
       }
@@ -5994,15 +6365,12 @@ export const DEMO_SCRIPT = {
         "readDesc": true
       },
       "effect": {
-        "normal": [
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "spare_room_key",
-            "value": 1
-          }
-        ],
+        "normal": [],
         "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_unlock_room7"
+          },
           {
             "type": "effect",
             "ref": "open_room7_success"
@@ -6048,6 +6416,10 @@ export const DEMO_SCRIPT = {
           }
         ],
         "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_unlock_room7"
+          },
           {
             "type": "notify",
             "subtype": "toast",
@@ -6101,15 +6473,12 @@ export const DEMO_SCRIPT = {
         "readDesc": true
       },
       "effect": {
-        "normal": [
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "spare_room_key",
-            "value": 1
-          }
-        ],
+        "normal": [],
         "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_force_room7"
+          },
           {
             "type": "characters",
             "subtype": "edit_stats",
@@ -6190,10 +6559,14 @@ export const DEMO_SCRIPT = {
         ],
         "fail": [
           {
+            "type": "effect",
+            "ref": "consume_action_force_room7"
+          },
+          {
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Cần key, toolkit, xác minh phòng và Composure ≥1. Thiếu requirement không gây damage."
+            "text": "Bạn chưa đủ sức và dụng cụ để cạy cửa. Chìa khóa vẫn nguyên; hãy tìm bộ dụng cụ và xác nhận căn phòng trước."
           }
         ]
       },
@@ -6366,15 +6739,12 @@ export const DEMO_SCRIPT = {
         "readDesc": true
       },
       "effect": {
-        "normal": [
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "radio_toolkit",
-            "value": 1
-          }
-        ],
+        "normal": [],
         "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_open_room7_alternative"
+          },
           {
             "type": "effect",
             "ref": "open_room7_success"
@@ -6413,6 +6783,10 @@ export const DEMO_SCRIPT = {
           }
         ],
         "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_open_room7_alternative"
+          },
           {
             "type": "notify",
             "subtype": "toast",
@@ -6637,15 +7011,12 @@ export const DEMO_SCRIPT = {
         "readDesc": true
       },
       "effect": {
-        "normal": [
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "lantern",
-            "value": 1
-          }
-        ],
+        "normal": [],
         "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_use_lantern_dim"
+          },
           {
             "type": "set",
             "subtype": "state",
@@ -6681,6 +7052,10 @@ export const DEMO_SCRIPT = {
           }
         ],
         "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_use_lantern_dim"
+          },
           {
             "type": "notify",
             "subtype": "toast",
@@ -6922,15 +7297,12 @@ export const DEMO_SCRIPT = {
         "readDesc": true
       },
       "effect": {
-        "normal": [
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "tape",
-            "value": 1
-          }
-        ],
+        "normal": [],
         "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_listen_mai_tape"
+          },
           {
             "type": "set",
             "subtype": "action",
@@ -6945,7 +7317,12 @@ export const DEMO_SCRIPT = {
             "text": "Băng ghi âm cung cấp lời khai gián tiếp."
           }
         ],
-        "fail": []
+        "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_listen_mai_tape"
+          }
+        ]
       },
       "requirement": {
         "logic": "AND",
@@ -7023,15 +7400,12 @@ export const DEMO_SCRIPT = {
         "readDesc": true
       },
       "effect": {
-        "normal": [
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "guide_compass",
-            "value": 1
-          }
-        ],
+        "normal": [],
         "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_follow_compass_uncertain"
+          },
           {
             "type": "characters",
             "subtype": "edit_stats",
@@ -7081,6 +7455,10 @@ export const DEMO_SCRIPT = {
           }
         ],
         "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_follow_compass_uncertain"
+          },
           {
             "type": "notify",
             "subtype": "toast",
@@ -7181,15 +7559,12 @@ export const DEMO_SCRIPT = {
         "readDesc": true
       },
       "effect": {
-        "normal": [
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "radio_toolkit",
-            "value": 1
-          }
-        ],
+        "normal": [],
         "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_force_seal"
+          },
           {
             "type": "item",
             "subtype": "usage",
@@ -7236,6 +7611,10 @@ export const DEMO_SCRIPT = {
           }
         ],
         "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_force_seal"
+          },
           {
             "type": "notify",
             "subtype": "toast",
@@ -7329,27 +7708,12 @@ export const DEMO_SCRIPT = {
         "readDesc": true
       },
       "effect": {
-        "normal": [
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "radio_toolkit",
-            "value": 1
-          },
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "clockwork_spring",
-            "value": 1
-          },
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "mill_gear_pin",
-            "value": 1
-          }
-        ],
+        "normal": [],
         "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_repair_mill_partial"
+          },
           {
             "type": "set",
             "subtype": "state",
@@ -7397,10 +7761,14 @@ export const DEMO_SCRIPT = {
         ],
         "fail": [
           {
+            "type": "effect",
+            "ref": "consume_action_repair_mill_partial"
+          },
+          {
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Cần toolkit, spring, gear pin và clue."
+            "text": "Thiếu dụng cụ, lò xo, chốt truyền động hoặc dấu đường hầm để sửa cối xay."
           }
         ]
       },
@@ -7462,15 +7830,19 @@ export const DEMO_SCRIPT = {
         "readDesc": true
       },
       "effect": {
-        "normal": [
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "radio_toolkit",
-            "value": 1
-          }
-        ],
+        "normal": [],
         "pass": [
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_force_mill_repair",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "effect",
+            "ref": "consume_action_force_mill_repair"
+          },
           {
             "type": "characters",
             "subtype": "edit_stats",
@@ -7510,10 +7882,14 @@ export const DEMO_SCRIPT = {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Repair thất bại; toolkit và Composure chịu ảnh hưởng. Bypass vẫn khả dụng."
+            "text": "Cơ cấu không chịu khớp. Bộ dụng cụ bị quá tải, bạn mất bình tĩnh; vẫn còn cách lần theo đường hầm mà không cần cối xay."
           }
         ],
         "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_force_mill_repair"
+          },
           {
             "type": "notify",
             "subtype": "toast",
@@ -7560,15 +7936,12 @@ export const DEMO_SCRIPT = {
         "readDesc": true
       },
       "effect": {
-        "normal": [
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "radio_toolkit",
-            "value": 1
-          }
-        ],
+        "normal": [],
         "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_stabilize_mill"
+          },
           {
             "type": "item",
             "subtype": "usage",
@@ -7608,7 +7981,12 @@ export const DEMO_SCRIPT = {
             "text": "Cối xay được ổn định; tuyến chính tiếp tục."
           }
         ],
-        "fail": []
+        "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_stabilize_mill"
+          }
+        ]
       },
       "requirement": {
         "logic": "AND",
@@ -7638,7 +8016,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Đi theo đường hầm, không qua cối xay",
         "buttonLabel": "Đi theo đường hầm",
-        "desc": "Bạn có thể lần theo dấu vết dưới đê mà không cần khôi phục cối xay."
+        "desc": "Bạn có thể lần theo dấu vết dưới chân đê mà không cần khôi phục cối xay. Dấu đường hầm vẫn phải được tìm ra trước khi lối đi hiện rõ."
       },
       "set": {
         "display": "show",
@@ -7678,7 +8056,7 @@ export const DEMO_SCRIPT = {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Cối xay được bỏ qua; đường hầm vẫn reachable."
+            "text": "Bạn lần theo dấu dưới chân đê, bỏ qua cối xay. Lối xuống đường hầm vẫn còn."
           }
         ],
         "fail": []
@@ -7699,7 +8077,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Mở tủ hồ sơ bằng cách khác",
         "buttonLabel": "Mở tủ bằng cách khác",
-        "desc": "Dùng bộ dụng cụ và những bằng chứng thay thế để mở tủ hồ sơ khi chìa khóa không còn. Nếu phải cưỡng ép, kết quả có thể chỉ thu được một phần."
+        "desc": "Dùng bộ dụng cụ và những dấu vết đã tìm được để mở tủ hồ sơ khi chìa khóa không còn. Nếu phải cưỡng ép, giấy tờ bên trong có thể bị rách hoặc thất lạc."
       },
       "set": {
         "display": "show",
@@ -7707,15 +8085,12 @@ export const DEMO_SCRIPT = {
         "readDesc": true
       },
       "effect": {
-        "normal": [
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "radio_toolkit",
-            "value": 1
-          }
-        ],
+        "normal": [],
         "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_bypass_archive_lock"
+          },
           {
             "type": "characters",
             "subtype": "edit_stats",
@@ -7755,21 +8130,45 @@ export const DEMO_SCRIPT = {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Kho hồ sơ mở bằng bypass. Bản ghi partial; progression không bị khóa."
+            "text": "Bạn ép được cánh tủ bật ra. Một vài trang bị rách và mất góc, nhưng những gì còn lại vẫn đủ để tiếp tục lần theo dấu người sơ tán."
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_open_archive",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_open_archive_from_evidence",
+            "property": "display",
+            "value": "hide"
           }
         ],
         "fail": [
           {
+            "type": "effect",
+            "ref": "consume_action_bypass_archive_lock"
+          },
+          {
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Cần tunnel clue, toolkit và đã chọn Evidence/Memory."
+            "text": "Bạn cần dấu đường hầm, bộ dụng cụ và phải quyết định cách lần theo sự thật trước khi thử mở tủ."
           }
         ]
       },
       "requirement": {
         "logic": "AND",
         "check": [
+          {
+            "type": "state",
+            "property": "archive_open",
+            "op": "==",
+            "value": false
+          },
           {
             "type": "state",
             "property": "clue_tunnel",
@@ -7803,21 +8202,12 @@ export const DEMO_SCRIPT = {
         "readDesc": true
       },
       "effect": {
-        "normal": [
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "tunnel_manifest",
-            "value": 1
-          },
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "evacuation_film",
-            "value": 1
-          }
-        ],
+        "normal": [],
         "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_reconstruct_archive_record"
+          },
           {
             "type": "effect",
             "ref": "open_archive"
@@ -7842,7 +8232,12 @@ export const DEMO_SCRIPT = {
             "text": "Hồ sơ được tái dựng từ nhiều nguồn độc lập."
           }
         ],
-        "fail": []
+        "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_reconstruct_archive_record"
+          }
+        ]
       },
       "requirement": {
         "logic": "AND",
@@ -7872,7 +8267,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Mở kho bằng bằng chứng",
         "buttonLabel": "Mở bằng bằng chứng",
-        "desc": "Dùng danh sách vận chuyển, cuộn phim và con dấu để mở kho khi không còn chìa khóa."
+        "desc": "Dùng danh sách vận chuyển và cuộn phim để mở kho khi không còn chìa khóa. Những dấu vết dưới đê và lựa chọn điều tra sẽ giúp đối chiếu hồ sơ."
       },
       "set": {
         "display": "show",
@@ -7880,21 +8275,18 @@ export const DEMO_SCRIPT = {
         "readDesc": true
       },
       "effect": {
-        "normal": [
+        "normal": [],
+        "pass": [
           {
-            "type": "item",
-            "subtype": "usage",
-            "target": "tunnel_manifest",
-            "value": 1
+            "type": "set",
+            "subtype": "state",
+            "target": "archive_partial",
+            "value": false
           },
           {
-            "type": "item",
-            "subtype": "usage",
-            "target": "evacuation_film",
-            "value": 1
-          }
-        ],
-        "pass": [
+            "type": "effect",
+            "ref": "consume_action_open_archive_from_evidence"
+          },
           {
             "type": "effect",
             "ref": "open_archive"
@@ -7910,14 +8302,39 @@ export const DEMO_SCRIPT = {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Kho hồ sơ mở bằng evidence độc lập."
+            "text": "Danh sách, cuộn phim và các dấu vết đối chiếu đã giúp mở tủ hồ sơ."
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_open_archive",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_bypass_archive_lock",
+            "property": "display",
+            "value": "hide"
           }
         ],
-        "fail": []
+        "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_open_archive_from_evidence"
+          }
+        ]
       },
       "requirement": {
         "logic": "AND",
         "check": [
+          {
+            "type": "state",
+            "property": "archive_open",
+            "op": "==",
+            "value": false
+          },
           {
             "type": "state",
             "property": "clue_tunnel",
@@ -8027,15 +8444,12 @@ export const DEMO_SCRIPT = {
         "readDesc": true
       },
       "effect": {
-        "normal": [
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "evacuation_film",
-            "value": 1
-          }
-        ],
+        "normal": [],
         "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_compare_evacuation_film"
+          },
           {
             "type": "effect",
             "ref": "complete_tunnel_route"
@@ -8054,7 +8468,12 @@ export const DEMO_SCRIPT = {
             "text": "Tuyến được xác minh bằng film."
           }
         ],
-        "fail": []
+        "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_compare_evacuation_film"
+          }
+        ]
       },
       "requirement": {
         "logic": "AND",
@@ -8138,27 +8557,12 @@ export const DEMO_SCRIPT = {
         "readDesc": true
       },
       "effect": {
-        "normal": [
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "bell_copper_wire",
-            "value": 1
-          },
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "hymn_note",
-            "value": 1
-          },
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "bell_clapper",
-            "value": 1
-          }
-        ],
+        "normal": [],
         "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_ring_bell_imperfect"
+          },
           {
             "type": "characters",
             "subtype": "edit_stats",
@@ -8221,6 +8625,10 @@ export const DEMO_SCRIPT = {
           }
         ],
         "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_ring_bell_imperfect"
+          },
           {
             "type": "notify",
             "subtype": "toast",
@@ -8292,15 +8700,12 @@ export const DEMO_SCRIPT = {
         "readDesc": true
       },
       "effect": {
-        "normal": [
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "radio_toolkit",
-            "value": 1
-          }
-        ],
+        "normal": [],
         "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_correct_bell_signal"
+          },
           {
             "type": "item",
             "subtype": "usage",
@@ -8339,7 +8744,12 @@ export const DEMO_SCRIPT = {
             "text": "Tín hiệu được chỉnh lại; lịch sử rung chuông imperfect vẫn được lưu."
           }
         ],
-        "fail": []
+        "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_correct_bell_signal"
+          }
+        ]
       },
       "requirement": {
         "logic": "AND",
@@ -8383,15 +8793,12 @@ export const DEMO_SCRIPT = {
         "readDesc": true
       },
       "effect": {
-        "normal": [
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "guestbook",
-            "value": 1
-          }
-        ],
+        "normal": [],
         "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_restore_hymn_note"
+          },
           {
             "type": "item",
             "subtype": "usage",
@@ -8416,7 +8823,12 @@ export const DEMO_SCRIPT = {
             "text": "Ghi chú thánh ca được tái dựng."
           }
         ],
-        "fail": []
+        "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_restore_hymn_note"
+          }
+        ]
       },
       "requirement": {
         "logic": "AND",
@@ -8448,33 +8860,12 @@ export const DEMO_SCRIPT = {
         "readDesc": true
       },
       "effect": {
-        "normal": [
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "radio_toolkit",
-            "value": 1
-          },
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "radio_crystal",
-            "value": 1
-          },
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "insulated_wire",
-            "value": 1
-          },
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "spare_fuse",
-            "value": 1
-          }
-        ],
+        "normal": [],
         "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_restore_radio_signal_partial"
+          },
           {
             "type": "characters",
             "subtype": "edit_stats",
@@ -8537,6 +8928,10 @@ export const DEMO_SCRIPT = {
           }
         ],
         "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_restore_radio_signal_partial"
+          },
           {
             "type": "notify",
             "subtype": "toast",
@@ -8741,15 +9136,12 @@ export const DEMO_SCRIPT = {
         "readDesc": true
       },
       "effect": {
-        "normal": [
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "tape",
-            "value": 1
-          }
-        ],
+        "normal": [],
         "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_listen_static"
+          },
           {
             "type": "set",
             "subtype": "state",
@@ -8776,7 +9168,12 @@ export const DEMO_SCRIPT = {
             "text": "Tín hiệu partial được đối chiếu với tape."
           }
         ],
-        "fail": []
+        "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_listen_static"
+          }
+        ]
       },
       "requirement": {
         "logic": "AND",
@@ -9171,15 +9568,12 @@ export const DEMO_SCRIPT = {
         "readDesc": true
       },
       "effect": {
-        "normal": [
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "evacuation_film",
-            "value": 1
-          }
-        ],
+        "normal": [],
         "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_reconstruct_manifest"
+          },
           {
             "type": "item",
             "subtype": "usage",
@@ -9212,7 +9606,12 @@ export const DEMO_SCRIPT = {
             "text": "Manifest được tái dựng."
           }
         ],
-        "fail": []
+        "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_reconstruct_manifest"
+          }
+        ]
       },
       "requirement": {
         "logic": "AND",
@@ -9244,15 +9643,12 @@ export const DEMO_SCRIPT = {
         "readDesc": true
       },
       "effect": {
-        "normal": [
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "tunnel_manifest",
-            "value": 1
-          }
-        ],
+        "normal": [],
         "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_verify_evacuation_film"
+          },
           {
             "type": "set",
             "subtype": "state",
@@ -9279,7 +9675,12 @@ export const DEMO_SCRIPT = {
             "text": "Film sơ tán được xác minh."
           }
         ],
-        "fail": []
+        "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_verify_evacuation_film"
+          }
+        ]
       },
       "requirement": {
         "logic": "AND",
@@ -9311,15 +9712,12 @@ export const DEMO_SCRIPT = {
         "readDesc": true
       },
       "effect": {
-        "normal": [
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "guestbook",
-            "value": 1
-          }
-        ],
+        "normal": [],
         "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_recover_hymn"
+          },
           {
             "type": "effect",
             "ref": "recover_hymn"
@@ -9338,7 +9736,12 @@ export const DEMO_SCRIPT = {
             "text": "Clue hymn được phục hồi từ evidence."
           }
         ],
-        "fail": []
+        "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_recover_hymn"
+          }
+        ]
       },
       "requirement": {
         "logic": "AND",
@@ -9370,15 +9773,12 @@ export const DEMO_SCRIPT = {
         "readDesc": true
       },
       "effect": {
-        "normal": [
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "class_photo",
-            "value": 1
-          }
-        ],
+        "normal": [],
         "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_reconstruct_stakes_evidence"
+          },
           {
             "type": "set",
             "subtype": "state",
@@ -9405,7 +9805,12 @@ export const DEMO_SCRIPT = {
             "text": "Evidence vòng cọc được tái dựng."
           }
         ],
-        "fail": []
+        "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_reconstruct_stakes_evidence"
+          }
+        ]
       },
       "requirement": {
         "logic": "AND",
@@ -9443,15 +9848,12 @@ export const DEMO_SCRIPT = {
         "readDesc": true
       },
       "effect": {
-        "normal": [
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "tunnel_manifest",
-            "value": 1
-          }
-        ],
+        "normal": [],
         "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_verify_tunnel_clue"
+          },
           {
             "type": "set",
             "subtype": "state",
@@ -9478,7 +9880,12 @@ export const DEMO_SCRIPT = {
             "text": "Tunnel clue được xác minh."
           }
         ],
-        "fail": []
+        "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_verify_tunnel_clue"
+          }
+        ]
       },
       "requirement": {
         "logic": "AND",
@@ -9502,7 +9909,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Giải thoát khi bằng chứng còn thiếu",
         "buttonLabel": "Giải thoát",
-        "desc": "Nếu đã chuẩn bị những điều cần thiết để giải thoát, bạn vẫn có thể cứu người mắc kẹt dù một phần bằng chứng chưa được khôi phục đầy đủ."
+        "desc": "Nếu đã chuẩn bị những điều cần thiết để giải thoát và từng rung chuông lệch nhịp, bạn vẫn có thể cứu người mắc kẹt dù một phần dấu vết chưa được khôi phục đầy đủ."
       },
       "set": {
         "display": "show",
@@ -9523,7 +9930,7 @@ export const DEMO_SCRIPT = {
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Release core chưa đạt hoặc không có dấu consequence partial."
+            "text": "Chưa đủ điều kiện để giải thoát trong tình trạng dấu vết còn dang dở. Cần hoàn tất các điều kiện chính và từng rung chuông lệch nhịp."
           }
         ]
       },
@@ -9579,7 +9986,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Giải thoát sau khi tái dựng sự thật",
         "buttonLabel": "Giải thoát",
-        "desc": "Bạn đã chuẩn bị những điều cần thiết để giải thoát và khôi phục thêm bằng chứng từ các dấu vết còn sót lại."
+        "desc": "Bạn đã chuẩn bị những điều cần thiết để giải thoát và đối chiếu thêm các dấu vết, khôi phục phần ký ức còn thiếu."
       },
       "set": {
         "display": "show",
@@ -9600,7 +10007,7 @@ export const DEMO_SCRIPT = {
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Cần Release core, corroboration và reconstruction."
+            "text": "Cần hoàn tất các dấu mốc giải thoát, xác minh thêm bằng chứng và khôi phục ký ức."
           }
         ]
       },
@@ -9670,15 +10077,12 @@ export const DEMO_SCRIPT = {
         "readDesc": true
       },
       "effect": {
-        "normal": [
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "tunnel_manifest",
-            "value": 1
-          }
-        ],
+        "normal": [],
         "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_verify_ticket"
+          },
           {
             "type": "set",
             "subtype": "state",
@@ -9699,7 +10103,12 @@ export const DEMO_SCRIPT = {
             "text": "Vé được xác minh bằng Manifest."
           }
         ],
-        "fail": []
+        "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_verify_ticket"
+          }
+        ]
       },
       "requirement": {
         "logic": "AND",
@@ -9723,7 +10132,7 @@ export const DEMO_SCRIPT = {
       "meta": {
         "title": "Đến ga bằng cách tái dựng bằng chứng",
         "buttonLabel": "Tái dựng tuyến đường",
-        "desc": "Bạn có thể lần đến ga bằng cuộn phim, danh sách vận chuyển và lời khai đối chiếu, ngay cả khi ký ức chưa rõ ràng."
+        "desc": "Từ những mảnh phim, hồ sơ và dấu tích đã đối chiếu, bạn có thể dựng lại tuyến đường đến ga 03:17 dù ký ức vẫn còn mờ."
       },
       "set": {
         "display": "show",
@@ -9742,7 +10151,7 @@ export const DEMO_SCRIPT = {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Ga 03:17 reachable bằng evidence route."
+            "text": "Những dấu vết trên phim, hồ sơ và lời kể ghép thành con đường dẫn đến ga 03:17."
           }
         ],
         "fail": []
