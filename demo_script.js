@@ -218,7 +218,7 @@ export const DEMO_SCRIPT = {
     },
     "mai_approach": {
       "type": "string",
-      "value": "none",
+      "value": "chưa tiếp cận",
       "title": "Cách tiếp cận Mai"
     },
     "clue_mai_observation": {
@@ -2670,7 +2670,7 @@ export const DEMO_SCRIPT = {
             "type": "set",
             "subtype": "state",
             "target": "mai_approach",
-            "value": "talk"
+            "value": "trò chuyện"
           },
           {
             "type": "set",
@@ -6867,7 +6867,7 @@ export const DEMO_SCRIPT = {
             "type": "set",
             "subtype": "state",
             "target": "mai_approach",
-            "value": "observe"
+            "value": "quan sát"
           },
           {
             "type": "set",
@@ -6905,7 +6905,7 @@ export const DEMO_SCRIPT = {
             "type": "state",
             "property": "mai_approach",
             "op": "==",
-            "value": "none"
+            "value": "chưa tiếp cận"
           }
         ]
       }
