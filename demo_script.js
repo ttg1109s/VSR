@@ -6049,12 +6049,6 @@
           {
             "type": "set",
             "subtype": "state",
-            "target": "knows_twelve",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
             "target": "clue_tunnel",
             "value": true
           },
