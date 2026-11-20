@@ -615,19 +615,23 @@ export const DEMO_SCRIPT = {
         "max": 3,
         "autoInc": false,
         "status": [
-            [0,
-              "Sáng ổn định"
-            ],
-            [33,
-              "Ánh sáng yếu"
-            ],
-            [67,
-              "Chập chờn"
-            ],
-            [100,
-              "Tắt hoàn toàn"
-            ]
+          [
+            0,
+            "Sáng ổn định"
+          ],
+          [
+            33,
+            "Ánh sáng yếu"
+          ],
+          [
+            67,
+            "Chập chờn"
+          ],
+          [
+            100,
+            "Tắt hoàn toàn"
           ]
+        ]
       },
       "effect": {
         "use": [
@@ -650,16 +654,19 @@ export const DEMO_SCRIPT = {
         "max": 2,
         "autoInc": false,
         "status": [
-            [0,
-              "Đọc rõ"
-            ],
-            [50,
-              "Khó đọc"
-            ],
-            [100,
-              "Không đọc được"
-            ]
+          [
+            0,
+            "Đọc rõ"
+          ],
+          [
+            50,
+            "Khó đọc"
+          ],
+          [
+            100,
+            "Không đọc được"
           ]
+        ]
       },
       "effect": {
         "use": []
@@ -675,19 +682,23 @@ export const DEMO_SCRIPT = {
         "max": 3,
         "autoInc": false,
         "status": [
-            [0,
-              "Âm thanh rõ"
-            ],
-            [33,
-              "Nhiễu nhẹ"
-            ],
-            [67,
-              "Nhiễu nặng"
-            ],
-            [100,
-              "Mất tín hiệu"
-            ]
+          [
+            0,
+            "Âm thanh rõ"
+          ],
+          [
+            33,
+            "Nhiễu nhẹ"
+          ],
+          [
+            67,
+            "Nhiễu nặng"
+          ],
+          [
+            100,
+            "Mất tín hiệu"
           ]
+        ]
       },
       "effect": {
         "use": []
@@ -703,16 +714,19 @@ export const DEMO_SCRIPT = {
         "max": 2,
         "autoInc": false,
         "status": [
-            [0,
-              "Dấu khắc rõ"
-            ],
-            [50,
-              "Khó nhận dạng"
-            ],
-            [100,
-              "Mất dấu khắc"
-            ]
+          [
+            0,
+            "Dấu khắc rõ"
+          ],
+          [
+            50,
+            "Khó nhận dạng"
+          ],
+          [
+            100,
+            "Mất dấu khắc"
           ]
+        ]
       },
       "effect": {
         "use": [
@@ -767,19 +781,23 @@ export const DEMO_SCRIPT = {
         "max": 3,
         "autoInc": false,
         "status": [
-            [0,
-              "Ảnh rõ nét"
-            ],
-            [33,
-              "Rách nhẹ"
-            ],
-            [67,
-              "Khó đối chiếu"
-            ],
-            [100,
-              "Không phục dựng được"
-            ]
+          [
+            0,
+            "Ảnh rõ nét"
+          ],
+          [
+            33,
+            "Rách nhẹ"
+          ],
+          [
+            67,
+            "Khó đối chiếu"
+          ],
+          [
+            100,
+            "Không phục dựng được"
           ]
+        ]
       },
       "effect": {
         "use": []
@@ -795,19 +813,23 @@ export const DEMO_SCRIPT = {
         "max": 3,
         "autoInc": false,
         "status": [
-            [0,
-              "Răng khóa tốt"
-            ],
-            [33,
-              "Mòn nhẹ"
-            ],
-            [67,
-              "Khó xoay"
-            ],
-            [100,
-              "Khóa bị hỏng"
-            ]
+          [
+            0,
+            "Răng khóa tốt"
+          ],
+          [
+            33,
+            "Mòn nhẹ"
+          ],
+          [
+            67,
+            "Khó xoay"
+          ],
+          [
+            100,
+            "Khóa bị hỏng"
           ]
+        ]
       },
       "effect": {
         "use": []
@@ -823,19 +845,23 @@ export const DEMO_SCRIPT = {
         "max": 3,
         "autoInc": false,
         "status": [
-            [0,
-              "Nét vẽ rõ"
-            ],
-            [33,
-              "Mực nhạt"
-            ],
-            [67,
-              "Khó đối chiếu"
-            ],
-            [100,
-              "Không đọc được"
-            ]
+          [
+            0,
+            "Nét vẽ rõ"
+          ],
+          [
+            33,
+            "Mực nhạt"
+          ],
+          [
+            67,
+            "Khó đối chiếu"
+          ],
+          [
+            100,
+            "Không đọc được"
           ]
+        ]
       },
       "effect": {
         "use": []
@@ -851,25 +877,31 @@ export const DEMO_SCRIPT = {
         "max": 5,
         "autoInc": false,
         "status": [
-            [0,
-              "Đầy đủ"
-            ],
-            [20,
-              "Hao mòn nhẹ"
-            ],
-            [40,
-              "Xuống cấp"
-            ],
-            [60,
-              "Khó sử dụng"
-            ],
-            [80,
-              "Hư hỏng nặng"
-            ],
-            [100,
-              "Không sử dụng được"
-            ]
+          [
+            0,
+            "Đầy đủ"
+          ],
+          [
+            20,
+            "Hao mòn nhẹ"
+          ],
+          [
+            40,
+            "Xuống cấp"
+          ],
+          [
+            60,
+            "Khó sử dụng"
+          ],
+          [
+            80,
+            "Hư hỏng nặng"
+          ],
+          [
+            100,
+            "Không sử dụng được"
           ]
+        ]
       },
       "effect": {
         "use": []
@@ -885,16 +917,19 @@ export const DEMO_SCRIPT = {
         "max": 2,
         "autoInc": false,
         "status": [
-            [0,
-              "Cách điện tốt"
-            ],
-            [50,
-              "Sắp hở dây"
-            ],
-            [100,
-              "Hở điện"
-            ]
+          [
+            0,
+            "Cách điện tốt"
+          ],
+          [
+            50,
+            "Sắp hở dây"
+          ],
+          [
+            100,
+            "Hở điện"
           ]
+        ]
       },
       "effect": {
         "use": []
@@ -910,16 +945,19 @@ export const DEMO_SCRIPT = {
         "max": 2,
         "autoInc": false,
         "status": [
-            [0,
-              "Còn tốt"
-            ],
-            [50,
-              "Chịu tải yếu"
-            ],
-            [100,
-              "Bị hỏng"
-            ]
+          [
+            0,
+            "Còn tốt"
+          ],
+          [
+            50,
+            "Chịu tải yếu"
+          ],
+          [
+            100,
+            "Bị hỏng"
           ]
+        ]
       },
       "effect": {
         "use": []
@@ -971,19 +1009,23 @@ export const DEMO_SCRIPT = {
         "max": 3,
         "autoInc": false,
         "status": [
-            [0,
-              "Giấy sạch"
-            ],
-            [33,
-              "Chồng nét"
-            ],
-            [67,
-              "Khó đối chiếu"
-            ],
-            [100,
-              "Không đối chiếu được"
-            ]
+          [
+            0,
+            "Giấy sạch"
+          ],
+          [
+            33,
+            "Chồng nét"
+          ],
+          [
+            67,
+            "Khó đối chiếu"
+          ],
+          [
+            100,
+            "Không đối chiếu được"
           ]
+        ]
       },
       "effect": {
         "use": []
@@ -999,22 +1041,27 @@ export const DEMO_SCRIPT = {
         "max": 4,
         "autoInc": false,
         "status": [
-            [0,
-              "Quan sát rõ"
-            ],
-            [25,
-              "Bám bụi"
-            ],
-            [50,
-              "Phóng đại yếu"
-            ],
-            [75,
-              "Khó quan sát"
-            ],
-            [100,
-              "Không sử dụng được"
-            ]
+          [
+            0,
+            "Quan sát rõ"
+          ],
+          [
+            25,
+            "Bám bụi"
+          ],
+          [
+            50,
+            "Phóng đại yếu"
+          ],
+          [
+            75,
+            "Khó quan sát"
+          ],
+          [
+            100,
+            "Không sử dụng được"
           ]
+        ]
       },
       "effect": {
         "use": []
@@ -1030,19 +1077,23 @@ export const DEMO_SCRIPT = {
         "max": 3,
         "autoInc": false,
         "status": [
-            [0,
-              "Thu sóng tốt"
-            ],
-            [33,
-              "Tín hiệu yếu"
-            ],
-            [67,
-              "Thu sóng kém"
-            ],
-            [100,
-              "Mất tín hiệu"
-            ]
+          [
+            0,
+            "Thu sóng tốt"
+          ],
+          [
+            33,
+            "Tín hiệu yếu"
+          ],
+          [
+            67,
+            "Thu sóng kém"
+          ],
+          [
+            100,
+            "Mất tín hiệu"
           ]
+        ]
       },
       "effect": {
         "use": []
@@ -1058,16 +1109,19 @@ export const DEMO_SCRIPT = {
         "max": 2,
         "autoInc": false,
         "status": [
-            [0,
-              "Dấu rõ nét"
-            ],
-            [50,
-              "Khó xác thực"
-            ],
-            [100,
-              "Không xác thực được"
-            ]
+          [
+            0,
+            "Dấu rõ nét"
+          ],
+          [
+            50,
+            "Khó xác thực"
+          ],
+          [
+            100,
+            "Không xác thực được"
           ]
+        ]
       },
       "effect": {
         "use": []
@@ -1083,19 +1137,23 @@ export const DEMO_SCRIPT = {
         "max": 3,
         "autoInc": false,
         "status": [
-            [0,
-              "Răng khóa tốt"
-            ],
-            [33,
-              "Mòn nhẹ"
-            ],
-            [67,
-              "Khó xoay"
-            ],
-            [100,
-              "Không mở được"
-            ]
+          [
+            0,
+            "Răng khóa tốt"
+          ],
+          [
+            33,
+            "Mòn nhẹ"
+          ],
+          [
+            67,
+            "Khó xoay"
+          ],
+          [
+            100,
+            "Không mở được"
           ]
+        ]
       },
       "effect": {
         "use": []
@@ -1111,19 +1169,23 @@ export const DEMO_SCRIPT = {
         "max": 3,
         "autoInc": false,
         "status": [
-            [0,
-              "Khung hình rõ"
-            ],
-            [33,
-              "Trầy nhẹ"
-            ],
-            [67,
-              "Khó phục dựng"
-            ],
-            [100,
-              "Không phục dựng được"
-            ]
+          [
+            0,
+            "Khung hình rõ"
+          ],
+          [
+            33,
+            "Trầy nhẹ"
+          ],
+          [
+            67,
+            "Khó phục dựng"
+          ],
+          [
+            100,
+            "Không phục dựng được"
           ]
+        ]
       },
       "effect": {
         "use": []
@@ -1139,19 +1201,23 @@ export const DEMO_SCRIPT = {
         "max": 3,
         "autoInc": false,
         "status": [
-            [0,
-              "Ghi chú rõ"
-            ],
-            [33,
-              "Mực nhòe"
-            ],
-            [67,
-              "Khó giải mã"
-            ],
-            [100,
-              "Không giải mã được"
-            ]
+          [
+            0,
+            "Ghi chú rõ"
+          ],
+          [
+            33,
+            "Mực nhòe"
+          ],
+          [
+            67,
+            "Khó giải mã"
+          ],
+          [
+            100,
+            "Không giải mã được"
           ]
+        ]
       },
       "effect": {
         "use": []
@@ -1203,19 +1269,23 @@ export const DEMO_SCRIPT = {
         "max": 3,
         "autoInc": false,
         "status": [
-            [0,
-              "Dữ liệu rõ"
-            ],
-            [33,
-              "Dòng bị nhòe"
-            ],
-            [67,
-              "Dữ liệu mờ"
-            ],
-            [100,
-              "Không xác minh được"
-            ]
+          [
+            0,
+            "Dữ liệu rõ"
+          ],
+          [
+            33,
+            "Dòng bị nhòe"
+          ],
+          [
+            67,
+            "Dữ liệu mờ"
+          ],
+          [
+            100,
+            "Không xác minh được"
           ]
+        ]
       },
       "effect": {
         "use": []
@@ -1231,19 +1301,23 @@ export const DEMO_SCRIPT = {
         "max": 3,
         "autoInc": false,
         "status": [
-            [0,
-              "Chỉ hướng chuẩn"
-            ],
-            [33,
-              "Sai lệch nhẹ"
-            ],
-            [67,
-              "Khó định hướng"
-            ],
-            [100,
-              "Mất phương hướng"
-            ]
+          [
+            0,
+            "Chỉ hướng chuẩn"
+          ],
+          [
+            33,
+            "Sai lệch nhẹ"
+          ],
+          [
+            67,
+            "Khó định hướng"
+          ],
+          [
+            100,
+            "Mất phương hướng"
           ]
+        ]
       },
       "effect": {
         "use": []
@@ -1259,16 +1333,19 @@ export const DEMO_SCRIPT = {
         "max": 2,
         "autoInc": false,
         "status": [
-            [0,
-              "Dấu rõ nét"
-            ],
-            [50,
-              "Dấu mờ"
-            ],
-            [100,
-              "Mất dấu"
-            ]
+          [
+            0,
+            "Dấu rõ nét"
+          ],
+          [
+            50,
+            "Dấu mờ"
+          ],
+          [
+            100,
+            "Mất dấu"
           ]
+        ]
       },
       "effect": {
         "use": []
@@ -1284,16 +1361,19 @@ export const DEMO_SCRIPT = {
         "max": 2,
         "autoInc": false,
         "status": [
-            [0,
-              "Chốt nguyên"
-            ],
-            [50,
-              "Cong lệch"
-            ],
-            [100,
-              "Mất cố định"
-            ]
+          [
+            0,
+            "Chốt nguyên"
+          ],
+          [
+            50,
+            "Cong lệch"
+          ],
+          [
+            100,
+            "Mất cố định"
           ]
+        ]
       },
       "effect": {
         "use": []
@@ -1309,19 +1389,23 @@ export const DEMO_SCRIPT = {
         "max": 3,
         "autoInc": false,
         "status": [
-            [0,
-              "Danh sách rõ"
-            ],
-            [33,
-              "Nhòe một phần"
-            ],
-            [67,
-              "Dữ liệu mờ"
-            ],
-            [100,
-              "Không đối chiếu được"
-            ]
+          [
+            0,
+            "Danh sách rõ"
+          ],
+          [
+            33,
+            "Nhòe một phần"
+          ],
+          [
+            67,
+            "Dữ liệu mờ"
+          ],
+          [
+            100,
+            "Không đối chiếu được"
           ]
+        ]
       },
       "effect": {
         "use": []
@@ -1337,16 +1421,19 @@ export const DEMO_SCRIPT = {
         "max": 2,
         "autoInc": false,
         "status": [
-            [0,
-              "Vé nguyên vẹn"
-            ],
-            [50,
-              "Khó xác minh"
-            ],
-            [100,
-              "Không xác minh được"
-            ]
+          [
+            0,
+            "Vé nguyên vẹn"
+          ],
+          [
+            50,
+            "Khó xác minh"
+          ],
+          [
+            100,
+            "Không xác minh được"
           ]
+        ]
       },
       "effect": {
         "use": []
@@ -4474,13 +4561,13 @@ export const DEMO_SCRIPT = {
           {
             "logic": "OR",
             "check": [
-  {
-    "type": "state",
-    "property": "ticket_verified",
-    "op": "==",
-    "value": true
-  }
-]
+              {
+                "type": "state",
+                "property": "ticket_verified",
+                "op": "==",
+                "value": true
+              }
+            ]
           }
         ]
       }
@@ -6557,7 +6644,7 @@ export const DEMO_SCRIPT = {
           }
         ],
         "pass": [
-                    {
+          {
             "type": "characters",
             "subtype": "edit_stats",
             "target": "player",
@@ -6854,7 +6941,7 @@ export const DEMO_SCRIPT = {
           }
         ],
         "pass": [
-                    {
+          {
             "type": "set",
             "subtype": "state",
             "target": "room7_open",
@@ -7171,7 +7258,7 @@ export const DEMO_SCRIPT = {
           }
         ],
         "pass": [
-                    {
+          {
             "type": "set",
             "subtype": "state",
             "target": "clue_well_bottom_partial",
@@ -7600,7 +7687,7 @@ export const DEMO_SCRIPT = {
           }
         ],
         "pass": [
-                    {
+          {
             "type": "characters",
             "subtype": "edit_stats",
             "target": "player",
@@ -7764,7 +7851,7 @@ export const DEMO_SCRIPT = {
           }
         ],
         "pass": [
-                              {
+          {
             "type": "set",
             "subtype": "state",
             "target": "evidence_corrupted",
@@ -7941,7 +8028,7 @@ export const DEMO_SCRIPT = {
           }
         ],
         "pass": [
-                              {
+          {
             "type": "set",
             "subtype": "state",
             "target": "mill_powered_partial",
@@ -8068,7 +8155,7 @@ export const DEMO_SCRIPT = {
           }
         ],
         "pass": [
-                    {
+          {
             "type": "characters",
             "subtype": "edit_stats",
             "target": "player",
@@ -8178,7 +8265,7 @@ export const DEMO_SCRIPT = {
             "target": "clockwork_spring",
             "value": -1
           },
-                              {
+          {
             "type": "set",
             "subtype": "state",
             "target": "mill_powered",
@@ -8331,7 +8418,7 @@ export const DEMO_SCRIPT = {
           }
         ],
         "pass": [
-                    {
+          {
             "type": "characters",
             "subtype": "edit_stats",
             "target": "player",
@@ -8614,13 +8701,13 @@ export const DEMO_SCRIPT = {
             "target": "tracing_paper",
             "value": -1
           },
-                    {
+          {
             "type": "item",
             "subtype": "usage",
             "target": "inspection_loupe",
             "value": -1
           },
-                    {
+          {
             "type": "set",
             "subtype": "state",
             "target": "map_incomplete",
@@ -8850,7 +8937,7 @@ export const DEMO_SCRIPT = {
           }
         ],
         "pass": [
-                                        {
+          {
             "type": "characters",
             "subtype": "edit_stats",
             "target": "player",
@@ -9174,7 +9261,7 @@ export const DEMO_SCRIPT = {
           }
         ],
         "pass": [
-                              {
+          {
             "type": "characters",
             "subtype": "edit_stats",
             "target": "player",
@@ -9370,13 +9457,13 @@ export const DEMO_SCRIPT = {
       "effect": {
         "normal": [],
         "pass": [
-                    {
+          {
             "type": "item",
             "subtype": "usage",
             "target": "radio_toolkit",
             "value": -1
           },
-                    {
+          {
             "type": "item",
             "subtype": "usage",
             "target": "insulated_wire",
