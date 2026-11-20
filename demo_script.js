@@ -4250,6 +4250,13 @@
             "subtype": "state",
             "target": "knows_twelve",
             "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_inspect_stakes",
+            "property": "display",
+            "value": "hide"
           }
         ]
       },
