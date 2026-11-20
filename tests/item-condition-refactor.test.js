@@ -27,7 +27,7 @@ test('item-condition refactor preserves schema and removes redundant/dead condit
 
   for (const stateId of removedConditionStates) {
     assert.equal(Object.hasOwn(DEMO_SCRIPT.globalStates, stateId), false, stateId);
-    assert.equal(collectReferences(DEMO_SCRIPT.actions).includes(stateId), false, stateId);
+    assert.equal(collectReferences(DEMO_SCRIPT).includes(stateId), false, stateId);
   }
 
   const sealRequirement = DEMO_SCRIPT.actions.action_verify_seal.requirement.check;
