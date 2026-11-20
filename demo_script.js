@@ -1845,7 +1845,7 @@
         "router_village_night": {
           "meta": {
             "sceneID": "scene_village",
-            "subTitleStatus": "Đêm phủ kín làng",
+            "subTitleStatus": "Đêm tối",
             "desc": "Ngôi làng chìm trong đêm. Sương thấp che khuất các khúc quanh và làm tầm nhìn chỉ còn vài bước. Loa phát thanh ở quảng trường phát những cái tên bằng giọng méo mó; các căn nhà im lìm, nhưng một vài ô cửa có dấu hiệu chuyển động trong bóng tối."
           },
           "set": {
@@ -1876,7 +1876,7 @@
         "router_square_fogbound": {
           "meta": {
             "sceneID": "scene_village_square",
-            "subTitleStatus": "Quảng trường bị sương phủ",
+            "subTitleStatus": "Mù sương",
             "desc": "Sương dày phủ quảng trường và làm mờ các dãy nhà quanh cổng làng. Loa phát thanh lặp lại tên những người mất tích. Bảng thông báo lưu danh sách dân làng, trong đó một cái tên bị cạo bỏ."
           },
           "set": {
@@ -1896,7 +1896,7 @@
         "router_square_broadcast_decoded": {
           "meta": {
             "sceneID": "scene_village_square",
-            "subTitleStatus": "Bản phát thanh lặp đã được xác định",
+            "subTitleStatus": "Phát thanh lặp",
             "desc": "Hộp loa chứa cuộn dây đồng và sơ đồ tần số. Tiếng gọi tên không phải phát trực tiếp mà là bản ghi được phát lặp theo chu kỳ."
           },
           "set": {
@@ -1928,7 +1928,7 @@
         "router_well_echoes": {
           "meta": {
             "sceneID": "scene_village_well",
-            "subTitleStatus": "Giếng phát tiếng gõ",
+            "subTitleStatus": "Tiếng gõ đều đặn",
             "desc": "Chiếc giếng đá phủ rêu phát ra tiếng gõ đều đặn. Trên thành giếng có bốn vạch khắc mới và một vết kim loại bị cào xước."
           },
           "set": {
@@ -1947,7 +1947,7 @@
         "router_well_bottom_revealed": {
           "meta": {
             "sceneID": "scene_village_well",
-            "subTitleStatus": "Phù hiệu đội sơ tán được tìm thấy",
+            "subTitleStatus": "Phù hiệu sơ tán",
             "desc": "Một hốc nhỏ dưới mực nước cũ chứa phù hiệu kim loại của đội sơ tán. Ký hiệu trên phù hiệu trùng với dấu trên bản đồ làng."
           },
           "set": {
@@ -1978,7 +1978,7 @@
         "router_inn_unsettled": {
           "meta": {
             "sceneID": "scene_inn",
-            "subTitleStatus": "Sổ khách có tên đến trong tương lai",
+            "subTitleStatus": "Tên đến trong tương lai",
             "desc": "Quầy lễ tân còn mùi trà nguội. Sổ khách ghi những người được cho là đã rời làng; trang cuối có tên An với ngày đến là ngày mai."
           },
           "set": {
@@ -2008,7 +2008,7 @@
         "router_inn_hidden_room": {
           "meta": {
             "sceneID": "scene_inn",
-            "subTitleStatus": "Phòng thứ bảy đã mở",
+            "subTitleStatus": "Phòng ẩn đã mở",
             "desc": "Sau quầy lễ tân có ổ khóa nối với hành lang. Phòng thứ bảy không có trong sơ đồ nhà trọ; bên trong còn một thẻ gửi đồ cũ."
           },
           "set": {
@@ -2037,7 +2037,7 @@
         "router_room7_forced": {
           "meta": {
             "sceneID": "scene_inn",
-            "subTitleStatus": "Cửa phòng thứ bảy bị phá",
+            "subTitleStatus": "Cửa bị phá",
             "desc": "Cửa phòng thứ bảy bị cưỡng chế mở. Khóa và khung cửa mang dấu hư hại; manh mối bên trong chưa đầy đủ, nhưng căn phòng vẫn có thể được tiếp tục điều tra."
           },
           "set": {
@@ -2066,7 +2066,7 @@
         "router_room7_repaired": {
           "meta": {
             "sceneID": "scene_inn",
-            "subTitleStatus": "Khóa phòng thứ bảy đã phục hồi",
+            "subTitleStatus": "Khóa đã phục hồi",
             "desc": "Chìa khóa và ổ khóa phòng thứ bảy đã được phục hồi. Cửa có thể mở bằng chìa khóa; các dấu vết còn lại trong phòng vẫn cần được đối chiếu."
           },
           "set": {
@@ -2107,7 +2107,7 @@
         "router_cellar_open": {
           "meta": {
             "sceneID": "scene_inn_cellar",
-            "subTitleStatus": "Cửa hầm đã mở",
+            "subTitleStatus": "Đã mở khóa",
             "desc": "Ổ khóa hầm đã bật, để lộ cầu thang xuống căn hầm rượu tối và lạnh. Một cuộn băng ghi âm đêm mất điện nằm sau chiếc thùng rỗng."
           },
           "set": {
@@ -2124,7 +2124,7 @@
         "router_cellar_recording_found": {
           "meta": {
             "sceneID": "scene_inn_cellar",
-            "subTitleStatus": "Cuộn phim sơ tán được phát hiện",
+            "subTitleStatus": "Cuộn phim chưa tráng",
             "desc": "Phía sau kệ rượu có máy chiếu cũ và cuộn phim chưa tráng. Phim có dấu hiệu ghi lại cảnh người dân tập trung ở bờ đê trước thời điểm mất điện; nội dung chưa được xác minh đầy đủ."
           },
           "set": {
@@ -2152,7 +2152,7 @@
         "router_chapel_silent": {
           "meta": {
             "sceneID": "scene_chapel",
-            "subTitleStatus": "Nhà nguyện im lặng",
+            "subTitleStatus": "Im lặng",
             "desc": "Gian cầu nguyện yên tĩnh. Chuông đã ngừng ngân từ mười bảy năm trước; bản thánh ca còn lưu mật từ và chỉ dẫn về ba hồi chuông."
           },
           "set": {
@@ -2171,7 +2171,7 @@
         "router_chapel_cryptic_note": {
           "meta": {
             "sceneID": "scene_chapel",
-            "subTitleStatus": "Tín hiệu sơ tán được xác nhận",
+            "subTitleStatus": "Tín hiệu sơ tán",
             "desc": "Trang giấy khâu vào gáy sách xác nhận ba hồi chuông là tín hiệu kết thúc sơ tán, còn hồi thứ tư là lệnh ở lại."
           },
           "set": {
@@ -2201,7 +2201,7 @@
         "router_bell_chamber": {
           "meta": {
             "sceneID": "scene_chapel_tower",
-            "subTitleStatus": "Chuông chưa hoạt động",
+            "subTitleStatus": "Chuông im lìm",
             "desc": "Quả chuông treo trên tháp phía trên mặt đồng hồ. Quả lắc đã bị tháo rời; mã khắc dưới mặt đồng hồ liên quan đến thời điểm dân làng biến mất."
           },
           "set": {
@@ -2220,7 +2220,7 @@
         "router_bell_mechanism_repaired": {
           "meta": {
             "sceneID": "scene_chapel_tower",
-            "subTitleStatus": "Cơ cấu truyền lực đã nối",
+            "subTitleStatus": "Cơ cấu đã nối",
             "desc": "Dây đồng đã được nối vào trục bánh răng và cơ cấu truyền lực hoạt động. Chuông vẫn chưa thể rung cho đến khi tìm được quả lắc."
           },
           "set": {
@@ -2250,7 +2250,7 @@
         "router_school_entry": {
           "meta": {
             "sceneID": "scene_abandoned_school",
-            "subTitleStatus": "Hành lang trường phủ bụi",
+            "subTitleStatus": "Hành lang phủ bụi",
             "desc": "Cửa trường mở hé. Bụi phủ nền hành lang, ngoại trừ một hàng dấu chân nhỏ hướng về lớp học số 3. Từ lớp học vọng ra tiếng lật giấy rất khẽ."
           },
           "set": {
@@ -2277,7 +2277,7 @@
         "router_classroom_overview": {
           "meta": {
             "sceneID": "scene_school_classroom_03",
-            "subTitleStatus": "Lớp học số 3 còn nguyên trạng",
+            "subTitleStatus": "Còn nguyên trạng",
             "desc": "Lớp học số 3 có ba dãy bàn ghế phủ bụi, bục giảng dưới bảng đen, đồng hồ chết máy gần cửa sổ và thông báo sơ tán đã ngả vàng trên bảng tin. Chưa có dấu hiệu đủ rõ để xác định sự việc đã xảy ra."
           },
           "set": {
@@ -2312,7 +2312,7 @@
         "router_classroom_archive_open": {
           "meta": {
             "sceneID": "scene_school_classroom_03",
-            "subTitleStatus": "Sĩ số mười hai học sinh được xác nhận",
+            "subTitleStatus": "Sĩ số 12 được xác nhận",
             "desc": "Ngăn bàn cuối lớp chứa bản sao sổ điểm danh. Dòng thứ mười hai bị bôi đen; số thứ tự và ngày nghỉ học trùng với hồ sơ sơ tán. Sĩ số mười hai người được xác nhận, nhưng danh tính một học sinh vẫn bị xóa khỏi các tài liệu khác."
           },
           "set": {
@@ -2358,7 +2358,7 @@
         "router_classroom_blackboard": {
           "meta": {
             "sceneID": "scene_classroom_blackboard",
-            "subTitleStatus": "Bảng đen chưa xác định nội dung",
+            "subTitleStatus": "Chưa giải mã",
             "desc": "Mặt bảng phủ bụi phấn và các vệt lau chồng lên nhau. Một vài nét chữ còn sót lại nhưng chưa đủ để đọc; một vị trí bị cạo mạnh hơn những chỗ khác."
           },
           "set": {
@@ -2373,7 +2373,7 @@
         "router_classroom_erased": {
           "meta": {
             "sceneID": "scene_classroom_blackboard",
-            "subTitleStatus": "Tên học sinh bị xóa có chủ ý",
+            "subTitleStatus": "Xóa tên có chủ ý",
             "desc": "Một số tên học sinh bị xóa có chủ ý; một vị trí trên bảng bị cạo mạnh đến mức mặt bảng xước thành đường trắng. Dấu vết cần được đối chiếu với sơ đồ chỗ ngồi và hồ sơ lớp."
           },
           "set": {
@@ -2400,7 +2400,7 @@
         "router_forest_path_shifting": {
           "meta": {
             "sceneID": "scene_north_forest",
-            "subTitleStatus": "Lối rừng thay đổi",
+            "subTitleStatus": "Đường đi biến đổi",
             "desc": "Con đường mòn dưới tán thông không giữ nguyên hình dạng. Những vệt sơn trên thân cây là dấu hiệu hiếm hoi để xác định hướng tới khoảng đất trống."
           },
           "set": {
@@ -2421,7 +2421,7 @@
         "router_forest_markers_aligned": {
           "meta": {
             "sceneID": "scene_north_forest",
-            "subTitleStatus": "Tuyến vận chuyển qua rừng được xác định",
+            "subTitleStatus": "Tuyến đường được xác định",
             "desc": "Các dấu sơn đã được đối chiếu với hướng la bàn. Chúng xác định tuyến đường qua rừng và đồng thời đánh dấu lối vận chuyển người xuống bờ đê."
           },
           "set": {
@@ -2453,7 +2453,7 @@
         "router_forest_clearing": {
           "meta": {
             "sceneID": "scene_forest_clearing",
-            "subTitleStatus": "Vòng cọc có mười một bóng",
+            "subTitleStatus": "Bóng bị khuyết",
             "desc": "Mười hai cọc gỗ tạo thành vòng cung giữa khoảng đất trống, nhưng chỉ có mười một chiếc bóng. Một hộp chôn gần vòng cọc chứa các mảnh ảnh gia đình."
           },
           "set": {
@@ -2472,7 +2472,7 @@
         "router_clearing_ritual_trace": {
           "meta": {
             "sceneID": "scene_forest_clearing",
-            "subTitleStatus": "Con dấu đội sơ tán được xác định",
+            "subTitleStatus": "Con dấu sơ tán",
             "desc": "Con dấu gỗ nằm dưới phiến đá giữa vòng cọc. Đây không phải vật tế lễ mà là dấu xác nhận của đội sơ tán, dùng để niêm phong danh sách người đã rời làng."
           },
           "set": {
@@ -2502,7 +2502,7 @@
         "router_watermill_stalled": {
           "meta": {
             "sceneID": "scene_watermill",
-            "subTitleStatus": "Cối xay ngừng hoạt động",
+            "subTitleStatus": "Ngừng hoạt động",
             "desc": "Dòng suối đã cạn và bánh xe mục kẹt cứng trên trục. Bảng điều khiển còn nguyên; cần sơ đồ từ trường học để xác định cách lắp cơ cấu truyền động."
           },
           "set": {
@@ -2522,7 +2522,7 @@
         "router_watermill_running": {
           "meta": {
             "sceneID": "scene_watermill",
-            "subTitleStatus": "Cối xay đang vận hành",
+            "subTitleStatus": "Đang vận hành",
             "desc": "Bánh xe đã ăn khớp với trục truyền động. Cửa sập dưới sàn rung theo nhịp máy và để lộ lối xuống đường hầm dưới chân đê."
           },
           "set": {
@@ -2537,7 +2537,7 @@
         "router_watermill_gear_inspected": {
           "meta": {
             "sceneID": "scene_watermill",
-            "subTitleStatus": "Chốt truyền động bị cong",
+            "subTitleStatus": "Chốt bị cong",
             "desc": "Chốt truyền động trong cụm bánh răng bị cong, giải thích nguyên nhân cối xay dừng lại. Chốt chưa được thay thế hoặc lắp lại đúng vị trí."
           },
           "set": {
@@ -2569,7 +2569,7 @@
         "router_tunnel_names": {
           "meta": {
             "sceneID": "scene_levee_tunnel",
-            "subTitleStatus": "Danh sách tên trên tường có dấu sửa đổi",
+            "subTitleStatus": "Danh sách bị sửa",
             "desc": "Tường đường hầm ghi tên dân làng theo thứ tự ngày họ biến mất. Danh sách có dấu hiệu bị sửa; số tên thực tế nhiều hơn hồ sơ chính thức."
           },
           "set": {
@@ -2598,7 +2598,7 @@
         "router_tunnel_manifest_found": {
           "meta": {
             "sceneID": "scene_levee_tunnel",
-            "subTitleStatus": "Danh sách vận chuyển xác nhận ga tập kết",
+            "subTitleStatus": "Ga tập kết được xác nhận",
             "desc": "Ống tài liệu chống ẩm sau lớp gạch rỗng chứa danh sách những người được đưa qua đường hầm. Hồ sơ xác nhận ga tàu là điểm tập kết cuối cùng."
           },
           "set": {
@@ -2638,7 +2638,7 @@
         "router_station_0317": {
           "meta": {
             "sceneID": "scene_ghost_station",
-            "subTitleStatus": "Chuyến tàu 03:17 chưa được xác minh",
+            "subTitleStatus": "Chuyến 03:17 chưa xác minh",
             "desc": "Sân ga không có trên bản đồ hiện hành. Một chuyến tàu được ghi nhận lúc 03:17; giọng nói từ đường ray đặt ra lựa chọn về điều gì sẽ được giữ lại và điều gì phải chấm dứt, nhưng sự kiện vẫn chưa được xác minh độc lập."
           },
           "set": {
@@ -2668,7 +2668,7 @@
         "router_station_departure_records": {
           "meta": {
             "sceneID": "scene_ghost_station",
-            "subTitleStatus": "Hồ sơ chuyến tàu 03:17 được tìm thấy",
+            "subTitleStatus": "Hồ sơ chuyến 03:17",
             "desc": "Dưới ghế chờ có vé tàu chưa xé và bản kê hành khách. Vé xác nhận chuyến 03:17 từng tồn tại, nhưng chưa chứng minh tất cả người trong danh sách đã lên tàu."
           },
           "set": {
