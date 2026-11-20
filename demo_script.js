@@ -4196,7 +4196,18 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Những cái tên trên tường khớp với sơ đồ và mảnh bản đồ. Bạn đã nhận ra danh tính người thứ mười hai—cái tên bị xóa khỏi mọi hồ sơ chính thức."
+            "text": "Những cái tên trên tường khớp với sơ đồ và mảnh bản đồ. Bạn đã nhận ra danh tính người thứ mười hai—cái tên bị xóa khỏi mọi hồ sơ chính thức.",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "state",
+                  "property": "knows_twelve",
+                  "op": "==",
+                  "value": false
+                }
+              ]
+            }
           },
           {
             "type": "set",
@@ -4250,13 +4261,6 @@
             "subtype": "state",
             "target": "knows_twelve",
             "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_inspect_stakes",
-            "property": "display",
-            "value": "hide"
           }
         ]
       },
