@@ -5,11 +5,13 @@ import ActionNavigator from '../../features/actions/ActionNavigator.jsx';
 import ContactPanel from './ContactPanel.jsx';
 import NotificationCenter from '../../features/notifications/NotificationCenter.jsx';
 import InventoryWorkspace from '../../features/inventory/InventoryWorkspace.jsx';
+import NoteWorkspace from '../../features/note/NoteWorkspace.jsx';
 import '../../features/playing/playing-page.css';
 
 export default function PlayingPage({ snapshot, chatViewRequest = null, client, error = '', onNavigate, soundEnabled = true, onSoundChange, modalNotification = null, onModalClose }) {
   const toast = useToast();
   const [activeNavigation, setActiveNavigation] = useState(null);
+  const [noteOpen, setNoteOpen] = useState(false);
   const [contactOpen, setContactOpen] = useState(false);
   const [inventoryOpen, setInventoryOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
@@ -137,7 +139,16 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
       <BottomNavigation
         value={activeNavigation}
         onChange={value => {
+          if (value === 'note') {
+            setNoteOpen(current => !current);
+            setInventoryOpen(false);
+            setContactOpen(false);
+            setNotificationOpen(false);
+            setActiveNavigation(noteOpen ? null : 'note');
+            return;
+          }
           if (value === 'inventor') {
+            setNoteOpen(false);
             setInventoryOpen(current => !current);
             setContactOpen(false);
             setNotificationOpen(false);
@@ -145,22 +156,30 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
             return;
           }
           if (value === 'notify') {
+            setNoteOpen(false);
             setInventoryOpen(false);
             setNotificationOpen(current => !current);
             setContactOpen(false);
             setActiveNavigation(notificationOpen ? null : 'notify');
             return;
           }
+          setNoteOpen(false);
           setNotificationOpen(false);
           setInventoryOpen(false);
           setActiveNavigation(value);
           if (value === 'contact') setContactOpen(true);
         }}
         items={[
+          { value: 'note', label: 'Note', icon: 'sticky_note_2' },
           ...(snapshot?.presentation?.inventory?.enabled !== false ? [{ value: 'inventor', label: 'Inventory', icon: 'inventory_2' }] : []),
           { value: 'contact', label: 'Contact', icon: 'contacts' },
           { value: 'notify', label: 'Notify', icon: 'notifications', badge: unreadCount, badgeLabel: 'unread notifications' }
         ]}
+      />
+      <NoteWorkspace
+        snapshot={snapshot}
+        open={noteOpen}
+        onClose={() => { setNoteOpen(false); setActiveNavigation(null); }}
       />
       <InventoryWorkspace
         snapshot={snapshot}
