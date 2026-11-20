@@ -242,7 +242,7 @@ export default function NotificationCenter({
                           <Badge tone={tone} size="sm">
                             {levelLabel(item.level)}
                           </Badge>
-                          {!item.read && <Badge tone={tone} size="lg">New</Badge>}
+                          {!item.read && <span className="vsr-notification-item__unread-indicator" aria-label="Unread notification" />}
                         </div>
                         <p>{item.message}</p>
                         {validTimestamp && <time className="vsr-notification-item__timestamp" dateTime={timestamp.toISOString()}>{formatRelativeTime(timestamp)}</time>}
