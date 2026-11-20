@@ -40,7 +40,7 @@ test('item-condition refactor preserves schema and removes redundant/dead condit
   ));
   assert.equal(Object.hasOwn(DEMO_SCRIPT.globalStates, 'seal_damaged'), false);
 
-  assert.ok(DEMO_SCRIPT.actions.action_force_seal.effect.normal.some(effect =>
+  assert.ok(DEMO_SCRIPT.actions.action_force_seal.effect.pass.some(effect =>
     effect.type === 'item' &&
     effect.subtype === 'usage' &&
     effect.target === 'evacuation_seal' &&
