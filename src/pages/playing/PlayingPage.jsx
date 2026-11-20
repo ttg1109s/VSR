@@ -10,11 +10,12 @@ import '../../features/playing/playing-page.css';
 
 export default function PlayingPage({ snapshot, chatViewRequest = null, client, error = '', onNavigate, soundEnabled = true, onSoundChange, modalNotification = null, onModalClose }) {
   const toast = useToast();
+  // Keep a single source of truth for bottom-navigation workspace selection.
   const [activeNavigation, setActiveNavigation] = useState(null);
-  const [noteOpen, setNoteOpen] = useState(false);
-  const [contactOpen, setContactOpen] = useState(false);
-  const [inventoryOpen, setInventoryOpen] = useState(false);
-  const [notificationOpen, setNotificationOpen] = useState(false);
+  const noteOpen = activeNavigation === 'note';
+  const contactOpen = activeNavigation === 'contact';
+  const inventoryOpen = activeNavigation === 'inventory';
+  const notificationOpen = activeNavigation === 'notify';
   const [backParentPending, setBackParentPending] = useState(false);
   const actionCollectionRef = useRef(null);
   const [actionNavigation, setActionNavigation] = useState({ activeIndex: 0, actionCount: 0, activeTitle: '' });
@@ -38,13 +39,11 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
   const activeChat = snapshot?.session?.chat ?? null;
   useEffect(() => {
     if (activeChat?.active !== true || !activeChat.id || !activeChat.contactId) return;
-    setContactOpen(true);
     setActiveNavigation('contact');
   }, [activeChat?.active, activeChat?.id, activeChat?.contactId]);
 
   useEffect(() => {
     if (!chatViewRequest?.requestId || !chatViewRequest.chatId || !chatViewRequest.contactId) return;
-    setContactOpen(true);
     setActiveNavigation('contact');
   }, [chatViewRequest?.requestId, chatViewRequest?.chatId, chatViewRequest?.contactId]);
 
@@ -84,6 +83,12 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
   const status = typeof router?.meta?.subTitleStatus === 'string' && router.meta.subTitleStatus.trim()
     ? router.meta.subTitleStatus.trim()
     : '';
+
+  const handleNavigationChange = value => {
+    // Tapping the selected workspace closes it; tapping another switches directly.
+    setActiveNavigation(current => current === value ? null : value);
+  };
+  const closeWorkspace = () => setActiveNavigation(null);
 
   return (
     <main className="vsr-page-shell vsr-page-shell--start vsr-page-shell--flush-top">
@@ -138,37 +143,7 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
       </article>
       <BottomNavigation
         value={activeNavigation}
-        onChange={value => {
-          if (value === 'note') {
-            setNoteOpen(current => !current);
-            setInventoryOpen(false);
-            setContactOpen(false);
-            setNotificationOpen(false);
-            setActiveNavigation(noteOpen ? null : 'note');
-            return;
-          }
-          if (value === 'inventory') {
-            setNoteOpen(false);
-            setInventoryOpen(current => !current);
-            setContactOpen(false);
-            setNotificationOpen(false);
-            setActiveNavigation(inventoryOpen ? null : 'inventory');
-            return;
-          }
-          if (value === 'notify') {
-            setNoteOpen(false);
-            setInventoryOpen(false);
-            setNotificationOpen(current => !current);
-            setContactOpen(false);
-            setActiveNavigation(notificationOpen ? null : 'notify');
-            return;
-          }
-          setNoteOpen(false);
-          setNotificationOpen(false);
-          setInventoryOpen(false);
-          setActiveNavigation(value);
-          if (value === 'contact') setContactOpen(true);
-        }}
+        onChange={handleNavigationChange}
         items={[
           { value: 'note', label: 'Note', icon: 'sticky_note_2' },
           ...(snapshot?.presentation?.inventory?.enabled !== false ? [{ value: 'inventory', label: 'Inventory', icon: 'inventory_2' }] : []),
@@ -179,14 +154,14 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
       <NoteWorkspace
         snapshot={snapshot}
         open={noteOpen}
-        onClose={() => { setNoteOpen(false); setActiveNavigation(null); }}
+        onClose={closeWorkspace}
       />
       <InventoryWorkspace
         snapshot={snapshot}
         client={client}
         open={inventoryOpen}
         onError={message => toast(message, { tone: 'warning' })}
-        onClose={() => { setInventoryOpen(false); setActiveNavigation(null); }}
+        onClose={closeWorkspace}
       />
       <ContactPanel
         open={contactOpen}
@@ -196,19 +171,13 @@ export default function PlayingPage({ snapshot, chatViewRequest = null, client, 
         session={snapshot?.session ?? null}
         viewRequest={chatViewRequest}
         client={client}
-        onClose={() => {
-          setContactOpen(false);
-          setActiveNavigation(null);
-        }}
+        onClose={closeWorkspace}
       />
       <NotificationCenter
         open={notificationOpen}
         notifications={notifications}
         client={client}
-        onClose={() => {
-          setNotificationOpen(false);
-          setActiveNavigation(null);
-        }}
+        onClose={closeWorkspace}
         soundEnabled={soundEnabled}
         onSoundChange={onSoundChange}
         modalNotification={modalNotification}
