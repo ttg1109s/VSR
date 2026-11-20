@@ -6894,11 +6894,6 @@ export const DEMO_SCRIPT = {
             "subtype": "toast",
             "level": "success",
             "text": "Bạn ghi nhận dấu hiệu từ xa. Mai không còn là đối tượng tiếp cận trực tiếp trong nhánh này."
-          },
-          {
-            "type": "goto",
-            "subtype": "chat",
-            "target": "chat_mai_observation"
           }
         ],
         "fail": []
@@ -10814,63 +10809,6 @@ export const DEMO_SCRIPT = {
             "id": "voice_village_question",
             "text": "Nếu ký ức có thể nói dối, làm sao tôi biết đâu là sự thật?",
             "jump": "village_question"
-          }
-        ]
-      }
-    },
-    "chat_mai_observation": {
-      "meta": {
-        "title": "Mai — Dấu hiệu từ xa",
-        "loop": false,
-        "sender": "mai",
-        "entry": "start",
-        "to": ["player"]
-      },
-      "block": {
-        "start": {
-          "line": [
-            {
-              "char_id": "$communication",
-              "text": "Bạn không tiến lại gần. Mai nhiều lần nhìn về phía giếng rồi quay đi, nhưng khi loa phát thanh rè lên, cô lại kiểm tra một mảnh giấy gấp trong tay."
-            },
-            {
-              "char_id": "$communication",
-              "text": "Từ khoảng cách này, bạn không thể đọc được nội dung. Tuy nhiên, hành vi của Mai cho thấy giếng và bản ghi phát thanh có liên quan đến cùng một ký ức. Bạn ghi nhận dấu hiệu, không suy diễn lời khai."
-            }
-          ],
-          "choice_id": "mai_observation_follow",
-          "choiced": false
-        },
-        "records": {
-          "line": [
-            {
-              "char_id": "$communication",
-              "text": "Dấu hiệu này có thể được đối chiếu với hồ sơ sơ tán hoặc danh sách lớp. Hãy tìm nguồn độc lập trước khi kết luận Mai đang nhớ điều gì."
-            }
-          ],
-          "choiced": false
-        },
-        "well": {
-          "line": [
-            {
-              "char_id": "$communication",
-              "text": "Mai tránh nhìn xuống giếng nhưng không rời quảng trường. Đây chỉ là dấu hiệu hành vi; nó không chứng minh cô từng ở dưới giếng hay là người thứ mười hai."
-            }
-          ],
-          "choiced": false
-        }
-      },
-      "choice": {
-        "mai_observation_follow": [
-          {
-            "id": "mai_observation_records",
-            "text": "Đối chiếu hành vi này với hồ sơ sơ tán.",
-            "jump": "records"
-          },
-          {
-            "id": "mai_observation_well",
-            "text": "Ghi nhận việc Mai tránh nhìn giếng, chưa kết luận.",
-            "jump": "well"
           }
         ]
       }
