@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { DescriptionList, DescriptionListItem, Drawer, IconButton, Input } from '../../design-system/index.js';
+import './note.css';
 
 const STATE_GROUPS = [
   { type: 'boolean', label: 'Boolean' },
@@ -49,7 +50,7 @@ export default function NoteWorkspace({ snapshot, open = false, onClose }) {
   const copyStateValue = async state => {
     const value = state.value === null || state.value === undefined ? '' : String(state.value);
     try {
-      if (!navigator?.clipboard?.writeText) throw new Error('Clipboard unavailable');
+      if (typeof navigator === 'undefined' || !navigator.clipboard?.writeText) throw new Error('Clipboard unavailable');
       await navigator.clipboard.writeText(value);
       setCopiedStateId(state.id);
       setCopyError('');
