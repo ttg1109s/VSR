@@ -46,11 +46,6 @@
       "value": false,
       "title": "Biết con số mười hai"
     },
-    "truth_fragments": {
-      "type": "number",
-      "value": 0,
-      "title": "Mảnh sự thật"
-    },
     "school_choice": {
       "type": "string",
       "value": "chưa quyết định",
@@ -302,17 +297,6 @@
             "property": "clue_lantern",
             "op": "==",
             "value": true
-          }
-        ]
-      },
-      "enough_truth": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "state",
-            "property": "truth_fragments",
-            "op": ">=",
-            "value": 3
           }
         ]
       },
@@ -2746,24 +2730,6 @@
           {
             "type": "set",
             "subtype": "state",
-            "target": "truth_fragments",
-            "value": 1,
-            "req": {
-              "logic": "AND",
-              "check": [
-                {
-                  "type": "action_count",
-                  "target": "action_read_notice",
-                  "phase": "normal",
-                  "op": "==",
-                  "value": 1
-                }
-              ]
-            }
-          },
-          {
-            "type": "set",
-            "subtype": "state",
             "target": "clue_village_notice",
             "value": true,
             "req": {
@@ -3080,12 +3046,6 @@
           {
             "type": "set",
             "subtype": "state",
-            "target": "truth_fragments",
-            "value": 1
-          },
-          {
-            "type": "set",
-            "subtype": "state",
             "target": "clue_well",
             "value": true
           },
@@ -3122,12 +3082,6 @@
           {
             "type": "effect",
             "ref": "consume_action_use_lantern"
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "truth_fragments",
-            "value": 1
           },
           {
             "type": "notify",
@@ -3378,12 +3332,6 @@
           {
             "type": "set",
             "subtype": "state",
-            "target": "truth_fragments",
-            "value": 1
-          },
-          {
-            "type": "set",
-            "subtype": "state",
             "target": "found_guestbook",
             "value": true
           },
@@ -3510,12 +3458,6 @@
           {
             "type": "set",
             "subtype": "state",
-            "target": "truth_fragments",
-            "value": 1
-          },
-          {
-            "type": "set",
-            "subtype": "state",
             "target": "clue_tape",
             "value": true
           },
@@ -3552,12 +3494,6 @@
       "effect": {
         "normal": [],
         "pass": [
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "truth_fragments",
-            "value": 1
-          },
           {
             "type": "set",
             "subtype": "state",
@@ -3667,12 +3603,6 @@
           {
             "type": "set",
             "subtype": "state",
-            "target": "truth_fragments",
-            "value": 1
-          },
-          {
-            "type": "set",
-            "subtype": "state",
             "target": "heard_bell",
             "value": true
           },
@@ -3725,12 +3655,6 @@
             "subtype": "state",
             "target": "bell_rung",
             "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "truth_fragments",
-            "value": 1
           },
           {
             "type": "notify",
@@ -3940,12 +3864,6 @@
           {
             "type": "set",
             "subtype": "state",
-            "target": "truth_fragments",
-            "value": 1
-          },
-          {
-            "type": "set",
-            "subtype": "state",
             "target": "clue_stakes",
             "value": true
           },
@@ -4019,12 +3937,6 @@
             "ref": "consume_action_maze_path"
           },
           {
-            "type": "set",
-            "subtype": "state",
-            "target": "truth_fragments",
-            "value": 1
-          },
-          {
             "type": "item",
             "subtype": "add",
             "target": "archive_key"
@@ -4085,12 +3997,6 @@
           {
             "type": "set",
             "subtype": "state",
-            "target": "truth_fragments",
-            "value": 1
-          },
-          {
-            "type": "set",
-            "subtype": "state",
             "target": "knows_twelve",
             "value": true
           },
@@ -4128,12 +4034,6 @@
           {
             "type": "effect",
             "ref": "consume_action_find_hidden_box"
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "truth_fragments",
-            "value": 1
           },
           {
             "type": "set",
@@ -4214,12 +4114,6 @@
             "subtype": "state",
             "target": "mill_powered",
             "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "truth_fragments",
-            "value": 1
           },
           {
             "type": "set",
@@ -4317,12 +4211,6 @@
           {
             "type": "set",
             "subtype": "state",
-            "target": "truth_fragments",
-            "value": 1
-          },
-          {
-            "type": "set",
-            "subtype": "state",
             "target": "clue_tunnel",
             "value": true
           },
@@ -4417,12 +4305,6 @@
             "subtype": "state",
             "target": "archive_open",
             "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "truth_fragments",
-            "value": 1
           },
           {
             "type": "set",
@@ -5857,12 +5739,6 @@
           },
           {
             "type": "set",
-            "subtype": "state",
-            "target": "truth_fragments",
-            "value": 1
-          },
-          {
-            "type": "set",
             "subtype": "action",
             "target": "action_recover_class_register",
             "property": "display",
@@ -6154,12 +6030,6 @@
             "subtype": "state",
             "target": "knows_twelve",
             "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "truth_fragments",
-            "value": 1
           },
           {
             "type": "set",
@@ -8613,12 +8483,6 @@
           },
           {
             "type": "set",
-            "subtype": "state",
-            "target": "truth_fragments",
-            "value": 1
-          },
-          {
-            "type": "set",
             "subtype": "action",
             "target": "action_ring_bell",
             "property": "display",
@@ -10697,12 +10561,6 @@
                 "value": true
               },
               {
-                "type": "set",
-                "subtype": "state",
-                "target": "truth_fragments",
-                "value": 1
-              },
-              {
                 "type": "item",
                 "subtype": "add",
                 "target": "red_umbrella"
@@ -11068,12 +10926,6 @@
             "jump": "bells",
             "effect": [
               {
-                "type": "set",
-                "subtype": "state",
-                "target": "truth_fragments",
-                "value": 1
-              },
-              {
                 "type": "notify",
                 "subtype": "toast",
                 "level": "success",
@@ -11257,12 +11109,6 @@
                 "subtype": "state",
                 "target": "voice_revealed",
                 "value": true
-              },
-              {
-                "type": "set",
-                "subtype": "state",
-                "target": "truth_fragments",
-                "value": 1
               },
               {
                 "type": "notify",
@@ -12923,14 +12769,7 @@
             "id": "linh_name_roll",
             "text": "Sổ điểm danh có ghi tên đó không?",
             "jump": "roll",
-            "effect": [
-              {
-                "type": "set",
-                "subtype": "state",
-                "target": "truth_fragments",
-                "value": 1
-              }
-            ]
+            "effect": []
           }
         ],
         "teacher_follow": [
