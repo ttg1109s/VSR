@@ -276,7 +276,7 @@ export default function App() {
   return (
     <ToastProvider duration={5000} position="top-right">
       <AppContent />
-      {import.meta.env.DEV && <RuntimeDebugConsole />}
+      <RuntimeDebugConsole />
     </ToastProvider>
   );
 }
