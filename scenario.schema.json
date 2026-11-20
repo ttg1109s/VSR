@@ -5296,8 +5296,23 @@
         },
         {
           "$ref": "#/definitions/requirement_definition"
+        },
+        {
+          "type": "object",
+          "required": [
+            "ref"
+          ],
+          "properties": {
+            "ref": {
+              "type": "string",
+              "minLength": 1,
+              "description": "ID referencing templates.requirements.<ref>."
+            }
+          },
+          "additionalProperties": false
         }
-      ]
+      ],
+      "description": "A nested requirement node: either a single check, an inline requirement definition, or a reference to templates.requirements.<ref>."
     },
     "requirement_definition": {
       "type": "object",
