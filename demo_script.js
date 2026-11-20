@@ -6699,7 +6699,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Cần chìa khóa, toolkit và state damage."
+            "text": "Bạn cần chiếc chìa khóa, bộ dụng cụ và phải biết ổ khóa đã hỏng đến mức nào."
           }
         ]
       },
@@ -6779,7 +6779,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Bypass thành công. Phòng mở; clue được xác minh bằng dấu khóa và evidence thay thế."
+            "text": "Bạn mở được căn phòng bằng cách khác. Những vết trên ổ khóa cùng các dấu còn lại giúp xác nhận điều bạn nghi ngờ."
           }
         ],
         "fail": [
@@ -6791,7 +6791,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Chỉ mở bypass khi key broken, phòng đã xác minh và có toolkit."
+            "text": "Chỉ có thể dùng cách mở khác khi chìa khóa đã gãy, căn phòng được xác nhận và bạn có bộ dụng cụ."
           }
         ]
       },
@@ -6851,7 +6851,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Dấu cạy được ghi nhận. Có thể đối chiếu với sơ đồ hoặc bypass."
+            "text": "Vết cạy trên cửa cho thấy căn phòng từng bị mở trái phép. Hãy đối chiếu với sơ đồ hoặc tìm cách mở khác."
           }
         ],
         "fail": [
@@ -7060,7 +7060,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Cần đèn cầm tay và clue; đây là thao tác partial."
+            "text": "Bạn cần đèn cầm tay và dấu vết phù hợp để soi phần còn khuất."
           }
         ]
       },
@@ -7451,7 +7451,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Tuyến rừng chỉ được xác định một phần; cần corroboration."
+            "text": "Đường rừng mới hiện ra một đoạn. Hãy đối chiếu thêm dấu chân, bản đồ hoặc lời kể để biết nó dẫn đến đâu."
           }
         ],
         "fail": [
@@ -7607,7 +7607,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Seal bị hỏng nhưng hộp mở; evidence nhận được ở dạng partial."
+            "text": "Con dấu bị rách khi bạn mở hộp. Bên trong vẫn còn một phần giấy tờ, nhưng vài dòng đã mất."
           }
         ],
         "fail": [
@@ -7619,7 +7619,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Cần seal và toolkit."
+            "text": "Bạn cần con dấu và bộ dụng cụ để mở hộp mà không làm hỏng thêm những gì bên trong."
           }
         ]
       },
@@ -7894,7 +7894,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "warning",
-            "text": "Cần cầm toolkit và có linh kiện."
+            "text": "Bạn phải cầm bộ dụng cụ và có đủ linh kiện để thử sửa cơ cấu."
           }
         ]
       },
@@ -8924,7 +8924,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Radio phát được tín hiệu partial; identity có thể corroborate bằng tape/film."
+            "text": "Radio chỉ bắt được một đoạn tín hiệu. Cuộn băng hoặc phim có thể giúp nhận ra giọng nói đang phát."
           }
         ],
         "fail": [
@@ -9095,7 +9095,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Toolkit radio được phục hồi."
+            "text": "Bộ dụng cụ đã được sửa lại, có thể dùng cho những cơ cấu khác."
           }
         ],
         "fail": []
@@ -9165,7 +9165,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Tín hiệu partial được đối chiếu với tape."
+            "text": "Đoạn tín hiệu yếu khớp với tiếng ghi trên cuộn băng."
           }
         ],
         "fail": [
