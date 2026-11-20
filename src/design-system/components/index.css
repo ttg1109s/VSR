@@ -158,22 +158,26 @@
   outline: 2px solid var(--vsr-color-primary);
   outline-offset: 2px;
 }
-.vsr-inventory-item__equipped-badge {
+.vsr-inventory-item__status-badge {
   position: absolute;
   top: 6px;
   left: 6px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 16px;
-  height: 16px;
-  border-radius: 3px;
+  max-width: calc(100% - 12px);
+  padding: 3px 6px;
+  border-radius: 4px;
   background: var(--vsr-color-primary);
   color: white;
   font-size: 10px;
   font-weight: 700;
-  line-height: 1;
+  line-height: 1.2;
   z-index: 1;
+}
+.vsr-inventory-item__status-badge.is-broken {
+  background: var(--vsr-color-warning);
+  color: var(--vsr-color-text);
 }
 .vsr-inventory-item__icon {
   display: flex;
