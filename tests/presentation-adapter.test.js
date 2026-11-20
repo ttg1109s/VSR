@@ -121,7 +121,7 @@ test('snapshot.get refreshes the client projection without changing Engine state
     assert.equal(refreshed.type, 'snapshot');
     assert.equal(refreshed.stateRevision, revisionBefore);
     assert.equal(host.engine.protocol.stateRevision, revisionBefore);
-    assert.equal(refreshed.presentation.actions[0].key, 'scene_village_square_router_square_fogbound_action_read_notice');
+    assert.equal(refreshed.presentation.actions[0].key, 'scene_village_router_village_night_action_village_square');
   } finally {
     client.dispose();
     host.close();
@@ -307,7 +307,9 @@ test('Contact exposes Engine-owned thread summaries and opens only a thread belo
   const host = new LocalEngineHost();
   const client = new JsonClient(host);
   try {
-    await client.initialize(JSON.parse(host.getDemoScenario()));
+    const scenario = JSON.parse(host.getDemoScenario());
+    scenario.meta.entryScene = 'scene_village_square';
+    await client.initialize(scenario);
     const runtimeChat = JSON.parse(JSON.stringify(host.engine.src.chat.chat_mai));
     runtimeChat.set = {
       ...(runtimeChat.set || {}),
