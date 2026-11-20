@@ -3032,25 +3032,9 @@
           {
             "type": "set",
             "subtype": "action",
-            "target": "action_talk_mai",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
             "target": "action_observe_mai",
             "property": "display",
             "value": "hide"
-          },
-          {
-            "type": "characters",
-            "subtype": "edit_stats",
-            "target": "mai",
-            "property": "trust",
-            "field": "current",
-            "mode": "add",
-            "value": 1
           }
         ]
       }
