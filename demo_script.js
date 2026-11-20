@@ -12412,6 +12412,7 @@
               "text": "Chiếc cặp màu xanh có một miếng vá hình ngôi sao. Em đã khâu nó vào hôm trước ngày sơ tán."
             }
           ],
+          "choice_id": "linh_stage1",
           "choiced": false
         },
         "seat": {
@@ -12421,6 +12422,7 @@
               "text": "Chỗ ngồi ấy không trống. Có người ngồi đó, nhưng khi chụp ảnh mọi người đều quay mặt về phía máy ảnh như thể không thấy."
             }
           ],
+          "choice_id": "linh_stage1",
           "choiced": false
         },
         "letters": {
@@ -12430,6 +12432,7 @@
               "text": "Em từng viết tên ấy lên bảng. Khi quay lại, chữ đã bị lau sạch, nhưng bụi phấn vẫn còn vết lõm."
             }
           ],
+          "choice_id": "linh_stage1",
           "choiced": false
         },
         "roll": {
@@ -12439,6 +12442,7 @@
               "text": "Sổ điểm danh có mười hai dòng. Dòng cuối không bị xé; nó bị phủ một lớp mực dày đến mức giấy gần thủng."
             }
           ],
+          "choice_id": "linh_stage1",
           "choiced": false
         },
         "fear": {
@@ -12448,6 +12452,7 @@
               "text": "Em sợ nếu đọc đúng tên, người đó sẽ phải quay lại. Nhưng em cũng sợ nếu không ai đọc, người đó sẽ biến mất lần nữa."
             }
           ],
+          "choice_id": "linh_stage1",
           "choiced": false
         },
         "proof": {
@@ -12455,6 +12460,58 @@
             {
               "char_id": "linh",
               "text": "Hãy lấy bản sao sổ điểm danh và so với tấm ảnh. Đừng chỉ dựa vào điều em nhớ."
+            }
+          ],
+          "choice_id": "linh_stage1",
+          "choiced": false
+        },
+        "stage1": {
+          "line": [
+            {
+              "char_id": "linh",
+              "text": "Anh nghe em kể khá nhiều rồi. Em không muốn anh chọn ngay khi chỉ mới nghe một phía."
+            },
+            {
+              "char_id": "linh",
+              "text": "Nhưng nếu phải quyết định cách giữ chuyện này, anh có thể chọn: để lời em được giữ riêng, hay cho phép người khác đối chiếu nó với hồ sơ."
+            }
+          ],
+          "choice_id": "linh_stage1",
+          "choiced": false
+        },
+        "stage2": {
+          "line": [
+            {
+              "char_id": "linh",
+              "text": "Em hiểu. Dù anh chọn cách nào, vẫn còn một điều em nhớ rất rõ: con đường phía sau trường dẫn đến đường hầm."
+            },
+            {
+              "char_id": "linh",
+              "text": "Em không chắc mình nhớ đường hầm vì đã đi qua đó, hay vì ai đó từng kể. Anh muốn tin chi tiết ấy, hay muốn xem nó như một dấu để kiểm tra?"
+            }
+          ],
+          "choice_id": "linh_stage2",
+          "choiced": false
+        },
+        "stage3": {
+          "line": [
+            {
+              "char_id": "linh",
+              "text": "Cảm ơn anh đã không bắt em kể hết ngay từ đầu. Có những ký ức trở lại từng mảnh, và em cần thời gian để nhận ra chúng có thuộc về mình không."
+            },
+            {
+              "char_id": "linh",
+              "text": "Nếu anh muốn, mình có thể thử ghép lại mảnh cuối. Nhưng em không hứa rằng khi nhớ đủ, mọi chuyện sẽ dễ chịu hơn."
+            }
+          ],
+          "choice_id": "linh_stage3",
+          "choiced": false
+        },
+        "final": {
+          "line": [
+            {
+              "char_id": "linh",
+              "text": "Vậy là em đã nói hết những gì có thể nói lúc này. Anh đừng xem một lời kể là toàn bộ sự thật; hãy đối chiếu nó với những gì tìm thấy ở trường."
             }
           ],
           "choiced": false
@@ -12476,113 +12533,6 @@
             "id": "linh_teacher",
             "text": "Cô giáo đã làm gì khi đến dòng cuối?",
             "jump": "teacher"
-          },
-          {
-            "id": "linh_protect_memory",
-            "text": "Anh sẽ giữ kín lời khai của em. Những ký ức này sẽ không bị biến thành vật chứng công khai.",
-            "jump": "proof",
-            "effect": [
-              {
-                "type": "set",
-                "subtype": "state",
-                "target": "school_choice",
-                "value": "ký ức"
-              },
-              {
-                "type": "set",
-                "subtype": "state",
-                "target": "clue_tunnel",
-                "value": true
-              },
-              {
-                "type": "set",
-                "subtype": "action",
-                "target": "action_recover_class_register",
-                "property": "display",
-                "value": "hide"
-              },
-              {
-                "type": "set",
-                "subtype": "action",
-                "target": "action_reach_station",
-                "property": "display",
-                "value": "hide"
-              },
-              {
-                "type": "set",
-                "subtype": "action",
-                "target": "action_choose_fate",
-                "property": "display",
-                "value": "show"
-              },
-              {
-                "type": "set",
-                "subtype": "action",
-                "target": "action_decode_roster",
-                "property": "display",
-                "value": "hide"
-              },
-              {
-                "type": "set",
-                "subtype": "action",
-                "target": "action_overlay_map",
-                "property": "display",
-                "value": "hide"
-              },
-              {
-                "type": "set",
-                "subtype": "action",
-                "target": "action_reach_station_memory",
-                "property": "display",
-                "value": "show"
-              },
-              {
-                "type": "set",
-                "subtype": "action",
-                "target": "action_choose_fate",
-                "property": "display",
-                "value": "show"
-              },
-              {
-                "type": "notify",
-                "subtype": "toast",
-                "level": "success",
-                "text": "Bạn giữ kín lời khai của Linh. Những ký ức riêng vẫn được bảo vệ."
-              },
-              {
-                "type": "characters",
-                "subtype": "edit_stats",
-                "target": "linh",
-                "property": "memory",
-                "field": "current",
-                "mode": "add",
-                "value": 1
-              },
-              {
-                "type": "characters",
-                "subtype": "edit_stats",
-                "target": "linh",
-                "property": "trust",
-                "field": "current",
-                "mode": "add",
-                "value": 1
-              },
-              {
-                "type": "characters",
-                "subtype": "edit_stats",
-                "target": "linh",
-                "property": "fear",
-                "field": "current",
-                "mode": "add",
-                "value": -1
-              },
-              {
-                "type": "set",
-                "subtype": "state",
-                "target": "memory_reconstructed",
-                "value": true
-              }
-            ]
           }
         ],
         "photo_follow": [
@@ -12606,8 +12556,7 @@
           {
             "id": "linh_name_roll",
             "text": "Sổ điểm danh có ghi tên đó không?",
-            "jump": "roll",
-            "effect": []
+            "jump": "roll"
           }
         ],
         "teacher_follow": [
@@ -12620,6 +12569,90 @@
             "id": "linh_teacher_proof",
             "text": "Làm sao kiểm chứng ký ức của em?",
             "jump": "proof"
+          }
+        ],
+        "linh_stage1": [
+          {
+            "id": "linh_protect_memory",
+            "text": "Anh sẽ giữ kín lời khai của em, không biến ký ức riêng thành vật chứng công khai.",
+            "jump": "stage2",
+            "effect": [
+              {
+                "type": "set",
+                "subtype": "state",
+                "target": "school_choice",
+                "value": "ký ức"
+              }
+            ]
+          },
+          {
+            "id": "linh_allow_evidence",
+            "text": "Anh sẽ cho phép đối chiếu lời em với hồ sơ, nhưng không xem hồ sơ là toàn bộ sự thật.",
+            "jump": "stage2",
+            "effect": [
+              {
+                "type": "set",
+                "subtype": "state",
+                "target": "school_choice",
+                "value": "bằng chứng"
+              }
+            ]
+          }
+        ],
+        "linh_stage2": [
+          {
+            "id": "linh_accept_tunnel_memory",
+            "text": "Anh sẽ giữ chi tiết đường hầm như một phần ký ức cần được kiểm tra.",
+            "jump": "stage3",
+            "effect": [
+              {
+                "type": "set",
+                "subtype": "state",
+                "target": "clue_tunnel",
+                "value": true
+              }
+            ]
+          },
+          {
+            "id": "linh_check_tunnel_clue",
+            "text": "Anh sẽ xem đường hầm là một dấu vết để đối chiếu, không chỉ là lời kể.",
+            "jump": "stage3",
+            "effect": [
+              {
+                "type": "set",
+                "subtype": "state",
+                "target": "clue_tunnel",
+                "value": true
+              }
+            ]
+          }
+        ],
+        "linh_stage3": [
+          {
+            "id": "linh_reconstruct_memory",
+            "text": "Mình thử ghép lại ký ức, từng chi tiết một.",
+            "jump": "final",
+            "effect": [
+              {
+                "type": "set",
+                "subtype": "state",
+                "target": "memory_reconstructed",
+                "value": true
+              }
+            ]
+          },
+          {
+            "id": "linh_reconstruct_carefully",
+            "text": "Anh sẽ giúp em nhớ lại, nhưng không ép em phải hoàn tất ngay.",
+            "jump": "final",
+            "effect": [
+              {
+                "type": "set",
+                "subtype": "state",
+                "target": "memory_reconstructed",
+                "value": true
+              }
+            ]
           }
         ]
       }
