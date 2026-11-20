@@ -273,10 +273,11 @@ function AppContent() {
 
 
 export default function App() {
+  const debugEnabled = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('debug') === '1';
   return (
     <ToastProvider duration={5000} position="top-right">
       <AppContent />
-      <RuntimeDebugConsole />
+      {debugEnabled && <RuntimeDebugConsole />}
     </ToastProvider>
   );
 }
