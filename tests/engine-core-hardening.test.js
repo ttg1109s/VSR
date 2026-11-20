@@ -1656,7 +1656,7 @@ test('radio actions are distributed across routers and optional branches preserv
   assert.ok(listenStatic.effect.pass.some(effect => effect.type === 'set' && effect.subtype === 'action' && effect.target === 'action_repair_radio_toolkit' && effect.property === 'display' && effect.value === 'show'));
   const repairRadio = DEMO_SCRIPT.actions.action_repair_radio_toolkit;
   assert.ok(repairRadio.requirement.check.some(check => check.property === 'radio_static_matched' && check.value === true));
-  assert.ok(repairRadio.effect.pass.some(effect => effect.type === 'set' && effect.subtype === 'state' && effect.target === 'identity_verified_partial' && effect.value === true));
+  assert.ok(repairRadio.effect.pass.some(effect => effect.type === 'set' && effect.subtype === 'state' && effect.target === 'radio_damaged' && effect.value === false));
   assert.ok(repairRadio.effect.pass.some(effect => effect.type === 'set' && effect.subtype === 'state' && effect.target === 'radio_signal_partial' && effect.value === false));
   const fullRepair = DEMO_SCRIPT.actions.action_restore_radio_signal.requirement.check;
   assert.ok(fullRepair.some(check => check.target === 'radio_crystal' && check.subtype === 'usage' && check.op === '<' && check.value === 1));
