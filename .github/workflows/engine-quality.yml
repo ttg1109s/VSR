@@ -1,6 +1,7 @@
 name: Engine quality
 
 on:
+  workflow_call:
   push:
     branches: [engine-only, ui-rebuild, feature/restore-password-domain, feature/schema-as-source-of-truth, audit/remediation-and-deadcode-cleanup, remediation/full-audit-hardening]
   pull_request:
@@ -21,9 +22,8 @@ jobs:
         with:
           node-version: 20
           cache: npm
-      # package-lock.json is not currently tracked on engine-only. Use a
-      # deterministic npm install until the lockfile is committed, then switch
-      # to npm ci as a separately verifiable dependency-baseline change.
+      # package-lock.json is not tracked in this repository yet. Keep npm
+      # install until a lockfile can be reviewed and committed.
       - name: Install dependencies
         run: npm install --ignore-scripts --no-audit --no-fund
       - run: npm run schema:check
