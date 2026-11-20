@@ -228,7 +228,6 @@ export const LogicSystem = {
         }
         return { pass: gate(results) };
     },
-    },
 
     compare(v1, op, v2) {
         return Operations[op]?.(resolveValue(v1, this), resolveValue(v2, this)) ?? false;
