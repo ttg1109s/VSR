@@ -2648,7 +2648,8 @@
             "subtype": "router",
             "target": "router_well_echoes",
             "op": "==",
-            "value": true
+            "value": true,
+            "property": "visited"
           }
         ]
       },
