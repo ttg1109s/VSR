@@ -3,8 +3,6 @@ name: React build and GitHub Pages deployment
 on:
   pull_request:
     branches: [engine-only]
-  push:
-    branches: [engine-only]
   workflow_dispatch:
 
 permissions:
