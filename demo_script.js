@@ -166,11 +166,6 @@
       "value": false,
       "title": "Ký ức tái dựng"
     },
-    "lantern_damaged": {
-      "type": "boolean",
-      "value": false,
-      "title": "Đèn lồng hư hại"
-    },
     "radio_damaged": {
       "type": "boolean",
       "value": false,
@@ -543,14 +538,6 @@
           "value": true
         }
       ],
-      "consume_action_use_lantern": [
-        {
-          "type": "item",
-          "subtype": "usage",
-          "target": "lantern",
-          "value": 1
-        }
-      ],
       "consume_action_ring_bell": [
         {
           "type": "item",
@@ -691,14 +678,6 @@
           "type": "item",
           "subtype": "usage",
           "target": "radio_toolkit",
-          "value": 1
-        }
-      ],
-      "consume_action_use_lantern_dim": [
-        {
-          "type": "item",
-          "subtype": "usage",
-          "target": "lantern",
           "value": 1
         }
       ],
@@ -907,29 +886,6 @@
       "category": "tool",
       "icon": "light",
       "desc": "Đèn bão cũ, kính ám khói và quai xách đã sờn. Ánh sáng của nó làm lộ những vệt dấu mờ trong sương mà mắt thường khó nhận ra.",
-      "usage": {
-        "current": 0,
-        "max": 3,
-        "autoInc": false,
-        "status": [
-          [
-            0,
-            "Sáng ổn định"
-          ],
-          [
-            33,
-            "Ánh sáng yếu"
-          ],
-          [
-            67,
-            "Chập chờn"
-          ],
-          [
-            100,
-            "Tắt hoàn toàn"
-          ]
-        ]
-      },
       "effect": {
         "use": [
           {
@@ -1948,10 +1904,7 @@
           },
           "actions": [
             "action_inspect_well",
-            "action_use_lantern",
-            "action_use_lantern_dim",
-            "action_recover_lantern",
-            "action_retrieve_well_badge_alternative"
+            "action_use_lantern"
           ]
         },
         "router_well_bottom_revealed": {
@@ -1968,9 +1921,7 @@
           "actions": [
             "action_inspect_well",
             "action_use_lantern",
-            "action_retrieve_well_badge",
-            "action_use_lantern_dim",
-            "action_recover_lantern"
+            "action_retrieve_well_badge"
           ]
         }
       }
@@ -2812,6 +2763,25 @@
             "target": "action_read_notice",
             "property": "display",
             "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_use_lantern",
+            "property": "display",
+            "value": "show",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "action_count",
+                  "target": "action_read_notice",
+                  "phase": "normal",
+                  "op": "==",
+                  "value": 1
+                }
+              ]
+            }
           }
         ],
         "pass": [],
@@ -3062,7 +3032,7 @@
         "desc": "Đáy giếng chìm trong lớp nước cũ và bóng tối, nơi mắt thường không thể phân biệt ký hiệu trên thành đá. Những dấu khắc chỉ hiện rõ khi ánh sáng được chiếu đúng góc; chiếc đèn bão nhặt ở quảng trường có thể giúp soi ra phần chữ bị che khuất."
       },
       "set": {
-        "display": "show",
+        "display": "hide",
         "requirement": true,
         "readDesc": true
       },
@@ -3070,8 +3040,10 @@
         "normal": [],
         "pass": [
           {
-            "type": "effect",
-            "ref": "consume_action_use_lantern"
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_lantern",
+            "value": true
           },
           {
             "type": "notify",
@@ -3094,14 +3066,83 @@
         ],
         "fail": [
           {
-            "type": "effect",
-            "ref": "consume_action_use_lantern"
+            "type": "notify",
+            "subtype": "toast",
+            "level": "info",
+            "text": "Nếu mình mãi chỉ cầm đèn như này không lẽ chờ ma quỷ nào đó thắp sáng cho mình. Chi bằng mình tự tay sử dụng còn hơn là cứ xách đèn như thế này.",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "state",
+                  "property": "clue_lantern",
+                  "op": "==",
+                  "value": false
+                },
+                {
+                  "type": "item",
+                  "subtype": "hand",
+                  "op": "==",
+                  "value": [
+                    "lantern"
+                  ]
+                }
+              ]
+            }
           },
           {
             "type": "notify",
             "subtype": "toast",
-            "level": "warning",
-            "text": "Đèn vẫn chưa đủ sáng để soi xuống giếng. Bạn cần tìm lại dấu vết liên quan đến nó trước."
+            "level": "info",
+            "text": "Nếu cứ để đen mãi xuống đất vùng chiếu sáng không chiếu hết được miệng giếng này. Có lẽ mình phải cầm nó lên đưa tay xuống sâu hơn mới phải!",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "state",
+                  "property": "clue_lantern",
+                  "op": "==",
+                  "value": false
+                },
+                {
+                  "type": "item",
+                  "subtype": "hand",
+                  "op": "!has",
+                  "value": "lantern"
+                }
+              ]
+            }
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "info",
+            "text": "Nhoài mình vào giếng rất mệt, ngoài đèn ra thì có lẽ mình không thể cầm thêm thứ khác trên tay nữa!",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "state",
+                  "property": "clue_lantern",
+                  "op": "==",
+                  "value": false
+                },
+                {
+                  "type": "item",
+                  "subtype": "hand",
+                  "op": "has",
+                  "value": "lantern"
+                },
+                {
+                  "type": "item",
+                  "subtype": "hand",
+                  "op": "!=",
+                  "value": [
+                    "lantern"
+                  ]
+                }
+              ]
+            }
           }
         ]
       },
@@ -6782,231 +6823,6 @@
             "subtype": "inventory",
             "op": "has",
             "value": "class_photo"
-          }
-        ]
-      }
-    },
-    "action_use_lantern_dim": {
-      "meta": {
-        "title": "Soi bằng đèn yếu",
-        "buttonLabel": "Soi một phần",
-        "desc": "Đèn vẫn sáng nhưng không đủ rõ. Dùng tiếp sẽ làm đèn hao mòn thêm và ánh sáng yếu đi."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true,
-        "readDesc": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "effect",
-            "ref": "consume_action_use_lantern_dim"
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "lantern_damaged",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_use_lantern_dim",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_recover_lantern",
-            "property": "display",
-            "value": "show"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_retrieve_well_badge",
-            "property": "display",
-            "value": "show"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Ánh sáng yếu chỉ để lộ một phần ký hiệu. Bạn cần khôi phục thêm dấu vết hoặc tìm bằng chứng khác."
-          }
-        ],
-        "fail": [
-          {
-            "type": "effect",
-            "ref": "consume_action_use_lantern_dim"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warning",
-            "text": "Hãy cầm đèn và tìm dấu vết phù hợp để soi phần còn khuất."
-          }
-        ]
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "state",
-            "property": "clue_well",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "state",
-            "property": "clue_lantern",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "item",
-            "subtype": "hand",
-            "op": "==",
-            "value": [
-              "lantern"
-            ]
-          },
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "lantern",
-            "op": "<",
-            "value": 3
-          }
-        ]
-      }
-    },
-    "action_recover_lantern": {
-      "meta": {
-        "title": "Khôi phục đèn bão",
-        "buttonLabel": "Chỉnh đèn",
-        "desc": "Thay dầu, chỉnh bấc và kiểm tra chụp kính để ánh sáng trở lại rõ hơn."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true,
-        "readDesc": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "lantern",
-            "value": -1
-          },
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "radio_toolkit",
-            "value": 1
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "lantern_damaged",
-            "value": false
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_recover_lantern",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_use_lantern",
-            "property": "display",
-            "value": "show"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Đèn đã được khôi phục. Bạn có thể thử soi lại."
-          }
-        ],
-        "fail": []
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "state",
-            "property": "lantern_damaged",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "radio_toolkit"
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "lantern"
-          }
-        ]
-      }
-    },
-    "action_retrieve_well_badge_alternative": {
-      "meta": {
-        "title": "Xác minh phù hiệu bằng bằng chứng",
-        "buttonLabel": "Đối chiếu phù hiệu",
-        "desc": "Nếu đèn bão bị hỏng, dùng băng ghi âm, cuộn phim hoặc dấu vết ở giếng để xác minh phù hiệu."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true,
-        "readDesc": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_retrieve_well_badge_alternative",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Phù hiệu đã được xác nhận bằng một dấu vết khác."
-          }
-        ],
-        "fail": []
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "state",
-            "property": "lantern_damaged",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "well_badge"
           }
         ]
       }
