@@ -2708,6 +2708,29 @@
             }
           },
           {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Cầm đèn soi vừa mỏi tay vừa chỉ nhìn được một phần bảng thông báo rất mất thời gian. Nên treo lại nhưng giờ chưa phải lúc.",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "item",
+                  "subtype": "hand",
+                  "op": "has",
+                  "value": "lantern"
+                },
+                {
+                  "type": "item",
+                  "subtype": "hand",
+                  "op": "!has",
+                  "value": "well_badge"
+                }
+              ]
+            }
+          },
+          {
             "type": "set",
             "subtype": "action",
             "target": "action_use_lantern",
@@ -2723,29 +2746,6 @@
             "target": "lantern",
             "req": {
               "ref": "notice_lantern_unlock"
-            }
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Cầm đèn soi vừa mỏi tay vừa chỉ nhìn được một phần bảng thông báo rất mất thời gian. Nên treo lại nhưng giờ chưa phải lúc.",
-            "req": {
-              "logic": "AND",
-              "check": [
-                {
-                  "type": "item",
-                  "subtype": "inventory",
-                  "op": "has",
-                  "value": "lantern"
-                },
-                {
-                  "type": "item",
-                  "subtype": "hand",
-                  "op": "!has",
-                  "value": "well_badge"
-                }
-              ]
             }
           },
           {
