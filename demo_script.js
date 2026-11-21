@@ -2653,7 +2653,7 @@
       "meta": {
         "title": "Bảng thông báo",
         "buttonLabel": "Đọc các dòng còn lại",
-        "desc": "Bảng thông báo dựng cạnh lối vào quảng trường, nơi dân làng từng xem tin và lịch sơ tán. Danh sách vẫn còn nguyên các dòng chữ, chỉ riêng một cái tên bị cạo sâu đến rách mặt giấy. Dưới chân bảng là chiếc đèn bão phủ bụi, như thể người cuối cùng đọc thông báo đã vội bỏ nó lại giữa chừng."
+        "desc": "Bảng thông báo dựng cạnh lối vào quảng trường, nơi dân làng từng xem tin và lịch sơ tán. Danh sách vẫn còn nguyên các dòng chữ, chỉ riêng một cái tên bị cạo sâu đến rách mặt giấy. Chiếc đèn bão phủ bụi được treo trên bảng, như thể người cuối cùng đọc thông báo đã vội bỏ nó lại giữa chừng."
       },
       "set": {
         "display": "show",
@@ -2678,7 +2678,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Đèn bão nằm lăn lóc dưới bảng thông báo này có lẽ sau này mình sẽ cần dùng tới? Có lẽ những gì đang bị che khuất sẽ hiện ra dưới ánh sáng này?",
+            "text": "Cũng may có chiếc đèn bão treo trên bảng, nếu không mình chẳng đọc được gì... Nhưng có lẽ sau này mình sẽ cần dùng tới...",
             "req": {
               "type": "set",
               "subtype": "router",
