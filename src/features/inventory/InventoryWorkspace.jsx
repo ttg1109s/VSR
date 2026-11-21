@@ -457,6 +457,7 @@ export default function InventoryWorkspace({ snapshot, client, open = false, onC
       ) : items.length === 0 ? (
         <EmptyInventoryState />
       ) : (
+        <>
         <div className="vsr-inventory-layout">
           <InventoryControls
             search={search}
@@ -504,6 +505,7 @@ export default function InventoryWorkspace({ snapshot, client, open = false, onC
           </div>
         </div>
         <InventoryHandPanel items={handItems} handCount={inventory.handCount ?? handItems.length} handLimit={inventory.handLimit} offset={handOffset} onOffsetChange={setHandOffset} onViewDetails={setDetailItem} onToggleEquipment={toggleItemEquipment} pendingItemId={pendingItemId} />
+        </>
       )}
     </Drawer>
 
