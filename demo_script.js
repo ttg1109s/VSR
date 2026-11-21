@@ -29,7 +29,7 @@
     "clue_lantern": {
       "type": "boolean",
       "value": false,
-      "title": "Đã soi dấu bằng đèn lồng"
+      "title": "Đã soi dấu bằng đèn bão"
     },
     "heard_bell": {
       "type": "boolean",
