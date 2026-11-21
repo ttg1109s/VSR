@@ -2717,7 +2717,7 @@
               "check": [
                 {
                   "type": "item",
-                  "subtype": "hand",
+                  "subtype": "inventory",
                   "op": "has",
                   "value": "lantern"
                 },
