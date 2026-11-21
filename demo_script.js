@@ -1397,7 +1397,7 @@
       "name": "Phù hiệu đội sơ tán",
       "category": "evidence",
       "icon": "badge",
-      "desc": "Phù hiệu kim loại phủ cặn nước, khắc biểu tượng đội sơ tán. Mặt sau có dấu đóng mờ, cùng kiểu với ký hiệu trên một vật được niêm kín.",
+      "desc": "Phù hiệu kim loại phủ cặn nước, khắc biểu tượng đội sơ tán. Mặt sau có dấu đóng mờ, cùng kiểu với ký hiệu trên một vật được niêm kín. Phù hiệu này có thể liên quan đến chuyến bàn giao mười hai người, nhưng bản lưu chuyến xe chỉ ghi mười một.",
       "usage": {
         "current": 0,
         "max": 2,
@@ -2693,7 +2693,24 @@
           {
             "type": "goto",
             "subtype": "chat",
-            "target": "chat_notice_history"
+            "target": "chat_notice_history",
+            "req": {
+              "type": "item",
+              "subtype": "hand",
+              "op": "!has",
+              "value": "well_badge"
+            }
+          },
+          {
+            "type": "goto",
+            "subtype": "chat",
+            "target": "chat_notice_memory",
+            "req": {
+              "type": "item",
+              "subtype": "hand",
+              "op": "has",
+              "value": "well_badge"
+            }
           },
           {
             "type": "set",
