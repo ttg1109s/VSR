@@ -2952,7 +2952,13 @@
             "type": "notify",
             "subtype": "toast",
             "level": "info",
-            "text": "Tối quá mình chỉ thấy lờ mờ những vạch khắc không rõ nét. Chắc phải kiếm thứ gì đó để chiếu sáng để nhìn rõ hơn."
+            "text": "Tối quá mình chỉ thấy lờ mờ những vạch khắc không rõ nét. Chắc phải kiếm thứ gì đó để chiếu sáng để nhìn rõ hơn.",
+            "req": {
+              "type": "item",
+              "subtype": "inventory",
+              "op": "!has",
+              "value": "lantern"
+            }
           },
           {
             "type": "set",
