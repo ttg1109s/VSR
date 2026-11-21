@@ -885,7 +885,21 @@
       "name": "Đèn bão",
       "category": "tool",
       "icon": "light",
-      "desc": "Đèn bão cũ, kính ám khói và quai xách đã sờn. Ánh sáng của nó làm lộ những vệt dấu mờ trong sương mà mắt thường khó nhận ra."
+      "desc": "Đèn bão cũ, kính ám khói và quai xách đã sờn. Ánh sáng của nó làm lộ những vệt dấu mờ trong sương mà mắt thường khó nhận ra.",
+      "usage": {
+        "current": 0,
+        "max": 3,
+        "autoInc": false,
+        "status": [
+          [0, "Ánh sáng tốt"],
+          [33, "Kính ám khói"],
+          [67, "Ánh sáng yếu"],
+          [100, "Không thể sử dụng"]
+        ]
+      },
+      "effect": {
+        "use": []
+      }
     },
     "guestbook": {
       "name": "Sổ khách",
