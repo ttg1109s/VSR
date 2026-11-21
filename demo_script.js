@@ -286,9 +286,22 @@
             "type": "set",
             "subtype": "router",
             "target": "router_well_echoes",
+            "property": "visited",
             "op": "==",
-            "value": true,
-            "property": "visited"
+            "value": true
+          },
+          {
+            "type": "action_count",
+            "target": "action_inspect_well",
+            "phase": "normal",
+            "op": ">",
+            "value": 1
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "!has",
+            "value": "lantern"
           }
         ]
       },
@@ -466,6 +479,17 @@
             "target": "tape",
             "op": "<",
             "value": 1
+          }
+        ]
+      },
+      "inventory_no_lantern": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "!has",
+            "value": "lantern"
           }
         ]
       }
@@ -2682,17 +2706,7 @@
             "level": "success",
             "text": "Cũng may có chiếc đèn bão treo trên bảng, nếu không mình chẳng đọc được gì... Nhưng có lẽ sau này mình sẽ cần dùng tới...",
             "req": {
-              "logic": "AND",
-              "check": [
-                {
-                  "type": "set",
-                  "subtype": "router",
-                  "target": "router_well_echoes",
-                  "property": "visited",
-                  "op": "==",
-                  "value": false
-                }
-              ]
+              "ref": "inventory_no_lantern"
             }
           },
           {
@@ -2700,15 +2714,7 @@
             "subtype": "chat",
             "target": "chat_notice_history",
             "req": {
-              "logic": "AND",
-              "check": [
-                {
-                  "type": "item",
-                  "subtype": "hand",
-                  "op": "!has",
-                  "value": "well_badge"
-                }
-              ]
+              "ref": "inventory_no_lantern"
             }
           },
           {
@@ -2740,7 +2746,21 @@
             "property": "display",
             "value": "hide",
             "req": {
-              "ref": "notice_lantern_unlock"
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "item",
+                  "subtype": "hand",
+                  "op": "has",
+                  "value": "well_badge"
+                },
+                {
+                  "type": "item",
+                  "subtype": "hand",
+                  "op": "!has",
+                  "value": "lantern"
+                }
+              ]
             }
           },
           {
