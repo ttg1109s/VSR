@@ -286,7 +286,7 @@
             "type": "action_count",
             "target": "action_inspect_well",
             "phase": "normal",
-            "op": ">",
+            "op": ">=",
             "value": 1
           },
           {
@@ -2763,6 +2763,22 @@
             "value": "show",
             "req": {
               "ref": "notice_lantern_unlock"
+            }
+          },
+          {
+            "type": "item",
+            "subtype": "remove",
+            "target": "well_badge",
+            "req": {
+              "ref": "hand_badge_no_lantern"
+            }
+          },
+          {
+            "type": "item",
+            "subtype": "remove",
+            "target": "lantern",
+            "req": {
+              "ref": "hand_badge_no_lantern"
             }
           }
         ],
