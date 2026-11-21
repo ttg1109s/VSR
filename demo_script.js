@@ -2702,6 +2702,14 @@
             "value": true
           },
           {
+            "type": "goto",
+            "subtype": "chat",
+            "target": "chat_notice_history",
+            "req": {
+              "ref": "inventory_no_lantern"
+            }
+          },
+          {
             "type": "set",
             "subtype": "action",
             "target": "action_use_lantern",
@@ -2740,14 +2748,6 @@
                   "value": "well_badge"
                 }
               ]
-            }
-          },
-          {
-            "type": "goto",
-            "subtype": "chat",
-            "target": "chat_notice_history",
-            "req": {
-              "ref": "inventory_no_lantern"
             }
           },
           {
