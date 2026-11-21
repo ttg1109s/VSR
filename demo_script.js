@@ -2783,14 +2783,7 @@
           }
         ],
         "pass": [],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warning",
-            "text": "Những dòng chữ vẫn rời rạc, chưa đủ để gợi lại điều bạn đã quên. Có lẽ một dấu vết khác sẽ giúp chúng nối liền."
-          }
-        ]
+        "fail": []
       }
     },
     "action_use_lantern": {
