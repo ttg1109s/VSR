@@ -885,17 +885,7 @@
       "name": "Đèn bão",
       "category": "tool",
       "icon": "light",
-      "desc": "Đèn bão cũ, kính ám khói và quai xách đã sờn. Ánh sáng của nó làm lộ những vệt dấu mờ trong sương mà mắt thường khó nhận ra.",
-      "effect": {
-        "use": [
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "clue_lantern",
-            "value": true
-          }
-        ]
-      }
+      "desc": "Đèn bão cũ, kính ám khói và quai xách đã sờn. Ánh sáng của nó làm lộ những vệt dấu mờ trong sương mà mắt thường khó nhận ra."
     },
     "guestbook": {
       "name": "Sổ khách",
@@ -2663,6 +2653,13 @@
             "property": "clue_tape",
             "op": "==",
             "value": true
+          },
+          {
+            "type": "router",
+            "subtype": "visited",
+            "target": "router_well_echoes",
+            "op": "==",
+            "value": true
           }
         ]
       },
@@ -3020,7 +3017,14 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Dưới đáy giếng, một dấu vết hiện ra. Ký ức tưởng đã mất cũng trở về."
+            "text": "Bốn vạch khắc không phải vết xước. Khi cúi sát thành giếng, bạn nhận ra chúng được khắc theo nhịp—như một dấu hiệu dành cho người biết tìm. Tiếng gõ dưới đáy dừng lại đúng lúc bạn chạm vào rãnh kim loại. Bạn có cảm giác đã tìm thấy thứ cần thiết để tiếp tục."
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_use_lantern",
+            "property": "display",
+            "value": "show"
           }
         ]
       }
@@ -3069,6 +3073,23 @@
             "type": "notify",
             "subtype": "toast",
             "level": "info",
+            "text": "Khoảng cách xa thế này đèn không soi tới được. Có lẽ phải tiến lại gần để quan sát giếng trước.",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "state",
+                  "property": "clue_well",
+                  "op": "==",
+                  "value": false
+                }
+              ]
+            }
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "info",
             "text": "Nếu mình mãi chỉ cầm đèn như này không lẽ chờ ma quỷ nào đó thắp sáng cho mình. Chi bằng mình tự tay sử dụng còn hơn là cứ xách đèn như thế này.",
             "req": {
               "logic": "AND",
@@ -3086,6 +3107,12 @@
                   "value": [
                     "lantern"
                   ]
+                },
+                {
+                  "type": "state",
+                  "property": "clue_well",
+                  "op": "==",
+                  "value": true
                 }
               ]
             }
@@ -3094,7 +3121,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "info",
-            "text": "Nếu cứ để đen mãi xuống đất vùng chiếu sáng không chiếu hết được miệng giếng này. Có lẽ mình phải cầm nó lên đưa tay xuống sâu hơn mới phải!",
+            "text": "Mình cần một thứ gì đó sáng để nhìn rõ hơn.",
             "req": {
               "logic": "AND",
               "check": [
@@ -3109,6 +3136,12 @@
                   "subtype": "hand",
                   "op": "!has",
                   "value": "lantern"
+                },
+                {
+                  "type": "state",
+                  "property": "clue_well",
+                  "op": "==",
+                  "value": true
                 }
               ]
             }
@@ -3140,6 +3173,12 @@
                   "value": [
                     "lantern"
                   ]
+                },
+                {
+                  "type": "state",
+                  "property": "clue_well",
+                  "op": "==",
+                  "value": true
                 }
               ]
             }
@@ -3152,12 +3191,6 @@
           {
             "type": "state",
             "property": "clue_well",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "state",
-            "property": "clue_lantern",
             "op": "==",
             "value": true
           },
