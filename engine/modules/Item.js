@@ -161,35 +161,45 @@ export const ItemSystem = {
         const info = state.getRuntimeSnapshot('itemInfo.[id]', { id });
         if (!info) return;
 
-        if (info.requirements) {
-            const res = this.checkReq(info.requirements);
-            if (!res.pass) {
-                this.api.notifications.add("Cannot use item", "Requirements not met.", "danger", { source: "engine", category: "inventory.use_failed" });
-                return;
+        try {
+            if (info.requirements) {
+                const res = this.checkReq(info.requirements);
+                if (!res.pass) {
+                    this.api.notifications.add("Cannot use item", "Requirements not met.", "danger", { source: "engine", category: "inventory.use_failed" });
+                    return;
+                }
+            }
+
+            if (info.usage) {
+                const isBroken = this.isBroken(id);
+                const disableBrokenUse = this.getConfig ? this.getConfig('brokenDisable') : false;
+                if (isBroken && disableBrokenUse) {
+                    this.api.notifications.add("Broken", "The item is broken or has no uses remaining.", "warning", { source: "engine", category: "inventory.use_broken" });
+                    return;
+                }
+                const autoInc = info.usage.autoInc !== false;
+                if (typeof info.usage.current === 'number' && autoInc) {
+                    state.set('item.current', info.usage.current + 1, { id });
+                }
+            }
+
+            if (info.effect?.use) {
+                this.api.notifications.add("Used", `Used ${info.name}`, "info", { source: "engine", category: "inventory.used" });
+                await this.processRunnables(info.effect.use, { itemId: id, hook: 'use' });
+            } else {
+                this.api.notifications.add("Notice", "This item has no effect when used directly.", "info", { source: "engine", category: "inventory.use_no_effect" });
+            }
+
+            this.api.presentation.components.updateItemModal(id);
+            this.api.presentation.components.explorer();
+        } finally {
+            // Defensive recovery after item effects: release a stale action lock only
+            // when no synchronous effect queue or scene transition is still active.
+            if (!this.runtime?.isSyncQueueRunning && !(this.runtime?.effectQueue?.sync?.length) && !this.isTransitioning && this.isActionProcessing) {
+                this.isActionProcessing = false;
+                this.api.presentation.navigation.setBlocking(false);
+                this.commitState('item.use.lock_recovered');
             }
         }
-
-        if (info.usage) {
-            const isBroken = this.isBroken(id);
-            const disableBrokenUse = this.getConfig ? this.getConfig('brokenDisable') : false;
-            if (isBroken && disableBrokenUse) {
-                this.api.notifications.add("Broken", "The item is broken or has no uses remaining.", "warning", { source: "engine", category: "inventory.use_broken" });
-                return;
-            }
-            const autoInc = info.usage.autoInc !== false;
-            if (typeof info.usage.current === 'number' && autoInc) {
-                state.set('item.current', info.usage.current + 1, { id });
-            }
-        }
-
-        if (info.effect?.use) {
-            this.api.notifications.add("Used", `Used ${info.name}`, "info", { source: "engine", category: "inventory.used" });
-            await this.processRunnables(info.effect.use, { itemId: id, hook: 'use' });
-        } else {
-            this.api.notifications.add("Notice", "This item has no effect when used directly.", "info", { source: "engine", category: "inventory.use_no_effect" });
-        }
-
-        this.api.presentation.components.updateItemModal(id);
-        this.api.presentation.components.explorer();
     }
 };
