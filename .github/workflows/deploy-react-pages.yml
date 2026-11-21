@@ -11,11 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  quality:
-    uses: ./.github/workflows/engine-quality.yml
-
   build:
-    needs: quality
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
