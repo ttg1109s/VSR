@@ -2723,7 +2723,7 @@
                 },
                 {
                   "type": "item",
-                  "subtype": "hand",
+                  "subtype": "inventory",
                   "op": "!has",
                   "value": "well_badge"
                 }
