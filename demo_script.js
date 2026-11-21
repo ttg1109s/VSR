@@ -2723,6 +2723,12 @@
                   "subtype": "hand",
                   "op": "has",
                   "value": "well_badge"
+                },
+                {
+                  "type": "item",
+                  "subtype": "hand",
+                  "op": "!has",
+                  "value": "lantern"
                 }
               ]
             }
