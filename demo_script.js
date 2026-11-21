@@ -279,7 +279,20 @@
   },
   "templates": {
     "requirements": {
-      "lantern_clue": {
+            "notice_lantern_unlock": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "set",
+            "subtype": "router",
+            "target": "router_well_echoes",
+            "op": "==",
+            "value": true,
+            "property": "visited"
+          }
+        ]
+      },
+"lantern_clue": {
         "logic": "AND",
         "check": [
           {
@@ -2654,105 +2667,26 @@
             "subtype": "state",
             "target": "clue_village_notice",
             "value": true,
-            "req": {
-              "logic": "AND",
-              "check": [
-                {
-                  "type": "action_count",
-                  "target": "action_read_notice",
-                  "phase": "normal",
-                  "op": "==",
-                  "value": 1
-                }
-              ]
-            }
+            
           },
           {
             "type": "item",
             "subtype": "add",
             "target": "lantern",
-            "req": {
-              "logic": "AND",
-              "check": [
-                {
-                  "type": "action_count",
-                  "target": "action_read_notice",
-                  "phase": "normal",
-                  "op": "==",
-                  "value": 1
-                },
-                {
-                  "type": "set",
-                  "subtype": "router",
-                  "target": "router_well_echoes",
-                  "op": "==",
-                  "value": true,
-                  "property": "visited"
-                }
-              ]
-            }
+            "req": { "ref": "notice_lantern_unlock" }
           },
           {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
             "text": "Ánh đèn bão xuyên qua màn sương. Có lẽ những gì đang bị che khuất sẽ hiện ra dưới ánh sáng này.",
-            "req": {
-              "logic": "AND",
-              "check": [
-                {
-                  "type": "action_count",
-                  "target": "action_read_notice",
-                  "phase": "normal",
-                  "op": "==",
-                  "value": 1
-                }
-              ]
-            }
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_read_notice",
-            "property": "display",
-            "value": "hide",
-            "req": {
-              "logic": "AND",
-              "check": [
-                {
-                  "type": "action_count",
-                  "target": "action_read_notice",
-                  "phase": "normal",
-                  "op": "==",
-                  "value": 1
-                },
-                {
-                  "type": "set",
-                  "subtype": "router",
-                  "target": "router_well_echoes",
-                  "op": "==",
-                  "value": true,
-                  "property": "visited"
-                }
-              ]
-            }
+            
           },
           {
             "type": "goto",
             "subtype": "chat",
             "target": "chat_notice_history",
-            "req": {
-              "logic": "AND",
-              "check": [
-                {
-                  "type": "action_count",
-                  "target": "action_read_notice",
-                  "phase": "normal",
-                  "op": "==",
-                  "value": 1
-                }
-              ]
-            }
+            
           },
           {
             "type": "set",
@@ -2760,26 +2694,7 @@
             "target": "action_read_notice",
             "property": "display",
             "value": "hide",
-            "req": {
-              "logic": "AND",
-              "check": [
-                {
-                  "type": "action_count",
-                  "target": "action_read_notice",
-                  "phase": "normal",
-                  "op": "==",
-                  "value": 1
-                },
-                {
-                  "type": "set",
-                  "subtype": "router",
-                  "target": "router_well_echoes",
-                  "op": "==",
-                  "value": true,
-                  "property": "visited"
-                }
-              ]
-            }
+            "req": { "ref": "notice_lantern_unlock" }
           },
           {
             "type": "set",
@@ -2787,26 +2702,7 @@
             "target": "action_use_lantern",
             "property": "display",
             "value": "show",
-            "req": {
-              "logic": "AND",
-              "check": [
-                {
-                  "type": "action_count",
-                  "target": "action_read_notice",
-                  "phase": "normal",
-                  "op": "==",
-                  "value": 1
-                },
-                {
-                  "type": "set",
-                  "subtype": "router",
-                  "target": "router_well_echoes",
-                  "op": "==",
-                  "value": true,
-                  "property": "visited"
-                }
-              ]
-            }
+            "req": { "ref": "notice_lantern_unlock" }
           }
         ],
         "pass": [],
