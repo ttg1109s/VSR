@@ -305,7 +305,7 @@ function InventoryHandPanel({ items, handCount, handLimit, offset, onOffsetChang
     <section className="vsr-inventory-hand" aria-label="Equipped items in Hand">
       <header className="vsr-inventory-hand__header"><h3>Hand</h3><span className="vsr-text-secondary">{handCount}{handLimit ? ` / ${handLimit}` : ''} equipped</span></header>
       <div className="vsr-inventory-hand__carousel">
-        <Button variant="secondary" size="sm" disabled={safeOffset <= 0} onClick={() => onOffsetChange(Math.max(0, safeOffset - 1))} aria-label="Previous hand slot">Prev</Button>
+        <button type="button" className="vsr-inventory-hand__nav" disabled={safeOffset <= 0} onClick={() => onOffsetChange(Math.max(0, safeOffset - 1))} aria-label="Previous hand slot"><span className="material-symbols-rounded" aria-hidden="true">arrow_back</span></button>
         <div className="vsr-inventory-hand__slots" aria-live="polite">
           {visibleItems.length === 0 ? <div className="vsr-inventory-hand__empty">No items equipped</div> : visibleItems.map(item => (
             <article className="vsr-inventory-hand__slot" key={item.id}>
@@ -315,7 +315,7 @@ function InventoryHandPanel({ items, handCount, handLimit, offset, onOffsetChang
             </article>
           ))}
         </div>
-        <Button variant="secondary" size="sm" disabled={safeOffset >= maxOffset} onClick={() => onOffsetChange(Math.min(maxOffset, safeOffset + 1))} aria-label="Next hand slot">Next</Button>
+        <button type="button" className="vsr-inventory-hand__nav" disabled={safeOffset >= maxOffset} onClick={() => onOffsetChange(Math.min(maxOffset, safeOffset + 1))} aria-label="Next hand slot"><span className="material-symbols-rounded" aria-hidden="true">arrow_forward</span></button>
       </div>
     </section>
   );
