@@ -2645,7 +2645,7 @@
         "check": [
           {
             "type": "set",
-            "subtype": "visited",
+            "subtype": "router",
             "target": "router_well_echoes",
             "op": "==",
             "value": true
