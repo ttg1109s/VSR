@@ -324,7 +324,9 @@ function InventoryHandPanel({ items, handCount, handLimit, offset, onOffsetChang
 
 export default function InventoryWorkspace({ snapshot, client, open = false, onClose, onError }) {
   const inventory = snapshot?.presentation?.inventory;
-  const items = Array.isArray(inventory?.items) ? inventory.items : null;\n  const handItems = items?.filter(item => item.equipped) || [];\n  const [handOffset, setHandOffset] = useState(0);
+  const items = Array.isArray(inventory?.items) ? inventory.items : null;
+  const handItems = items?.filter(item => item.equipped) || [];
+  const [handOffset, setHandOffset] = useState(0);
 
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('all');
