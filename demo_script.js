@@ -1969,8 +1969,6 @@
             "countVisited": 0
           },
           "actions": [
-            "action_inspect_well",
-            "action_use_lantern",
             "action_retrieve_well_badge"
           ]
         }
