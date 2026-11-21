@@ -2730,6 +2730,34 @@
               ]
             }
           },
+          "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Nhìn phần còn lại của bảng thông báo mình không hiểu gì cả. Có lẽ nên cầm lấy phù hiệu này quan sát không chừng nghĩ thông về nội dung trên bảng này.",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "item",
+                  "subtype": "inventory",
+                  "op": "has",
+                  "value": "lantern"
+                },
+                {
+                  "type": "item",
+                  "subtype": "hand",
+                  "op": "!has",
+                  "value": "well_badge"
+                },
+                {
+                  "type": "item",
+                  "subtype": "hand",
+                  "op": "!has",
+                  "value": "well_badge"
+                }
+              ]
+            }
+          },
           {
             "type": "set",
             "subtype": "action",
