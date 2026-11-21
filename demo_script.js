@@ -891,7 +891,14 @@
         "max": 1
       },
       "effect": {
-        "use": []
+        "use": [
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_lantern",
+            "value": true
+          }
+        ]
       }
     },
     "guestbook": {
