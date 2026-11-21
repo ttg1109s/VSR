@@ -2715,18 +2715,10 @@
             "level": "success",
             "text": "Cầm đèn soi vừa mỏi tay vừa chỉ nhìn được một phần bảng thông báo rất mất thời gian. Nên treo lại nhưng giờ chưa phải lúc.",
             "req": {
-              "logic": "AND",
-              "check": [
-                {
-                  "ref": "inventory_no_lantern"
-                },
-                {
-                  "type": "item",
-                  "subtype": "inventory",
-                  "op": "!has",
-                  "value": "well_badge"
-                }
-              ]
+              "type": "item",
+              "subtype": "inventory",
+              "op": "has",
+              "value": "lantern"
             }
           },
           {
