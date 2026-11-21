@@ -2666,8 +2666,7 @@
             "type": "set",
             "subtype": "state",
             "target": "clue_village_notice",
-            "value": true,
-            
+            "value": true
           },
           {
             "type": "item",
@@ -2679,14 +2678,12 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Ánh đèn bão xuyên qua màn sương. Có lẽ những gì đang bị che khuất sẽ hiện ra dưới ánh sáng này.",
-            
+            "text": "Ánh đèn bão xuyên qua màn sương. Có lẽ những gì đang bị che khuất sẽ hiện ra dưới ánh sáng này."
           },
           {
             "type": "goto",
             "subtype": "chat",
-            "target": "chat_notice_history",
-            
+            "target": "chat_notice_history"
           },
           {
             "type": "set",
