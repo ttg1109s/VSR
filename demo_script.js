@@ -2637,29 +2637,6 @@
         "logic": "AND",
         "check": [
           {
-            "logic": "OR",
-            "check": [
-              {
-                "type": "state",
-                "property": "clue_photo",
-                "op": "==",
-                "value": true
-              },
-              {
-                "type": "state",
-                "property": "clue_roster",
-                "op": "==",
-                "value": true
-              },
-              {
-                "type": "state",
-                "property": "clue_tape",
-                "op": "==",
-                "value": true
-              }
-            ]
-          },
-          {
             "type": "router",
             "subtype": "visited",
             "target": "router_well_echoes",
