@@ -3,12 +3,8 @@ name: VSR headless quality
 on:
   push:
     branches:
-      - engine-only
       - chore/remove-ui-keep-react-engine
       - remediation/full-audit-hardening
-  pull_request:
-    branches:
-      - engine-only
   workflow_dispatch:
 
 permissions:
