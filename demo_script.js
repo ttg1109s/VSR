@@ -2644,7 +2644,7 @@
       },
       "set": {
         "display": "show",
-        "requirement": false,
+        "requirement": true,
         "readDesc": true
       },
       "requirement": {
