@@ -283,14 +283,6 @@
         "logic": "AND",
         "check": [
           {
-            "type": "set",
-            "subtype": "router",
-            "target": "router_well_echoes",
-            "property": "visited",
-            "op": "==",
-            "value": true
-          },
-          {
             "type": "action_count",
             "target": "action_inspect_well",
             "phase": "normal",
@@ -488,6 +480,23 @@
           {
             "type": "item",
             "subtype": "inventory",
+            "op": "!has",
+            "value": "lantern"
+          }
+        ]
+      },
+      "hand_badge_no_lantern": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "item",
+            "subtype": "hand",
+            "op": "has",
+            "value": "well_badge"
+          },
+          {
+            "type": "item",
+            "subtype": "hand",
             "op": "!has",
             "value": "lantern"
           }
@@ -2704,9 +2713,20 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Cũng may có chiếc đèn bão treo trên bảng, nếu không mình chẳng đọc được gì... Nhưng có lẽ sau này mình sẽ cần dùng tới...",
+            "text": "Cầm đèn soi vừa mỏi tay vừa chỉ nhìn được một phần bảng thông báo rất mất thời gian. Nên treo lại nhưng giờ chưa phải lúc.",
             "req": {
-              "ref": "inventory_no_lantern"
+              "logic": "AND",
+              "check": [
+                {
+                  "ref": "inventory_no_lantern"
+                },
+                {
+                  "type": "item",
+                  "subtype": "inventory",
+                  "op": "!has",
+                  "value": "well_badge"
+                }
+              ]
             }
           },
           {
@@ -2722,21 +2742,7 @@
             "subtype": "chat",
             "target": "chat_notice_memory",
             "req": {
-              "logic": "AND",
-              "check": [
-                {
-                  "type": "item",
-                  "subtype": "hand",
-                  "op": "has",
-                  "value": "well_badge"
-                },
-                {
-                  "type": "item",
-                  "subtype": "hand",
-                  "op": "!has",
-                  "value": "lantern"
-                }
-              ]
+              "ref": "hand_badge_no_lantern"
             }
           },
           {
@@ -2746,21 +2752,7 @@
             "property": "display",
             "value": "hide",
             "req": {
-              "logic": "AND",
-              "check": [
-                {
-                  "type": "item",
-                  "subtype": "hand",
-                  "op": "has",
-                  "value": "well_badge"
-                },
-                {
-                  "type": "item",
-                  "subtype": "hand",
-                  "op": "!has",
-                  "value": "lantern"
-                }
-              ]
+              "ref": "hand_badge_no_lantern"
             }
           },
           {
