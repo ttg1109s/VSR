@@ -8,6 +8,7 @@ import { EffectSystem } from '../engine/modules/Effect.js';
 import { EffectHandlers, CharacterStrategies, SetStrategies } from '../engine/modules/effect/Strategies.js';
 import { StatsHelpers } from '../engine/modules/effect/strategies/Stats.js';
 import { ItemStrategies } from '../engine/modules/effect/strategies/Item.js';
+import { ItemSystem } from '../engine/modules/Item.js';
 import { LoaderSystem } from '../engine/modules/Loader.js';
 import { ActionSystem } from '../engine/modules/Action.js';
 import { SceneSystem } from '../engine/modules/Scene.js';
@@ -1495,3 +1496,84 @@ test('LogicSystem preserves single-level requirement behavior', () => {
   }), { pass: true });
 });
 
+
+test('item use releases stale action lock when all effect queues are idle and commits usage snapshot', async () => {
+  const item = { name: 'Consumable', usage: { current: 0, max: 1, autoInc: true } };
+  const state = {
+    getRuntimeSnapshot(path) {
+      if (path === 'itemInfo.[id]') return item;
+      return undefined;
+    },
+    get(path) {
+      if (path === 'item.current') return item.usage.current;
+      if (path === 'item.max') return item.usage.max;
+      return undefined;
+    },
+    set(path, value) {
+      if (path === 'item.current') item.usage.current = value;
+    }
+  };
+  const commits = [];
+  let blockingCleared = 0;
+  const engine = {
+    api: {
+      engine: { state },
+      notifications: { add() {} },
+      presentation: {
+        components: { updateItemModal() {}, explorer() {} },
+        navigation: { setBlocking(value) { if (value === false) blockingCleared++; } }
+      }
+    },
+    runtime: { effectQueue: { sync: [], async: [] }, isSyncQueueRunning: false, isAsyncQueueRunning: false },
+    isTransitioning: false,
+    isActionProcessing: true,
+    getConfig() { return false; },
+    processRunnables: async () => {},
+    commitState(reason) { commits.push(reason); }
+  };
+
+  await ItemSystem.use.call(engine, 'consumable');
+
+  assert.equal(item.usage.current, 1);
+  assert.equal(engine.isActionProcessing, false);
+  assert.equal(blockingCleared, 1);
+  assert.deepEqual(commits, ['inventory.use.completed']);
+});
+
+test('item use does not release action lock while async effect queue is active but still commits usage snapshot', async () => {
+  const item = { name: 'Consumable', usage: { current: 0, max: 2, autoInc: true } };
+  const state = {
+    getRuntimeSnapshot(path) { return path === 'itemInfo.[id]' ? item : undefined; },
+    get(path) {
+      if (path === 'item.current') return item.usage.current;
+      if (path === 'item.max') return item.usage.max;
+      return undefined;
+    },
+    set(path, value) { if (path === 'item.current') item.usage.current = value; }
+  };
+  const commits = [];
+  let blockingCleared = 0;
+  const engine = {
+    api: {
+      engine: { state },
+      notifications: { add() {} },
+      presentation: {
+        components: { updateItemModal() {}, explorer() {} },
+        navigation: { setBlocking(value) { if (value === false) blockingCleared++; } }
+      }
+    },
+    runtime: { effectQueue: { sync: [], async: [{ pending: true }] }, isSyncQueueRunning: false, isAsyncQueueRunning: true },
+    isTransitioning: false,
+    isActionProcessing: true,
+    getConfig() { return false; },
+    processRunnables: async () => {},
+    commitState(reason) { commits.push(reason); }
+  };
+
+  await ItemSystem.use.call(engine, 'consumable');
+
+  assert.equal(item.usage.current, 1);
+  assert.equal(engine.isActionProcessing, true);
+  assert.equal(blockingCleared, 0);
+  assert.deepEqual(commits, ['inventory.use.completed']);
+});
