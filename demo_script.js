@@ -2678,7 +2678,15 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Ánh đèn bão xuyên qua màn sương. Có lẽ những gì đang bị che khuất sẽ hiện ra dưới ánh sáng này."
+            "text": "Đèn bão nằm lăn lóc dưới bảng thông báo này có lẽ sau này mình sẽ cần dùng tới? Có lẽ những gì đang bị che khuất sẽ hiện ra dưới ánh sáng này?",
+            "req": {
+              "type": "set",
+              "subtype": "router",
+              "target": "router_well_echoes",
+              "op": "==",
+              "value": false,
+              "property": "visited"
+            }
           },
           {
             "type": "goto",
