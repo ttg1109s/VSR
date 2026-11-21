@@ -584,31 +584,11 @@
           "value": true
         }
       ],
-      "consume_action_ring_bell": [
+      "consume_action_find_hidden_box": [
         {
           "type": "item",
           "subtype": "usage",
-          "target": "bell_copper_wire",
-          "value": 1
-        },
-        {
-          "type": "item",
-          "subtype": "usage",
-          "target": "hymn_note",
-          "value": 1
-        },
-        {
-          "type": "item",
-          "subtype": "usage",
-          "target": "bell_clapper",
-          "value": 1
-        }
-      ],
-      "consume_action_decode_roster": [
-        {
-          "type": "item",
-          "subtype": "usage",
-          "target": "class_register_copy",
+          "target": "well_badge",
           "value": 1
         }
       ],
@@ -620,121 +600,6 @@
           "value": 1
         }
       ],
-      "consume_action_find_hidden_box": [
-        {
-          "type": "item",
-          "subtype": "usage",
-          "target": "well_badge",
-          "value": 1
-        }
-      ],
-      "consume_action_repair_mill": [
-        {
-          "type": "item",
-          "subtype": "usage",
-          "target": "radio_toolkit",
-          "value": 1
-        },
-        {
-          "type": "item",
-          "subtype": "usage",
-          "target": "clockwork_spring",
-          "value": 1
-        },
-        {
-          "type": "item",
-          "subtype": "usage",
-          "target": "mill_gear_pin",
-          "value": 1
-        }
-      ],
-      "consume_action_open_archive": [
-        {
-          "type": "item",
-          "subtype": "usage",
-          "target": "archive_key",
-          "value": 1
-        }
-      ],
-      "consume_action_restore_radio_components": [
-        {
-          "type": "item",
-          "subtype": "usage",
-          "target": "radio_toolkit",
-          "value": 1
-        },
-        {
-          "type": "item",
-          "subtype": "usage",
-          "target": "radio_crystal",
-          "value": 1
-        },
-        {
-          "type": "item",
-          "subtype": "usage",
-          "target": "insulated_wire",
-          "value": 1
-        },
-        {
-          "type": "item",
-          "subtype": "usage",
-          "target": "spare_fuse",
-          "value": 1
-        },
-        {
-          "type": "set",
-          "subtype": "action",
-          "target": "action_confront_voice",
-          "property": "display",
-          "value": "show"
-        }
-      ],
-      "consume_action_overlay_map": [
-        {
-          "type": "item",
-          "subtype": "usage",
-          "target": "tracing_paper",
-          "value": 1
-        },
-        {
-          "type": "item",
-          "subtype": "usage",
-          "target": "inspection_loupe",
-          "value": 1
-        }
-      ],
-      "consume_action_unlock_room7": [
-        {
-          "type": "item",
-          "subtype": "usage",
-          "target": "spare_room_key",
-          "value": 1
-        }
-      ],
-      "consume_action_force_room7": [
-        {
-          "type": "item",
-          "subtype": "usage",
-          "target": "spare_room_key",
-          "value": 1
-        }
-      ],
-      "consume_action_open_room7_alternative": [
-        {
-          "type": "item",
-          "subtype": "usage",
-          "target": "radio_toolkit",
-          "value": 1
-        }
-      ],
-      "consume_action_listen_mai_tape": [
-        {
-          "type": "item",
-          "subtype": "usage",
-          "target": "tape",
-          "value": 1
-        }
-      ],
       "consume_action_follow_compass_uncertain": [
         {
           "type": "item",
@@ -743,55 +608,19 @@
           "value": 1
         }
       ],
-      "consume_action_force_seal": [
+      "consume_action_listen_static": [
         {
           "type": "item",
           "subtype": "usage",
-          "target": "radio_toolkit",
+          "target": "tape",
           "value": 1
         }
       ],
-      "consume_action_repair_mill_partial": [
+      "consume_action_listen_mai_tape": [
         {
           "type": "item",
           "subtype": "usage",
-          "target": "radio_toolkit",
-          "value": 1
-        },
-        {
-          "type": "item",
-          "subtype": "usage",
-          "target": "clockwork_spring",
-          "value": 1
-        },
-        {
-          "type": "item",
-          "subtype": "usage",
-          "target": "mill_gear_pin",
-          "value": 1
-        }
-      ],
-      "consume_action_force_mill_repair": [
-        {
-          "type": "item",
-          "subtype": "usage",
-          "target": "radio_toolkit",
-          "value": 1
-        }
-      ],
-      "consume_action_stabilize_mill": [
-        {
-          "type": "item",
-          "subtype": "usage",
-          "target": "radio_toolkit",
-          "value": 1
-        }
-      ],
-      "consume_action_bypass_archive_lock": [
-        {
-          "type": "item",
-          "subtype": "usage",
-          "target": "radio_toolkit",
+          "target": "tape",
           "value": 1
         }
       ],
@@ -809,25 +638,23 @@
           "value": 1
         }
       ],
-      "consume_action_open_archive_from_evidence": [
+      "consume_action_ring_bell": [
         {
           "type": "item",
           "subtype": "usage",
-          "target": "tunnel_manifest",
+          "target": "bell_copper_wire",
           "value": 1
         },
         {
           "type": "item",
           "subtype": "usage",
-          "target": "evacuation_film",
+          "target": "hymn_note",
           "value": 1
-        }
-      ],
-      "consume_action_compare_evacuation_film": [
+        },
         {
           "type": "item",
           "subtype": "usage",
-          "target": "evacuation_film",
+          "target": "bell_clapper",
           "value": 1
         }
       ],
@@ -867,11 +694,19 @@
           "value": 1
         }
       ],
-      "consume_action_listen_static": [
+      "consume_action_recover_hymn": [
         {
           "type": "item",
           "subtype": "usage",
-          "target": "tape",
+          "target": "guestbook",
+          "value": 1
+        }
+      ],
+      "consume_action_decode_roster": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "class_register_copy",
           "value": 1
         }
       ],
@@ -891,11 +726,11 @@
           "value": 1
         }
       ],
-      "consume_action_recover_hymn": [
+      "consume_action_compare_evacuation_film": [
         {
           "type": "item",
           "subtype": "usage",
-          "target": "guestbook",
+          "target": "evacuation_film",
           "value": 1
         }
       ],
@@ -904,6 +739,20 @@
           "type": "item",
           "subtype": "usage",
           "target": "class_photo",
+          "value": 1
+        }
+      ],
+      "consume_action_overlay_map": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "tracing_paper",
+          "value": 1
+        },
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "inspection_loupe",
           "value": 1
         }
       ],
@@ -920,6 +769,157 @@
           "type": "item",
           "subtype": "usage",
           "target": "tunnel_manifest",
+          "value": 1
+        }
+      ],
+      "consume_action_repair_mill": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "radio_toolkit",
+          "value": 1
+        },
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "clockwork_spring",
+          "value": 1
+        },
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "mill_gear_pin",
+          "value": 1
+        }
+      ],
+      "consume_action_repair_mill_partial": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "radio_toolkit",
+          "value": 1
+        },
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "clockwork_spring",
+          "value": 1
+        },
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "mill_gear_pin",
+          "value": 1
+        }
+      ],
+      "consume_action_force_mill_repair": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "radio_toolkit",
+          "value": 1
+        }
+      ],
+      "consume_action_stabilize_mill": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "radio_toolkit",
+          "value": 1
+        }
+      ],
+      "consume_action_open_archive": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "archive_key",
+          "value": 1
+        }
+      ],
+      "consume_action_bypass_archive_lock": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "radio_toolkit",
+          "value": 1
+        }
+      ],
+      "consume_action_open_archive_from_evidence": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "tunnel_manifest",
+          "value": 1
+        },
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "evacuation_film",
+          "value": 1
+        }
+      ],
+      "consume_action_unlock_room7": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "spare_room_key",
+          "value": 1
+        }
+      ],
+      "consume_action_force_room7": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "spare_room_key",
+          "value": 1
+        }
+      ],
+      "consume_action_open_room7_alternative": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "radio_toolkit",
+          "value": 1
+        }
+      ],
+      "consume_action_restore_radio_components": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "radio_toolkit",
+          "value": 1
+        },
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "radio_crystal",
+          "value": 1
+        },
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "insulated_wire",
+          "value": 1
+        },
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "spare_fuse",
+          "value": 1
+        },
+        {
+          "type": "set",
+          "subtype": "action",
+          "target": "action_confront_voice",
+          "property": "display",
+          "value": "show"
+        }
+      ],
+      "consume_action_force_seal": [
+        {
+          "type": "item",
+          "subtype": "usage",
+          "target": "radio_toolkit",
           "value": 1
         }
       ]
