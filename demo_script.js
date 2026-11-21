@@ -2761,7 +2761,7 @@
           },
           {
             "type": "item",
-            "subtype": "remove",
+            "subtype": "hand_off",
             "target": "lantern",
             "req": {
               "logic": "AND",
