@@ -2729,7 +2729,7 @@
                 }
               ]
             }
-          }
+          },
           {
             "type": "notify",
             "subtype": "toast",
@@ -2759,7 +2759,8 @@
               ]
             }
           },
-"type": "set",
+          {
+            "type": "set",
             "subtype": "action",
             "target": "action_use_lantern",
             "property": "display",
