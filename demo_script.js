@@ -3034,12 +3034,6 @@
         "normal": [],
         "pass": [
           {
-            "type": "set",
-            "subtype": "state",
-            "target": "clue_lantern",
-            "value": true
-          },
-          {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
@@ -3191,6 +3185,12 @@
             "value": [
               "lantern"
             ]
+          },
+          {
+            "type": "state",
+            "property": "clue_lantern",
+            "op": "==",
+            "value": true
           }
         ]
       }
