@@ -2760,6 +2760,28 @@
             }
           },
           {
+            "type": "item",
+            "subtype": "remove",
+            "target": "lantern",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "item",
+                  "subtype": "inventory",
+                  "op": "has",
+                  "value": "lantern"
+                },
+                {
+                  "type": "item",
+                  "subtype": "inventory",
+                  "op": "has",
+                  "value": "well_badge"
+                }
+              ]
+            }
+          },
+          {
             "type": "set",
             "subtype": "action",
             "target": "action_use_lantern",
