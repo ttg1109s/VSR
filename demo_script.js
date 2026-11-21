@@ -2644,21 +2644,8 @@
       },
       "set": {
         "display": "show",
-        "requirement": true,
+        "requirement": false,
         "readDesc": true
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "set",
-            "subtype": "router",
-            "target": "router_well_echoes",
-            "op": "==",
-            "value": true,
-            "property": "visited"
-          }
-        ]
       },
       "effect": {
         "normal": [
@@ -2693,6 +2680,14 @@
                   "phase": "normal",
                   "op": "==",
                   "value": 1
+                },
+                {
+                  "type": "set",
+                  "subtype": "router",
+                  "target": "router_well_echoes",
+                  "op": "==",
+                  "value": true,
+                  "property": "visited"
                 }
               ]
             }
@@ -2730,6 +2725,14 @@
                   "phase": "normal",
                   "op": "==",
                   "value": 1
+                },
+                {
+                  "type": "set",
+                  "subtype": "router",
+                  "target": "router_well_echoes",
+                  "op": "==",
+                  "value": true,
+                  "property": "visited"
                 }
               ]
             }
@@ -2756,7 +2759,27 @@
             "subtype": "action",
             "target": "action_read_notice",
             "property": "display",
-            "value": "hide"
+            "value": "hide",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "action_count",
+                  "target": "action_read_notice",
+                  "phase": "normal",
+                  "op": "==",
+                  "value": 1
+                },
+                {
+                  "type": "set",
+                  "subtype": "router",
+                  "target": "router_well_echoes",
+                  "op": "==",
+                  "value": true,
+                  "property": "visited"
+                }
+              ]
+            }
           },
           {
             "type": "set",
@@ -2773,6 +2796,14 @@
                   "phase": "normal",
                   "op": "==",
                   "value": 1
+                },
+                {
+                  "type": "set",
+                  "subtype": "router",
+                  "target": "router_well_echoes",
+                  "op": "==",
+                  "value": true,
+                  "property": "visited"
                 }
               ]
             }
