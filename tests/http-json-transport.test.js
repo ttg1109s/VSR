@@ -31,7 +31,7 @@ test('HTTP transport attaches bearer credentials to fetches without putting them
     await transport.request({ command: 'engine.pause' });
     await transport.getSnapshot();
 
-    assert.equal(fetchCalls.length, 2);
+    assert.equal(fetchCalls.length, 3);
     for (const call of fetchCalls) {
       assert.equal(call.options.headers.authorization, 'Bearer secret-token');
       assert.equal(call.options.credentials, 'include');
