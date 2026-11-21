@@ -642,7 +642,7 @@
 .vsr-inventory-item-details__condition strong{color:var(--vsr-color-text);font-size:16px;font-weight:600}
 
 /* Inventory Hand stays anchored to the drawer bottom while bag content scrolls. */
-.vsr-overlay--drawer .vsr-inventory-drawer-content { position: relative; overflow: visible; }
+.vsr-overlay--drawer .vsr-inventory-drawer-content { position: relative; overflow: hidden; }
 .vsr-inventory-layout { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
 .vsr-inventory-hand { position: relative; bottom: auto; z-index: 2; flex: 0 0 auto; border-top: 1px solid var(--vsr-color-border); background: var(--vsr-color-surface); padding: 12px 0 0; margin-top: 12px; }
 .vsr-inventory-hand__header { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
@@ -655,8 +655,3 @@
 .vsr-inventory-hand__item span:last-child { font-size: 11px; line-height: 1.25; text-align: center; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 .vsr-inventory-hand__empty { grid-column: 1 / -1; display: flex; align-items: center; justify-content: center; color: var(--vsr-color-text-secondary); min-height: 64px; font-size: 13px; }
 .vsr-inventory-hand__carousel > .vsr-button { flex: 0 0 auto; align-self: center; }
-
-/* Keep inventory item menus inside the drawer's horizontal bounds and above its scroll viewport. */
-.vsr-inventory-layout { overflow-x: visible; }
-.vsr-inventory-item-menu .vsr-menu-content--start { left: auto; right: 0; }
-.vsr-inventory-item-menu .vsr-menu-content { z-index: 1200; }
