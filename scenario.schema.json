@@ -504,18 +504,16 @@
           "usage": {
             "type": "object",
             "description": "Durability or usage count.",
-            "required": [
-              "current",
-              "max"
-            ],
             "properties": {
               "current": {
                 "type": "number",
-                "description": "Current value (Wear and tear)."
+                "description": "Current value (Wear and tear).",
+                "default": 0
               },
               "max": {
                 "type": "number",
-                "description": "Max value (Fully broken)."
+                "description": "Max value (Fully broken).",
+                "default": 1
               },
               "status": {
                 "type": "array",
