@@ -279,7 +279,7 @@
   },
   "templates": {
     "requirements": {
-            "notice_lantern_unlock": {
+      "notice_lantern_unlock": {
         "logic": "AND",
         "check": [
           {
@@ -292,7 +292,7 @@
           }
         ]
       },
-"lantern_clue": {
+      "lantern_clue": {
         "logic": "AND",
         "check": [
           {
@@ -2672,7 +2672,9 @@
             "type": "item",
             "subtype": "add",
             "target": "lantern",
-            "req": { "ref": "notice_lantern_unlock" }
+            "req": {
+              "ref": "notice_lantern_unlock"
+            }
           },
           {
             "type": "notify",
@@ -2699,7 +2701,9 @@
             "target": "action_read_notice",
             "property": "display",
             "value": "hide",
-            "req": { "ref": "notice_lantern_unlock" }
+            "req": {
+              "ref": "notice_lantern_unlock"
+            }
           },
           {
             "type": "set",
@@ -2707,7 +2711,9 @@
             "target": "action_use_lantern",
             "property": "display",
             "value": "show",
-            "req": { "ref": "notice_lantern_unlock" }
+            "req": {
+              "ref": "notice_lantern_unlock"
+            }
           }
         ],
         "pass": [],
@@ -2927,7 +2933,14 @@
         "display": "show"
       },
       "effect": {
-        "normal": [],
+        "normal": [
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "info",
+            "text": "Tối quá mình không nhìn thấy gì. Chắc phải kiếm thứ gì đó để chiếu sáng."
+          }
+        ],
         "pass": [
           {
             "type": "set",
