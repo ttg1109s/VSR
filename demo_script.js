@@ -2793,254 +2793,6 @@
         ]
       }
     },
-    "action_talk_mai": {
-      "meta": {
-        "title": "Mai",
-        "buttonLabel": "Trò chuyện",
-        "desc": "Mai đứng gần quảng trường nhưng luôn giữ khoảng cách với giếng đá. Cô dường như biết nhiều hơn những gì mình nói, và ánh mắt thường dừng lại ở những dấu vết bạn mang theo. Có lẽ cô chỉ sẵn lòng kể khi bạn tìm được điều gì đó khiến cô không thể tiếp tục im lặng."
-      },
-      "set": {
-        "display": "show",
-        "requirement": false,
-        "readDesc": true
-      },
-      "effect": {
-        "normal": [
-          {
-            "type": "goto",
-            "subtype": "chat",
-            "target": "chat_mai_memory",
-            "req": {
-              "logic": "AND",
-              "check": [
-                {
-                  "type": "state",
-                  "property": "knows_twelve",
-                  "op": "==",
-                  "value": true
-                },
-                {
-                  "type": "state",
-                  "property": "school_choice",
-                  "op": "==",
-                  "value": "ký ức"
-                }
-              ]
-            }
-          },
-          {
-            "type": "goto",
-            "subtype": "chat",
-            "target": "chat_mai_evidence",
-            "req": {
-              "logic": "AND",
-              "check": [
-                {
-                  "type": "state",
-                  "property": "knows_twelve",
-                  "op": "==",
-                  "value": true
-                },
-                {
-                  "type": "state",
-                  "property": "school_choice",
-                  "op": "==",
-                  "value": "bằng chứng"
-                }
-              ]
-            }
-          },
-          {
-            "type": "goto",
-            "subtype": "chat",
-            "target": "chat_mai",
-            "req": {
-              "logic": "AND",
-              "check": [
-                {
-                  "type": "state",
-                  "property": "knows_twelve",
-                  "op": "!=",
-                  "value": true
-                },
-                {
-                  "type": "state",
-                  "property": "clue_well",
-                  "op": "!=",
-                  "value": true
-                }
-              ]
-            }
-          },
-          {
-            "type": "goto",
-            "subtype": "chat",
-            "target": "chat_mai",
-            "req": {
-              "logic": "AND",
-              "check": [
-                {
-                  "type": "state",
-                  "property": "knows_twelve",
-                  "op": "!=",
-                  "value": true
-                },
-                {
-                  "type": "state",
-                  "property": "clue_well",
-                  "op": "==",
-                  "value": true
-                },
-                {
-                  "type": "state",
-                  "property": "clue_lantern",
-                  "op": "!=",
-                  "value": true
-                }
-              ]
-            }
-          },
-          {
-            "type": "goto",
-            "subtype": "chat",
-            "target": "chat_mai_well",
-            "req": {
-              "logic": "AND",
-              "check": [
-                {
-                  "type": "state",
-                  "property": "knows_twelve",
-                  "op": "!=",
-                  "value": true
-                },
-                {
-                  "type": "state",
-                  "property": "clue_well",
-                  "op": "==",
-                  "value": true
-                },
-                {
-                  "type": "state",
-                  "property": "clue_lantern",
-                  "op": "==",
-                  "value": true
-                }
-              ]
-            }
-          },
-          {
-            "type": "goto",
-            "subtype": "chat",
-            "target": "chat_mai_umbrella",
-            "req": {
-              "logic": "AND",
-              "check": [
-                {
-                  "type": "state",
-                  "property": "knows_twelve",
-                  "op": "==",
-                  "value": true
-                },
-                {
-                  "type": "state",
-                  "property": "school_choice",
-                  "op": "==",
-                  "value": "chưa quyết định"
-                }
-              ]
-            }
-          }
-        ],
-        "pass": [
-          {
-            "type": "characters",
-            "subtype": "edit_stats",
-            "target": "mai",
-            "property": "trust",
-            "field": "current",
-            "mode": "add",
-            "value": 1,
-            "req": {
-              "logic": "AND",
-              "check": [
-                {
-                  "type": "action_count",
-                  "target": "action_talk_mai",
-                  "phase": "pass",
-                  "op": "==",
-                  "value": 1
-                }
-              ]
-            }
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "mai_approach",
-            "value": "trò chuyện"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_observe_mai",
-            "property": "display",
-            "value": "hide"
-          }
-        ]
-      }
-    },
-    "action_inspect_well": {
-      "meta": {
-        "title": "Giếng đá",
-        "buttonLabel": "Quan sát dấu khắc",
-        "desc": "Giếng đá nằm ở rìa quảng trường, phủ rêu nhưng phần thành phía đông có dấu mới bị cạo sạch. Bốn vạch khắc thẳng hàng giống ký hiệu đo đạc hơn là vết xước ngẫu nhiên; bên cạnh là một rãnh kim loại mảnh, như thể có vật gì từng được móc khỏi hốc đá."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "clue_well",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_inspect_well",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Tối quá mình chỉ thấy lờ mờ những vạch khắc không rõ nét. Chắc phải kiếm thứ gì đó để chiếu sáng để nhìn rõ hơn.",
-            "req": {
-              "logic": "AND",
-              "check": [
-                {
-                  "type": "item",
-                  "subtype": "inventory",
-                  "op": "!has",
-                  "value": "lantern"
-                }
-              ]
-            }
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_use_lantern",
-            "property": "display",
-            "value": "show"
-          }
-        ]
-      }
-    },
     "action_use_lantern": {
       "meta": {
         "title": "Ký hiệu dưới đáy giếng",
@@ -3217,178 +2969,396 @@
         ]
       }
     },
-    "action_talk_hanh": {
+    "action_reach_station": {
       "meta": {
-        "title": "Bà Hạnh",
-        "buttonLabel": "Trò chuyện",
-        "desc": "Bà Hạnh quản lý nhà trọ và nắm giữ cuốn sổ ghi khách đến, khách đi. Bà khẳng định nơi này chỉ có sáu phòng, nhưng hành lang phía sau quầy lại có bảy cánh cửa. Sự chênh lệch ấy không giống một nhầm lẫn trong cách đếm; nó giống một căn phòng đã bị cố tình xóa khỏi lời kể."
+        "title": "Ga tàu 03:17",
+        "buttonLabel": "Tiến vào",
+        "buttonIcon": "train",
+        "desc": "Ga tàu 03:17 không xuất hiện trên bản đồ làng và chỉ hiện ra ở cuối tuyến đường hầm. Những manh mối về cuộc sơ tán, danh sách vận chuyển và kho hồ sơ phải được ghép lại trước khi có thể tìm thấy sân ga."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "goto",
+            "subtype": "scene",
+            "target": "scene_ghost_station"
+          }
+        ],
+        "fail": [
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "warning",
+            "text": "Sân ga vẫn chưa hiện ra. Kho hồ sơ, danh sách vận chuyển và cuộn phim sơ tán còn phải được tìm thấy; thánh ca, vòng cọc và đường hầm cũng chưa thể bỏ qua."
+          }
+        ]
+      },
+      "requirement": {
+        "ref": "station_ready"
+      }
+    },
+    "action_reach_station_memory": {
+      "meta": {
+        "title": "Ga tàu 03:17 — theo ký ức",
+        "buttonLabel": "Theo dấu ký ức",
+        "buttonIcon": "train",
+        "desc": "Bạn lần theo lời khai và những dấu vết trong đường hầm, không cần dựa vào danh sách vận chuyển hay cuộn phim."
+      },
+      "set": {
+        "display": "hide",
+        "requirement": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "goto",
+            "subtype": "scene",
+            "target": "scene_ghost_station"
+          }
+        ],
+        "fail": [
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "warning",
+            "text": "Con đường ký ức vẫn chưa mở. Kho hồ sơ, đường hầm, thánh ca và vòng cọc thứ mười hai đang chờ được tìm thấy."
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "school_choice",
+            "op": "==",
+            "value": "ký ức"
+          },
+          {
+            "type": "state",
+            "property": "archive_open",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "clue_tunnel",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "clue_hymn",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "clue_stakes",
+            "op": "==",
+            "value": true
+          }
+        ]
+      }
+    },
+    "action_descend_tunnel": {
+      "meta": {
+        "title": "Đường hầm dưới cối xay",
+        "buttonLabel": "Mở cửa sập",
+        "buttonIcon": "south",
+        "desc": "Cửa sập nằm dưới sàn cối xay, nối phòng máy với đường hầm dưới chân đê. Một hệ đối trọng giữ cánh cửa khóa chặt khi bánh xe đứng yên; khi trục truyền động hoạt động, sức kéo mới đủ nâng cửa và để lộ bậc thang đi xuống."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "goto",
+            "subtype": "scene",
+            "target": "scene_levee_tunnel"
+          }
+        ],
+        "fail": [
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "warning",
+            "text": "Cửa sập không nhúc nhích. Cối xay hoặc dấu đường hầm có thể giúp mở lối xuống."
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "OR",
+        "check": [
+          {
+            "type": "state",
+            "property": "mill_powered",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "clue_tunnel",
+            "op": "==",
+            "value": true
+          }
+        ]
+      }
+    },
+    "action_inspect_well": {
+      "meta": {
+        "title": "Giếng đá",
+        "buttonLabel": "Quan sát dấu khắc",
+        "desc": "Giếng đá nằm ở rìa quảng trường, phủ rêu nhưng phần thành phía đông có dấu mới bị cạo sạch. Bốn vạch khắc thẳng hàng giống ký hiệu đo đạc hơn là vết xước ngẫu nhiên; bên cạnh là một rãnh kim loại mảnh, như thể có vật gì từng được móc khỏi hốc đá."
       },
       "set": {
         "display": "show"
       },
       "effect": {
-        "normal": [
-          {
-            "type": "goto",
-            "subtype": "chat",
-            "target": "chat_hanh_memory",
-            "req": {
-              "logic": "AND",
-              "check": [
-                {
-                  "type": "state",
-                  "property": "evidence_hidden_room",
-                  "op": "==",
-                  "value": true
-                },
-                {
-                  "type": "state",
-                  "property": "school_choice",
-                  "op": "==",
-                  "value": "ký ức"
-                }
-              ]
-            }
-          },
-          {
-            "type": "goto",
-            "subtype": "chat",
-            "target": "chat_hanh_evidence",
-            "req": {
-              "logic": "AND",
-              "check": [
-                {
-                  "type": "state",
-                  "property": "evidence_hidden_room",
-                  "op": "==",
-                  "value": true
-                },
-                {
-                  "type": "state",
-                  "property": "school_choice",
-                  "op": "==",
-                  "value": "bằng chứng"
-                }
-              ]
-            }
-          },
-          {
-            "type": "goto",
-            "subtype": "chat",
-            "target": "chat_hanh_room",
-            "req": {
-              "logic": "AND",
-              "check": [
-                {
-                  "type": "state",
-                  "property": "evidence_hidden_room",
-                  "op": "==",
-                  "value": true
-                },
-                {
-                  "type": "state",
-                  "property": "school_choice",
-                  "op": "==",
-                  "value": "chưa quyết định"
-                }
-              ]
-            }
-          },
-          {
-            "type": "goto",
-            "subtype": "chat",
-            "target": "chat_hanh_guestbook",
-            "req": {
-              "logic": "AND",
-              "check": [
-                {
-                  "type": "state",
-                  "property": "evidence_hidden_room",
-                  "op": "!=",
-                  "value": true
-                },
-                {
-                  "type": "state",
-                  "property": "found_guestbook",
-                  "op": "==",
-                  "value": true
-                }
-              ]
-            }
-          },
-          {
-            "type": "goto",
-            "subtype": "chat",
-            "target": "chat_hanh_notice",
-            "req": {
-              "logic": "AND",
-              "check": [
-                {
-                  "type": "state",
-                  "property": "evidence_hidden_room",
-                  "op": "!=",
-                  "value": true
-                },
-                {
-                  "type": "state",
-                  "property": "found_guestbook",
-                  "op": "!=",
-                  "value": true
-                },
-                {
-                  "type": "state",
-                  "property": "clue_village_notice",
-                  "op": "==",
-                  "value": true
-                }
-              ]
-            }
-          },
-          {
-            "type": "goto",
-            "subtype": "chat",
-            "target": "chat_hanh",
-            "req": {
-              "logic": "AND",
-              "check": [
-                {
-                  "type": "state",
-                  "property": "evidence_hidden_room",
-                  "op": "!=",
-                  "value": true
-                },
-                {
-                  "type": "state",
-                  "property": "found_guestbook",
-                  "op": "!=",
-                  "value": true
-                },
-                {
-                  "type": "state",
-                  "property": "clue_village_notice",
-                  "op": "!=",
-                  "value": true
-                }
-              ]
-            }
-          }
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "set",
+            "subtype": "state",
+            "target": "clue_well",
+            "value": true
+          },
+          {
+            "type": "set",
             "subtype": "action",
-            "target": "action_talk_hanh",
+            "target": "action_inspect_well",
             "property": "display",
             "value": "hide"
           },
           {
-            "type": "characters",
-            "subtype": "edit_stats",
-            "target": "hanh",
-            "property": "trust",
-            "field": "current",
-            "mode": "add",
-            "value": 1
+            "type": "notify",
+            "subtype": "toast",
+            "level": "info",
+            "text": "Tối quá mình chỉ thấy lờ mờ những vạch khắc không rõ nét. Chắc phải kiếm thứ gì đó để chiếu sáng để nhìn rõ hơn.",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "item",
+                  "subtype": "inventory",
+                  "op": "!has",
+                  "value": "lantern"
+                }
+              ]
+            }
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_use_lantern",
+            "property": "display",
+            "value": "show"
+          }
+        ]
+      }
+    },
+    "action_find_hidden_box": {
+      "meta": {
+        "title": "Hộp chôn dưới đất",
+        "buttonLabel": "Đào và mở hộp",
+        "desc": "Một hộp gỗ được chôn gần vòng cọc, nắp đóng kín và trên mặt có dấu niêm phong của đội sơ tán. Phù hiệu kim loại tìm thấy dưới giếng mang cùng ký hiệu, cho biết đây là vật chứng được chôn có chủ ý chứ không phải đồ thất lạc. Bên trong hộp là những mảnh ảnh gia đình bị xé rời, cần ghép lại để nhận diện đứa trẻ."
+      },
+      "set": {
+        "display": "show",
+        "password": "puzzle:pw_photo",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_find_hidden_box"
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_photo",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "add",
+            "target": "class_photo"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Trong bức ảnh đã ghép đủ, Linh đứng giữa những người mất tích."
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_find_hidden_box",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_stakes",
+            "value": true
+          }
+        ],
+        "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_find_hidden_box"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "warning",
+            "text": "Bạn vẫn chưa tìm thấy phù hiệu đội sơ tán. Dấu niêm phong có thể giúp xác định chiếc hộp này trước khi mở."
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "well_badge"
+          }
+        ]
+      }
+    },
+    "action_maze_path": {
+      "meta": {
+        "title": "Mê cung trong rừng",
+        "buttonLabel": "Giải mê cung",
+        "desc": "Lối mòn trong rừng thay đổi vị trí mỗi khi bạn quay đi, khiến các dấu cây quen thuộc không còn đáng tin. La bàn của người dẫn đường có khắc một tuyến ô vuông cố định; đường đúng phải nối các ô liền kề từ cổng rừng đến khoảng đất trống, không được tự ý cắt qua những ô không có dấu."
+      },
+      "set": {
+        "display": "show",
+        "password": "find_way:pw_forest",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_maze_path"
+          },
+          {
+            "type": "item",
+            "subtype": "add",
+            "target": "archive_key"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Bạn đã vượt qua mê cung. Phía trước là kho hồ sơ."
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_maze_path",
+            "property": "display",
+            "value": "hide"
+          }
+        ],
+        "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_maze_path"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "warning",
+            "text": "Không có la bàn, những lối mòn cứ dẫn bạn vòng trở lại. Dấu sơn đã không còn đủ để xác định hướng đi."
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "item",
+            "subtype": "hand",
+            "op": "==",
+            "value": [
+              "guide_compass"
+            ]
+          }
+        ]
+      }
+    },
+    "action_retrieve_well_badge": {
+      "meta": {
+        "title": "Phù hiệu đội sơ tán",
+        "buttonLabel": "Nhặt lên",
+        "desc": "Một vật kim loại mắc trong hốc đá dưới mực nước cũ, chỉ lộ ra sau khi ánh đèn bão soi đúng góc và làm hiện đường viền của hốc. Mép phù hiệu bị bám cặn nhưng ký hiệu đội sơ tán vẫn còn nguyên, trùng với dấu niêm phong trên chiếc hộp chôn trong rừng."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "add",
+            "target": "well_badge"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_retrieve_well_badge",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "goto",
+            "subtype": "router",
+            "target": "router_well_bottom_revealed"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Bạn lấy được phù hiệu đội sơ tán từ hốc giếng."
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "clue_well",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "clue_lantern",
+            "op": "==",
+            "value": true
           }
         ]
       }
@@ -3464,6 +3434,45 @@
         ]
       }
     },
+    "action_search_cellar": {
+      "meta": {
+        "title": "Hầm rượu",
+        "buttonLabel": "Tìm dấu vết",
+        "desc": "Hầm rượu lạnh và gần như trống rỗng, ngoại trừ những thùng gỗ xếp sát tường. Một thùng rỗng có vết kéo lê mới trên nền bụi, phía sau nó là cuộn băng được bọc trong giấy dầu. Ngày ghi trên nhãn trùng với đêm mất điện mà các nhân chứng đều né tránh nhắc đến."
+      },
+      "set": {
+        "display": "show"
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_tape",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "add",
+            "target": "tape"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Cuộn băng lưu lại âm thanh trong đêm mất điện; bản ghi có thể hé lộ điều đã xảy ra trước khi làng chìm vào im lặng."
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_search_cellar",
+            "property": "display",
+            "value": "hide"
+          }
+        ]
+      }
+    },
     "action_unlock_cellar": {
       "meta": {
         "title": "Cửa hầm rượu",
@@ -3519,14 +3528,140 @@
         ]
       }
     },
-    "action_search_cellar": {
+    "action_dry_guestbook": {
       "meta": {
-        "title": "Hầm rượu",
-        "buttonLabel": "Tìm dấu vết",
-        "desc": "Hầm rượu lạnh và gần như trống rỗng, ngoại trừ những thùng gỗ xếp sát tường. Một thùng rỗng có vết kéo lê mới trên nền bụi, phía sau nó là cuộn băng được bọc trong giấy dầu. Ngày ghi trên nhãn trùng với đêm mất điện mà các nhân chứng đều né tránh nhắc đến."
+        "title": "Sổ khách bị ẩm",
+        "buttonLabel": "Làm khô sổ",
+        "desc": "Hơi ẩm đã khiến những dòng chữ trên trang giấy nhòe đi. Một vài cái tên chỉ còn hiện ra dưới ánh đèn, trong khi mực ở những trang cuối dường như vẫn chưa khô hẳn."
       },
       "set": {
-        "display": "show"
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "guestbook",
+            "value": -1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "guestbook_partial",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "room7_confirmed",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_dry_guestbook",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Cuốn sổ khách đã sáng tỏ hơn. Phòng thứ bảy được xác nhận."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "guestbook_partial",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "guestbook"
+          }
+        ]
+      }
+    },
+    "action_compare_guestbook_photo": {
+      "meta": {
+        "title": "Đối chiếu sổ khách với ảnh",
+        "buttonLabel": "Đối chiếu",
+        "desc": "Dùng ảnh lớp hoặc cuộn phim để xác minh cái tên bị mất khỏi sổ khách."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "effect",
+            "ref": "verify_room7"
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "guestbook_partial",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_compare_guestbook_photo",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Một nguồn độc lập cũng xác nhận phòng thứ bảy."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "guestbook_partial",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "class_photo"
+          }
+        ]
+      }
+    },
+    "action_observe_mai": {
+      "meta": {
+        "title": "Quan sát Mai từ xa",
+        "buttonLabel": "Quan sát",
+        "desc": "Bạn không tiến lại gần Mai. Từ phía bên kia quảng trường, cô nhiều lần nhìn về giếng rồi nhanh chóng quay đi. Khi loa phát thanh rè lên, Mai kiểm tra mảnh giấy gấp trong tay. Có điều gì đó khiến cô không muốn đối diện với giếng, nhưng bạn chưa thể biết đó là gì."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
       },
       "effect": {
         "normal": [],
@@ -3534,26 +3669,136 @@
           {
             "type": "set",
             "subtype": "state",
-            "target": "clue_tape",
+            "target": "mai_approach",
+            "value": "quan sát"
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_mai_observation",
             "value": true
           },
           {
-            "type": "item",
-            "subtype": "add",
-            "target": "tape"
+            "type": "set",
+            "subtype": "action",
+            "target": "action_observe_mai",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_talk_mai",
+            "property": "display",
+            "value": "hide"
           },
           {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Cuộn băng lưu lại âm thanh trong đêm mất điện; bản ghi có thể hé lộ điều đã xảy ra trước khi làng chìm vào im lặng."
+            "text": "Mai khẽ nhìn về phía giếng rồi quay đi. Mảnh giấy trong tay cô bị vò chặt hơn."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "mai_approach",
+            "op": "==",
+            "value": "chưa tiếp cận"
+          }
+        ]
+      }
+    },
+    "action_listen_mai_tape": {
+      "meta": {
+        "title": "Nghe lại băng của Mai",
+        "buttonLabel": "Nghe băng",
+        "desc": "Cuộn băng được bọc trong giấy dầu, nhãn ghi ngày đêm mất điện. Khi phát lại, giữa tiếng rè có một tín hiệu ngắn lặp lại. Lời ghi âm có thể hé lộ điều Mai chưa muốn nói trực tiếp."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_listen_mai_tape"
           },
           {
             "type": "set",
             "subtype": "action",
-            "target": "action_search_cellar",
+            "target": "action_listen_mai_tape",
             "property": "display",
             "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Cuộn băng mang đến lời kể từ xa, không phải cuộc trò chuyện trực tiếp."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "ref": "tape_available"
+      }
+    },
+    "action_verify_guestbook": {
+      "meta": {
+        "title": "Xác minh sổ khách",
+        "buttonLabel": "Đối chiếu sổ",
+        "desc": "Đối chiếu sổ khách với cuộn phim hoặc ảnh lớp để xác minh căn phòng thứ bảy."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "effect",
+            "ref": "verify_room7"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_verify_guestbook",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Cuốn sổ khách đã được đối chiếu với một nguồn khác."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "guestbook"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "evacuation_film"
           }
         ]
       }
@@ -3622,42 +3867,6 @@
                 }
               ]
             }
-          }
-        ]
-      }
-    },
-    "action_talk_keeper": {
-      "meta": {
-        "title": "Người giữ nhà nguyện",
-        "buttonLabel": "Trò chuyện",
-        "desc": "Người giữ nhà nguyện đã ở đây từ trước khi chuông ngừng ngân. Ông không phủ nhận việc cơ cấu chuông bị tháo rời, nhưng luôn nói rằng tiếng chuông không chỉ để báo giờ. Theo ông, người giữ chuông phải chấp nhận điều đã xảy ra trước khi có thể đánh thức những ký ức bị chôn vùi."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_talk_keeper",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "goto",
-            "subtype": "chat",
-            "target": "chat_keeper"
-          },
-          {
-            "type": "characters",
-            "subtype": "edit_stats",
-            "target": "keeper",
-            "property": "remorse",
-            "field": "current",
-            "mode": "add",
-            "value": 1
           }
         ]
       }
@@ -3810,6 +4019,364 @@
         ]
       }
     },
+    "action_ring_bell_imperfect": {
+      "meta": {
+        "title": "Rung chuông với cơ cấu chưa hoàn chỉnh",
+        "buttonLabel": "Rung chuông",
+        "desc": "Bạn chấp nhận cơ cấu chưa hoàn hảo. Dây và các bộ phận sẽ hao mòn, An có thể mất bình tĩnh, còn tiếng chuông sẽ bị méo."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_ring_bell_imperfect"
+          },
+          {
+            "type": "characters",
+            "subtype": "edit_stats",
+            "target": "player",
+            "property": "composure",
+            "field": "current",
+            "mode": "add",
+            "value": -1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "bell_rung",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "bell_rung_imperfectly",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "bell_signal_distorted",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_ring_bell",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_correct_bell_signal",
+            "property": "display",
+            "value": "show"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Chuông vang lên, nhưng âm thanh méo mó. Dấu vết lần rung chuông vẫn còn; bạn có thể sửa tín hiệu."
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_ring_bell_imperfect",
+            "property": "display",
+            "value": "hide"
+          }
+        ],
+        "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_ring_bell_imperfect"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "warning",
+            "text": "Cơ cấu chuông còn thiếu bộ phận và mã xác nhận."
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "bell_clapper"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "bell_copper_wire"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "hymn_note"
+          },
+          {
+            "type": "state",
+            "property": "heard_bell",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "bell_copper_wire",
+            "op": "<",
+            "value": 4
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "hymn_note",
+            "op": "<",
+            "value": 3
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "bell_clapper",
+            "op": "<",
+            "value": 3
+          }
+        ]
+      }
+    },
+    "action_correct_bell_signal": {
+      "meta": {
+        "title": "Sửa tín hiệu chuông",
+        "buttonLabel": "Sửa tín hiệu",
+        "desc": "Sửa dây dẫn và đối chiếu bài thánh ca để điều chỉnh tiếng chuông bị méo."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_correct_bell_signal"
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "hymn_note",
+            "value": -1
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "bell_copper_wire",
+            "value": -1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "bell_signal_distorted",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "bell_rung_imperfectly",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_correct_bell_signal",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Tín hiệu chuông đã được chỉnh lại. Dù vậy, lần rung méo trước đó vẫn để lại dấu vết."
+          }
+        ],
+        "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_correct_bell_signal"
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "bell_signal_distorted",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "radio_toolkit"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "bell_copper_wire"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "hymn_note"
+          }
+        ]
+      }
+    },
+    "action_restore_hymn_note": {
+      "meta": {
+        "title": "Tái dựng ghi chú thánh ca",
+        "buttonLabel": "Tái dựng",
+        "desc": "Đối chiếu bài thánh ca với sổ khách, sổ điểm danh hoặc lời khai của người giữ nhà nguyện."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_restore_hymn_note"
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "hymn_note",
+            "value": -1
+          },
+          {
+            "type": "effect",
+            "ref": "recover_hymn"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_restore_hymn_note",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Những ghi chú trong thánh ca đã được khôi phục."
+          }
+        ],
+        "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_restore_hymn_note"
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "hymn_partial",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "guestbook"
+          }
+        ]
+      }
+    },
+    "action_recover_hymn": {
+      "meta": {
+        "title": "Phục hồi thánh ca",
+        "buttonLabel": "Phục hồi",
+        "desc": "Dùng lời khai của người giữ nhà nguyện hoặc sổ khách để khôi phục manh mối về bài thánh ca."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_recover_hymn"
+          },
+          {
+            "type": "effect",
+            "ref": "recover_hymn"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_recover_hymn",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Dấu vết trong thánh ca đã được khôi phục từ bằng chứng."
+          }
+        ],
+        "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_recover_hymn"
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "clue_hymn",
+            "op": "==",
+            "value": false
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "guestbook"
+          }
+        ]
+      }
+    },
     "action_check_desk": {
       "meta": {
         "title": "Ngăn bàn giáo viên",
@@ -3914,1117 +4481,6 @@
             "property": "school_choice",
             "op": "==",
             "value": "bằng chứng"
-          }
-        ]
-      }
-    },
-    "action_follow_marks": {
-      "meta": {
-        "title": "Dấu sơn trong rừng",
-        "buttonLabel": "Theo dấu đến cuối",
-        "desc": "Các vệt sơn trên thân thông xuất hiện theo cặp, có chỗ bị rêu che gần hết. Chúng không phải dấu đánh dấu đường đi thông thường: khoảng cách giữa các vệt thay đổi theo hướng rẽ và dẫn đến một khoảng đất trống khuất sau sườn dốc. Từ đó có thể nhìn thấy vòng cọc gỗ giữa rừng."
-      },
-      "set": {
-        "display": "show",
-        "readDesc": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "clue_stakes",
-            "value": true
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Bạn đã tìm được lối an toàn xuyên rừng."
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_follow_marks",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Những vệt sơn dẫn bạn đi như lời nhắn của người còn sống. Không cần giấy tờ, con đường vẫn ở đó.",
-            "req": {
-              "logic": "AND",
-              "check": [
-                {
-                  "type": "state",
-                  "property": "school_choice",
-                  "op": "==",
-                  "value": "ký ức"
-                }
-              ]
-            }
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Các vệt sơn khớp với tuyến sơ tán trong hồ sơ. Một đoạn đường đã bị gạch khỏi bản đồ chính thức.",
-            "req": {
-              "logic": "AND",
-              "check": [
-                {
-                  "type": "state",
-                  "property": "school_choice",
-                  "op": "==",
-                  "value": "bằng chứng"
-                }
-              ]
-            }
-          }
-        ]
-      }
-    },
-    "action_maze_path": {
-      "meta": {
-        "title": "Mê cung trong rừng",
-        "buttonLabel": "Giải mê cung",
-        "desc": "Lối mòn trong rừng thay đổi vị trí mỗi khi bạn quay đi, khiến các dấu cây quen thuộc không còn đáng tin. La bàn của người dẫn đường có khắc một tuyến ô vuông cố định; đường đúng phải nối các ô liền kề từ cổng rừng đến khoảng đất trống, không được tự ý cắt qua những ô không có dấu."
-      },
-      "set": {
-        "display": "show",
-        "password": "find_way:pw_forest",
-        "requirement": true,
-        "readDesc": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "effect",
-            "ref": "consume_action_maze_path"
-          },
-          {
-            "type": "item",
-            "subtype": "add",
-            "target": "archive_key"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Bạn đã vượt qua mê cung. Phía trước là kho hồ sơ."
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_maze_path",
-            "property": "display",
-            "value": "hide"
-          }
-        ],
-        "fail": [
-          {
-            "type": "effect",
-            "ref": "consume_action_maze_path"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warning",
-            "text": "Không có la bàn, những lối mòn cứ dẫn bạn vòng trở lại. Dấu sơn đã không còn đủ để xác định hướng đi."
-          }
-        ]
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "item",
-            "subtype": "hand",
-            "op": "==",
-            "value": [
-              "guide_compass"
-            ]
-          }
-        ]
-      }
-    },
-    "action_inspect_stakes": {
-      "meta": {
-        "title": "Vòng cọc gỗ",
-        "buttonLabel": "Đếm bóng cọc",
-        "desc": "Mười hai cọc gỗ cắm thành một vòng cung trên nền đất cứng. Ánh sáng chỉ tạo ra mười một chiếc bóng, dù không có cọc nào bị gãy hay nghiêng khỏi mặt đất. Khoảng trống không bóng nằm đúng vị trí trung tâm của vòng cung, như thể nơi đó dành cho một người mà ngôi làng không còn nhớ."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_inspect_stakes",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Vòng cọc thiếu mất người thứ mười hai. Người này là ai nhỉ?",
-            "req": {
-              "logic": "AND",
-              "check": [
-                {
-                  "type": "state",
-                  "property": "knows_twelve",
-                  "op": "==",
-                  "value": false
-                }
-              ]
-            }
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Tôi nhìn bãi cọc và chiếc cọc gỗ trống tại vị trí thứ mười hai cảm thấy nghẹn lại.",
-            "req": {
-              "logic": "AND",
-              "check": [
-                {
-                  "type": "state",
-                  "property": "knows_twelve",
-                  "op": "==",
-                  "value": true
-                }
-              ]
-            }
-          }
-        ]
-      }
-    },
-    "action_find_hidden_box": {
-      "meta": {
-        "title": "Hộp chôn dưới đất",
-        "buttonLabel": "Đào và mở hộp",
-        "desc": "Một hộp gỗ được chôn gần vòng cọc, nắp đóng kín và trên mặt có dấu niêm phong của đội sơ tán. Phù hiệu kim loại tìm thấy dưới giếng mang cùng ký hiệu, cho biết đây là vật chứng được chôn có chủ ý chứ không phải đồ thất lạc. Bên trong hộp là những mảnh ảnh gia đình bị xé rời, cần ghép lại để nhận diện đứa trẻ."
-      },
-      "set": {
-        "display": "show",
-        "password": "puzzle:pw_photo",
-        "requirement": true,
-        "readDesc": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "effect",
-            "ref": "consume_action_find_hidden_box"
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "clue_photo",
-            "value": true
-          },
-          {
-            "type": "item",
-            "subtype": "add",
-            "target": "class_photo"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Trong bức ảnh đã ghép đủ, Linh đứng giữa những người mất tích."
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_find_hidden_box",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "clue_stakes",
-            "value": true
-          }
-        ],
-        "fail": [
-          {
-            "type": "effect",
-            "ref": "consume_action_find_hidden_box"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warning",
-            "text": "Bạn vẫn chưa tìm thấy phù hiệu đội sơ tán. Dấu niêm phong có thể giúp xác định chiếc hộp này trước khi mở."
-          }
-        ]
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "well_badge"
-          }
-        ]
-      }
-    },
-    "action_repair_mill": {
-      "meta": {
-        "title": "Cối xay nước",
-        "buttonLabel": "Khởi động lại",
-        "desc": "Cối xay cần chốt truyền động, lò xo và bộ dụng cụ còn đủ tốt. Dấu vết trong ký ức hoặc mảnh bản đồ đều có thể giúp bạn biết cách sửa."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true,
-        "readDesc": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "effect",
-            "ref": "consume_action_repair_mill"
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "mill_powered",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_repair_mill",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "goto",
-            "subtype": "router",
-            "target": "router_watermill_running"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Cối xay quay trở lại. Một mảnh ký ức cũng theo đó trở về."
-          },
-          {
-            "type": "characters",
-            "subtype": "edit_stats",
-            "target": "player",
-            "property": "resolve",
-            "field": "current",
-            "mode": "add",
-            "value": 1
-          }
-        ],
-        "fail": [
-          {
-            "type": "effect",
-            "ref": "consume_action_repair_mill"
-          }
-        ]
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "clockwork_spring"
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "radio_toolkit"
-          },
-          {
-            "type": "item",
-            "subtype": "hand",
-            "op": "==",
-            "value": [
-              "mill_gear_pin"
-            ]
-          },
-          {
-            "type": "state",
-            "property": "clue_tunnel",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "radio_toolkit",
-            "op": "<",
-            "value": 2
-          },
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "clockwork_spring",
-            "op": "<",
-            "value": 2
-          }
-        ]
-      }
-    },
-    "action_inspect_tunnel_names": {
-      "meta": {
-        "title": "Danh sách tên trên tường đường hầm",
-        "buttonLabel": "Đối chiếu số người",
-        "desc": "Các bức tường đường hầm phủ kín tên người và ngày tháng. Những dòng chữ được sắp theo thứ tự biến mất chứ không theo họ tên; một số đoạn đã bị cạo sửa, đặc biệt ở cuối danh sách. Đối chiếu các tên cho thấy có mười hai người, không phải mười một."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "clue_tunnel",
-            "value": true
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Những cái tên trên tường khớp với sơ đồ và mảnh bản đồ. Bạn đã nhận ra danh tính người thứ mười hai—cái tên bị xóa khỏi mọi hồ sơ chính thức."
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_inspect_tunnel_names",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Bạn đã nhớ ra cái tên ấy. Nhưng những gì được giữ lại trên tường đường hầm sẽ không được đưa vào hồ sơ công khai.",
-            "req": {
-              "logic": "AND",
-              "check": [
-                {
-                  "type": "state",
-                  "property": "school_choice",
-                  "op": "==",
-                  "value": "ký ức"
-                }
-              ]
-            }
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Danh tính người thứ mười hai đã được xác định. Những dấu vết trên tường, sơ đồ và mảnh bản đồ khớp với nhau—đây là bằng chứng về người đã bị xóa khỏi hồ sơ.",
-            "req": {
-              "logic": "AND",
-              "check": [
-                {
-                  "type": "state",
-                  "property": "school_choice",
-                  "op": "==",
-                  "value": "bằng chứng"
-                }
-              ]
-            }
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "memory_reward_tunnel",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "knows_twelve",
-            "value": true
-          }
-        ]
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "state",
-            "property": "clue_roster_verified",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "map_fragment"
-          }
-        ]
-      }
-    },
-    "action_open_archive": {
-      "meta": {
-        "title": "Tủ hồ sơ dưới đê",
-        "buttonLabel": "Mở khóa",
-        "desc": "Tủ hồ sơ dưới đê lưu bản ghi sơ tán. Sau khi tìm được dấu đường hầm và chọn cách điều tra, chìa khóa sẽ giúp bạn tiếp cận kho tư liệu."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true,
-        "readDesc": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "archive_partial",
-            "value": false
-          },
-          {
-            "type": "effect",
-            "ref": "consume_action_open_archive"
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "archive_open",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_open_archive",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Tủ hồ sơ mở ra. Bản ghi sơ tán giờ có thể được đối chiếu."
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_bypass_archive_lock",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_open_archive_from_evidence",
-            "property": "display",
-            "value": "hide"
-          }
-        ],
-        "fail": [
-          {
-            "type": "effect",
-            "ref": "consume_action_open_archive"
-          }
-        ]
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "state",
-            "property": "archive_open",
-            "op": "==",
-            "value": false
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "archive_key"
-          },
-          {
-            "type": "state",
-            "property": "clue_tunnel",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "state",
-            "property": "school_choice",
-            "op": "!=",
-            "value": "chưa quyết định"
-          }
-        ]
-      }
-    },
-    "action_confront_voice": {
-      "meta": {
-        "title": "Tín hiệu dưới ga",
-        "buttonLabel": "Trả lời tín hiệu",
-        "desc": "Từ đường ray vang lên một tín hiệu méo tiếng, lặp lại nhịp phát thanh từng phát ở quảng trường. Cuộn tinh thể thu sóng lấy từ hộp loa có thể dò lại đúng tần số để tách giọng nói khỏi nhiễu. Đằng sau tín hiệu là một câu hỏi không chỉ về việc ai được cứu, mà còn về ký ức nào sẽ được giữ lại."
-      },
-      "set": {
-        "display": "hide",
-        "requirement": true,
-        "readDesc": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_confront_voice",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "item",
-            "subtype": "remove",
-            "target": "radio_crystal"
-          },
-          {
-            "type": "goto",
-            "subtype": "chat",
-            "target": "chat_voice"
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "identity_verified_partial",
-            "value": true
-          }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "title": "Tần số chưa ổn định",
-            "level": "warning",
-            "text": "Bạn nhận ra cuộn tinh thể đang phát ra dao động cùng tần số với radio. Tuy nhiên, khi nó còn nằm trong túi, tín hiệu vẫn quá yếu để tách giọng nói khỏi nhiễu. Có lẽ cầm nó lên xem thử?",
-            "req": {
-              "logic": "AND",
-              "check": [
-                {
-                  "type": "item",
-                  "subtype": "inventory",
-                  "op": "has",
-                  "value": "radio_crystal"
-                }
-              ]
-            }
-          }
-        ]
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "item",
-            "subtype": "hand",
-            "op": "==",
-            "value": [
-              "radio_crystal"
-            ]
-          }
-        ]
-      }
-    },
-    "action_choose_fate": {
-      "meta": {
-        "title": "Giải phóng tại sân ga",
-        "buttonLabel": "Giải phóng",
-        "desc": "Cả ký ức lẫn những bằng chứng bạn thu thập đều có thể dẫn đến giải phóng. Những gì bạn đã tìm được sẽ quyết định cách sự thật được hé lộ."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true,
-        "readDesc": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "goto",
-            "subtype": "end",
-            "target": "ending_release"
-          }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warning",
-            "text": "Những dấu mốc cần thiết vẫn chưa hoàn tất. Hãy tiếp tục đối chiếu hồ sơ, khôi phục các dấu vết và xác nhận những gì ký ức còn giữ lại."
-          }
-        ]
-      },
-      "requirement": {
-        "logic": "OR",
-        "check": [
-          {
-            "logic": "AND",
-            "check": [
-              {
-                "type": "state",
-                "property": "bell_rung",
-                "op": "==",
-                "value": true
-              },
-              {
-                "type": "state",
-                "property": "archive_open",
-                "op": "==",
-                "value": true
-              },
-              {
-                "type": "state",
-                "property": "evidence_evacuation_seal",
-                "op": "==",
-                "value": true
-              },
-              {
-                "type": "state",
-                "property": "clue_hymn",
-                "op": "==",
-                "value": true
-              },
-              {
-                "type": "state",
-                "property": "clue_stakes",
-                "op": "==",
-                "value": true
-              },
-              {
-                "type": "state",
-                "property": "clue_tunnel",
-                "op": "==",
-                "value": true
-              }
-            ]
-          },
-          {
-            "logic": "AND",
-            "check": [
-              {
-                "type": "state",
-                "property": "school_choice",
-                "op": "==",
-                "value": "ký ức"
-              },
-              {
-                "type": "state",
-                "property": "bell_rung",
-                "op": "==",
-                "value": true
-              },
-              {
-                "type": "state",
-                "property": "archive_open",
-                "op": "==",
-                "value": true
-              },
-              {
-                "type": "state",
-                "property": "clue_tunnel",
-                "op": "==",
-                "value": true
-              },
-              {
-                "type": "state",
-                "property": "clue_hymn",
-                "op": "==",
-                "value": true
-              },
-              {
-                "type": "state",
-                "property": "clue_stakes",
-                "op": "==",
-                "value": true
-              }
-            ]
-          }
-        ]
-      }
-    },
-    "action_ending_bury": {
-      "meta": {
-        "title": "Hồ sơ sơ tán",
-        "buttonLabel": "Phá hủy hồ sơ",
-        "desc": "Hồ sơ sơ tán nằm trước mặt bạn, ghi lại những cái tên mà ngôi làng đã cố quên. Đốt hoặc phá hủy chúng sẽ giữ nguyên sự yên ổn giả tạo hiện tại, nhưng cũng xóa đi cơ hội để những người bị loại khỏi ký ức được thừa nhận. Đây là lựa chọn khép lại sự việc bằng cách chôn sự thật thêm một lần nữa."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true,
-        "readDesc": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "goto",
-            "subtype": "end",
-            "target": "ending_bury"
-          }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warning",
-            "text": "Cuốn sổ khách vẫn chưa được tìm thấy. Bạn chưa biết hồ sơ nào đang bị che giấu để quyết định."
-          }
-        ]
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "state",
-            "property": "found_guestbook",
-            "op": "==",
-            "value": true
-          }
-        ]
-      }
-    },
-    "action_ending_echo": {
-      "meta": {
-        "title": "Tiếng vọng thứ mười hai",
-        "buttonLabel": "Ở lại và lắng nghe",
-        "desc": "Tiếng vọng thứ mười hai không phải một bản ghi thông thường. Giữa những tiếng nhiễu, bạn nghe thấy giọng của người mà mình luôn tin tưởng nhất. Bản ghi chứa lời thú nhận về người thứ mười hai — và một việc kinh hoàng mà người ấy đã làm, nhưng chưa từng kể cho bạn."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true,
-        "readDesc": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "goto",
-            "subtype": "end",
-            "target": "ending_echo"
-          }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warning",
-            "text": "Bạn cần biết về người thứ mười hai, cùng một lời kể, lời khai hoặc bằng chứng thay thế."
-          }
-        ]
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "state",
-            "property": "knows_twelve",
-            "op": "==",
-            "value": true
-          },
-          {
-            "logic": "OR",
-            "check": [
-              {
-                "type": "state",
-                "property": "voice_revealed",
-                "op": "==",
-                "value": true
-              },
-              {
-                "type": "state",
-                "property": "identity_verified_partial",
-                "op": "==",
-                "value": true
-              }
-            ]
-          }
-        ]
-      }
-    },
-    "action_ending_depart": {
-      "meta": {
-        "title": "Chuyến tàu 03:17",
-        "buttonLabel": "Lên tàu",
-        "desc": "Chuyến tàu 03:17 dừng ở sân ga không có trên bản đồ. Tấm vé chưa bị xé là bằng chứng duy nhất cho phép bạn bước lên, nhưng nó không nói rõ chuyến tàu sẽ đưa ai đi và bỏ ai lại. Rời khỏi làng có thể chấm dứt hành trình của bạn mà không giải quyết những điều đã xảy ra."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true,
-        "readDesc": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "goto",
-            "subtype": "end",
-            "target": "ending_depart"
-          }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warning",
-            "text": "Vé tàu chưa đủ. Bạn cần xác minh chuyến 03:17 từ bản kê hành khách."
-          }
-        ]
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "unpunched_ticket"
-          },
-          {
-            "logic": "OR",
-            "check": [
-              {
-                "type": "state",
-                "property": "ticket_verified",
-                "op": "==",
-                "value": true
-              }
-            ]
-          }
-        ]
-      }
-    },
-    "action_village_square": {
-      "meta": {
-        "title": "Quảng trường làng",
-        "buttonLabel": "Vào quảng trường",
-        "buttonIcon": "location_city",
-        "desc": "Quảng trường nằm giữa ngôi làng, nơi bảng thông báo và chiếc loa phát thanh vẫn hoạt động dù không còn ai tụ tập. Ánh đèn vàng yếu ớt hắt xuống nền đá ướt, còn những cái tên bị đọc lên từ loa dường như đang vọng ra từ chính các ngôi nhà quanh quảng trường."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "goto",
-            "subtype": "scene",
-            "target": "scene_village_square"
-          }
-        ]
-      }
-    },
-    "action_enter_well": {
-      "meta": {
-        "title": "Giếng đá",
-        "buttonLabel": "Tiến xuống",
-        "buttonIcon": "water_drop",
-        "desc": "Giếng đá nằm sát quảng trường, phủ rêu và có những vết khắc mới trên thành. Từ mặt nước vọng lên tiếng gõ đều đặn, dù không thấy ai ở dưới. Con đường ngắn từ bảng thông báo dẫn thẳng đến nơi dấu vết của người thứ mười hai bị che giấu."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "goto",
-            "subtype": "scene",
-            "target": "scene_village_well"
-          }
-        ]
-      }
-    },
-    "action_enter_tower": {
-      "meta": {
-        "title": "Tháp chuông",
-        "buttonLabel": "Leo lên",
-        "buttonIcon": "stairs",
-        "desc": "Cầu thang hẹp dẫn từ gian cầu nguyện lên tháp chuông. Trên đó treo quả chuông đã câm lặng suốt mười bảy năm, bên cạnh là mặt đồng hồ dừng ở thời điểm liên quan đến vụ mất tích. Cơ cấu bên trong vẫn còn dấu vết của lần tháo dỡ có chủ ý."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "goto",
-            "subtype": "scene",
-            "target": "scene_chapel_tower"
-          }
-        ]
-      }
-    },
-    "action_enter_clearing": {
-      "meta": {
-        "title": "Khoảng đất trống",
-        "buttonLabel": "Tiến vào",
-        "buttonIcon": "park",
-        "desc": "Khoảng đất trống nằm sâu trong rừng, nơi các vệt sơn hội tụ thành một vòng cọc gỗ. Mười hai cọc được dựng thành hình cung, cạnh đó là dấu đất mới xới cho thấy có vật chứng bị chôn xuống."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "goto",
-            "subtype": "scene",
-            "target": "scene_forest_clearing"
-          }
-        ]
-      }
-    },
-    "action_enter_watermill": {
-      "meta": {
-        "title": "Cối xay nước",
-        "buttonLabel": "Đến cối xay nước",
-        "buttonIcon": "water",
-        "desc": "Lối rẽ phía Bắc dẫn tới cối xay cũ nép bên dòng suối đã cạn. Bánh xe và phòng máy có thể hé lộ cơ cấu mở đường hầm dưới chân đê."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "goto",
-            "subtype": "scene",
-            "target": "scene_watermill"
-          }
-        ]
-      }
-    },
-    "action_travel_inn": {
-      "meta": {
-        "title": "Nhà trọ Bà Hạnh",
-        "buttonLabel": "Đi vào",
-        "buttonIcon": "hotel",
-        "desc": "Nhà trọ Bà Hạnh nằm trên con đường lát đá rời quảng trường. Đây là nơi lưu cuốn sổ khách, lời khai về căn phòng thứ bảy và lối xuống hầm rượu bị giấu sau quầy lễ tân."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "goto",
-            "subtype": "scene",
-            "target": "scene_inn"
-          }
-        ]
-      }
-    },
-    "action_travel_chapel": {
-      "meta": {
-        "title": "Nhà nguyện",
-        "buttonLabel": "Đến nhà nguyện",
-        "buttonIcon": "church",
-        "desc": "Nhà nguyện nằm cuối con đường nơi tiếng chuông đã im bặt từ mười bảy năm trước. Bản thánh ca trong gian cầu nguyện giữ mật từ và quy tắc ba hồi chuông cần thiết để hiểu chuyện gì đã xảy ra."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "goto",
-            "subtype": "scene",
-            "target": "scene_chapel"
-          }
-        ]
-      }
-    },
-    "action_travel_school": {
-      "meta": {
-        "title": "Trường học bỏ hoang",
-        "buttonLabel": "Đến trường học",
-        "buttonIcon": "school",
-        "desc": "Trường tiểu học bỏ hoang nằm bên con đường có những dấu chân nhỏ dẫn vào lớp số 3. Hồ sơ lớp học và bức ảnh bị xé là những bằng chứng quan trọng về người thứ mười hai."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "goto",
-            "subtype": "scene",
-            "target": "scene_abandoned_school"
-          }
-        ]
-      }
-    },
-    "action_enter_classroom_03": {
-      "meta": {
-        "title": "Lớp học số 3",
-        "buttonLabel": "Bước vào",
-        "buttonIcon": "door_open",
-        "desc": "Theo dấu chân nhỏ dọc hành lang, bạn bước vào lớp học số 3. Những dãy bàn thấp phủ bụi vẫn được xếp ngay ngắn. Bục giảng, bảng đen, cửa sổ và chiếc đồng hồ đứng im hiện ra trong ánh sáng xám lọt qua rèm cửa."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "goto",
-            "subtype": "scene",
-            "target": "scene_school_classroom_03"
-          }
-        ]
-      }
-    },
-    "action_examine_blackboard": {
-      "meta": {
-        "title": "Bảng đen",
-        "buttonLabel": "Quan sát dấu phấn",
-        "desc": "Bạn tiến lại gần bảng đen. Những vệt phấn mờ nằm dưới lớp bụi, nhưng từ khoảng cách này chưa thể đọc được nội dung. Tập trung quan sát bảng để nhìn rõ các dấu vết."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "goto",
-            "subtype": "scene",
-            "target": "scene_classroom_blackboard"
           }
         ]
       }
@@ -5177,511 +4633,6 @@
         ]
       }
     },
-    "action_travel_forest": {
-      "meta": {
-        "title": "Rừng thông phía Bắc",
-        "buttonLabel": "Vào rừng",
-        "buttonIcon": "forest",
-        "desc": "Rừng thông phía Bắc bắt đầu ở rìa làng, nơi những vệt sơn lặp lại trên thân cây. Con đường ở đây không ổn định, nhưng các dấu mốc dẫn đến khoảng đất nghi lễ và tuyến xuống chân đê."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "goto",
-            "subtype": "scene",
-            "target": "scene_north_forest"
-          }
-        ]
-      }
-    },
-    "action_reach_station": {
-      "meta": {
-        "title": "Ga tàu 03:17",
-        "buttonLabel": "Tiến vào",
-        "buttonIcon": "train",
-        "desc": "Ga tàu 03:17 không xuất hiện trên bản đồ làng và chỉ hiện ra ở cuối tuyến đường hầm. Những manh mối về cuộc sơ tán, danh sách vận chuyển và kho hồ sơ phải được ghép lại trước khi có thể tìm thấy sân ga."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "goto",
-            "subtype": "scene",
-            "target": "scene_ghost_station"
-          }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warning",
-            "text": "Sân ga vẫn chưa hiện ra. Kho hồ sơ, danh sách vận chuyển và cuộn phim sơ tán còn phải được tìm thấy; thánh ca, vòng cọc và đường hầm cũng chưa thể bỏ qua."
-          }
-        ]
-      },
-      "requirement": {
-        "ref": "station_ready"
-      }
-    },
-    "action_reach_station_memory": {
-      "meta": {
-        "title": "Ga tàu 03:17 — theo ký ức",
-        "buttonLabel": "Theo dấu ký ức",
-        "buttonIcon": "train",
-        "desc": "Bạn lần theo lời khai và những dấu vết trong đường hầm, không cần dựa vào danh sách vận chuyển hay cuộn phim."
-      },
-      "set": {
-        "display": "hide",
-        "requirement": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "goto",
-            "subtype": "scene",
-            "target": "scene_ghost_station"
-          }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warning",
-            "text": "Con đường ký ức vẫn chưa mở. Kho hồ sơ, đường hầm, thánh ca và vòng cọc thứ mười hai đang chờ được tìm thấy."
-          }
-        ]
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "state",
-            "property": "school_choice",
-            "op": "==",
-            "value": "ký ức"
-          },
-          {
-            "type": "state",
-            "property": "archive_open",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "state",
-            "property": "clue_tunnel",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "state",
-            "property": "clue_hymn",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "state",
-            "property": "clue_stakes",
-            "op": "==",
-            "value": true
-          }
-        ]
-      }
-    },
-    "action_descend_tunnel": {
-      "meta": {
-        "title": "Đường hầm dưới cối xay",
-        "buttonLabel": "Mở cửa sập",
-        "buttonIcon": "south",
-        "desc": "Cửa sập nằm dưới sàn cối xay, nối phòng máy với đường hầm dưới chân đê. Một hệ đối trọng giữ cánh cửa khóa chặt khi bánh xe đứng yên; khi trục truyền động hoạt động, sức kéo mới đủ nâng cửa và để lộ bậc thang đi xuống."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true,
-        "readDesc": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "goto",
-            "subtype": "scene",
-            "target": "scene_levee_tunnel"
-          }
-        ],
-        "fail": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warning",
-            "text": "Cửa sập không nhúc nhích. Cối xay hoặc dấu đường hầm có thể giúp mở lối xuống."
-          }
-        ]
-      },
-      "requirement": {
-        "logic": "OR",
-        "check": [
-          {
-            "type": "state",
-            "property": "mill_powered",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "state",
-            "property": "clue_tunnel",
-            "op": "==",
-            "value": true
-          }
-        ]
-      }
-    },
-    "action_restore_radio_signal": {
-      "meta": {
-        "title": "Khôi phục tín hiệu phát thanh (tùy chọn)",
-        "buttonLabel": "Sửa mạch điện",
-        "desc": "Bạn có thể thử sửa mạch bằng bộ dụng cụ, dây, cầu chì và tinh thể còn đủ tốt. Việc này không ảnh hưởng đến con đường chính; cuộn tinh thể vẫn có thể giúp dò tín hiệu dưới ga."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true,
-        "readDesc": true
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "radio_toolkit"
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "radio_crystal"
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "insulated_wire"
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "spare_fuse"
-          },
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "radio_toolkit",
-            "op": "<",
-            "value": 2
-          },
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "radio_crystal",
-            "op": "<",
-            "value": 1
-          }
-        ]
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "effect",
-            "ref": "consume_action_restore_radio_components"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_restore_radio_signal",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Tiếng rè dịu dần. Tín hiệu cũ rõ lên, mang theo một giọng nói và dấu vết mới."
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "voice_revealed",
-            "value": true
-          },
-          {
-            "type": "characters",
-            "subtype": "edit_stats",
-            "target": "player",
-            "property": "resolve",
-            "field": "current",
-            "mode": "add",
-            "value": 1
-          }
-        ],
-        "fail": [
-          {
-            "type": "effect",
-            "ref": "consume_action_restore_radio_components"
-          }
-        ]
-      }
-    },
-    "action_overlay_map": {
-      "meta": {
-        "title": "Đối chiếu bản đồ",
-        "buttonLabel": "Chồng giấy can",
-        "desc": "Chồng giấy can lên mảnh bản đồ và kiểm tra các ký hiệu. Bản đồ, giấy can và kính lúp cần đủ rõ để xác nhận tuyến phụ dẫn đến khu vực dưới chân đê."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true,
-        "readDesc": true
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "map_fragment"
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "tracing_paper"
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "inspection_loupe"
-          },
-          {
-            "type": "state",
-            "property": "clue_seat_mark",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "state",
-            "property": "clue_class_clock",
-            "op": "==",
-            "value": true
-          }
-        ]
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "effect",
-            "ref": "consume_action_overlay_map"
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "clue_tunnel",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_overlay_map",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Bản đồ khớp với dấu dưới chân đê. Con đường đã hiện rõ."
-          }
-        ],
-        "fail": [
-          {
-            "type": "effect",
-            "ref": "consume_action_overlay_map"
-          }
-        ]
-      }
-    },
-    "action_decode_broadcast": {
-      "meta": {
-        "title": "Mạch phát thanh",
-        "buttonLabel": "Lấy tinh thể",
-        "desc": "Hộp loa gắn sau bảng thông báo. Tiếng gọi tên dân làng phát đều đặn; sau bảng mạch là cuộn tinh thể lưu tần số. Cần bộ dụng cụ sửa chữa để mở mạch và lấy linh kiện an toàn."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "radio_toolkit"
-          }
-        ]
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "item",
-            "subtype": "add",
-            "target": "radio_crystal"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_decode_broadcast",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "goto",
-            "subtype": "router",
-            "target": "router_square_broadcast_decoded"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Cuộn tinh thể nằm trong tay bạn. Mạch phát thanh đã được giải, và quảng trường đổi khác."
-          }
-        ]
-      }
-    },
-    "action_retrieve_well_badge": {
-      "meta": {
-        "title": "Phù hiệu đội sơ tán",
-        "buttonLabel": "Nhặt lên",
-        "desc": "Một vật kim loại mắc trong hốc đá dưới mực nước cũ, chỉ lộ ra sau khi ánh đèn bão soi đúng góc và làm hiện đường viền của hốc. Mép phù hiệu bị bám cặn nhưng ký hiệu đội sơ tán vẫn còn nguyên, trùng với dấu niêm phong trên chiếc hộp chôn trong rừng."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "item",
-            "subtype": "add",
-            "target": "well_badge"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_retrieve_well_badge",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "goto",
-            "subtype": "router",
-            "target": "router_well_bottom_revealed"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Bạn lấy được phù hiệu đội sơ tán từ hốc giếng."
-          }
-        ]
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "state",
-            "property": "clue_well",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "state",
-            "property": "clue_lantern",
-            "op": "==",
-            "value": true
-          }
-        ]
-      }
-    },
-    "action_find_spare_key": {
-      "meta": {
-        "title": "Chìa khóa phòng thứ bảy",
-        "buttonLabel": "Thu thập",
-        "desc": "Ngăn kéo sau quầy lễ tân chứa chìa khóa đồng số bảy. Việc tìm được chìa khóa xác nhận căn phòng thứ bảy tồn tại, nhưng chưa mở cửa. Bạn phải chọn mở sạch, cưỡng chế hoặc tìm cách bypass."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "item",
-            "subtype": "add",
-            "target": "spare_room_key"
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "room7_confirmed",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "evidence_hidden_room",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_find_spare_key",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_confirm_room7",
-            "property": "display",
-            "value": "show"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Chìa khóa phòng thứ bảy đã tìm thấy. Cánh cửa vẫn đóng—hãy xác minh căn phòng rồi chọn cách mở."
-          }
-        ],
-        "fail": []
-      }
-    },
     "action_find_evacuation_film": {
       "meta": {
         "title": "Cuộn phim sơ tán",
@@ -5722,94 +4673,6 @@
             "subtype": "toast",
             "level": "success",
             "text": "Cuộn phim sơ tán đã được tìm thấy. Nó có thể giúp xác nhận những gì hồ sơ bỏ sót."
-          }
-        ]
-      }
-    },
-    "action_find_hymn_note": {
-      "meta": {
-        "title": "Ghi chú trong thánh ca",
-        "buttonLabel": "Mở phần gáy",
-        "desc": "Phần gáy bản thánh ca dày hơn các trang còn lại và có đường chỉ khâu không đồng màu. Bên trong là một trang ghi chú được gấp nhỏ, giải thích ý nghĩa của ba hồi chuông và vì sao hồi thứ tư không được vang lên."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "item",
-            "subtype": "add",
-            "target": "hymn_note"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_find_hymn_note",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "goto",
-            "subtype": "router",
-            "target": "router_chapel_cryptic_note"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Bạn tìm thấy ghi chú về ba hồi chuông—và lời cảnh báo đừng bao giờ rung hồi thứ tư."
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "clue_hymn",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "hymn_partial",
-            "value": false
-          }
-        ]
-      }
-    },
-    "action_recover_bell_wire": {
-      "meta": {
-        "title": "Dây đồng chuông",
-        "buttonLabel": "Thu hồi",
-        "desc": "Đoạn dây đồng còn mắc quanh bánh răng của cơ cấu chuông, một đầu bị tuột khỏi trục truyền lực. Dấu xoắn trên dây cho thấy nó từng được tháo ra chứ không tự đứt; đoạn dây này có thể nối lại bộ phận truyền động trên tháp."
-      },
-      "set": {
-        "display": "show"
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "item",
-            "subtype": "add",
-            "target": "bell_copper_wire"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_recover_bell_wire",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "goto",
-            "subtype": "router",
-            "target": "router_bell_mechanism_repaired"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Dây đồng chuông đã được lấy ra. Cơ cấu giờ có thêm một phần cần thiết."
           }
         ]
       }
@@ -5931,6 +4794,445 @@
         ]
       }
     },
+    "action_compare_evacuation_film": {
+      "meta": {
+        "title": "Đối chiếu bản đồ bằng cuộn phim",
+        "buttonLabel": "Đối chiếu cuộn phim",
+        "desc": "Dùng cuộn phim sơ tán để kiểm tra và xác nhận tuyến đường dưới đê."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_compare_evacuation_film"
+          },
+          {
+            "type": "effect",
+            "ref": "complete_tunnel_route"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_compare_evacuation_film",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Cuộn phim xác nhận tuyến đường."
+          }
+        ],
+        "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_compare_evacuation_film"
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "map_incomplete",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "evacuation_film"
+          }
+        ]
+      }
+    },
+    "action_verify_evacuation_film": {
+      "meta": {
+        "title": "Xác minh cuộn phim sơ tán",
+        "buttonLabel": "Đối chiếu cuộn phim",
+        "desc": "Đối chiếu cuộn phim với danh sách vận chuyển hoặc sổ điểm danh."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_verify_evacuation_film"
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "evidence_evacuation_film",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "evidence_verified",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_verify_evacuation_film",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Khung hình trên phim khớp với danh sách vận chuyển. Hai dấu vết độc lập cùng chỉ về chuyến đi ấy."
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "corroboration_transport_records",
+            "value": true
+          }
+        ],
+        "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_verify_evacuation_film"
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "evacuation_film"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "tunnel_manifest"
+          }
+        ]
+      }
+    },
+    "action_reconstruct_manifest": {
+      "meta": {
+        "title": "Danh sách vận chuyển",
+        "buttonLabel": "Tái dựng",
+        "desc": "Dùng tên trên tường, cuộn phim hoặc hồ sơ lưu trữ để khôi phục danh sách vận chuyển bị thiếu."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_reconstruct_manifest"
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "tunnel_manifest",
+            "value": -1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "manifest_partial",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "evidence_verified",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_reconstruct_manifest",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Bản kê hành khách đã được dựng lại."
+          }
+        ],
+        "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_reconstruct_manifest"
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "manifest_partial",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "evacuation_film"
+          }
+        ]
+      }
+    },
+    "action_follow_marks": {
+      "meta": {
+        "title": "Dấu sơn trong rừng",
+        "buttonLabel": "Theo dấu đến cuối",
+        "desc": "Các vệt sơn trên thân thông xuất hiện theo cặp, có chỗ bị rêu che gần hết. Chúng không phải dấu đánh dấu đường đi thông thường: khoảng cách giữa các vệt thay đổi theo hướng rẽ và dẫn đến một khoảng đất trống khuất sau sườn dốc. Từ đó có thể nhìn thấy vòng cọc gỗ giữa rừng."
+      },
+      "set": {
+        "display": "show",
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_stakes",
+            "value": true
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Bạn đã tìm được lối an toàn xuyên rừng."
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_follow_marks",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "info",
+            "text": "Những vệt sơn dẫn bạn đi như lời nhắn của người còn sống. Không cần giấy tờ, con đường vẫn ở đó.",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "state",
+                  "property": "school_choice",
+                  "op": "==",
+                  "value": "ký ức"
+                }
+              ]
+            }
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "info",
+            "text": "Các vệt sơn khớp với tuyến sơ tán trong hồ sơ. Một đoạn đường đã bị gạch khỏi bản đồ chính thức.",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "state",
+                  "property": "school_choice",
+                  "op": "==",
+                  "value": "bằng chứng"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "action_follow_compass_uncertain": {
+      "meta": {
+        "title": "Theo la bàn không chắc chắn",
+        "buttonLabel": "Theo dấu mờ",
+        "desc": "La bàn chỉ hướng không thật chính xác. Đi theo nó có thể làm la bàn xuống cấp, khiến bạn khó giữ phương hướng và mất bình tĩnh."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_follow_compass_uncertain"
+          },
+          {
+            "type": "characters",
+            "subtype": "edit_stats",
+            "target": "player",
+            "property": "composure",
+            "field": "current",
+            "mode": "add",
+            "value": -1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "forest_route_partial",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "player_panicked",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_tunnel_partial",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_follow_compass_uncertain",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_verify_forest_route",
+            "property": "display",
+            "value": "show"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Một đoạn đường rừng mới hiện ra. Dấu chân, bản đồ hoặc lời kể có thể cho biết nó dẫn đến đâu."
+          }
+        ],
+        "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_follow_compass_uncertain"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "warning",
+            "text": "La bàn phải ở trong tay bạn mới có thể lần theo hướng này."
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "item",
+            "subtype": "hand",
+            "op": "==",
+            "value": [
+              "guide_compass"
+            ]
+          }
+        ]
+      }
+    },
+    "action_verify_forest_route": {
+      "meta": {
+        "title": "Xác minh tuyến rừng",
+        "buttonLabel": "Đối chiếu tuyến",
+        "desc": "Những vệt sơn trong rừng, cái tên trên tường đường hầm và danh sách vận chuyển dường như cùng chỉ về một hướng. Ba dấu vết vốn nằm ở những nơi cách xa nhau lại đang kể cùng một câu chuyện."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "forest_route_partial",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_tunnel_partial",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_tunnel",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_verify_forest_route",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Dấu đường rừng đã được xác nhận bằng bằng chứng."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "forest_route_partial",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "clue_tunnel",
+            "op": "==",
+            "value": true
+          }
+        ]
+      }
+    },
     "action_collect_forest_compass": {
       "meta": {
         "title": "La bàn người dẫn đường",
@@ -5969,90 +5271,226 @@
         ]
       }
     },
-    "action_find_wooden_seal": {
+    "action_overlay_map": {
       "meta": {
-        "title": "Con dấu đội sơ tán",
-        "buttonLabel": "Thu thập",
-        "desc": "Phiến đá nằm giữa vòng cọc có mép bị xê dịch, để lộ một hốc đất nhỏ bên dưới. Trong hốc là con dấu gỗ của đội sơ tán, vật từng dùng để xác nhận danh sách chính thức trước khi niêm phong hồ sơ."
+        "title": "Đối chiếu bản đồ",
+        "buttonLabel": "Chồng giấy can",
+        "desc": "Chồng giấy can lên mảnh bản đồ và kiểm tra các ký hiệu. Bản đồ, giấy can và kính lúp cần đủ rõ để xác nhận tuyến phụ dẫn đến khu vực dưới chân đê."
       },
       "set": {
-        "display": "show"
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "map_fragment"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "tracing_paper"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "inspection_loupe"
+          },
+          {
+            "type": "state",
+            "property": "clue_seat_mark",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "clue_class_clock",
+            "op": "==",
+            "value": true
+          }
+        ]
       },
       "effect": {
         "normal": [],
         "pass": [
           {
-            "type": "item",
-            "subtype": "add",
-            "target": "evacuation_seal"
+            "type": "effect",
+            "ref": "consume_action_overlay_map"
           },
           {
             "type": "set",
             "subtype": "state",
-            "target": "evidence_evacuation_seal",
+            "target": "clue_tunnel",
             "value": true
           },
           {
             "type": "set",
             "subtype": "action",
-            "target": "action_find_wooden_seal",
+            "target": "action_overlay_map",
             "property": "display",
             "value": "hide"
-          },
-          {
-            "type": "goto",
-            "subtype": "router",
-            "target": "router_clearing_ritual_trace"
           },
           {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Con dấu đội sơ tán nằm trong tay bạn—dấu xác nhận của danh sách chính thức."
+            "text": "Bản đồ khớp với dấu dưới chân đê. Con đường đã hiện rõ."
+          }
+        ],
+        "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_overlay_map"
           }
         ]
       }
     },
-    "action_recover_tunnel_manifest": {
+    "action_retrace_map": {
       "meta": {
-        "title": "Danh sách vận chuyển",
-        "buttonLabel": "Thu thập",
-        "desc": "Ống tài liệu được giấu sau một viên gạch rỗng trong đường hầm và có lớp bọc chống ẩm. Danh sách bên trong ghi tên những người được vận chuyển qua đây theo từng lượt, cung cấp bằng chứng trực tiếp về tuyến sơ tán mà hồ sơ làng đã phủ nhận."
+        "title": "Tái đối chiếu bản đồ",
+        "buttonLabel": "Tái đối chiếu",
+        "desc": "Dùng giấy can và kính lúp để khôi phục những phần bản đồ bị thiếu."
       },
       "set": {
-        "display": "show"
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
       },
       "effect": {
         "normal": [],
         "pass": [
           {
             "type": "item",
-            "subtype": "add",
-            "target": "tunnel_manifest"
+            "subtype": "usage",
+            "target": "tracing_paper",
+            "value": -1
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "inspection_loupe",
+            "value": -1
+          },
+          {
+            "type": "effect",
+            "ref": "complete_tunnel_route"
           },
           {
             "type": "set",
             "subtype": "action",
-            "target": "action_recover_tunnel_manifest",
+            "target": "action_retrace_map",
             "property": "display",
             "value": "hide"
-          },
-          {
-            "type": "goto",
-            "subtype": "router",
-            "target": "router_tunnel_manifest_found"
           },
           {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Danh sách vận chuyển trong đường hầm đã được tìm thấy."
+            "text": "Tuyến đường trên bản đồ đã được xác nhận."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "map_incomplete",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "tracing_paper"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "inspection_loupe"
+          }
+        ]
+      }
+    },
+    "action_verify_route_from_radio": {
+      "meta": {
+        "title": "Xác minh tuyến đường từ radio",
+        "buttonLabel": "Đối chiếu tín hiệu",
+        "desc": "Dùng bản ghi phát thanh hoặc bằng chứng từ radio để xác nhận tuyến đường trong đường hầm."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "effect",
+            "ref": "complete_tunnel_route"
           },
           {
             "type": "set",
-            "subtype": "state",
-            "target": "evidence_verified",
+            "subtype": "action",
+            "target": "action_verify_route_from_radio",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Tín hiệu xác nhận tuyến đường."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "map_incomplete",
+            "op": "==",
             "value": true
+          },
+          {
+            "type": "state",
+            "property": "voice_revealed",
+            "op": "==",
+            "value": true
+          }
+        ]
+      }
+    },
+    "action_verify_tunnel_clue": {
+      "meta": {
+        "title": "Dấu đường hầm",
+        "buttonLabel": "Xác minh",
+        "desc": "Dùng danh sách vận chuyển, hồ sơ lưu trữ hoặc tên trên tường để xác nhận manh mối đường hầm."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_verify_tunnel_clue"
           },
           {
             "type": "set",
@@ -6063,8 +5501,107 @@
           {
             "type": "set",
             "subtype": "state",
-            "target": "manifest_partial",
+            "target": "clue_tunnel_partial",
             "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_verify_tunnel_clue",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Dấu đường hầm đã được xác nhận."
+          }
+        ],
+        "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_verify_tunnel_clue"
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "clue_tunnel_partial",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "tunnel_manifest"
+          }
+        ]
+      }
+    },
+    "action_verify_ticket": {
+      "meta": {
+        "title": "Xác minh vé tàu",
+        "buttonLabel": "Xác minh vé",
+        "desc": "Đối chiếu vé với danh sách hành khách hoặc hồ sơ lưu trữ khi dấu trên vé đã mờ."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_verify_ticket"
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "ticket_verified",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_verify_ticket",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Bản kê hành khách xác nhận chiếc vé."
+          }
+        ],
+        "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_verify_ticket"
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "unpunched_ticket"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "tunnel_manifest"
           }
         ]
       }
@@ -6113,23 +5650,184 @@
         ]
       }
     },
-    "action_talk_linh": {
+    "action_repair_mill": {
       "meta": {
-        "title": "Lời khai riêng của Linh",
-        "buttonLabel": "Bảo vệ lời khai",
-        "desc": "Bạn quyết định không biến ký ức của Linh thành vật chứng công khai. Lời khai riêng và những chi tiết em nhớ sẽ là con đường tiếp tục điều tra."
+        "title": "Cối xay nước",
+        "buttonLabel": "Khởi động lại",
+        "desc": "Cối xay cần chốt truyền động, lò xo và bộ dụng cụ còn đủ tốt. Dấu vết trong ký ức hoặc mảnh bản đồ đều có thể giúp bạn biết cách sửa."
       },
       "set": {
         "display": "show",
-        "requirement": true
+        "requirement": true,
+        "readDesc": true
       },
       "effect": {
         "normal": [],
         "pass": [
           {
+            "type": "effect",
+            "ref": "consume_action_repair_mill"
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "mill_powered",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_repair_mill",
+            "property": "display",
+            "value": "hide"
+          },
+          {
             "type": "goto",
-            "subtype": "chat",
-            "target": "chat_linh"
+            "subtype": "router",
+            "target": "router_watermill_running"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Cối xay quay trở lại. Một mảnh ký ức cũng theo đó trở về."
+          },
+          {
+            "type": "characters",
+            "subtype": "edit_stats",
+            "target": "player",
+            "property": "resolve",
+            "field": "current",
+            "mode": "add",
+            "value": 1
+          }
+        ],
+        "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_repair_mill"
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "clockwork_spring"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "radio_toolkit"
+          },
+          {
+            "type": "item",
+            "subtype": "hand",
+            "op": "==",
+            "value": [
+              "mill_gear_pin"
+            ]
+          },
+          {
+            "type": "state",
+            "property": "clue_tunnel",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "radio_toolkit",
+            "op": "<",
+            "value": 2
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "clockwork_spring",
+            "op": "<",
+            "value": 2
+          }
+        ]
+      }
+    },
+    "action_repair_mill_partial": {
+      "meta": {
+        "title": "Sửa cối xay tạm thời",
+        "buttonLabel": "Sửa tạm",
+        "desc": "Nếu một linh kiện đã xuống cấp, bạn vẫn có thể thử sửa cối xay. Các linh kiện sẽ hao mòn thêm và máy chỉ hoạt động tạm thời."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_repair_mill_partial"
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "mill_repaired_partial",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_tunnel",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_repair_mill_partial",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_stabilize_mill",
+            "property": "display",
+            "value": "show"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_bypass_mill",
+            "property": "display",
+            "value": "show"
+          },
+          {
+            "type": "goto",
+            "subtype": "router",
+            "target": "router_watermill_running"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Cối xay chỉ chạy tạm thời. Dấu đường hầm vẫn dẫn tiếp."
+          }
+        ],
+        "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_repair_mill_partial"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "warning",
+            "text": "Bạn còn thiếu dụng cụ, lò xo, chốt truyền động hoặc dấu đường hầm để sửa cối xay."
           }
         ]
       },
@@ -6138,14 +5836,742 @@
         "check": [
           {
             "type": "state",
-            "property": "clue_photo",
+            "property": "clue_tunnel",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "radio_toolkit"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "clockwork_spring"
+          },
+          {
+            "type": "item",
+            "subtype": "hand",
+            "op": "==",
+            "value": [
+              "mill_gear_pin"
+            ]
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "radio_toolkit",
+            "op": "<",
+            "value": 4
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "clockwork_spring",
+            "op": "<",
+            "value": 4
+          }
+        ]
+      }
+    },
+    "action_force_mill_repair": {
+      "meta": {
+        "title": "Cưỡng ép sửa cối xay",
+        "buttonLabel": "Cưỡng ép sửa",
+        "desc": "Cố sửa cối xay bằng sức có thể làm hỏng bộ dụng cụ và khiến An mất bình tĩnh."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_force_mill_repair",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "effect",
+            "ref": "consume_action_force_mill_repair"
+          },
+          {
+            "type": "characters",
+            "subtype": "edit_stats",
+            "target": "player",
+            "property": "composure",
+            "field": "current",
+            "mode": "add",
+            "value": -1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "radio_damaged",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "player_panicked",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_stabilize_mill",
+            "property": "display",
+            "value": "show"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_bypass_mill",
+            "property": "display",
+            "value": "show"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Cơ cấu không khớp. Bộ dụng cụ quá tải, bạn mất bình tĩnh; vẫn có thể lần theo đường hầm mà không cần cối xay."
+          }
+        ],
+        "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_force_mill_repair"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "warning",
+            "text": "Hãy cầm bộ dụng cụ và tìm đủ linh kiện trước khi thử sửa cơ cấu."
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "item",
+            "subtype": "hand",
+            "op": "==",
+            "value": [
+              "radio_toolkit"
+            ]
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "clockwork_spring"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "mill_gear_pin"
+          }
+        ]
+      }
+    },
+    "action_stabilize_mill": {
+      "meta": {
+        "title": "Giữ cối xay hoạt động tạm thời",
+        "buttonLabel": "Ổn định máy",
+        "desc": "Dùng linh kiện và bộ dụng cụ để giữ cối xay hoạt động trong thời gian ngắn."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_stabilize_mill"
+          },
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "clockwork_spring",
+            "value": -1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "mill_powered",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "mill_repaired_partial",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_stabilize_mill",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_descend_tunnel",
+            "property": "display",
+            "value": "show"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Cối xay đã ổn định. Lối chính vẫn thông."
+          }
+        ],
+        "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_stabilize_mill"
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "mill_repaired_partial",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "radio_toolkit"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "clockwork_spring"
+          }
+        ]
+      }
+    },
+    "action_bypass_mill": {
+      "meta": {
+        "title": "Đi theo đường hầm, không qua cối xay",
+        "buttonLabel": "Đi theo đường hầm",
+        "desc": "Bạn có thể lần theo dấu vết dưới chân đê mà không cần khôi phục cối xay. Dấu đường hầm vẫn phải được tìm ra trước khi lối đi hiện rõ."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "mill_powered",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_tunnel",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_bypass_mill",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_descend_tunnel",
+            "property": "display",
+            "value": "show"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Bạn lần theo dấu dưới chân đê, bỏ lại cối xay. Lối xuống đường hầm vẫn còn đó."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "clue_tunnel",
+            "op": "==",
+            "value": true
+          }
+        ]
+      }
+    },
+    "action_find_mill_components": {
+      "meta": {
+        "title": "Hộp bảo trì cối xay",
+        "buttonLabel": "Mở hộp và thu hồi linh kiện",
+        "desc": "Với bộ dụng cụ sửa chữa, bạn mở hộp bảo trì và thu hồi lò xo cơ khí cùng chốt bánh răng. Chốt bị cong, giải thích vì sao cối xay dừng hoạt động."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "radio_toolkit"
+          }
+        ]
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "add",
+            "target": "clockwork_spring"
+          },
+          {
+            "type": "item",
+            "subtype": "add",
+            "target": "mill_gear_pin"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_find_mill_components",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "goto",
+            "subtype": "router",
+            "target": "router_watermill_gear_inspected"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Lò xo và chốt bánh răng đã tìm thấy. Lỗi truyền động được xác nhận."
+          }
+        ]
+      }
+    },
+    "action_open_archive": {
+      "meta": {
+        "title": "Tủ hồ sơ dưới đê",
+        "buttonLabel": "Mở khóa",
+        "desc": "Tủ hồ sơ dưới đê lưu bản ghi sơ tán. Sau khi tìm được dấu đường hầm và chọn cách điều tra, chìa khóa sẽ giúp bạn tiếp cận kho tư liệu."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "archive_partial",
+            "value": false
+          },
+          {
+            "type": "effect",
+            "ref": "consume_action_open_archive"
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "archive_open",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_open_archive",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Tủ hồ sơ mở ra. Bản ghi sơ tán giờ có thể được đối chiếu."
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_bypass_archive_lock",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_open_archive_from_evidence",
+            "property": "display",
+            "value": "hide"
+          }
+        ],
+        "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_open_archive"
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "archive_open",
+            "op": "==",
+            "value": false
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "archive_key"
+          },
+          {
+            "type": "state",
+            "property": "clue_tunnel",
             "op": "==",
             "value": true
           },
           {
             "type": "state",
             "property": "school_choice",
+            "op": "!=",
+            "value": "chưa quyết định"
+          }
+        ]
+      }
+    },
+    "action_bypass_archive_lock": {
+      "meta": {
+        "title": "Mở tủ hồ sơ bằng cách khác",
+        "buttonLabel": "Mở tủ bằng cách khác",
+        "desc": "Dùng bộ dụng cụ và những dấu vết đã tìm được để mở tủ hồ sơ khi chìa khóa không còn. Nếu phải cưỡng ép, giấy tờ bên trong có thể bị rách hoặc thất lạc."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_bypass_archive_lock"
+          },
+          {
+            "type": "characters",
+            "subtype": "edit_stats",
+            "target": "player",
+            "property": "composure",
+            "field": "current",
+            "mode": "add",
+            "value": -1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "archive_open",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "archive_partial",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_bypass_archive_lock",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_reconstruct_archive_record",
+            "property": "display",
+            "value": "show"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Tủ bật mở dưới sức ép. Một vài trang rách mất góc, nhưng phần còn lại vẫn đủ để lần theo dấu người sơ tán."
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_open_archive",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_open_archive_from_evidence",
+            "property": "display",
+            "value": "hide"
+          }
+        ],
+        "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_bypass_archive_lock"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "warning",
+            "text": "Hãy tìm dấu đường hầm và bộ dụng cụ, rồi quyết định cách lần theo sự thật trước khi mở tủ."
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "archive_open",
             "op": "==",
+            "value": false
+          },
+          {
+            "type": "state",
+            "property": "clue_tunnel",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "radio_toolkit"
+          },
+          {
+            "type": "state",
+            "property": "school_choice",
+            "op": "!=",
+            "value": "chưa quyết định"
+          }
+        ]
+      }
+    },
+    "action_reconstruct_archive_record": {
+      "meta": {
+        "title": "Hồ sơ sơ tán thiếu",
+        "buttonLabel": "Tái dựng",
+        "desc": "Đối chiếu danh sách đường hầm, cuộn phim và sổ điểm danh để khôi phục bản ghi."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_reconstruct_archive_record"
+          },
+          {
+            "type": "effect",
+            "ref": "open_archive"
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "evidence_verified",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_reconstruct_archive_record",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Danh sách đường hầm, cuộn phim và sổ điểm danh khớp nhau. Những cái tên từng bị xóa đã trở lại hồ sơ."
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "corroboration_transport_records",
+            "value": true
+          }
+        ],
+        "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_reconstruct_archive_record"
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "archive_partial",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "tunnel_manifest"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "evacuation_film"
+          }
+        ]
+      }
+    },
+    "action_open_archive_from_evidence": {
+      "meta": {
+        "title": "Mở kho bằng bằng chứng",
+        "buttonLabel": "Mở bằng bằng chứng",
+        "desc": "Dùng danh sách vận chuyển và cuộn phim để mở kho khi không còn chìa khóa. Những dấu vết dưới đê và lựa chọn điều tra sẽ giúp đối chiếu hồ sơ."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "archive_partial",
+            "value": false
+          },
+          {
+            "type": "effect",
+            "ref": "consume_action_open_archive_from_evidence"
+          },
+          {
+            "type": "effect",
+            "ref": "open_archive"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_open_archive_from_evidence",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Danh sách, cuộn phim và dấu vết đối chiếu đã giúp bạn mở tủ hồ sơ."
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_open_archive",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_bypass_archive_lock",
+            "property": "display",
+            "value": "hide"
+          }
+        ],
+        "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_open_archive_from_evidence"
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "archive_open",
+            "op": "==",
+            "value": false
+          },
+          {
+            "type": "state",
+            "property": "clue_tunnel",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "tunnel_manifest"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "evacuation_film"
+          },
+          {
+            "type": "state",
+            "property": "school_choice",
+            "op": "!=",
             "value": "chưa quyết định"
           }
         ]
@@ -6748,674 +7174,20 @@
         ]
       }
     },
-    "action_dry_guestbook": {
+    "action_restore_radio_signal": {
       "meta": {
-        "title": "Sổ khách bị ẩm",
-        "buttonLabel": "Làm khô sổ",
-        "desc": "Hơi ẩm đã khiến những dòng chữ trên trang giấy nhòe đi. Một vài cái tên chỉ còn hiện ra dưới ánh đèn, trong khi mực ở những trang cuối dường như vẫn chưa khô hẳn."
+        "title": "Khôi phục tín hiệu phát thanh (tùy chọn)",
+        "buttonLabel": "Sửa mạch điện",
+        "desc": "Bạn có thể thử sửa mạch bằng bộ dụng cụ, dây, cầu chì và tinh thể còn đủ tốt. Việc này không ảnh hưởng đến con đường chính; cuộn tinh thể vẫn có thể giúp dò tín hiệu dưới ga."
       },
       "set": {
         "display": "show",
         "requirement": true,
         "readDesc": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "guestbook",
-            "value": -1
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "guestbook_partial",
-            "value": false
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "room7_confirmed",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_dry_guestbook",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Cuốn sổ khách đã sáng tỏ hơn. Phòng thứ bảy được xác nhận."
-          }
-        ],
-        "fail": []
       },
       "requirement": {
         "logic": "AND",
         "check": [
-          {
-            "type": "state",
-            "property": "guestbook_partial",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "guestbook"
-          }
-        ]
-      }
-    },
-    "action_compare_guestbook_photo": {
-      "meta": {
-        "title": "Đối chiếu sổ khách với ảnh",
-        "buttonLabel": "Đối chiếu",
-        "desc": "Dùng ảnh lớp hoặc cuộn phim để xác minh cái tên bị mất khỏi sổ khách."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true,
-        "readDesc": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "effect",
-            "ref": "verify_room7"
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "guestbook_partial",
-            "value": false
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_compare_guestbook_photo",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Một nguồn độc lập cũng xác nhận phòng thứ bảy."
-          }
-        ],
-        "fail": []
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "state",
-            "property": "guestbook_partial",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "class_photo"
-          }
-        ]
-      }
-    },
-    "action_observe_mai": {
-      "meta": {
-        "title": "Quan sát Mai từ xa",
-        "buttonLabel": "Quan sát",
-        "desc": "Bạn không tiến lại gần Mai. Từ phía bên kia quảng trường, cô nhiều lần nhìn về giếng rồi nhanh chóng quay đi. Khi loa phát thanh rè lên, Mai kiểm tra mảnh giấy gấp trong tay. Có điều gì đó khiến cô không muốn đối diện với giếng, nhưng bạn chưa thể biết đó là gì."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true,
-        "readDesc": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "mai_approach",
-            "value": "quan sát"
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "clue_mai_observation",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_observe_mai",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_talk_mai",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Mai khẽ nhìn về phía giếng rồi quay đi. Mảnh giấy trong tay cô bị vò chặt hơn."
-          }
-        ],
-        "fail": []
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "state",
-            "property": "mai_approach",
-            "op": "==",
-            "value": "chưa tiếp cận"
-          }
-        ]
-      }
-    },
-    "action_listen_mai_tape": {
-      "meta": {
-        "title": "Nghe lại băng của Mai",
-        "buttonLabel": "Nghe băng",
-        "desc": "Cuộn băng được bọc trong giấy dầu, nhãn ghi ngày đêm mất điện. Khi phát lại, giữa tiếng rè có một tín hiệu ngắn lặp lại. Lời ghi âm có thể hé lộ điều Mai chưa muốn nói trực tiếp."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true,
-        "readDesc": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "effect",
-            "ref": "consume_action_listen_mai_tape"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_listen_mai_tape",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Cuộn băng mang đến lời kể từ xa, không phải cuộc trò chuyện trực tiếp."
-          }
-        ],
-        "fail": []
-      },
-      "requirement": {
-        "ref": "tape_available"
-      }
-    },
-    "action_verify_guestbook": {
-      "meta": {
-        "title": "Xác minh sổ khách",
-        "buttonLabel": "Đối chiếu sổ",
-        "desc": "Đối chiếu sổ khách với cuộn phim hoặc ảnh lớp để xác minh căn phòng thứ bảy."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true,
-        "readDesc": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "effect",
-            "ref": "verify_room7"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_verify_guestbook",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Cuốn sổ khách đã được đối chiếu với một nguồn khác."
-          }
-        ],
-        "fail": []
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "guestbook"
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "evacuation_film"
-          }
-        ]
-      }
-    },
-    "action_follow_compass_uncertain": {
-      "meta": {
-        "title": "Theo la bàn không chắc chắn",
-        "buttonLabel": "Theo dấu mờ",
-        "desc": "La bàn chỉ hướng không thật chính xác. Đi theo nó có thể làm la bàn xuống cấp, khiến bạn khó giữ phương hướng và mất bình tĩnh."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true,
-        "readDesc": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "effect",
-            "ref": "consume_action_follow_compass_uncertain"
-          },
-          {
-            "type": "characters",
-            "subtype": "edit_stats",
-            "target": "player",
-            "property": "composure",
-            "field": "current",
-            "mode": "add",
-            "value": -1
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "forest_route_partial",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "player_panicked",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "clue_tunnel_partial",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_follow_compass_uncertain",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_verify_forest_route",
-            "property": "display",
-            "value": "show"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Một đoạn đường rừng mới hiện ra. Dấu chân, bản đồ hoặc lời kể có thể cho biết nó dẫn đến đâu."
-          }
-        ],
-        "fail": [
-          {
-            "type": "effect",
-            "ref": "consume_action_follow_compass_uncertain"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warning",
-            "text": "La bàn phải ở trong tay bạn mới có thể lần theo hướng này."
-          }
-        ]
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "item",
-            "subtype": "hand",
-            "op": "==",
-            "value": [
-              "guide_compass"
-            ]
-          }
-        ]
-      }
-    },
-    "action_verify_forest_route": {
-      "meta": {
-        "title": "Xác minh tuyến rừng",
-        "buttonLabel": "Đối chiếu tuyến",
-        "desc": "Những vệt sơn trong rừng, cái tên trên tường đường hầm và danh sách vận chuyển dường như cùng chỉ về một hướng. Ba dấu vết vốn nằm ở những nơi cách xa nhau lại đang kể cùng một câu chuyện."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true,
-        "readDesc": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "forest_route_partial",
-            "value": false
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "clue_tunnel_partial",
-            "value": false
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "clue_tunnel",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_verify_forest_route",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Dấu đường rừng đã được xác nhận bằng bằng chứng."
-          }
-        ],
-        "fail": []
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "state",
-            "property": "forest_route_partial",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "state",
-            "property": "clue_tunnel",
-            "op": "==",
-            "value": true
-          }
-        ]
-      }
-    },
-    "action_force_seal": {
-      "meta": {
-        "title": "Cạy niêm phong hộp",
-        "buttonLabel": "Cạy niêm phong",
-        "desc": "Cạy niêm phong có thể làm hỏng dấu xác thực và khiến bằng chứng mất giá trị."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true,
-        "readDesc": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "effect",
-            "ref": "consume_action_force_seal"
-          },
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "evacuation_seal",
-            "value": 1
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "clue_photo",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "clue_stakes",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "evidence_evacuation_seal",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_force_seal",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_verify_seal",
-            "property": "display",
-            "value": "show"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Con dấu rách khi chiếc hộp mở ra. Một phần giấy tờ vẫn còn, nhưng vài dòng đã mất."
-          }
-        ],
-        "fail": [
-          {
-            "type": "effect",
-            "ref": "consume_action_force_seal"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warning",
-            "text": "Hãy tìm con dấu và bộ dụng cụ để mở hộp mà không làm hỏng thêm giấy tờ."
-          }
-        ]
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "evacuation_seal"
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "radio_toolkit"
-          }
-        ]
-      }
-    },
-    "action_verify_seal": {
-      "meta": {
-        "title": "Xác minh con dấu bị hư",
-        "buttonLabel": "Đối chiếu con dấu",
-        "desc": "Đối chiếu con dấu bị hư với cuộn phim, danh sách vận chuyển hoặc phù hiệu."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true,
-        "readDesc": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "evidence_evacuation_seal",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_verify_seal",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Cuộn phim giúp xác nhận dấu con dấu bị rách."
-          }
-        ],
-        "fail": []
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "evacuation_seal",
-            "op": ">",
-            "value": 0
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "evacuation_film"
-          }
-        ]
-      }
-    },
-    "action_repair_mill_partial": {
-      "meta": {
-        "title": "Sửa cối xay tạm thời",
-        "buttonLabel": "Sửa tạm",
-        "desc": "Nếu một linh kiện đã xuống cấp, bạn vẫn có thể thử sửa cối xay. Các linh kiện sẽ hao mòn thêm và máy chỉ hoạt động tạm thời."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true,
-        "readDesc": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "effect",
-            "ref": "consume_action_repair_mill_partial"
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "mill_repaired_partial",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "clue_tunnel",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_repair_mill_partial",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_stabilize_mill",
-            "property": "display",
-            "value": "show"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_bypass_mill",
-            "property": "display",
-            "value": "show"
-          },
-          {
-            "type": "goto",
-            "subtype": "router",
-            "target": "router_watermill_running"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Cối xay chỉ chạy tạm thời. Dấu đường hầm vẫn dẫn tiếp."
-          }
-        ],
-        "fail": [
-          {
-            "type": "effect",
-            "ref": "consume_action_repair_mill_partial"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warning",
-            "text": "Bạn còn thiếu dụng cụ, lò xo, chốt truyền động hoặc dấu đường hầm để sửa cối xay."
-          }
-        ]
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "state",
-            "property": "clue_tunnel",
-            "op": "==",
-            "value": true
-          },
           {
             "type": "item",
             "subtype": "inventory",
@@ -7426,1059 +7198,76 @@
             "type": "item",
             "subtype": "inventory",
             "op": "has",
-            "value": "clockwork_spring"
+            "value": "radio_crystal"
           },
           {
             "type": "item",
-            "subtype": "hand",
-            "op": "==",
-            "value": [
-              "mill_gear_pin"
-            ]
+            "subtype": "inventory",
+            "op": "has",
+            "value": "insulated_wire"
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "spare_fuse"
           },
           {
             "type": "item",
             "subtype": "usage",
             "target": "radio_toolkit",
             "op": "<",
-            "value": 4
+            "value": 2
           },
           {
             "type": "item",
             "subtype": "usage",
-            "target": "clockwork_spring",
+            "target": "radio_crystal",
             "op": "<",
-            "value": 4
+            "value": 1
           }
         ]
-      }
-    },
-    "action_force_mill_repair": {
-      "meta": {
-        "title": "Cưỡng ép sửa cối xay",
-        "buttonLabel": "Cưỡng ép sửa",
-        "desc": "Cố sửa cối xay bằng sức có thể làm hỏng bộ dụng cụ và khiến An mất bình tĩnh."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true,
-        "readDesc": true
       },
       "effect": {
         "normal": [],
         "pass": [
           {
+            "type": "effect",
+            "ref": "consume_action_restore_radio_components"
+          },
+          {
             "type": "set",
             "subtype": "action",
-            "target": "action_force_mill_repair",
+            "target": "action_restore_radio_signal",
             "property": "display",
             "value": "hide"
           },
           {
-            "type": "effect",
-            "ref": "consume_action_force_mill_repair"
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Tiếng rè dịu dần. Tín hiệu cũ rõ lên, mang theo một giọng nói và dấu vết mới."
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "voice_revealed",
+            "value": true
           },
           {
             "type": "characters",
             "subtype": "edit_stats",
             "target": "player",
-            "property": "composure",
+            "property": "resolve",
             "field": "current",
             "mode": "add",
-            "value": -1
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "radio_damaged",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "player_panicked",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_stabilize_mill",
-            "property": "display",
-            "value": "show"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_bypass_mill",
-            "property": "display",
-            "value": "show"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Cơ cấu không khớp. Bộ dụng cụ quá tải, bạn mất bình tĩnh; vẫn có thể lần theo đường hầm mà không cần cối xay."
+            "value": 1
           }
         ],
         "fail": [
           {
             "type": "effect",
-            "ref": "consume_action_force_mill_repair"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warning",
-            "text": "Hãy cầm bộ dụng cụ và tìm đủ linh kiện trước khi thử sửa cơ cấu."
-          }
-        ]
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "item",
-            "subtype": "hand",
-            "op": "==",
-            "value": [
-              "radio_toolkit"
-            ]
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "clockwork_spring"
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "mill_gear_pin"
-          }
-        ]
-      }
-    },
-    "action_stabilize_mill": {
-      "meta": {
-        "title": "Giữ cối xay hoạt động tạm thời",
-        "buttonLabel": "Ổn định máy",
-        "desc": "Dùng linh kiện và bộ dụng cụ để giữ cối xay hoạt động trong thời gian ngắn."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true,
-        "readDesc": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "effect",
-            "ref": "consume_action_stabilize_mill"
-          },
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "clockwork_spring",
-            "value": -1
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "mill_powered",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "mill_repaired_partial",
-            "value": false
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_stabilize_mill",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_descend_tunnel",
-            "property": "display",
-            "value": "show"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Cối xay đã ổn định. Lối chính vẫn thông."
-          }
-        ],
-        "fail": [
-          {
-            "type": "effect",
-            "ref": "consume_action_stabilize_mill"
-          }
-        ]
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "state",
-            "property": "mill_repaired_partial",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "radio_toolkit"
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "clockwork_spring"
-          }
-        ]
-      }
-    },
-    "action_bypass_mill": {
-      "meta": {
-        "title": "Đi theo đường hầm, không qua cối xay",
-        "buttonLabel": "Đi theo đường hầm",
-        "desc": "Bạn có thể lần theo dấu vết dưới chân đê mà không cần khôi phục cối xay. Dấu đường hầm vẫn phải được tìm ra trước khi lối đi hiện rõ."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true,
-        "readDesc": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "mill_powered",
-            "value": false
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "clue_tunnel",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_bypass_mill",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_descend_tunnel",
-            "property": "display",
-            "value": "show"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Bạn lần theo dấu dưới chân đê, bỏ lại cối xay. Lối xuống đường hầm vẫn còn đó."
-          }
-        ],
-        "fail": []
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "state",
-            "property": "clue_tunnel",
-            "op": "==",
-            "value": true
-          }
-        ]
-      }
-    },
-    "action_bypass_archive_lock": {
-      "meta": {
-        "title": "Mở tủ hồ sơ bằng cách khác",
-        "buttonLabel": "Mở tủ bằng cách khác",
-        "desc": "Dùng bộ dụng cụ và những dấu vết đã tìm được để mở tủ hồ sơ khi chìa khóa không còn. Nếu phải cưỡng ép, giấy tờ bên trong có thể bị rách hoặc thất lạc."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true,
-        "readDesc": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "effect",
-            "ref": "consume_action_bypass_archive_lock"
-          },
-          {
-            "type": "characters",
-            "subtype": "edit_stats",
-            "target": "player",
-            "property": "composure",
-            "field": "current",
-            "mode": "add",
-            "value": -1
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "archive_open",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "archive_partial",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_bypass_archive_lock",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_reconstruct_archive_record",
-            "property": "display",
-            "value": "show"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Tủ bật mở dưới sức ép. Một vài trang rách mất góc, nhưng phần còn lại vẫn đủ để lần theo dấu người sơ tán."
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_open_archive",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_open_archive_from_evidence",
-            "property": "display",
-            "value": "hide"
-          }
-        ],
-        "fail": [
-          {
-            "type": "effect",
-            "ref": "consume_action_bypass_archive_lock"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warning",
-            "text": "Hãy tìm dấu đường hầm và bộ dụng cụ, rồi quyết định cách lần theo sự thật trước khi mở tủ."
-          }
-        ]
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "state",
-            "property": "archive_open",
-            "op": "==",
-            "value": false
-          },
-          {
-            "type": "state",
-            "property": "clue_tunnel",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "radio_toolkit"
-          },
-          {
-            "type": "state",
-            "property": "school_choice",
-            "op": "!=",
-            "value": "chưa quyết định"
-          }
-        ]
-      }
-    },
-    "action_reconstruct_archive_record": {
-      "meta": {
-        "title": "Hồ sơ sơ tán thiếu",
-        "buttonLabel": "Tái dựng",
-        "desc": "Đối chiếu danh sách đường hầm, cuộn phim và sổ điểm danh để khôi phục bản ghi."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true,
-        "readDesc": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "effect",
-            "ref": "consume_action_reconstruct_archive_record"
-          },
-          {
-            "type": "effect",
-            "ref": "open_archive"
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "evidence_verified",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_reconstruct_archive_record",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Danh sách đường hầm, cuộn phim và sổ điểm danh khớp nhau. Những cái tên từng bị xóa đã trở lại hồ sơ."
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "corroboration_transport_records",
-            "value": true
-          }
-        ],
-        "fail": [
-          {
-            "type": "effect",
-            "ref": "consume_action_reconstruct_archive_record"
-          }
-        ]
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "state",
-            "property": "archive_partial",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "tunnel_manifest"
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "evacuation_film"
-          }
-        ]
-      }
-    },
-    "action_open_archive_from_evidence": {
-      "meta": {
-        "title": "Mở kho bằng bằng chứng",
-        "buttonLabel": "Mở bằng bằng chứng",
-        "desc": "Dùng danh sách vận chuyển và cuộn phim để mở kho khi không còn chìa khóa. Những dấu vết dưới đê và lựa chọn điều tra sẽ giúp đối chiếu hồ sơ."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true,
-        "readDesc": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "archive_partial",
-            "value": false
-          },
-          {
-            "type": "effect",
-            "ref": "consume_action_open_archive_from_evidence"
-          },
-          {
-            "type": "effect",
-            "ref": "open_archive"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_open_archive_from_evidence",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Danh sách, cuộn phim và dấu vết đối chiếu đã giúp bạn mở tủ hồ sơ."
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_open_archive",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_bypass_archive_lock",
-            "property": "display",
-            "value": "hide"
-          }
-        ],
-        "fail": [
-          {
-            "type": "effect",
-            "ref": "consume_action_open_archive_from_evidence"
-          }
-        ]
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "state",
-            "property": "archive_open",
-            "op": "==",
-            "value": false
-          },
-          {
-            "type": "state",
-            "property": "clue_tunnel",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "tunnel_manifest"
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "evacuation_film"
-          },
-          {
-            "type": "state",
-            "property": "school_choice",
-            "op": "!=",
-            "value": "chưa quyết định"
-          }
-        ]
-      }
-    },
-    "action_retrace_map": {
-      "meta": {
-        "title": "Tái đối chiếu bản đồ",
-        "buttonLabel": "Tái đối chiếu",
-        "desc": "Dùng giấy can và kính lúp để khôi phục những phần bản đồ bị thiếu."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true,
-        "readDesc": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "tracing_paper",
-            "value": -1
-          },
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "inspection_loupe",
-            "value": -1
-          },
-          {
-            "type": "effect",
-            "ref": "complete_tunnel_route"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_retrace_map",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Tuyến đường trên bản đồ đã được xác nhận."
-          }
-        ],
-        "fail": []
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "state",
-            "property": "map_incomplete",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "tracing_paper"
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "inspection_loupe"
-          }
-        ]
-      }
-    },
-    "action_compare_evacuation_film": {
-      "meta": {
-        "title": "Đối chiếu bản đồ bằng cuộn phim",
-        "buttonLabel": "Đối chiếu cuộn phim",
-        "desc": "Dùng cuộn phim sơ tán để kiểm tra và xác nhận tuyến đường dưới đê."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true,
-        "readDesc": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "effect",
-            "ref": "consume_action_compare_evacuation_film"
-          },
-          {
-            "type": "effect",
-            "ref": "complete_tunnel_route"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_compare_evacuation_film",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Cuộn phim xác nhận tuyến đường."
-          }
-        ],
-        "fail": [
-          {
-            "type": "effect",
-            "ref": "consume_action_compare_evacuation_film"
-          }
-        ]
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "state",
-            "property": "map_incomplete",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "evacuation_film"
-          }
-        ]
-      }
-    },
-    "action_verify_route_from_radio": {
-      "meta": {
-        "title": "Xác minh tuyến đường từ radio",
-        "buttonLabel": "Đối chiếu tín hiệu",
-        "desc": "Dùng bản ghi phát thanh hoặc bằng chứng từ radio để xác nhận tuyến đường trong đường hầm."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true,
-        "readDesc": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "effect",
-            "ref": "complete_tunnel_route"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_verify_route_from_radio",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Tín hiệu xác nhận tuyến đường."
-          }
-        ],
-        "fail": []
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "state",
-            "property": "map_incomplete",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "state",
-            "property": "voice_revealed",
-            "op": "==",
-            "value": true
-          }
-        ]
-      }
-    },
-    "action_ring_bell_imperfect": {
-      "meta": {
-        "title": "Rung chuông với cơ cấu chưa hoàn chỉnh",
-        "buttonLabel": "Rung chuông",
-        "desc": "Bạn chấp nhận cơ cấu chưa hoàn hảo. Dây và các bộ phận sẽ hao mòn, An có thể mất bình tĩnh, còn tiếng chuông sẽ bị méo."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true,
-        "readDesc": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "effect",
-            "ref": "consume_action_ring_bell_imperfect"
-          },
-          {
-            "type": "characters",
-            "subtype": "edit_stats",
-            "target": "player",
-            "property": "composure",
-            "field": "current",
-            "mode": "add",
-            "value": -1
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "bell_rung",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "bell_rung_imperfectly",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "bell_signal_distorted",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_ring_bell",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_correct_bell_signal",
-            "property": "display",
-            "value": "show"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Chuông vang lên, nhưng âm thanh méo mó. Dấu vết lần rung chuông vẫn còn; bạn có thể sửa tín hiệu."
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_ring_bell_imperfect",
-            "property": "display",
-            "value": "hide"
-          }
-        ],
-        "fail": [
-          {
-            "type": "effect",
-            "ref": "consume_action_ring_bell_imperfect"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "warning",
-            "text": "Cơ cấu chuông còn thiếu bộ phận và mã xác nhận."
-          }
-        ]
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "bell_clapper"
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "bell_copper_wire"
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "hymn_note"
-          },
-          {
-            "type": "state",
-            "property": "heard_bell",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "bell_copper_wire",
-            "op": "<",
-            "value": 4
-          },
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "hymn_note",
-            "op": "<",
-            "value": 3
-          },
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "bell_clapper",
-            "op": "<",
-            "value": 3
-          }
-        ]
-      }
-    },
-    "action_correct_bell_signal": {
-      "meta": {
-        "title": "Sửa tín hiệu chuông",
-        "buttonLabel": "Sửa tín hiệu",
-        "desc": "Sửa dây dẫn và đối chiếu bài thánh ca để điều chỉnh tiếng chuông bị méo."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true,
-        "readDesc": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "effect",
-            "ref": "consume_action_correct_bell_signal"
-          },
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "hymn_note",
-            "value": -1
-          },
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "bell_copper_wire",
-            "value": -1
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "bell_signal_distorted",
-            "value": false
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "bell_rung_imperfectly",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_correct_bell_signal",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Tín hiệu chuông đã được chỉnh lại. Dù vậy, lần rung méo trước đó vẫn để lại dấu vết."
-          }
-        ],
-        "fail": [
-          {
-            "type": "effect",
-            "ref": "consume_action_correct_bell_signal"
-          }
-        ]
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "state",
-            "property": "bell_signal_distorted",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "radio_toolkit"
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "bell_copper_wire"
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "hymn_note"
-          }
-        ]
-      }
-    },
-    "action_restore_hymn_note": {
-      "meta": {
-        "title": "Tái dựng ghi chú thánh ca",
-        "buttonLabel": "Tái dựng",
-        "desc": "Đối chiếu bài thánh ca với sổ khách, sổ điểm danh hoặc lời khai của người giữ nhà nguyện."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true,
-        "readDesc": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "effect",
-            "ref": "consume_action_restore_hymn_note"
-          },
-          {
-            "type": "item",
-            "subtype": "usage",
-            "target": "hymn_note",
-            "value": -1
-          },
-          {
-            "type": "effect",
-            "ref": "recover_hymn"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_restore_hymn_note",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Những ghi chú trong thánh ca đã được khôi phục."
-          }
-        ],
-        "fail": [
-          {
-            "type": "effect",
-            "ref": "consume_action_restore_hymn_note"
-          }
-        ]
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "state",
-            "property": "hymn_partial",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "guestbook"
+            "ref": "consume_action_restore_radio_components"
           }
         ]
       }
@@ -8769,281 +7558,61 @@
         ]
       }
     },
-    "action_rest_at_inn": {
+    "action_decode_broadcast": {
       "meta": {
-        "title": "Lấy lại bình tĩnh",
-        "buttonLabel": "Nghỉ một lát",
-        "desc": "An nghỉ một lát, chờ cho cảm giác bất an dịu xuống."
+        "title": "Mạch phát thanh",
+        "buttonLabel": "Lấy tinh thể",
+        "desc": "Hộp loa gắn sau bảng thông báo. Tiếng gọi tên dân làng phát đều đặn; sau bảng mạch là cuộn tinh thể lưu tần số. Cần bộ dụng cụ sửa chữa để mở mạch và lấy linh kiện an toàn."
       },
       "set": {
         "display": "show",
-        "requirement": true,
-        "readDesc": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "characters",
-            "subtype": "edit_stats",
-            "target": "player",
-            "property": "composure",
-            "field": "current",
-            "mode": "add",
-            "value": 1
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "player_panicked",
-            "value": false
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_rest_at_inn",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "An dần bình tĩnh lại."
-          }
-        ],
-        "fail": []
+        "requirement": true
       },
       "requirement": {
         "logic": "AND",
         "check": [
-          {
-            "type": "state",
-            "property": "player_panicked",
-            "op": "==",
-            "value": true
-          }
-        ]
-      }
-    },
-    "action_ground_with_radio": {
-      "meta": {
-        "title": "Lấy lại bình tĩnh theo nhịp phát thanh",
-        "buttonLabel": "Nghe nhịp phát thanh",
-        "desc": "Dựa vào nhịp phát thanh ổn định để lấy lại bình tĩnh; không cần tín hiệu phải hoàn hảo."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true,
-        "readDesc": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "characters",
-            "subtype": "edit_stats",
-            "target": "player",
-            "property": "composure",
-            "field": "current",
-            "mode": "add",
-            "value": 1
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "player_panicked",
-            "value": false
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_ground_with_radio",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Nhịp radio giúp An lấy lại bình tĩnh."
-          }
-        ],
-        "fail": []
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "state",
-            "property": "player_panicked",
-            "op": "==",
-            "value": true
-          },
           {
             "type": "item",
             "subtype": "inventory",
             "op": "has",
-            "value": "radio_crystal"
+            "value": "radio_toolkit"
           }
         ]
-      }
-    },
-    "action_recover_with_mai": {
-      "meta": {
-        "title": "Cuộc trò chuyện với Mai",
-        "buttonLabel": "Nói chuyện với Mai",
-        "desc": "Mai nhận ra bạn đang không ổn. Cô ngồi lại bên cạnh, không hỏi về những chuyện bạn chưa muốn kể, chỉ kiên nhẫn chờ đến khi bạn có thể bình tĩnh lại. Sự hiện diện của cô khiến những âm thanh hỗn loạn trong đầu An dần lắng xuống."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true,
-        "readDesc": true
       },
       "effect": {
         "normal": [],
         "pass": [
           {
-            "type": "characters",
-            "subtype": "edit_stats",
-            "target": "player",
-            "property": "composure",
-            "field": "current",
-            "mode": "add",
-            "value": 1
-          },
-          {
-            "type": "characters",
-            "subtype": "edit_stats",
-            "target": "mai",
-            "property": "trust",
-            "field": "current",
-            "mode": "add",
-            "value": 1
-          },
-          {
-            "type": "characters",
-            "subtype": "edit_stats",
-            "target": "mai",
-            "property": "fear",
-            "field": "current",
-            "mode": "add",
-            "value": -1
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "player_panicked",
-            "value": false
+            "type": "item",
+            "subtype": "add",
+            "target": "radio_crystal"
           },
           {
             "type": "set",
             "subtype": "action",
-            "target": "action_recover_with_mai",
+            "target": "action_decode_broadcast",
             "property": "display",
             "value": "hide"
+          },
+          {
+            "type": "goto",
+            "subtype": "router",
+            "target": "router_square_broadcast_decoded"
           },
           {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Mai giúp An. Giữa họ, lòng tin và nỗi sợ đã thay đổi."
-          }
-        ],
-        "fail": []
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "state",
-            "property": "player_panicked",
-            "op": "==",
-            "value": true
+            "text": "Cuộn tinh thể nằm trong tay bạn. Mạch phát thanh đã được giải, và quảng trường đổi khác."
           }
         ]
       }
     },
-    "action_recover_with_linh": {
+    "action_force_seal": {
       "meta": {
-        "title": "Nói chuyện riêng với Linh",
-        "buttonLabel": "Nói chuyện riêng",
-        "desc": "Tôn trọng sự riêng tư và tạo môi trường an toàn để Linh có thể nói chuyện."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true,
-        "readDesc": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "characters",
-            "subtype": "edit_stats",
-            "target": "player",
-            "property": "composure",
-            "field": "current",
-            "mode": "add",
-            "value": 1
-          },
-          {
-            "type": "characters",
-            "subtype": "edit_stats",
-            "target": "linh",
-            "property": "trust",
-            "field": "current",
-            "mode": "add",
-            "value": 1
-          },
-          {
-            "type": "characters",
-            "subtype": "edit_stats",
-            "target": "linh",
-            "property": "fear",
-            "field": "current",
-            "mode": "add",
-            "value": -1
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "player_panicked",
-            "value": false
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_recover_with_linh",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Bạn và Linh đã cùng khôi phục một ký ức."
-          }
-        ],
-        "fail": []
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "state",
-            "property": "player_panicked",
-            "op": "==",
-            "value": true
-          }
-        ]
-      }
-    },
-    "action_reconstruct_manifest": {
-      "meta": {
-        "title": "Danh sách vận chuyển",
-        "buttonLabel": "Tái dựng",
-        "desc": "Dùng tên trên tường, cuộn phim hoặc hồ sơ lưu trữ để khôi phục danh sách vận chuyển bị thiếu."
+        "title": "Cạy niêm phong hộp",
+        "buttonLabel": "Cạy niêm phong",
+        "desc": "Cạy niêm phong có thể làm hỏng dấu xác thực và khiến bằng chứng mất giá trị."
       },
       "set": {
         "display": "show",
@@ -9055,218 +7624,19 @@
         "pass": [
           {
             "type": "effect",
-            "ref": "consume_action_reconstruct_manifest"
+            "ref": "consume_action_force_seal"
           },
           {
             "type": "item",
             "subtype": "usage",
-            "target": "tunnel_manifest",
-            "value": -1
+            "target": "evacuation_seal",
+            "value": 1
           },
           {
             "type": "set",
             "subtype": "state",
-            "target": "manifest_partial",
-            "value": false
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "evidence_verified",
+            "target": "clue_photo",
             "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_reconstruct_manifest",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Bản kê hành khách đã được dựng lại."
-          }
-        ],
-        "fail": [
-          {
-            "type": "effect",
-            "ref": "consume_action_reconstruct_manifest"
-          }
-        ]
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "state",
-            "property": "manifest_partial",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "evacuation_film"
-          }
-        ]
-      }
-    },
-    "action_verify_evacuation_film": {
-      "meta": {
-        "title": "Xác minh cuộn phim sơ tán",
-        "buttonLabel": "Đối chiếu cuộn phim",
-        "desc": "Đối chiếu cuộn phim với danh sách vận chuyển hoặc sổ điểm danh."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true,
-        "readDesc": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "effect",
-            "ref": "consume_action_verify_evacuation_film"
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "evidence_evacuation_film",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "evidence_verified",
-            "value": true
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_verify_evacuation_film",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Khung hình trên phim khớp với danh sách vận chuyển. Hai dấu vết độc lập cùng chỉ về chuyến đi ấy."
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "corroboration_transport_records",
-            "value": true
-          }
-        ],
-        "fail": [
-          {
-            "type": "effect",
-            "ref": "consume_action_verify_evacuation_film"
-          }
-        ]
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "evacuation_film"
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "tunnel_manifest"
-          }
-        ]
-      }
-    },
-    "action_recover_hymn": {
-      "meta": {
-        "title": "Phục hồi thánh ca",
-        "buttonLabel": "Phục hồi",
-        "desc": "Dùng lời khai của người giữ nhà nguyện hoặc sổ khách để khôi phục manh mối về bài thánh ca."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true,
-        "readDesc": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "effect",
-            "ref": "consume_action_recover_hymn"
-          },
-          {
-            "type": "effect",
-            "ref": "recover_hymn"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_recover_hymn",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Dấu vết trong thánh ca đã được khôi phục từ bằng chứng."
-          }
-        ],
-        "fail": [
-          {
-            "type": "effect",
-            "ref": "consume_action_recover_hymn"
-          }
-        ]
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "state",
-            "property": "clue_hymn",
-            "op": "==",
-            "value": false
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "guestbook"
-          }
-        ]
-      }
-    },
-    "action_reconstruct_stakes_evidence": {
-      "meta": {
-        "title": "Tái dựng bằng chứng vòng cọc",
-        "buttonLabel": "Tái dựng",
-        "desc": "Dùng ảnh lớp và tên trên tường để xác nhận những dấu vết quanh vòng cọc."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true,
-        "readDesc": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "effect",
-            "ref": "consume_action_reconstruct_stakes_evidence"
           },
           {
             "type": "set",
@@ -9277,33 +7647,40 @@
           {
             "type": "set",
             "subtype": "state",
-            "target": "evidence_verified",
+            "target": "evidence_evacuation_seal",
             "value": true
           },
           {
             "type": "set",
             "subtype": "action",
-            "target": "action_reconstruct_stakes_evidence",
+            "target": "action_force_seal",
             "property": "display",
             "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_verify_seal",
+            "property": "display",
+            "value": "show"
           },
           {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Ảnh lớp và những cái tên còn sót lại xác nhận dấu vết quanh vòng cọc."
-          },
-          {
-            "type": "set",
-            "subtype": "state",
-            "target": "corroboration_class_photo",
-            "value": true
+            "text": "Con dấu rách khi chiếc hộp mở ra. Một phần giấy tờ vẫn còn, nhưng vài dòng đã mất."
           }
         ],
         "fail": [
           {
             "type": "effect",
-            "ref": "consume_action_reconstruct_stakes_evidence"
+            "ref": "consume_action_force_seal"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "warning",
+            "text": "Hãy tìm con dấu và bộ dụng cụ để mở hộp mà không làm hỏng thêm giấy tờ."
           }
         ]
       },
@@ -9311,31 +7688,25 @@
         "logic": "AND",
         "check": [
           {
-            "type": "state",
-            "property": "clue_stakes",
-            "op": "==",
-            "value": true
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "evacuation_seal"
           },
           {
             "type": "item",
             "subtype": "inventory",
             "op": "has",
-            "value": "class_photo"
-          },
-          {
-            "type": "state",
-            "property": "knows_twelve",
-            "op": "==",
-            "value": true
+            "value": "radio_toolkit"
           }
         ]
       }
     },
-    "action_verify_tunnel_clue": {
+    "action_verify_seal": {
       "meta": {
-        "title": "Dấu đường hầm",
-        "buttonLabel": "Xác minh",
-        "desc": "Dùng danh sách vận chuyển, hồ sơ lưu trữ hoặc tên trên tường để xác nhận manh mối đường hầm."
+        "title": "Xác minh con dấu bị hư",
+        "buttonLabel": "Đối chiếu con dấu",
+        "desc": "Đối chiếu con dấu bị hư với cuộn phim, danh sách vận chuyển hoặc phù hiệu."
       },
       "set": {
         "display": "show",
@@ -9346,8 +7717,86 @@
         "normal": [],
         "pass": [
           {
-            "type": "effect",
-            "ref": "consume_action_verify_tunnel_clue"
+            "type": "set",
+            "subtype": "state",
+            "target": "evidence_evacuation_seal",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_verify_seal",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Cuộn phim giúp xác nhận dấu con dấu bị rách."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "item",
+            "subtype": "usage",
+            "target": "evacuation_seal",
+            "op": ">",
+            "value": 0
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "evacuation_film"
+          }
+        ]
+      }
+    },
+    "action_recover_tunnel_manifest": {
+      "meta": {
+        "title": "Danh sách vận chuyển",
+        "buttonLabel": "Thu thập",
+        "desc": "Ống tài liệu được giấu sau một viên gạch rỗng trong đường hầm và có lớp bọc chống ẩm. Danh sách bên trong ghi tên những người được vận chuyển qua đây theo từng lượt, cung cấp bằng chứng trực tiếp về tuyến sơ tán mà hồ sơ làng đã phủ nhận."
+      },
+      "set": {
+        "display": "show"
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "add",
+            "target": "tunnel_manifest"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_recover_tunnel_manifest",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "goto",
+            "subtype": "router",
+            "target": "router_tunnel_manifest_found"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Danh sách vận chuyển trong đường hầm đã được tìm thấy."
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "evidence_verified",
+            "value": true
           },
           {
             "type": "set",
@@ -9358,27 +7807,622 @@
           {
             "type": "set",
             "subtype": "state",
-            "target": "clue_tunnel_partial",
+            "target": "manifest_partial",
             "value": false
+          }
+        ]
+      }
+    },
+    "action_find_hymn_note": {
+      "meta": {
+        "title": "Ghi chú trong thánh ca",
+        "buttonLabel": "Mở phần gáy",
+        "desc": "Phần gáy bản thánh ca dày hơn các trang còn lại và có đường chỉ khâu không đồng màu. Bên trong là một trang ghi chú được gấp nhỏ, giải thích ý nghĩa của ba hồi chuông và vì sao hồi thứ tư không được vang lên."
+      },
+      "set": {
+        "display": "show"
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "add",
+            "target": "hymn_note"
           },
           {
             "type": "set",
             "subtype": "action",
-            "target": "action_verify_tunnel_clue",
+            "target": "action_find_hymn_note",
             "property": "display",
             "value": "hide"
+          },
+          {
+            "type": "goto",
+            "subtype": "router",
+            "target": "router_chapel_cryptic_note"
           },
           {
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Dấu đường hầm đã được xác nhận."
+            "text": "Bạn tìm thấy ghi chú về ba hồi chuông—và lời cảnh báo đừng bao giờ rung hồi thứ tư."
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_hymn",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "hymn_partial",
+            "value": false
+          }
+        ]
+      }
+    },
+    "action_recover_bell_wire": {
+      "meta": {
+        "title": "Dây đồng chuông",
+        "buttonLabel": "Thu hồi",
+        "desc": "Đoạn dây đồng còn mắc quanh bánh răng của cơ cấu chuông, một đầu bị tuột khỏi trục truyền lực. Dấu xoắn trên dây cho thấy nó từng được tháo ra chứ không tự đứt; đoạn dây này có thể nối lại bộ phận truyền động trên tháp."
+      },
+      "set": {
+        "display": "show"
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "add",
+            "target": "bell_copper_wire"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_recover_bell_wire",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "goto",
+            "subtype": "router",
+            "target": "router_bell_mechanism_repaired"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Dây đồng chuông đã được lấy ra. Cơ cấu giờ có thêm một phần cần thiết."
+          }
+        ]
+      }
+    },
+    "action_find_wooden_seal": {
+      "meta": {
+        "title": "Con dấu đội sơ tán",
+        "buttonLabel": "Thu thập",
+        "desc": "Phiến đá nằm giữa vòng cọc có mép bị xê dịch, để lộ một hốc đất nhỏ bên dưới. Trong hốc là con dấu gỗ của đội sơ tán, vật từng dùng để xác nhận danh sách chính thức trước khi niêm phong hồ sơ."
+      },
+      "set": {
+        "display": "show"
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "add",
+            "target": "evacuation_seal"
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "evidence_evacuation_seal",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_find_wooden_seal",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "goto",
+            "subtype": "router",
+            "target": "router_clearing_ritual_trace"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Con dấu đội sơ tán nằm trong tay bạn—dấu xác nhận của danh sách chính thức."
+          }
+        ]
+      }
+    },
+    "action_find_spare_key": {
+      "meta": {
+        "title": "Chìa khóa phòng thứ bảy",
+        "buttonLabel": "Thu thập",
+        "desc": "Ngăn kéo sau quầy lễ tân chứa chìa khóa đồng số bảy. Việc tìm được chìa khóa xác nhận căn phòng thứ bảy tồn tại, nhưng chưa mở cửa. Bạn phải chọn mở sạch, cưỡng chế hoặc tìm cách bypass."
+      },
+      "set": {
+        "display": "show"
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "item",
+            "subtype": "add",
+            "target": "spare_room_key"
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "room7_confirmed",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "evidence_hidden_room",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_find_spare_key",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_confirm_room7",
+            "property": "display",
+            "value": "show"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Chìa khóa phòng thứ bảy đã tìm thấy. Cánh cửa vẫn đóng—hãy xác minh căn phòng rồi chọn cách mở."
           }
         ],
-        "fail": [
+        "fail": []
+      }
+    },
+    "action_talk_mai": {
+      "meta": {
+        "title": "Mai",
+        "buttonLabel": "Trò chuyện",
+        "desc": "Mai đứng gần quảng trường nhưng luôn giữ khoảng cách với giếng đá. Cô dường như biết nhiều hơn những gì mình nói, và ánh mắt thường dừng lại ở những dấu vết bạn mang theo. Có lẽ cô chỉ sẵn lòng kể khi bạn tìm được điều gì đó khiến cô không thể tiếp tục im lặng."
+      },
+      "set": {
+        "display": "show",
+        "requirement": false,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [
           {
-            "type": "effect",
-            "ref": "consume_action_verify_tunnel_clue"
+            "type": "goto",
+            "subtype": "chat",
+            "target": "chat_mai_memory",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "state",
+                  "property": "knows_twelve",
+                  "op": "==",
+                  "value": true
+                },
+                {
+                  "type": "state",
+                  "property": "school_choice",
+                  "op": "==",
+                  "value": "ký ức"
+                }
+              ]
+            }
+          },
+          {
+            "type": "goto",
+            "subtype": "chat",
+            "target": "chat_mai_evidence",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "state",
+                  "property": "knows_twelve",
+                  "op": "==",
+                  "value": true
+                },
+                {
+                  "type": "state",
+                  "property": "school_choice",
+                  "op": "==",
+                  "value": "bằng chứng"
+                }
+              ]
+            }
+          },
+          {
+            "type": "goto",
+            "subtype": "chat",
+            "target": "chat_mai",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "state",
+                  "property": "knows_twelve",
+                  "op": "!=",
+                  "value": true
+                },
+                {
+                  "type": "state",
+                  "property": "clue_well",
+                  "op": "!=",
+                  "value": true
+                }
+              ]
+            }
+          },
+          {
+            "type": "goto",
+            "subtype": "chat",
+            "target": "chat_mai",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "state",
+                  "property": "knows_twelve",
+                  "op": "!=",
+                  "value": true
+                },
+                {
+                  "type": "state",
+                  "property": "clue_well",
+                  "op": "==",
+                  "value": true
+                },
+                {
+                  "type": "state",
+                  "property": "clue_lantern",
+                  "op": "!=",
+                  "value": true
+                }
+              ]
+            }
+          },
+          {
+            "type": "goto",
+            "subtype": "chat",
+            "target": "chat_mai_well",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "state",
+                  "property": "knows_twelve",
+                  "op": "!=",
+                  "value": true
+                },
+                {
+                  "type": "state",
+                  "property": "clue_well",
+                  "op": "==",
+                  "value": true
+                },
+                {
+                  "type": "state",
+                  "property": "clue_lantern",
+                  "op": "==",
+                  "value": true
+                }
+              ]
+            }
+          },
+          {
+            "type": "goto",
+            "subtype": "chat",
+            "target": "chat_mai_umbrella",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "state",
+                  "property": "knows_twelve",
+                  "op": "==",
+                  "value": true
+                },
+                {
+                  "type": "state",
+                  "property": "school_choice",
+                  "op": "==",
+                  "value": "chưa quyết định"
+                }
+              ]
+            }
+          }
+        ],
+        "pass": [
+          {
+            "type": "characters",
+            "subtype": "edit_stats",
+            "target": "mai",
+            "property": "trust",
+            "field": "current",
+            "mode": "add",
+            "value": 1,
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "action_count",
+                  "target": "action_talk_mai",
+                  "phase": "pass",
+                  "op": "==",
+                  "value": 1
+                }
+              ]
+            }
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "mai_approach",
+            "value": "trò chuyện"
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_observe_mai",
+            "property": "display",
+            "value": "hide"
+          }
+        ]
+      }
+    },
+    "action_talk_hanh": {
+      "meta": {
+        "title": "Bà Hạnh",
+        "buttonLabel": "Trò chuyện",
+        "desc": "Bà Hạnh quản lý nhà trọ và nắm giữ cuốn sổ ghi khách đến, khách đi. Bà khẳng định nơi này chỉ có sáu phòng, nhưng hành lang phía sau quầy lại có bảy cánh cửa. Sự chênh lệch ấy không giống một nhầm lẫn trong cách đếm; nó giống một căn phòng đã bị cố tình xóa khỏi lời kể."
+      },
+      "set": {
+        "display": "show"
+      },
+      "effect": {
+        "normal": [
+          {
+            "type": "goto",
+            "subtype": "chat",
+            "target": "chat_hanh_memory",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "state",
+                  "property": "evidence_hidden_room",
+                  "op": "==",
+                  "value": true
+                },
+                {
+                  "type": "state",
+                  "property": "school_choice",
+                  "op": "==",
+                  "value": "ký ức"
+                }
+              ]
+            }
+          },
+          {
+            "type": "goto",
+            "subtype": "chat",
+            "target": "chat_hanh_evidence",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "state",
+                  "property": "evidence_hidden_room",
+                  "op": "==",
+                  "value": true
+                },
+                {
+                  "type": "state",
+                  "property": "school_choice",
+                  "op": "==",
+                  "value": "bằng chứng"
+                }
+              ]
+            }
+          },
+          {
+            "type": "goto",
+            "subtype": "chat",
+            "target": "chat_hanh_room",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "state",
+                  "property": "evidence_hidden_room",
+                  "op": "==",
+                  "value": true
+                },
+                {
+                  "type": "state",
+                  "property": "school_choice",
+                  "op": "==",
+                  "value": "chưa quyết định"
+                }
+              ]
+            }
+          },
+          {
+            "type": "goto",
+            "subtype": "chat",
+            "target": "chat_hanh_guestbook",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "state",
+                  "property": "evidence_hidden_room",
+                  "op": "!=",
+                  "value": true
+                },
+                {
+                  "type": "state",
+                  "property": "found_guestbook",
+                  "op": "==",
+                  "value": true
+                }
+              ]
+            }
+          },
+          {
+            "type": "goto",
+            "subtype": "chat",
+            "target": "chat_hanh_notice",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "state",
+                  "property": "evidence_hidden_room",
+                  "op": "!=",
+                  "value": true
+                },
+                {
+                  "type": "state",
+                  "property": "found_guestbook",
+                  "op": "!=",
+                  "value": true
+                },
+                {
+                  "type": "state",
+                  "property": "clue_village_notice",
+                  "op": "==",
+                  "value": true
+                }
+              ]
+            }
+          },
+          {
+            "type": "goto",
+            "subtype": "chat",
+            "target": "chat_hanh",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "state",
+                  "property": "evidence_hidden_room",
+                  "op": "!=",
+                  "value": true
+                },
+                {
+                  "type": "state",
+                  "property": "found_guestbook",
+                  "op": "!=",
+                  "value": true
+                },
+                {
+                  "type": "state",
+                  "property": "clue_village_notice",
+                  "op": "!=",
+                  "value": true
+                }
+              ]
+            }
+          }
+        ],
+        "pass": [
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_talk_hanh",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "characters",
+            "subtype": "edit_stats",
+            "target": "hanh",
+            "property": "trust",
+            "field": "current",
+            "mode": "add",
+            "value": 1
+          }
+        ]
+      }
+    },
+    "action_talk_keeper": {
+      "meta": {
+        "title": "Người giữ nhà nguyện",
+        "buttonLabel": "Trò chuyện",
+        "desc": "Người giữ nhà nguyện đã ở đây từ trước khi chuông ngừng ngân. Ông không phủ nhận việc cơ cấu chuông bị tháo rời, nhưng luôn nói rằng tiếng chuông không chỉ để báo giờ. Theo ông, người giữ chuông phải chấp nhận điều đã xảy ra trước khi có thể đánh thức những ký ức bị chôn vùi."
+      },
+      "set": {
+        "display": "show"
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_talk_keeper",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "goto",
+            "subtype": "chat",
+            "target": "chat_keeper"
+          },
+          {
+            "type": "characters",
+            "subtype": "edit_stats",
+            "target": "keeper",
+            "property": "remorse",
+            "field": "current",
+            "mode": "add",
+            "value": 1
+          }
+        ]
+      }
+    },
+    "action_talk_linh": {
+      "meta": {
+        "title": "Lời khai riêng của Linh",
+        "buttonLabel": "Bảo vệ lời khai",
+        "desc": "Bạn quyết định không biến ký ức của Linh thành vật chứng công khai. Lời khai riêng và những chi tiết em nhớ sẽ là con đường tiếp tục điều tra."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "goto",
+            "subtype": "chat",
+            "target": "chat_linh"
           }
         ]
       },
@@ -9387,15 +8431,355 @@
         "check": [
           {
             "type": "state",
-            "property": "clue_tunnel_partial",
+            "property": "clue_photo",
             "op": "==",
             "value": true
           },
           {
+            "type": "state",
+            "property": "school_choice",
+            "op": "==",
+            "value": "chưa quyết định"
+          }
+        ]
+      }
+    },
+    "action_confront_voice": {
+      "meta": {
+        "title": "Tín hiệu dưới ga",
+        "buttonLabel": "Trả lời tín hiệu",
+        "desc": "Từ đường ray vang lên một tín hiệu méo tiếng, lặp lại nhịp phát thanh từng phát ở quảng trường. Cuộn tinh thể thu sóng lấy từ hộp loa có thể dò lại đúng tần số để tách giọng nói khỏi nhiễu. Đằng sau tín hiệu là một câu hỏi không chỉ về việc ai được cứu, mà còn về ký ức nào sẽ được giữ lại."
+      },
+      "set": {
+        "display": "hide",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_confront_voice",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "item",
+            "subtype": "remove",
+            "target": "radio_crystal"
+          },
+          {
+            "type": "goto",
+            "subtype": "chat",
+            "target": "chat_voice"
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "identity_verified_partial",
+            "value": true
+          }
+        ],
+        "fail": [
+          {
+            "type": "notify",
+            "title": "Tần số chưa ổn định",
+            "level": "warning",
+            "text": "Bạn nhận ra cuộn tinh thể đang phát ra dao động cùng tần số với radio. Tuy nhiên, khi nó còn nằm trong túi, tín hiệu vẫn quá yếu để tách giọng nói khỏi nhiễu. Có lẽ cầm nó lên xem thử?",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "item",
+                  "subtype": "inventory",
+                  "op": "has",
+                  "value": "radio_crystal"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "item",
+            "subtype": "hand",
+            "op": "==",
+            "value": [
+              "radio_crystal"
+            ]
+          }
+        ]
+      }
+    },
+    "action_choose_fate": {
+      "meta": {
+        "title": "Giải phóng tại sân ga",
+        "buttonLabel": "Giải phóng",
+        "desc": "Cả ký ức lẫn những bằng chứng bạn thu thập đều có thể dẫn đến giải phóng. Những gì bạn đã tìm được sẽ quyết định cách sự thật được hé lộ."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "goto",
+            "subtype": "end",
+            "target": "ending_release"
+          }
+        ],
+        "fail": [
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "warning",
+            "text": "Những dấu mốc cần thiết vẫn chưa hoàn tất. Hãy tiếp tục đối chiếu hồ sơ, khôi phục các dấu vết và xác nhận những gì ký ức còn giữ lại."
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "OR",
+        "check": [
+          {
+            "logic": "AND",
+            "check": [
+              {
+                "type": "state",
+                "property": "bell_rung",
+                "op": "==",
+                "value": true
+              },
+              {
+                "type": "state",
+                "property": "archive_open",
+                "op": "==",
+                "value": true
+              },
+              {
+                "type": "state",
+                "property": "evidence_evacuation_seal",
+                "op": "==",
+                "value": true
+              },
+              {
+                "type": "state",
+                "property": "clue_hymn",
+                "op": "==",
+                "value": true
+              },
+              {
+                "type": "state",
+                "property": "clue_stakes",
+                "op": "==",
+                "value": true
+              },
+              {
+                "type": "state",
+                "property": "clue_tunnel",
+                "op": "==",
+                "value": true
+              }
+            ]
+          },
+          {
+            "logic": "AND",
+            "check": [
+              {
+                "type": "state",
+                "property": "school_choice",
+                "op": "==",
+                "value": "ký ức"
+              },
+              {
+                "type": "state",
+                "property": "bell_rung",
+                "op": "==",
+                "value": true
+              },
+              {
+                "type": "state",
+                "property": "archive_open",
+                "op": "==",
+                "value": true
+              },
+              {
+                "type": "state",
+                "property": "clue_tunnel",
+                "op": "==",
+                "value": true
+              },
+              {
+                "type": "state",
+                "property": "clue_hymn",
+                "op": "==",
+                "value": true
+              },
+              {
+                "type": "state",
+                "property": "clue_stakes",
+                "op": "==",
+                "value": true
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "action_ending_bury": {
+      "meta": {
+        "title": "Hồ sơ sơ tán",
+        "buttonLabel": "Phá hủy hồ sơ",
+        "desc": "Hồ sơ sơ tán nằm trước mặt bạn, ghi lại những cái tên mà ngôi làng đã cố quên. Đốt hoặc phá hủy chúng sẽ giữ nguyên sự yên ổn giả tạo hiện tại, nhưng cũng xóa đi cơ hội để những người bị loại khỏi ký ức được thừa nhận. Đây là lựa chọn khép lại sự việc bằng cách chôn sự thật thêm một lần nữa."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "goto",
+            "subtype": "end",
+            "target": "ending_bury"
+          }
+        ],
+        "fail": [
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "warning",
+            "text": "Cuốn sổ khách vẫn chưa được tìm thấy. Bạn chưa biết hồ sơ nào đang bị che giấu để quyết định."
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "found_guestbook",
+            "op": "==",
+            "value": true
+          }
+        ]
+      }
+    },
+    "action_ending_echo": {
+      "meta": {
+        "title": "Tiếng vọng thứ mười hai",
+        "buttonLabel": "Ở lại và lắng nghe",
+        "desc": "Tiếng vọng thứ mười hai không phải một bản ghi thông thường. Giữa những tiếng nhiễu, bạn nghe thấy giọng của người mà mình luôn tin tưởng nhất. Bản ghi chứa lời thú nhận về người thứ mười hai — và một việc kinh hoàng mà người ấy đã làm, nhưng chưa từng kể cho bạn."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "goto",
+            "subtype": "end",
+            "target": "ending_echo"
+          }
+        ],
+        "fail": [
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "warning",
+            "text": "Bạn cần biết về người thứ mười hai, cùng một lời kể, lời khai hoặc bằng chứng thay thế."
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "knows_twelve",
+            "op": "==",
+            "value": true
+          },
+          {
+            "logic": "OR",
+            "check": [
+              {
+                "type": "state",
+                "property": "voice_revealed",
+                "op": "==",
+                "value": true
+              },
+              {
+                "type": "state",
+                "property": "identity_verified_partial",
+                "op": "==",
+                "value": true
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "action_ending_depart": {
+      "meta": {
+        "title": "Chuyến tàu 03:17",
+        "buttonLabel": "Lên tàu",
+        "desc": "Chuyến tàu 03:17 dừng ở sân ga không có trên bản đồ. Tấm vé chưa bị xé là bằng chứng duy nhất cho phép bạn bước lên, nhưng nó không nói rõ chuyến tàu sẽ đưa ai đi và bỏ ai lại. Rời khỏi làng có thể chấm dứt hành trình của bạn mà không giải quyết những điều đã xảy ra."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "goto",
+            "subtype": "end",
+            "target": "ending_depart"
+          }
+        ],
+        "fail": [
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "warning",
+            "text": "Vé tàu chưa đủ. Bạn cần xác minh chuyến 03:17 từ bản kê hành khách."
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
             "type": "item",
             "subtype": "inventory",
             "op": "has",
-            "value": "tunnel_manifest"
+            "value": "unpunched_ticket"
+          },
+          {
+            "logic": "OR",
+            "check": [
+              {
+                "type": "state",
+                "property": "ticket_verified",
+                "op": "==",
+                "value": true
+              }
+            ]
           }
         ]
       }
@@ -9616,11 +9000,11 @@
         ]
       }
     },
-    "action_verify_ticket": {
+    "action_recover_with_mai": {
       "meta": {
-        "title": "Xác minh vé tàu",
-        "buttonLabel": "Xác minh vé",
-        "desc": "Đối chiếu vé với danh sách hành khách hoặc hồ sơ lưu trữ khi dấu trên vé đã mờ."
+        "title": "Cuộc trò chuyện với Mai",
+        "buttonLabel": "Nói chuyện với Mai",
+        "desc": "Mai nhận ra bạn đang không ổn. Cô ngồi lại bên cạnh, không hỏi về những chuyện bạn chưa muốn kể, chỉ kiên nhẫn chờ đến khi bạn có thể bình tĩnh lại. Sự hiện diện của cô khiến những âm thanh hỗn loạn trong đầu An dần lắng xuống."
       },
       "set": {
         "display": "show",
@@ -9631,19 +9015,42 @@
         "normal": [],
         "pass": [
           {
-            "type": "effect",
-            "ref": "consume_action_verify_ticket"
+            "type": "characters",
+            "subtype": "edit_stats",
+            "target": "player",
+            "property": "composure",
+            "field": "current",
+            "mode": "add",
+            "value": 1
+          },
+          {
+            "type": "characters",
+            "subtype": "edit_stats",
+            "target": "mai",
+            "property": "trust",
+            "field": "current",
+            "mode": "add",
+            "value": 1
+          },
+          {
+            "type": "characters",
+            "subtype": "edit_stats",
+            "target": "mai",
+            "property": "fear",
+            "field": "current",
+            "mode": "add",
+            "value": -1
           },
           {
             "type": "set",
             "subtype": "state",
-            "target": "ticket_verified",
-            "value": true
+            "target": "player_panicked",
+            "value": false
           },
           {
             "type": "set",
             "subtype": "action",
-            "target": "action_verify_ticket",
+            "target": "action_recover_with_mai",
             "property": "display",
             "value": "hide"
           },
@@ -9651,58 +9058,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Bản kê hành khách xác nhận chiếc vé."
-          }
-        ],
-        "fail": [
-          {
-            "type": "effect",
-            "ref": "consume_action_verify_ticket"
-          }
-        ]
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "unpunched_ticket"
-          },
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "tunnel_manifest"
-          }
-        ]
-      }
-    },
-    "action_reach_station_memory_evidence": {
-      "meta": {
-        "title": "Đến ga bằng cách tái dựng bằng chứng",
-        "buttonLabel": "Tái dựng tuyến đường",
-        "desc": "Từ những mảnh phim, hồ sơ và dấu tích đã đối chiếu, bạn có thể dựng lại tuyến đường đến ga 03:17 dù ký ức vẫn còn mờ."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true,
-        "readDesc": true
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "goto",
-            "subtype": "scene",
-            "target": "scene_ghost_station"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Những khung phim, hồ sơ và lời kể ghép lại thành con đường dẫn tới ga 03:17."
+            "text": "Mai giúp An. Giữa họ, lòng tin và nỗi sợ đã thay đổi."
           }
         ],
         "fail": []
@@ -9712,33 +9068,204 @@
         "check": [
           {
             "type": "state",
-            "property": "archive_open",
+            "property": "player_panicked",
+            "op": "==",
+            "value": true
+          }
+        ]
+      }
+    },
+    "action_recover_with_linh": {
+      "meta": {
+        "title": "Nói chuyện riêng với Linh",
+        "buttonLabel": "Nói chuyện riêng",
+        "desc": "Tôn trọng sự riêng tư và tạo môi trường an toàn để Linh có thể nói chuyện."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "characters",
+            "subtype": "edit_stats",
+            "target": "player",
+            "property": "composure",
+            "field": "current",
+            "mode": "add",
+            "value": 1
+          },
+          {
+            "type": "characters",
+            "subtype": "edit_stats",
+            "target": "linh",
+            "property": "trust",
+            "field": "current",
+            "mode": "add",
+            "value": 1
+          },
+          {
+            "type": "characters",
+            "subtype": "edit_stats",
+            "target": "linh",
+            "property": "fear",
+            "field": "current",
+            "mode": "add",
+            "value": -1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "player_panicked",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_recover_with_linh",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Bạn và Linh đã cùng khôi phục một ký ức."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "player_panicked",
+            "op": "==",
+            "value": true
+          }
+        ]
+      }
+    },
+    "action_rest_at_inn": {
+      "meta": {
+        "title": "Lấy lại bình tĩnh",
+        "buttonLabel": "Nghỉ một lát",
+        "desc": "An nghỉ một lát, chờ cho cảm giác bất an dịu xuống."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "characters",
+            "subtype": "edit_stats",
+            "target": "player",
+            "property": "composure",
+            "field": "current",
+            "mode": "add",
+            "value": 1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "player_panicked",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_rest_at_inn",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "An dần bình tĩnh lại."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "player_panicked",
+            "op": "==",
+            "value": true
+          }
+        ]
+      }
+    },
+    "action_ground_with_radio": {
+      "meta": {
+        "title": "Lấy lại bình tĩnh theo nhịp phát thanh",
+        "buttonLabel": "Nghe nhịp phát thanh",
+        "desc": "Dựa vào nhịp phát thanh ổn định để lấy lại bình tĩnh; không cần tín hiệu phải hoàn hảo."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "characters",
+            "subtype": "edit_stats",
+            "target": "player",
+            "property": "composure",
+            "field": "current",
+            "mode": "add",
+            "value": 1
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "player_panicked",
+            "value": false
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_ground_with_radio",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Nhịp radio giúp An lấy lại bình tĩnh."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "player_panicked",
             "op": "==",
             "value": true
           },
           {
-            "type": "state",
-            "property": "evidence_evacuation_film",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "state",
-            "property": "clue_hymn",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "state",
-            "property": "clue_stakes",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "state",
-            "property": "clue_tunnel",
-            "op": "==",
-            "value": true
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "radio_crystal"
           }
         ]
       }
@@ -9869,6 +9396,534 @@
         ]
       }
     },
+    "action_reconstruct_stakes_evidence": {
+      "meta": {
+        "title": "Tái dựng bằng chứng vòng cọc",
+        "buttonLabel": "Tái dựng",
+        "desc": "Dùng ảnh lớp và tên trên tường để xác nhận những dấu vết quanh vòng cọc."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "effect",
+            "ref": "consume_action_reconstruct_stakes_evidence"
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_stakes",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "evidence_verified",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_reconstruct_stakes_evidence",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Ảnh lớp và những cái tên còn sót lại xác nhận dấu vết quanh vòng cọc."
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "corroboration_class_photo",
+            "value": true
+          }
+        ],
+        "fail": [
+          {
+            "type": "effect",
+            "ref": "consume_action_reconstruct_stakes_evidence"
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "clue_stakes",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "class_photo"
+          },
+          {
+            "type": "state",
+            "property": "knows_twelve",
+            "op": "==",
+            "value": true
+          }
+        ]
+      }
+    },
+    "action_inspect_stakes": {
+      "meta": {
+        "title": "Vòng cọc gỗ",
+        "buttonLabel": "Đếm bóng cọc",
+        "desc": "Mười hai cọc gỗ cắm thành một vòng cung trên nền đất cứng. Ánh sáng chỉ tạo ra mười một chiếc bóng, dù không có cọc nào bị gãy hay nghiêng khỏi mặt đất. Khoảng trống không bóng nằm đúng vị trí trung tâm của vòng cung, như thể nơi đó dành cho một người mà ngôi làng không còn nhớ."
+      },
+      "set": {
+        "display": "show"
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_inspect_stakes",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Vòng cọc thiếu mất người thứ mười hai. Người này là ai nhỉ?",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "state",
+                  "property": "knows_twelve",
+                  "op": "==",
+                  "value": false
+                }
+              ]
+            }
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "info",
+            "text": "Tôi nhìn bãi cọc và chiếc cọc gỗ trống tại vị trí thứ mười hai cảm thấy nghẹn lại.",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "state",
+                  "property": "knows_twelve",
+                  "op": "==",
+                  "value": true
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "action_inspect_tunnel_names": {
+      "meta": {
+        "title": "Danh sách tên trên tường đường hầm",
+        "buttonLabel": "Đối chiếu số người",
+        "desc": "Các bức tường đường hầm phủ kín tên người và ngày tháng. Những dòng chữ được sắp theo thứ tự biến mất chứ không theo họ tên; một số đoạn đã bị cạo sửa, đặc biệt ở cuối danh sách. Đối chiếu các tên cho thấy có mười hai người, không phải mười một."
+      },
+      "set": {
+        "display": "show"
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "clue_tunnel",
+            "value": true
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Những cái tên trên tường khớp với sơ đồ và mảnh bản đồ. Bạn đã nhận ra danh tính người thứ mười hai—cái tên bị xóa khỏi mọi hồ sơ chính thức."
+          },
+          {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_inspect_tunnel_names",
+            "property": "display",
+            "value": "hide"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "info",
+            "text": "Bạn đã nhớ ra cái tên ấy. Nhưng những gì được giữ lại trên tường đường hầm sẽ không được đưa vào hồ sơ công khai.",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "state",
+                  "property": "school_choice",
+                  "op": "==",
+                  "value": "ký ức"
+                }
+              ]
+            }
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "info",
+            "text": "Danh tính người thứ mười hai đã được xác định. Những dấu vết trên tường, sơ đồ và mảnh bản đồ khớp với nhau—đây là bằng chứng về người đã bị xóa khỏi hồ sơ.",
+            "req": {
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "state",
+                  "property": "school_choice",
+                  "op": "==",
+                  "value": "bằng chứng"
+                }
+              ]
+            }
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "memory_reward_tunnel",
+            "value": true
+          },
+          {
+            "type": "set",
+            "subtype": "state",
+            "target": "knows_twelve",
+            "value": true
+          }
+        ]
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "clue_roster_verified",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "item",
+            "subtype": "inventory",
+            "op": "has",
+            "value": "map_fragment"
+          }
+        ]
+      }
+    },
+    "action_village_square": {
+      "meta": {
+        "title": "Quảng trường làng",
+        "buttonLabel": "Vào quảng trường",
+        "buttonIcon": "location_city",
+        "desc": "Quảng trường nằm giữa ngôi làng, nơi bảng thông báo và chiếc loa phát thanh vẫn hoạt động dù không còn ai tụ tập. Ánh đèn vàng yếu ớt hắt xuống nền đá ướt, còn những cái tên bị đọc lên từ loa dường như đang vọng ra từ chính các ngôi nhà quanh quảng trường."
+      },
+      "set": {
+        "display": "show"
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "goto",
+            "subtype": "scene",
+            "target": "scene_village_square"
+          }
+        ]
+      }
+    },
+    "action_enter_well": {
+      "meta": {
+        "title": "Giếng đá",
+        "buttonLabel": "Tiến xuống",
+        "buttonIcon": "water_drop",
+        "desc": "Giếng đá nằm sát quảng trường, phủ rêu và có những vết khắc mới trên thành. Từ mặt nước vọng lên tiếng gõ đều đặn, dù không thấy ai ở dưới. Con đường ngắn từ bảng thông báo dẫn thẳng đến nơi dấu vết của người thứ mười hai bị che giấu."
+      },
+      "set": {
+        "display": "show"
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "goto",
+            "subtype": "scene",
+            "target": "scene_village_well"
+          }
+        ]
+      }
+    },
+    "action_enter_tower": {
+      "meta": {
+        "title": "Tháp chuông",
+        "buttonLabel": "Leo lên",
+        "buttonIcon": "stairs",
+        "desc": "Cầu thang hẹp dẫn từ gian cầu nguyện lên tháp chuông. Trên đó treo quả chuông đã câm lặng suốt mười bảy năm, bên cạnh là mặt đồng hồ dừng ở thời điểm liên quan đến vụ mất tích. Cơ cấu bên trong vẫn còn dấu vết của lần tháo dỡ có chủ ý."
+      },
+      "set": {
+        "display": "show"
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "goto",
+            "subtype": "scene",
+            "target": "scene_chapel_tower"
+          }
+        ]
+      }
+    },
+    "action_enter_clearing": {
+      "meta": {
+        "title": "Khoảng đất trống",
+        "buttonLabel": "Tiến vào",
+        "buttonIcon": "park",
+        "desc": "Khoảng đất trống nằm sâu trong rừng, nơi các vệt sơn hội tụ thành một vòng cọc gỗ. Mười hai cọc được dựng thành hình cung, cạnh đó là dấu đất mới xới cho thấy có vật chứng bị chôn xuống."
+      },
+      "set": {
+        "display": "show"
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "goto",
+            "subtype": "scene",
+            "target": "scene_forest_clearing"
+          }
+        ]
+      }
+    },
+    "action_enter_watermill": {
+      "meta": {
+        "title": "Cối xay nước",
+        "buttonLabel": "Đến cối xay nước",
+        "buttonIcon": "water",
+        "desc": "Lối rẽ phía Bắc dẫn tới cối xay cũ nép bên dòng suối đã cạn. Bánh xe và phòng máy có thể hé lộ cơ cấu mở đường hầm dưới chân đê."
+      },
+      "set": {
+        "display": "show"
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "goto",
+            "subtype": "scene",
+            "target": "scene_watermill"
+          }
+        ]
+      }
+    },
+    "action_travel_inn": {
+      "meta": {
+        "title": "Nhà trọ Bà Hạnh",
+        "buttonLabel": "Đi vào",
+        "buttonIcon": "hotel",
+        "desc": "Nhà trọ Bà Hạnh nằm trên con đường lát đá rời quảng trường. Đây là nơi lưu cuốn sổ khách, lời khai về căn phòng thứ bảy và lối xuống hầm rượu bị giấu sau quầy lễ tân."
+      },
+      "set": {
+        "display": "show"
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "goto",
+            "subtype": "scene",
+            "target": "scene_inn"
+          }
+        ]
+      }
+    },
+    "action_travel_chapel": {
+      "meta": {
+        "title": "Nhà nguyện",
+        "buttonLabel": "Đến nhà nguyện",
+        "buttonIcon": "church",
+        "desc": "Nhà nguyện nằm cuối con đường nơi tiếng chuông đã im bặt từ mười bảy năm trước. Bản thánh ca trong gian cầu nguyện giữ mật từ và quy tắc ba hồi chuông cần thiết để hiểu chuyện gì đã xảy ra."
+      },
+      "set": {
+        "display": "show"
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "goto",
+            "subtype": "scene",
+            "target": "scene_chapel"
+          }
+        ]
+      }
+    },
+    "action_travel_school": {
+      "meta": {
+        "title": "Trường học bỏ hoang",
+        "buttonLabel": "Đến trường học",
+        "buttonIcon": "school",
+        "desc": "Trường tiểu học bỏ hoang nằm bên con đường có những dấu chân nhỏ dẫn vào lớp số 3. Hồ sơ lớp học và bức ảnh bị xé là những bằng chứng quan trọng về người thứ mười hai."
+      },
+      "set": {
+        "display": "show"
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "goto",
+            "subtype": "scene",
+            "target": "scene_abandoned_school"
+          }
+        ]
+      }
+    },
+    "action_enter_classroom_03": {
+      "meta": {
+        "title": "Lớp học số 3",
+        "buttonLabel": "Bước vào",
+        "buttonIcon": "door_open",
+        "desc": "Theo dấu chân nhỏ dọc hành lang, bạn bước vào lớp học số 3. Những dãy bàn thấp phủ bụi vẫn được xếp ngay ngắn. Bục giảng, bảng đen, cửa sổ và chiếc đồng hồ đứng im hiện ra trong ánh sáng xám lọt qua rèm cửa."
+      },
+      "set": {
+        "display": "show"
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "goto",
+            "subtype": "scene",
+            "target": "scene_school_classroom_03"
+          }
+        ]
+      }
+    },
+    "action_examine_blackboard": {
+      "meta": {
+        "title": "Bảng đen",
+        "buttonLabel": "Quan sát dấu phấn",
+        "desc": "Bạn tiến lại gần bảng đen. Những vệt phấn mờ nằm dưới lớp bụi, nhưng từ khoảng cách này chưa thể đọc được nội dung. Tập trung quan sát bảng để nhìn rõ các dấu vết."
+      },
+      "set": {
+        "display": "show"
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "goto",
+            "subtype": "scene",
+            "target": "scene_classroom_blackboard"
+          }
+        ]
+      }
+    },
+    "action_travel_forest": {
+      "meta": {
+        "title": "Rừng thông phía Bắc",
+        "buttonLabel": "Vào rừng",
+        "buttonIcon": "forest",
+        "desc": "Rừng thông phía Bắc bắt đầu ở rìa làng, nơi những vệt sơn lặp lại trên thân cây. Con đường ở đây không ổn định, nhưng các dấu mốc dẫn đến khoảng đất nghi lễ và tuyến xuống chân đê."
+      },
+      "set": {
+        "display": "show"
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "goto",
+            "subtype": "scene",
+            "target": "scene_north_forest"
+          }
+        ]
+      }
+    },
+    "action_reach_station_memory_evidence": {
+      "meta": {
+        "title": "Đến ga bằng cách tái dựng bằng chứng",
+        "buttonLabel": "Tái dựng tuyến đường",
+        "desc": "Từ những mảnh phim, hồ sơ và dấu tích đã đối chiếu, bạn có thể dựng lại tuyến đường đến ga 03:17 dù ký ức vẫn còn mờ."
+      },
+      "set": {
+        "display": "show",
+        "requirement": true,
+        "readDesc": true
+      },
+      "effect": {
+        "normal": [],
+        "pass": [
+          {
+            "type": "goto",
+            "subtype": "scene",
+            "target": "scene_ghost_station"
+          },
+          {
+            "type": "notify",
+            "subtype": "toast",
+            "level": "success",
+            "text": "Những khung phim, hồ sơ và lời kể ghép lại thành con đường dẫn tới ga 03:17."
+          }
+        ],
+        "fail": []
+      },
+      "requirement": {
+        "logic": "AND",
+        "check": [
+          {
+            "type": "state",
+            "property": "archive_open",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "evidence_evacuation_film",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "clue_hymn",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "clue_stakes",
+            "op": "==",
+            "value": true
+          },
+          {
+            "type": "state",
+            "property": "clue_tunnel",
+            "op": "==",
+            "value": true
+          }
+        ]
+      }
+    },
     "action_find_classroom_supplies": {
       "meta": {
         "title": "Dụng cụ và giấy can",
@@ -9947,61 +10002,6 @@
             "subtype": "toast",
             "level": "success",
             "text": "Dây cách nhiệt và cầu chì dự phòng đã được tìm thấy."
-          }
-        ]
-      }
-    },
-    "action_find_mill_components": {
-      "meta": {
-        "title": "Hộp bảo trì cối xay",
-        "buttonLabel": "Mở hộp và thu hồi linh kiện",
-        "desc": "Với bộ dụng cụ sửa chữa, bạn mở hộp bảo trì và thu hồi lò xo cơ khí cùng chốt bánh răng. Chốt bị cong, giải thích vì sao cối xay dừng hoạt động."
-      },
-      "set": {
-        "display": "show",
-        "requirement": true
-      },
-      "requirement": {
-        "logic": "AND",
-        "check": [
-          {
-            "type": "item",
-            "subtype": "inventory",
-            "op": "has",
-            "value": "radio_toolkit"
-          }
-        ]
-      },
-      "effect": {
-        "normal": [],
-        "pass": [
-          {
-            "type": "item",
-            "subtype": "add",
-            "target": "clockwork_spring"
-          },
-          {
-            "type": "item",
-            "subtype": "add",
-            "target": "mill_gear_pin"
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_find_mill_components",
-            "property": "display",
-            "value": "hide"
-          },
-          {
-            "type": "goto",
-            "subtype": "router",
-            "target": "router_watermill_gear_inspected"
-          },
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "success",
-            "text": "Lò xo và chốt bánh răng đã tìm thấy. Lỗi truyền động được xác nhận."
           }
         ]
       }
