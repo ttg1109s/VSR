@@ -141,10 +141,32 @@ function Overlay({open,onClose,title,description,headerActions,headerContent,hea
 export function Dialog(props){return <Overlay {...props}/>;}
 export function Drawer({className,...props}){return <Overlay {...props} className={cx('vsr-drawer',className)}/>;}
 export function Menu({trigger,items=[],label='Open menu',align='start',className,onOpenChange}){
-  const [open,setOpen]=useState(false),root=useRef(null),menu=useRef(null);
-  useEffect(()=>{if(!open)return;const close=()=>{setOpen(false);onOpenChange?.(false);};const outside=e=>{if(!root.current?.contains(e.target))close();};const key=e=>{if(e.key==='Escape'){close();root.current?.querySelector('button')?.focus();}if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();const nodes=[...(menu.current?.querySelectorAll('[role=menuitem]:not([disabled])')||[])],i=nodes.indexOf(document.activeElement);nodes[(i+(e.key==='ArrowDown'?1:-1)+nodes.length)%nodes.length]?.focus();}};document.addEventListener('pointerdown',outside);document.addEventListener('keydown',key);menu.current?.querySelector('[role=menuitem]')?.focus();return()=>{document.removeEventListener('pointerdown',outside);document.removeEventListener('keydown',key);};},[open,onOpenChange]);
-  const triggerNode=isValidElement(trigger)?cloneElement(trigger,{'aria-haspopup':'menu','aria-expanded':open,onClick:e=>{trigger.props.onClick?.(e);if(!e.defaultPrevented)setOpen(v=>{const next=!v;onOpenChange?.(next);return next;});}}):<button type="button" aria-label={label} aria-haspopup="menu" aria-expanded={open} onClick={()=>setOpen(v=>{const next=!v;onOpenChange?.(next);return next;})}>{trigger}</button>;
-  return <div ref={root} className={cx('vsr-menu',className)}>{triggerNode}{open&&<div ref={menu} role="menu" className={'vsr-menu-content vsr-menu-content--'+align}>{items.map((item,i)=>item.separator?<Separator key={'s'+i}/>:<button key={item.key||item.label} type="button" role="menuitem" disabled={item.disabled} className={cx('vsr-menu-item',item.danger&&'is-danger')} onClick={()=>{setOpen(false);onOpenChange?.(false);item.onSelect?.();}}>{item.icon&&<span className="material-symbols-rounded vsr-menu-item__icon" aria-hidden="true">{item.icon}</span>}{item.label}</button>)}</div>}</div>;
+  const [open,setOpen]=useState(false),[position,setPosition]=useState(null),root=useRef(null),menu=useRef(null),triggerRef=useRef(null);
+  const inventoryMenu=className?.includes('vsr-inventory-item-menu');
+  const close=()=>{setOpen(false);setPosition(null);onOpenChange?.(false);};
+  const updatePosition=()=>{
+    if(!inventoryMenu)return;
+    const anchor=triggerRef.current?.getBoundingClientRect();
+    if(!anchor||!menu.current)return;
+    const drawer=root.current?.closest('.vsr-overlay-panel')?.getBoundingClientRect();
+    const margin=8, gap=6;
+    const bounds={left:Math.max(margin,drawer?.left??0),right:Math.min(window.innerWidth-margin,drawer?.right??window.innerWidth),top:Math.max(margin,drawer?.top??0),bottom:Math.min(window.innerHeight-margin,drawer?.bottom??window.innerHeight)};
+    const panel=menu.current.getBoundingClientRect();
+    const width=Math.min(panel.width,bounds.right-bounds.left);
+    let left=align==='end'?anchor.right-width:anchor.left;
+    left=Math.max(bounds.left,Math.min(left,bounds.right-width));
+    const belowSpace=bounds.bottom-anchor.bottom-gap,aboveSpace=anchor.top-bounds.top-gap;
+    const placeAbove=panel.height>belowSpace&&aboveSpace>belowSpace;
+    const available=placeAbove?aboveSpace:belowSpace;
+    const height=Math.min(panel.height,Math.max(0,available));
+    let top=placeAbove?anchor.top-gap-height:anchor.bottom+gap;
+    top=Math.max(bounds.top,Math.min(top,bounds.bottom-height));
+    setPosition({left,top,width,maxHeight:height,above:placeAbove});
+  };
+  useEffect(()=>{if(!open)return;const outside=e=>{if(!root.current?.contains(e.target)&&!menu.current?.contains(e.target))close();};const key=e=>{if(e.key==='Escape'){close();triggerRef.current?.focus();}if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();const nodes=[...(menu.current?.querySelectorAll('[role=menuitem]:not([disabled])')||[])],i=nodes.indexOf(document.activeElement);nodes[(i+(e.key==='ArrowDown'?1:-1)+nodes.length)%nodes.length]?.focus();}};document.addEventListener('pointerdown',outside);document.addEventListener('keydown',key);menu.current?.querySelector('[role=menuitem]')?.focus();if(inventoryMenu){updatePosition();window.addEventListener('resize',updatePosition);window.addEventListener('scroll',updatePosition,true);}return()=>{document.removeEventListener('pointerdown',outside);document.removeEventListener('keydown',key);window.removeEventListener('resize',updatePosition);window.removeEventListener('scroll',updatePosition,true);};},[open,onOpenChange]);
+  const triggerNode=isValidElement(trigger)?cloneElement(trigger,{ref:node=>{triggerRef.current=node;const original=trigger.ref;if(typeof original==='function')original(node);else if(original)original.current=node;},'aria-haspopup':'menu','aria-expanded':open,onClick:e=>{trigger.props.onClick?.(e);if(!e.defaultPrevented)setOpen(v=>{const next=!v;onOpenChange?.(next);return next;});}}):<button ref={triggerRef} type="button" aria-label={label} aria-haspopup="menu" aria-expanded={open} onClick={()=>setOpen(v=>{const next=!v;onOpenChange?.(next);return next;})}>{trigger}</button>;
+  const menuNode=open&&<div ref={menu} role="menu" className={'vsr-menu-content vsr-menu-content--'+align+(position?.above?' is-above':'')} style={inventoryMenu?{position:'fixed',left:position?.left??8,top:position?.top??8,width:position?.width??'auto',maxHeight:position?.maxHeight??'none',overflowY:'auto',zIndex:1300,visibility:position?'visible':'hidden'}:undefined}>{items.map((item,i)=>item.separator?<Separator key={'s'+i}/>:<button key={item.key||item.label} type="button" role="menuitem" disabled={item.disabled} className={cx('vsr-menu-item',item.danger&&'is-danger')} onClick={()=>{close();item.onSelect?.();}}>{item.icon&&<span className="material-symbols-rounded vsr-menu-item__icon" aria-hidden="true">{item.icon}</span>}{item.label}</button>)}</div>;
+  return <div ref={root} className={cx('vsr-menu',className)}>{triggerNode}{inventoryMenu&&menuNode&&typeof document!=='undefined'?createPortal(menuNode,document.body):menuNode}</div>;
 }
 export function Popover({trigger,children,align='start',label='Open additional content',className,onOpenChange}){
   const [open,setOpen]=useState(false),[position,setPosition]=useState(null);
