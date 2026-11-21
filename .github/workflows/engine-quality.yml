@@ -3,7 +3,7 @@ name: Engine quality
 on:
   workflow_call:
   push:
-    branches: [engine-only, ui-rebuild, feature/restore-password-domain, feature/schema-as-source-of-truth, audit/remediation-and-deadcode-cleanup, remediation/full-audit-hardening]
+    branches: [ui-rebuild, feature/restore-password-domain, feature/schema-as-source-of-truth, audit/remediation-and-deadcode-cleanup, remediation/full-audit-hardening]
   pull_request:
 
 permissions:
