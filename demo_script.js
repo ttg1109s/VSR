@@ -2644,7 +2644,7 @@
         "logic": "AND",
         "check": [
           {
-            "type": "router",
+            "type": "set",
             "subtype": "visited",
             "target": "router_well_echoes",
             "op": "==",
