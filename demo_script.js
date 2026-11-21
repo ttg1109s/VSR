@@ -2634,25 +2634,30 @@
         "readDesc": true
       },
       "requirement": {
-        "logic": "OR",
+        "logic": "AND",
         "check": [
           {
-            "type": "state",
-            "property": "clue_photo",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "state",
-            "property": "clue_roster",
-            "op": "==",
-            "value": true
-          },
-          {
-            "type": "state",
-            "property": "clue_tape",
-            "op": "==",
-            "value": true
+            "logic": "OR",
+            "check": [
+              {
+                "type": "state",
+                "property": "clue_photo",
+                "op": "==",
+                "value": true
+              },
+              {
+                "type": "state",
+                "property": "clue_roster",
+                "op": "==",
+                "value": true
+              },
+              {
+                "type": "state",
+                "property": "clue_tape",
+                "op": "==",
+                "value": true
+              }
+            ]
           },
           {
             "type": "router",
