@@ -2682,12 +2682,17 @@
             "level": "success",
             "text": "Cũng may có chiếc đèn bão treo trên bảng, nếu không mình chẳng đọc được gì... Nhưng có lẽ sau này mình sẽ cần dùng tới...",
             "req": {
-              "type": "set",
-              "subtype": "router",
-              "target": "router_well_echoes",
-              "op": "==",
-              "value": false,
-              "property": "visited"
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "set",
+                  "subtype": "router",
+                  "target": "router_well_echoes",
+                  "property": "visited",
+                  "op": "==",
+                  "value": false
+                }
+              ]
             }
           },
           {
