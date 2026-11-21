@@ -296,9 +296,35 @@ function InventoryPagination({ page, pageCount, onPageChange }) {
   );
 }
 
+function InventoryHandPanel({ items, handCount, handLimit, offset, onOffsetChange, onViewDetails, onToggleEquipment, pendingItemId }) {
+  const visibleSlots = 3;
+  const maxOffset = Math.max(0, items.length - visibleSlots);
+  const safeOffset = Math.min(offset, maxOffset);
+  const visibleItems = items.slice(safeOffset, safeOffset + visibleSlots);
+  return (
+    <section className="vsr-inventory-hand" aria-label="Equipped items in Hand">
+      <header className="vsr-inventory-hand__header"><h3>Hand</h3><span className="vsr-text-secondary">{handCount}{handLimit ? ` / ${handLimit}` : ''} equipped</span></header>
+      <div className="vsr-inventory-hand__carousel">
+        <Button variant="secondary" size="sm" disabled={safeOffset <= 0} onClick={() => onOffsetChange(Math.max(0, safeOffset - 1))} aria-label="Previous hand slot">Prev</Button>
+        <div className="vsr-inventory-hand__slots" aria-live="polite">
+          {visibleItems.length === 0 ? <div className="vsr-inventory-hand__empty">No items equipped</div> : visibleItems.map(item => (
+            <article className="vsr-inventory-hand__slot" key={item.id}>
+              <button type="button" className="vsr-inventory-hand__item" onClick={() => onViewDetails(item)} aria-label={`View ${item.name} details`}>
+                <span className="material-symbols-rounded" aria-hidden="true">{typeof item.icon === 'string' && /^[a-z][a-z0-9_]*$/.test(item.icon) ? item.icon : 'inventory_2'}</span><span title={item.name}>{item.name}</span>
+              </button>
+              <Button variant="ghost" size="sm" disabled={pendingItemId === item.id} onClick={() => onToggleEquipment(item)}>Unequip</Button>
+            </article>
+          ))}
+        </div>
+        <Button variant="secondary" size="sm" disabled={safeOffset >= maxOffset} onClick={() => onOffsetChange(Math.min(maxOffset, safeOffset + 1))} aria-label="Next hand slot">Next</Button>
+      </div>
+    </section>
+  );
+}
+
 export default function InventoryWorkspace({ snapshot, client, open = false, onClose, onError }) {
   const inventory = snapshot?.presentation?.inventory;
-  const items = Array.isArray(inventory?.items) ? inventory.items : null;
+  const items = Array.isArray(inventory?.items) ? inventory.items : null;\n  const handItems = items?.filter(item => item.equipped) || [];\n  const [handOffset, setHandOffset] = useState(0);
 
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('all');
@@ -475,6 +501,7 @@ export default function InventoryWorkspace({ snapshot, client, open = false, onC
           )}
           </div>
         </div>
+        <InventoryHandPanel items={handItems} handCount={inventory.handCount ?? handItems.length} handLimit={inventory.handLimit} offset={handOffset} onOffsetChange={setHandOffset} onViewDetails={setDetailItem} onToggleEquipment={toggleItemEquipment} pendingItemId={pendingItemId} />
       )}
     </Drawer>
 
