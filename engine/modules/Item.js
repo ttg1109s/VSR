@@ -193,13 +193,21 @@ export const ItemSystem = {
             this.api.presentation.components.updateItemModal(id);
             this.api.presentation.components.explorer();
         } finally {
-            // Defensive recovery after item effects: release a stale action lock only
-            // when no synchronous effect queue or scene transition is still active.
-            if (!this.runtime?.isSyncQueueRunning && !(this.runtime?.effectQueue?.sync?.length) && !this.isTransitioning && this.isActionProcessing) {
+            // Recover a stale global action lock only after every effect queue is
+            // idle. Item use must not unlock while async effects or transitions
+            // still own the engine's blocking state.
+            const queuesIdle = !this.runtime?.isSyncQueueRunning
+                && !this.runtime?.isAsyncQueueRunning
+                && !(this.runtime?.effectQueue?.sync?.length)
+                && !(this.runtime?.effectQueue?.async?.length);
+            if (queuesIdle && !this.isTransitioning && this.isActionProcessing) {
                 this.isActionProcessing = false;
                 this.api.presentation.navigation.setBlocking(false);
-                this.commitState('item.use.lock_recovered');
             }
+
+            // Always publish the item-use result (usage/broken/inventory), even
+            // when no lock recovery was needed or the item has no effect.
+            this.commitState('inventory.use.completed');
         }
     }
 };
