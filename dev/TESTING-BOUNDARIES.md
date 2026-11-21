@@ -19,3 +19,22 @@ This repository has two intentionally separate test responsibilities.
 - Keep the test groups visibly separated.
 - Add/maintain a guard so Engine test files cannot import Demo data.
 - A Demo content change must only affect the Demo schema-validation test (and never Engine feature tests).
+
+
+## CI modes
+
+### Fast test (push)
+- Runs on pushes to `engine-only`.
+- Executes schema validation, server checks, and the unit test suite.
+- Skips browser installation/tests, UI/safe-area/dead-code audits, build, and strict state audit.
+- Optimized for frequent development commits and quick feedback.
+
+### Full test (pull request)
+- Runs on pull requests targeting `engine-only`.
+- Executes the full suite: schema/server checks, UI and safe-area audits, dead-code audit, build, browser tests, all tests, and strict state audit.
+- Provides comprehensive validation before merge.
+
+### Deploy
+- Deployment is separate from ordinary development pushes.
+- Trigger Pages deployment manually after Full test passes, or through an explicit release/deploy event.
+- Ordinary pushes to `engine-only` must not run full validation or deployment.
