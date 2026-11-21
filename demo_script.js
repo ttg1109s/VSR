@@ -2702,6 +2702,16 @@
             "value": true
           },
           {
+            "type": "set",
+            "subtype": "action",
+            "target": "action_use_lantern",
+            "property": "display",
+            "value": "show",
+            "req": {
+              "ref": "notice_lantern_unlock"
+            }
+          },
+          {
             "type": "item",
             "subtype": "add",
             "target": "lantern",
@@ -2756,16 +2766,6 @@
             "value": "hide",
             "req": {
               "ref": "hand_badge_no_lantern"
-            }
-          },
-          {
-            "type": "set",
-            "subtype": "action",
-            "target": "action_use_lantern",
-            "property": "display",
-            "value": "show",
-            "req": {
-              "ref": "notice_lantern_unlock"
             }
           },
           {
