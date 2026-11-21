@@ -2830,7 +2830,7 @@
           {
             "type": "notify",
             "subtype": "toast",
-            "level": "info",
+            "level": "warning",
             "text": "Khoảng cách xa thế này đèn không soi tới được. Có lẽ phải tiến lại gần để quan sát giếng trước.",
             "req": {
               "logic": "AND",
@@ -2847,7 +2847,7 @@
           {
             "type": "notify",
             "subtype": "toast",
-            "level": "info",
+            "level": "warning",
             "text": "Nếu mình mãi chỉ cầm đèn như này không lẽ chờ ma quỷ nào đó thắp sáng cho mình. Chi bằng mình tự tay sử dụng còn hơn là cứ xách đèn như thế này.",
             "req": {
               "logic": "AND",
@@ -2878,7 +2878,7 @@
           {
             "type": "notify",
             "subtype": "toast",
-            "level": "info",
+            "level": "warning",
             "text": "Mình cần một thứ gì đó sáng để nhìn rõ hơn.",
             "req": {
               "logic": "AND",
@@ -2907,7 +2907,7 @@
           {
             "type": "notify",
             "subtype": "toast",
-            "level": "info",
+            "level": "warning",
             "text": "Nhoài mình vào giếng rất mệt, ngoài đèn ra thì có lẽ mình không thể cầm thêm thứ khác trên tay nữa!",
             "req": {
               "logic": "AND",
