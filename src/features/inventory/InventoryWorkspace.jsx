@@ -296,7 +296,7 @@ function InventoryPagination({ page, pageCount, onPageChange }) {
   );
 }
 
-function InventoryHandPanel({ items, handCount, handLimit, offset, onOffsetChange, onViewDetails, onToggleEquipment, pendingItemId }) {
+function InventoryHandPanel({ items, handCount, handLimit, offset, onOffsetChange, onViewDetails }) {
   const visibleSlots = 3;
   const maxOffset = Math.max(0, items.length - visibleSlots);
   const safeOffset = Math.min(offset, maxOffset);
@@ -312,7 +312,6 @@ function InventoryHandPanel({ items, handCount, handLimit, offset, onOffsetChang
               <button type="button" className="vsr-inventory-hand__item" onClick={() => onViewDetails(item)} aria-label={`View ${item.name} details`}>
                 <span className="material-symbols-rounded" aria-hidden="true">{typeof item.icon === 'string' && /^[a-z][a-z0-9_]*$/.test(item.icon) ? item.icon : 'inventory_2'}</span><span title={item.name}>{item.name}</span>
               </button>
-              <Button variant="ghost" size="sm" disabled={pendingItemId === item.id} onClick={() => onToggleEquipment(item)}>Unequip</Button>
             </article>
           ))}
         </div>
@@ -504,7 +503,7 @@ export default function InventoryWorkspace({ snapshot, client, open = false, onC
           )}
           </div>
         </div>
-        <InventoryHandPanel items={handItems} handCount={inventory.handCount ?? handItems.length} handLimit={inventory.handLimit} offset={handOffset} onOffsetChange={setHandOffset} onViewDetails={setDetailItem} onToggleEquipment={toggleItemEquipment} pendingItemId={pendingItemId} />
+        <InventoryHandPanel items={handItems} handCount={inventory.handCount ?? handItems.length} handLimit={inventory.handLimit} offset={handOffset} onOffsetChange={setHandOffset} onViewDetails={setDetailItem} />
         </>
       )}
     </Drawer>
