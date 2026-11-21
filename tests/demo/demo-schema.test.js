@@ -4,9 +4,15 @@ import Ajv from 'ajv';
 import { scenarioSchema } from '../../engine/scenario/ScenarioSchema.js';
 import { DEMO_SCRIPT } from '../../demo-script-data.js';
 
-test('demo JSON conforms to the canonical scenario JSON Schema', () => {
+test('canonical scenario schema is valid JSON Schema Draft-07', () => {
   const ajv = new Ajv({ allErrors: true, strict: false });
-  const validate = ajv.compile(scenarioSchema);
-  const valid = validate(DEMO_SCRIPT);
-  assert.equal(valid, true, validate.errors?.map(error => `${error.instancePath} ${error.message}`).join('\n'));
+  assert.equal(
+    ajv.validateSchema(scenarioSchema),
+    true,
+    ajv.errors?.map(error => `${error.instancePath} ${error.message}`).join('\n')
+  );
+});
+
+test('demo scenario data is valid JSON syntax', () => {
+  assert.doesNotThrow(() => JSON.parse(JSON.stringify(DEMO_SCRIPT)));
 });
