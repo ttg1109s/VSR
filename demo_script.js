@@ -2933,14 +2933,7 @@
         "display": "show"
       },
       "effect": {
-        "normal": [
-          {
-            "type": "notify",
-            "subtype": "toast",
-            "level": "info",
-            "text": "Tối quá mình không nhìn thấy gì. Chắc phải kiếm thứ gì đó để chiếu sáng."
-          }
-        ],
+        "normal": [],
         "pass": [
           {
             "type": "set",
@@ -2958,8 +2951,8 @@
           {
             "type": "notify",
             "subtype": "toast",
-            "level": "success",
-            "text": "Bốn vạch khắc không phải vết xước. Khi cúi sát thành giếng, bạn nhận ra chúng được khắc theo nhịp—như một dấu hiệu dành cho người biết tìm. Tiếng gõ dưới đáy dừng lại đúng lúc bạn chạm vào rãnh kim loại. Bạn có cảm giác đã tìm thấy thứ cần thiết để tiếp tục."
+            "level": "info",
+            "text": "Tối quá mình chỉ thấy lờ mờ những vạch khắc không rõ nét. Chắc phải kiếm thứ gì đó để chiếu sáng để nhìn rõ hơn."
           },
           {
             "type": "set",
