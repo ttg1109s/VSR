@@ -2711,7 +2711,7 @@
             "type": "notify",
             "subtype": "toast",
             "level": "success",
-            "text": "Cầm đèn soi vừa mỏi tay vừa chỉ nhìn được một phần bảng thông báo rất mất thời gian. Nên treo lại nhưng giờ chưa phải lúc.",
+            "text": "Bảng thông báo không có đèn nên nhìn chẳng rõ chữ. Để khi dùng đèn xong thì hẵng treo lại để đọc tiếp.",
             "req": {
               "logic": "AND",
               "check": [
