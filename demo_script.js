@@ -2695,10 +2695,15 @@
             "subtype": "chat",
             "target": "chat_notice_history",
             "req": {
-              "type": "item",
-              "subtype": "hand",
-              "op": "!has",
-              "value": "well_badge"
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "item",
+                  "subtype": "hand",
+                  "op": "!has",
+                  "value": "well_badge"
+                }
+              ]
             }
           },
           {
@@ -2706,10 +2711,15 @@
             "subtype": "chat",
             "target": "chat_notice_memory",
             "req": {
-              "type": "item",
-              "subtype": "hand",
-              "op": "has",
-              "value": "well_badge"
+              "logic": "AND",
+              "check": [
+                {
+                  "type": "item",
+                  "subtype": "hand",
+                  "op": "has",
+                  "value": "well_badge"
+                }
+              ]
             }
           },
           {
