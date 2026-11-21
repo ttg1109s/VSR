@@ -2729,8 +2729,9 @@
                 }
               ]
             }
-          },
-          "type": "notify",
+          }
+          {
+            "type": "notify",
             "subtype": "toast",
             "level": "success",
             "text": "Nhìn phần còn lại của bảng thông báo mình không hiểu gì cả. Có lẽ nên cầm lấy phù hiệu này quan sát không chừng nghĩ thông về nội dung trên bảng này.",
@@ -2745,8 +2746,8 @@
                 },
                 {
                   "type": "item",
-                  "subtype": "hand",
-                  "op": "!has",
+                  "subtype": "inventory",
+                  "op": "has",
                   "value": "well_badge"
                 },
                 {
@@ -2758,8 +2759,7 @@
               ]
             }
           },
-          {
-            "type": "set",
+"type": "set",
             "subtype": "action",
             "target": "action_use_lantern",
             "property": "display",
