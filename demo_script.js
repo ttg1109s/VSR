@@ -2722,6 +2722,12 @@
                   "subtype": "inventory",
                   "op": "has",
                   "value": "lantern"
+                },
+                {
+                  "type": "item",
+                  "subtype": "hand",
+                  "op": "!has",
+                  "value": "well_badge"
                 }
               ]
             }
@@ -2765,7 +2771,7 @@
           {
             "type": "item",
             "subtype": "remove",
-            "target": "well_badge",
+            "target": "lantern",
             "req": {
               "ref": "hand_badge_no_lantern"
             }
@@ -2773,7 +2779,7 @@
           {
             "type": "item",
             "subtype": "remove",
-            "target": "lantern",
+            "target": "well_badge",
             "req": {
               "ref": "hand_badge_no_lantern"
             }
