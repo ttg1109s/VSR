@@ -3,23 +3,77 @@
   "$id": "https://vsr.engine/protocol/v1/sprite-motion.json",
   "title": "VSR Sprite Motion Event Payload",
   "type": "object",
-  "required": ["spriteId", "from", "waypoints", "to", "path", "duration", "type", "easing"],
+  "required": [
+    "spriteId",
+    "path",
+    "duration",
+    "easing"
+  ],
   "properties": {
-    "spriteId": { "type": "string", "minLength": 1 },
-    "from": { "$ref": "#/definitions/vector3" },
-    "waypoints": { "type": "array", "items": { "$ref": "#/definitions/vector3" } },
-    "to": { "$ref": "#/definitions/vector3" },
-    "path": { "type": "array", "minItems": 2, "items": { "$ref": "#/definitions/vector3" } },
-    "duration": { "type": "number", "minimum": 0 },
-    "type": { "enum": ["linear", "sin_native", "sin_positive"] },
-    "easing": { "enum": ["linear", "ease_in", "ease_out", "ease_in_out", "sin_in", "sin_out", "sin_in_out", "step"] }
+    "spriteId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "path": {
+      "type": "object",
+      "required": [
+        "type",
+        "points"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "bezier"
+          ]
+        },
+        "points": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "items": {
+            "$ref": "#/definitions/point3"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "duration": {
+      "type": "number",
+      "minimum": 0
+    },
+    "easing": {
+      "enum": [
+        "linear",
+        "ease_in",
+        "ease_out",
+        "ease_in_out",
+        "sin_in",
+        "sin_out",
+        "sin_in_out",
+        "step"
+      ]
+    }
   },
   "definitions": {
-    "vector3": {
-      "type": "array",
-      "minItems": 3,
-      "maxItems": 3,
-      "items": { "type": "number" }
+    "point3": {
+      "type": "object",
+      "required": [
+        "x",
+        "y",
+        "z"
+      ],
+      "properties": {
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        },
+        "z": {
+          "type": "number"
+        }
+      },
+      "additionalProperties": false
     }
   },
   "additionalProperties": false
