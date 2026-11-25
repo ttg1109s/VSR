@@ -29,27 +29,18 @@ export function evaluateSpriteEasing(easing, progress) {
 
 export function sampleSpriteMotion(motion, progress) {
   if (!isSpriteMotionPayload(motion)) throw new TypeError('Invalid Sprite motion descriptor.');
-  if (motion.type !== 'linear') throw new TypeError(`Sprite path geometry '${motion.type}' must be sampled by the host renderer.`);
-  const eased = evaluateSpriteEasing(motion.easing, progress);
-  const path = motion.path;
-  const segmentCount = path.length - 1;
-  const scaled = eased * segmentCount;
-  const segmentIndex = Math.min(segmentCount - 1, Math.floor(scaled));
-  const localProgress = eased >= 1 ? 1 : scaled - segmentIndex;
-  const a = path[segmentIndex], b = path[segmentIndex + 1];
-  return a.map((value, axis) => value + (b[axis] - value) * localProgress);
+  const t = evaluateSpriteEasing(motion.easing, progress);
+  const [p0, p1, p2, p3] = motion.path.points.map(point => [point.x, point.y, point.z]);
+  if (motion.path.type !== 'bezier') throw new TypeError(`Unsupported Sprite path geometry: ${String(motion.path.type)}`);
+  const u = 1 - t, weights = [u * u * u, 3 * u * u * t, 3 * u * t * t, t * t * t];
+  return [0, 1, 2].map(axis => weights[0] * p0[axis] + weights[1] * p1[axis] + weights[2] * p2[axis] + weights[3] * p3[axis]);
 }
-
-function isFiniteSpriteVector(value) {
-  return Array.isArray(value) && value.length === 3 && value.every(axis => typeof axis === 'number' && Number.isFinite(axis));
+function isFiniteSpritePoint(point) {
+  return point && typeof point === 'object' && !Array.isArray(point) && ['x', 'y', 'z'].every(axis => typeof point[axis] === 'number' && Number.isFinite(point[axis]));
 }
 function isSpriteMotionPayload(payload) {
-  const geometries = ['linear', 'sin_native', 'sin_positive'];
   const easings = ['linear', 'ease_in', 'ease_out', 'ease_in_out', 'sin_in', 'sin_out', 'sin_in_out', 'step'];
-  return payload && typeof payload.spriteId === 'string' && isFiniteSpriteVector(payload.from) &&
-    isFiniteSpriteVector(payload.to) && Array.isArray(payload.waypoints) && payload.waypoints.every(isFiniteSpriteVector) &&
-    Array.isArray(payload.path) && payload.path.length >= 2 && payload.path.every(isFiniteSpriteVector) &&
-    Number.isFinite(payload.duration) && payload.duration >= 0 && geometries.includes(payload.type) && easings.includes(payload.easing);
+  return payload && typeof payload.spriteId === 'string' && payload.spriteId.length > 0 && payload.path?.type === 'bezier' && Array.isArray(payload.path.points) && payload.path.points.length === 4 && payload.path.points.every(isFiniteSpritePoint) && Number.isFinite(payload.duration) && payload.duration >= 0 && easings.includes(payload.easing);
 }
 
 const timestampFromSnapshot = snapshot => {
