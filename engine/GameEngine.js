@@ -104,4 +104,4 @@ export class GameEngine {
  commitState(reason='state.changed'){return this.protocol?.commitState(this,reason)??null;}
  dispatchProtocolCommand(command,context={}){if(!this.protocol)throw new Error('VSR protocol is not initialized.');return this.protocol.dispatch(command,context);}
 }
-Object.assign(GameEngine.prototype,ConfigSystem,LogicSystem,EffectSystem,ActionSystem,SceneSystem,EntitySystem,ItemSystem,ChatSystem,AutomationSystem,ProtocolCommands,Lifecycle,SaveRestore,TaskScheduling,EffectQueue);
+Object.assign(GameEngine.prototype,ConfigSystem,LogicSystem,EffectSystem,ActionSystem,SceneSystem,EntitySystem,ItemSystem,ChatSystem,AutomationSystem,SpriteSystem,ProtocolCommands,Lifecycle,SaveRestore,TaskScheduling,EffectQueue);
