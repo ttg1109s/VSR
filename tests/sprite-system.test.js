@@ -15,7 +15,7 @@ function spriteScenario() {
   const s = fixture();
   delete s.scenes.start.routers.main.actions;
   s.sprite = {
-    door: { action: 'test_action', layer: 2, state: { closed: 'door_closed.png', open: 'door_open.png' }, position: [100, 200, 0], transform: { scale: 1, rotate: 0 }, motion: { enable: true, duration: 1000, type: 'sin_native', easing: 'ease_in_out', step: [{ x: 150, y: null, z: null }, { x: null, y: 300, z: null }] } }
+    door: { action: 'test_action', layer: 2, state: { closed: 'door_closed.png', open: 'door_open.png' }, position: [100, 200, 0], transform: { scale: 1, rotate: 0 }, motion: { enable: true, duration: 1000, path: { type: 'bezier', points: [{ x: 100, y: 200, z: 0 }, { x: 150, y: 300, z: 25 }, { x: 200, y: 300, z: 50 }, { x: 100, y: 400, z: 100 }] }, easing: 'ease_in_out' } }
   };
   s.scenes.start.routers.main.meta.sprite = true;
   s.scenes.start.routers.main.sprites = ['door'];
@@ -132,28 +132,22 @@ test('Sprite runtime position persists through save and restore', async () => {
 });
 
 
-test('Sprite transform partial set and motion descriptor use independent geometry/easing', async () => {
+test('Sprite transform and absolute 3D Bezier motion descriptor', async () => {
   const engine = new GameEngine();
   try {
     const scenario = spriteScenario();
-    scenario.sprite.door.motion.step = [{ x: 150, y: null, z: null }, { x: null, y: 300, z: null }, { x: 200, y: null, z: null }];
+    scenario.sprite.door.motion.path.points = [{ x: 100, y: 200, z: 0 }, { x: 150, y: 300, z: 10 }, { x: 200, y: 300, z: 20 }, { x: 100, y: 400, z: 30 }];
     await engine.init(scenario, { enterScene: true });
     SetStrategies.sprite(engine, { target: 'door', property: 'transform', value: { rotate: 90 } });
-    const runtime = engine.api.engine.state.getRuntimeSnapshot('sprites.[id]', { id: 'door' });
-    assert.deepEqual(runtime.transform, { scale: 1, rotate: 90 });
+    assert.deepEqual(engine.api.engine.state.getRuntimeSnapshot('sprites.[id]', { id: 'door' }).transform, { scale: 1, rotate: 90 });
     SetStrategies.sprite(engine, { target: 'door', property: 'position', value: [null, 400, null] });
-    const motionEvent = engine.protocol.eventLog.filter(event => event.event === 'presentation.sprite.motion').at(-1);
-    assert.ok(motionEvent);
-    assert.equal(motionEvent.payload.type, 'sin_native');
-    assert.equal(motionEvent.payload.easing, 'ease_in_out');
-    assert.equal(motionEvent.payload.duration, 1000);
-    assert.deepEqual(motionEvent.payload.from, [100, 200, 0]);
-    assert.deepEqual(motionEvent.payload.to, [100, 400, 0]);
-    assert.deepEqual(motionEvent.payload.waypoints, [[150, 200, 0], [150, 300, 0], [200, 300, 0]]);
-    assert.equal(motionEvent.payload.path.length, 5);
-    assert.deepEqual(motionEvent.payload.path[0], [100, 200, 0]);
-    assert.deepEqual(motionEvent.payload.path[4], [100, 400, 0]);
-    assert.deepEqual(engine.api.engine.state.getRuntimeSnapshot('sprites.[id]', { id: 'door' }).position, [100, 400, 0]);
+    const event = engine.protocol.eventLog.filter(e => e.event === 'presentation.sprite.motion').at(-1);
+    assert.ok(event);
+    assert.equal(event.payload.path.type, 'bezier');
+    assert.equal(event.payload.duration, 1000);
+    assert.equal(event.payload.easing, 'ease_in_out');
+    assert.deepEqual(event.payload.path.points, [{ x: 100, y: 200, z: 0 }, { x: 150, y: 300, z: 10 }, { x: 200, y: 300, z: 20 }, { x: 100, y: 400, z: 30 }]);
+    assert.deepEqual(engine.api.engine.state.getRuntimeSnapshot('sprites.[id]', { id: 'door' }).position, [100, 400, 30]);
   } finally { engine.dispose(); }
 });
 
@@ -187,15 +181,16 @@ test('JsonClient exposes Sprite projections through getSprites/getSprite', () =>
   } finally { client.dispose?.(); }
 });
 
-test('JsonClient emits sprite.motion and easing evaluator returns normalized progress', () => {
+test('JsonClient emits sprite.motion and samples 3D Bezier/easing', () => {
   const emitted = [];
   const transport = { subscribe(fn) { this.fn = fn; return () => {}; }, request: async raw => raw };
   const client = new JsonClient(transport);
   client.subscribe(event => emitted.push(event));
-  transport.fn({ protocol: 'vsr', protocolVersion: 1, type: 'event', sequence: 1, event: 'presentation.sprite.motion', eventId: 'motion-1', payload: { spriteId: 'door', from: [0,0,0], waypoints: [], to: [10,0,0], path: [[0,0,0],[10,0,0]], duration: 500, type: 'linear', easing: 'ease_out' } });
+  const payload = { spriteId: 'door', path: { type: 'bezier', points: [{ x: 0, y: 0, z: 0 }, { x: 0, y: 0, z: 0 }, { x: 10, y: 0, z: 10 }, { x: 10, y: 0, z: 10 }] }, duration: 500, easing: 'ease_out' };
+  transport.fn({ protocol: 'vsr', protocolVersion: 1, type: 'event', sequence: 1, event: 'presentation.sprite.motion', eventId: 'motion-1', payload });
   assert.equal(emitted.some(event => event.type === 'sprite.motion' && event.motion.spriteId === 'door'), true);
+  assert.deepEqual(sampleSpriteMotion({ ...payload, easing: 'linear' }, 0.5), [5, 0, 5]);
   assert.equal(evaluateSpriteEasing('linear', 0.5), 0.5);
-  assert.deepEqual(sampleSpriteMotion({ spriteId: 'door', from: [0,0,0], waypoints: [[5,0,0]], to: [10,0,0], path: [[0,0,0],[5,0,0],[10,0,0]], duration: 500, type: 'linear', easing: 'linear' }, 0.5), [5,0,0]);
   assert.equal(evaluateSpriteEasing('ease_in', 0.5), 0.25);
   assert.equal(evaluateSpriteEasing('ease_out', 0.5), 0.75);
   assert.ok(Math.abs(evaluateSpriteEasing('sin_in_out', 0.5) - 0.5) < 1e-12);
@@ -221,24 +216,23 @@ test('schema: Sprite motion and transform are strict and null is allowed only fo
 });
 
 
-test('Sprite motion with empty step uses implicit middle node (timeline 0 -> 2)', async () => {
+test('Sprite motion follows absolute 3D Bezier endpoint', async () => {
   const engine = new GameEngine();
   try {
     const scenario = spriteScenario();
-    scenario.sprite.door.motion.step = [];
+    scenario.sprite.door.motion.path.points = [{ x: 100, y: 200, z: 0 }, { x: 150, y: 250, z: 10 }, { x: 150, y: 250, z: 20 }, { x: 200, y: 300, z: 30 }];
     await engine.init(scenario, { enterScene: true });
     SetStrategies.sprite(engine, { target: 'door', property: 'position', value: [200, 300, 0] });
-    const motionEvent = engine.protocol.eventLog.filter(event => event.event === 'presentation.sprite.motion').at(-1);
-    assert.deepEqual(motionEvent.payload.path, [[100,200,0],[150,250,0],[200,300,0]]);
-    assert.deepEqual(motionEvent.payload.waypoints, [[150,250,0]]);
+    const event = engine.protocol.eventLog.filter(e => e.event === 'presentation.sprite.motion').at(-1);
+    assert.deepEqual(event.payload.path.points, scenario.sprite.door.motion.path.points);
+    assert.deepEqual(engine.api.engine.state.getRuntimeSnapshot('sprites.[id]', { id: 'door' }).position, [200, 300, 30]);
   } finally { engine.dispose(); }
 });
-
 
 test('protocol: Sprite motion event payload validates against strict protocol schema', () => {
   const schema = JSON.parse(readFileSync(new URL('../engine/protocol/sprite-motion.schema.json', import.meta.url), 'utf8'));
   const validate = new Ajv({ strict: false }).compile(schema);
-  const payload = { spriteId: 'door', from: [0,0,0], waypoints: [[5,5,0]], to: [10,10,0], path: [[0,0,0],[5,5,0],[10,10,0]], duration: 1000, type: 'sin_positive', easing: 'ease_in_out' };
+  const payload = { spriteId: 'door', path: { type: 'bezier', points: [{ x: 0, y: 0, z: 0 }, { x: 5, y: 5, z: 10 }, { x: 8, y: 8, z: 20 }, { x: 10, y: 10, z: 30 }] }, duration: 1000, easing: 'ease_in_out' };
   assert.equal(validate(payload), true);
   assert.equal(validate({ ...payload, easing: 'unknown' }), false);
   assert.equal(validate({ ...payload, extra: true }), false);
