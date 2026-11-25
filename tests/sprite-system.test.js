@@ -42,6 +42,20 @@ test('schema: action references and sprite IDs are validated', () => {
   assert.ok(validateScenario(t).some(e => e.includes("references missing Sprite 'missing_sprite'")));
 });
 
+
+test('schema: motion impact and start/end hooks are supported with strict impact booleans', () => {
+  const s = spriteScenario();
+  s.sprite.door.motion.impact = { enable: true, physics: false };
+  s.sprite.door.motion.effect = { start: [], end: [] };
+  assert.deepEqual(validateScenario(s), []);
+  const bad = spriteScenario();
+  bad.sprite.door.motion.impact = { enable: true, physics: 'yes' };
+  assert.ok(validateScenario(bad).length > 0);
+  const extra = spriteScenario();
+  extra.sprite.door.motion.impact = { enable: true, physics: false, impact: [] };
+  assert.ok(validateScenario(extra).length > 0);
+});
+
 test('Sprite position uses null for partial axis updates; negative values remain coordinates', async () => {
   const engine = new GameEngine();
   try {
@@ -101,6 +115,14 @@ test('JsonClient exposes sprite interaction through the sprite.trigger command a
   } finally { client.dispose?.(); }
 });
 
+test('schema: impact requirements require a target and supported property', () => {
+  const s = spriteScenario();
+  s.actions.test_action.requirement = { logic: null, check: [{ type: 'impact', target: 'door', property: 'physics', op: '==', value: false }] };
+  assert.deepEqual(validateScenario(s), []);
+  const bad = spriteScenario();
+  bad.actions.test_action.requirement = { logic: null, check: [{ type: 'impact', target: 'door', property: 'position', op: '==', value: 0 }] };
+  assert.ok(validateScenario(bad).length > 0);
+});
 test('schema: sprite requirement and set/sprite position contracts are strict', () => {
   const s = spriteScenario();
   s.actions.test_action.requirement = { logic: null, check: [{ type: 'sprite', subtype: 'sprite', target: 'door', property: 'position', field: 'y', op: '==', value: 200 }] };
@@ -186,7 +208,7 @@ test('JsonClient emits sprite.motion and samples 3D Bezier/easing', () => {
   const transport = { subscribe(fn) { this.fn = fn; return () => {}; }, request: async raw => raw };
   const client = new JsonClient(transport);
   client.subscribe(event => emitted.push(event));
-  const payload = { spriteId: 'door', path: { type: 'bezier', points: [{ x: 0, y: 0, z: 0 }, { x: 0, y: 0, z: 0 }, { x: 10, y: 0, z: 10 }, { x: 10, y: 0, z: 10 }] }, duration: 500, easing: 'ease_out' };
+  const payload = { spriteId: 'door', motionId: 'door:motion:1', impact: { enable: false, physics: false }, path: { type: 'bezier', points: [{ x: 0, y: 0, z: 0 }, { x: 0, y: 0, z: 0 }, { x: 10, y: 0, z: 10 }, { x: 10, y: 0, z: 10 }] }, duration: 500, easing: 'ease_out' };
   transport.fn({ protocol: 'vsr', protocolVersion: 1, type: 'event', sequence: 1, event: 'presentation.sprite.motion', eventId: 'motion-1', payload });
   assert.equal(emitted.some(event => event.type === 'sprite.motion' && event.motion.spriteId === 'door'), true);
   assert.deepEqual(sampleSpriteMotion({ ...payload, easing: 'linear' }, 0.5), [5, 0, 5]);
@@ -216,6 +238,44 @@ test('schema: Sprite motion and transform are strict and null is allowed only fo
 });
 
 
+
+test('protocol: sprite motion impact validates same-layer target, emits impact and runs motion end hook', async () => {
+  const s = spriteScenario();
+  s.sprite.door.motion.impact = { enable: true, physics: false };
+  s.sprite.door.motion.effect = { start: [], end: [{ type: 'notify', text: 'motion ended on impact' }] };
+  s.sprite.wall = { action: 'test_action', layer: 2, state: { idle: 'wall.png' }, position: [150, 200, 0] };
+  s.scenes.start.routers.main.sprites.push('wall');
+  const engine = new GameEngine();
+  try {
+    await engine.init(s, { enterScene: true });
+    let endHookContext = null;
+    const originalProcessRunnables = engine.processRunnables.bind(engine);
+    engine.processRunnables = async (list, context, ...rest) => {
+      if (context?.hook === 'motion.end') endHookContext = { hook: context.hook, reason: context.reason, spriteId: context.spriteId, targetSpriteId: context.targetSpriteId };
+      return originalProcessRunnables(list, context, ...rest);
+    };
+    const result = await engine.protocol.dispatch(engine.protocol.createCommand('sprite.motion.impact', {
+      spriteId: 'door', targetSpriteId: 'wall', motionId: 'door:motion:1', contact: { x: 140, y: 200, z: 0 }
+    }));
+    assert.equal(result.ok, true);
+    assert.equal(result.result.physics, false);
+    assert.equal(result.result.collisionResponse, 'stop_at_contact');
+    assert.equal(endHookContext?.reason, 'impact');
+    assert.equal(endHookContext?.spriteId, 'door');
+    assert.equal(endHookContext?.targetSpriteId, 'wall');
+    assert.ok(engine.protocol.eventLog.some(e => e.event === 'sprite.impact' && e.payload.spriteId === 'door' && e.payload.targetSpriteId === 'wall'));
+    assert.ok(engine.protocol.eventLog.some(e => e.event === 'presentation.sprite.motion.completed' && e.payload.reason === 'impact'));
+    const impactReq = { logic: null, check: [{ type: 'impact', target: 'door', property: 'target', op: '==', value: 'wall' }] };
+    assert.equal(engine.checkReq(impactReq).pass, true);
+    const physicsReq = { logic: null, check: [{ type: 'impact', target: 'door', property: 'physics', op: '==', value: false }] };
+    assert.equal(engine.checkReq(physicsReq).pass, true);
+    const duplicate = await engine.protocol.dispatch(engine.protocol.createCommand('sprite.motion.impact', {
+      spriteId: 'door', targetSpriteId: 'wall', motionId: 'door:motion:1', contact: {}
+    }));
+    assert.equal(duplicate.result.duplicate, true);
+  } finally { engine.dispose(); }
+});
+
 test('Sprite motion follows absolute 3D Bezier endpoint', async () => {
   const engine = new GameEngine();
   try {
@@ -232,7 +292,7 @@ test('Sprite motion follows absolute 3D Bezier endpoint', async () => {
 test('protocol: Sprite motion event payload validates against strict protocol schema', () => {
   const schema = JSON.parse(readFileSync(new URL('../engine/protocol/sprite-motion.schema.json', import.meta.url), 'utf8'));
   const validate = new Ajv({ strict: false }).compile(schema);
-  const payload = { spriteId: 'door', path: { type: 'bezier', points: [{ x: 0, y: 0, z: 0 }, { x: 5, y: 5, z: 10 }, { x: 8, y: 8, z: 20 }, { x: 10, y: 10, z: 30 }] }, duration: 1000, easing: 'ease_in_out' };
+  const payload = { spriteId: 'door', motionId: 'door:motion:1', impact: { enable: false, physics: false }, path: { type: 'bezier', points: [{ x: 0, y: 0, z: 0 }, { x: 5, y: 5, z: 10 }, { x: 8, y: 8, z: 20 }, { x: 10, y: 10, z: 30 }] }, duration: 1000, easing: 'ease_in_out' };
   assert.equal(validate(payload), true);
   assert.equal(validate({ ...payload, easing: 'unknown' }), false);
   assert.equal(validate({ ...payload, extra: true }), false);

@@ -40,7 +40,7 @@ function isFiniteSpritePoint(point) {
 }
 function isSpriteMotionPayload(payload) {
   const easings = ['linear', 'ease_in', 'ease_out', 'ease_in_out', 'sin_in', 'sin_out', 'sin_in_out', 'step'];
-  return payload && typeof payload.spriteId === 'string' && payload.spriteId.length > 0 && payload.path?.type === 'bezier' && Array.isArray(payload.path.points) && payload.path.points.length === 4 && payload.path.points.every(isFiniteSpritePoint) && Number.isFinite(payload.duration) && payload.duration >= 0 && easings.includes(payload.easing);
+  return payload && typeof payload.spriteId === 'string' && payload.spriteId.length > 0 && typeof payload.motionId === 'string' && payload.motionId.length > 0 && payload.path?.type === 'bezier' && Array.isArray(payload.path.points) && payload.path.points.length === 4 && payload.path.points.every(isFiniteSpritePoint) && Number.isFinite(payload.duration) && payload.duration >= 0 && easings.includes(payload.easing) && (payload.impact === undefined || (payload.impact && typeof payload.impact.enable === 'boolean' && typeof payload.impact.physics === 'boolean'));
 }
 
 const timestampFromSnapshot = snapshot => {
@@ -620,6 +620,8 @@ export class JsonClient {
 
   triggerAction(actionId, uniqueId) { return this.dispatch('action.trigger', { actionId, uniqueId }); }
   triggerSprite(spriteId, uniqueId) { return this.dispatch('sprite.trigger', { spriteId, uniqueId }); }
+  completeSpriteMotion(spriteId, motionId, reason = 'completed') { return this.dispatch('sprite.motion.complete', { spriteId, motionId, reason }); }
+  reportSpriteImpact(spriteId, targetSpriteId, motionId, contact = {}) { return this.dispatch('sprite.motion.impact', { spriteId, targetSpriteId, motionId, contact }); }
   markActionRead(uniqueId) { return this.dispatch('action.markAsRead', { uniqueId }); }
   openChatThread(contactId, chatId) { return this.dispatch('chat.open', { contactId, chatId }); }
   nextChat() { return this.dispatch('chat.next'); }

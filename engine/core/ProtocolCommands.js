@@ -56,6 +56,44 @@ export const ProtocolCommands = {
     if(!sprite)return{success:false,reason:'sprite_not_found'};
     return this.handleAction(sprite.action,payload.uniqueId||`${sceneId}_${routerId}_${payload.spriteId}`);
    });
+   this.protocol.registerCommand('sprite.motion.complete', async payload => {
+    if(typeof payload.spriteId!=='string'||!payload.spriteId||typeof payload.motionId!=='string'||!payload.motionId)throw new TypeError('sprite.motion.complete requires spriteId and motionId.');
+    const state=this.api.engine.state;
+    const sprite=this.src?.sprite?.[payload.spriteId];
+    if(!sprite||sprite.motion?.enable!==true)return{success:false,reason:'motion_not_enabled'};
+    this.completedSpriteMotions ||= new Set();
+    if(this.completedSpriteMotions.has(payload.motionId))return{success:true,duplicate:true};
+    this.completedSpriteMotions.add(payload.motionId);
+    const effects=Array.isArray(sprite.motion.effect?.end)?sprite.motion.effect.end:[];
+    if(effects.length)await this.processRunnables(effects,{spriteId:payload.spriteId,motionId:payload.motionId,hook:'motion.end',reason:payload.reason||'completed'},true);
+    this.protocol.publish('presentation.sprite.motion.completed',{spriteId:payload.spriteId,motionId:payload.motionId,reason:payload.reason||'completed'});
+    return{success:true,reason:payload.reason||'completed'};
+   });
+   this.protocol.registerCommand('sprite.motion.impact', async payload => {
+    if(typeof payload.spriteId!=='string'||!payload.spriteId||typeof payload.targetSpriteId!=='string'||!payload.targetSpriteId||typeof payload.motionId!=='string'||!payload.motionId)throw new TypeError('sprite.motion.impact requires spriteId, targetSpriteId and motionId.');
+    const state=this.api.engine.state;
+    const mover=this.src?.sprite?.[payload.spriteId], target=this.src?.sprite?.[payload.targetSpriteId];
+    if(!mover||!target)return{success:false,reason:'sprite_not_found'};
+    const runtimeM=state.getRuntimeSnapshot('sprites.[id]',{id:payload.spriteId})||{};
+    const runtimeT=state.getRuntimeSnapshot('sprites.[id]',{id:payload.targetSpriteId})||{};
+    const layerM=Number.isFinite(runtimeM.layer)?runtimeM.layer:mover.layer;
+    const layerT=Number.isFinite(runtimeT.layer)?runtimeT.layer:target.layer;
+    if(layerM!==layerT)return{success:false,reason:'different_layer'};
+    if(mover.motion?.impact?.enable!==true)return{success:false,reason:'impact_disabled'};
+    this.completedSpriteMotions ||= new Set();
+    if(this.completedSpriteMotions.has(payload.motionId))return{success:true,duplicate:true};
+    this.completedSpriteMotions.add(payload.motionId);
+    const physics=mover.motion?.impact?.physics===true;
+    this.lastSpriteImpact ||= new Map();
+    const impactRecord={motionId:payload.motionId,physics,contact:payload.contact&&typeof payload.contact==='object'?payload.contact:{},timestamp:Date.now()};
+    this.lastSpriteImpact.set(payload.spriteId,{...impactRecord,targetSpriteId:payload.targetSpriteId});
+    this.lastSpriteImpact.set(payload.targetSpriteId,{...impactRecord,targetSpriteId:payload.spriteId});
+    this.protocol.publish('sprite.impact',{spriteId:payload.spriteId,targetSpriteId:payload.targetSpriteId,motionId:payload.motionId,layer:layerM,contact:payload.contact&&typeof payload.contact==='object'?payload.contact:{},physics});
+    const effects=Array.isArray(mover.motion.effect?.end)?mover.motion.effect.end:[];
+    if(effects.length)await this.processRunnables(effects,{spriteId:payload.spriteId,targetSpriteId:payload.targetSpriteId,motionId:payload.motionId,hook:'motion.end',reason:'impact',impact:{physics,contact:payload.contact||null}},true);
+    this.protocol.publish('presentation.sprite.motion.completed',{spriteId:payload.spriteId,motionId:payload.motionId,reason:'impact',physics});
+    return{success:true,reason:'impact',physics,collisionResponse:physics?'physics':'stop_at_contact'};
+   });
    this.protocol.registerCommand('action.trigger',async payload=>{
     if(typeof payload.actionId!=='string'||!payload.actionId)throw new TypeError('action.trigger requires actionId.');
     try {

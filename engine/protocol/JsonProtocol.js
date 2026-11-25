@@ -135,7 +135,7 @@ export class JsonProtocol{
     const runtime=state.sprites?.[spriteId]||{};
     const action=definition?actionProjectionById.get(definition.action):null;
     if(!definition||!action)return null;
-    return{id:spriteId,actionId:definition.action,layer:Number.isFinite(runtime.layer)?runtime.layer:definition.layer,position:Array.isArray(runtime.position)?cloneJsonValue(runtime.position):cloneJsonValue(definition.position),transform:cloneJsonValue(runtime.transform||definition.transform||{scale:1,rotate:0}),motion:cloneJsonValue(definition.motion||{enable:false,duration:0,type:'linear',easing:'linear',step:[]}),state:runtime.state??Object.keys(definition.state||{})[0]??null,states:cloneJsonValue(definition.state||{}),action};
+    return{id:spriteId,actionId:definition.action,layer:Number.isFinite(runtime.layer)?runtime.layer:definition.layer,position:Array.isArray(runtime.position)?cloneJsonValue(runtime.position):cloneJsonValue(definition.position),transform:cloneJsonValue(runtime.transform||definition.transform||{scale:1,rotate:0}),motion:cloneJsonValue(definition.motion||{enable:false,duration:0,path:null,easing:'linear',impact:{enable:false,physics:false},effect:{start:[],end:[]}}),state:runtime.state??Object.keys(definition.state||{})[0]??null,states:cloneJsonValue(definition.state||{}),action};
    }).filter(Boolean)
    :[];
   const actions=spriteMode?[]:actionProjections;

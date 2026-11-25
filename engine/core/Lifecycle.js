@@ -3,6 +3,7 @@ import {cloneJsonValue} from '../protocol/JsonProtocol.js';
 export const Lifecycle = {
   reset(){
    this._lifecycleGeneration=(this._lifecycleGeneration||0)+1;
+   this.lastSpriteImpact=new Map();this.completedSpriteMotions=new Set();this.spriteMotionSequence=0;
    this.clearEffectQueue?.('all');
    this.automationRunTokens?.clear?.();this.automationRandomBags?.clear?.();this.automationBlockingOwners?.clear?.();this.automationRunSequence=0;
    this.api?.presentation?.navigation?.setBlocking?.(false);

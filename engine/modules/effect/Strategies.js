@@ -99,11 +99,20 @@ const WiredSetStrategies = {
                 const matches = from.every((axis, index) => axis === start[index]) && target.every((axis, index) => axis === end[index]);
                 if (matches) {
                     resolvedTarget = end;
-                    descriptor = { spriteId, path: { type: 'bezier', points }, duration: motion.duration, easing: motion.easing };
+                    engine.spriteMotionSequence = (engine.spriteMotionSequence || 0) + 1;
+                    const motionId = `${spriteId}:motion:${engine.spriteMotionSequence}`;
+                    descriptor = { spriteId, motionId, path: { type: 'bezier', points }, duration: motion.duration, easing: motion.easing, impact: motion.impact || { enable: false, physics: false } };
                 }
             }
             state.update('sprites.[id]', runtime => ({ ...(runtime || {}), position: resolvedTarget }), { id: spriteId });
-            if (descriptor) engine.protocol?.publish?.('presentation.sprite.motion', descriptor);
+            if (descriptor) {
+                const startEffects = Array.isArray(motion.effect?.start) ? motion.effect.start : [];
+                if (startEffects.length) {
+                    return Promise.resolve(engine.processRunnables(startEffects, { spriteId, hook: 'motion.start', motionId: descriptor.motionId }, true))
+                        .then(() => engine.protocol?.publish?.('presentation.sprite.motion', descriptor));
+                }
+                engine.protocol?.publish?.('presentation.sprite.motion', descriptor);
+            }
             return;
         }
         if (prop === 'scale' || prop === 'rotate') {

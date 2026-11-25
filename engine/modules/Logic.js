@@ -160,6 +160,16 @@ const CheckTypeHandlers = {
     },
     stats: (engine, c) => StatsStrategies[c.subtype]?.(engine, c) ?? false,
     relationship: (engine, c) => RelationshipStrategies.characters(engine, c),
+    impact: (engine, c) => {
+        if (!['target', 'physics'].includes(c.property)) return false;
+        const record = engine.lastSpriteImpact?.get?.(String(c.target));
+        if (!record) return false;
+        const actual = c.property === 'target' ? record.targetSpriteId : record.physics;
+        const expected = resolveValue(c.value, engine);
+        if (c.property === 'physics' && typeof expected !== 'boolean') return false;
+        if (c.property === 'target' && typeof expected !== 'string') return false;
+        return Operations[c.op]?.(actual, expected) ?? false;
+    },
     sprite: (engine, c) => {
         const runtime = engine.api.engine.state.getRuntimeSnapshot('sprites.[id]', { id: c.target });
         if (!runtime) return false;

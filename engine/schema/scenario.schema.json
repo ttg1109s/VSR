@@ -5103,9 +5103,10 @@
             "set",
             "relationship",
             "action_count",
-            "sprite"
+            "sprite",
+            "impact"
           ],
-          "description": "[FIX] Enum trước đây ghi 'stat'/'character' — engine thật (engine/modules/Logic.js: CheckTypeHandlers) chỉ có 4 key này ('stats' số nhiều, không phải 'stat'; không có 'character'). Dùng 'stat' hoặc 'character' sẽ luôn fail âm thầm (checkSingle trả về pass:false khi không tìm thấy handler). type=item -> kiểm tra vật phẩm; type=state -> global state; type=stats -> chỉ số nhân vật/vật phẩm (subtype 'characters'|'item'); type=set -> field trong .set của scene/router/action/characters/chat/chat_choice/automation (subtype tương ứng). type=sprite checks runtime Sprite state/layer/position."
+          "description": "[FIX] Enum trước đây ghi 'stat'/'character' — engine thật (engine/modules/Logic.js: CheckTypeHandlers) chỉ có 4 key này ('stats' số nhiều, không phải 'stat'; không có 'character'). Dùng 'stat' hoặc 'character' sẽ luôn fail âm thầm (checkSingle trả về pass:false khi không tìm thấy handler). type=item -> kiểm tra vật phẩm; type=state -> global state; type=stats -> chỉ số nhân vật/vật phẩm (subtype 'characters'|'item'); type=set -> field trong .set của scene/router/action/characters/chat/chat_choice/automation (subtype tương ứng). type=sprite checks runtime Sprite state/layer/position. type=impact checks the latest collision recorded for a Sprite; target compares the other Sprite ID and physics compares the response flag."
         },
         "subtype": {
           "type": "string",
@@ -5633,6 +5634,36 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "impact"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "target",
+              "property"
+            ],
+            "properties": {
+              "target": {
+                "type": "string",
+                "minLength": 1
+              },
+              "property": {
+                "enum": [
+                  "target",
+                  "physics"
+                ]
+              }
+            }
           }
         }
       ]
@@ -6822,17 +6853,164 @@
         },
         "motion": {
           "type": "object",
-          "default": { "enable": false, "duration": 0, "path": { "type": "bezier", "points": [{ "x": 0, "y": 0, "z": 0 }, { "x": 0, "y": 0, "z": 0 }, { "x": 0, "y": 0, "z": 0 }, { "x": 0, "y": 0, "z": 0 }] }, "easing": "linear" },
-          "properties": {
-            "enable": { "type": "boolean", "default": false },
-            "duration": { "type": "number", "minimum": 0, "default": 0 },
-            "path": { "type": "object", "required": ["type", "points"], "properties": {
-              "type": { "type": "string", "enum": ["bezier"] },
-              "points": { "type": "array", "minItems": 4, "maxItems": 4, "items": { "type": "object", "required": ["x", "y", "z"], "properties": { "x": { "type": "number" }, "y": { "type": "number" }, "z": { "type": "number" } }, "additionalProperties": false } }
-            }, "additionalProperties": false },
-            "easing": { "type": "string", "enum": ["linear", "ease_in", "ease_out", "ease_in_out", "sin_in", "sin_out", "sin_in_out", "step"], "default": "linear" }
+          "default": {
+            "enable": false,
+            "duration": 0,
+            "path": {
+              "type": "bezier",
+              "points": [
+                {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                }
+              ]
+            },
+            "easing": "linear",
+            "impact": {
+              "enable": false,
+              "physics": false
+            },
+            "effect": {
+              "start": [],
+              "end": []
+            }
           },
-          "required": ["enable", "duration", "path", "easing"],
+          "properties": {
+            "enable": {
+              "type": "boolean",
+              "default": false
+            },
+            "duration": {
+              "type": "number",
+              "minimum": 0,
+              "default": 0
+            },
+            "path": {
+              "type": "object",
+              "required": [
+                "type",
+                "points"
+              ],
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "bezier"
+                  ]
+                },
+                "points": {
+                  "type": "array",
+                  "minItems": 4,
+                  "maxItems": 4,
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "x",
+                      "y",
+                      "z"
+                    ],
+                    "properties": {
+                      "x": {
+                        "type": "number"
+                      },
+                      "y": {
+                        "type": "number"
+                      },
+                      "z": {
+                        "type": "number"
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "additionalProperties": false
+            },
+            "easing": {
+              "type": "string",
+              "enum": [
+                "linear",
+                "ease_in",
+                "ease_out",
+                "ease_in_out",
+                "sin_in",
+                "sin_out",
+                "sin_in_out",
+                "step"
+              ],
+              "default": "linear"
+            },
+            "impact": {
+              "type": "object",
+              "default": {
+                "enable": false,
+                "physics": false
+              },
+              "properties": {
+                "enable": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Bật collision event trong thời gian motion."
+                },
+                "physics": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Bật phản ứng vật lý khi collision được xác nhận; chỉ có hiệu lực khi enable=true."
+                }
+              },
+              "required": [
+                "enable",
+                "physics"
+              ],
+              "additionalProperties": false
+            },
+            "effect": {
+              "type": "object",
+              "default": {
+                "start": [],
+                "end": []
+              },
+              "properties": {
+                "start": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/runnable_wrapper"
+                  },
+                  "default": []
+                },
+                "end": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/runnable_wrapper"
+                  },
+                  "default": []
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "enable",
+            "duration",
+            "path",
+            "easing"
+          ],
           "additionalProperties": false
         }
       },
