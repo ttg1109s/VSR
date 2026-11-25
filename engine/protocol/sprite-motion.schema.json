@@ -32,7 +32,7 @@
         "geometry-preserving",
         "absolute"
       ],
-      "description": "Source waypoint transformation mode used by Engine."
+      "description": "Source waypoint transformation mode: geometry-preserving (default) or absolute."
     },
     "path": {
       "type": "object",
@@ -50,12 +50,15 @@
           "type": "array",
           "minItems": 4,
           "items": {
-            "$ref": "#/definitions/point3"
+            "$ref": "#/definitions/point3",
+            "minItems": 4,
+            "maxItems": 4
           },
           "maxItems": 4
         }
       },
-      "additionalProperties": false
+      "additionalProperties": false,
+      "description": "Canonical cubic Bezier control points after runtime endpoints have been supplied by Engine."
     },
     "duration": {
       "type": "number",
