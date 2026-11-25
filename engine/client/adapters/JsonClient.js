@@ -34,11 +34,17 @@ export function sampleSpriteMotion(motion, progress) {
   if (motion.path.type !== 'bezier') throw new TypeError(`Unsupported Sprite path geometry: ${String(motion.path.type)}`);
   // Geometry-preserving paths are polylines through runtime endpoints and reference waypoints.
   if (motion.geometryMode) {
-    const segments = points.length - 1;
-    const scaled = t * segments;
-    const index = Math.min(segments - 1, Math.floor(scaled));
-    const local = t >= 1 ? 1 : scaled - index;
-    return [0, 1, 2].map(axis => points[index][axis] + (points[index + 1][axis] - points[index][axis]) * local);
+    // The protocol carries a cubic Bezier path whose two middle controls encode
+    // the transformed intermediate waypoint geometry. Runtime endpoints always
+    // override path values at t=0 and t=1.
+    const [p0, p1, p2, p3] = points;
+    const u = 1 - t, weights = [u * u * u, 3 * u * u * t, 3 * u * t * t, t * t * t];
+    const sampled = [0, 1, 2].map(axis =>
+      weights[0] * p0[axis] + weights[1] * p1[axis] + weights[2] * p2[axis] + weights[3] * p3[axis]
+    );
+    if (t === 0 && motion.start) return [motion.start.x, motion.start.y, motion.start.z];
+    if (t === 1 && motion.end) return [motion.end.x, motion.end.y, motion.end.z];
+    return sampled;
   }
   const [p0, p1, p2, p3] = points;
   const u = 1 - t, weights = [u * u * u, 3 * u * u * t, 3 * u * t * t, t * t * t];
