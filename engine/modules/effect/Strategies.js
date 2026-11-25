@@ -8,7 +8,7 @@ import { StatsCalculators, StatsModeHandlers } from './strategies/Stats.js';
 import { NotifyStrategies } from './strategies/Notifications.js';
 import { EffectKeyStrategies, EffectScopeResolvers, StaticListResolvers, ManageSubtypeHandlers } from './strategies/Management.js';
 import { CmsStrategies } from './strategies/Cms.js';
-import { setSpriteProperty } from './Sprite.js';
+import { setSpriteProperty } from '../Sprite.js';
 
 // Action definitions and runtime state share one global ID namespace.
 function resolveActionRuntime(engine, actionId) {
