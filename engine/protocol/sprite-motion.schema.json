@@ -5,6 +5,9 @@
   "type": "object",
   "required": [
     "spriteId",
+    "start",
+    "end",
+    "geometryMode",
     "path",
     "duration",
     "easing",
@@ -16,17 +19,20 @@
       "minLength": 1
     },
     "start": {
-      "$ref": "#/definitions/point3"
+      "$ref": "#/definitions/point3",
+      "description": "Runtime Sprite position immediately before this effect."
     },
     "end": {
-      "$ref": "#/definitions/point3"
+      "$ref": "#/definitions/point3",
+      "description": "Runtime position requested by this effect."
     },
     "geometryMode": {
       "type": "string",
       "enum": [
         "geometry-preserving",
         "absolute"
-      ]
+      ],
+      "description": "Source waypoint transformation mode used by Engine."
     },
     "path": {
       "type": "object",
@@ -42,10 +48,11 @@
         },
         "points": {
           "type": "array",
-          "minItems": 2,
+          "minItems": 4,
           "items": {
             "$ref": "#/definitions/point3"
-          }
+          },
+          "maxItems": 4
         }
       },
       "additionalProperties": false
@@ -117,5 +124,6 @@
       "additionalProperties": false
     }
   },
-  "additionalProperties": false
+  "additionalProperties": false,
+  "description": "Runtime Sprite motion event. The four Bezier points are the runtime Start, two effective intermediate controls, and runtime End."
 }
