@@ -6822,83 +6822,17 @@
         },
         "motion": {
           "type": "object",
-          "default": {
-            "enable": false,
-            "duration": 0,
-            "type": "linear",
-            "easing": "linear",
-            "step": []
-          },
+          "default": { "enable": false, "duration": 0, "path": { "type": "bezier", "points": [{ "x": 0, "y": 0, "z": 0 }, { "x": 0, "y": 0, "z": 0 }, { "x": 0, "y": 0, "z": 0 }, { "x": 0, "y": 0, "z": 0 }] }, "easing": "linear" },
           "properties": {
-            "enable": {
-              "type": "boolean",
-              "default": false
-            },
-            "duration": {
-              "type": "number",
-              "minimum": 0,
-              "default": 0
-            },
-            "type": {
-              "type": "string",
-              "enum": [
-                "linear",
-                "sin_native",
-                "sin_positive"
-              ],
-              "default": "linear"
-            },
-            "easing": {
-              "type": "string",
-              "enum": [
-                "linear",
-                "ease_in",
-                "ease_out",
-                "ease_in_out",
-                "sin_in",
-                "sin_out",
-                "sin_in_out",
-                "step"
-              ],
-              "default": "linear"
-            },
-            "step": {
-              "type": "array",
-              "default": [],
-              "items": {
-                "type": "object",
-                "properties": {
-                  "x": {
-                    "type": [
-                      "number",
-                      "null"
-                    ]
-                  },
-                  "y": {
-                    "type": [
-                      "number",
-                      "null"
-                    ]
-                  },
-                  "z": {
-                    "type": [
-                      "number",
-                      "null"
-                    ]
-                  }
-                },
-                "additionalProperties": false,
-                "minProperties": 1
-              }
-            }
+            "enable": { "type": "boolean", "default": false },
+            "duration": { "type": "number", "minimum": 0, "default": 0 },
+            "path": { "type": "object", "required": ["type", "points"], "properties": {
+              "type": { "type": "string", "enum": ["bezier"] },
+              "points": { "type": "array", "minItems": 4, "maxItems": 4, "items": { "type": "object", "required": ["x", "y", "z"], "properties": { "x": { "type": "number" }, "y": { "type": "number" }, "z": { "type": "number" } }, "additionalProperties": false } }
+            }, "additionalProperties": false },
+            "easing": { "type": "string", "enum": ["linear", "ease_in", "ease_out", "ease_in_out", "sin_in", "sin_out", "sin_in_out", "step"], "default": "linear" }
           },
-          "required": [
-            "enable",
-            "duration",
-            "type",
-            "easing",
-            "step"
-          ],
+          "required": ["enable", "duration", "path", "easing"],
           "additionalProperties": false
         }
       },
