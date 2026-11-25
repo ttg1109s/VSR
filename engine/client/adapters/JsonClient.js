@@ -32,20 +32,15 @@ export function sampleSpriteMotion(motion, progress) {
   const t = evaluateSpriteEasing(motion.easing, progress);
   const points = motion.path.points.map(point => [point.x, point.y, point.z]);
   if (motion.path.type !== 'bezier') throw new TypeError(`Unsupported Sprite path geometry: ${String(motion.path.type)}`);
-  // Geometry-preserving paths use the preserved cubic Bezier waypoints.
-  if (motion.geometryMode) {
-    const [p0, p1, p2, p3] = points;
-    const u = 1 - t, weights = [u * u * u, 3 * u * u * t, 3 * u * t * t, t * t * t];
-    const sampled = [0, 1, 2].map(axis =>
-      weights[0] * p0[axis] + weights[1] * p1[axis] + weights[2] * p2[axis] + weights[3] * p3[axis]
-    );
-    if (t === 0 && motion.start) return [motion.start.x, motion.start.y, motion.start.z];
-    if (t === 1 && motion.end) return [motion.end.x, motion.end.y, motion.end.z];
-    return sampled;
-  }
+  // Preserve the existing cubic Bezier sampling contract for all motion descriptors.
   const [p0, p1, p2, p3] = points;
   const u = 1 - t, weights = [u * u * u, 3 * u * u * t, 3 * u * t * t, t * t * t];
-  return [0, 1, 2].map(axis => weights[0] * p0[axis] + weights[1] * p1[axis] + weights[2] * p2[axis] + weights[3] * p3[axis]);
+  const sampled = [0, 1, 2].map(axis =>
+    weights[0] * p0[axis] + weights[1] * p1[axis] + weights[2] * p2[axis] + weights[3] * p3[axis]
+  );
+  if (motion.start && t === 0) return [motion.start.x, motion.start.y, motion.start.z];
+  if (motion.end && t === 1) return [motion.end.x, motion.end.y, motion.end.z];
+  return sampled;
 }
 function isFiniteSpritePoint(point) {
   return point && typeof point === 'object' && !Array.isArray(point) && ['x', 'y', 'z'].every(axis => typeof point[axis] === 'number' && Number.isFinite(point[axis]));
