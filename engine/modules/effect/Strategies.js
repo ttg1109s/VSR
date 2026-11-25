@@ -113,60 +113,38 @@ const WiredSetStrategies = {
                     const origin = definition.position;
                     const direction = target.map((axis, index) => axis - from[index]);
                     const length = Math.hypot(...direction);
-                    const normalizedOffset = point => [
+                    const offsetFromOrigin = point => [
                         point.x - origin[0],
                         point.y - origin[1],
                         point.z - origin[2]
                     ];
                     if (length > 0) {
-                        // Apply the minimal proper 3D rotation from reference +X to runtime direction.
+                        // Minimal proper rotation mapping reference +X onto the runtime Start -> End vector.
                         const unit = direction.map(axis => axis / length);
-                        const cross = [0, -unit[2], unit[1]];
-                        const sine = Math.hypot(...cross);
-                        const cosine = Math.max(-1, Math.min(1, unit[0]));
-                        const quaternion = sine > 1e-12
-                            ? [Math.sqrt((1 + cosine) / 2), cross[0] / Math.sqrt(2 * (1 + cosine)), cross[1] / Math.sqrt(2 * (1 + cosine)), cross[2] / Math.sqrt(2 * (1 + cosine))]
-                            : (cosine < 0 ? [0, 0, 0, 1] : [1, 0, 0, 0]);
+                        const crossAxis = [0, -unit[2], unit[1]];
+                        const sinHalf = Math.sqrt(Math.max(0, (1 - unit[0]) / 2));
+                        const cosHalf = Math.sqrt(Math.max(0, (1 + unit[0]) / 2));
+                        const axisLength = Math.hypot(...crossAxis);
+                        const quaternion = axisLength > 1e-12
+                            ? [cosHalf, ...crossAxis.map(value => value * sinHalf / axisLength)]
+                            : (unit[0] < 0 ? [0, 0, 0, 1] : [1, 0, 0, 0]);
+                        const [w, qx, qy, qz] = quaternion;
                         intermediate = intermediate.map(point => {
-                            const v = normalizedOffset(point);
-                            const [w, x, y, z] = quaternion;
-                            const qv = [x, y, z];
-                            const qCrossV = [
-                                qv[1] * v[2] - qv[2] * v[1],
-                                qv[2] * v[0] - qv[0] * v[2],
-                                qv[0] * v[1] - qv[1] * v[0]
+                            const v = offsetFromOrigin(point);
+                            const tx = 2 * (qy * v[2] - qz * v[1]);
+                            const ty = 2 * (qz * v[0] - qx * v[2]);
+                            const tz = 2 * (qx * v[1] - qy * v[0]);
+                            const rotated = [
+                                v[0] + w * tx + (qy * tz - qz * ty),
+                                v[1] + w * ty + (qz * tx - qx * tz),
+                                v[2] + w * tz + (qx * ty - qy * tx)
                             ];
-                            const qCrossTwice = qCrossV.map(value => 2 * value);
-                            const qvCrossTwice = [
-                                qv[1] * qCrossTwice[2] - qv[2] * qCrossTwice[1],
-                                qv[2] * qCrossTwice[0] - qv[0] * qCrossTwice[2],
-                                qv[0] * qCrossTwice[1] - qv[1] * qCrossTwice[0]
-                            ];
-                            const rotated = v.map((value, index) => value + w * qCrossTwice[index] + qvCrossTwice[index]);
                             return toPoint(rotated.map((value, index) => value + from[index]));
                         });
                     } else {
-                        // The zero vector has no direction, so retain the reference +X orientation.
+                        // A zero-length move has no direction. Translate the reference shape without rotation.
                         intermediate = intermediate.map(point =>
-                            toPoint(normalizedOffset(point).map((value, index) => value + from[index]))
-                        );
-                } else {
-                                const cross = [
-                                    axisUnit[1] * offset[2] - axisUnit[2] * offset[1],
-                                    axisUnit[2] * offset[0] - axisUnit[0] * offset[2],
-                                    axisUnit[0] * offset[1] - axisUnit[1] * offset[0]
-                                ];
-                                const projection = axisUnit.reduce((sum, value, index) => sum + value * offset[index], 0);
-                                rotated = offset.map((value, index) =>
-                                    value * dot + cross[index] * sine + axisUnit[index] * projection * (1 - dot)
-                                );
-                            }
-                            return toPoint(rotated.map((value, index) => value + from[index]));
-                        });
-                    } else {
-                        // The zero vector has no direction, so retain the reference +X orientation.
-                        intermediate = intermediate.map(point =>
-                            toPoint(normalizedOffset(point).map((value, index) => value + from[index]))
+                            toPoint(offsetFromOrigin(point).map((value, index) => value + from[index]))
                         );
                     }
                 }
