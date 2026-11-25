@@ -370,3 +370,30 @@ test('JsonClient records Action Passed and password retry failure outcomes from 
   assert.deepEqual(client.getTimeline().map(([, event]) => event.type), ['action_attempted', 'action_passed', 'action_password_failed']);
   client.dispose();
 });
+
+
+test('persistent idempotency store replays committed command result across protocol instances', async () => {
+  const durable = new Map();
+  const store = { async get(key) { return durable.get(key); }, async set(key, value) { durable.set(key, structuredClone(value)); } };
+  let commits = 0;
+  const command = { protocol: 'vsr', protocolVersion: 2, type: 'command', command: 'counter.commit', commandId: 'durable-1', payload: { amount: 1 } };
+  const first = new JsonProtocol({ idempotencyStore: store });
+  first.registerCommand('counter.commit', async () => ({ value: ++commits }));
+  const ack1 = await first.dispatch(command, { principalId: 'durable-principal' });
+  const second = new JsonProtocol({ idempotencyStore: store });
+  second.registerCommand('counter.commit', async () => ({ value: ++commits }));
+  const ack2 = await second.dispatch(command, { principalId: 'durable-principal' });
+  assert.equal(ack1.result.value, 1);
+  assert.deepEqual(ack2, ack1);
+  assert.equal(commits, 1);
+});
+
+test('persistent idempotency store read failure prevents command execution', async () => {
+  const store = { async get() { throw new Error('store unavailable'); }, async set() {} };
+  const protocol = new JsonProtocol({ idempotencyStore: store });
+  let invoked = false;
+  protocol.registerCommand('dangerous', async () => { invoked = true; });
+  const command = { protocol: 'vsr', protocolVersion: 2, type: 'command', command: 'dangerous', commandId: 'store-fail', payload: {} };
+  await assert.rejects(protocol.dispatch(command), /store unavailable/);
+  assert.equal(invoked, false);
+});

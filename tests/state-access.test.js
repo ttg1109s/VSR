@@ -42,3 +42,22 @@ test('source namespace remains read-only', () => {
     code: 'READ_ONLY_NAMESPACE'
   });
 });
+
+
+test('StateAccess transaction rolls back runtime and session when commit hook throws', async () => {
+  const engine = makeEngine();
+  engine.chatState = { active: false, history: [] };
+  engine.pendingPasswordAction = { status: 'pending' };
+  const state = createStateAccess(engine);
+  const originalCommit = engine.commitState;
+  engine.commitState = (reason) => { if (reason === 'state.transaction') throw new Error('commit fault'); };
+  await assert.rejects(state.transaction(tx => {
+    tx.set('global.counter', 9);
+    tx.set('chatState', { active: true, history: ['changed'] }, {}, { namespace: 'session' });
+    tx.set('pendingPasswordAction', { status: 'done' }, {}, { namespace: 'session' });
+  }), /commit fault/);
+  assert.equal(state.get('global.counter'), undefined);
+  assert.deepEqual(engine.chatState, { active: false, history: [] });
+  assert.deepEqual(engine.pendingPasswordAction, { status: 'pending' });
+  engine.commitState = originalCommit;
+});

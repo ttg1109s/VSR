@@ -23,10 +23,11 @@ const hasSnapshotUnsafeExpression=value=>{
  return false;
 };
 export class JsonProtocol{
- constructor({engineId=`vsr-${Math.random().toString(36).slice(2,10)}`,protocolVersion=2,maxEvents=1000,maxRememberedCommands=500,authorizeCommand=null,requireAuthorization=false,onCommandSuccess=null,presentationAvailable=null}={}){
+ constructor({engineId=`vsr-${Math.random().toString(36).slice(2,10)}`,protocolVersion=2,maxEvents=1000,maxRememberedCommands=500,idempotencyStore=null,authorizeCommand=null,requireAuthorization=false,onCommandSuccess=null,presentationAvailable=null}={}){
   if(typeof requireAuthorization!=='boolean')throw new TypeError('requireAuthorization must be boolean.');
   if(requireAuthorization&&typeof authorizeCommand!=='function')throw new TypeError('requireAuthorization needs an authorizeCommand function.');
-  Object.assign(this,{engineId,protocolVersion,maxEvents,maxRememberedCommands,authorizeCommand,requireAuthorization,onCommandSuccess,presentationAvailable});
+  if(idempotencyStore!==null&&(!idempotencyStore||typeof idempotencyStore.get!=='function'||typeof idempotencyStore.set!=='function'))throw new TypeError('idempotencyStore must implement async-compatible get(key) and set(key, value).');
+  Object.assign(this,{engineId,protocolVersion,maxEvents,maxRememberedCommands,idempotencyStore,authorizeCommand,requireAuthorization,onCommandSuccess,presentationAvailable});
   this.stateRevision=0;this.revision=0;this.eventSequence=0;this.commandSequence=0;this.listeners=new Set();this.eventLog=[];this.commandHandlers=new Map();this.commandResults=new Map();this.dispatchQueue=Promise.resolve();this.presentationRequests=new Map();this.presentationRequestSequence=0;
  }
  subscribe(fn){if(typeof fn!=='function')throw new TypeError('Protocol listener must be a function.');this.listeners.add(fn);return()=>this.listeners.delete(fn);}
@@ -459,8 +460,10 @@ export class JsonProtocol{
  publishSnapshot(engine,reason='state.changed'){return this.commitState(engine,reason);}
  getEventsSince(rev=0){if(!Number.isInteger(rev)||rev<0)throw new TypeError('stateRevision must be non-negative.');const first=this.eventLog[0],gap=!!first&&first.stateRevision>rev+1;return{gap,currentRevision:this.stateRevision,currentStateRevision:this.stateRevision,events:gap?[]:this.eventLog.filter(e=>e.stateRevision>rev).map(event => cloneJsonValue(event))};}
  getEventsAfter(seq=0){if(!Number.isInteger(seq)||seq<0)throw new TypeError('sequence must be non-negative.');const first=this.eventLog[0]?.sequence??this.eventSequence+1,gap=seq<first-1;return{gap,currentSequence:this.eventSequence,currentStateRevision:this.stateRevision,events:gap?[]:this.eventLog.filter(e=>e.sequence>seq).map(event => cloneJsonValue(event))};}
- #remember(key, requestFingerprint, ack) {
-  this.commandResults.set(key, { requestFingerprint, ack: cloneJsonValue(ack) });
+ async #remember(key, requestFingerprint, ack) {
+  const record={ requestFingerprint, ack: cloneJsonValue(ack) };
+  if(this.idempotencyStore) await this.idempotencyStore.set(key, cloneJsonValue(record));
+  this.commandResults.set(key, record);
   if (this.commandResults.size > this.maxRememberedCommands) {
    this.commandResults.delete(this.commandResults.keys().next().value);
   }
@@ -512,7 +515,8 @@ export class JsonProtocol{
     // result. A command ID reused with a different payload is rejected.
     const idempotencyKey = principalId === null ? command.commandId : `${String(principalId)}:${command.commandId}`;
     const requestFingerprint = JSON.stringify({ command: command.command, payload });
-    const previous = this.commandResults.get(idempotencyKey);
+    let previous = this.commandResults.get(idempotencyKey);
+    if(!previous&&this.idempotencyStore){previous=await this.idempotencyStore.get(idempotencyKey);if(previous)this.commandResults.set(idempotencyKey,cloneJsonValue(previous));}
     if (previous) {
       if (previous.requestFingerprint !== requestFingerprint) {
         return {
@@ -539,7 +543,7 @@ export class JsonProtocol{
 
     const handler = this.commandHandlers.get(command.command);
     if (!handler) {
-      return this.#remember(idempotencyKey, requestFingerprint, {
+      return await this.#remember(idempotencyKey, requestFingerprint, {
         protocol: 'vsr', protocolVersion: this.protocolVersion, type: 'ack',
         commandId: command.commandId, ok: false,
         error: { code: 'UNKNOWN_COMMAND', command: command.command },

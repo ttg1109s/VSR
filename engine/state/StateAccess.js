@@ -230,7 +230,17 @@ export class StateAccess {
       else engine.chatState = sessionDraft.chatState;
       if (sessionOriginal.pendingPasswordAction && sessionDraft.pendingPasswordAction) reconcile(sessionOriginal.pendingPasswordAction, sessionDraft.pendingPasswordAction);
       else engine.pendingPasswordAction = sessionDraft.pendingPasswordAction;
-      engine.commitState?.('state.transaction');
+      try {
+        engine.commitState?.('state.transaction');
+      } catch (commitError) {
+        reconcile(runtimeOriginal, clone(JSON.parse(runtimeBaseline)));
+        if (sessionOriginal.chatState && typeof sessionOriginal.chatState === 'object') reconcile(sessionOriginal.chatState, clone(sessionBaseline.chatState));
+        else engine.chatState = sessionBaseline.chatState;
+        if (sessionOriginal.pendingPasswordAction && typeof sessionOriginal.pendingPasswordAction === 'object') reconcile(sessionOriginal.pendingPasswordAction, clone(sessionBaseline.pendingPasswordAction));
+        else engine.pendingPasswordAction = sessionBaseline.pendingPasswordAction;
+        try { engine.commitState?.('state.transaction.rollback'); } catch {}
+        throw commitError;
+      }
       return result;
     } finally {
       closed = true;
