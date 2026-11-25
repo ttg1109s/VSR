@@ -92,21 +92,21 @@ const WiredSetStrategies = {
             let descriptor = null;
             let resolvedTarget = target;
             const configuredPath = motion.path;
-            const isWaypointPath = Array.isArray(configuredPath?.point?.[0]);
+            const hasWaypointList = Array.isArray(configuredPath?.point?.[0]);
             const isLegacyPath = !Array.isArray(configuredPath?.point) &&
                 configuredPath?.type === 'bezier' &&
                 Array.isArray(configuredPath?.points) &&
                 configuredPath.points.length === 4;
-            const referencePoints = isWaypointPath
+            const referencePoints = hasWaypointList
                 ? configuredPath.point[0]
                 : isLegacyPath ? configuredPath.points.slice(1, -1) : [];
             const mode = configuredPath?.point?.[1] ?? (isLegacyPath ? 'absolute' : 'geometry-preserving');
-            if (motion.enable === true && (isWaypointPath || isLegacyPath)) {
+            if (motion.enable === true && (hasWaypointList || isLegacyPath)) {
+                if (!['geometry-preserving', 'absolute'].includes(mode)) throw new TypeError(`Unsupported Sprite motion path mode: ${String(mode)}`);
                 const validPoints = referencePoints.every(point =>
                     point && ['x', 'y', 'z'].every(axis => typeof point[axis] === 'number' && Number.isFinite(point[axis]))
                 );
                 if (!validPoints) throw new TypeError(`Sprite '${spriteId}' motion path contains an invalid reference point.`);
-                if (!['geometry-preserving', 'absolute'].includes(mode)) throw new TypeError(`Unsupported Sprite motion path mode: ${String(mode)}`);
                 const toPoint = vector => ({ x: vector[0], y: vector[1], z: vector[2] });
                 let intermediate = referencePoints.map(point => ({ x: point.x, y: point.y, z: point.z }));
                 if (mode === 'geometry-preserving') {
@@ -148,14 +148,16 @@ const WiredSetStrategies = {
                         );
                     }
                 }
-                const points = [toPoint(from), ...intermediate, toPoint(target)];
-                const motionPoints = points.length >= 4
-                    ? points
+                const allPoints = [toPoint(from), ...intermediate, toPoint(target)];
+                // Canonical protocol paths remain cubic Beziers: extra authoring waypoints
+                // are reduced to the first and last intermediates, without changing scale.
+                const motionPoints = allPoints.length >= 4
+                    ? [allPoints[0], allPoints[1], allPoints.at(-2), allPoints.at(-1)]
                     : [
-                        points[0],
+                        allPoints[0],
                         toPoint(from.map((axis, index) => axis + (target[index] - axis) / 3)),
                         toPoint(from.map((axis, index) => axis + 2 * (target[index] - axis) / 3)),
-                        points.at(-1)
+                        allPoints.at(-1)
                     ];
                 engine.spriteMotionSequence = (engine.spriteMotionSequence || 0) + 1;
                 const motionId = `${spriteId}:motion:${engine.spriteMotionSequence}`;
