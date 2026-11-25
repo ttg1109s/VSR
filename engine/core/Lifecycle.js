@@ -1,4 +1,5 @@
 import {LoaderSystem} from '../modules/Loader.js';
+import {cloneJsonValue} from '../protocol/JsonProtocol.js';
 export const Lifecycle = {
   reset(){
    this._lifecycleGeneration=(this._lifecycleGeneration||0)+1;
