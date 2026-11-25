@@ -1,6 +1,19 @@
 import { getFakerActingIds } from './entity/Identity.js';
 
 export const ActionSystem = {
+    getActionPresentationData(action) {
+        if (!action) return null;
+        return {
+            id: action.id,
+            meta: {
+                title: action.meta?.title ?? action.title ?? action.name ?? action.id,
+                desc: action.meta?.desc ?? action.meta?.description ?? '',
+                buttonLabel: action.meta?.buttonLabel,
+                buttonIcon: action.meta?.buttonIcon
+            }
+        };
+    },
+
     getEffectiveActions(sId, rId) {
         const router = this.src?.scenes?.[sId]?.routers?.[rId];
         if (!router) return [];

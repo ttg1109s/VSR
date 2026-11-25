@@ -5,6 +5,9 @@
   "type": "object",
   "required": [
     "spriteId",
+    "start",
+    "end",
+    "geometryMode",
     "path",
     "duration",
     "easing",
@@ -14,6 +17,22 @@
     "spriteId": {
       "type": "string",
       "minLength": 1
+    },
+    "start": {
+      "$ref": "#/definitions/point3",
+      "description": "Runtime Sprite position immediately before this effect."
+    },
+    "end": {
+      "$ref": "#/definitions/point3",
+      "description": "Runtime position requested by this effect."
+    },
+    "geometryMode": {
+      "type": "string",
+      "enum": [
+        "geometry-preserving",
+        "absolute"
+      ],
+      "description": "Source waypoint transformation mode: geometry-preserving (default) or absolute."
     },
     "path": {
       "type": "object",
@@ -30,13 +49,16 @@
         "points": {
           "type": "array",
           "minItems": 4,
-          "maxItems": 4,
           "items": {
-            "$ref": "#/definitions/point3"
-          }
+            "$ref": "#/definitions/point3",
+            "minItems": 4,
+            "maxItems": 4
+          },
+          "maxItems": 4
         }
       },
-      "additionalProperties": false
+      "additionalProperties": false,
+      "description": "Canonical cubic Bezier control points after runtime endpoints have been supplied by Engine."
     },
     "duration": {
       "type": "number",
@@ -64,12 +86,12 @@
         "enable": {
           "type": "boolean",
           "default": false,
-          "description": "B\u1eadt collision event trong th\u1eddi gian motion."
+          "description": "Bật collision event trong thời gian motion."
         },
         "physics": {
           "type": "boolean",
           "default": false,
-          "description": "B\u1eadt ph\u1ea3n \u1ee9ng v\u1eadt l\u00fd khi collision \u0111\u01b0\u1ee3c x\u00e1c nh\u1eadn; ch\u1ec9 c\u00f3 hi\u1ec7u l\u1ef1c khi enable=true."
+          "description": "Bật phản ứng vật lý khi collision được xác nhận; chỉ có hiệu lực khi enable=true."
         }
       },
       "required": [
@@ -105,5 +127,6 @@
       "additionalProperties": false
     }
   },
-  "additionalProperties": false
+  "additionalProperties": false,
+  "description": "Runtime Sprite motion event. The four Bezier points are the runtime Start, two effective intermediate controls, and runtime End."
 }

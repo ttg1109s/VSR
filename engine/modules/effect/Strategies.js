@@ -9,6 +9,7 @@ import { NotifyStrategies } from './strategies/Notifications.js';
 import { EffectKeyStrategies, EffectScopeResolvers, StaticListResolvers, ManageSubtypeHandlers } from './strategies/Management.js';
 import { CmsStrategies } from './strategies/Cms.js';
 
+
 // Action definitions and runtime state share one global ID namespace.
 function resolveActionRuntime(engine, actionId) {
     if (!actionId || !Object.prototype.hasOwnProperty.call(engine.src?.actions || {}, actionId)) return null;
@@ -61,73 +62,10 @@ const WiredSetStrategies = {
     },
 
     sprite: (engine, eff) => {
-        const state = engine.api.engine.state;
         const spriteId = String(resolveValue(eff.target, engine) ?? '');
         const prop = resolveValue(eff.property, engine);
         const value = resolveValue(eff.value, engine);
-        const definition = engine.src?.sprite?.[spriteId];
-        if (!definition) throw new Error(`Unknown Sprite ID: ${spriteId}`);
-        const current = state.getRuntimeSnapshot('sprites.[id]', { id: spriteId });
-        if (!current) throw new Error(`Sprite runtime state missing: ${spriteId}`);
-        if (prop === 'state') {
-            if (typeof value !== 'string' || !Object.hasOwn(definition.state, value)) throw new TypeError(`Sprite '${spriteId}' has no state '${String(value)}'.`);
-            state.update('sprites.[id]', runtime => ({ ...(runtime || {}), state: value }), { id: spriteId });
-            return;
-        }
-        if (prop === 'layer') {
-            if (typeof value !== 'number' || !Number.isFinite(value)) throw new TypeError('set/sprite layer requires a finite number.');
-            state.update('sprites.[id]', runtime => ({ ...(runtime || {}), layer: value }), { id: spriteId });
-            return;
-        }
-        if (prop === 'position') {
-            if (!Array.isArray(value) || value.length < 1 || value.length > 3 || value.some(v => v !== null && (typeof v !== 'number' || !Number.isFinite(v)))) {
-                throw new TypeError('set/sprite position requires an array of 1 to 3 finite numbers or null axis values.');
-            }
-            const from = [...(current.position || definition.position)];
-            const target = [...from];
-            for (let index = 0; index < value.length; index++) {
-                if (value[index] !== null) target[index] = value[index];
-            }
-            const motion = definition.motion || { enable: false, duration: 0, path: null, easing: 'linear' };
-            let descriptor = null;
-            let resolvedTarget = target;
-            if (motion.enable === true && motion.path?.type === 'bezier' && Array.isArray(motion.path.points) && motion.path.points.length === 4) {
-                const points = motion.path.points.map(point => ({ x: point.x, y: point.y, z: point.z }));
-                const start = [points[0].x, points[0].y, points[0].z];
-                const end = [points[3].x, points[3].y, points[3].z];
-                // Absolute paths are applied only when the position command matches both configured endpoints.
-                const matches = from.every((axis, index) => axis === start[index]) && target.every((axis, index) => axis === end[index]);
-                if (matches) {
-                    resolvedTarget = end;
-                    engine.spriteMotionSequence = (engine.spriteMotionSequence || 0) + 1;
-                    const motionId = `${spriteId}:motion:${engine.spriteMotionSequence}`;
-                    descriptor = { spriteId, motionId, path: { type: 'bezier', points }, duration: motion.duration, easing: motion.easing, impact: motion.impact || { enable: false, physics: false } };
-                }
-            }
-            state.update('sprites.[id]', runtime => ({ ...(runtime || {}), position: resolvedTarget }), { id: spriteId });
-            if (descriptor) {
-                const startEffects = Array.isArray(motion.effect?.start) ? motion.effect.start : [];
-                if (startEffects.length) {
-                    return Promise.resolve(engine.processRunnables(startEffects, { spriteId, hook: 'motion.start', motionId: descriptor.motionId }, true))
-                        .then(() => engine.protocol?.publish?.('presentation.sprite.motion', descriptor));
-                }
-                engine.protocol?.publish?.('presentation.sprite.motion', descriptor);
-            }
-            return;
-        }
-        if (prop === 'scale' || prop === 'rotate') {
-            if (typeof value !== 'number' || !Number.isFinite(value) || (prop === 'scale' && value <= 0)) throw new TypeError(`set/sprite ${prop} requires a finite${prop === 'scale' ? ' positive' : ''} number.`);
-            state.update('sprites.[id]', runtime => ({ ...(runtime || {}), transform: { ...(runtime?.transform || current.transform || definition.transform || { scale: 1, rotate: 0 }), [prop]: value } }), { id: spriteId });
-            return;
-        }
-        if (prop === 'transform') {
-            if (!value || typeof value !== 'object' || Array.isArray(value) || Object.keys(value).length < 1 || Object.keys(value).some(key => !['scale', 'rotate'].includes(key))) throw new TypeError('set/sprite transform requires a partial {scale, rotate} object.');
-            if (value.scale !== undefined && (typeof value.scale !== 'number' || !Number.isFinite(value.scale) || value.scale <= 0)) throw new TypeError('set/sprite transform.scale must be a finite positive number.');
-            if (value.rotate !== undefined && (typeof value.rotate !== 'number' || !Number.isFinite(value.rotate))) throw new TypeError('set/sprite transform.rotate must be a finite number.');
-            state.update('sprites.[id]', runtime => ({ ...(runtime || {}), transform: { ...(runtime?.transform || current.transform || definition.transform || { scale: 1, rotate: 0 }), ...value } }), { id: spriteId });
-            return;
-        }
-        throw new TypeError(`Unsupported set/sprite property: ${String(prop)}`);
+        engine.setSpriteProperty(spriteId, prop, value);
     },
 
     action_count: (engine, eff) => {

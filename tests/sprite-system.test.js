@@ -173,6 +173,84 @@ test('Sprite transform and absolute 3D Bezier motion descriptor', async () => {
   } finally { engine.dispose(); }
 });
 
+test('Sprite geometry-preserving waypoints follow the runtime Start to End vector without scaling', async () => {
+  const engine = new GameEngine();
+  try {
+    const scenario = spriteScenario();
+    scenario.sprite.door.motion.path = { point: [
+      [{ x: 200, y: 100, z: 0 }, { x: 400, y: 100, z: 0 }],
+      'geometry-preserving'
+    ] };
+    await engine.init(scenario, { enterScene: true });
+    SetStrategies.sprite(engine, { target: 'door', property: 'position', value: [100, 500, 0] });
+    const event = engine.protocol.eventLog.filter(e => e.event === 'presentation.sprite.motion').at(-1);
+    assert.ok(event);
+    assert.equal(event.payload.geometryMode, 'geometry-preserving');
+    assert.deepEqual(event.payload.start, { x: 100, y: 200, z: 0 });
+    assert.deepEqual(event.payload.end, { x: 100, y: 500, z: 0 });
+    assert.deepEqual(event.payload.path.points[0], event.payload.start);
+    assert.deepEqual(event.payload.path.points.at(-1), event.payload.end);
+    const distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z);
+    assert.ok(Math.abs(distance(event.payload.path.points[1], event.payload.start) - distance(
+      { x: 200, y: 100, z: 0 }, scenario.sprite.door.position
+    )) < 1e-9);
+    assert.equal(validateScenario(scenario).length, 0);
+  } finally { engine.dispose(); }
+});
+
+test('Sprite geometry-preserving mode is the default when omitted', async () => {
+  const engine = new GameEngine();
+  try {
+    const scenario = spriteScenario();
+    scenario.sprite.door.motion.path = { point: [
+      [{ x: 200, y: 100, z: 0 }, { x: 400, y: 100, z: 0 }]
+    ] };
+    await engine.init(scenario, { enterScene: true });
+    SetStrategies.sprite(engine, { target: 'door', property: 'position', value: [100, 500, 0] });
+    const event = engine.protocol.eventLog.filter(e => e.event === 'presentation.sprite.motion').at(-1);
+    assert.equal(event.payload.geometryMode, 'geometry-preserving');
+    assert.equal(validateScenario(scenario).length, 0);
+  } finally { engine.dispose(); }
+});
+
+test('Sprite absolute motion waypoints retain their coordinates and are wrapped by runtime endpoints', async () => {
+  const engine = new GameEngine();
+  try {
+    const scenario = spriteScenario();
+    scenario.sprite.door.motion.path = { point: [
+      [{ x: 200, y: 100, z: 0 }, { x: 400, y: 100, z: 0 }],
+      'absolute'
+    ] };
+    await engine.init(scenario, { enterScene: true });
+    SetStrategies.sprite(engine, { target: 'door', property: 'position', value: [0, 500, 0] });
+    const event = engine.protocol.eventLog.filter(e => e.event === 'presentation.sprite.motion').at(-1);
+    assert.deepEqual(event.payload.path.points[1], { x: 200, y: 100, z: 0 });
+    assert.deepEqual(event.payload.path.points[2], { x: 400, y: 100, z: 0 });
+    assert.deepEqual(event.payload.path.points[0], event.payload.start);
+    assert.deepEqual(event.payload.path.points.at(-1), event.payload.end);
+    assert.equal(event.payload.geometryMode, 'absolute');
+    const schema = JSON.parse(readFileSync(new URL('../engine/protocol/sprite-motion.schema.json', import.meta.url), 'utf8'));
+    const validate = new Ajv({ strict: false }).compile(schema);
+    assert.equal(validate(event.payload), true);
+  } finally { engine.dispose(); }
+});
+
+test('JsonClient samples geometry-preserving cubic motion at its runtime endpoints', () => {
+  const payload = {
+    spriteId: 'door', motionId: 'door:motion:1', geometryMode: 'geometry-preserving',
+    start: { x: 10, y: 20, z: 0 }, end: { x: 10, y: 80, z: 0 },
+    path: { type: 'bezier', points: [
+      { x: 10, y: 20, z: 0 }, { x: -10, y: 30, z: 0 },
+      { x: -30, y: 70, z: 0 }, { x: 10, y: 80, z: 0 }
+    ] },
+    duration: 1000, easing: 'linear'
+  };
+  assert.deepEqual(sampleSpriteMotion(payload, 0), [10, 20, 0]);
+  assert.deepEqual(sampleSpriteMotion(payload, 1), [10, 80, 0]);
+  const midpoint = sampleSpriteMotion(payload, 0.5);
+  assert.deepEqual(midpoint, [-5, 50, 0]);
+});
+
 test('Sprite motion disabled teleports without emitting and transform survives save/restore', async () => {
   const engine = new GameEngine(); const restored = new GameEngine();
   try {

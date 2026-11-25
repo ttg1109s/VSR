@@ -7,6 +7,7 @@ import {EntitySystem} from './modules/Entity.js';
 import {ItemSystem} from './modules/Item.js';
 import {ChatSystem} from './modules/Chat.js';
 import {AutomationSystem} from './modules/Automation.js';
+import {SpriteSystem} from './modules/Sprite.js';
 import {createEngineAPI} from './protocol/index.js';
 import {ProtocolCommands} from './core/ProtocolCommands.js';
 import {Lifecycle} from './core/Lifecycle.js';
@@ -104,4 +105,4 @@ export class GameEngine {
  commitState(reason='state.changed'){return this.protocol?.commitState(this,reason)??null;}
  dispatchProtocolCommand(command,context={}){if(!this.protocol)throw new Error('VSR protocol is not initialized.');return this.protocol.dispatch(command,context);}
 }
-Object.assign(GameEngine.prototype,ConfigSystem,LogicSystem,EffectSystem,ActionSystem,SceneSystem,EntitySystem,ItemSystem,ChatSystem,AutomationSystem,ProtocolCommands,Lifecycle,SaveRestore,TaskScheduling,EffectQueue);
+Object.assign(GameEngine.prototype,ConfigSystem,LogicSystem,EffectSystem,ActionSystem,SceneSystem,EntitySystem,ItemSystem,ChatSystem,AutomationSystem,SpriteSystem,ProtocolCommands,Lifecycle,SaveRestore,TaskScheduling,EffectQueue);

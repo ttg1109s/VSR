@@ -1154,6 +1154,26 @@
     }
   },
   "definitions": {
+    "point3": {
+      "type": "object",
+      "required": [
+        "x",
+        "y",
+        "z"
+      ],
+      "properties": {
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        },
+        "z": {
+          "type": "number"
+        }
+      },
+      "additionalProperties": false
+    },
     "runnable_wrapper": {
       "type": "object",
       "description": "A single executable wrapper. The engine supports only the dispatch types listed here.",
@@ -6904,43 +6924,42 @@
             "path": {
               "type": "object",
               "required": [
-                "type",
-                "points"
+                "point"
               ],
               "properties": {
+                "point": {
+                  "type": "array",
+                  "minItems": 2,
+                  "maxItems": 2,
+                  "prefixItems": [
+                    {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/definitions/point3"
+                      },
+                      "minItems": 0
+                    },
+                    {
+                      "type": "string",
+                      "enum": [
+                        "geometry-preserving",
+                        "absolute"
+                      ],
+                      "default": "geometry-preserving",
+                      "description": "Required transformation mode. Use geometry-preserving by default or absolute to retain literal waypoint coordinates."
+                    }
+                  ],
+                  "items": false
+                },
                 "type": {
                   "type": "string",
                   "enum": [
                     "bezier"
                   ]
-                },
-                "points": {
-                  "type": "array",
-                  "minItems": 4,
-                  "maxItems": 4,
-                  "items": {
-                    "type": "object",
-                    "required": [
-                      "x",
-                      "y",
-                      "z"
-                    ],
-                    "properties": {
-                      "x": {
-                        "type": "number"
-                      },
-                      "y": {
-                        "type": "number"
-                      },
-                      "z": {
-                        "type": "number"
-                      }
-                    },
-                    "additionalProperties": false
-                  }
                 }
               },
-              "additionalProperties": false
+              "additionalProperties": false,
+              "description": "Reference intermediate waypoints and optional geometry mode. Runtime Start and End are added by Engine."
             },
             "easing": {
               "type": "string",
