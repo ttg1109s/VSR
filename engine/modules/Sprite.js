@@ -164,3 +164,15 @@ export function getSpritePresentationData(engine, spriteId, action = null) {
     };
 }
 
+
+// Sprite subsystem facade, mixed into GameEngine. Keep implementation helpers
+// engine-explicit so runtime operations and projections remain easy to test.
+export const SpriteSystem = {
+    setSpriteProperty(spriteId, prop, value) {
+        return setSpriteProperty(this.api.engine, spriteId, prop, value);
+    },
+
+    getSpritePresentationData(spriteId, actionPresentation = null) {
+        return getSpritePresentationData(this.api.engine, spriteId, actionPresentation);
+    }
+};
