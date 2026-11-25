@@ -11,13 +11,13 @@ export function setSpriteProperty(engine, spriteId, prop, value) {
             return;
         }
         if (prop === 'layer') {
-            if (typeof value !== 'number' || !Number.isFinite(value)) throw new TypeError('set/sprite layer requires a finite number.');
+            if (typeof value !== 'number' || !Number.isFinite(value)) throw new TypeError('Sprite layer requires a finite number.');
             state.update('sprites.[id]', runtime => ({ ...(runtime || {}), layer: value }), { id: spriteId });
             return;
         }
         if (prop === 'position') {
             if (!Array.isArray(value) || value.length < 1 || value.length > 3 || value.some(v => v !== null && (typeof v !== 'number' || !Number.isFinite(v)))) {
-                throw new TypeError('set/sprite position requires an array of 1 to 3 finite numbers or null axis values.');
+                throw new TypeError('Sprite position requires an array of 1 to 3 finite numbers or null axis values.');
             }
             const from = [...(current.position || definition.position)];
             const target = [...from];
@@ -137,9 +137,9 @@ export function setSpriteProperty(engine, spriteId, prop, value) {
             return;
         }
         if (prop === 'transform') {
-            if (!value || typeof value !== 'object' || Array.isArray(value) || Object.keys(value).length < 1 || Object.keys(value).some(key => !['scale', 'rotate'].includes(key))) throw new TypeError('set/sprite transform requires a partial {scale, rotate} object.');
-            if (value.scale !== undefined && (typeof value.scale !== 'number' || !Number.isFinite(value.scale) || value.scale <= 0)) throw new TypeError('set/sprite transform.scale must be a finite positive number.');
-            if (value.rotate !== undefined && (typeof value.rotate !== 'number' || !Number.isFinite(value.rotate))) throw new TypeError('set/sprite transform.rotate must be a finite number.');
+            if (!value || typeof value !== 'object' || Array.isArray(value) || Object.keys(value).length < 1 || Object.keys(value).some(key => !['scale', 'rotate'].includes(key))) throw new TypeError('Sprite transform requires a partial {scale, rotate} object.');
+            if (value.scale !== undefined && (typeof value.scale !== 'number' || !Number.isFinite(value.scale) || value.scale <= 0)) throw new TypeError('Sprite transform.scale must be a finite positive number.');
+            if (value.rotate !== undefined && (typeof value.rotate !== 'number' || !Number.isFinite(value.rotate))) throw new TypeError('Sprite transform.rotate must be a finite number.');
             state.update('sprites.[id]', runtime => ({ ...(runtime || {}), transform: { ...(runtime?.transform || current.transform || definition.transform || { scale: 1, rotate: 0 }), ...value } }), { id: spriteId });
             return;
         }
