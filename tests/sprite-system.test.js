@@ -189,11 +189,11 @@ test('Sprite geometry-preserving waypoints follow the runtime Start to End vecto
     assert.deepEqual(event.payload.end, { x: 100, y: 500, z: 0 });
     assert.deepEqual(event.payload.path.points[0], event.payload.start);
     assert.deepEqual(event.payload.path.points.at(-1), event.payload.end);
-    assert.equal(Math.hypot(
-      event.payload.path.points[1].x - event.payload.start.x,
-      event.payload.path.points[1].y - event.payload.start.y,
-      event.payload.path.points[1].z - event.payload.start.z
-    ), Math.hypot(100, -100, 0));
+    const distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z);
+    assert.ok(Math.abs(distance(event.payload.path.points[1], event.payload.start) - distance(
+      { x: 200, y: 100, z: 0 }, scenario.sprite.door.position
+    )) < 1e-9);
+    assert.equal(validateScenario(scenario).length, 0);
   } finally { engine.dispose(); }
 });
 
@@ -213,6 +213,9 @@ test('Sprite absolute motion waypoints retain their coordinates and are wrapped 
     assert.deepEqual(event.payload.path.points[0], event.payload.start);
     assert.deepEqual(event.payload.path.points.at(-1), event.payload.end);
     assert.equal(event.payload.geometryMode, 'absolute');
+    const schema = JSON.parse(readFileSync(new URL('../engine/protocol/sprite-motion.schema.json', import.meta.url), 'utf8'));
+    const validate = new Ajv({ strict: false }).compile(schema);
+    assert.equal(validate(event.payload), true);
   } finally { engine.dispose(); }
 });
 
