@@ -495,6 +495,18 @@ export class JsonClient {
 
   getSnapshot() { return this.store.getSnapshot(); }
 
+  /** Return the active Sprite presentation projection, independent of Engine internals. */
+  getSprites() {
+    const sprites = this.getSnapshot()?.presentation?.sprites;
+    return Array.isArray(sprites) ? structuredClone(sprites) : [];
+  }
+
+  /** Return one Sprite presentation projection by ID, or null when absent. */
+  getSprite(spriteId) {
+    if (typeof spriteId !== 'string' || !spriteId) return null;
+    return this.getSprites().find(sprite => sprite?.id === spriteId) || null;
+  }
+
   select(selector) { return this.store.select(selector); }
 
   subscribeSelector(selector, listener, equalityFn = Object.is) {

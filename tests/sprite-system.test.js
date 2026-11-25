@@ -173,6 +173,20 @@ test('Sprite motion disabled teleports without emitting and transform survives s
   } finally { engine.dispose(); restored.dispose(); }
 });
 
+test('JsonClient exposes Sprite projections through getSprites/getSprite', () => {
+  const transport = { subscribe() { return () => {}; }, request: async raw => raw };
+  const client = new JsonClient(transport);
+  try {
+    client.setSnapshot({ type: 'snapshot', engineId: 'test-engine', stateRevision: 1, presentation: { sprites: [{ id: 'door', actionId: 'open_door', layer: 2, position: [10, 20, 0], state: 'closed' }] } }, 'test');
+    assert.equal(client.getSprites().length, 1);
+    assert.equal(client.getSprite('door').actionId, 'open_door');
+    assert.equal(client.getSprite('missing'), null);
+    const copy = client.getSprites();
+    copy[0].position[0] = 999;
+    assert.equal(client.getSprite('door').position[0], 10);
+  } finally { client.dispose?.(); }
+});
+
 test('JsonClient emits sprite.motion and easing evaluator returns normalized progress', () => {
   const emitted = [];
   const transport = { subscribe(fn) { this.fn = fn; return () => {}; }, request: async raw => raw };
