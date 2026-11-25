@@ -6936,14 +6936,16 @@
                       "type": "array",
                       "items": {
                         "$ref": "#/definitions/point3"
-                      }
+                      },
+                      "minItems": 0
                     },
                     {
                       "type": "string",
                       "enum": [
                         "geometry-preserving",
                         "absolute"
-                      ]
+                      ],
+                      "description": "Optional transformation mode. Defaults to geometry-preserving."
                     }
                   ],
                   "items": false
