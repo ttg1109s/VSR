@@ -119,7 +119,7 @@ const WiredSetStrategies = {
                         point.z - origin[2]
                     ];
                     if (length > 0) {
-                        // Minimal proper rotation mapping reference +X onto the runtime Start -> End vector.
+                        // A minimal proper rotation maps reference +X to the runtime Start -> End vector.
                         const unit = direction.map(axis => axis / length);
                         const crossAxis = [0, -unit[2], unit[1]];
                         const sinHalf = Math.sqrt(Math.max(0, (1 - unit[0]) / 2));
@@ -142,23 +142,35 @@ const WiredSetStrategies = {
                             return toPoint(rotated.map((value, index) => value + from[index]));
                         });
                     } else {
-                        // A zero-length move has no direction. Translate the reference shape without rotation.
+                        // A zero-length move has no direction: translate without rotation.
                         intermediate = intermediate.map(point =>
                             toPoint(offsetFromOrigin(point).map((value, index) => value + from[index]))
                         );
                     }
                 }
                 const allPoints = [toPoint(from), ...intermediate, toPoint(target)];
-                // Canonical protocol paths remain cubic Beziers: extra authoring waypoints
-                // are reduced to the first and last intermediates, without changing scale.
-                const motionPoints = allPoints.length >= 4
-                    ? [allPoints[0], allPoints[1], allPoints.at(-2), allPoints.at(-1)]
-                    : [
+                let motionPoints;
+                if (allPoints.length === 4) {
+                    motionPoints = allPoints;
+                } else if (allPoints.length === 3) {
+                    // One intermediate waypoint is the curve's midpoint. Symmetric controls
+                    // keep that authored point exact at t=0.5 in the cubic Bezier.
+                    const midpoint = allPoints[1];
+                    motionPoints = [
                         allPoints[0],
-                        toPoint(from.map((axis, index) => axis + (target[index] - axis) / 3)),
-                        toPoint(from.map((axis, index) => axis + 2 * (target[index] - axis) / 3)),
+                        toPoint(from.map((value, index) => value + 2 * (midpoint[['x', 'y', 'z'][index]] - value) / 3)),
+                        toPoint(target.map((value, index) => value + 2 * (midpoint[['x', 'y', 'z'][index]] - value) / 3)),
+                        allPoints[2]
+                    ];
+                } else {
+                    // With no intermediate points the canonical curve is a straight line.
+                    motionPoints = [
+                        allPoints[0],
+                        toPoint(from.map((value, index) => value + (target[index] - value) / 3)),
+                        toPoint(from.map((value, index) => value + 2 * (target[index] - value) / 3)),
                         allPoints.at(-1)
                     ];
+                }
                 engine.spriteMotionSequence = (engine.spriteMotionSequence || 0) + 1;
                 const motionId = `${spriteId}:motion:${engine.spriteMotionSequence}`;
                 descriptor = {
