@@ -219,6 +219,22 @@ test('Sprite absolute motion waypoints retain their coordinates and are wrapped 
   } finally { engine.dispose(); }
 });
 
+test('JsonClient samples geometry-preserving cubic motion at its runtime endpoints', () => {
+  const payload = {
+    spriteId: 'door', motionId: 'door:motion:1', geometryMode: 'geometry-preserving',
+    start: { x: 10, y: 20, z: 0 }, end: { x: 10, y: 80, z: 0 },
+    path: { type: 'bezier', points: [
+      { x: 10, y: 20, z: 0 }, { x: -10, y: 30, z: 0 },
+      { x: -30, y: 70, z: 0 }, { x: 10, y: 80, z: 0 }
+    ] },
+    duration: 1000, easing: 'linear'
+  };
+  assert.deepEqual(sampleSpriteMotion(payload, 0), [10, 20, 0]);
+  assert.deepEqual(sampleSpriteMotion(payload, 1), [10, 80, 0]);
+  const midpoint = sampleSpriteMotion(payload, 0.5);
+  assert.deepEqual(midpoint, [-5, 50, 0]);
+});
+
 test('Sprite motion disabled teleports without emitting and transform survives save/restore', async () => {
   const engine = new GameEngine(); const restored = new GameEngine();
   try {
