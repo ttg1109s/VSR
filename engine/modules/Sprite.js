@@ -1,9 +1,6 @@
 // Runtime Sprite operations. Effect syntax is resolved in effect/Strategies.js.
 export function setSpriteProperty(engine, spriteId, prop, value) {
         const state = engine.api.engine.state;
-        const spriteId = String(resolveValue(eff.target, engine) ?? '');
-        const prop = resolveValue(eff.property, engine);
-        const value = resolveValue(eff.value, engine);
         const definition = engine.src?.sprite?.[spriteId];
         if (!definition) throw new Error(`Unknown Sprite ID: ${spriteId}`);
         const current = state.getRuntimeSnapshot('sprites.[id]', { id: spriteId });
