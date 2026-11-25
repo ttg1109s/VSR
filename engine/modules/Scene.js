@@ -697,7 +697,7 @@ async _enterRouterCore(routerId, forceRender = false, isSceneEntry = false, skip
                 const action = definition ? effectiveActions.find(item => item.id === definition.action) || null : null;
                 if (!definition) return null;
                 const actionPresentation = this.getActionPresentationData(action);
-                return getSpritePresentationData(this.api.engine, spriteId, actionPresentation);
+                return this.getSpritePresentationData(spriteId, actionPresentation);
             }).filter(Boolean)
             : [];
 
