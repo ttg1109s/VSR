@@ -146,3 +146,21 @@ export function setSpriteProperty(engine, spriteId, prop, value) {
         throw new TypeError(`Unsupported set/sprite property: ${String(prop)}`);
 
 }
+// Build a JSON-safe Sprite presentation projection from definition and runtime state.
+export function getSpritePresentationData(engine, spriteId, action = null) {
+    const definition = engine.src?.sprite?.[spriteId];
+    if (!definition) return null;
+    const runtime = engine.api.engine.state.getRuntimeSnapshot('sprites.[id]', { id: spriteId }) || {};
+    return {
+        id: spriteId,
+        actionId: definition.action,
+        action,
+        layer: Number.isFinite(runtime.layer) ? runtime.layer : definition.layer,
+        position: Array.isArray(runtime.position) ? runtime.position : definition.position,
+        transform: runtime.transform || definition.transform || { scale: 1, rotate: 0 },
+        motion: definition.motion || { enable: false, duration: 0, type: 'linear', easing: 'linear', step: [] },
+        state: runtime.state ?? Object.keys(definition.state || {})[0] ?? null,
+        states: definition.state || {}
+    };
+}
+
