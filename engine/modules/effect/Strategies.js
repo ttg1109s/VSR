@@ -92,12 +92,16 @@ const WiredSetStrategies = {
             let descriptor = null;
             let resolvedTarget = target;
             const configuredPath = motion.path;
-            const referencePoints = Array.isArray(configuredPath?.point?.[0])
+            const isWaypointPath = Array.isArray(configuredPath?.point?.[0]);
+            const isLegacyPath = !Array.isArray(configuredPath?.point) &&
+                configuredPath?.type === 'bezier' &&
+                Array.isArray(configuredPath?.points) &&
+                configuredPath.points.length === 4;
+            const referencePoints = isWaypointPath
                 ? configuredPath.point[0]
-                : Array.isArray(configuredPath?.points) ? configuredPath.points.slice(1, -1) : [];
-            const mode = configuredPath?.point?.[1] ?? 'geometry-preserving';
-            const isLegacyAbsolute = !Array.isArray(configuredPath?.point) && Array.isArray(configuredPath?.points);
-            if (motion.enable === true && (referencePoints.length > 0 || isLegacyAbsolute)) {
+                : isLegacyPath ? configuredPath.points.slice(1, -1) : [];
+            const mode = configuredPath?.point?.[1] ?? (isLegacyPath ? 'absolute' : 'geometry-preserving');
+            if (motion.enable === true && (isWaypointPath || isLegacyPath)) {
                 const validPoints = referencePoints.every(point =>
                     point && ['x', 'y', 'z'].every(axis => typeof point[axis] === 'number' && Number.isFinite(point[axis]))
                 );
@@ -109,47 +113,57 @@ const WiredSetStrategies = {
                     const origin = definition.position;
                     const direction = target.map((axis, index) => axis - from[index]);
                     const length = Math.hypot(...direction);
+                    const normalizedOffset = point => [
+                        point.x - origin[0],
+                        point.y - origin[1],
+                        point.z - origin[2]
+                    ];
                     if (length > 0) {
                         const unit = direction.map(axis => axis / length);
-                        // Minimal 3D rotation mapping reference +X onto runtime Start -> End.
+                        // Minimal 3D rotation maps the reference +X axis onto Start -> End.
                         const dot = Math.max(-1, Math.min(1, unit[0]));
-                        let axis = [0, -unit[2], unit[1]];
-                        let sine = Math.hypot(...axis);
-                        let cosine = dot;
-                        if (sine < 1e-12) {
-                            if (dot < 0) { axis = [0, 0, 1]; sine = 0; cosine = -1; }
-                            else { axis = [0, 0, 1]; sine = 0; cosine = 1; }
-                        } else {
-                            axis = axis.map(value => value / sine);
-                        }
+                        const axis = [0, -unit[2], unit[1]];
+                        const sine = Math.hypot(...axis);
+                        const axisUnit = sine > 1e-12 ? axis.map(value => value / sine) : [0, 0, 1];
                         intermediate = intermediate.map(point => {
-                            const offset = [point.x - origin[0], point.y - origin[1], point.z - origin[2]];
+                            const offset = normalizedOffset(point);
                             let rotated;
-                            if (sine < 1e-12) rotated = dot < 0 ? [-offset[0], -offset[1], offset[2]] : offset;
-                            else {
+                            if (sine <= 1e-12) {
+                                rotated = dot < 0 ? [-offset[0], -offset[1], offset[2]] : offset;
+                            } else {
                                 const cross = [
-                                    axis[1] * offset[2] - axis[2] * offset[1],
-                                    axis[2] * offset[0] - axis[0] * offset[2],
-                                    axis[0] * offset[1] - axis[1] * offset[0]
+                                    axisUnit[1] * offset[2] - axisUnit[2] * offset[1],
+                                    axisUnit[2] * offset[0] - axisUnit[0] * offset[2],
+                                    axisUnit[0] * offset[1] - axisUnit[1] * offset[0]
                                 ];
-                                const projection = axis.reduce((sum, value, index) => sum + value * offset[index], 0);
-                                rotated = offset.map((value, index) => value * cosine + cross[index] * sine + axis[index] * projection * (1 - cosine));
+                                const projection = axisUnit.reduce((sum, value, index) => sum + value * offset[index], 0);
+                                rotated = offset.map((value, index) =>
+                                    value * dot + cross[index] * sine + axisUnit[index] * projection * (1 - dot)
+                                );
                             }
                             return toPoint(rotated.map((value, index) => value + from[index]));
                         });
                     } else {
-                        // A zero-length runtime move has no direction; retain reference orientation.
-                        intermediate = intermediate.map(point => toPoint(point ? [point.x - origin[0] + from[0], point.y - origin[1] + from[1], point.z - origin[2] + from[2]] : [0, 0, 0]));
+                        // The zero vector has no direction, so retain the reference +X orientation.
+                        intermediate = intermediate.map(point =>
+                            toPoint(normalizedOffset(point).map((value, index) => value + from[index]))
+                        );
                     }
                 }
                 const points = [toPoint(from), ...intermediate, toPoint(target)];
-                if (points.length === 2) points.splice(1, 0, toPoint(from.map((axis, index) => axis + (target[index] - axis) / 3)), toPoint(from.map((axis, index) => axis + 2 * (target[index] - axis) / 3)));
-                else if (points.length === 3) points.splice(2, 0, toPoint(target.map((axis, index) => axis - (target[index] - from[index]) / 3)));
+                const motionPoints = points.length >= 4
+                    ? points
+                    : [
+                        points[0],
+                        toPoint(from.map((axis, index) => axis + (target[index] - axis) / 3)),
+                        toPoint(from.map((axis, index) => axis + 2 * (target[index] - axis) / 3)),
+                        points.at(-1)
+                    ];
                 engine.spriteMotionSequence = (engine.spriteMotionSequence || 0) + 1;
                 const motionId = `${spriteId}:motion:${engine.spriteMotionSequence}`;
                 descriptor = {
                     spriteId, motionId,
-                    path: { type: 'bezier', points: points.length === 4 ? points : [points[0], points[1], points.at(-2), points.at(-1)] },
+                    path: { type: 'bezier', points: motionPoints },
                     start: toPoint(from), end: toPoint(target),
                     duration: motion.duration, easing: motion.easing,
                     impact: motion.impact || { enable: false, physics: false },
