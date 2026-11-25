@@ -8,7 +8,7 @@ import { StatsCalculators, StatsModeHandlers } from './strategies/Stats.js';
 import { NotifyStrategies } from './strategies/Notifications.js';
 import { EffectKeyStrategies, EffectScopeResolvers, StaticListResolvers, ManageSubtypeHandlers } from './strategies/Management.js';
 import { CmsStrategies } from './strategies/Cms.js';
-import { setSpriteProperty } from '../Sprite.js';
+
 
 // Action definitions and runtime state share one global ID namespace.
 function resolveActionRuntime(engine, actionId) {
@@ -65,7 +65,7 @@ const WiredSetStrategies = {
         const spriteId = String(resolveValue(eff.target, engine) ?? '');
         const prop = resolveValue(eff.property, engine);
         const value = resolveValue(eff.value, engine);
-        setSpriteProperty(engine, spriteId, prop, value);
+        engine.setSpriteProperty(spriteId, prop, value);
     },
 
     action_count: (engine, eff) => {
