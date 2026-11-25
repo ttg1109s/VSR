@@ -10,6 +10,11 @@ import { fileURLToPath } from 'node:url';
 
 const MODULE_REGISTRY = Object.freeze({
   "GameEngine": new URL("../../engine/GameEngine.js", import.meta.url),
+  "ProtocolCommands": new URL("../../engine/core/ProtocolCommands.js", import.meta.url),
+  "Lifecycle": new URL("../../engine/core/Lifecycle.js", import.meta.url),
+  "SaveRestore": new URL("../../engine/core/SaveRestore.js", import.meta.url),
+  "TaskScheduling": new URL("../../engine/core/TaskScheduling.js", import.meta.url),
+  "EffectQueue": new URL("../../engine/core/EffectQueue.js", import.meta.url),
   "HttpJsonTransport": new URL("../../engine/client/adapters/HttpJsonTransport.js", import.meta.url),
   "JsonProtocol": new URL("../../engine/protocol/JsonProtocol.js", import.meta.url),
   "JsonClient": new URL("../../engine/client/adapters/JsonClient.js", import.meta.url),
