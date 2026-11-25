@@ -1,7 +1,7 @@
 import {normalizeScenario} from '../schema/scenario.js';
 import { COMMUNICATION_SENDER_ID, UNKNOWN_SENDER_ID } from '../modules/chat/systemSenders.js';
 export const ProtocolCommands = {
- registerProtocolCommands(){
+  registerProtocolCommands(){
    this.protocol.registerCommand('engine.init',async payload=>{if(!payload.script||typeof payload.script!=='object')throw new TypeError('engine.init requires payload.script.');await this.init(payload.script,{enterScene:payload.enterScene!==false});return{initialized:!!this.src,sceneEntered:!!this.api.engine.state.get('sceneId'),entryScene:this.src?.meta?.entryScene??null};});
    this.protocol.registerCommand('scenario.inspect',payload=>{
     if(!payload.scenario||typeof payload.scenario!=='object'||Array.isArray(payload.scenario))throw new TypeError('scenario.inspect requires payload.scenario.');
@@ -153,5 +153,5 @@ export const ProtocolCommands = {
     const source=typeof payload.source==='string'&&payload.source.trim()?payload.source:undefined;
     return{updated:this.notifications.markAllRead({source})};
    });
-  }
+  },
 };

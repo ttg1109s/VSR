@@ -2,9 +2,9 @@ import {LoaderSystem} from '../modules/Loader.js';
 import {cloneJsonValue} from '../protocol/JsonProtocol.js';
 import {createSaveEnvelope,normalizeSaveEnvelope,validateCharacterVisitCounters,SAVE_VERSION} from '../persistence/SaveState.js';
 export const SaveRestore = {
- exportSave(){return createSaveEnvelope(this);}
+  exportSave(){return createSaveEnvelope(this);},
  
- async restoreSave(input){
+  async restoreSave(input){
    const save=normalizeSaveEnvelope(input);
    const normalized=LoaderSystem.loadScript(save.scenario,this.api);
    if(!normalized)throw new TypeError('Save scenario is invalid.');
@@ -113,9 +113,9 @@ export const SaveRestore = {
     }
     throw error;
    }
-  }
+  },
  
- rehydratePasswordChallenge() {
+  rehydratePasswordChallenge() {
    const challenge = this.pendingPasswordAction;
    if (!challenge) {
     this.api.engine.state.set('session.passwordChallenge', null);
@@ -149,5 +149,5 @@ export const SaveRestore = {
    }
    this.api.engine.state.set('session.passwordChallenge', challenge);
    this.schedulePasswordExpiry(challenge, action);
-  }
+  },
 };

@@ -1,12 +1,12 @@
 export const TaskScheduling = {
- scheduleDelay(ms,callback,taskId=null){
+  scheduleDelay(ms,callback,taskId=null){
    const id=taskId||`engine_delay_${++this.taskSequence}`;
    this.taskManager.kill(id);
    this.taskManager.addNew(id,{time:Math.max(1,Number(ms)||1),mode:'timeout',count:1,exe:callback});
    this.taskManager.operator(id,'enabled');return id;
-  }
+  },
  
- schedulePasswordExpiry(challenge, action) {
+  schedulePasswordExpiry(challenge, action) {
    if (!challenge || challenge.deadlineAt === null || challenge.deadlineAt === undefined) return null;
    const taskId = `password_${challenge.challengeId}`;
    const remaining = challenge.deadlineAt - this.passwordSystem.clock();
@@ -37,15 +37,15 @@ export const TaskScheduling = {
     }
     this.commitState('password.challenge.inactive');
    }, taskId);
-  }
+  },
  
- clearPasswordExpiry(challenge) {
+  clearPasswordExpiry(challenge) {
    if (challenge?.challengeId) this.taskManager?.kill?.(`password_${challenge.challengeId}`);
-  }
+  },
  
- delay(ms){return new Promise(resolve=>this.scheduleDelay(ms,resolve));}
+  delay(ms){return new Promise(resolve=>this.scheduleDelay(ms,resolve));},
  
- rehydrateBackgroundTasks(){
+  rehydrateBackgroundTasks(){
    const timers=this.restoredTaskTimers||{};
    for(const charId of Object.keys(this.api.engine.state.getRuntimeSnapshot('characters') || {})) {
     const remaining=timers[`move_char_${charId}`];
@@ -76,17 +76,17 @@ export const TaskScheduling = {
    this.restoredTaskTimers={};
    this.restoredPausedTasks=[];
    this.restoredAutomationRandomBags={};
-  }
+  },
  
- pauseBackgroundTasks(){
+  pauseBackgroundTasks(){
    for(const id of Object.keys(this.api.engine.state.getRuntimeSnapshot('automations') || {}))if(this.api.engine.state.get('automation.active', { id }))this.taskManager.pause(`auto_${id}`);
    for(const id of Object.keys(this.api.engine.state.getRuntimeSnapshot('characters') || {}))this.taskManager.pause(`move_char_${id}`);
    for(const id of Object.keys(this.taskManager.plan || {}))if(['move_still_','router_still_','timer_ui_','timer_end_'].some(prefix=>id.startsWith(prefix)))this.taskManager.pause(id);
-  }
+  },
  
- resumeBackgroundTasks(){
+  resumeBackgroundTasks(){
    for(const id of Object.keys(this.api.engine.state.getRuntimeSnapshot('automations') || {}))if(this.api.engine.state.get('automation.active', { id }))this.taskManager.resume(`auto_${id}`);
    for(const id of Object.keys(this.api.engine.state.getRuntimeSnapshot('characters') || {}))this.taskManager.resume(`move_char_${id}`);
    for(const id of Object.keys(this.taskManager.plan || {}))if(['move_still_','router_still_','timer_ui_','timer_end_'].some(prefix=>id.startsWith(prefix)))this.taskManager.resume(id);
-  }
+  },
 };
