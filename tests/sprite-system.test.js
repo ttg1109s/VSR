@@ -178,7 +178,8 @@ test('Sprite geometry-preserving waypoints follow the runtime Start to End vecto
   try {
     const scenario = spriteScenario();
     scenario.sprite.door.motion.path = { point: [
-      [{ x: 200, y: 100, z: 0 }, { x: 400, y: 100, z: 0 }]
+      [{ x: 200, y: 100, z: 0 }, { x: 400, y: 100, z: 0 }],
+      'geometry-preserving'
     ] };
     await engine.init(scenario, { enterScene: true });
     SetStrategies.sprite(engine, { target: 'door', property: 'position', value: [100, 500, 0] });
@@ -193,6 +194,21 @@ test('Sprite geometry-preserving waypoints follow the runtime Start to End vecto
     assert.ok(Math.abs(distance(event.payload.path.points[1], event.payload.start) - distance(
       { x: 200, y: 100, z: 0 }, scenario.sprite.door.position
     )) < 1e-9);
+    assert.equal(validateScenario(scenario).length, 0);
+  } finally { engine.dispose(); }
+});
+
+test('Sprite geometry-preserving mode is the default when omitted', async () => {
+  const engine = new GameEngine();
+  try {
+    const scenario = spriteScenario();
+    scenario.sprite.door.motion.path = { point: [
+      [{ x: 200, y: 100, z: 0 }, { x: 400, y: 100, z: 0 }]
+    ] };
+    await engine.init(scenario, { enterScene: true });
+    SetStrategies.sprite(engine, { target: 'door', property: 'position', value: [100, 500, 0] });
+    const event = engine.protocol.eventLog.filter(e => e.event === 'presentation.sprite.motion').at(-1);
+    assert.equal(event.payload.geometryMode, 'geometry-preserving');
     assert.equal(validateScenario(scenario).length, 0);
   } finally { engine.dispose(); }
 });
