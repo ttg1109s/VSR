@@ -16,6 +16,8 @@ import {EffectQueue} from './core/EffectQueue.js';
 import {TaskManager} from './utils.js';
 import {PasswordSystem} from './modules/password/PasswordSystem.js';
 import {NotificationSystem} from './modules/Notification.js';
+import {JsonProtocol} from './protocol/JsonProtocol.js';
+import {verifyPassword} from './modules/password/verify.js';
 
 export class GameEngine {
  constructor({taskManager,engineId,authorizeCommand,requireAuthorization=false,clock,presentationAvailable=()=>false}={}) {
