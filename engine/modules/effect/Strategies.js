@@ -88,39 +88,15 @@ const WiredSetStrategies = {
             for (let index = 0; index < value.length; index++) {
                 if (value[index] !== null) target[index] = value[index];
             }
-            const motion = definition.motion || { enable: false, duration: 0, type: 'linear', easing: 'linear', step: [] };
-            const waypoints = [];
-            let previous = [...from];
-            const configuredSteps = motion.step || [];
-            if (configuredSteps.length === 0) {
-                // Empty step retains the documented 0 -> 2 timeline: the middle
-                // point is implicit and evenly divides the start/target segment.
-                waypoints.push(from.map((value, index) => (value + target[index]) / 2));
-            } else {
-                for (const step of configuredSteps) {
-                    const point = [...previous];
-                    for (const axis of ['x', 'y', 'z']) {
-                        const index = { x: 0, y: 1, z: 2 }[axis];
-                        if (step?.[axis] !== undefined && step[axis] !== null) point[index] = step[axis];
-                    }
-                    waypoints.push(point);
-                    previous = point;
-                }
-            }
+            const motion = definition.motion || { enable: false, duration: 0, path: null, easing: 'linear' };
             let descriptor = null;
-            if (motion.enable === true && (from.some((v, i) => v !== target[i]) || configuredSteps.length > 0)) {
-                descriptor = {
-                    spriteId,
-                    from,
-                    waypoints,
-                    to: target,
-                    path: [from, ...waypoints, target],
-                    duration: motion.duration,
-                    type: motion.type,
-                    easing: motion.easing
-                };
+            let resolvedTarget = target;
+            if (motion.enable === true && motion.path?.type === 'bezier' && Array.isArray(motion.path.points) && motion.path.points.length === 4) {
+                const points = motion.path.points.map(point => ({ x: point.x, y: point.y, z: point.z }));
+                resolvedTarget = [points[3].x, points[3].y, points[3].z];
+                descriptor = { spriteId, path: { type: 'bezier', points }, duration: motion.duration, easing: motion.easing };
             }
-            state.update('sprites.[id]', runtime => ({ ...(runtime || {}), position: target }), { id: spriteId });
+            state.update('sprites.[id]', runtime => ({ ...(runtime || {}), position: resolvedTarget }), { id: spriteId });
             if (descriptor) engine.protocol?.publish?.('presentation.sprite.motion', descriptor);
             return;
         }
