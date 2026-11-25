@@ -234,10 +234,11 @@ export class StateAccess {
         engine.commitState?.('state.transaction');
       } catch (commitError) {
         reconcile(runtimeOriginal, clone(JSON.parse(runtimeBaseline)));
-        if (sessionOriginal.chatState && typeof sessionOriginal.chatState === 'object') reconcile(sessionOriginal.chatState, clone(sessionBaseline.chatState));
-        else engine.chatState = sessionBaseline.chatState;
-        if (sessionOriginal.pendingPasswordAction && typeof sessionOriginal.pendingPasswordAction === 'object') reconcile(sessionOriginal.pendingPasswordAction, clone(sessionBaseline.pendingPasswordAction));
-        else engine.pendingPasswordAction = sessionBaseline.pendingPasswordAction;
+        const sessionBaselineValue=JSON.parse(sessionBaseline);
+        if (sessionOriginal.chatState && typeof sessionOriginal.chatState === 'object') reconcile(sessionOriginal.chatState, clone(sessionBaselineValue.chatState));
+        else engine.chatState = sessionBaselineValue.chatState;
+        if (sessionOriginal.pendingPasswordAction && typeof sessionOriginal.pendingPasswordAction === 'object') reconcile(sessionOriginal.pendingPasswordAction, clone(sessionBaselineValue.pendingPasswordAction));
+        else engine.pendingPasswordAction = sessionBaselineValue.pendingPasswordAction;
         try { engine.commitState?.('state.transaction.rollback'); } catch {}
         throw commitError;
       }
