@@ -696,16 +696,8 @@ async _enterRouterCore(routerId, forceRender = false, isSceneEntry = false, skip
                 const definition = this.src.sprite?.[spriteId];
                 const action = definition ? effectiveActions.find(item => item.id === definition.action) || null : null;
                 if (!definition) return null;
-                const safeAction = action ? {
-                    id: action.id,
-                    meta: {
-                        title: action.meta?.title ?? action.title ?? action.name ?? action.id,
-                        desc: action.meta?.desc ?? action.meta?.description ?? '',
-                        buttonLabel: action.meta?.buttonLabel,
-                        buttonIcon: action.meta?.buttonIcon
-                    }
-                } : null;
-                return getSpritePresentationData(this.api.engine, spriteId, safeAction);
+                const actionPresentation = this.getActionPresentationData(action);
+                return getSpritePresentationData(this.api.engine, spriteId, actionPresentation);
             }).filter(Boolean)
             : [];
 
