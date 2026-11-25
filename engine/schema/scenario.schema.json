@@ -6929,7 +6929,7 @@
               "properties": {
                 "point": {
                   "type": "array",
-                  "minItems": 1,
+                  "minItems": 2,
                   "maxItems": 2,
                   "prefixItems": [
                     {
@@ -6945,7 +6945,8 @@
                         "geometry-preserving",
                         "absolute"
                       ],
-                      "description": "Optional transformation mode. Defaults to geometry-preserving."
+                      "default": "geometry-preserving",
+                      "description": "Transformation mode; defaults to geometry-preserving."
                     }
                   ],
                   "items": false
