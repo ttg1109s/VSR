@@ -1,0 +1,10 @@
+{
+  "name": "vsr-engine",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "test:stress": "node --test tests/*stress*.test.js tests/*race*.test.js"
+  }
+}
