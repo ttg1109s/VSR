@@ -30,8 +30,17 @@ export function evaluateSpriteEasing(easing, progress) {
 export function sampleSpriteMotion(motion, progress) {
   if (!isSpriteMotionPayload(motion)) throw new TypeError('Invalid Sprite motion descriptor.');
   const t = evaluateSpriteEasing(motion.easing, progress);
-  const [p0, p1, p2, p3] = motion.path.points.map(point => [point.x, point.y, point.z]);
+  const points = motion.path.points.map(point => [point.x, point.y, point.z]);
   if (motion.path.type !== 'bezier') throw new TypeError(`Unsupported Sprite path geometry: ${String(motion.path.type)}`);
+  // Geometry-preserving paths are polylines through runtime endpoints and reference waypoints.
+  if (motion.geometryMode) {
+    const segments = points.length - 1;
+    const scaled = t * segments;
+    const index = Math.min(segments - 1, Math.floor(scaled));
+    const local = t >= 1 ? 1 : scaled - index;
+    return [0, 1, 2].map(axis => points[index][axis] + (points[index + 1][axis] - points[index][axis]) * local);
+  }
+  const [p0, p1, p2, p3] = points;
   const u = 1 - t, weights = [u * u * u, 3 * u * u * t, 3 * u * t * t, t * t * t];
   return [0, 1, 2].map(axis => weights[0] * p0[axis] + weights[1] * p1[axis] + weights[2] * p2[axis] + weights[3] * p3[axis]);
 }
@@ -40,9 +49,14 @@ function isFiniteSpritePoint(point) {
 }
 function isSpriteMotionPayload(payload) {
   const easings = ['linear', 'ease_in', 'ease_out', 'ease_in_out', 'sin_in', 'sin_out', 'sin_in_out', 'step'];
-  return payload && typeof payload.spriteId === 'string' && payload.spriteId.length > 0 && typeof payload.motionId === 'string' && payload.motionId.length > 0 && payload.path?.type === 'bezier' && Array.isArray(payload.path.points) && payload.path.points.length === 4 && payload.path.points.every(isFiniteSpritePoint) && Number.isFinite(payload.duration) && payload.duration >= 0 && easings.includes(payload.easing) && (payload.impact === undefined || (payload.impact && typeof payload.impact.enable === 'boolean' && typeof payload.impact.physics === 'boolean'));
+  return payload && typeof payload.spriteId === 'string' && payload.spriteId.length > 0 &&
+    typeof payload.motionId === 'string' && payload.motionId.length > 0 &&
+    payload.path?.type === 'bezier' && Array.isArray(payload.path.points) &&
+    payload.path.points.length >= 2 && payload.path.points.every(isFiniteSpritePoint) &&
+    Number.isFinite(payload.duration) && payload.duration >= 0 && easings.includes(payload.easing) &&
+    (payload.geometryMode === undefined || ['geometry-preserving', 'absolute'].includes(payload.geometryMode)) &&
+    (payload.impact === undefined || (payload.impact && typeof payload.impact.enable === 'boolean' && typeof payload.impact.physics === 'boolean'));
 }
-
 const timestampFromSnapshot = snapshot => {
   const parsed = Date.parse(snapshot?.createdAt || '');
   return Number.isFinite(parsed) ? parsed : Date.now();
