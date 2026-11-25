@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://vsr.engine/protocol/v1/sprite-motion.json",
+  "title": "VSR Sprite Motion Event Payload",
+  "type": "object",
+  "required": ["spriteId", "from", "waypoints", "to", "path", "duration", "type", "easing"],
+  "properties": {
+    "spriteId": { "type": "string", "minLength": 1 },
+    "from": { "$ref": "#/definitions/vector3" },
+    "waypoints": { "type": "array", "items": { "$ref": "#/definitions/vector3" } },
+    "to": { "$ref": "#/definitions/vector3" },
+    "path": { "type": "array", "minItems": 2, "items": { "$ref": "#/definitions/vector3" } },
+    "duration": { "type": "number", "minimum": 0 },
+    "type": { "enum": ["linear", "sin_native", "sin_positive"] },
+    "easing": { "enum": ["linear", "ease_in", "ease_out", "ease_in_out", "sin_in", "sin_out", "sin_in_out", "step"] }
+  },
+  "definitions": {
+    "vector3": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": { "type": "number" }
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,1443 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vsr.engine/protocol/v2/schema.json",
+  "title": "VSR Hybrid JSON Protocol v2",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/snapshot"
+    },
+    {
+      "$ref": "#/$defs/event"
+    },
+    {
+      "$ref": "#/$defs/command"
+    },
+    {
+      "$ref": "#/$defs/ack"
+    }
+  ],
+  "$defs": {
+    "base": {
+      "type": "object",
+      "required": [
+        "protocol",
+        "protocolVersion",
+        "type"
+      ],
+      "properties": {
+        "protocol": {
+          "const": "vsr"
+        },
+        "protocolVersion": {
+          "const": 2
+        }
+      }
+    },
+    "snapshot": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/base"
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "engineId",
+            "revision",
+            "stateRevision",
+            "eventSequence",
+            "createdAt",
+            "game",
+            "state"
+          ],
+          "properties": {
+            "type": {
+              "const": "snapshot"
+            },
+            "engineId": {
+              "type": "string"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "stateRevision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "eventSequence": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "game": {
+              "type": "object",
+              "required": [
+                "initialized",
+                "sceneId",
+                "routerId"
+              ],
+              "properties": {
+                "initialized": {
+                  "type": "boolean"
+                },
+                "sceneId": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "routerId": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "state": {
+              "type": "object",
+              "properties": {
+                "originalEntryCharacter": {
+                  "type": "string",
+                  "description": "Immutable ID of the scenario's configured entry character."
+                },
+                "entryCharacter": {
+                  "type": "string",
+                  "description": "Current runtime identity; may change while Faker is active."
+                },
+                "global": {
+                  "type": "object",
+                  "description": "Runtime global states. Each state includes its type, value, and optional human-readable title.",
+                  "additionalProperties": {
+                    "type": "object",
+                    "required": [
+                      "type",
+                      "value"
+                    ],
+                    "properties": {
+                      "title": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "boolean",
+                          "number",
+                          "string"
+                        ]
+                      },
+                      "value": {}
+                    },
+                    "additionalProperties": true
+                  }
+                }
+              }
+            },
+            "source": {
+              "type": "object"
+            },
+            "presentation": {
+              "type": "object",
+              "properties": {
+                "scenarioTitle": {
+                  "type": "string"
+                },
+                "scene": {
+                  "type": [
+                    "object",
+                    "null"
+                  ]
+                },
+                "router": {
+                  "type": [
+                    "object",
+                    "null"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "meta": {
+                      "type": "object"
+                    },
+                    "sprite": {
+                      "type": "boolean"
+                    }
+                  }
+                },
+                "scenePath": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "id",
+                      "title"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string"
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "inventory": {
+                  "$ref": "#/$defs/inventoryProjection"
+                },
+                "player": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/$defs/playerProjection"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "actions": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/actionProjection"
+                  }
+                },
+                "contacts": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/contactProjection"
+                  }
+                },
+                "systemContacts": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/systemContactProjection"
+                  }
+                },
+                "sprites": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/spriteProjection"
+                  }
+                }
+              }
+            },
+            "session": {
+              "type": "object",
+              "properties": {
+                "chat": {
+                  "type": "object",
+                  "properties": {
+                    "active": {
+                      "type": "boolean"
+                    },
+                    "blocking": {
+                      "type": "boolean"
+                    },
+                    "waitingChoice": {
+                      "type": "boolean"
+                    },
+                    "transitionPending": {
+                      "type": "boolean"
+                    },
+                    "id": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "contactId": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "blockId": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "index": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "choices": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "index",
+                          "text"
+                        ],
+                        "properties": {
+                          "index": {
+                            "type": "integer",
+                            "minimum": 0
+                          },
+                          "text": {
+                            "type": "string"
+                          },
+                          "locked": {
+                            "type": "boolean"
+                          },
+                          "active": {
+                            "type": "boolean"
+                          },
+                          "requirementPass": {
+                            "type": "boolean"
+                          }
+                        },
+                        "additionalProperties": false
+                      }
+                    },
+                    "prompt": {
+                      "type": "string"
+                    },
+                    "history": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                          "type": "object"
+                        }
+                      }
+                    },
+                    "mode": {
+                      "type": "string",
+                      "enum": [
+                        "idle",
+                        "active",
+                        "review"
+                      ]
+                    },
+                    "isReview": {
+                      "type": "boolean"
+                    }
+                  }
+                },
+                "passwordChallenge": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/$defs/passwordChallenge"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "notifications": {
+                  "type": "object",
+                  "properties": {
+                    "pending": {
+                      "type": "array"
+                    },
+                    "history": {
+                      "type": "array"
+                    }
+                  }
+                },
+                "timer": {
+                  "type": [
+                    "object",
+                    "null"
+                  ],
+                  "properties": {
+                    "active": {
+                      "type": "boolean"
+                    },
+                    "sceneId": {
+                      "type": "string"
+                    },
+                    "routerId": {
+                      "type": "string"
+                    },
+                    "mode": {
+                      "type": "string"
+                    },
+                    "maxSeconds": {
+                      "type": "number"
+                    },
+                    "remainingSeconds": {
+                      "type": "number"
+                    },
+                    "displayText": {
+                      "type": "string"
+                    },
+                    "updatedAt": {
+                      "type": "number"
+                    },
+                    "paused": {
+                      "type": "boolean"
+                    },
+                    "remainingMs": {
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "event": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/base"
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "engineId",
+            "eventId",
+            "sequence",
+            "revision",
+            "stateRevision",
+            "timestamp",
+            "event",
+            "payload"
+          ],
+          "properties": {
+            "type": {
+              "const": "event"
+            },
+            "engineId": {
+              "type": "string"
+            },
+            "eventId": {
+              "type": "string"
+            },
+            "sequence": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "stateRevision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "timestamp": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "event": {
+              "type": "string"
+            },
+            "payload": {
+              "type": "object"
+            }
+          }
+        }
+      ]
+    },
+    "command": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/base"
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "commandId",
+            "command",
+            "payload"
+          ],
+          "properties": {
+            "type": {
+              "const": "command"
+            },
+            "commandId": {
+              "type": "string",
+              "minLength": 1
+            },
+            "command": {
+              "type": "string",
+              "minLength": 1
+            },
+            "expectedRevision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "expectedStateRevision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "payload": {
+              "type": "object"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "if": {
+            "properties": {
+              "command": {
+                "const": "timer.control"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "type": "object",
+                "required": [
+                  "control"
+                ],
+                "properties": {
+                  "subtype": {
+                    "enum": [
+                      "router",
+                      "cooldown"
+                    ]
+                  },
+                  "target": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "routerId": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "actionId": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "control": {
+                    "enum": [
+                      "pause",
+                      "resume"
+                    ]
+                  }
+                },
+                "anyOf": [
+                  {
+                    "required": [
+                      "subtype",
+                      "target"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "routerId"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "subtype",
+                      "actionId"
+                    ]
+                  }
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      ]
+    },
+    "ack": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/base"
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "commandId",
+            "ok"
+          ],
+          "properties": {
+            "type": {
+              "const": "ack"
+            },
+            "commandId": {
+              "type": "string"
+            },
+            "ok": {
+              "type": "boolean"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "stateRevision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "result": {},
+            "error": {
+              "type": "object"
+            }
+          }
+        }
+      ]
+    },
+    "actionProjection": {
+      "type": "object",
+      "required": [
+        "id",
+        "key",
+        "title",
+        "meta",
+        "presentation",
+        "availability",
+        "runtimeState",
+        "count"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "meta": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "desc": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "subTitleStatus": {
+              "type": "string"
+            },
+            "thumb": {},
+            "cover": {
+              "type": [
+                "object",
+                "null"
+              ]
+            },
+            "thumbnail": {
+              "type": [
+                "object",
+                "null"
+              ]
+            },
+            "buttonLabel": {
+              "type": "string"
+            },
+            "buttonIcon": {
+              "type": "string"
+            }
+          }
+        },
+        "presentation": {
+          "type": "object",
+          "required": [
+            "display",
+            "readRequired",
+            "read"
+          ],
+          "properties": {
+            "display": {
+              "enum": [
+                "show",
+                "locked"
+              ]
+            },
+            "readRequired": {
+              "type": "boolean"
+            },
+            "read": {
+              "type": "boolean"
+            }
+          }
+        },
+        "availability": {
+          "type": "object",
+          "required": [
+            "canTrigger",
+            "reason",
+            "cooldownUntil",
+            "checks"
+          ],
+          "properties": {
+            "canTrigger": {
+              "type": "boolean"
+            },
+            "reason": {
+              "enum": [
+                "available",
+                "locked",
+                "busy",
+                "permission_denied",
+                "not_read",
+                "cooldown",
+                "target_locked",
+                "requirement_failed",
+                "requirement_unavailable",
+                "password_required",
+                "challenge_active"
+              ]
+            },
+            "cooldownUntil": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "cooldownStartedAt": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "cooldownDuration": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "exclusiveMinimum": 0
+            },
+            "checks": {
+              "type": "object",
+              "required": [
+                "permission",
+                "requirement"
+              ],
+              "properties": {
+                "permission": {
+                  "enum": [
+                    "passed",
+                    "failed"
+                  ]
+                },
+                "requirement": {
+                  "enum": [
+                    "passed",
+                    "failed",
+                    "not_required",
+                    "not_evaluated"
+                  ]
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "runtimeState": {
+          "type": "object",
+          "required": [
+            "display",
+            "readDesc"
+          ],
+          "properties": {
+            "display": {
+              "type": "string"
+            },
+            "readDesc": {
+              "type": "boolean"
+            }
+          }
+        },
+        "count": {
+          "type": "object",
+          "required": [
+            "normal",
+            "pass",
+            "fail",
+            "pwFailed"
+          ],
+          "properties": {
+            "normal": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "pass": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "fail": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "pwFailed": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": true
+    },
+    "passwordChallenge": {
+      "type": "object",
+      "required": [
+        "challengeId",
+        "type",
+        "actionId",
+        "uniqueId",
+        "sceneId",
+        "routerId",
+        "status",
+        "countTest",
+        "retryMax",
+        "remainingAttempts",
+        "deadlineAt"
+      ],
+      "properties": {
+        "challengeId": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "actionId": {
+          "type": "string"
+        },
+        "uniqueId": {
+          "type": "string"
+        },
+        "sceneId": {
+          "type": "string"
+        },
+        "routerId": {
+          "type": "string"
+        },
+        "status": {
+          "const": "active"
+        },
+        "countTest": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "retryMax": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "remainingAttempts": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "deadlineAt": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "description": {
+          "type": "string"
+        },
+        "display": {
+          "type": "string",
+          "enum": [
+            "keyboard",
+            "combination",
+            "rotary_dial"
+          ]
+        },
+        "codeLength": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "puzzle": {
+          "type": "object",
+          "properties": {
+            "url": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "ratio": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            },
+            "level": {}
+          }
+        },
+        "findWay": {
+          "type": "object",
+          "properties": {
+            "area": {
+              "type": [
+                "array",
+                "null"
+              ]
+            },
+            "start": {
+              "type": [
+                "array",
+                "null"
+              ]
+            },
+            "target": {
+              "type": [
+                "array",
+                "null"
+              ]
+            }
+          }
+        },
+        "switchPanel": {
+          "type": "object",
+          "required": [
+            "count"
+          ],
+          "properties": {
+            "count": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "systemContactProjection": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "description",
+        "kind",
+        "threads"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "enum": [
+            "$communication",
+            "spam"
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "avatar": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "communication",
+            "unknown"
+          ]
+        },
+        "threads": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/contactThreadProjection"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "contactProjection": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "stats",
+        "relationshipWithPlayer",
+        "presence",
+        "metCount",
+        "threads"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "avatar": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "stats": {
+          "type": "object"
+        },
+        "relationshipWithPlayer": {
+          "type": "object",
+          "required": [
+            "hasRelationship",
+            "tag"
+          ],
+          "properties": {
+            "hasRelationship": {
+              "type": "boolean"
+            },
+            "tag": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "presence": {
+          "type": "string",
+          "enum": [
+            "present",
+            "away"
+          ]
+        },
+        "metCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "threads": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/contactThreadProjection"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "contactThreadProjection": {
+      "type": "object",
+      "required": [
+        "id",
+        "title",
+        "preview",
+        "time",
+        "isUnread",
+        "isFinished"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "preview": {
+          "type": "string"
+        },
+        "time": {
+          "type": "number"
+        },
+        "isUnread": {
+          "type": "boolean"
+        },
+        "isFinished": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "playerProjection": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "stats",
+        "relationship",
+        "identityMode",
+        "identityTarget"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "avatar": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "stats": {
+          "type": "object"
+        },
+        "identityMode": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "soul",
+            "mask",
+            "swap",
+            null
+          ]
+        },
+        "identityTarget": {
+          "oneOf": [
+            {
+              "type": "object",
+              "required": [
+                "id",
+                "name"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "avatar": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "description": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "relationship": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "tag",
+              "characterId",
+              "characterName"
+            ],
+            "properties": {
+              "tag": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "characterId": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "characterName": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "inventoryItemProjection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "icon",
+        "description",
+        "category",
+        "equipped",
+        "requirements",
+        "usage",
+        "broken",
+        "canEquip",
+        "canUse",
+        "stats"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "icon": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "description": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "equipped": {
+          "type": "boolean"
+        },
+        "requirements": {
+          "type": "object",
+          "required": [
+            "hasRequirements",
+            "passed"
+          ],
+          "properties": {
+            "hasRequirements": {
+              "type": "boolean"
+            },
+            "passed": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "usage": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "properties": {
+            "current": {
+              "type": "number"
+            },
+            "max": {
+              "type": "number"
+            },
+            "autoInc": {
+              "type": "boolean"
+            },
+            "status": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "prefixItems": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "minItems": 2,
+                "maxItems": 2
+              }
+            }
+          },
+          "required": [
+            "current",
+            "max",
+            "autoInc",
+            "status"
+          ],
+          "additionalProperties": false
+        },
+        "broken": {
+          "type": "boolean"
+        },
+        "canEquip": {
+          "type": "boolean"
+        },
+        "canUse": {
+          "type": "boolean"
+        },
+        "stats": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "label",
+              "current",
+              "max",
+              "color"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "label": {
+                "type": "string"
+              },
+              "current": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "max": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "color": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    "inventoryProjection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "enabled",
+        "ownerName",
+        "items",
+        "handCount",
+        "handLimit",
+        "itemCount",
+        "inventoryLimit"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "ownerName": {
+          "type": "string"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inventoryItemProjection"
+          }
+        },
+        "handCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "handLimit": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "itemCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "inventoryLimit": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        }
+      }
+    },
+    "spriteProjection": {
+      "type": "object",
+      "required": [
+        "id",
+        "actionId",
+        "layer",
+        "position",
+        "state",
+        "states",
+        "action"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "actionId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "layer": {
+          "type": "number"
+        },
+        "position": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {
+            "type": "number"
+          }
+        },
+        "state": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "states": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "action": {
+          "$ref": "#/$defs/actionProjection"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
