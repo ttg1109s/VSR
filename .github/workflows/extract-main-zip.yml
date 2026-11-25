@@ -46,6 +46,9 @@ jobs:
             --exclude='main.zip' \
             "$source_dir/" ./
 
+          # Remove the archive only after extraction and overlay succeeded.
+          rm -f "$archive"
+
       - name: Commit extracted files
         run: |
           set -euo pipefail
