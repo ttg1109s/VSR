@@ -93,8 +93,14 @@ const WiredSetStrategies = {
             let resolvedTarget = target;
             if (motion.enable === true && motion.path?.type === 'bezier' && Array.isArray(motion.path.points) && motion.path.points.length === 4) {
                 const points = motion.path.points.map(point => ({ x: point.x, y: point.y, z: point.z }));
-                resolvedTarget = [points[3].x, points[3].y, points[3].z];
-                descriptor = { spriteId, path: { type: 'bezier', points }, duration: motion.duration, easing: motion.easing };
+                const start = [points[0].x, points[0].y, points[0].z];
+                const end = [points[3].x, points[3].y, points[3].z];
+                // Absolute paths are applied only when the position command matches both configured endpoints.
+                const matches = from.every((axis, index) => axis === start[index]) && target.every((axis, index) => axis === end[index]);
+                if (matches) {
+                    resolvedTarget = end;
+                    descriptor = { spriteId, path: { type: 'bezier', points }, duration: motion.duration, easing: motion.easing };
+                }
             }
             state.update('sprites.[id]', runtime => ({ ...(runtime || {}), position: resolvedTarget }), { id: spriteId });
             if (descriptor) engine.protocol?.publish?.('presentation.sprite.motion', descriptor);
