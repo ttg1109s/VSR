@@ -150,11 +150,13 @@ const WiredSetStrategies = {
                 }
                 const allPoints = [toPoint(from), ...intermediate, toPoint(target)];
                 let motionPoints;
-                if (allPoints.length === 4) {
-                    motionPoints = allPoints;
+                if (allPoints.length >= 4) {
+                    // A cubic Bezier has two control points; preserve the first and last
+                    // authored intermediate points in order when there are more than two.
+                    motionPoints = [allPoints[0], allPoints[1], allPoints.at(-2), allPoints.at(-1)];
                 } else if (allPoints.length === 3) {
-                    // One intermediate waypoint is the curve's midpoint. Symmetric controls
-                    // keep that authored point exact at t=0.5 in the cubic Bezier.
+                    // Convert a single authored midpoint into symmetric cubic controls,
+                    // so the Bezier passes through that waypoint exactly at t=0.5.
                     const midpoint = allPoints[1];
                     motionPoints = [
                         allPoints[0],
