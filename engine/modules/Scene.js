@@ -1,3 +1,5 @@
+import { getSpritePresentationData } from './Sprite.js';
+
 
 export const SceneSystem = {
     snapshotRouterTasks(sceneId, routerId) {
@@ -692,7 +694,6 @@ async _enterRouterCore(routerId, forceRender = false, isSceneEntry = false, skip
         const sprites = spriteMode && Array.isArray(r.sprites)
             ? r.sprites.map(spriteId => {
                 const definition = this.src.sprite?.[spriteId];
-                const runtime = state.getRuntimeSnapshot('sprites.[id]', { id: spriteId }) || {};
                 const action = definition ? effectiveActions.find(item => item.id === definition.action) || null : null;
                 if (!definition) return null;
                 const safeAction = action ? {
@@ -704,17 +705,7 @@ async _enterRouterCore(routerId, forceRender = false, isSceneEntry = false, skip
                         buttonIcon: action.meta?.buttonIcon
                     }
                 } : null;
-                return {
-                    id: spriteId,
-                    actionId: definition.action,
-                    action: safeAction,
-                    layer: Number.isFinite(runtime.layer) ? runtime.layer : definition.layer,
-                    position: Array.isArray(runtime.position) ? runtime.position : definition.position,
-                    transform: runtime.transform || definition.transform || { scale: 1, rotate: 0 },
-                    motion: definition.motion || { enable: false, duration: 0, type: 'linear', easing: 'linear', step: [] },
-                    state: runtime.state ?? Object.keys(definition.state || {})[0] ?? null,
-                    states: definition.state || {}
-                };
+                return getSpritePresentationData(this.api.engine, spriteId, safeAction);
             }).filter(Boolean)
             : [];
 
