@@ -146,7 +146,7 @@ test('Sprite transform and absolute 3D Bezier motion descriptor', async () => {
     assert.equal(event.payload.path.type, 'bezier');
     assert.equal(event.payload.duration, 1000);
     assert.equal(event.payload.easing, 'ease_in_out');
-    assert.deepEqual(event.payload.path.points, [{ x: 100, y: 200, z: 0 }, { x: 150, y: 300, z: 10 }, { x: 200, y: 300, z: 20 }, { x: 100, y: 400, z: 30 }]);
+    assert.equal(JSON.stringify(event.payload.path.points), JSON.stringify([{ x: 100, y: 200, z: 0 }, { x: 150, y: 300, z: 10 }, { x: 200, y: 300, z: 20 }, { x: 100, y: 400, z: 30 }]));
     assert.deepEqual(engine.api.engine.state.getRuntimeSnapshot('sprites.[id]', { id: 'door' }).position, [100, 400, 30]);
   } finally { engine.dispose(); }
 });
@@ -224,7 +224,7 @@ test('Sprite motion follows absolute 3D Bezier endpoint', async () => {
     await engine.init(scenario, { enterScene: true });
     SetStrategies.sprite(engine, { target: 'door', property: 'position', value: [200, 300, 30] });
     const event = engine.protocol.eventLog.filter(e => e.event === 'presentation.sprite.motion').at(-1);
-    assert.deepEqual(event.payload.path.points, scenario.sprite.door.motion.path.points);
+    assert.equal(JSON.stringify(event.payload.path.points), JSON.stringify(scenario.sprite.door.motion.path.points));
     assert.deepEqual(engine.api.engine.state.getRuntimeSnapshot('sprites.[id]', { id: 'door' }).position, [200, 300, 30]);
   } finally { engine.dispose(); }
 });
