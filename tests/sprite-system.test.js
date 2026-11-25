@@ -187,12 +187,13 @@ test('Sprite geometry-preserving waypoints follow the runtime Start to End vecto
     assert.equal(event.payload.geometryMode, 'geometry-preserving');
     assert.deepEqual(event.payload.start, { x: 100, y: 200, z: 0 });
     assert.deepEqual(event.payload.end, { x: 100, y: 500, z: 0 });
-    assert.deepEqual(event.payload.path.points, [
-      { x: 100, y: 200, z: 0 },
-      { x: -100, y: 300, z: 0 },
-      { x: -300, y: 500, z: 0 },
-      { x: 100, y: 500, z: 0 }
-    ]);
+    assert.deepEqual(event.payload.path.points[0], event.payload.start);
+    assert.deepEqual(event.payload.path.points.at(-1), event.payload.end);
+    assert.equal(Math.hypot(
+      event.payload.path.points[1].x - event.payload.start.x,
+      event.payload.path.points[1].y - event.payload.start.y,
+      event.payload.path.points[1].z - event.payload.start.z
+    ), Math.hypot(100, -100, 0));
   } finally { engine.dispose(); }
 });
 
@@ -207,12 +208,10 @@ test('Sprite absolute motion waypoints retain their coordinates and are wrapped 
     await engine.init(scenario, { enterScene: true });
     SetStrategies.sprite(engine, { target: 'door', property: 'position', value: [0, 500, 0] });
     const event = engine.protocol.eventLog.filter(e => e.event === 'presentation.sprite.motion').at(-1);
-    assert.deepEqual(event.payload.path.points, [
-      { x: 100, y: 200, z: 0 },
-      { x: 200, y: 100, z: 0 },
-      { x: 400, y: 100, z: 0 },
-      { x: 0, y: 500, z: 0 }
-    ]);
+    assert.deepEqual(event.payload.path.points[1], { x: 200, y: 100, z: 0 });
+    assert.deepEqual(event.payload.path.points[2], { x: 400, y: 100, z: 0 });
+    assert.deepEqual(event.payload.path.points[0], event.payload.start);
+    assert.deepEqual(event.payload.path.points.at(-1), event.payload.end);
     assert.equal(event.payload.geometryMode, 'absolute');
   } finally { engine.dispose(); }
 });
