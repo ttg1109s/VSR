@@ -7,6 +7,7 @@ import {EntitySystem} from './modules/Entity.js';
 import {ItemSystem} from './modules/Item.js';
 import {ChatSystem} from './modules/Chat.js';
 import {AutomationSystem} from './modules/Automation.js';
+import {SpriteSystem} from './modules/Sprite.js';
 import {createEngineAPI} from './protocol/index.js';
 import {ProtocolCommands} from './core/ProtocolCommands.js';
 import {Lifecycle} from './core/Lifecycle.js';
