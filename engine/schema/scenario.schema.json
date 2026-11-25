@@ -6946,7 +6946,7 @@
                         "absolute"
                       ],
                       "default": "geometry-preserving",
-                      "description": "Transformation mode; defaults to geometry-preserving."
+                      "description": "Required transformation mode. Use geometry-preserving by default or absolute to retain literal waypoint coordinates."
                     }
                   ],
                   "items": false
