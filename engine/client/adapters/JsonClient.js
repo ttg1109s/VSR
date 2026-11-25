@@ -50,7 +50,7 @@ function isSpriteMotionPayload(payload) {
   return payload && typeof payload.spriteId === 'string' && payload.spriteId.length > 0 &&
     typeof payload.motionId === 'string' && payload.motionId.length > 0 &&
     payload.path?.type === 'bezier' && Array.isArray(payload.path.points) &&
-    payload.path.points.length >= 2 && payload.path.points.every(isFiniteSpritePoint) &&
+    payload.path.points.length === 4 && payload.path.points.every(isFiniteSpritePoint) &&
     Number.isFinite(payload.duration) && payload.duration >= 0 && easings.includes(payload.easing) &&
     (payload.geometryMode === undefined || ['geometry-preserving', 'absolute'].includes(payload.geometryMode)) &&
     (payload.impact === undefined || (payload.impact && typeof payload.impact.enable === 'boolean' && typeof payload.impact.physics === 'boolean'));
