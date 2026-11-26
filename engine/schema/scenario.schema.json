@@ -123,11 +123,6 @@
           "description": "Authoritative configuration for the scenario's shared Sprite physics world.",
           "default": {},
           "properties": {
-            "enable": {
-              "type": "boolean",
-              "default": true,
-              "description": "Enable the authoritative Sprite physics world."
-            },
             "dimension": {
               "type": "string",
               "enum": [
@@ -7086,11 +7081,6 @@
               "minimum": 0,
               "default": 0
             },
-            "enable": {
-              "type": "boolean",
-              "default": false,
-              "description": "Opt-in to authoritative physics. Disabled by default for legacy compatibility."
-            }
           },
           "additionalProperties": false
         },
