@@ -98,7 +98,9 @@ function migrateMotionPhysics(scenario) {
     sleepAngularThreshold: 'sleepAngularThreshold',
     sleepDwell: 'sleepDwell'
   };
-  const world = isObject(scenario.config?.physicsWorld) ? scenario.config.physicsWorld : {};
+  const rawWorld = scenario.config?.physicsWorld;
+  if (rawWorld !== undefined && !isObject(rawWorld)) throw new ScenarioValidationError(['config.physicsWorld must be an object']);
+  const world = isObject(rawWorld) ? rawWorld : {};
   if (isObject(scenario.config)) scenario.config.physicsWorld = world;
   const explicitWorldKeys = new Set(Object.keys(world));
   const adopted = new Set();
