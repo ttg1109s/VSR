@@ -124,7 +124,9 @@ function migrateMotionPhysics(scenario) {
       delete physics[legacyKey];
     }
     // Body presence is the opt-in; remove legacy enable flags.
+    const legacyPhysicsEnable = physics.enable;
     delete physics.enable;
+    if (legacyPhysicsEnable === false && Object.keys(physics).length === 0) delete definition.physics;
     // CCD now belongs to the collider. Preserve legacy body-level values by migrating them.
     if (Object.hasOwn(physics, 'ccd')) {
       definition.collision = isObject(definition.collision) ? definition.collision : {};
