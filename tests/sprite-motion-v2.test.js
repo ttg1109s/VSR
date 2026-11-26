@@ -62,15 +62,12 @@ test('CCD adaptively increases subdivisions for fast travel relative to radius',
   assert.ok(hit.subdivisions>8);
 });
 
-test('conservative CCD reports potential curved-trajectory crossing even when endpoint displacement is small', async()=>{
+test('conservative CCD does not emit unconfirmed curved-trajectory candidates', async()=>{
  const {createBezierTrajectory}=await import('../engine/modules/sprite/trajectory.js');
- const {firstCircleImpact}=await import('../engine/modules/sprite/collision.js');
  const loop=createBezierTrajectory({points:[[0,0,0],[100,100,0],[-100,100,0],[0,0,0]],duration:1});
  const stationary=createLinearPhysicsSegment({segmentId:'stationary',startTime:0,duration:1,position:[30,50,0],velocity:[0,0,0]});
- const impact=firstCircleImpact({trajectoryA:loop,trajectoryB:stationary,radiusA:1,radiusB:1,timeStart:0,timeEnd:1});
- assert.equal(impact,null); // A potential broad-phase crossing is not an authoritative impact.
+ assert.equal(firstCircleImpact({trajectoryA:loop,trajectoryB:stationary,radiusA:1,radiusB:1,timeStart:0,timeEnd:1}),null);
 });
-
 test('analytical linear damping derives natural-equilibrium endpoint and duration', async()=>{
  const {solveDampedTrajectory,createDampedPhysicsSegment}=await import('../engine/modules/sprite/trajectory.js');
  const solved=solveDampedTrajectory({position:[30,0,0],velocity:[-80,0,0],linearDamping:4,velocityThreshold:0.02});
