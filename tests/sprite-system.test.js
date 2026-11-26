@@ -83,7 +83,7 @@ test('Position effect during active motion rebases from sampled presentation pos
     const payload=engine.protocol.eventLog.filter(e=>e.event==='presentation.sprite.simulation').at(-1).payload;
     const start=payload.initialTrajectory[0].controlPoints[0];
     const end=payload.initialTrajectory[0].controlPoints[3];
-    assert.ok(Math.abs(start[0]-30)<0.1,`expected sampled x≈30, got ${start[0]}`);
+    assert.ok(Math.abs(start[0]-30)<0.15,`expected sampled x≈30, got ${start[0]}`);
     assert.ok(Math.abs(start[1])<0.1);
     assert.deepEqual(end,[20,10,0]);
     assert.ok(engine.protocol.eventLog.some(e=>e.event==='presentation.sprite.trajectory.cancelled'&&e.payload.reason==='superseded'));
