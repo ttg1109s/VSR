@@ -4,6 +4,7 @@ import { createBezierTrajectory, createLinearPhysicsSegment } from '../../engine
 import { firstCircleImpactResult, movingCircleTOI } from '../../engine/modules/sprite/collision.js';
 import { createPoseTrajectory } from '../../engine/modules/sprite/PoseTrajectory.js';
 import { createPhysicalStateSampler } from '../../engine/modules/sprite/PhysicalStateSampler.js';
+import { RigidBodyWorld3D } from '../../engine/modules/sprite/RigidBodyWorld3D.js';
 import { AuthoritativeSpriteSimulation } from '../../engine/modules/sprite/AuthoritativeSimulation.js';
 
 test('CCD confirms tangential contact and rejects a geometric near miss',()=>{
