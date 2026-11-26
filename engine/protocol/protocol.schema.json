@@ -1433,12 +1433,35 @@
           "type": "number"
         },
         "position": {
-          "type": "array",
-          "minItems": 3,
-          "maxItems": 3,
-          "items": {
-            "type": "number"
-          }
+          "type": "object",
+          "required": [
+            "location",
+            "transform"
+          ],
+          "properties": {
+            "location": {
+              "$ref": "#/$defs/vec3"
+            },
+            "transform": {
+              "type": "array",
+              "minItems": 3,
+              "maxItems": 3,
+              "items": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number",
+                  "exclusiveMinimum": 0
+                },
+                {
+                  "type": "string"
+                }
+              ],
+              "additionalItems": false
+            }
+          },
+          "additionalProperties": false
         },
         "state": {
           "type": [
@@ -1642,6 +1665,10 @@
               "scale": {
                 "type": "number",
                 "exclusiveMinimum": 0
+              },
+              "origin": {
+                "type": "string",
+                "minLength": 1
               }
             },
             "additionalProperties": false

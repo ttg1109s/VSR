@@ -75,6 +75,20 @@ function asArray(value) {
 
 // Compatibility migration: old motion.physics values are folded into canonical sprite.physics.
 // Existing sprite.physics values win when both locations are present.
+function migrateSpritePose(scenario) {
+  for (const definition of Object.values(isObject(scenario.sprite) ? scenario.sprite : {})) {
+    if (!isObject(definition)) continue;
+    const legacyPosition=Array.isArray(definition.position)?definition.position:null;
+    const pose=isObject(definition.position)?definition.position:{};
+    const oldTransform=isObject(definition.transform)?definition.transform:{};
+    const tuple=Array.isArray(pose.transform)?pose.transform:[Number(oldTransform.rotate??0),Number(oldTransform.scale??1),String(oldTransform.origin??'center')];
+    const location=Array.isArray(pose.location)?pose.location:legacyPosition;
+    if(location)definition.position={location:[...location],transform:tuple.length===3?[...tuple]:[0,1,'center']};
+    delete definition.transform;
+  }
+  return scenario;
+}
+
 function migrateMotionPhysics(scenario) {
   // Compatibility migration: old motion.physics values are folded into canonical sprite.physics.
   for (const [spriteId, definition] of Object.entries(isObject(scenario.sprite) ? scenario.sprite : {})) {
@@ -672,7 +686,7 @@ export function validateScenario(scenario) {
 }
 
 export function normalizeScenario(input) {
-  const scenario = migrateMotionPhysics(clone(input));
+  const scenario = migrateSpritePose(migrateMotionPhysics(clone(input)));
   if (!isObject(scenario)) throw new ScenarioValidationError(['root must be a JSON object']);
 
   if (isObject(scenario.meta) && scenario.meta.entryCharacter == null) {

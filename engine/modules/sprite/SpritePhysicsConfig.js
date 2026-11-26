@@ -39,7 +39,7 @@ export function normalizeSpritePhysicsConfig(spriteId, spriteDefinition) {
   const radius=shape==='sphere'?collider.radius:Number(c.radius??0.5);
   const bodyType=p.bodyType??'dynamic';
   if(!['static','kinematic','dynamic','sensor'].includes(bodyType))throw new TypeError(`Sprite ${spriteId} has invalid bodyType`);
-  const position=vec3(spriteDefinition.position??[0,0,0],'position');
+  const position=vec3(spriteDefinition.position?.location??spriteDefinition.position??[0,0,0],'position');
   return {
     id:String(spriteId), type:bodyType, radius, collider,
     transform:{position,orientation:quat(p.orientation??[1,0,0,0])},

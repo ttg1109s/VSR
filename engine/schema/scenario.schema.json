@@ -2209,8 +2209,7 @@
                         "layer",
                         "position",
                         "scale",
-                        "rotate",
-                        "transform"
+                        "rotate"
                       ]
                     },
                     "value": {
@@ -3899,8 +3898,7 @@
                         "layer",
                         "position",
                         "scale",
-                        "rotate",
-                        "transform"
+                        "rotate"
                       ]
                     },
                     "value": {
@@ -4109,8 +4107,7 @@
                         "layer",
                         "position",
                         "scale",
-                        "rotate",
-                        "transform"
+                        "rotate"
                       ]
                     },
                     "value": {
@@ -5091,8 +5088,7 @@
                   "layer",
                   "position",
                   "scale",
-                  "rotate",
-                  "transform"
+                  "rotate"
                 ]
               },
               "target": {
@@ -6934,36 +6930,46 @@
           "description": "Named visual states mapped to image URLs/paths."
         },
         "position": {
-          "type": "array",
-          "minItems": 3,
-          "maxItems": 3,
-          "items": {
-            "type": "number"
-          },
-          "description": "Initial [x,y,z] position."
-        },
-        "transform": {
           "type": "object",
-          "default": {
-            "scale": 1,
-            "rotate": 0
-          },
+          "required": [
+            "location",
+            "transform"
+          ],
           "properties": {
-            "scale": {
-              "type": "number",
-              "exclusiveMinimum": 0,
-              "default": 1
+            "location": {
+              "$ref": "#/definitions/vec3",
+              "description": "Initial [x,y,z] location."
             },
-            "rotate": {
-              "type": "number",
-              "default": 0
+            "transform": {
+              "type": "array",
+              "minItems": 3,
+              "maxItems": 3,
+              "items": [
+                {
+                  "type": "number",
+                  "description": "Rotation in degrees."
+                },
+                {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "description": "Uniform scale."
+                },
+                {
+                  "type": "string",
+                  "description": "Transform origin."
+                }
+              ],
+              "additionalItems": false,
+              "default": [
+                0,
+                1,
+                "center"
+              ],
+              "description": "[rotate, scale, origin]"
             }
           },
-          "required": [
-            "scale",
-            "rotate"
-          ],
-          "additionalProperties": false
+          "additionalProperties": false,
+          "description": "Initial pose: location and transform."
         },
         "collision": {
           "type": "object",

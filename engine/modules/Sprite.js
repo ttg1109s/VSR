@@ -1,5 +1,19 @@
 import { adaptSpriteTrajectory } from '../protocol/JsonProtocol.js';
 // Runtime Sprite operations. Effect syntax is resolved in effect/Strategies.js.
+function poseLocation(value) { return Array.isArray(value) ? value : (Array.isArray(value?.location) ? value.location : null); }
+function poseTransform(value, fallback={rotate:0,scale:1,origin:'center'}) {
+ const tuple=value?.transform;
+ if(Array.isArray(tuple)&&tuple.length===3)return {rotate:Number(tuple[0]??fallback.rotate),scale:Number(tuple[1]??fallback.scale),origin:String(tuple[2]??fallback.origin)};
+ return {...fallback};
+}
+function sampleTransformKeys(keys,time,endTime,fallback) {
+ if(!Array.isArray(keys)||!keys.length)return {...fallback};
+ const t=Math.max(0,Math.min(Number(time),Number(endTime)||0)),right=keys.findIndex(k=>k.time>=t);
+ if(right<=0)return {rotate:keys[0].rotate,scale:keys[0].scale,origin:keys[0].origin??fallback.origin};
+ if(right<0)return {...keys.at(-1)};
+ const a=keys[right-1],b=keys[right],span=Math.max(1e-9,b.time-a.time),u=Math.max(0,Math.min(1,(t-a.time)/span));
+ return {rotate:a.rotate+(b.rotate-a.rotate)*u,scale:a.scale+(b.scale-a.scale)*u,origin:b.origin??a.origin??fallback.origin};
+}
 
 function sampleSerializedSegments(segments, time, terminalClamp=true) {
     if (!Array.isArray(segments) || !segments.length) return null;
@@ -63,11 +77,13 @@ export function setSpriteProperty(engine, spriteId, prop, value) {
         // runtime position (which intentionally remains at the old start).
         const activeBeforeSet = engine.activeSpriteMotions?.get(spriteId);
         let sampledActivePosition = null;
+        let sampledActiveTransform = null;
         if (prop === 'position' && activeBeforeSet) {
             const elapsed = Math.max(0, (Date.now() - (activeBeforeSet.startedAt || Date.now())) / 1000);
             const serialized = activeBeforeSet.descriptor?.trajectories?.[spriteId];
             const sampled = sampleSerializedSegments(serialized, elapsed);
             if (sampled?.position?.every(Number.isFinite)) sampledActivePosition = sampled.position;
+            sampledActiveTransform=sampleTransformKeys(activeBeforeSet.descriptor?.transformTrajectory,elapsed,activeBeforeSet.descriptor?.endTime||0,poseTransform(definition.position,current.transform||{rotate:0,scale:1,origin:'center'}));
         }
         if (prop === 'state') {
             if (typeof value !== 'string' || !Object.hasOwn(definition.state, value)) throw new TypeError(`Sprite '${spriteId}' has no state '${String(value)}'.`);
@@ -80,14 +96,14 @@ export function setSpriteProperty(engine, spriteId, prop, value) {
             return;
         }
         if (prop === 'position') {
-            if (!Array.isArray(value) || value.length < 1 || value.length > 3 || value.some(v => v !== null && (typeof v !== 'number' || !Number.isFinite(v)))) {
-                throw new TypeError('Sprite position requires an array of 1 to 3 finite numbers or null axis values.');
-            }
-            const from = [...(sampledActivePosition || current.position || definition.position)];
+            const incomingLocation=poseLocation(value);
+            if (!incomingLocation || incomingLocation.length < 1 || incomingLocation.length > 3 || incomingLocation.some(v => v !== null && (typeof v !== 'number' || !Number.isFinite(v)))) throw new TypeError('Sprite position requires {location:[x,y,z], transform:[rotate,scale,origin]}.');
+            const from = [...(sampledActivePosition || poseLocation(current.position) || poseLocation(definition.position) || [0,0,0])];
             const target = [...from];
-            for (let index = 0; index < value.length; index++) {
-                if (value[index] !== null) target[index] = value[index];
-            }
+            for (let index = 0; index < incomingLocation.length; index++) if (incomingLocation[index] !== null) target[index] = incomingLocation[index];
+            const baseTransform=sampledActiveTransform || poseTransform(definition.position,current.transform||{rotate:0,scale:1,origin:'center'});
+            const targetTransform=poseTransform(value,baseTransform);
+            if(!Number.isFinite(targetTransform.rotate)||!Number.isFinite(targetTransform.scale)||targetTransform.scale<=0||typeof targetTransform.origin!=='string'||!targetTransform.origin.trim())throw new TypeError('Sprite position.transform must be [finite rotate, positive scale, non-empty origin].');
             const motion = definition.motion || { enable: false, duration: 0, path: null, easing: 'linear' };
             let descriptor = null;
             let resolvedTarget = target;
@@ -112,7 +128,7 @@ export function setSpriteProperty(engine, spriteId, prop, value) {
                 const toPoint = vector => ({ x: vector[0], y: vector[1], z: vector[2] });
                 let intermediate = referencePoints.map(point => ({ x: point.x, y: point.y, z: point.z }));
                 if (hasWaypoints && mode === 'geometry-preserving') {
-                    const origin = definition.position;
+                    const origin = poseLocation(definition.position) || from;
                     const direction = target.map((axis, index) => axis - from[index]);
                     const length = Math.hypot(...direction);
                     const offsetFromOrigin = point => [
@@ -174,19 +190,19 @@ export function setSpriteProperty(engine, spriteId, prop, value) {
                         allPoints.at(-1)
                     ];
                 }
-                const currentTransform = current.transform || definition.transform || { scale: 1, rotate: 0 };
+                const currentTransform = baseTransform;
                 const authoredTransforms = referencePoints.map(point => ({
                     rotate: point.r === undefined ? null : point.r,
                     scale: point.s === undefined ? null : point.s
                 }));
                 const transformNodes = [
-                    { position: from, rotate: Number(currentTransform.rotate || 0), scale: Number(currentTransform.scale || 1) },
+                    { position: from, rotate: Number(currentTransform.rotate), scale: Number(currentTransform.scale), origin: currentTransform.origin },
                     ...intermediate.map((point, index) => ({
                         position: [point.x, point.y, point.z],
                         rotate: authoredTransforms[index]?.rotate ?? null,
-                        scale: authoredTransforms[index]?.scale ?? null
+                        scale: authoredTransforms[index]?.scale ?? null, origin: currentTransform.origin
                     })),
-                    { position: target, rotate: Number(currentTransform.rotate || 0), scale: Number(currentTransform.scale || 1) }
+                    { position: target, rotate: Number(targetTransform.rotate), scale: Number(targetTransform.scale), origin: targetTransform.origin }
                 ];
                 let lastRotate = transformNodes[0].rotate, lastScale = transformNodes[0].scale;
                 for (let i=1;i<transformNodes.length;i++) {
@@ -201,10 +217,10 @@ export function setSpriteProperty(engine, spriteId, prop, value) {
                 const transformDistances = transformNodes.slice(0,-1).map((node,index)=>Math.hypot(...node.position.map((v,k)=>v-transformNodes[index+1].position[k])));
                 const transformTotal=transformDistances.reduce((sum,d)=>sum+d,0);
                 let transformTime=0;
-                const transformTrajectory=[{time:0,rotate:transformNodes[0].rotate,scale:transformNodes[0].scale}];
+                const transformTrajectory=[{time:0,rotate:transformNodes[0].rotate,scale:transformNodes[0].scale,origin:transformNodes[0].origin}];
                 for(let i=1;i<transformNodes.length;i++){
                     transformTime += Number(motion.duration||0) * (transformTotal>1e-9 ? transformDistances[i-1]/transformTotal : 1/(transformNodes.length-1));
-                    transformTrajectory.push({time:transformTime/1000,rotate:transformNodes[i].rotate,scale:transformNodes[i].scale});
+                    transformTrajectory.push({time:transformTime/1000,rotate:transformNodes[i].rotate,scale:transformNodes[i].scale,origin:transformNodes[i].origin});
                 }
                 engine.spriteMotionSequence = (engine.spriteMotionSequence || 0) + 1;
                 const motionId = `${spriteId}:motion:${engine.spriteMotionSequence}`;
@@ -227,7 +243,7 @@ export function setSpriteProperty(engine, spriteId, prop, value) {
                 });
             }
             if (!descriptor) {
-                state.update('sprites.[id]', runtime => ({ ...(runtime || {}), position: resolvedTarget, motion: null }), { id: spriteId });
+                state.update('sprites.[id]', runtime => ({ ...(runtime || {}), position: resolvedTarget, transform: targetTransform, motion: null }), { id: spriteId });
                 return;
             }
 
@@ -249,7 +265,7 @@ export function setSpriteProperty(engine, spriteId, prop, value) {
             const runtimeSprites = state.getRuntimeSnapshot('sprites') || {};
             for (const [otherId, otherDef] of Object.entries(definitions)) {
                 const otherRuntime = runtimeSprites[otherId] || {};
-                let otherPosition = otherRuntime.position || otherDef.position || [0,0,0];
+                let otherPosition = poseLocation(otherRuntime.position) || poseLocation(otherDef.position) || [0,0,0];
                 let otherVector = [...otherPosition,0,0].slice(0,3).map(v=>v??0);
                 let otherVelocity=[0,0,0];
                 const activeOther=engine.activeSpriteMotions.get(otherId);
@@ -336,7 +352,7 @@ export function setSpriteProperty(engine, spriteId, prop, value) {
             engine.activeSpriteMotions.set(spriteId, activeMotion);
             // Runtime remains at the authoritative start position until presentation ACK commits simulation results.
             const moverSimulatedPosition=result.positionsAtImpact.get(spriteId)||startVector;
-            state.update('sprites.[id]', runtime => ({ ...(runtime || {}), position: moverSimulatedPosition, motion: { motionId: descriptor.motionId, trajectoryId, phase: impactEvents.length?'post-impact':'presentation-pending', currentTime: impactEvents.at(-1)?.time||0, finalPositions: bodyFinalPositions } }), { id: spriteId });
+            state.update('sprites.[id]', runtime => ({ ...(runtime || {}), position: moverSimulatedPosition, transform: targetTransform, motion: { motionId: descriptor.motionId, trajectoryId, phase: impactEvents.length?'post-impact':'presentation-pending', currentTime: impactEvents.at(-1)?.time||0, finalPositions: bodyFinalPositions } }), { id: spriteId });
             for (const impact of impactEvents) {
                 engine.lastSpriteImpact ||= new Map();
                 const record = { motionId: descriptor.motionId, trajectoryId, impact, timestamp: Date.now() };
@@ -389,8 +405,7 @@ export function getSpritePresentationData(engine, spriteId, action = null) {
         actionId: definition.action,
         action,
         layer: Number.isFinite(runtime.layer) ? runtime.layer : definition.layer,
-        position: Array.isArray(runtime.position) ? runtime.position : definition.position,
-        transform: runtime.transform || definition.transform || { scale: 1, rotate: 0 },
+        position: { location: poseLocation(runtime.position) || poseLocation(definition.position), transform: [Number((runtime.transform||poseTransform(definition.position)).rotate), Number((runtime.transform||poseTransform(definition.position)).scale), String((runtime.transform||poseTransform(definition.position)).origin||'center')] },
         motion: definition.motion || { enable: false, duration: 0, type: 'linear', easing: 'linear', step: [] },
         state: runtime.state ?? Object.keys(definition.state || {})[0] ?? null,
         states: definition.state || {}

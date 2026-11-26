@@ -13,6 +13,7 @@ export function cloneJsonValue(value,seen=new WeakSet()){
  else{out=Object.create(null);for(const k of Object.keys(value)){const c=cloneJsonValue(value[k],seen);if(c!==undefined)Object.defineProperty(out,k,{value:c,enumerable:true,writable:true,configurable:true});}}
  seen.delete(value);return out;
 }
+const poseLocationForProtocol=(runtimePosition,definitionPosition)=>Array.isArray(runtimePosition)?runtimePosition:(Array.isArray(runtimePosition?.location)?runtimePosition.location:definitionPosition?.location||[0,0,0]);
 const id=(p,n)=>`${p}_${Date.now().toString(36)}_${n.toString(36)}`;
 // Snapshot projections must be deterministic. Random resolver expressions are
 // intentionally left unevaluated here; they belong to action execution, not projection.
@@ -135,7 +136,7 @@ export class JsonProtocol{
     const runtime=state.sprites?.[spriteId]||{};
     const action=definition?actionProjectionById.get(definition.action):null;
     if(!definition||!action)return null;
-    return{id:spriteId,actionId:definition.action,layer:Number.isFinite(runtime.layer)?runtime.layer:definition.layer,position:Array.isArray(runtime.position)?cloneJsonValue(runtime.position):cloneJsonValue(definition.position),transform:cloneJsonValue(runtime.transform||definition.transform||{scale:1,rotate:0}),motion:cloneJsonValue(definition.motion||{enable:false,duration:0,path:null,easing:'linear',impact:{enable:false,physics:false},effect:{start:[],end:[]}}),state:runtime.state??Object.keys(definition.state||{})[0]??null,states:cloneJsonValue(definition.state||{}),action};
+    return{id:spriteId,actionId:definition.action,layer:Number.isFinite(runtime.layer)?runtime.layer:definition.layer,position:{location:cloneJsonValue(poseLocationForProtocol(runtime.position,definition.position)),transform:[Number((runtime.transform||{rotate:definition.position?.transform?.[0]??0}).rotate),Number((runtime.transform||{scale:definition.position?.transform?.[1]??1}).scale),String((runtime.transform||{origin:definition.position?.transform?.[2]??'center'}).origin||'center')]},motion:cloneJsonValue(definition.motion||{enable:false,duration:0,path:null,easing:'linear',impact:{enable:false,physics:false},effect:{start:[],end:[]}}),state:runtime.state??Object.keys(definition.state||{})[0]??null,states:cloneJsonValue(definition.state||{}),action};
    }).filter(Boolean)
    :[];
   const actions=spriteMode?[]:actionProjections;

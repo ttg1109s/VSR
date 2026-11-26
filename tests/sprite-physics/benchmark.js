@@ -1,5 +1,0 @@
-import {performance} from 'node:perf_hooks';
-import {createLinearPhysicsSegment} from '../../engine/modules/sprite/trajectory.js';
-import {AuthoritativeSpriteSimulation} from '../../engine/modules/sprite/AuthoritativeSimulation.js';
-function workload(name,count,{dense=false,highVelocity=false}={}){const bodies={},trajectories=new Map();for(let i=0;i<count;i++){const id=`b${i}`,position=dense?[i%20*2,(i/20|0)*2,0]:[i*20,0,0],velocity=highVelocity&&i===0?[10000,0,0]:[0,0,0];bodies[id]={radius:4,collisionEnabled:true,physicsEnabled:false,isMotionOwner:false};trajectories.set(id,createLinearPhysicsSegment({segmentId:id,startTime:0,duration:1,position,velocity}));}const sim=new AuthoritativeSpriteSimulation({horizon:.1,maxCollisionEvents:4});const t=performance.now(),r=sim.run({bodies,initialTrajectories:trajectories});console.log(JSON.stringify({workload:name,sprites:count,wallMs:performance.now()-t,...r.profiler,status:r.simulationStatus}));}
-for(const n of [10,100,1000,10000])workload(`sparse-${n}`,n);workload('dense-500',500,{dense:true});workload('high-velocity-100',100,{highVelocity:true});
