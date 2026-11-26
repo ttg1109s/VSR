@@ -12,7 +12,7 @@ export function createBezierTrajectory({points,duration,easing='linear',startTim
   const p=points.map((v,i)=>validateVector(v,`control point ${i}`));
   if(!Number.isFinite(duration)||duration<=0)throw new TypeError('duration must be a positive finite number.');
   const ease=typeof easing==='function'?easing:(easing==='ease-in'||easing==='ease_in'?t=>t*t:easing==='ease-out'||easing==='ease_out'?t=>1-(1-t)*(1-t):easing==='ease-in-out'||easing==='ease_in_out'?t=>t<.5?2*t*t:1-2*(1-t)*(1-t):easing==='sin_in'?t=>1-Math.cos(t*Math.PI/2):easing==='sin_out'?t=>Math.sin(t*Math.PI/2):easing==='sin_in_out'?t=>-(Math.cos(Math.PI*t)-1)/2:easing==='step'?t=>t>=1?1:0:t=>t);
-  return {segmentId,type:'bezier',startTime,endTime:startTime+duration,duration,points:p,easingName:typeof easing==='string'?easing:'linear',
+  return {segmentId,type:'bezier',startTime,endTime:startTime+duration,duration,points:p,easingName:typeof easing==='string'?easing:'custom',
     sample(time){const t=Math.max(0,Math.min(1,(time-startTime)/duration));return cubicBezier(...p,ease(t));},
     velocity(time){const raw=Math.max(0,Math.min(1,(time-startTime)/duration));const eps=1e-5;const eased=ease(raw);const de=(ease(Math.min(1,raw+eps))-ease(Math.max(0,raw-eps)))/(Math.min(1,raw+eps)-Math.max(0,raw-eps));return scale(cubicBezierDerivative(...p,eased),de/duration);},
     sampleNormalized(t){return cubicBezier(...p,ease(Math.max(0,Math.min(1,t))));}
