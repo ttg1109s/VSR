@@ -76,6 +76,17 @@ function asArray(value) {
 // Compatibility migration: old motion.physics values are folded into canonical sprite.physics.
 // Existing sprite.physics values win when both locations are present.
 function migrateMotionPhysics(scenario) {
+  // Compatibility migration: old motion.physics values are folded into canonical sprite.physics.
+  for (const [spriteId, definition] of Object.entries(isObject(scenario.sprite) ? scenario.sprite : {})) {
+    if (!isObject(definition?.motion) || !isObject(definition.motion.physics)) continue;
+    const legacyPhysics = definition.motion.physics;
+    definition.physics = isObject(definition.physics) ? definition.physics : {};
+    for (const [key, value] of Object.entries(legacyPhysics)) {
+      if (!Object.hasOwn(definition.physics, key)) definition.physics[key] = value;
+    }
+    delete definition.motion.physics;
+  }
+
   const worldKeys = {
     gravity: 'gravity',
     dimension: 'dimension',
@@ -117,16 +128,6 @@ function migrateMotionPhysics(scenario) {
     }
   }
 
-  // Compatibility migration: old motion.physics values are folded into canonical sprite.physics.
-  for (const [spriteId, definition] of Object.entries(isObject(scenario.sprite) ? scenario.sprite : {})) {
-    if (!isObject(definition?.motion) || !isObject(definition.motion.physics)) continue;
-    const legacyPhysics = definition.motion.physics;
-    definition.physics = isObject(definition.physics) ? definition.physics : {};
-    for (const [key, value] of Object.entries(legacyPhysics)) {
-      if (!Object.hasOwn(definition.physics, key)) definition.physics[key] = value;
-    }
-    delete definition.motion.physics;
-  }
   // Remove legacy endpoint controls: they are no longer part of the physical model.
   for (const definition of Object.values(isObject(scenario.sprite) ? scenario.sprite : {})) {
     if (!isObject(definition?.physics)) continue;
