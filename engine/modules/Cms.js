@@ -1,5 +1,6 @@
+// CMS domain operations: transactional scenario/runtime mutations.
 // Centralized CMS state mutations. Every update is applied to a transaction draft.
-import { resolveValue } from './Logic.js';
+import { resolveValue } from './effect/strategies/Logic.js';
 
 function resolveCharacterId(engine, value) {
     return resolveValue(value, engine);
@@ -172,3 +173,5 @@ export const CmsStrategies = {
         });
     }
 };
+
+export const CmsSystem = { executeCmsEffect(eff) { const handler = CmsStrategies[eff.table]; if (typeof handler !== 'function') throw new TypeError(`Unsupported CMS table: ${String(eff.table)}`); return handler(this, eff); } };

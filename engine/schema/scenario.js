@@ -447,6 +447,16 @@ function validateReferences(scenario) {
 
   for (const [spriteId, sprite] of Object.entries(scenario.sprite || {})) {
     if (!actionExists(sprite?.action)) add(`sprite.${spriteId}.action`, `references missing global Action '${sprite?.action}'`);
+    const point = sprite?.motion?.path?.point;
+    if (Array.isArray(point)) {
+      const waypoints = Array.isArray(point[0]) ? point[0] : [];
+      if (waypoints.length > 0) {
+        if (!Array.isArray(point[0])) add(`sprite.${spriteId}.motion.path.point[0]`, 'must be an array when waypoints are present');
+        if (point[1] !== undefined && !['geometry-preserving', 'absolute'].includes(point[1])) {
+          add(`sprite.${spriteId}.motion.path.point[1]`, `must be 'geometry-preserving' or 'absolute' when waypoints are present`);
+        }
+      }
+    }
   }
   for (const [actionId, action] of Object.entries(actions)) validateAction(action, 'actions.' + actionId);
   for (const [itemId, item] of Object.entries(items)) validateRequirement(item?.requirements, 'itemInfo.' + itemId + '.requirements');

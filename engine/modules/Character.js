@@ -1,5 +1,6 @@
+// Domain-owned character effects and state operations.
 // htdocs/engine/modules/effect/strategies/Character.js
-import { resolveValue } from './Logic.js';
+import { resolveValue } from './effect/strategies/Logic.js';
 import { StatsHelpers } from './Stats.js';
 
 const cloneValue = value => JSON.parse(JSON.stringify(value));
@@ -327,5 +328,38 @@ export const CharacterStrategies = {
         engine.api.engine.state.set('characters.[id]', char, { id: charId });
         engine.taskManager?.kill?.(`move_char_${charId}`);
         if (engine.validateMoveState(charId)) engine.scheduleCharacterMove(charId);
+    }
+};
+export const CharacterSystem = {
+    executeCharacterEffect(eff) {
+        const handler = CharacterStrategies[eff.subtype];
+        if (typeof handler !== 'function') throw new TypeError(`Unsupported characters subtype: ${String(eff.subtype)}`);
+        return handler(this, eff);
+    }
+};
+
+
+const characterHandlerStateOf = engine => engine.api.engine.state;
+
+export const CharacterPropertyHandlers = {
+    meeting: () => { },
+    moveList: (engine, char, val, charId) => {
+        characterHandlerStateOf(engine).set('characters.[id].place.currentIndex', 0, { id: charId });
+        characterHandlerStateOf(engine).set('characters.[id].moveList', val, { id: charId });
+    },
+    moving: (engine, char, val, charId) => {
+        characterHandlerStateOf(engine).set('characters.[id].set.moving', val, { id: charId });
+        if (val === true) engine.scheduleCharacterMove(charId);
+        else {
+            engine.taskManager.kill(`move_char_${charId}`);
+            if (engine.checkQueueAndResume) engine.checkQueueAndResume();
+        }
+    },
+    met: (engine, char, val, charId) => {
+        characterHandlerStateOf(engine).set('characters.[id].set.met', val, { id: charId });
+        engine.api.presentation.components.renderCharacterScreen();
+    },
+    __default__: (engine, char, val, charId, prop) => {
+        characterHandlerStateOf(engine).set('characters.[id].set.[property]', val, { id: charId, property: prop });
     }
 };

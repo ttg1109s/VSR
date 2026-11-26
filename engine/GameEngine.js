@@ -4,10 +4,14 @@ import {EffectSystem} from './modules/Effect.js';
 import {ActionSystem} from './modules/Action.js';
 import {SceneSystem} from './modules/Scene.js';
 import {EntitySystem} from './modules/Entity.js';
-import {ItemSystem} from './modules/Item.js';
+import {ItemSystem,ItemEffectSystem} from './modules/Item.js';
+import {CharacterSystem} from './modules/Character.js';
+import {CmsSystem} from './modules/Cms.js';
+import {SetEffectSystem} from './modules/SetEffects.js';
 import {ChatSystem} from './modules/Chat.js';
 import {AutomationSystem} from './modules/Automation.js';
 import {SpriteSystem} from './modules/Sprite.js';
+import {AuthoritativeSpriteSimulation} from './modules/sprite-motion-v2/AuthoritativeSimulation.js';
 import {createEngineAPI} from './protocol/index.js';
 import {ProtocolCommands} from './core/ProtocolCommands.js';
 import {Lifecycle} from './core/Lifecycle.js';
@@ -105,4 +109,14 @@ export class GameEngine {
  commitState(reason='state.changed'){return this.protocol?.commitState(this,reason)??null;}
  dispatchProtocolCommand(command,context={}){if(!this.protocol)throw new Error('VSR protocol is not initialized.');return this.protocol.dispatch(command,context);}
 }
-Object.assign(GameEngine.prototype,ConfigSystem,LogicSystem,EffectSystem,ActionSystem,SceneSystem,EntitySystem,ItemSystem,ChatSystem,AutomationSystem,SpriteSystem,ProtocolCommands,Lifecycle,SaveRestore,TaskScheduling,EffectQueue);
+const SpriteMotionV2System = {
+  getAuthoritativeSpriteSimulationV2(options = {}) {
+    if (!this.authoritativeSpriteSimulationV2 || options.reset === true) this.authoritativeSpriteSimulationV2 = new AuthoritativeSpriteSimulation(options);
+    return this.authoritativeSpriteSimulationV2;
+  },
+  runAuthoritativeSpriteSimulationV2(input, options = {}) {
+    return this.getAuthoritativeSpriteSimulationV2(options).run(input);
+  }
+};
+
+Object.assign(GameEngine.prototype,ConfigSystem,LogicSystem,EffectSystem,ActionSystem,SceneSystem,EntitySystem,ItemSystem,ItemEffectSystem,CharacterSystem,CmsSystem,SetEffectSystem,ChatSystem,AutomationSystem,SpriteSystem,SpriteMotionV2System,ProtocolCommands,Lifecycle,SaveRestore,TaskScheduling,EffectQueue);

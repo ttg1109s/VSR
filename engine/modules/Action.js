@@ -520,3 +520,15 @@ export const ActionSystem = {
         }
     }
 };
+
+const actionHandlerStateOf = engine => engine.api.engine.state;
+
+export const ActionPropertyHandlers = {
+    __default__: (engine, action, val, actKey, prop) => {
+        actionHandlerStateOf(engine).set('actions.[id].[property]', val, { id: actKey, property: prop });
+        const chatState = actionHandlerStateOf(engine).getSession('chatState');
+        if (chatState?.active && chatState.triggerActionId === actKey) {
+            actionHandlerStateOf(engine).set('chatState.actionModified', true, {}, { namespace: 'session' });
+        }
+    }
+};

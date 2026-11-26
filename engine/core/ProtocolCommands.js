@@ -56,43 +56,54 @@ export const ProtocolCommands = {
     if(!sprite)return{success:false,reason:'sprite_not_found'};
     return this.handleAction(sprite.action,payload.uniqueId||`${sceneId}_${routerId}_${payload.spriteId}`);
    });
-   this.protocol.registerCommand('sprite.motion.complete', async payload => {
-    if(typeof payload.spriteId!=='string'||!payload.spriteId||typeof payload.motionId!=='string'||!payload.motionId)throw new TypeError('sprite.motion.complete requires spriteId and motionId.');
+   this.protocol.registerCommand('sprite.motion.presentation.ack', async payload => {
+    const required=['spriteId','motionId','trajectoryId','status','lastSegmentId','presentedThroughTime','presentedSegmentIds'];
+    if(required.some(key=>payload[key]===undefined)||payload.status!=='completed')throw new TypeError('sprite.motion.presentation.ack requires identity, completed status, lastSegmentId and presentedThroughTime.');
+    if(typeof payload.spriteId!=='string'||typeof payload.motionId!=='string'||typeof payload.trajectoryId!=='string'||typeof payload.lastSegmentId!=='string'||!Number.isFinite(payload.presentedThroughTime)||!Array.isArray(payload.presentedSegmentIds)||payload.presentedSegmentIds.some(id=>typeof id!=='string'))throw new TypeError('Invalid Sprite trajectory presentation ACK.');
+    this.completedSpriteMotions ||= new Set();
+    this.completedSpriteMotionIdentities ||= new Map();
+    this.pendingSpriteMotionEndHooks ||= new Map();
+    const identity=this.completedSpriteMotionIdentities.get(payload.motionId);
+    if(this.completedSpriteMotions.has(payload.motionId)){
+      if(identity?.spriteId!==payload.spriteId||identity?.trajectoryId!==payload.trajectoryId)return{success:false,reason:'stale_ack'};
+      const pending=this.pendingSpriteMotionEndHooks.get(payload.motionId);
+      if(pending){
+        try{
+          if(pending.effects.length)await this.processRunnables(pending.effects,pending.context,true);
+          this.pendingSpriteMotionEndHooks.delete(payload.motionId);
+          this.protocol.publish('presentation.sprite.trajectory.completed',pending.completion);
+          return{success:true,duplicate:true,endHookRetried:true,committedSprites:pending.committedSprites};
+        }catch(error){return{success:false,reason:'end_hook_failed',retryable:true,message:error?.message||String(error)};}
+      }
+      return{success:true,duplicate:true};
+    }
+    const active=this.activeSpriteMotions?.get(payload.spriteId);
+    if(!active||active.motionId!==payload.motionId||active.trajectoryId!==payload.trajectoryId)return{success:false,reason:'stale_ack'};
+    const requiredSegments=active.descriptor.presentation?.requiredSegments||[];
+    if(!requiredSegments.includes(payload.lastSegmentId)||requiredSegments.some(id=>!payload.presentedSegmentIds.includes(id)))return{success:false,reason:'invalid_segment_ack'};
+    if(payload.presentedThroughTime+1e-6<active.endTime)return{success:false,reason:'presentation_incomplete',requiredTime:active.endTime};
     const state=this.api.engine.state;
+    const entries=Object.entries(active.finalPositions||{});
+    await state.transaction(tx=>{
+      for(const [affectedId,position] of entries){
+        const runtime=tx.get('sprites.[id]',{id:affectedId})||{};
+        tx.set('sprites.[id]',{...runtime,position,motion:null},{id:affectedId});
+      }
+    });
+    this.activeSpriteMotions.delete(payload.spriteId);
+    this.completedSpriteMotions.add(payload.motionId);
+    this.completedSpriteMotionIdentities.set(payload.motionId,{spriteId:payload.spriteId,trajectoryId:payload.trajectoryId});
     const sprite=this.src?.sprite?.[payload.spriteId];
-    if(!sprite||sprite.motion?.enable!==true)return{success:false,reason:'motion_not_enabled'};
-    this.completedSpriteMotions ||= new Set();
-    if(this.completedSpriteMotions.has(payload.motionId))return{success:true,duplicate:true};
-    this.completedSpriteMotions.add(payload.motionId);
-    const effects=Array.isArray(sprite.motion.effect?.end)?sprite.motion.effect.end:[];
-    if(effects.length)await this.processRunnables(effects,{spriteId:payload.spriteId,motionId:payload.motionId,hook:'motion.end',reason:payload.reason||'completed'},true);
-    this.protocol.publish('presentation.sprite.motion.completed',{spriteId:payload.spriteId,motionId:payload.motionId,reason:payload.reason||'completed'});
-    return{success:true,reason:payload.reason||'completed'};
-   });
-   this.protocol.registerCommand('sprite.motion.impact', async payload => {
-    if(typeof payload.spriteId!=='string'||!payload.spriteId||typeof payload.targetSpriteId!=='string'||!payload.targetSpriteId||typeof payload.motionId!=='string'||!payload.motionId)throw new TypeError('sprite.motion.impact requires spriteId, targetSpriteId and motionId.');
-    const state=this.api.engine.state;
-    const mover=this.src?.sprite?.[payload.spriteId], target=this.src?.sprite?.[payload.targetSpriteId];
-    if(!mover||!target)return{success:false,reason:'sprite_not_found'};
-    const runtimeM=state.getRuntimeSnapshot('sprites.[id]',{id:payload.spriteId})||{};
-    const runtimeT=state.getRuntimeSnapshot('sprites.[id]',{id:payload.targetSpriteId})||{};
-    const layerM=Number.isFinite(runtimeM.layer)?runtimeM.layer:mover.layer;
-    const layerT=Number.isFinite(runtimeT.layer)?runtimeT.layer:target.layer;
-    if(layerM!==layerT)return{success:false,reason:'different_layer'};
-    if(mover.motion?.impact?.enable!==true)return{success:false,reason:'impact_disabled'};
-    this.completedSpriteMotions ||= new Set();
-    if(this.completedSpriteMotions.has(payload.motionId))return{success:true,duplicate:true};
-    this.completedSpriteMotions.add(payload.motionId);
-    const physics=mover.motion?.impact?.physics===true;
-    this.lastSpriteImpact ||= new Map();
-    const impactRecord={motionId:payload.motionId,physics,contact:payload.contact&&typeof payload.contact==='object'?payload.contact:{},timestamp:Date.now()};
-    this.lastSpriteImpact.set(payload.spriteId,{...impactRecord,targetSpriteId:payload.targetSpriteId});
-    this.lastSpriteImpact.set(payload.targetSpriteId,{...impactRecord,targetSpriteId:payload.spriteId});
-    this.protocol.publish('sprite.impact',{spriteId:payload.spriteId,targetSpriteId:payload.targetSpriteId,motionId:payload.motionId,layer:layerM,contact:payload.contact&&typeof payload.contact==='object'?payload.contact:{},physics});
-    const effects=Array.isArray(mover.motion.effect?.end)?mover.motion.effect.end:[];
-    if(effects.length)await this.processRunnables(effects,{spriteId:payload.spriteId,targetSpriteId:payload.targetSpriteId,motionId:payload.motionId,hook:'motion.end',reason:'impact',impact:{physics,contact:payload.contact||null}},true);
-    this.protocol.publish('presentation.sprite.motion.completed',{spriteId:payload.spriteId,motionId:payload.motionId,reason:'impact',physics});
-    return{success:true,reason:'impact',physics,collisionResponse:physics?'physics':'stop_at_contact'};
+    const effects=Array.isArray(sprite?.motion?.effect?.end)?sprite.motion.effect.end:[];
+    const completion={spriteId:payload.spriteId,motionId:payload.motionId,trajectoryId:payload.trajectoryId,reason:'presentation-completed',presentedThroughTime:payload.presentedThroughTime};
+    const context={spriteId:payload.spriteId,motionId:payload.motionId,trajectoryId:payload.trajectoryId,hook:'motion.end',reason:'presentation-completed',impacts:active.descriptor.impacts||[]};
+    if(effects.length){
+      this.pendingSpriteMotionEndHooks.set(payload.motionId,{effects,context,completion,committedSprites:entries.map(([id])=>id)});
+      try{await this.processRunnables(effects,context,true);this.pendingSpriteMotionEndHooks.delete(payload.motionId);}
+      catch(error){return{success:false,reason:'end_hook_failed',retryable:true,committed:true,message:error?.message||String(error),committedSprites:entries.map(([id])=>id)};}
+    }
+    this.protocol.publish('presentation.sprite.trajectory.completed',completion);
+    return{success:true,reason:'presentation-completed',committedSprites:entries.map(([id])=>id)};
    });
    this.protocol.registerCommand('action.trigger',async payload=>{
     if(typeof payload.actionId!=='string'||!payload.actionId)throw new TypeError('action.trigger requires actionId.');

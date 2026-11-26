@@ -1,5 +1,6 @@
+// Stats domain: calculation, clamping, mutation, notifications, and projections.
 // htdocs/engine/modules/effect/strategies/Stats.js
-import { resolveValue } from './Logic.js';
+import { resolveValue } from './effect/strategies/Logic.js';
 
 const notifyStat = (engine, payload) => engine.api.notifications.notify({
     title: payload.title, message: payload.message, level: payload.level,

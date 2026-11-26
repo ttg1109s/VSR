@@ -1,7 +1,7 @@
 // htdocs/engine/modules/Effect.js
 // [REFACTORED] EffectSystem - Standardized 'skip' & V9.2 Logic
 
-import { EffectHandlers, EffectKeyStrategies, EffectScopeResolvers, StaticListResolvers, ManageSubtypeHandlers } from './effect/Strategies.js';
+import { EffectHandlers, EffectKeyStrategies } from './effect/Strategies.js';
 
 export const EffectSystem = {
     generateBanKey(scope, params) { return EffectKeyStrategies[scope]?.(params) || null; },
@@ -102,45 +102,6 @@ export const EffectSystem = {
         }
         await this.applyEffect(wrapper, context, listKey, sourceList);
         return typeof context.shouldContinue === 'function' && !context.shouldContinue();
-    },
-
-    getStaticList(scope, params) {
-        if (!this.src) return [];
-        try {
-            return StaticListResolvers[scope]?.(this.src, params) || [];
-        } catch (e) {
-            console.warn("EffectSystem: Lookup Static List Failed", e);
-            return [];
-        }
-    },
-
-    async handleManageEffect(cfg, context, currentKey, sourceList) {
-        const resolveScope = EffectScopeResolvers[cfg.space];
-        if (typeof resolveScope !== 'function') {
-            throw new TypeError(`Unsupported manage_effect space: ${String(cfg.space)}`);
-        }
-        const result = resolveScope(cfg, context, this);
-        if (!result) {
-            throw new Error(`Unable to resolve manage_effect target for space '${cfg.space}'.`);
-        }
-
-        const targetKey = this.generateBanKey(result.scope, result.params);
-        if (!targetKey) {
-            throw new Error(`Unable to generate manage_effect key for space '${cfg.space}'.`);
-        }
-
-        const handler = ManageSubtypeHandlers[cfg.subtype];
-        if (typeof handler !== 'function') {
-            throw new TypeError(`Unsupported manage_effect subtype: ${String(cfg.subtype)}`);
-        }
-
-        let defaultList = [];
-        if (targetKey === currentKey) {
-            defaultList = sourceList;
-        } else {
-            defaultList = this.getStaticList(result.scope, result.params);
-        }
-        await handler(this, targetKey, cfg, defaultList);
     },
 
     async applyEffect(eff, context, listKey = null, sourceList = []) {

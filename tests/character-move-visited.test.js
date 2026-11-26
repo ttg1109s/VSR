@@ -6,7 +6,7 @@ const { MoveAlgorithms } = __testModules.MoveAlgorithms;
 const { EntitySystem } = __testModules.EntitySystem;
 const { EffectSystem } = __testModules.EffectSystem;
 const { validateCharacterVisitCounters } = __testModules.SaveState;
-const { EffectKeyStrategies, EffectScopeResolvers, StaticListResolvers } = __testModules.ManagementStrategies;
+const { EffectKeyStrategies, EffectScopeResolvers, StaticListResolvers, manageEffect } = __testModules.ManagementStrategies;
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -342,7 +342,7 @@ test('manage_effect can mutate one Character moveList entry without touching sib
     }
   });
 
-  await engine.handleManageEffect({
+  await manageEffect(engine, {
     space: 'character_move',
     target: 'npc',
     moveEntryId: 'second',
@@ -397,7 +397,7 @@ test('manage_effect uses only stable movement entry IDs for overrides', async ()
   const overrides = { char_move_npc_entry_second_still: [{ type: 'notify', text: 'previously-managed' }] };
   const source = { characters: { npc: { moveList: [{ entryId: 'first', loop: { still: [{ type: 'notify', text: 'first' }] } }, { entryId: 'second', loop: { still: [{ type: 'notify', text: 'default-second' }] } }] } } };
   const engine = Object.assign({}, EffectSystem, { src: source, api: { engine: { state: { getRuntime(path, params) { return path === 'effect_overrides.[key]' ? overrides[params.key] : undefined; }, getRuntimeSnapshot(path) { return path === 'effect_overrides' ? overrides : {}; }, set(path, value, params) { if (path !== 'effect_overrides.[key]') throw new Error('Unexpected state write: ' + path); overrides[params.key] = value; } } } } });
-  await engine.handleManageEffect({ space: 'character_move', target: 'npc', moveEntryId: 'second', in: 'still', subtype: 'add_effect', content: { type: 'notify', text: 'new' } }, {}, null, []);
+  await manageEffect(engine, { space: 'character_move', target: 'npc', moveEntryId: 'second', in: 'still', subtype: 'add_effect', content: { type: 'notify', text: 'new' } }, {}, null, []);
   assert.deepEqual(overrides.char_move_npc_entry_second_still, [{ type: 'notify', text: 'previously-managed' }, { type: 'notify', text: 'new' }]);
   assert.equal(overrides.char_move_npc_1_still, undefined);
 });

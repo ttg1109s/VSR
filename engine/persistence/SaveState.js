@@ -1,10 +1,11 @@
 import { cloneJsonValue } from '../protocol/JsonProtocol.js';
 
-export const SAVE_VERSION = 3;
+export const SAVE_VERSION = 5;
 const RUNTIME_KEYS = ['effectQueue', 'isSyncQueueRunning', 'isAsyncQueueRunning', 'pausedBackgroundTasks'];
 
 export function createSaveEnvelope(engine) {
   if (!engine?.src || !engine?.scenario) throw new Error('Cannot save an uninitialized Engine.');
+
   if (engine.isActionProcessing || engine.isTransitioning ||
       engine.runtime?.isSyncQueueRunning || engine.runtime?.isAsyncQueueRunning ||
       engine.runtime?.effectQueue?.sync?.length || engine.runtime?.effectQueue?.async?.length) {
@@ -31,6 +32,11 @@ export function createSaveEnvelope(engine) {
     taskRemainingMs: engine.taskManager?.snapshotRemaining?.(['auto_', 'move_char_', 'move_still_', 'router_still_', 'timer_ui_', 'timer_end_']) ?? {},
     pausedTasks: engine.taskManager?.snapshotPaused?.(['auto_', 'move_char_', 'move_still_', 'router_still_', 'timer_ui_', 'timer_end_']) ?? [],
     automationRandomBags: Object.fromEntries([...(engine.automationRandomBags||new Map())].map(([id,bag])=>[id,[...bag]])),
+    activeSpriteMotions: [...(engine.activeSpriteMotions||new Map()).values()].map(item=>cloneJsonValue(item)),
+    completedSpriteMotions: [...(engine.completedSpriteMotions||new Set())],
+    completedSpriteMotionIdentities: Object.fromEntries(engine.completedSpriteMotionIdentities||new Map()),
+    pendingSpriteMotionEndHooks: Object.fromEntries(engine.pendingSpriteMotionEndHooks||new Map()),
+    spriteMotionSequence: engine.spriteMotionSequence||0,
     savedAt: new Date().toISOString()
   };
 }
@@ -83,6 +89,11 @@ function validateSaveShape(save) {
       (typeof save.pendingPasswordAction !== 'object' || Array.isArray(save.pendingPasswordAction))) {
     throw new TypeError('Save pendingPasswordAction must be an object or null.');
   }
+  if (save.activeSpriteMotions !== undefined && (!Array.isArray(save.activeSpriteMotions) || save.activeSpriteMotions.some(item=>!item||typeof item!=='object'||typeof item.motionId!=='string'||typeof item.trajectoryId!=='string'||!item.descriptor?.trajectories))) throw new TypeError('Save activeSpriteMotions is invalid.');
+  if (save.completedSpriteMotions !== undefined && (!Array.isArray(save.completedSpriteMotions) || save.completedSpriteMotions.some(id=>typeof id!=='string'))) throw new TypeError('Save completedSpriteMotions is invalid.');
+  if (save.completedSpriteMotionIdentities !== undefined && (!save.completedSpriteMotionIdentities||typeof save.completedSpriteMotionIdentities!=='object'||Array.isArray(save.completedSpriteMotionIdentities)||Object.values(save.completedSpriteMotionIdentities).some(identity=>!identity||typeof identity.spriteId!=='string'||typeof identity.trajectoryId!=='string'))) throw new TypeError('Save completedSpriteMotionIdentities is invalid.');
+  if (save.pendingSpriteMotionEndHooks !== undefined && (!save.pendingSpriteMotionEndHooks||typeof save.pendingSpriteMotionEndHooks!=='object'||Array.isArray(save.pendingSpriteMotionEndHooks)||Object.values(save.pendingSpriteMotionEndHooks).some(item=>!item||!Array.isArray(item.effects)||!item.context||!item.completion||!Array.isArray(item.committedSprites)))) throw new TypeError('Save pendingSpriteMotionEndHooks is invalid.');
+  if (save.spriteMotionSequence !== undefined && (!Number.isSafeInteger(save.spriteMotionSequence)||save.spriteMotionSequence<0)) throw new TypeError('Save spriteMotionSequence is invalid.');
   if (save.automationRandomBags !== undefined && (!save.automationRandomBags || typeof save.automationRandomBags !== 'object' || Array.isArray(save.automationRandomBags))) throw new TypeError('Save automationRandomBags must be an object.');
   if (save.pausedTasks !== undefined && (!Array.isArray(save.pausedTasks) || save.pausedTasks.some(name => typeof name !== 'string' || !/^(auto_|move_char_|move_still_|router_still_|timer_ui_|timer_end_)[^/]+$/.test(name)))) {
     throw new TypeError('Save pausedTasks must contain valid task names.');

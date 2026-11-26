@@ -1,3 +1,4 @@
+// Effect-management domain: keying, resolving, and mutating effect lists.
 // htdocs/engine/modules/effect/strategies/Management.js
 
 export const EffectKeyStrategies = {
@@ -166,3 +167,33 @@ export const ManageSubtypeHandlers = {
     },
 
 };
+
+/** Execute a manage_effect operation inside the Management domain. */
+export async function manageEffect(engine, cfg, context = {}, currentKey = null, sourceList = []) {
+    const resolveScope = EffectScopeResolvers[cfg.space];
+    if (typeof resolveScope !== 'function') {
+        throw new TypeError(`Unsupported manage_effect space: ${String(cfg.space)}`);
+    }
+    const result = resolveScope(cfg, context, engine);
+    if (!result) {
+        throw new Error(`Unable to resolve manage_effect target for space '${cfg.space}'.`);
+    }
+
+    const targetKey = EffectKeyStrategies[result.scope]?.(result.params) || null;
+    if (!targetKey) {
+        throw new Error(`Unable to generate manage_effect key for space '${cfg.space}'.`);
+    }
+
+    const handler = ManageSubtypeHandlers[cfg.subtype];
+    if (typeof handler !== 'function') {
+        throw new TypeError(`Unsupported manage_effect subtype: ${String(cfg.subtype)}`);
+    }
+
+    let defaultList = [];
+    if (targetKey === currentKey) {
+        defaultList = sourceList;
+    } else {
+        defaultList = StaticListResolvers[result.scope]?.(engine.src, result.params) || [];
+    }
+    await handler(engine, targetKey, cfg, defaultList);
+}

@@ -27,33 +27,34 @@ export function evaluateSpriteEasing(easing, progress) {
   }
 }
 
-export function sampleSpriteMotion(motion, progress) {
-  if (!isSpriteMotionPayload(motion)) throw new TypeError('Invalid Sprite motion descriptor.');
-  const t = evaluateSpriteEasing(motion.easing, progress);
-  const points = motion.path.points.map(point => [point.x, point.y, point.z]);
-  if (motion.path.type !== 'bezier') throw new TypeError(`Unsupported Sprite path geometry: ${String(motion.path.type)}`);
-  // Preserve the existing cubic Bezier sampling contract for all motion descriptors.
-  const [p0, p1, p2, p3] = points;
-  const u = 1 - t, weights = [u * u * u, 3 * u * u * t, 3 * u * t * t, t * t * t];
-  const sampled = [0, 1, 2].map(axis =>
-    weights[0] * p0[axis] + weights[1] * p1[axis] + weights[2] * p2[axis] + weights[3] * p3[axis]
-  );
-  if (motion.start && t === 0) return [motion.start.x, motion.start.y, motion.start.z];
-  if (motion.end && t === 1) return [motion.end.x, motion.end.y, motion.end.z];
-  return sampled;
+export function sampleSpriteTrajectoryV2(trajectory, spriteId, simulationTime) {
+  if (trajectory?.protocolVersion !== 2 || typeof trajectory.trajectoryId !== 'string' || !Array.isArray(trajectory.trajectories?.[spriteId])) throw new TypeError('Invalid authoritative Sprite trajectory v2.');
+  const segments = trajectory.trajectories[spriteId];
+  const time = Math.max(trajectory.startTime, Math.min(trajectory.endTime, Number(simulationTime)));
+  const segment = [...segments].reverse().find(item => time >= item.startTime - 1e-9) || segments[0];
+  if (!segment) throw new TypeError(`Trajectory ${spriteId} has no segments.`);
+  const duration = Math.max(1e-9, segment.endTime - segment.startTime);
+  const t = Math.max(0, Math.min(1, (time - segment.startTime) / duration));
+  if (segment.type === 'bezier') {
+    const u = evaluateSpriteEasing(segment.easing || 'linear', t), v=1-u;
+    const p=segment.controlPoints;
+    return [0,1,2].map(axis=>v*v*v*p[0][axis]+3*v*v*u*p[1][axis]+3*v*u*u*p[2][axis]+u*u*u*p[3][axis]);
+  }
+  if (segment.type === 'physics') {
+    const dt=Math.max(0,Math.min(duration,time-segment.startTime));
+    return segment.initialPosition.map((value,axis)=>value+segment.initialVelocity[axis]*dt+0.5*segment.acceleration[axis]*dt*dt);
+  }
+  throw new TypeError(`Unsupported authoritative trajectory segment type: ${String(segment.type)}`);
 }
-function isFiniteSpritePoint(point) {
-  return point && typeof point === 'object' && !Array.isArray(point) && ['x', 'y', 'z'].every(axis => typeof point[axis] === 'number' && Number.isFinite(point[axis]));
-}
-function isSpriteMotionPayload(payload) {
-  const easings = ['linear', 'ease_in', 'ease_out', 'ease_in_out', 'sin_in', 'sin_out', 'sin_in_out', 'step'];
-  return payload && typeof payload.spriteId === 'string' && payload.spriteId.length > 0 &&
-    typeof payload.motionId === 'string' && payload.motionId.length > 0 &&
-    payload.path?.type === 'bezier' && Array.isArray(payload.path.points) &&
-    payload.path.points.length === 4 && payload.path.points.every(isFiniteSpritePoint) &&
-    Number.isFinite(payload.duration) && payload.duration >= 0 && easings.includes(payload.easing) &&
-    (payload.geometryMode === undefined || ['geometry-preserving', 'absolute'].includes(payload.geometryMode)) &&
-    (payload.impact === undefined || (payload.impact && typeof payload.impact.enable === 'boolean' && typeof payload.impact.physics === 'boolean'));
+export function getSpriteTrajectoryAck(trajectory, spriteId, presentedThroughTime, presentedSegmentIds) {
+  if (trajectory?.protocolVersion !== 2 || !Array.isArray(trajectory.trajectories?.[spriteId])) throw new TypeError('Invalid authoritative Sprite trajectory v2.');
+  const required=trajectory.presentation.requiredSegments;
+  if(!Array.isArray(required)||required.some(id=>typeof id!=='string')||!Array.isArray(presentedSegmentIds)||presentedSegmentIds.some(id=>typeof id!=='string'))throw new TypeError('Trajectory segment presentation identities are invalid.');
+  const lastSegmentId=trajectory.trajectories[spriteId].at(-1)?.segmentId;
+  if(!lastSegmentId)throw new TypeError('Sprite trajectory has no terminal segment.');
+  if(!required.every(id=>presentedSegmentIds.includes(id))||!presentedSegmentIds.includes(lastSegmentId))throw new TypeError('Cannot ACK a trajectory before all required segments are actually presented.');
+  if(!Number.isFinite(presentedThroughTime)||presentedThroughTime<trajectory.endTime)throw new TypeError('Cannot ACK before terminal presentation time.');
+  return {spriteId,motionId:trajectory.motionId,trajectoryId:trajectory.trajectoryId,status:'completed',lastSegmentId,presentedThroughTime,presentedSegmentIds:[...presentedSegmentIds]};
 }
 const timestampFromSnapshot = snapshot => {
   const parsed = Date.parse(snapshot?.createdAt || '');
@@ -131,9 +132,12 @@ export class JsonClient {
         if (engineChanged) this.emit({ type: 'synchronization.recovered', source: 'event.snapshot', eventSequence: sequence });
       }
       this.processProtocolTimelineEvent(message);
-      if (message.event === 'presentation.sprite.motion') {
-        if (isSpriteMotionPayload(message.payload)) this.emit({ type: 'sprite.motion', motion: structuredClone(message.payload), eventId: message.eventId, sequence });
-        else this.emit({ type: 'sprite.motion.invalid', payload: structuredClone(message.payload), eventId: message.eventId, sequence });
+      if (message.event === 'presentation.sprite.trajectory.v2') {
+        if (message.payload?.protocolVersion === 2 && message.payload?.motionId && message.payload?.trajectoryId && message.payload?.trajectories) this.emit({ type: 'sprite.trajectory.v2', trajectory: structuredClone(message.payload), eventId: message.eventId, sequence });
+        else this.emit({ type: 'sprite.trajectory.invalid', payload: structuredClone(message.payload), eventId: message.eventId, sequence });
+      }
+      if (message.event === 'presentation.sprite.trajectory.cancelled' && message.payload && typeof message.payload.spriteId === 'string' && typeof message.payload.motionId === 'string') {
+        this.emit({ type: 'sprite.trajectory.cancelled', cancellation: structuredClone(message.payload), eventId: message.eventId, sequence });
       }
       this.emit({ type: 'event', event: message });
     } else if (message?.type === 'snapshot') {
@@ -632,8 +636,7 @@ export class JsonClient {
 
   triggerAction(actionId, uniqueId) { return this.dispatch('action.trigger', { actionId, uniqueId }); }
   triggerSprite(spriteId, uniqueId) { return this.dispatch('sprite.trigger', { spriteId, uniqueId }); }
-  completeSpriteMotion(spriteId, motionId, reason = 'completed') { return this.dispatch('sprite.motion.complete', { spriteId, motionId, reason }); }
-  reportSpriteImpact(spriteId, targetSpriteId, motionId, contact = {}) { return this.dispatch('sprite.motion.impact', { spriteId, targetSpriteId, motionId, contact }); }
+  acknowledgeSpriteTrajectory(payload) { return this.dispatch('sprite.motion.presentation.ack', payload); }
   markActionRead(uniqueId) { return this.dispatch('action.markAsRead', { uniqueId }); }
   openChatThread(contactId, chatId) { return this.dispatch('chat.open', { contactId, chatId }); }
   nextChat() { return this.dispatch('chat.next'); }

@@ -175,3 +175,16 @@ export const AutomationSystem = {
         this.taskManager.operator(taskId, 'enabled');
     }
 };
+
+
+const automationStateOf = engine => engine.api.engine.state;
+
+export const AutomationPropertyHandlers = {
+    state: (engine, target, val) => {
+        const actions = { run: id => engine.runAutomation(id), stop: id => engine.stopAutomation(id) };
+        if (actions[val]) actions[val](target);
+    },
+    __default__: (engine, target, val, prop) => {
+        automationStateOf(engine).set('automations.[id].[property]', val, { id: target, property: prop });
+    }
+};

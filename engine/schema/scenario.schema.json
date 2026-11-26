@@ -6871,37 +6871,78 @@
           ],
           "additionalProperties": false
         },
+        "collision": {
+          "type": "object",
+          "properties": {
+            "enable": {
+              "type": "boolean",
+              "default": true
+            },
+            "radius": {
+              "type": "number",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          "additionalProperties": false
+        },
+        "physics": {
+          "type": "object",
+          "properties": {
+            "mass": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "default": 1
+            },
+            "restitution": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "default": 0.5
+            },
+            "friction": {
+              "type": "number",
+              "minimum": 0,
+              "default": 0
+            },
+            "gravity": {
+              "type": "array",
+              "minItems": 3,
+              "maxItems": 3,
+              "items": {
+                "type": "number"
+              },
+              "default": [
+                0,
+                0,
+                0
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
         "motion": {
           "type": "object",
           "default": {
             "enable": false,
             "duration": 0,
             "path": {
-              "type": "bezier",
-              "points": [
-                {
-                  "x": 0,
-                  "y": 0,
-                  "z": 0
-                },
-                {
-                  "x": 0,
-                  "y": 0,
-                  "z": 0
-                },
-                {
-                  "x": 0,
-                  "y": 0,
-                  "z": 0
-                },
-                {
-                  "x": 0,
-                  "y": 0,
-                  "z": 0
-                }
+              "point": [
+                [],
+                "geometry-preserving"
               ]
             },
             "easing": "linear",
+            "physics": {
+              "horizon": 2,
+              "restitution": 0.5,
+              "friction": 0,
+              "gravity": [
+                0,
+                0,
+                0
+              ]
+            },
             "impact": {
               "enable": false,
               "physics": false
@@ -6929,27 +6970,21 @@
               "properties": {
                 "point": {
                   "type": "array",
-                  "minItems": 2,
+                  "minItems": 0,
                   "maxItems": 2,
-                  "prefixItems": [
-                    {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/definitions/point3"
+                  "items": {
+                    "anyOf": [
+                      {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/definitions/point3"
+                        }
                       },
-                      "minItems": 0
-                    },
-                    {
-                      "type": "string",
-                      "enum": [
-                        "geometry-preserving",
-                        "absolute"
-                      ],
-                      "default": "geometry-preserving",
-                      "description": "Required transformation mode. Use geometry-preserving by default or absolute to retain literal waypoint coordinates."
-                    }
-                  ],
-                  "items": false
+                      {
+                        "type": "string"
+                      }
+                    ]
+                  }
                 },
                 "type": {
                   "type": "string",
@@ -7019,6 +7054,41 @@
                     "$ref": "#/definitions/runnable_wrapper"
                   },
                   "default": []
+                }
+              },
+              "additionalProperties": false
+            },
+            "physics": {
+              "type": "object",
+              "properties": {
+                "horizon": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "default": 2
+                },
+                "restitution": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1,
+                  "default": 0.5
+                },
+                "friction": {
+                  "type": "number",
+                  "minimum": 0,
+                  "default": 0
+                },
+                "gravity": {
+                  "type": "array",
+                  "minItems": 3,
+                  "maxItems": 3,
+                  "items": {
+                    "type": "number"
+                  },
+                  "default": [
+                    0,
+                    0,
+                    0
+                  ]
                 }
               },
               "additionalProperties": false

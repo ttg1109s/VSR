@@ -709,3 +709,34 @@ async _enterRouterCore(routerId, forceRender = false, isSceneEntry = false, skip
         this.api.presentation.scene.render(s, r, actions, sprites);
     },
 };
+
+const sceneHandlerStateOf = engine => engine.api.engine.state;
+
+export const ScenePropertyHandlers = {
+    blocked: (engine, scene, val, sceneId) => {
+        sceneHandlerStateOf(engine).set('scenes.[id].blocked', val, { id: sceneId });
+        if (val === false) engine.resumeCharacterMovement();
+    },
+    activeRouterId: async (engine, scene, val, sceneId) => {
+        if (typeof val !== 'string' || !engine.src?.scenes?.[sceneId]?.routers?.[val]) {
+            throw new Error(`Cannot activate unknown router '${String(val)}' in scene '${sceneId}'.`);
+        }
+        if (sceneId === sceneHandlerStateOf(engine).get('sceneId')) return engine.enterRouter(val);
+        sceneHandlerStateOf(engine).set('scenes.[id].activeRouterId', val, { id: sceneId });
+    },
+    __default__: (engine, scene, val, sceneId, prop) => {
+        sceneHandlerStateOf(engine).set('scenes.[id].[property]', val, { id: sceneId, property: prop });
+    }
+};
+
+export const RouterPropertyHandlers = {
+    blocked: (engine, router, val, routerId) => {
+        const sceneId = engine.src?.path?.routers?.[routerId] || sceneHandlerStateOf(engine).sceneId;
+        sceneHandlerStateOf(engine).set('routers.[routerKey].blocked', val, { routerKey: `${sceneId}_${routerId}` });
+        if (val === false) engine.resumeCharacterMovement();
+    },
+    __default__: (engine, router, val, routerId, prop) => {
+        const sceneId = engine.src?.path?.routers?.[routerId] || sceneHandlerStateOf(engine).sceneId;
+        sceneHandlerStateOf(engine).set('routers.[routerKey].[property]', val, { routerKey: `${sceneId}_${routerId}`, property: prop });
+    }
+};

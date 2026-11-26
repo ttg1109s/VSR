@@ -77,7 +77,7 @@ export const SaveRestore = {
     'scenario','src','state','runtime','pendingPasswordAction','chatState','timerState','endingState',
     'taskSequence','currentStillTask','activeTimerTasks','characterVisitTokens','characterVisitSequence',
     'characterStillTaskIds','characterTransitionQueues','characterMoveSlots','characterMoveQueue','characterMoveExecuting','isActionProcessing','isTransitioning','disposed',
-    'restoredTaskTimers','restoredPausedTasks','restoredAutomationRandomBags','automationRunTokens',
+    'restoredTaskTimers','restoredPausedTasks','restoredAutomationRandomBags','activeSpriteMotions','completedSpriteMotions','completedSpriteMotionIdentities','pendingSpriteMotionEndHooks','spriteMotionSequence','automationRunTokens',
     'automationRandomBags','automationBlockingOwners','automationRunSequence','_lifecycleGeneration'
    ];
    const rollback=Object.fromEntries(rollbackFields.map(key=>[key,this[key]]));
@@ -88,6 +88,11 @@ export const SaveRestore = {
     this.scenario=cloneJsonValue(normalized.scenario);
     this.src=normalized.src;
     this.state=restored;
+    this.activeSpriteMotions=new Map((save.activeSpriteMotions||[]).map(item=>{const restoredMotion={...item,startedAt:Date.now(),phase:'presentation-pending'};return[item.descriptor.spriteId,restoredMotion];}));
+    this.completedSpriteMotions=new Set(save.completedSpriteMotions||[]);
+    this.completedSpriteMotionIdentities=new Map(Object.entries(save.completedSpriteMotionIdentities||{}));
+    this.pendingSpriteMotionEndHooks=new Map(Object.entries(save.pendingSpriteMotionEndHooks||{}));
+    this.spriteMotionSequence=save.spriteMotionSequence||0;
     this.chatState={...this.chatState,...(cloneJsonValue(save.chatState)||{})};
     this.pendingPasswordAction=cloneJsonValue(save.pendingPasswordAction)||null;
     this.endingState=save.endingState===null||save.endingState===undefined?null:cloneJsonValue(save.endingState);
@@ -96,6 +101,7 @@ export const SaveRestore = {
     this.restoredAutomationRandomBags=cloneJsonValue(save.automationRandomBags)||{};
     this.rehydrateBackgroundTasks();
     this.rehydratePasswordChallenge();
+    for(const active of this.activeSpriteMotions.values()) this.protocol?.publish?.('presentation.sprite.trajectory.v2',active.descriptor);
     this.commitState('save.restored');
     return{restored:true,saveVersion:SAVE_VERSION};
    } catch(error) {

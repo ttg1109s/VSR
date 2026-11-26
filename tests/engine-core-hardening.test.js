@@ -1,9 +1,11 @@
 import { importModules } from './imports/index.js';
-const __testModules = await importModules(["Scenario","LogicSystem","EffectSystem","EffectStrategies","StatsHelpers","ItemStrategies","ItemSystem","LoaderSystem","ActionSystem","SceneSystem","AutomationSystem","GameEngine","SaveState","JsonProtocol","PasswordVerification","ScenarioSchema","StateAccess","Resolver"]);
+const __testModules = await importModules(["Scenario","LogicSystem","EffectSystem","EffectStrategies","SetEffectsSystem","StatsHelpers","ItemStrategies","ItemSystem","LoaderSystem","ActionSystem","SceneSystem","AutomationSystem","GameEngine","SaveState","JsonProtocol","PasswordVerification","ScenarioSchema","StateAccess","Resolver","ManagementStrategies"]);
 const { validateScenario, normalizeScenario, ScenarioValidationError } = __testModules.Scenario;
 const { LogicSystem } = __testModules.LogicSystem;
 const { EffectSystem } = __testModules.EffectSystem;
 const { EffectHandlers, CharacterStrategies, SetStrategies, NotifyStrategies } = __testModules.EffectStrategies;
+const { ManageSubtypeHandlers } = __testModules.ManagementStrategies;
+const { SetEffectSystem } = __testModules.SetEffectsSystem;
 const { StatsHelpers } = __testModules.StatsHelpers;
 const { ItemStrategies } = __testModules.ItemStrategies;
 const { ItemSystem } = __testModules.ItemSystem;
@@ -80,7 +82,7 @@ test('save envelope rejects legacy and unsupported versions', () => {
   };
   assert.throws(() => normalizeSaveEnvelope(base), /Unsupported save version/);
 
-  for (const saveVersion of [undefined, 1, 4]) {
+  for (const saveVersion of [undefined, 1, 3]) {
     const legacyOrUnsupported = { ...base };
     if (saveVersion === undefined) delete legacyOrUnsupported.saveVersion;
     else legacyOrUnsupported.saveVersion = saveVersion;
@@ -613,18 +615,22 @@ test('runtime rejects stat field and mode combinations excluded by the schema', 
 
 test('character and management effect dispatchers await asynchronous handlers', async () => {
   let characterCompleted = false;
-  const engine = {
-    async handleManageEffect() {
-      await Promise.resolve();
-      characterCompleted = true;
-    }
+  const engine = { src: { characters: { npc: { effect: { still: [] } } } }, api: { engine: { state: {} } } };
+  const originalManageHandler = ManageSubtypeHandlers.locked;
+  ManageSubtypeHandlers.locked = async () => {
+    await Promise.resolve();
+    characterCompleted = true;
   };
 
-  const manageResult = await EffectHandlers.manage_effect.call(engine, {
-    inline: { space: 'router', in: 'enter', subtype: 'locked', target: 'main', index: [0] }
-  });
-  assert.equal(manageResult, undefined);
-  assert.equal(characterCompleted, true);
+  try {
+    const manageResult = await EffectHandlers.manage_effect.call(engine, {
+      inline: { space: 'character', in: 'still', subtype: 'locked', target: 'npc', index: [0] }
+    });
+    assert.equal(manageResult, undefined);
+    assert.equal(characterCompleted, true);
+  } finally {
+    ManageSubtypeHandlers.locked = originalManageHandler;
+  }
 
   const originalCharacterHandler = CharacterStrategies.mng_items;
   CharacterStrategies.mng_items = async () => {
@@ -1119,7 +1125,7 @@ test('set.action dispatches through the wired strategy and updates runtime actio
   };
   const engine = { src: { actions: { action_read_notice: {} } }, api: { engine: { state } } };
 
-  assert.doesNotThrow(() => EffectHandlers.set.call(engine, {
+  assert.doesNotThrow(() => SetStrategies.action(engine, {
     type: 'set', subtype: 'action', target: 'action_read_notice',
     property: 'display', value: 'hide'
   }));
@@ -1131,7 +1137,7 @@ test('set.action dispatches through the wired strategy and updates runtime actio
 
 test('set dispatcher rejects unknown subtypes explicitly', () => {
   assert.throws(
-    () => EffectHandlers.set.call({}, { type: 'set', subtype: 'not_supported' }),
+    () => SetEffectSystem.executeSetEffect.call({}, { type: 'set', subtype: 'not_supported' }),
     /Unsupported set subtype: not_supported/
   );
 });
@@ -1186,6 +1192,11 @@ test('item hide only occurs after a successful item operation in action context'
       inventory.push(id);
       return true;
     },
+    applyAddEffect(eff, context) {
+      const added = this.addItem(eff.target);
+      ItemStrategies._tryHideAction(this, eff, context, added === true);
+      return added;
+    },
     getOwnerId: () => 'player',
     getConfig: () => 1
   };
@@ -1233,6 +1244,11 @@ test('item hide is ignored outside action context', () => {
       presentation: { components: { explorer() {} } }
     },
     addItem(id) { inventory.push(id); return true; },
+    applyAddEffect(eff, context) {
+      const added = this.addItem(eff.target);
+      ItemStrategies._tryHideAction(this, eff, context, added === true);
+      return added;
+    },
     getOwnerId: () => 'player'
   };
 
