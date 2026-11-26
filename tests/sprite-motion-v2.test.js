@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createBezierTrajectory,createLinearPhysicsSegment,resolveCircleCollision,correctCirclePenetration,firstCircleImpact,AuthoritativeSpriteSimulation} from '../engine/modules/sprite-motion-v2/index.js';
+import {createBezierTrajectory,createLinearPhysicsSegment,resolveCircleCollision,correctCirclePenetration,firstCircleImpact,AuthoritativeSpriteSimulation} from '../engine/modules/sprite/index.js';
 
 test('v2 Bezier trajectory samples endpoints and computes velocity',()=>{
  const t=createBezierTrajectory({points:[[0,0],[1,0],[2,0],[3,0]],duration:2});
@@ -53,4 +53,11 @@ test('CCD does not repeatedly report an overlapping but separating pair',()=>{
  const a=createLinearPhysicsSegment({segmentId:'a',startTime:0,duration:1,position:[0,0,0],velocity:[-1,0,0]});
  const b=createLinearPhysicsSegment({segmentId:'b',startTime:0,duration:1,position:[1,0,0],velocity:[1,0,0]});
  const hit=firstCircleImpact({trajectoryA:a,trajectoryB:b,radiusA:1,radiusB:1,timeStart:0,timeEnd:1,subdivisions:8});assert.equal(hit,null);
+});
+
+test('CCD adaptively increases subdivisions for fast travel relative to radius',()=>{
+  const trajectory=(position,velocity)=>({sample:t=>position.map((v,i)=>v+velocity[i]*t),velocity:()=>velocity});
+  const hit=firstCircleImpact({trajectoryA:trajectory([-100,0,0],[400,0,0]),trajectoryB:trajectory([0,0,0],[0,0,0]),radiusA:1,radiusB:1,timeStart:0,timeEnd:1,subdivisions:8});
+  assert.ok(hit);
+  assert.ok(hit.subdivisions>8);
 });

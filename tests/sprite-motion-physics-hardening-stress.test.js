@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { AuthoritativeSpriteSimulation, createLinearPhysicsSegment, createPiecewiseBezierTrajectory, correctCirclePenetration, resolveCircleCollision } from '../engine/modules/sprite-motion-v2/index.js';
+import { AuthoritativeSpriteSimulation, createLinearPhysicsSegment, createPiecewiseBezierTrajectory, correctCirclePenetration, resolveCircleCollision } from '../engine/modules/sprite/index.js';
 
 function pairRun(moverId,targetId,seed=1){
   const mover=createLinearPhysicsSegment({segmentId:'m',startTime:0,duration:2,position:[3+seed*.0001,0,0],velocity:[-1,0,0]});

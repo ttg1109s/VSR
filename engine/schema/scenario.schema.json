@@ -1170,6 +1170,15 @@
         },
         "z": {
           "type": "number"
+        },
+        "r": {
+          "type": "number",
+          "description": "Waypoint rotation in degrees."
+        },
+        "s": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Waypoint uniform scale."
         }
       },
       "additionalProperties": false

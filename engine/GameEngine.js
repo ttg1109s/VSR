@@ -11,7 +11,7 @@ import {SetEffectSystem} from './modules/SetEffects.js';
 import {ChatSystem} from './modules/Chat.js';
 import {AutomationSystem} from './modules/Automation.js';
 import {SpriteSystem} from './modules/Sprite.js';
-import {AuthoritativeSpriteSimulation} from './modules/sprite-motion-v2/AuthoritativeSimulation.js';
+import {AuthoritativeSpriteSimulation} from './modules/sprite/AuthoritativeSimulation.js';
 import {createEngineAPI} from './protocol/index.js';
 import {ProtocolCommands} from './core/ProtocolCommands.js';
 import {Lifecycle} from './core/Lifecycle.js';

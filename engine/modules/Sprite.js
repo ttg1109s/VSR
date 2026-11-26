@@ -49,7 +49,7 @@ function rebaseSerializedSegments(segments,elapsed,horizon){
     return rebased;
 }
 
-import { createBezierTrajectory, createPiecewiseBezierTrajectory, createLinearPhysicsSegment, AuthoritativeSpriteSimulation } from './sprite-motion-v2/index.js';
+import { createBezierTrajectory, createPiecewiseBezierTrajectory, createLinearPhysicsSegment, AuthoritativeSpriteSimulation } from './sprite/index.js';
 export function setSpriteProperty(engine, spriteId, prop, value) {
         const state = engine.api.engine.state;
         const definition = engine.src?.sprite?.[spriteId];
@@ -91,6 +91,11 @@ export function setSpriteProperty(engine, spriteId, prop, value) {
                     point && ['x', 'y', 'z'].every(axis => typeof point[axis] === 'number' && Number.isFinite(point[axis]))
                 );
                 if (!validPoints) throw new TypeError(`Sprite '${spriteId}' motion path contains an invalid reference point.`);
+                const validTransforms = referencePoints.every(point =>
+                    (point.r === undefined || (typeof point.r === 'number' && Number.isFinite(point.r))) &&
+                    (point.s === undefined || (typeof point.s === 'number' && Number.isFinite(point.s) && point.s > 0))
+                );
+                if (!validTransforms) throw new TypeError(`Sprite '${spriteId}' motion path contains invalid r/ s transform values.`);
                 const toPoint = vector => ({ x: vector[0], y: vector[1], z: vector[2] });
                 let intermediate = referencePoints.map(point => ({ x: point.x, y: point.y, z: point.z }));
                 if (hasWaypoints && mode === 'geometry-preserving') {
@@ -156,6 +161,38 @@ export function setSpriteProperty(engine, spriteId, prop, value) {
                         allPoints.at(-1)
                     ];
                 }
+                const currentTransform = current.transform || definition.transform || { scale: 1, rotate: 0 };
+                const authoredTransforms = referencePoints.map(point => ({
+                    rotate: point.r === undefined ? null : point.r,
+                    scale: point.s === undefined ? null : point.s
+                }));
+                const transformNodes = [
+                    { position: from, rotate: Number(currentTransform.rotate || 0), scale: Number(currentTransform.scale || 1) },
+                    ...intermediate.map((point, index) => ({
+                        position: [point.x, point.y, point.z],
+                        rotate: authoredTransforms[index]?.rotate ?? null,
+                        scale: authoredTransforms[index]?.scale ?? null
+                    })),
+                    { position: target, rotate: Number(currentTransform.rotate || 0), scale: Number(currentTransform.scale || 1) }
+                ];
+                let lastRotate = transformNodes[0].rotate, lastScale = transformNodes[0].scale;
+                for (let i=1;i<transformNodes.length;i++) {
+                    if (transformNodes[i].rotate === null) transformNodes[i].rotate = lastRotate;
+                    else {
+                        let delta=((transformNodes[i].rotate-lastRotate+180)%360+360)%360-180;
+                        transformNodes[i].rotate=lastRotate+delta;
+                    }
+                    if (transformNodes[i].scale === null) transformNodes[i].scale = lastScale;
+                    lastRotate=transformNodes[i].rotate;lastScale=transformNodes[i].scale;
+                }
+                const transformDistances = transformNodes.slice(0,-1).map((node,index)=>Math.hypot(...node.position.map((v,k)=>v-transformNodes[index+1].position[k])));
+                const transformTotal=transformDistances.reduce((sum,d)=>sum+d,0);
+                let transformTime=0;
+                const transformTrajectory=[{time:0,rotate:transformNodes[0].rotate,scale:transformNodes[0].scale}];
+                for(let i=1;i<transformNodes.length;i++){
+                    transformTime += Number(motion.duration||0) * (transformTotal>1e-9 ? transformDistances[i-1]/transformTotal : 1/(transformNodes.length-1));
+                    transformTrajectory.push({time:transformTime/1000,rotate:transformNodes[i].rotate,scale:transformNodes[i].scale});
+                }
                 engine.spriteMotionSequence = (engine.spriteMotionSequence || 0) + 1;
                 const motionId = `${spriteId}:motion:${engine.spriteMotionSequence}`;
                 descriptor = {
@@ -164,7 +201,7 @@ export function setSpriteProperty(engine, spriteId, prop, value) {
                     start: toPoint(from), end: toPoint(target),
                     duration: motion.duration, easing: motion.easing,
                     impact: motion.impact || { enable: false, physics: false },
-                    geometryMode: effectiveMode
+                    geometryMode: effectiveMode, transformTrajectory
                 };
             }
             engine.activeSpriteMotions ||= new Map();
@@ -255,7 +292,7 @@ export function setSpriteProperty(engine, spriteId, prop, value) {
                 startTime: 0, endTime: impactEvents.length ? result.endTime : durationSeconds, duration: impactEvents.length ? result.endTime : durationSeconds,
                 requestedTarget: targetVector, initialTrajectory: bodyTrajectories[spriteId],
                 trajectories: bodyTrajectories, finalPositions: bodyFinalPositions,
-                impacts: impactEvents, geometryMode: effectiveMode,
+                impacts: impactEvents, geometryMode: effectiveMode, transformTrajectory: descriptor.transformTrajectory,
                 presentation: { requiredSegments: Object.values(bodyTrajectories).flat().map(seg => seg.segmentId) }
             };
             const activeMotion = { motionId: descriptor.motionId, trajectoryId, descriptor, finalPositions: bodyFinalPositions, startPosition: startVector, endTime: descriptor.endTime, startedAt: Date.now(), phase: 'presentation-pending' };

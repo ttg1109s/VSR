@@ -27,6 +27,16 @@ export function evaluateSpriteEasing(easing, progress) {
   }
 }
 
+export function sampleSpriteTransformTrajectoryV2(trajectory, simulationTime, fallback={rotate:0,scale:1}) {
+  const keys=trajectory?.transformTrajectory;
+  if(!Array.isArray(keys)||!keys.length)return {rotate:Number(fallback.rotate||0),scale:Number(fallback.scale||1)};
+  const time=Math.max(0,Math.min(Number(simulationTime),trajectory.endTime));
+  const right=keys.findIndex(key=>key.time>=time);
+  if(right<=0)return {rotate:keys[0].rotate,scale:keys[0].scale};
+  if(right<0)return {rotate:keys.at(-1).rotate,scale:keys.at(-1).scale};
+  const a=keys[right-1],b=keys[right],span=Math.max(1e-9,b.time-a.time),t=Math.max(0,Math.min(1,(time-a.time)/span));
+  return {rotate:a.rotate+(b.rotate-a.rotate)*t,scale:a.scale+(b.scale-a.scale)*t};
+}
 export function sampleSpriteTrajectoryV2(trajectory, spriteId, simulationTime) {
   if (trajectory?.protocolVersion !== 2 || typeof trajectory.trajectoryId !== 'string' || !Array.isArray(trajectory.trajectories?.[spriteId])) throw new TypeError('Invalid authoritative Sprite trajectory v2.');
   const segments = trajectory.trajectories[spriteId];

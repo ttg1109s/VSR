@@ -3,12 +3,12 @@ const modules = await importModules(['Scenario','GameEngine','EffectStrategies',
 const { validateScenario } = modules.Scenario;
 const { GameEngine } = modules.GameEngine;
 const { SetStrategies } = modules.EffectStrategies;
-const { JsonClient, evaluateSpriteEasing, sampleSpriteTrajectoryV2, getSpriteTrajectoryAck } = modules.JsonClient;
+const { JsonClient, evaluateSpriteEasing, sampleSpriteTrajectoryV2, getSpriteTrajectoryAck, sampleSpriteTransformTrajectoryV2 } = modules.JsonClient;
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import Ajv from '../engine/schema/valid.js';
-import { createBezierTrajectory, AuthoritativeSpriteSimulation } from '../engine/modules/sprite-motion-v2/index.js';
+import { createBezierTrajectory, AuthoritativeSpriteSimulation } from '../engine/modules/sprite/index.js';
 
 const fixture = () => JSON.parse(readFileSync(new URL('./fixtures/engine/minimal-scenario.json', import.meta.url), 'utf8'));
 function spriteScenario({collision=false,physics=false}={}) {
@@ -202,4 +202,23 @@ test('ACK end-hook failure is retryable after authoritative commit and completio
       assert.ok(restored.protocol.eventLog.some(e=>e.event==='presentation.sprite.trajectory.completed'&&e.payload.motionId===payload.motionId));
     }finally{restored.dispose();}
   }finally{engine.dispose();}
+});
+
+test('Sprite transform trajectory interpolates rotation shortest-path and scale',()=>{
+  const trajectory={endTime:1,transformTrajectory:[{time:0,rotate:350,scale:1},{time:1,rotate:370,scale:2}]};
+  assert.deepEqual(sampleSpriteTransformTrajectoryV2(trajectory,0.5),{rotate:360,scale:1.5});
+});
+test('Scenario waypoint r/s values validate and are serialized into transform trajectory',async()=>{
+  const engine=new GameEngine();
+  try {
+    const scenario=spriteScenario();
+    scenario.sprite.mover.motion.path.point[0]=[{x:25,y:10,z:0,r:45,s:1.25}];
+    assert.deepEqual(validateScenario(scenario),[]);
+    await engine.init(scenario,{enterScene:true});
+    SetStrategies.sprite(engine,{target:'mover',property:'position',value:[100,0,0]});
+    const payload=engine.protocol.eventLog.find(e=>e.event==='presentation.sprite.trajectory.v2').payload;
+    assert.ok(Array.isArray(payload.transformTrajectory));
+    assert.equal(payload.transformTrajectory[1].rotate,45);
+    assert.equal(payload.transformTrajectory[1].scale,1.25);
+  } finally {engine.dispose();}
 });

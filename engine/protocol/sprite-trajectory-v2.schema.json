@@ -146,6 +146,30 @@
     "duration": {
       "type": "number",
       "minimum": 0
+    },
+    "transformTrajectory": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "time",
+          "rotate",
+          "scale"
+        ],
+        "properties": {
+          "time": {
+            "type": "number"
+          },
+          "rotate": {
+            "type": "number"
+          },
+          "scale": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          }
+        },
+        "additionalProperties": false
+      }
     }
   },
   "definitions": {
