@@ -31,17 +31,18 @@ test('client executes analytically solved linear-damping trajectory instead of c
   const sampled=sampleSpriteTrajectoryV2(payload,'mover',0.5);
   assert.ok(Math.abs(sampled[0]-(10*(1-Math.exp(-1))/2))<1e-10);
 });
-test('motion.physics is migrated into canonical sprite.physics and validated',()=>{
+test('motion.physics migrates Body fields and World fields to their canonical owners',()=>{
   const scenario=spriteScenario({collision:true,physics:true});
   delete scenario.sprite.mover.physics.gravity;
   delete scenario.sprite.mover.physics.friction;
   scenario.sprite.mover.motion.physics={horizon:3,restitution:0.25,friction:0.2,gravity:[0,-9.8,0]};
-  assert.deepEqual(validateScenario(scenario),[]);
   const normalized=modules.Scenario.normalizeScenario(scenario);
+  assert.deepEqual(validateScenario(normalized),[]);
   assert.equal(Object.hasOwn(normalized.sprite.mover.physics,'horizon'),false); // legacy endpoint control is removed
   assert.equal(normalized.sprite.mover.physics.restitution,0.8);
   assert.equal(normalized.sprite.mover.physics.friction,0.2);
-  assert.deepEqual(normalized.sprite.mover.physics.gravity,[0,-9.8,0]);
+  assert.equal(normalized.sprite.mover.physics.gravity,undefined);
+  assert.deepEqual(normalized.config.physicsWorld.gravity,[0,-9.8,0]);
   assert.equal(Object.hasOwn(normalized.sprite.mover.motion,'physics'),false);
 });
 
@@ -50,12 +51,17 @@ test('scenario schema accepts v2 collision and physics configuration and rejects
   scenario.sprite.mover.physics.mass=0;assert.ok(validateScenario(scenario).length>0);
 });
 
-test('scenario schema accepts canonical unified 2D/3D physics and collider fields',()=>{
-  const scenario=spriteScenario();const p=scenario.sprite.mover.physics;Object.assign(p,{dimension:'3D',plane:'XZ',planeOffset:4,dimensionPolicy:'reject',bodyType:'kinematic',velocity:[1,2,3],angularVelocity:[0,1,0],orientation:[1,0,0,0],linearDamping:0.1,angularDamping:0.2,ccd:true,fixedDt:1/120});Object.assign(scenario.sprite.mover.collision,{shape:'box',halfExtents:[1,2,3],offset:[0,0,0]});assert.deepEqual(validateScenario(scenario),[]);p.dimension='4D';assert.ok(validateScenario(scenario).length>0);
+test('scenario schema accepts shared World config and per-Sprite Body/Collider fields',()=>{
+  const scenario=spriteScenario();const p=scenario.sprite.mover.physics;
+  Object.assign(scenario.config,{physicsWorld:{dimension:'3D',plane:'XZ',planeOffset:4,dimensionPolicy:'reject',gravity:[0,-9.81,0],fixedDt:1/120,velocityIterations:8,positionIterations:3,maxSubsteps:8}});
+  Object.assign(p,{bodyType:'kinematic',velocity:[1,2,3],angularVelocity:[0,1,0],orientation:[1,0,0,0],linearDamping:0.1,angularDamping:0.2});
+  Object.assign(scenario.sprite.mover.collision,{shape:'box',halfExtents:[1,2,3],offset:[0,0,0],ccd:true});
+  assert.deepEqual(validateScenario(scenario),[]);
+  scenario.config.physicsWorld.dimension='4D';assert.ok(validateScenario(scenario).length>0);
 });
 
-test('Engine API runs scenario physics and publishes unified Sprite protocol',()=>{
-  const engine=new GameEngine();try{const result=engine.api.spritePhysics.runScenario({ball:{position:[0,1,0],collision:{enable:true,shape:'sphere',radius:0.25},physics:{dimension:'2D',gravity:[0,0,0],bodyType:'dynamic'}}},{maxTicks:20,simulationId:'api-test'});assert.equal(result.payload.protocolVersion,2);assert.ok(engine.protocol.eventLog.some(e=>e.event==='presentation.sprite.simulation'&&e.payload.simulationId==='api-test'));}finally{engine.dispose();}
+test('Engine API runs scenario physics from shared World config and publishes unified Sprite protocol',()=>{
+  const engine=new GameEngine();try{const result=engine.api.spritePhysics.runScenario({config:{physicsWorld:{dimension:'2D',gravity:[0,0,0]}},sprite:{ball:{position:[0,1,0],collision:{enable:true,shape:'sphere',radius:0.25},physics:{enable:true,bodyType:'dynamic'}}}},{maxTicks:20,simulationId:'api-test'});assert.equal(result.payload.protocolVersion,2);assert.ok(engine.protocol.eventLog.some(e=>e.event==='presentation.sprite.simulation'&&e.payload.simulationId==='api-test'));}finally{engine.dispose();}
 });
 
 test('Sprite teleport commits position directly while active motion keeps authoritative start position',async()=>{
