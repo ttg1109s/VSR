@@ -59,7 +59,7 @@ export class RigidBodyWorld3D {
   for(const b of this.bodies.values())if(b.type==='dynamic'){b.force=[0,0,0];b.torque=[0,0,0];const quiet=len(b.velocity)<=this.config.sleepLinearThreshold&&len(b.angularVelocity)<=this.config.sleepAngularThreshold;if(quiet){b.sleepTime+=dt;if(b.sleepTime>=this.config.sleepDwell){b.awake=false;b.velocity=[0,0,0];b.angularVelocity=[0,0,0];}}else b.sleepTime=0;}
   for(const b of this.bodies.values())this.dimensionProfile.constrainBody(b);this.t+=dt;this.tick++;const endEnergy=this.energy();collisionEvents.push(...ccdEvents);this.lastDiagnostics={energyStart:startEnergy,energyEnd:endEnergy,energyDelta:endEnergy-startEnergy,collisionCount:collisionEvents.length,ccdCount:ccdEvents.length,awakeBodies:[...this.bodies.values()].filter(b=>b.awake).length};return {t:this.t,tick:this.tick,events:[...this.events],diagnostics:{...this.lastDiagnostics},bodies:this.snapshot()};
  }
- syncPhysicalState(time=this.t){if(!Number.isFinite(time))throw new TypeError('physical sample time must be finite');this.#samplePhysicalState(time);return this.snapshot();}
+ syncPhysicalState(time=this.t){if(!Number.isFinite(time))throw new TypeError('physical sample time must be finite');this.t=time;this.#samplePhysicalState(time);return this.snapshot();}
  #samplePhysicalState(time){for(const b of this.bodies.values()){if(!b.physicalStateSampler)continue;const before=b.type==='dynamic'?b.position.slice():null;this.#samplePhysicalStateForBody(b,time);if(before)b.physicalState={...b.physicalState,pose:{...b.physicalState.pose,location:before}};}}
  #samplePhysicalStateForBody(b,time){
   const sampled=b.physicalStateSampler(time);
