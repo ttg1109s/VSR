@@ -3,7 +3,7 @@ import { createUtils } from '../utils.js';
 import { SpriteSimulationCoordinator3D } from '../modules/sprite/physics3d/SpriteSimulationCoordinator3D.js';
 export { JsonProtocol, cloneJsonValue } from './JsonProtocol.js';
 export { SPRITE_PROTOCOL, normalizeSpriteProtocol, validateSpriteProtocol, serializeSpriteSimulation, adaptSpriteTrajectory } from './JsonProtocol.js';
-export { normalizeSpritePhysicsConfig, normalizeScenarioSpritePhysics } from '../modules/sprite/physics3d/SpritePhysicsConfig.js';
+export { normalizePhysicsWorldConfig, normalizeSpritePhysicsConfig, normalizeScenarioSpritePhysics } from '../modules/sprite/physics3d/SpritePhysicsConfig.js';
 
 function createPresentation(engine) {
     const publish = (path, args) => {
