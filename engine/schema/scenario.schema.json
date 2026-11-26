@@ -7080,7 +7080,7 @@
               "type": "number",
               "minimum": 0,
               "default": 0
-            },
+            }
           },
           "additionalProperties": false
         },
