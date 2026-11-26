@@ -1,6 +1,6 @@
 import { adaptSpriteTrajectory } from '../protocol/JsonProtocol.js';
 // Runtime Sprite operations. Effect syntax is resolved in effect/Strategies.js.
-function poseLocation(value) { return Array.isArray(value) ? value : (Array.isArray(value?.location) ? value.location : null); }
+function poseLocation(value) { return Array.isArray(value?.location) ? value.location : null; }
 function poseTransform(value, fallback={rotate:0,scale:1,origin:'center'}) {
  const tuple=value?.transform;
  if(Array.isArray(tuple)&&tuple.length===3)return {rotate:Number(tuple[0]??fallback.rotate),scale:Number(tuple[1]??fallback.scale),origin:String(tuple[2]??fallback.origin)};
