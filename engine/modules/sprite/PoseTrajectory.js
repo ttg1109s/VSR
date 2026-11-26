@@ -47,7 +47,7 @@ export function createPoseTrajectory({positionTrajectory=null,transformKeys=[],i
   const endTime=nextPositionTrajectory?.endTime??time+1,duration=Math.max(1e-9,endTime-time);
   const target=nextPositionTrajectory?nextPositionTrajectory.sample(endTime):current.location.map((x,i)=>x+pv[i]*duration),targetVelocity=nextPositionTrajectory?.velocity?.(endTime)??pv;
   const positionSource={startTime:time,endTime,sample(t){const u=Math.max(0,Math.min(1,(t-time)/duration));return hermite(current.location,target,preserveVelocity?pv:[0,0,0],targetVelocity,u,duration);},velocity(t){const u=Math.max(0,Math.min(1,(t-time)/duration));return hermiteD(current.location,target,preserveVelocity?pv:[0,0,0],targetVelocity,u,duration);}};
-  const first={time,rotation:current.rotation,scale:current.scale,origin:current.origin,angularVelocity:preserveVelocity?av:[0,0,0],scaleRate:preserveVelocity?sv:[0,0,0]};
+  const first={time,rotation:current.rotation,scale:current.scale,origin:current.origin,angularVelocity:preserveVelocity?av:[0,0,0],scaleRate:preserveVelocity?sv:[0,0,0],positionVelocity:preserveVelocity?pv:[0,0,0]};
   return createPoseTrajectory({positionTrajectory:positionSource,initialPose:current,transformKeys:[first,...nextKeys.map(k=>({...k}))],rotationMode:nextMode});
  };
  return{sample,velocity,angularVelocity,scaleRate:scaleVelocity,retarget,rotationMode,keys};
