@@ -12,14 +12,15 @@ const toQ=r=>Array.isArray(r)&&r.length===4?qn(r):qe(Array.isArray(r)?r:[0,0,r])
 const rv=k=>k.quaternion?qn(k.quaternion):validRotation(k.rotation??0);
 const shortest=(a,b,t)=>qeOut(qs(toQ(a),toQ(b),t));
 const directInterp=(a,b,t)=>Array.isArray(a)&&a.length===4?qs(a,b,t):Array.isArray(a)?a.map((v,j)=>v+(b[j]-v)*t):a+(b-a)*t;
-const lerp=(a,b,t)=>a.map((v,i)=>v+(b[i]-v)*t);
+
 const hermite=(p0,p1,v0,v1,u,dt)=>{const u2=u*u,u3=u2*u;return p0.map((v,i)=>(2*u3-3*u2+1)*v+(-2*u3+3*u2)*p1[i]+(u3-2*u2+u)*dt*v0[i]+(u3-u2)*dt*v1[i]);};
 const hermiteD=(p0,p1,v0,v1,u,dt)=>{const u2=u*u;return p0.map((v,i)=>((6*u2-6*u)*v+(-6*u2+6*u)*p1[i]+(3*u2-4*u+1)*dt*v0[i]+(3*u2-2*u)*dt*v1[i])/dt);};
-function keySample(keys,t,mode){if(!keys.length)return null;if(t<=keys[0].time)return keys[0];if(t>=keys.at(-1).time)return keys.at(-1);const i=keys.findIndex((k,j)=>j<keys.length-1&&t>=k.time&&t<=keys[j+1].time),a=keys[i],b=keys[i+1],u=(t-a.time)/(b.time-a.time);return{rotation:mode==='shortest-path'?shortest(a.rotation,b.rotation,u):directInterp(a.rotation,b.rotation,u),scale:a.scale.map((v,j)=>v+(b.scale[j]-v)*u),origin:u<1?a.origin:b.origin};}
-function quaternionAngularVelocity(a,b,dt){const qa=toQ(a),qb=toQ(b),conj=[qa[0],-qa[1],-qa[2],-qa[3]],r=[conj[0]*qb[0]-conj[1]*qb[1]-conj[2]*qb[2]-conj[3]*qb[3],conj[0]*qb[1]+conj[1]*qb[0]+conj[2]*qb[3]-conj[3]*qb[2],conj[0]*qb[2]-conj[1]*qb[3]+conj[2]*qb[0]+conj[3]*qb[1],conj[0]*qb[3]+conj[1]*qb[2]-conj[2]*qb[1]+conj[3]*qb[0]];let n=qn(r);if(n[0]<0)n=n.map(x=>-x);const angle=2*Math.atan2(Math.hypot(n[1],n[2],n[3]),Math.max(-1,Math.min(1,n[0])));const s=Math.hypot(n[1],n[2],n[3]);return s<1e-12?[0,0,0]:n.slice(1).map(x=>x/s*angle/dt);}
-function rotationRate(keys,t,mode){if(keys.length<2)return [0,0,0];const i=t<=keys[0].time?0:t>=keys.at(-1).time?keys.length-2:keys.findIndex((k,j)=>j<keys.length-1&&t>=k.time&&t<=keys[j+1].time),a=keys[i],b=keys[i+1],dt=b.time-a.time;if(dt<=0)return [0,0,0];if(mode==='shortest-path'||Array.isArray(a.rotation)&&a.rotation.length===4)return quaternionAngularVelocity(a.rotation,b.rotation,dt);const x=Array.isArray(a.rotation)?a.rotation:[0,0,a.rotation],y=Array.isArray(b.rotation)?b.rotation:[0,0,b.rotation];return x.map((v,j)=>(y[j]-v)/dt*Math.PI/180);}
-function scaleRate(keys,t){if(keys.length<2)return [0,0,0];const i=t<=keys[0].time?0:t>=keys.at(-1).time?keys.length-2:keys.findIndex((k,j)=>j<keys.length-1&&t>=k.time&&t<=keys[j+1].time),a=keys[i],b=keys[i+1],dt=b.time-a.time;return dt>0?a.scale.map((v,j)=>(b.scale[j]-v)/dt):[0,0,0];}
-
+function segmentIndex(keys,t){return t<=keys[0].time?0:t>=keys.at(-1).time?keys.length-2:keys.findIndex((k,i)=>i<keys.length-1&&t>=k.time&&t<=keys[i+1].time);}
+function tangent(keys,i,field,dim){const k=keys[i];if(k[field])return k[field].slice();const a=keys[Math.max(0,i-1)],b=keys[Math.min(keys.length-1,i+1)],dt=b.time-a.time;if(dt<=0)return Array(dim).fill(0);return a.scale.map((_,j)=>(b[field==='scaleRate'?'scale':'rotation'][j]-a[field==='scaleRate'?'scale':'rotation'][j])/dt);}
+function interpolated(keys,t,field,derivative=false){const i=segmentIndex(keys,t),a=keys[i],b=keys[i+1],dt=b.time-a.time,u=Math.max(0,Math.min(1,(t-a.time)/dt)),dim=field==='scale'?3:(Array.isArray(a.rotation)?a.rotation.length:1),av=field==='scale'?a.scale:(Array.isArray(a.rotation)?a.rotation:[0,0,a.rotation]),bv=field==='scale'?b.scale:(Array.isArray(b.rotation)?b.rotation:[0,0,b.rotation]),t0=tangent(keys,i,field==='scale'?'scaleRate':'angularVelocity',dim),t1=tangent(keys,i+1,field==='scale'?'scaleRate':'angularVelocity',dim);const value=derivative?hermiteD(av,bv,t0,t1,u,dt):hermite(av,bv,t0,t1,u,dt);return field==='rotation'&&!Array.isArray(a.rotation)?value[2]:value;}
+function keySample(keys,t,mode){if(!keys.length)return null;if(keys.length===1||t<=keys[0].time)return keys[0];if(t>=keys.at(-1).time)return keys.at(-1);const i=segmentIndex(keys,t),a=keys[i],b=keys[i+1],u=(t-a.time)/(b.time-a.time);return{rotation:mode==='shortest-path'?shortest(a.rotation,b.rotation,u):Array.isArray(a.rotation)&&a.rotation.length===4?directInterp(a.rotation,b.rotation,u):interpolated(keys,t,'rotation'),scale:interpolated(keys,t,'scale'),origin:u<1?a.origin:b.origin};}
+function rotationRate(keys,t,mode){if(keys.length<2)return [0,0,0];if(mode==='shortest-path'||(Array.isArray(keys[0].rotation)&&keys[0].rotation.length===4)){const i=segmentIndex(keys,t),dt=keys[i+1].time-keys[i].time;return quaternionAngularVelocity(keys[i].rotation,keys[i+1].rotation,dt);}const v=interpolated(keys,t,'rotation',true);return Array.isArray(v)?v.map(x=>x*Math.PI/180):[0,0,v*Math.PI/180];}
+function scaleRate(keys,t){return keys.length<2?[0,0,0]:interpolated(keys,t,'scale',true);}
 export function createPoseTrajectory({positionTrajectory=null,transformKeys=[],initialPose={},rotationMode='direct'}={}){
  if(!['direct','shortest-path'].includes(rotationMode))throw new TypeError('rotationMode must be direct or shortest-path');
  if(!Array.isArray(transformKeys))throw new TypeError('transformKeys must be an array');
@@ -28,21 +29,18 @@ export function createPoseTrajectory({positionTrajectory=null,transformKeys=[],i
  if(keys.some(k=>!Number.isFinite(k.time)))throw new TypeError('Key times must be finite');
  if(keys.some((k,i)=>i>0&&k.time===keys[i-1].time))throw new TypeError('Transform key times must be unique');
  if(rotationMode==='direct'&&keys.length){const first=keys[0].rotation,same=r=>typeof r===typeof first&&(!Array.isArray(first)||(Array.isArray(r)&&r.length===first.length));if(keys.some(k=>!same(k.rotation)))throw new TypeError('Direct-mode rotation keys must use a consistent representation');}
+ if(keys.some(k=>k.angularVelocity&&k.angularVelocity.length!==3))throw new TypeError('angularVelocity key values must be Vec3 in radians per second');
  const sample=t=>{if(!Number.isFinite(t))throw new TypeError('sample time must be finite');const k=keySample(keys,t,rotationMode),location=positionTrajectory?.sample?validateVector(positionTrajectory.sample(t),'pose location'):base.location.slice();return{location,rotation:k?.rotation??base.rotation,scale:k?.scale??base.scale.slice(),origin:k?.origin??base.origin};};
  const velocity=t=>{if(!Number.isFinite(t))throw new TypeError('velocity time must be finite');if(positionTrajectory?.velocity)return validateVector(positionTrajectory.velocity(t),'pose velocity');if(positionTrajectory?.sample){const h=1e-5,a=positionTrajectory.sample(t-h),b=positionTrajectory.sample(t+h);return b.map((v,i)=>(v-a[i])/(2*h));}return [0,0,0];};
- const angularVelocity=t=>{const i=keys.findIndex(k=>Math.abs(k.time-t)<1e-12),key=i>=0?keys[i]:null;if(key?.angularVelocity)return key.angularVelocity.slice();return rotationRate(keys,t,rotationMode);};
- const scaleVelocity=t=>{const i=keys.findIndex(k=>Math.abs(k.time-t)<1e-12),key=i>=0?keys[i]:null;if(key?.scaleRate)return key.scaleRate.slice();return scaleRate(keys,t);};
+ const angularVelocity=t=>{const key=keys.find(k=>Math.abs(k.time-t)<1e-12);return key?.angularVelocity?.slice()??rotationRate(keys,t,rotationMode);};
+ const scaleVelocity=t=>{const key=keys.find(k=>Math.abs(k.time-t)<1e-12);return key?.scaleRate?.slice()??scaleRate(keys,t);};
  const retarget=(time,{transformKeys:nextKeys=[],positionTrajectory:nextPositionTrajectory=null,rotationMode:nextMode=rotationMode,preserveVelocity=true}={})=>{
   if(!Number.isFinite(time)||!Array.isArray(nextKeys))throw new TypeError('Invalid retarget arguments');
   const current=sample(time),pv=velocity(time),av=angularVelocity(time),sv=scaleVelocity(time);
-  const anchoredPosition=nextPositionTrajectory||{sample:t=>current.location.map(x=>x),velocity:()=>pv.slice()};
-  const positionSource=nextPositionTrajectory?{
-   sample(t){return hermite(current.location,nextPositionTrajectory.sample(t),pv, nextPositionTrajectory.velocity?.(t)||pv, Math.max(0,Math.min(1,(t-time)/Math.max(1e-9,(nextPositionTrajectory.endTime??time+1)-time))),Math.max(1e-9,(nextPositionTrajectory.endTime??time+1)-time));},
-   velocity(t){const end=nextPositionTrajectory.sample(nextPositionTrajectory.endTime??time+1),ev=nextPositionTrajectory.velocity?.(nextPositionTrajectory.endTime??time+1)||pv,d=Math.max(1e-9,(nextPositionTrajectory.endTime??time+1)-time),u=Math.max(0,Math.min(1,(t-time)/d));return hermiteD(current.location,end,pv,ev,u,d);}
-  }:anchoredPosition;
+  const endTime=nextPositionTrajectory?.endTime??time+1;
+  const positionSource=nextPositionTrajectory?{sample(t){const u=Math.max(0,Math.min(1,(t-time)/Math.max(1e-9,endTime-time))),target=nextPositionTrajectory.sample(endTime),tv=nextPositionTrajectory.velocity?.(endTime)??pv;return hermite(current.location,target,pv,tv,u,Math.max(1e-9,endTime-time));},velocity(t){const u=Math.max(0,Math.min(1,(t-time)/Math.max(1e-9,endTime-time))),target=nextPositionTrajectory.sample(endTime),tv=nextPositionTrajectory.velocity?.(endTime)??pv;return hermiteD(current.location,target,pv,tv,u,Math.max(1e-9,endTime-time));}}:{sample:t=>current.location.map((x,i)=>x+pv[i]*(t-time)),velocity:()=>pv.slice(),startTime:time,endTime:time+1};
   const first={time,rotation:current.rotation,scale:current.scale,origin:current.origin,angularVelocity:preserveVelocity?av:[0,0,0],scaleRate:preserveVelocity?sv:[0,0,0]};
-  const keys=[first,...nextKeys.map(k=>({...k}))];
-  return createPoseTrajectory({positionTrajectory:positionSource,initialPose:current,transformKeys:keys,rotationMode:nextMode});
+  return createPoseTrajectory({positionTrajectory:positionSource,initialPose:current,transformKeys:[first,...nextKeys.map(k=>({...k}))],rotationMode:nextMode});
  };
  return{sample,velocity,angularVelocity,scaleRate:scaleVelocity,retarget,rotationMode,keys};
 }
