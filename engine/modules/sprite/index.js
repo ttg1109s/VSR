@@ -10,7 +10,7 @@ export * from './recovery.js';
 export * from './replay.js';
 export * from './physics3d/RigidBodyWorld3D.js';
 export * from './physics3d/DimensionProfile.js';
-export * from './physics3d/ProtocolV3.js';
+// Sprite protocol contract is owned by engine/protocol, not this implementation package.
 export * from './physics3d/collider3d.js';
 export * from './physics3d/SpriteSimulationCoordinator3D.js';
 

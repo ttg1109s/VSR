@@ -1,3 +1,4 @@
+import { adaptSpriteTrajectory } from '../protocol/JsonProtocol.js';
 import {LoaderSystem} from '../modules/Loader.js';
 import {cloneJsonValue} from '../protocol/JsonProtocol.js';
 import {createSaveEnvelope,normalizeSaveEnvelope,validateCharacterVisitCounters,SAVE_VERSION} from '../persistence/SaveState.js';
@@ -101,7 +102,7 @@ export const SaveRestore = {
     this.restoredAutomationRandomBags=cloneJsonValue(save.automationRandomBags)||{};
     this.rehydrateBackgroundTasks();
     this.rehydratePasswordChallenge();
-    for(const active of this.activeSpriteMotions.values()) this.protocol?.publish?.('presentation.sprite.trajectory.v2',active.descriptor);
+    for(const active of this.activeSpriteMotions.values()) this.protocol?.publish?.('presentation.sprite.simulation',adaptSpriteTrajectory(active.descriptor));
     this.commitState('save.restored');
     return{restored:true,saveVersion:SAVE_VERSION};
    } catch(error) {

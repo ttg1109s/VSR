@@ -450,6 +450,7 @@ export class JsonProtocol{
 
  publish(type,payload={}){
   if(typeof type!=='string'||!type.trim()||!payload||typeof payload!=='object'||Array.isArray(payload))throw new TypeError('Invalid event envelope.');
+  if(type==='presentation.sprite.simulation'){payload=normalizeSpriteProtocol(payload);validateSpriteProtocol(payload);}
   const sequence=++this.eventSequence,safe=cloneJsonValue(payload);
   const event={protocol:'vsr',protocolVersion:this.protocolVersion,type:'event',engineId:this.engineId,eventId:id('evt',sequence),sequence,revision:this.stateRevision,stateRevision:this.stateRevision,timestamp:new Date().toISOString(),event:type,payload:safe??{}};
   this.eventLog.push(event);if(this.eventLog.length>this.maxEvents)this.eventLog.shift();
@@ -590,3 +591,30 @@ export class JsonProtocol{
   return out;
  }
 }
+
+// Unified Sprite protocol contract. Trajectory and simulation payloads share one
+// protocol identity/version; "kind" distinguishes the payload shape, not a protocol version.
+export const SPRITE_PROTOCOL = 'vsr.sprite';
+const finiteVector = (value, size) => Array.isArray(value) && value.length === size && value.every(Number.isFinite);
+export function normalizeSpriteProtocol(payload) {
+  if (!payload || typeof payload !== 'object' || Array.isArray(payload)) throw new TypeError('Invalid Sprite protocol payload.');
+  if (payload.protocol === SPRITE_PROTOCOL && payload.protocolVersion === 2 && ['trajectory','simulation'].includes(payload.kind)) return payload;
+  if (payload.protocolVersion === 2 && payload.trajectoryId && payload.trajectories && payload.presentation) return { ...payload, protocol: SPRITE_PROTOCOL, protocolVersion: 2, kind: 'trajectory' };
+  if (payload.protocol === 'vsr.sprite.protocol.v3' && payload.protocolVersion === 3) return { ...payload, protocol: SPRITE_PROTOCOL, protocolVersion: 2, kind: 'simulation' };
+  throw new TypeError('Unsupported Sprite protocol payload identity.');
+}
+export function validateSpriteProtocol(payload) {
+  const p = normalizeSpriteProtocol(payload);
+  if (p.kind === 'trajectory') {
+    if (!p.spriteId || !p.motionId || !p.trajectoryId || !Number.isFinite(p.startTime) || !Number.isFinite(p.endTime) || p.endTime <= 0 || !p.trajectories || typeof p.trajectories !== 'object' || Array.isArray(p.trajectories) || !p.finalPositions || typeof p.finalPositions !== 'object' || !Array.isArray(p.impacts) || !Array.isArray(p.presentation?.requiredSegments)) throw new TypeError('Invalid Sprite trajectory payload.');
+    return true;
+  }
+  if (!p.simulationId || !p.time || !Number.isFinite(p.time.tStart) || !Number.isFinite(p.time.tEnd) || !Number.isFinite(p.time.fixedDt) || p.time.tEnd < p.time.tStart || p.time.fixedDt <= 0 || !Array.isArray(p.bodies) || !Array.isArray(p.events) || !Array.isArray(p.trajectories) || !p.diagnostics || typeof p.diagnostics !== 'object' || !p.completion || !['completed','natural-rest','kinematic-complete','cancelled','failed'].includes(p.completion.status)) throw new TypeError('Invalid Sprite simulation payload.');
+  if (p.bodies.some(b => !b?.id || !finiteVector(b.position,3) || !finiteVector(b.orientation,4) || !finiteVector(b.velocity,3) || !finiteVector(b.angularVelocity,3))) throw new TypeError('Invalid Sprite simulation body state.');
+  return true;
+}
+export function serializeSpriteSimulation({simulationId,physicsVersion='1.0.0',dimension='3D',time,bodies=[],events=[],trajectories=[],diagnostics={},completion={status:'completed',reason:'simulation-completed'}}) {
+  const payload={protocol:SPRITE_PROTOCOL,protocolVersion:2,kind:'simulation',simulationId:String(simulationId),physicsVersion,dimension,time:{tStart:time.tStart,tEnd:time.tEnd,fixedDt:time.fixedDt,ticks:time.ticks},bodies:bodies.map(b=>({id:String(b.id),type:b.type,position:[...(b.position||b.transform?.position||[0,0,0])],orientation:[...(b.orientation||b.transform?.orientation||[1,0,0,0])],velocity:[...(b.velocity||[0,0,0])],angularVelocity:[...(b.angularVelocity||[0,0,0])],awake:b.awake??false})),events:events.map(e=>({...e})),trajectories:trajectories.map(t=>({...t})),diagnostics:{...diagnostics},completion:{...completion}};
+  validateSpriteProtocol(payload); return payload;
+}
+export function adaptSpriteTrajectory(payload) { const normalized=normalizeSpriteProtocol(payload); if(normalized.kind!=='trajectory')throw new TypeError('Expected Sprite trajectory payload.'); validateSpriteProtocol(normalized); return normalized; }

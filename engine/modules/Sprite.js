@@ -1,3 +1,4 @@
+import { adaptSpriteTrajectory } from '../protocol/JsonProtocol.js';
 // Runtime Sprite operations. Effect syntax is resolved in effect/Strategies.js.
 
 function sampleSerializedSegments(segments, time, terminalClamp=true) {
@@ -346,7 +347,7 @@ export function setSpriteProperty(engine, spriteId, prop, value) {
             const startEffects = Array.isArray(motion.effect?.start) ? motion.effect.start : [];
             const publishIfActive = () => {
                 if (engine.activeSpriteMotions.get(spriteId)?.motionId !== descriptor.motionId) return { success: false, reason: 'stale_motion', motionId: descriptor.motionId };
-                engine.protocol?.publish?.('presentation.sprite.trajectory.v2', descriptor); // Legacy scripted-motion protocol remains; authoritative physics v3 is emitted by the physics API/coordinator.
+                engine.protocol?.publish?.('presentation.sprite.simulation', adaptSpriteTrajectory(descriptor));
                 return { success: true, motionId: descriptor.motionId, trajectoryId };
             };
             if (startEffects.length) {

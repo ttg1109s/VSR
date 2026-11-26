@@ -13,9 +13,9 @@ test('scenario normalizer rejects mixed profiles/gravity rather than silently ig
  assert.throws(()=>normalizeScenarioSpritePhysics({a:{physics:{enable:true,dimension:'2D'}},b:{physics:{enable:true,dimension:'3D'}}}),/mix dimension profiles/);
  assert.throws(()=>normalizeScenarioSpritePhysics({a:{physics:{enable:true,gravity:[0,-9,0]}},b:{physics:{enable:true,gravity:[0,-8,0]}}}),/mix per-Sprite gravity/);
 });
-test('coordinator runScenario produces validated v3 payload from canonical scenario sprite',()=>{
+test('coordinator runScenario produces validated unified Sprite payload from canonical scenario sprite',()=>{
  const result=SpriteSimulationCoordinator3D.fromScenario({ball:{position:[0,1,0],collision:{shape:'sphere',radius:.25},physics:{enable:true,dimension:'2D',gravity:[0,-9.8,0],bodyType:'dynamic'}}},{maxTicks:120,simulationId:'test-ball'});
- assert.equal(result.payload.protocolVersion,3);assert.equal(result.payload.simulationId,'test-ball');assert.equal(result.payload.bodies[0].id,'ball');assert.equal(result.payload.dimension,'2D');
+ assert.equal(result.payload.protocolVersion,2);assert.equal(result.payload.kind,'simulation');assert.equal(result.payload.simulationId,'test-ball');assert.equal(result.payload.bodies[0].id,'ball');assert.equal(result.payload.dimension,'2D');
 });
 
 

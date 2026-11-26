@@ -1,4 +1,4 @@
-import { validateSpriteV3 } from '../../modules/sprite/physics3d/ProtocolV3.js';
+import { normalizeSpriteProtocol, validateSpriteProtocol } from '../../protocol/JsonProtocol.js';
 /**
  * JSON-only client transport. It has no Engine import or Engine reference.
  * A host may be local, worker-backed, HTTP, or WebSocket as long as it
@@ -144,13 +144,12 @@ export class JsonClient {
         if (engineChanged) this.emit({ type: 'synchronization.recovered', source: 'event.snapshot', eventSequence: sequence });
       }
       this.processProtocolTimelineEvent(message);
-      if (message.event === 'presentation.sprite.simulation.v3' || message.event === 'presentation.sprite.trajectory.v3') {
-        try { validateSpriteV3(message.payload); this.emit({ type: 'sprite.simulation.v3', simulation: structuredClone(message.payload), eventId: message.eventId, sequence }); }
-        catch (error) { this.emit({ type: 'sprite.simulation.invalid', payload: structuredClone(message.payload), error, eventId: message.eventId, sequence }); }
-      }
-      if (message.event === 'presentation.sprite.trajectory.v2') {
-        if (message.payload?.protocolVersion === 2 && message.payload?.motionId && message.payload?.trajectoryId && message.payload?.trajectories) this.emit({ type: 'sprite.trajectory.v2', trajectory: structuredClone(message.payload), eventId: message.eventId, sequence });
-        else this.emit({ type: 'sprite.trajectory.invalid', payload: structuredClone(message.payload), eventId: message.eventId, sequence });
+      if (['presentation.sprite.simulation','presentation.sprite.simulation.v3','presentation.sprite.trajectory.v3','presentation.sprite.trajectory.v2'].includes(message.event)) {
+        try {
+          const normalized = normalizeSpriteProtocol(message.payload);
+          validateSpriteProtocol(normalized);
+          this.emit({ type: 'sprite.protocol', sprite: structuredClone(normalized), eventId: message.eventId, sequence });
+        } catch (error) { this.emit({ type: 'sprite.protocol.invalid', payload: structuredClone(message.payload), error, eventId: message.eventId, sequence }); }
       }
       if (message.event === 'presentation.sprite.trajectory.cancelled' && message.payload && typeof message.payload.spriteId === 'string' && typeof message.payload.motionId === 'string') {
         this.emit({ type: 'sprite.trajectory.cancelled', cancellation: structuredClone(message.payload), eventId: message.eventId, sequence });
