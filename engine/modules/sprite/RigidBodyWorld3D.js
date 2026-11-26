@@ -61,7 +61,31 @@ export class RigidBodyWorld3D {
  }
  syncPhysicalState(time=this.t){if(!Number.isFinite(time))throw new TypeError('physical sample time must be finite');this.#samplePhysicalState(time);return this.snapshot();}
  #samplePhysicalState(time){for(const b of this.bodies.values()){if(!b.physicalStateSampler)continue;const before=b.type==='dynamic'?b.position.slice():null;this.#samplePhysicalStateForBody(b,time);if(before)b.physicalState={...b.physicalState,pose:{...b.physicalState.pose,location:before}};}}
- #samplePhysicalStateForBody(b,time){const sampled=b.physicalStateSampler(time);if(!sampled||sampled.time!==time)throw new Error('PhysicalStateSampler timestamp mismatch');const pose=b.type==='dynamic'?{...sampled.pose,location:[...b.position]}:sampled.pose;b.physicalState={...sampled,pose};b.collider=structuredClone(sampled.geometry);if(b.type==='dynamic'){b.mass=finitePositive(sampled.mass,'sampled mass');b.invMass=1/b.mass;const inertia=sampled.inertia||[Infinity,Infinity,Infinity];b.inertia=inertia.reduce((sum,v)=>sum+v,0)/3;b.invInertia=b.inertia>EPS?1/b.inertia:0;}else{b.position=v3(sampled.pose.location);b.velocity=v3(b.poseTrajectory?.velocity?.(time)??b.velocity);b.angularVelocity=v3(b.poseTrajectory?.angularVelocity?.(time)??b.angularVelocity);const r=sampled.pose.rotation;if(Array.isArray(r)&&r.length===4)b.orientation=qnorm(r);else if(Array.isArray(r)&&r.length===3){const [x,y,z]=r.map(v=>v*Math.PI/360),cx=Math.cos(x),sx=Math.sin(x),cy=Math.cos(y),sy=Math.sin(y),cz=Math.cos(z),sz=Math.sin(z);b.orientation=qnorm([cx*cy*cz+sx*sy*sz,sx*cy*cz-cx*sy*sz,cx*sy*cz+sx*cy*sz,cx*cy*sz-sx*sy*cz]);}else if(Number.isFinite(r)){const h=r*Math.PI/360;b.orientation=[Math.cos(h),0,0,Math.sin(h)];}}this.dimensionProfile.constrainBody(b);}
+ #samplePhysicalStateForBody(b,time){
+  const sampled=b.physicalStateSampler(time);
+  if(!sampled||sampled.time!==time)throw new Error('PhysicalStateSampler timestamp mismatch');
+  const pose=b.type==='dynamic'?{...sampled.pose,location:[...b.position]}:sampled.pose;
+  b.physicalState={...sampled,pose};
+  b.collider=structuredClone(sampled.geometry);
+  if(b.type==='dynamic'){
+   b.mass=finitePositive(sampled.mass,'sampled mass');b.invMass=1/b.mass;
+   const inertia=sampled.inertia||[Infinity,Infinity,Infinity];
+   b.inertia=inertia.reduce((sum,v)=>sum+v,0)/3;b.invInertia=b.inertia>EPS?1/b.inertia:0;
+  }else{
+   b.position=v3(sampled.pose.location);
+   b.velocity=v3(b.poseTrajectory?.velocity?.(time)??b.velocity);
+   b.angularVelocity=v3(b.poseTrajectory?.angularVelocity?.(time)??b.angularVelocity);
+   const r=sampled.pose.rotation;
+   if(Array.isArray(r)&&r.length===4)b.orientation=qnorm(r);
+   else if(Array.isArray(r)&&r.length===3){
+    const [x,y,z]=r.map(v=>v*Math.PI/360),cx=Math.cos(x),sx=Math.sin(x),cy=Math.cos(y),sy=Math.sin(y),cz=Math.cos(z),sz=Math.sin(z);
+    b.orientation=qnorm([cx*cy*cz+sx*sy*sz,sx*cy*cz-cx*sy*sz,cx*sy*cz+sx*cy*sz,cx*cy*sz-sx*sy*cz]);
+   }else if(Number.isFinite(r)){
+    const h=r*Math.PI/360;b.orientation=[Math.cos(h),0,0,Math.sin(h)];
+   }
+  }
+  this.dimensionProfile.constrainBody(b);
+ }
  advance(elapsed,{maxSteps=this.config.maxSubsteps}={}){finitePositive(elapsed,'elapsed',true);const steps=Math.min(Math.floor(elapsed/this.config.fixedDt),maxSteps),results=[];for(let i=0;i<steps;i++)results.push(this.step());return {steps,remaining:elapsed-steps*this.config.fixedDt,results};}
  isSettled({includeKinematic=false}={}){if(this.pending.length)return false;return [...this.bodies.values()].every(b=>b.type!=='dynamic'||!b.awake)&&(!includeKinematic||![...this.bodies.values()].some(b=>b.type==='kinematic'));}
  energy(){return [...this.bodies.values()].reduce((sum,b)=>sum+kineticEnergy(b),0);}
