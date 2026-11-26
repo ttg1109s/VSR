@@ -54,7 +54,7 @@ test('scenario schema accepts canonical unified 2D/3D physics and collider field
   const scenario=spriteScenario();const p=scenario.sprite.mover.physics;Object.assign(p,{dimension:'3D',plane:'XZ',planeOffset:4,dimensionPolicy:'reject',bodyType:'kinematic',velocity:[1,2,3],angularVelocity:[0,1,0],orientation:[1,0,0,0],linearDamping:0.1,angularDamping:0.2,ccd:true,fixedDt:1/120});Object.assign(scenario.sprite.mover.collision,{shape:'box',halfExtents:[1,2,3],offset:[0,0,0]});assert.deepEqual(validateScenario(scenario),[]);p.dimension='4D';assert.ok(validateScenario(scenario).length>0);
 });
 
-test('Engine API runs scenario physics and publishes authoritative protocol v3',()=>{
+test('Engine API runs scenario physics and publishes unified Sprite protocol',()=>{
   const engine=new GameEngine();try{const result=engine.api.spritePhysics.runScenario({ball:{position:[0,1,0],collision:{enable:true,shape:'sphere',radius:0.25},physics:{dimension:'2D',gravity:[0,0,0],bodyType:'dynamic'}}},{maxTicks:20,simulationId:'api-test'});assert.equal(result.payload.protocolVersion,2);assert.ok(engine.protocol.eventLog.some(e=>e.event==='presentation.sprite.simulation'&&e.payload.simulationId==='api-test'));}finally{engine.dispose();}
 });
 
@@ -304,7 +304,7 @@ test('Scenario waypoint r/s values validate and are serialized into transform tr
   } finally {engine.dispose();}
 });
 
-test('Sprite v2 payload exposes analytical post-impact final position and duration',async()=>{
+test('Sprite trajectory payload exposes analytical post-impact final position and duration',async()=>{
  const engine=new GameEngine();
  try{
   const scenario=spriteScenario({collision:true,physics:true});
