@@ -9,14 +9,28 @@ const quat = (value, name='orientation') => {
   const m=Math.hypot(...value); return value.map(v=>v/m);
 };
 
-/** Converts canonical scenario Sprite definitions into RigidBodyWorld3D body specs. */
+const WORLD_DEFAULTS = Object.freeze({
+  enable:true, dimension:'2D', plane:'XY', planeOffset:0, dimensionPolicy:'project',
+  gravity:[0,-9.81,0], fixedDt:1/120, velocityIterations:8, positionIterations:3,
+  maxSubsteps:8, sleepLinearThreshold:0.02, sleepAngularThreshold:0.03, sleepDwell:0.5
+});
+
+export function normalizePhysicsWorldConfig(config={}) {
+  const w={...WORLD_DEFAULTS,...(config||{})};
+  if(typeof w.enable!=='boolean'||!['2D','3D'].includes(w.dimension)||!['XY','XZ','YZ'].includes(w.plane)||!Number.isFinite(w.planeOffset)||!['project','reject'].includes(w.dimensionPolicy)) throw new TypeError('Invalid physicsWorld dimension profile');
+  w.gravity=vec3(w.gravity,'physicsWorld.gravity');
+  for(const key of ['fixedDt'])if(!Number.isFinite(w[key])||w[key]<=0)throw new TypeError(`physicsWorld.${key} must be positive finite`);
+  for(const key of ['velocityIterations','positionIterations','maxSubsteps'])if(!Number.isSafeInteger(w[key])||w[key]<1)throw new TypeError(`physicsWorld.${key} must be a positive integer`);
+  for(const key of ['sleepLinearThreshold','sleepAngularThreshold','sleepDwell'])if(!Number.isFinite(w[key])||w[key]<0)throw new TypeError(`physicsWorld.${key} must be non-negative finite`);
+  return w;
+}
+
+/** Converts a scenario Sprite definition into a rigid-body spec. World settings are never read from the Sprite. */
 export function normalizeSpritePhysicsConfig(spriteId, spriteDefinition) {
   if (!spriteDefinition || typeof spriteDefinition !== 'object') throw new TypeError(`Sprite ${spriteId} definition required`);
   const p=spriteDefinition.physics||{}, c=spriteDefinition.collision||{};
   const physicsEnabled=p.enable===true;
   const collisionDeclared=Object.prototype.hasOwnProperty.call(spriteDefinition,'collision') && c.enable!==false;
-  const dimension=p.dimension??'2D', plane=p.plane??'XY', planeOffset=p.planeOffset??0, dimensionPolicy=p.dimensionPolicy??'project';
-  if(!['2D','3D'].includes(dimension)||!['XY','XZ','YZ'].includes(plane)||!Number.isFinite(planeOffset)||!['project','reject'].includes(dimensionPolicy))throw new TypeError(`Sprite ${spriteId} has invalid dimension profile`);
   const shape=c.shape??'sphere'; let collider;
   if(shape==='sphere') collider=createSphereCollider3D({radius:Number(c.radius??0.5),offset:vec3(c.offset??[0,0,0],'collision.offset')});
   else if(shape==='box') collider=createBoxCollider3D({halfExtents:vec3(c.halfExtents??[0.5,0.5,0.5],'collision.halfExtents'),offset:vec3(c.offset??[0,0,0],'collision.offset')});
@@ -35,22 +49,14 @@ export function normalizeSpritePhysicsConfig(spriteId, spriteDefinition) {
     restitution:Number(p.restitution??0.2),
     staticFriction:Number(p.friction??0.5), dynamicFriction:Number(p.friction??0.5),
     linearDamping:Number(p.linearDamping??0), angularDamping:Number(p.angularDamping??0),
-    collisionEnabled:collisionDeclared, ccd:p.ccd===true||c.ccd===true,
-    physicsEnabled,
-    dimensionProfile:{dimension,plane,planeOffset,dimensionPolicy},
-    worldConfig:{fixedDt:Number(p.fixedDt??1/120),gravity:vec3(p.gravity??[0,-9.81,0],'physics.gravity'),sleepLinearThreshold:Number(p.sleepLinearThreshold??0.02),sleepAngularThreshold:Number(p.sleepAngularThreshold??0.03),sleepDwell:Number(p.sleepDwell??0.5)}
+    collisionEnabled:collisionDeclared, ccd:c.ccd===true,
+    physicsEnabled
   };
 }
 
-/** Builds one authoritative world configuration and body set. Mixed profiles or per-body gravity/timestep are rejected rather than silently ignored. */
-export function normalizeScenarioSpritePhysics(spriteDefinitions={}) {
+/** Normalizes one shared World configuration and per-Sprite Body specifications. */
+export function normalizeScenarioSpritePhysics(spriteDefinitions={}, worldConfig={}) {
+  const normalizedWorld=normalizePhysicsWorldConfig(worldConfig);
   const bodies=Object.entries(spriteDefinitions).map(([id,def])=>normalizeSpritePhysicsConfig(id,def)).filter(body=>body.physicsEnabled);
-  if(!bodies.length)return {worldConfig:{},bodies:[]};
-  const profile=bodies[0].dimensionProfile, worldConfig=bodies[0].worldConfig;
-  for(const b of bodies){
-    if(JSON.stringify(b.dimensionProfile)!==JSON.stringify(profile))throw new TypeError('One authoritative Sprite physics world cannot mix dimension profiles; split simulations or use a common profile.');
-    for(const key of ['fixedDt','sleepLinearThreshold','sleepAngularThreshold','sleepDwell'])if(b.worldConfig[key]!==worldConfig[key])throw new TypeError(`Sprite physics world cannot mix ${key} values`);
-    if(JSON.stringify(b.worldConfig.gravity)!==JSON.stringify(worldConfig.gravity))throw new TypeError('Sprite physics world cannot mix per-Sprite gravity vectors; use a shared gravity or separate worlds.');
-  }
-  return {worldConfig:{...worldConfig,...profile,gravity:worldConfig.gravity},bodies:bodies.map(({dimensionProfile,worldConfig,physicsEnabled,...body})=>body)};
+  return {worldConfig:normalizedWorld,bodies:normalizedWorld.enable?bodies:[]};
 }
