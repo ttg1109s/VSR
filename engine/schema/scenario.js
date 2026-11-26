@@ -76,6 +76,48 @@ function asArray(value) {
 // Compatibility migration: old motion.physics values are folded into canonical sprite.physics.
 // Existing sprite.physics values win when both locations are present.
 function migrateMotionPhysics(scenario) {
+  const worldKeys = {
+    gravity: 'gravity',
+    dimension: 'dimension',
+    plane: 'plane',
+    planeOffset: 'planeOffset',
+    dimensionPolicy: 'dimensionPolicy',
+    fixedDt: 'fixedDt',
+    sleepLinearThreshold: 'sleepLinearThreshold',
+    sleepAngularThreshold: 'sleepAngularThreshold',
+    sleepDwell: 'sleepDwell'
+  };
+  const world = isObject(scenario.config?.physicsWorld) ? scenario.config.physicsWorld : {};
+  if (isObject(scenario.config)) scenario.config.physicsWorld = world;
+  const adopted = new Set(Object.keys(world));
+  const equal = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+
+  // Legacy Sprite world settings are migrated to the single scenario World.
+  for (const [spriteId, definition] of Object.entries(isObject(scenario.sprite) ? scenario.sprite : {})) {
+    if (!isObject(definition?.physics)) continue;
+    const physics = definition.physics;
+    for (const [legacyKey, worldKey] of Object.entries(worldKeys)) {
+      if (!Object.hasOwn(physics, legacyKey)) continue;
+      const value = physics[legacyKey];
+      if (Object.hasOwn(world, worldKey)) {
+        if (!equal(world[worldKey], value)) throw new ScenarioValidationError([`config.physicsWorld.${worldKey}: conflicts with legacy sprite.${spriteId}.physics.${legacyKey}`]);
+      } else if (adopted.has(worldKey)) {
+        if (!equal(world[worldKey], value)) throw new ScenarioValidationError([`sprite.${spriteId}.physics.${legacyKey}: conflicts with another Sprite's legacy World setting`]);
+      } else {
+        world[worldKey] = value;
+        adopted.add(worldKey);
+      }
+      delete physics[legacyKey];
+    }
+    // CCD now belongs to the collider. Preserve legacy body-level values by migrating them.
+    if (Object.hasOwn(physics, 'ccd')) {
+      definition.collision = isObject(definition.collision) ? definition.collision : {};
+      if (!Object.hasOwn(definition.collision, 'ccd')) definition.collision.ccd = physics.ccd;
+      delete physics.ccd;
+    }
+  }
+
+  // Compatibility migration: old motion.physics values are folded into canonical sprite.physics.
   for (const [spriteId, definition] of Object.entries(isObject(scenario.sprite) ? scenario.sprite : {})) {
     if (!isObject(definition?.motion) || !isObject(definition.motion.physics)) continue;
     const legacyPhysics = definition.motion.physics;
@@ -96,7 +138,6 @@ function migrateMotionPhysics(scenario) {
   }
   return scenario;
 }
-
 function validateReferences(scenario) {
   const errors = [];
   const scenes = scenario.scenes || {};
