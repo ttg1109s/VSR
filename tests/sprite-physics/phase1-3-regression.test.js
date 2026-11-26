@@ -116,7 +116,6 @@ test('PhysicalStateSampler keeps the requested timestamp and conservative scale 
 test('RigidBodyWorld3D samples kinematic physical state at fixed-step timestamps',()=>{
   const {RigidBodyWorld3D}=await import('../../engine/modules/sprite/RigidBodyWorld3D.js');
   const {createPhysicalStateSampler}=await import('../../engine/modules/sprite/PhysicalStateSampler.js');
-  const {createPoseTrajectory}=await import('../../engine/modules/sprite/PoseTrajectory.js');
   const pose=createPoseTrajectory({positionTrajectory:{sample:t=>[t,0,0],velocity:()=>[1,0,0]},transformKeys:[{time:0,scale:[1,1,1]},{time:1,scale:[2,1,1]}]});
   const world=new RigidBodyWorld3D({fixedDt:.1,gravity:[0,0,0]});
   world.addBody({id:'scripted',type:'kinematic',poseTrajectory:pose,physicalStateSampler:createPhysicalStateSampler({collider:{type:'box',halfExtents:[1,1,1]},bodyType:'kinematic',poseTrajectory:pose})});
