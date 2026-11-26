@@ -42,3 +42,11 @@ The exact feature boundaries and verification are in `docs-sprite-motion/impleme
 ## Post-impact trajectory solving (v2)
 
 Post-impact trajectory endpoints are derived from the configured continuous dynamics. The v2 coordinator no longer uses `horizon`, `maxPhysicsDuration`, or `postImpactDeceleration` to determine endpoints. With zero external acceleration and positive `linearDamping`, the solver analytically integrates exponential drag (`v(t)=v0*exp(-k*t)`) and uses `sleepLinearThreshold` as the natural-equilibrium tolerance. The same damping parameter is serialized so the client samples the solved exponential trajectory exactly, rather than approximating it with constant acceleration. If damping is absent/zero or external acceleration prevents equilibrium, the segment is explicitly marked `non-terminating-dynamics`; it is not assigned a fabricated physical endpoint.
+
+## Scenario configuration ownership
+
+- `config.physicsWorld`: shared dimension profile, gravity, fixed timestep, solver iteration/substep settings and sleep thresholds.
+- `sprite.physics`: per-body enable/type, mass, material, initial velocities/orientation and damping.
+- `sprite.collision`: per-collider shape, geometry, offset and CCD.
+
+Legacy per-Sprite World keys are migrated into the shared World during scenario normalization. Conflicting legacy values are rejected rather than silently choosing one Sprite.
