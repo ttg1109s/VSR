@@ -100,7 +100,8 @@ function migrateMotionPhysics(scenario) {
   };
   const world = isObject(scenario.config?.physicsWorld) ? scenario.config.physicsWorld : {};
   if (isObject(scenario.config)) scenario.config.physicsWorld = world;
-  const adopted = new Set(Object.keys(world));
+  const explicitWorldKeys = new Set(Object.keys(world));
+  const adopted = new Set();
   const equal = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 
   // Legacy Sprite world settings are migrated to the single scenario World.
