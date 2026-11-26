@@ -52,7 +52,7 @@ test('scenario schema accepts v2 collision and physics configuration and rejects
 });
 
 test('scenario schema accepts shared World config and per-Sprite Body/Collider fields',()=>{
-  const scenario=spriteScenario();const p=scenario.sprite.mover.physics;
+  const scenario=spriteScenario();const p=scenario.sprite.mover.physics;delete p.gravity;delete p.horizon;
   Object.assign(scenario.config,{physicsWorld:{dimension:'3D',plane:'XZ',planeOffset:4,dimensionPolicy:'reject',gravity:[0,-9.81,0],fixedDt:1/120,velocityIterations:8,positionIterations:3,maxSubsteps:8}});
   Object.assign(p,{bodyType:'kinematic',velocity:[1,2,3],angularVelocity:[0,1,0],orientation:[1,0,0,0],linearDamping:0.1,angularDamping:0.2});
   Object.assign(scenario.sprite.mover.collision,{shape:'box',halfExtents:[1,2,3],offset:[0,0,0],ccd:true});
