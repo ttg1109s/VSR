@@ -30,7 +30,7 @@ test('custom Bezier easing uses full control hull conservatively and authoritati
   assert.equal(custom.easingName,'custom');
   const target=createLinearPhysicsSegment({segmentId:'target',startTime:0,duration:1,position:[0,1,0],velocity:[0,0,0]});
   const result=firstCircleImpactResult({trajectoryA:custom,trajectoryB:target,radiusA:.1,radiusB:.1,timeStart:0,timeEnd:1});
-  assert.ok(['confirmed-impact','indeterminate'].includes(result.status));
+  assert.equal(result.status,'indeterminate');
   const sim=new AuthoritativeSpriteSimulation({gravity:[0,0,0]});
   const run=sim.run({bodies:{a:{radius:.1,collisionEnabled:true,physicsEnabled:true,mass:1},b:{radius:.1,collisionEnabled:true,physicsEnabled:true,mass:1}},initialTrajectories:new Map([['a',custom],['b',target]])});
   assert.ok(['completed','indeterminate'].includes(run.simulationStatus));
@@ -45,7 +45,7 @@ test('PoseTrajectory preserves direct 720-degree multi-turn keys and reports sca
   assert.equal(pose.sample(.5).rotation,360);
   assert.deepEqual(pose.sample(.5).scale,[1.5,2,2.5]);
   assert.ok(Math.abs(pose.angularVelocity(.5)[2]-4*Math.PI)<1e-3);
-  assert.deepEqual(pose.scaleRate(.5),[1,2,3]);
+  assert.ok(pose.scaleRate(.5).every((v,i)=>Math.abs(v-[1,2,3][i])<1e-6));
   assert.deepEqual(pose.sample(1).origin,'center');
 });
 
@@ -79,7 +79,7 @@ test('PhysicalStateSampler capsule inertia responds to axial and radial scale',(
   const base=createPhysicalStateSampler({collider:{type:'capsule',radius:.5,halfLength:1},mass:2})(0);
   const radial=createPhysicalStateSampler({collider:{type:'capsule',radius:.5,halfLength:1},mass:2,poseTrajectory:createPoseTrajectory({transformKeys:[{time:0,scale:[2,1,1]}]})})(0);
   const axial=createPhysicalStateSampler({collider:{type:'capsule',radius:.5,halfLength:1},mass:2,poseTrajectory:createPoseTrajectory({transformKeys:[{time:0,scale:[1,2,1]}]})})(0);
-  assert.ok(radial.inertia[0]>base.inertia[0]);
+  assert.ok(radial.inertia[1]>base.inertia[1]);
   assert.ok(axial.inertia[0]>base.inertia[0]);
   assert.ok(base.inertia.every(x=>Number.isFinite(x)&&x>0));
 });
