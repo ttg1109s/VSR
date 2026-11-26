@@ -61,7 +61,7 @@ test('scenario schema accepts shared World config and per-Sprite Body/Collider f
 });
 
 test('Engine API runs scenario physics from shared World config and publishes unified Sprite protocol',()=>{
-  const engine=new GameEngine();try{const result=engine.api.spritePhysics.runScenario({config:{physicsWorld:{dimension:'2D',gravity:[0,0,0]}},sprite:{ball:{position:[0,1,0],collision:{enable:true,shape:'sphere',radius:0.25},physics:{enable:true,bodyType:'dynamic'}}}},{maxTicks:20,simulationId:'api-test'});assert.equal(result.payload.protocolVersion,2);assert.ok(engine.protocol.eventLog.some(e=>e.event==='presentation.sprite.simulation'&&e.payload.simulationId==='api-test'));}finally{engine.dispose();}
+  const engine=new GameEngine();try{const result=engine.api.spritePhysics.runScenario({config:{physicsWorld:{dimension:'2D',gravity:[0,0,0]}},sprite:{ball:{position:[0,1,0],collision:{enable:true,shape:'sphere',radius:0.25},physics:{bodyType:'dynamic'}}}},{maxTicks:20,simulationId:'api-test'});assert.equal(result.payload.protocolVersion,2);assert.ok(engine.protocol.eventLog.some(e=>e.event==='presentation.sprite.simulation'&&e.payload.simulationId==='api-test'));}finally{engine.dispose();}
 });
 
 test('Sprite teleport commits position directly while active motion keeps authoritative start position',async()=>{
