@@ -69,7 +69,7 @@ export class AuthoritativeSpriteSimulation {
     const trajectories=new Map(initialTrajectories);
     const segments=new Map([...trajectories].map(([id,t])=>[id,t.segments?[...t.segments]:[t]]));
     const positions=new Map(); const velocities=new Map();
-    const collisions=[]; const lastCollisionTimeByPair=new Map();
+    const collisions=[]; const lastCollisionTimeByPair=new Map(); const indeterminatePairs=[];
     for(const [id,t] of trajectories){positions.set(id,t.sample(startTime));velocities.set(id,t.velocity(startTime));}
     let cursor=startTime;
     let collisionLimitReached=false;
@@ -90,7 +90,7 @@ export class AuthoritativeSpriteSimulation {
         profiler.narrowphaseChecks++;
         const ccd=firstCircleImpactResult({trajectoryA:trajectories.get(a),trajectoryB:trajectories.get(b),radiusA:bodyA.radius??0,radiusB:bodyB.radius??0,timeStart:pairSearchStart,timeEnd:endTime,subdivisions:this.options.subdivisions});
         profiler.ccdIntervals+=ccd.subdivisions||0;
-        if(ccd.status==='indeterminate')profiler.ccdIndeterminate++;
+        if(ccd.status==='indeterminate'){profiler.ccdIndeterminate++;indeterminatePairs.push({a,b,interval:ccd.interval||null,reason:ccd.reason||'indeterminate'});}
         if(ccd.status==='confirmed-impact'){if(String(ccd.approximation||'').includes('conservative')||String(ccd.approximation||'').includes('fallback'))profiler.ccdFallbacks++;if(!earliest||ccd.time<earliest.time)earliest={...ccd,a,b,key};}
       }
       if(!earliest)break;
@@ -148,6 +148,6 @@ export class AuthoritativeSpriteSimulation {
     for(const [id,t] of trajectories)finalPositions.set(id,t.sample(endTime));
     const trajectoryEndTime=Math.max(startTime,...[...segments.values()].flat().map(seg=>Number(seg.endTime??startTime)));
     profiler.elapsedMs=(globalThis.performance?.now?.()??Date.now())-profileStart;
-    return {startTime,endTime,trajectoryEndTime,collisions,segments,finalPositions,positionsAtImpact:positions,velocitiesAtImpact:velocities,collisionLimitReached,simulationStatus:collisionLimitReached?'collision-event-limit':'completed',profiler};
+    return {startTime,endTime,trajectoryEndTime,collisions,segments,finalPositions,positionsAtImpact:positions,velocitiesAtImpact:velocities,collisionLimitReached,indeterminatePairs,simulationStatus:collisionLimitReached?'collision-event-limit':indeterminatePairs.length?'indeterminate':'completed',profiler};
   }
 }
