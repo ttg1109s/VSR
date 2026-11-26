@@ -25,3 +25,29 @@ world.step();
 - Convex hull/GJK/EPA, capsule, compound and dynamic concave mesh colliders are not supported by this 3D runtime.
 - The legacy `engine/modules/Sprite.js` scripted-motion coordinator and the 3D world coordinator now publish through the same Sprite protocol identity/version. Their payload kinds remain trajectory and simulation, respectively.
 - No cross-platform bitwise determinism claim.
+
+## Scenario ownership
+
+Scenario authors configure the shared World under `config.physicsWorld`; Sprite `physics` contains only per-body settings, while `collision` contains collider geometry and CCD.
+
+```json
+{
+  "config": {
+    "physicsWorld": {
+      "dimension": "3D",
+      "plane": "XY",
+      "gravity": [0, -9.81, 0],
+      "fixedDt": 0.008333333333333333,
+      "velocityIterations": 8,
+      "positionIterations": 3,
+      "maxSubsteps": 8
+    }
+  },
+  "sprite": {
+    "ball": {
+      "physics": { "enable": true, "bodyType": "dynamic", "mass": 1, "velocity": [0, 0, 0] },
+      "collision": { "enable": true, "shape": "sphere", "radius": 0.5 }
+    }
+  }
+}
+```
