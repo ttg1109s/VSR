@@ -398,16 +398,16 @@ test('persistent idempotency store read failure prevents command execution', asy
   assert.equal(invoked, false);
 });
 
-test('JsonClient receives and validates Sprite simulation protocol v3 events', () => {
+test('JsonClient receives and validates the unified Sprite protocol', () => {
   const listeners = new Set();
   const transport = { subscribe(listener) { listeners.add(listener); return () => listeners.delete(listener); }, async request() { return JSON.stringify({ok:true,result:null}); } };
   const client = new JsonClient(transport);
   const received=[]; client.subscribe(event=>received.push(event));
-  const valid={protocol:'vsr.sprite.protocol.v3',protocolVersion:3,simulationId:'sim-1',physicsVersion:'3d-native-constrained-v2',dimension:'3D',time:{tStart:0,tEnd:1,fixedDt:1/120,ticks:120},completion:{status:'completed',reason:'test'},bodies:[{id:'ball',type:'dynamic',position:[0,1,0],orientation:[1,0,0,0],velocity:[0,0,0],angularVelocity:[0,0,0],awake:false}],events:[],trajectories:[],diagnostics:{}};
+  const valid={protocol:'vsr.sprite',protocolVersion:2,kind:'simulation',simulationId:'sim-1',physicsVersion:'3d-native-constrained-v2',dimension:'3D',time:{tStart:0,tEnd:1,fixedDt:1/120,ticks:120},completion:{status:'completed',reason:'test'},bodies:[{id:'ball',type:'dynamic',position:[0,1,0],orientation:[1,0,0,0],velocity:[0,0,0],angularVelocity:[0,0,0],awake:false}],events:[],trajectories:[],diagnostics:{}};
   try {
-    for(const listener of listeners)listener({type:'event',event:'presentation.sprite.simulation.v3',payload:valid,sequence:1,eventId:'evt-1'});
-    for(const listener of listeners)listener({type:'event',event:'presentation.sprite.simulation.v3',payload:{...valid,protocolVersion:2},sequence:2,eventId:'evt-2'});
-    assert.equal(received.some(x=>x.type==='sprite.simulation.v3'&&x.simulation.simulationId==='sim-1'),true);
-    assert.equal(received.some(x=>x.type==='sprite.simulation.invalid'),true);
+    for(const listener of listeners)listener({type:'event',event:'presentation.sprite.simulation',payload:valid,sequence:1,eventId:'evt-1'});
+    for(const listener of listeners)listener({type:'event',event:'presentation.sprite.simulation.v3',payload:{...valid,protocolVersion:3},sequence:2,eventId:'evt-2'});
+    assert.equal(received.some(x=>x.type==='sprite.protocol'&&x.sprite.simulationId==='sim-1'),true);
+    assert.equal(received.some(x=>x.type==='sprite.protocol.invalid'),true);
   } finally { client.dispose(); }
 });

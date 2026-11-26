@@ -16,12 +16,12 @@ world.step();
 - Sphere CCD for flagged bodies: analytic swept TOI, one supported CCD impact per body per fixed step. Other shape pairs remain discrete.
 - Normal impulse, approximate scalar inertia, friction, positional correction, sleep, energy diagnostics, checkpoint/restore.
 - 2D XY/XZ/YZ constrained profiles and legacy 2D transform adapter.
-- Protocol v3 serializer/validator and JSON schema. `SpriteSimulationCoordinator3D` executes fixed-step worlds to natural-rest or watchdog failure and emits v3 snapshots/events/trajectory samples.
+- Unified Sprite protocol serializer/validator is owned by `engine/protocol/JsonProtocol.js`; the single `engine/protocol/protocol.schema.json` contains both trajectory and simulation payload contracts. `SpriteSimulationCoordinator3D` emits the unified simulation kind.
 
 ## Explicit limits
 - Box collision is axis-aligned; orientation does not rotate box collider geometry (OBB is not implemented).
 - CCD is sphere-sphere only, one event per body per fixed step. CCD against box/plane and multiple-impact CCD chains are not implemented.
 - Scalar inverse inertia is an approximation for box bodies. Full tensor/world-space inertia and iterative multi-contact island solver remain future work.
 - Convex hull/GJK/EPA, capsule, compound and dynamic concave mesh colliders are not supported by this 3D runtime.
-- Protocol v3 world coordinator is available, but the legacy `engine/modules/Sprite.js` motion coordinator still publishes v2 for compatibility and is not yet migrated to authoritative 3D-world execution.
+- The legacy `engine/modules/Sprite.js` scripted-motion coordinator and the 3D world coordinator now publish through the same Sprite protocol identity/version. Their payload kinds remain trajectory and simulation, respectively.
 - No cross-platform bitwise determinism claim.

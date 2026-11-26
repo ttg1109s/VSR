@@ -2,7 +2,7 @@ import { createStateAccess } from '../state/StateAccess.js';
 import { createUtils } from '../utils.js';
 import { SpriteSimulationCoordinator3D } from '../modules/sprite/physics3d/SpriteSimulationCoordinator3D.js';
 export { JsonProtocol, cloneJsonValue } from './JsonProtocol.js';
-export { validateSpriteV3, serializeSpriteV3, adaptSpriteV2ToV3, SPRITE_PROTOCOL_V3 } from '../modules/sprite/physics3d/ProtocolV3.js';
+export { SPRITE_PROTOCOL, normalizeSpriteProtocol, validateSpriteProtocol, serializeSpriteSimulation, adaptSpriteTrajectory } from './JsonProtocol.js';
 export { normalizeSpritePhysicsConfig, normalizeScenarioSpritePhysics } from '../modules/sprite/physics3d/SpritePhysicsConfig.js';
 
 function createPresentation(engine) {
@@ -81,7 +81,7 @@ export function createEngineAPI(engine) {
         spritePhysics: {
             runScenario: (spriteDefinitions, options = {}) => {
                 const result = SpriteSimulationCoordinator3D.fromScenario(spriteDefinitions, options);
-                engine.protocol?.publish?.('presentation.sprite.simulation.v3', result.payload);
+                engine.protocol?.publish?.('presentation.sprite.simulation', result.payload);
                 return result;
             }
         },

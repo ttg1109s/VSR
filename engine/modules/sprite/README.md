@@ -2,7 +2,7 @@
 
 ## Runtime compatibility
 
-The existing authoritative Sprite trajectory coordinator remains **protocol v2** by default. It preserves the current client presentation/ACK contract and event-time circle/sphere coordinator. It is not yet wired to execute authoritative motions through the new 3D World.
+The legacy scripted trajectory and the 3D-native simulation now publish through one Sprite protocol identity/version and one event (`presentation.sprite.simulation`). Payload `kind` is `trajectory` or `simulation`; this identifies the data shape, not a protocol-version split. The existing trajectory presentation/ACK coordinator and the 3D-native world remain different implementations.
 
 ## Unified 3D-native physics
 
@@ -21,11 +21,11 @@ world.step();
 
 `physics3d/DimensionProfile.js` constrains all dimensional state and provides `legacy2DTo3D()` and `transform3DToLegacy2D()` adapters. Existing `x/y/angle` style data can be mapped into XYZ/quaternion. This adapter does not itself switch the legacy Sprite coordinator to the 3D World.
 
-## Protocol v3 contract
+## Unified Sprite protocol
 
-`physics3d/ProtocolV3.js` exports a v3 serializer, validator and v2 trajectory adapter. Schema is `physics3d/protocol-v3.schema.json`. Protocol v3 represents XYZ, quaternion, linear/angular velocity, explicit simulation time, dimension, completion, events and diagnostics. It is currently a standalone contract; v2 remains the published default until end-to-end migration and parity gates are completed.
+The contract and runtime serializer/validator are owned by `engine/protocol/JsonProtocol.js`; `engine/protocol/protocol.schema.json` contains both trajectory and simulation payload schemas. The single Sprite protocol identity is `vsr.sprite`, version 2. The `kind` field distinguishes the trajectory payload from the fixed-step simulation payload without introducing separate v2/v3 protocols. The `physics3d/` directory contains implementation only.
 
-## Existing v2 authority
+## Trajectory authority
 
 - Engine generates initial trajectory, collision events, response, post-impact segments and final positions.
 - Client renders/interpolates and ACKs; it cannot report authoritative impact.
@@ -35,7 +35,7 @@ world.step();
 
 ## 2D modules and diagnostics
 
-`collider.js` and `solver.js` provide standalone 2D circle/box/convex/capsule/compound geometry and a 2D angular contact solver. `recovery.js` provides an fsync-backed operation ledger for integration-side effects. The authoritative v2 coordinator remains circle/sphere based.
+`collider.js` and `solver.js` provide standalone 2D circle/box/convex/capsule/compound geometry and a 2D angular contact solver. `recovery.js` provides an fsync-backed operation ledger for integration-side effects. The trajectory coordinator remains circle/sphere based and shares the unified Sprite protocol contract.
 
 The exact feature boundaries and verification are in `docs-sprite-motion/implementation-status.md` and `docs-sprite-motion/one-pass-upgrade-report.md`. Benchmarks: `tests/sprite-physics/benchmark.js` (legacy Sprite) and `benchmark3d.js` (new physics world; all-pairs narrowphase, informational).
 

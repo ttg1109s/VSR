@@ -441,6 +441,25 @@
               "type": "object"
             }
           }
+        },
+        {
+          "if": {
+            "properties": {
+              "event": {
+                "const": "presentation.sprite.simulation"
+              }
+            },
+            "required": [
+              "event"
+            ]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/spriteProtocol"
+              }
+            }
+          }
         }
       ]
     },
@@ -1435,6 +1454,497 @@
         },
         "action": {
           "$ref": "#/$defs/actionProjection"
+        }
+      },
+      "additionalProperties": false
+    },
+    "spriteProtocol": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/spriteTrajectory"
+        },
+        {
+          "$ref": "#/$defs/spriteSimulation"
+        }
+      ]
+    },
+    "spriteTrajectory": {
+      "title": "Unified VSR Sprite Trajectory",
+      "type": "object",
+      "required": [
+        "protocol",
+        "protocolVersion",
+        "kind",
+        "spriteId",
+        "motionId",
+        "trajectoryId",
+        "startTime",
+        "endTime",
+        "trajectories",
+        "finalPositions",
+        "impacts",
+        "presentation"
+      ],
+      "properties": {
+        "protocol": {
+          "const": "vsr.sprite"
+        },
+        "protocolVersion": {
+          "const": 2
+        },
+        "kind": {
+          "const": "trajectory"
+        },
+        "spriteId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "motionId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "trajectoryId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "startTime": {
+          "type": "number"
+        },
+        "endTime": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "requestedTarget": {
+          "$ref": "#/$defs/spriteTrajectory/definitions/vector3"
+        },
+        "initialTrajectory": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/spriteTrajectory/definitions/segment"
+          }
+        },
+        "trajectories": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/spriteTrajectory/definitions/segment"
+            }
+          }
+        },
+        "finalPositions": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/spriteTrajectory/definitions/vector3"
+          }
+        },
+        "impacts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "eventId",
+              "time",
+              "spriteA",
+              "spriteB",
+              "contactA",
+              "contactB",
+              "normal",
+              "velocityAfterA",
+              "velocityAfterB"
+            ],
+            "properties": {
+              "eventId": {
+                "type": "string"
+              },
+              "time": {
+                "type": "number"
+              },
+              "spriteA": {
+                "type": "string"
+              },
+              "spriteB": {
+                "type": "string"
+              },
+              "contactA": {
+                "$ref": "#/$defs/spriteTrajectory/definitions/vector3"
+              },
+              "contactB": {
+                "$ref": "#/$defs/spriteTrajectory/definitions/vector3"
+              },
+              "normal": {
+                "$ref": "#/$defs/spriteTrajectory/definitions/vector3"
+              },
+              "velocityBeforeA": {
+                "$ref": "#/$defs/spriteTrajectory/definitions/vector3"
+              },
+              "velocityBeforeB": {
+                "$ref": "#/$defs/spriteTrajectory/definitions/vector3"
+              },
+              "velocityAfterA": {
+                "$ref": "#/$defs/spriteTrajectory/definitions/vector3"
+              },
+              "velocityAfterB": {
+                "$ref": "#/$defs/spriteTrajectory/definitions/vector3"
+              },
+              "impulse": {
+                "type": "number"
+              },
+              "physicsEnabled": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": true
+          }
+        },
+        "geometryMode": {
+          "type": "string",
+          "enum": [
+            "geometry-preserving",
+            "absolute"
+          ]
+        },
+        "presentation": {
+          "type": "object",
+          "required": [
+            "requiredSegments"
+          ],
+          "properties": {
+            "requiredSegments": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "duration": {
+          "type": "number",
+          "minimum": 0
+        },
+        "transformTrajectory": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "time",
+              "rotate",
+              "scale"
+            ],
+            "properties": {
+              "time": {
+                "type": "number"
+              },
+              "rotate": {
+                "type": "number"
+              },
+              "scale": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "postImpactResults": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": [
+              "from",
+              "to",
+              "duration",
+              "startTime",
+              "finalVelocity",
+              "completion"
+            ],
+            "properties": {
+              "from": {
+                "$ref": "#/$defs/spriteTrajectory/definitions/vector3"
+              },
+              "to": {
+                "$ref": "#/$defs/spriteTrajectory/definitions/vector3"
+              },
+              "duration": {
+                "type": "number",
+                "minimum": 0
+              },
+              "startTime": {
+                "type": "number"
+              },
+              "finalVelocity": {
+                "$ref": "#/$defs/spriteTrajectory/definitions/vector3"
+              },
+              "completion": {
+                "type": "string",
+                "enum": [
+                  "natural-equilibrium",
+                  "non-terminating-dynamics"
+                ]
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "definitions": {
+        "vector3": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {
+            "type": "number"
+          }
+        },
+        "segment": {
+          "type": "object",
+          "required": [
+            "segmentId",
+            "type",
+            "startTime",
+            "endTime"
+          ],
+          "properties": {
+            "segmentId": {
+              "type": "string"
+            },
+            "type": {
+              "enum": [
+                "bezier",
+                "physics"
+              ]
+            },
+            "startTime": {
+              "type": "number"
+            },
+            "endTime": {
+              "type": "number"
+            },
+            "controlPoints": {
+              "type": "array",
+              "minItems": 4,
+              "maxItems": 4,
+              "items": {
+                "$ref": "#/$defs/spriteTrajectory/definitions/vector3"
+              }
+            },
+            "easing": {
+              "type": "string"
+            },
+            "initialPosition": {
+              "$ref": "#/$defs/spriteTrajectory/definitions/vector3"
+            },
+            "initialVelocity": {
+              "$ref": "#/$defs/spriteTrajectory/definitions/vector3"
+            },
+            "acceleration": {
+              "$ref": "#/$defs/spriteTrajectory/definitions/vector3"
+            },
+            "duration": {
+              "type": "number",
+              "minimum": 0
+            },
+            "finalPosition": {
+              "$ref": "#/$defs/spriteTrajectory/definitions/vector3"
+            },
+            "finalVelocity": {
+              "$ref": "#/$defs/spriteTrajectory/definitions/vector3"
+            },
+            "linearDamping": {
+              "type": "number",
+              "minimum": 0
+            },
+            "completion": {
+              "type": "string",
+              "enum": [
+                "natural-equilibrium",
+                "non-terminating-dynamics"
+              ]
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "spriteSimulation": {
+      "title": "Unified VSR Sprite Simulation",
+      "type": "object",
+      "required": [
+        "protocol",
+        "protocolVersion",
+        "kind",
+        "simulationId",
+        "physicsVersion",
+        "dimension",
+        "time",
+        "completion",
+        "bodies",
+        "events",
+        "diagnostics"
+      ],
+      "properties": {
+        "protocol": {
+          "const": "vsr.sprite"
+        },
+        "protocolVersion": {
+          "const": 2
+        },
+        "simulationId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "physicsVersion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "dimension": {
+          "enum": [
+            "2D",
+            "3D"
+          ]
+        },
+        "time": {
+          "type": "object",
+          "required": [
+            "tStart",
+            "tEnd",
+            "fixedDt",
+            "ticks"
+          ],
+          "properties": {
+            "tStart": {
+              "type": "number"
+            },
+            "tEnd": {
+              "type": "number"
+            },
+            "fixedDt": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "ticks": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false
+        },
+        "completion": {
+          "type": "object",
+          "required": [
+            "status",
+            "reason"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "completed",
+                "natural-rest",
+                "kinematic-complete",
+                "cancelled",
+                "failed"
+              ]
+            },
+            "reason": {
+              "type": "string"
+            },
+            "watchdogExceeded": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": true
+        },
+        "bodies": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "position",
+              "orientation",
+              "velocity",
+              "angularVelocity"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "type": {
+                "enum": [
+                  "dynamic",
+                  "static",
+                  "kinematic",
+                  "sensor"
+                ]
+              },
+              "position": {
+                "$ref": "#/$defs/spriteSimulation/$defs/vec3"
+              },
+              "orientation": {
+                "$ref": "#/$defs/spriteSimulation/$defs/quat"
+              },
+              "velocity": {
+                "$ref": "#/$defs/spriteSimulation/$defs/vec3"
+              },
+              "angularVelocity": {
+                "$ref": "#/$defs/spriteSimulation/$defs/vec3"
+              },
+              "awake": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": true
+          }
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "t": {
+                "type": "number"
+              }
+            },
+            "additionalProperties": true
+          }
+        },
+        "trajectories": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "diagnostics": {
+          "type": "object"
+        },
+        "kind": {
+          "const": "simulation"
+        }
+      },
+      "$defs": {
+        "vec3": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {
+            "type": "number"
+          }
+        },
+        "quat": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "items": {
+            "type": "number"
+          }
         }
       },
       "additionalProperties": false
