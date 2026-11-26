@@ -111,7 +111,7 @@ function migrateMotionPhysics(scenario) {
     for (const [legacyKey, worldKey] of Object.entries(worldKeys)) {
       if (!Object.hasOwn(physics, legacyKey)) continue;
       const value = physics[legacyKey];
-      if (Object.hasOwn(world, worldKey)) {
+      if (explicitWorldKeys.has(worldKey)) {
         if (!equal(world[worldKey], value)) throw new ScenarioValidationError([`config.physicsWorld.${worldKey}: conflicts with legacy sprite.${spriteId}.physics.${legacyKey}`]);
       } else if (adopted.has(worldKey)) {
         if (!equal(world[worldKey], value)) throw new ScenarioValidationError([`sprite.${spriteId}.physics.${legacyKey}: conflicts with another Sprite's legacy World setting`]);
