@@ -10,14 +10,14 @@ const quat = (value, name='orientation') => {
 };
 
 const WORLD_DEFAULTS = Object.freeze({
-  enable:true, dimension:'2D', plane:'XY', planeOffset:0, dimensionPolicy:'project',
+  dimension:'2D', plane:'XY', planeOffset:0, dimensionPolicy:'project',
   gravity:[0,-9.81,0], fixedDt:1/120, velocityIterations:8, positionIterations:3,
   maxSubsteps:8, sleepLinearThreshold:0.02, sleepAngularThreshold:0.03, sleepDwell:0.5
 });
 
 export function normalizePhysicsWorldConfig(config={}) {
   const w={...WORLD_DEFAULTS,...(config||{})};
-  if(typeof w.enable!=='boolean'||!['2D','3D'].includes(w.dimension)||!['XY','XZ','YZ'].includes(w.plane)||!Number.isFinite(w.planeOffset)||!['project','reject'].includes(w.dimensionPolicy)) throw new TypeError('Invalid physicsWorld dimension profile');
+  if(!['2D','3D'].includes(w.dimension)||!['XY','XZ','YZ'].includes(w.plane)||!Number.isFinite(w.planeOffset)||!['project','reject'].includes(w.dimensionPolicy)) throw new TypeError('Invalid physicsWorld dimension profile');
   w.gravity=vec3(w.gravity,'physicsWorld.gravity');
   for(const key of ['fixedDt'])if(!Number.isFinite(w[key])||w[key]<=0)throw new TypeError(`physicsWorld.${key} must be positive finite`);
   for(const key of ['velocityIterations','positionIterations','maxSubsteps'])if(!Number.isSafeInteger(w[key])||w[key]<1)throw new TypeError(`physicsWorld.${key} must be a positive integer`);
@@ -29,7 +29,7 @@ export function normalizePhysicsWorldConfig(config={}) {
 export function normalizeSpritePhysicsConfig(spriteId, spriteDefinition) {
   if (!spriteDefinition || typeof spriteDefinition !== 'object') throw new TypeError(`Sprite ${spriteId} definition required`);
   const p=spriteDefinition.physics||{}, c=spriteDefinition.collision||{};
-  const physicsEnabled=p.enable===true;
+  const physicsEnabled=Object.hasOwn(spriteDefinition,'physics') && p && typeof p==='object';
   const collisionDeclared=Object.prototype.hasOwnProperty.call(spriteDefinition,'collision') && c.enable!==false;
   const shape=c.shape??'sphere'; let collider;
   if(shape==='sphere') collider=createSphereCollider3D({radius:Number(c.radius??0.5),offset:vec3(c.offset??[0,0,0],'collision.offset')});
@@ -75,5 +75,5 @@ export function normalizeScenarioSpritePhysics(spriteDefinitions={}, worldConfig
   }
   const normalizedWorld=normalizePhysicsWorldConfig(worldInput);
   const bodies=Object.entries(spriteDefinitions||{}).map(([id,def])=>normalizeSpritePhysicsConfig(id,def)).filter(body=>body.physicsEnabled);
-  return {worldConfig:normalizedWorld,bodies:normalizedWorld.enable?bodies:[]};
+  return {worldConfig:normalizedWorld,bodies};
 }
