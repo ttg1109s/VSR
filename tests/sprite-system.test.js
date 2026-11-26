@@ -293,7 +293,7 @@ test('ACK end-hook failure is retryable after authoritative commit and completio
 
 test('Sprite transform trajectory interpolates rotation shortest-path and scale',()=>{
   const trajectory={endTime:1,transformTrajectory:[{time:0,rotate:350,scale:1},{time:1,rotate:370,scale:2}]};
-  assert.deepEqual(sampleSpriteTransformTrajectoryV2(trajectory,0.5),{rotate:360,scale:1.5});
+  assert.deepEqual(sampleSpriteTransformTrajectoryV2(trajectory,0.5),{rotate:360,scale:1.5,origin:'center'});
 });
 test('Scenario waypoint r/s values validate and are serialized into transform trajectory',async()=>{
   const engine=new GameEngine();
