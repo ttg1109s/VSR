@@ -10,7 +10,6 @@ import { fileURLToPath } from 'node:url';
 
 const MODULE_REGISTRY = Object.freeze({
   "GameEngine": new URL("../../engine/GameEngine.js", import.meta.url),
-  "Sprite": new URL("../../engine/modules/sprite/index.js", import.meta.url),
   "ProtocolCommands": new URL("../../engine/core/ProtocolCommands.js", import.meta.url),
   "Lifecycle": new URL("../../engine/core/Lifecycle.js", import.meta.url),
   "SaveRestore": new URL("../../engine/core/SaveRestore.js", import.meta.url),

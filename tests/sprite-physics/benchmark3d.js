@@ -1,5 +1,5 @@
 import { performance } from 'node:perf_hooks';
-import { RigidBodyWorld3D } from '../../engine/modules/sprite/physics/3d/RigidBodyWorld.js';
+import { RigidBodyWorld3D } from '../../engine/modules/sprite/RigidBodyWorld3D.js';
 const workloads=[
  {name:'sphere-sparse-100',dimension:'3D',count:100,collider:'sphere',spacing:4},
  {name:'box-sparse-100',dimension:'3D',count:100,collider:'box',spacing:4},
