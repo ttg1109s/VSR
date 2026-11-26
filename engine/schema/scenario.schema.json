@@ -6946,13 +6946,33 @@
               "maxItems": 3,
               "items": [
                 {
-                  "type": "number",
-                  "description": "Rotation in degrees."
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "description": "Rotation in degrees (legacy scalar Z rotation)."
+                    },
+                    {
+                      "$ref": "#/definitions/vec3",
+                      "description": "Euler rotation in degrees [rx,ry,rz]."
+                    },
+                    {
+                      "$ref": "#/definitions/quat",
+                      "description": "Quaternion [w,x,y,z]."
+                    }
+                  ]
                 },
                 {
-                  "type": "number",
-                  "exclusiveMinimum": 0,
-                  "description": "Uniform scale."
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "exclusiveMinimum": 0,
+                      "description": "Uniform positive scale (legacy compatible)."
+                    },
+                    {
+                      "$ref": "#/definitions/vec3",
+                      "description": "Positive per-axis scale [sx,sy,sz]."
+                    }
+                  ]
                 },
                 {
                   "type": "string",
@@ -6965,7 +6985,66 @@
                 1,
                 "center"
               ],
-              "description": "[rotate, scale, origin]"
+              "description": "[rotation, scale, origin]; legacy scalar/uniform values remain valid."
+            },
+            "transformTrajectory": {
+              "type": "array",
+              "minItems": 1,
+              "description": "Optional time-keyed rotation, scale and origin trajectory.",
+              "items": {
+                "type": "object",
+                "required": [
+                  "time"
+                ],
+                "properties": {
+                  "time": {
+                    "type": "number"
+                  },
+                  "rotation": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "$ref": "#/definitions/vec3"
+                      }
+                    ]
+                  },
+                  "rotate": {
+                    "type": "number"
+                  },
+                  "quaternion": {
+                    "$ref": "#/definitions/quat"
+                  },
+                  "scale": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "$ref": "#/definitions/vec3"
+                      }
+                    ]
+                  },
+                  "origin": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "$ref": "#/definitions/vec3"
+                      }
+                    ]
+                  },
+                  "angularVelocity": {
+                    "$ref": "#/definitions/vec3"
+                  },
+                  "scaleRate": {
+                    "$ref": "#/definitions/vec3"
+                  }
+                },
+                "additionalProperties": false
+              }
             }
           },
           "additionalProperties": false,
@@ -7086,6 +7165,27 @@
               "type": "number",
               "minimum": 0,
               "default": 0
+            },
+            "rotationMode": {
+              "type": "string",
+              "enum": [
+                "direct",
+                "shortest-path"
+              ],
+              "default": "direct"
+            },
+            "massMode": {
+              "type": "string",
+              "enum": [
+                "fixed",
+                "constant-density"
+              ],
+              "default": "fixed"
+            },
+            "density": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "default": 1
             }
           },
           "additionalProperties": false
@@ -7225,6 +7325,30 @@
             "easing"
           ],
           "additionalProperties": false
+        },
+        "positionTrajectory": {
+          "type": "array",
+          "minItems": 2,
+          "description": "Optional time-keyed canonical position trajectory with optional velocity tangents.",
+          "items": {
+            "type": "object",
+            "required": [
+              "time",
+              "position"
+            ],
+            "properties": {
+              "time": {
+                "type": "number"
+              },
+              "position": {
+                "$ref": "#/definitions/vec3"
+              },
+              "velocity": {
+                "$ref": "#/definitions/vec3"
+              }
+            },
+            "additionalProperties": false
+          }
         }
       },
       "additionalProperties": false
