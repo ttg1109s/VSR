@@ -46,7 +46,7 @@ Post-impact trajectory endpoints are derived from the configured continuous dyna
 ## Scenario configuration ownership
 
 - `config.physicsWorld`: shared dimension profile, gravity, fixed timestep, solver iteration/substep settings and sleep thresholds.
-- `sprite.physics`: per-body enable/type, mass, material, initial velocities/orientation and damping.
+- `sprite.physics`: object presence declares a Body; contains type, mass, material, initial velocities/orientation and damping. No enable flag.
 - `sprite.collision`: per-collider shape, geometry, offset and CCD.
 
 Legacy per-Sprite World keys are migrated into the shared World during scenario normalization. Conflicting legacy values are rejected rather than silently choosing one Sprite.
