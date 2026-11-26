@@ -6975,8 +6975,16 @@
                   ]
                 },
                 {
-                  "type": "string",
-                  "description": "Transform origin."
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "description": "Transform origin identifier (legacy compatible)."
+                    },
+                    {
+                      "$ref": "#/definitions/vec3",
+                      "description": "Per-axis origin offset."
+                    }
+                  ]
                 }
               ],
               "additionalItems": false,
@@ -7040,6 +7048,9 @@
                     "$ref": "#/definitions/vec3"
                   },
                   "scaleRate": {
+                    "$ref": "#/definitions/vec3"
+                  },
+                  "positionVelocity": {
                     "$ref": "#/definitions/vec3"
                   }
                 },
