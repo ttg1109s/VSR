@@ -1,4 +1,4 @@
-import { firstCircleImpact } from './collision.js';
+import { firstCircleImpactResult } from './collision.js';
 import { resolveCircleCollision, correctCirclePenetration } from './physics.js';
 import { createLinearPhysicsSegment, createDampedPhysicsSegment } from './trajectory.js';
 import { sub, dot } from './math.js';
@@ -73,7 +73,7 @@ export class AuthoritativeSpriteSimulation {
     for(const [id,t] of trajectories){positions.set(id,t.sample(startTime));velocities.set(id,t.velocity(startTime));}
     let cursor=startTime;
     let collisionLimitReached=false;
-    const profiler={iterations:0,broadphasePairs:0,narrowphaseChecks:0,collisionEvents:0,ccdIntervals:0,ccdFallbacks:0,elapsedMs:0};
+    const profiler={iterations:0,broadphasePairs:0,narrowphaseChecks:0,collisionEvents:0,ccdIntervals:0,ccdFallbacks:0,ccdIndeterminate:0,elapsedMs:0};
     const profileStart=globalThis.performance?.now?.()??Date.now();
     while(true){
       let earliest=null;
@@ -88,8 +88,10 @@ export class AuthoritativeSpriteSimulation {
         if(!bodyA||!bodyB||bodyA.collisionEnabled===false||bodyB.collisionEnabled===false)continue;
         if(bodyA.layer!==bodyB.layer)continue;
         profiler.narrowphaseChecks++;
-        const impact=firstCircleImpact({trajectoryA:trajectories.get(a),trajectoryB:trajectories.get(b),radiusA:bodyA.radius??0,radiusB:bodyB.radius??0,timeStart:pairSearchStart,timeEnd:endTime,subdivisions:this.options.subdivisions});
-        if(impact){profiler.ccdIntervals+=impact.subdivisions||0;if(String(impact.approximation||'').includes('conservative')||String(impact.approximation||'').includes('fallback'))profiler.ccdFallbacks++;if(!earliest||impact.time<earliest.time)earliest={...impact,a,b,key};}
+        const ccd=firstCircleImpactResult({trajectoryA:trajectories.get(a),trajectoryB:trajectories.get(b),radiusA:bodyA.radius??0,radiusB:bodyB.radius??0,timeStart:pairSearchStart,timeEnd:endTime,subdivisions:this.options.subdivisions});
+        profiler.ccdIntervals+=ccd.subdivisions||0;
+        if(ccd.status==='indeterminate')profiler.ccdIndeterminate++;
+        if(ccd.status==='confirmed-impact'){if(String(ccd.approximation||'').includes('conservative')||String(ccd.approximation||'').includes('fallback'))profiler.ccdFallbacks++;if(!earliest||ccd.time<earliest.time)earliest={...ccd,a,b,key};}
       }
       if(!earliest)break;
       if(collisions.length>=this.options.maxCollisionEvents){collisionLimitReached=true;break;}

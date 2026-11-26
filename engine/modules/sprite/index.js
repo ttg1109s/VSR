@@ -15,3 +15,6 @@ export * from './collider3d.js';
 export * from './SpriteSimulationCoordinator3D.js';
 
 export * from './SpritePhysicsConfig.js';
+
+export * from './PoseTrajectory.js';
+export * from './PhysicalStateSampler.js';

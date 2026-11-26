@@ -1,4 +1,6 @@
 import { createSphereCollider3D, createBoxCollider3D, createPlaneCollider3D } from './collider3d.js';
+import { createPoseTrajectory } from './PoseTrajectory.js';
+import { createPhysicalStateSampler } from './PhysicalStateSampler.js';
 
 const vec3 = (value, name) => {
   if (!Array.isArray(value) || value.length !== 3 || value.some(v => !Number.isFinite(v))) throw new TypeError(`${name} must be a finite Vec3`);
@@ -39,10 +41,17 @@ export function normalizeSpritePhysicsConfig(spriteId, spriteDefinition) {
   const radius=shape==='sphere'?collider.radius:Number(c.radius??0.5);
   const bodyType=p.bodyType??'dynamic';
   if(!['static','kinematic','dynamic','sensor'].includes(bodyType))throw new TypeError(`Sprite ${spriteId} has invalid bodyType`);
-  const position=vec3(spriteDefinition.position?.location??spriteDefinition.position??[0,0,0],'position');
+  const authoredPose=spriteDefinition.position&&typeof spriteDefinition.position==='object'&&!Array.isArray(spriteDefinition.position)?spriteDefinition.position:{};
+  const position=vec3(authoredPose.location??spriteDefinition.position??[0,0,0],'position');
+  const tuple=authoredPose.transform;
+  const initialScale=Number(tuple?.[1]??1),initialRotation=tuple?.[0]??0,initialOrigin=tuple?.[2]??'center';
+  const transformKeys=Array.isArray(spriteDefinition.transformTrajectory)?spriteDefinition.transformTrajectory.map(k=>({time:k.time,rotation:k.rotate??k.rotation??0,scale:k.scale??1,origin:k.origin??initialOrigin})):[];
+  const poseTrajectory=createPoseTrajectory({initialPose:{location:position,rotation:initialRotation,scale:initialScale,origin:initialOrigin},transformKeys,rotationMode:p.rotationMode??'direct'});
+  const physicalStateSampler=createPhysicalStateSampler({collider,mass:Number(p.mass??1),bodyType,poseTrajectory,constantDensity:p.massMode==='constant-density',density:Number(p.density??1)});
   return {
     id:String(spriteId), type:bodyType, radius, collider,
-    transform:{position,orientation:quat(p.orientation??[1,0,0,0])},
+    transform:{position,orientation:quat(p.orientation??[1,0,0,0]),rotation:initialRotation,scale:initialScale,origin:initialOrigin},
+    poseTrajectory,physicalStateSampler,
     velocity:vec3(p.velocity??[0,0,0],'physics.velocity'),
     angularVelocity:vec3(p.angularVelocity??[0,0,0],'physics.angularVelocity'),
     mass:Number(p.mass??1),
