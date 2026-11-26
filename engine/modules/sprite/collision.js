@@ -81,5 +81,3 @@ export function firstCircleImpact({trajectoryA,trajectoryB=null,radiusA,radiusB,
  return null;
 }
 
- // Legacy approximate mode retained for explicit callers.
- const dt=(timeEnd-timeStart)/subdivisions;for(let i=0;i<subdivisions;i++){const t0=timeStart+i*dt,t1=t0+dt,a0=trajectoryA.sample(t0),a1=trajectoryA.sample(t1),b0=trajectoryB.sample(t0),b1=trajectoryB.sample(t1),va=a1.map((x,k)=>(x-a0[k])/dt),vb=b1.map((x,k)=>(x-b0[k])/dt),local=movingCircleTOI(a0,va,b0,vb,rs,dt);if(local!==null){const time=t0+local,pa=trajectoryA.sample(time),pb=trajectoryB.sample(time);return{time,positionA:pa,positionB:pb,normal:normalize(sub(pb,pa)),approximation:'subdivision-ccd',subdivisions};}}return null;}
