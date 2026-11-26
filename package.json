@@ -1,0 +1,15 @@
+{
+  "name": "vsr-engine",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test tests/*.test.js tests/sprite-physics/*.test.js tests/sprite-recovery/*.test.js",
+    "test:stress": "node --test tests/*stress*.test.js tests/*race*.test.js",
+    "test:sprite": "node --test tests/sprite-motion-v2.test.js tests/sprite-motion-physics-hardening-stress.test.js tests/sprite-diagnostics.test.js tests/sprite-physics/*.test.js tests/sprite-recovery/*.test.js",
+    "benchmark:sprite": "node tests/sprite-physics/benchmark.js",
+    "benchmark:3d": "node tests/sprite-physics/benchmark3d.js"
+  }
+}
