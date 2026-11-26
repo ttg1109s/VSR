@@ -44,7 +44,7 @@ export function normalizeSpritePhysicsConfig(spriteId, spriteDefinition) {
   const authoredPose=spriteDefinition.position&&typeof spriteDefinition.position==='object'&&!Array.isArray(spriteDefinition.position)?spriteDefinition.position:{};
   const position=vec3(authoredPose.location??spriteDefinition.position??[0,0,0],'position');
   const tuple=authoredPose.transform;
-  const initialScale=Number(tuple?.[1]??1),initialRotation=tuple?.[0]??0,initialOrigin=tuple?.[2]??'center';
+  const initialScale=tuple?.[1]??1,initialRotation=tuple?.[0]??0,initialOrigin=tuple?.[2]??'center';
   const transformKeys=Array.isArray(spriteDefinition.transformTrajectory)?spriteDefinition.transformTrajectory.map(k=>({time:k.time,rotation:k.rotate??k.rotation??0,scale:k.scale??1,origin:k.origin??initialOrigin})):[];
   const poseTrajectory=createPoseTrajectory({initialPose:{location:position,rotation:initialRotation,scale:initialScale,origin:initialOrigin},transformKeys,rotationMode:p.rotationMode??'direct'});
   const physicalStateSampler=createPhysicalStateSampler({collider,mass:Number(p.mass??1),bodyType,poseTrajectory,constantDensity:p.massMode==='constant-density',density:Number(p.density??1)});
