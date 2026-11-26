@@ -98,3 +98,25 @@ test('authoritative collision uses linear damping model without a horizon endpoi
    assert.ok(Math.hypot(...post.velocity(post.endTime))<=0.0200001);
  }
 });
+
+
+test('CCD rejects conservative broad-phase overlap without sampled contact',()=>{
+ const nearMiss=createBezierTrajectory({points:[[0,0,0],[0,5,0],[5,5,0],[5,0,0]],duration:1});
+ const stationary=createLinearPhysicsSegment({segmentId:'stationary',startTime:0,duration:1,position:[2.5,0.5,0],velocity:[0,0,0]});
+ const result=firstCircleImpact({trajectoryA:nearMiss,trajectoryB:stationary,radiusA:0.1,radiusB:0.1,timeStart:0,timeEnd:1});
+ assert.equal(result,null);
+});
+
+test('CCD does not invent impact time for an unknown trajectory',()=>{
+ const unknown=(x)=>({sample:t=>[x+Math.sin(t*Math.PI*2)*4,0,0]});
+ const result=firstCircleImpact({trajectoryA:unknown(0),trajectoryB:unknown(100),radiusA:1,radiusB:1,timeStart:0,timeEnd:1});
+ assert.equal(result,null);
+});
+
+test('CCD refines a real impact away from the interval midpoint',()=>{
+ const curved=createBezierTrajectory({points:[[0,0,0],[0,3,0],[3,3,0],[3,0,0]],duration:1});
+ const stationary=createLinearPhysicsSegment({segmentId:'stationary',startTime:0,duration:1,position:[1.5,2.0,0],velocity:[0,0,0]});
+ const result=firstCircleImpact({trajectoryA:curved,trajectoryB:stationary,radiusA:0.2,radiusB:0.2,timeStart:0,timeEnd:1});
+ assert.ok(result);
+ assert.ok(Math.abs(Math.hypot(...result.positionB.map((v,i)=>v-result.positionA[i]))-0.4)<1e-6);
+});
