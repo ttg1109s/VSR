@@ -45,8 +45,8 @@ Scenario authors configure the shared World under `config.physicsWorld`; Sprite 
   },
   "sprite": {
     "ball": {
-      "physics": { "enable": true, "bodyType": "dynamic", "mass": 1, "velocity": [0, 0, 0] },
-      "collision": { "enable": true, "shape": "sphere", "radius": 0.5 }
+      "physics": { "bodyType": "dynamic", "mass": 1, "velocity": [0, 0, 0] },
+      "collision": { "shape": "sphere", "radius": 0.5 }
     }
   }
 }
