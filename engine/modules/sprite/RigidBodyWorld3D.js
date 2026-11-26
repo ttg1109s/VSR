@@ -64,7 +64,7 @@ export class RigidBodyWorld3D {
  #samplePhysicalStateForBody(b,time){
   const sampled=b.physicalStateSampler(time);
   if(!sampled||sampled.time!==time)throw new Error('PhysicalStateSampler timestamp mismatch');
-  const pose=b.type==='dynamic'?{...sampled.pose,location:[...b.position]}:sampled.pose;
+  const pose=b.type==='dynamic'?{...sampled.pose,location:[...b.position],rotation:[...b.orientation]}:sampled.pose;
   b.physicalState={...sampled,pose};
   b.collider=structuredClone(sampled.geometry);
   if(b.type==='dynamic'){
