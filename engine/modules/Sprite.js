@@ -382,14 +382,14 @@ export function setSpriteProperty(engine, spriteId, prop, value) {
         }
         if (prop === 'scale' || prop === 'rotate') {
             if (typeof value !== 'number' || !Number.isFinite(value) || (prop === 'scale' && value <= 0)) throw new TypeError(`set/sprite ${prop} requires a finite${prop === 'scale' ? ' positive' : ''} number.`);
-            state.update('sprites.[id]', runtime => ({ ...(runtime || {}), transform: { ...(runtime?.transform || current.transform || definition.transform || { scale: 1, rotate: 0 }), [prop]: value } }), { id: spriteId });
+            state.update('sprites.[id]', runtime => ({ ...(runtime || {}), transform: { ...(runtime?.transform || current.transform || poseTransform(definition.position)), [prop]: value } }), { id: spriteId });
             return;
         }
         if (prop === 'transform') {
             if (!value || typeof value !== 'object' || Array.isArray(value) || Object.keys(value).length < 1 || Object.keys(value).some(key => !['scale', 'rotate'].includes(key))) throw new TypeError('Sprite transform requires a partial {scale, rotate} object.');
             if (value.scale !== undefined && (typeof value.scale !== 'number' || !Number.isFinite(value.scale) || value.scale <= 0)) throw new TypeError('Sprite transform.scale must be a finite positive number.');
             if (value.rotate !== undefined && (typeof value.rotate !== 'number' || !Number.isFinite(value.rotate))) throw new TypeError('Sprite transform.rotate must be a finite number.');
-            state.update('sprites.[id]', runtime => ({ ...(runtime || {}), transform: { ...(runtime?.transform || current.transform || definition.transform || { scale: 1, rotate: 0 }), ...value } }), { id: spriteId });
+            state.update('sprites.[id]', runtime => ({ ...(runtime || {}), transform: { ...(runtime?.transform || current.transform || poseTransform(definition.position)), ...value } }), { id: spriteId });
             return;
         }
         throw new TypeError(`Unsupported set/sprite property: ${String(prop)}`);
