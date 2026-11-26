@@ -61,3 +61,40 @@ test('CCD adaptively increases subdivisions for fast travel relative to radius',
   assert.ok(hit);
   assert.ok(hit.subdivisions>8);
 });
+
+test('conservative CCD reports potential curved-trajectory crossing even when endpoint displacement is small', async()=>{
+ const {createBezierTrajectory}=await import('../engine/modules/sprite/trajectory.js');
+ const {firstCircleImpact}=await import('../engine/modules/sprite/collision.js');
+ const loop=createBezierTrajectory({points:[[0,0,0],[100,100,0],[-100,100,0],[0,0,0]],duration:1});
+ const stationary=createLinearPhysicsSegment({segmentId:'stationary',startTime:0,duration:1,position:[30,50,0],velocity:[0,0,0]});
+ const impact=firstCircleImpact({trajectoryA:loop,trajectoryB:stationary,radiusA:1,radiusB:1,timeStart:0,timeEnd:1});
+ assert.ok(impact);assert.ok(['conservative-interval','unknown-trajectory-conservative-fallback'].includes(impact.approximation));
+});
+
+test('analytical linear damping derives natural-equilibrium endpoint and duration', async()=>{
+ const {solveDampedTrajectory,createDampedPhysicsSegment}=await import('../engine/modules/sprite/trajectory.js');
+ const solved=solveDampedTrajectory({position:[30,0,0],velocity:[-80,0,0],linearDamping:4,velocityThreshold:0.02});
+ assert.ok(solved.duration>0);
+ assert.ok(Math.abs(solved.finalPosition[0]-10)<0.02);
+ assert.ok(Math.hypot(...solved.finalVelocity)<=0.0200001);
+ assert.equal(solved.completion,'natural-equilibrium');
+ const segment=createDampedPhysicsSegment({segmentId:'damped',startTime:0.3,position:[30,0,0],velocity:[-80,0,0],linearDamping:4,velocityThreshold:0.02});
+ assert.ok(Math.abs(segment.endTime-(0.3+solved.duration))<1e-10);
+ assert.ok(Math.abs(segment.sample(segment.endTime)[0]-solved.finalPosition[0])<1e-10);
+ assert.ok(Math.hypot(...segment.velocity(segment.endTime))<=0.0200001);
+ assert.equal(segment.completion,'natural-equilibrium');
+});
+
+test('authoritative collision uses linear damping model without a horizon endpoint',()=>{
+ const a=createLinearPhysicsSegment({segmentId:'a',startTime:0,duration:2,position:[0,0,0],velocity:[2,0,0]});
+ const b=createLinearPhysicsSegment({segmentId:'b',startTime:0,duration:2,position:[3,0,0],velocity:[0,0,0]});
+ const sim=new AuthoritativeSpriteSimulation({subdivisions:128,maxCollisionEvents:8});
+ const out=sim.run({bodies:{a:{id:'a',layer:0,radius:.5,mass:1,collisionEnabled:true,physicsEnabled:true,isMotionOwner:true},b:{id:'b',layer:0,radius:.5,mass:1,collisionEnabled:true,physicsEnabled:true}},initialTrajectories:new Map([['a',a],['b',b]]),physicsByBody:{a:{restitution:1,linearDamping:2,sleepLinearThreshold:0.02},b:{restitution:1,linearDamping:2,sleepLinearThreshold:0.02}}});
+ assert.equal(out.collisions.length,1);
+ for(const id of ['a','b']){
+   const post=out.segments.get(id).filter(segment=>segment.type==='physics').at(-1);
+   assert.equal(post.completion,'natural-equilibrium');
+   assert.ok(post.duration>0);
+   assert.ok(Math.hypot(...post.velocity(post.endTime))<=0.0200001);
+ }
+});

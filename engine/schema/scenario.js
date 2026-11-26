@@ -73,6 +73,30 @@ function asArray(value) {
   return Array.isArray(value) ? value : [];
 }
 
+// Compatibility migration: old motion.physics values are folded into canonical sprite.physics.
+// Existing sprite.physics values win when both locations are present.
+function migrateMotionPhysics(scenario) {
+  for (const [spriteId, definition] of Object.entries(isObject(scenario.sprite) ? scenario.sprite : {})) {
+    if (!isObject(definition?.motion) || !isObject(definition.motion.physics)) continue;
+    const legacyPhysics = definition.motion.physics;
+    definition.physics = isObject(definition.physics) ? definition.physics : {};
+    for (const [key, value] of Object.entries(legacyPhysics)) {
+      if (!Object.hasOwn(definition.physics, key)) definition.physics[key] = value;
+    }
+    delete definition.motion.physics;
+  }
+  // Remove legacy endpoint controls: they are no longer part of the physical model.
+  for (const definition of Object.values(isObject(scenario.sprite) ? scenario.sprite : {})) {
+    if (!isObject(definition?.physics)) continue;
+    delete definition.physics.horizon;
+    delete definition.physics.maxPhysicsDuration;
+    delete definition.physics.postImpactDeceleration;
+    delete definition.physics.settlingVelocityThreshold;
+    delete definition.physics.settlingDuration;
+  }
+  return scenario;
+}
+
 function validateReferences(scenario) {
   const errors = [];
   const scenes = scenario.scenes || {};
@@ -583,7 +607,7 @@ export function validateScenario(scenario) {
 
   let candidate;
   try {
-    candidate = clone(scenario);
+    candidate = migrateMotionPhysics(clone(scenario));
   } catch (error) {
     return error instanceof ScenarioValidationError ? error.errors : [error.message];
   }
@@ -599,7 +623,7 @@ export function validateScenario(scenario) {
 }
 
 export function normalizeScenario(input) {
-  const scenario = clone(input);
+  const scenario = migrateMotionPhysics(clone(input));
   if (!isObject(scenario)) throw new ScenarioValidationError(['root must be a JSON object']);
 
   if (isObject(scenario.meta) && scenario.meta.entryCharacter == null) {

@@ -87,3 +87,24 @@ test('hardening: exact-center overlap resolves in authoritative simulation, not 
   const result=new AuthoritativeSpriteSimulation({horizon:1,subdivisions:16,maxCollisionEvents:8}).run({bodies:{a:{id:'a',layer:0,radius:1,mass:1,collisionEnabled:true,physicsEnabled:true},b:{id:'b',layer:0,radius:1,mass:1,collisionEnabled:true,physicsEnabled:true}},initialTrajectories:new Map([['a',a],['b',b]])});
   assert.equal(result.collisions.length,1);assert.ok(result.finalPositions.get('a')[0]<result.finalPositions.get('b')[0]);assert.ok(result.collisions[0].normal.every(Number.isFinite));
 });
+
+test('hardening fuzz: randomized collision response conserves momentum and does not increase kinetic energy',()=>{
+  let seed=0x5eed1234;
+  const random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/0x100000000;};
+  for(let i=0;i<1500;i++){
+    const n=[random()*2-1,random()*2-1,random()*2-1];const norm=Math.hypot(...n)||1;const normal=n.map(v=>v/norm);
+    const mass1=.1+random()*20,mass2=.1+random()*20;
+    const velocity1=[random()*20-10,random()*20-10,random()*20-10];
+    const velocity2=[random()*20-10,random()*20-10,random()*20-10];
+    const position1=[0,0,0],position2=normal.map(v=>v*2);
+    const restitution=random(),friction=random()*.8;
+    const beforeMomentum=velocity1.map((v,k)=>mass1*v+mass2*velocity2[k]);
+    const beforeEnergy=.5*mass1*velocity1.reduce((sum,v)=>sum+v*v,0)+.5*mass2*velocity2.reduce((sum,v)=>sum+v*v,0);
+    const r=resolveCircleCollision({position1,position2,velocity1,velocity2,mass1,mass2,restitution,friction});
+    const afterMomentum=r.velocity1.map((v,k)=>mass1*v+mass2*r.velocity2[k]);
+    const afterEnergy=.5*mass1*r.velocity1.reduce((sum,v)=>sum+v*v,0)+.5*mass2*r.velocity2.reduce((sum,v)=>sum+v*v,0);
+    assert.ok(r.velocity1.every(Number.isFinite)&&r.velocity2.every(Number.isFinite),`non-finite response seed ${i}`);
+    for(let k=0;k<3;k++)assert.ok(Math.abs(beforeMomentum[k]-afterMomentum[k])<1e-8,`momentum mismatch seed ${i}, axis ${k}`);
+    assert.ok(afterEnergy<=beforeEnergy+1e-8,`energy increased seed ${i}`);
+  }
+});

@@ -1,50 +1,44 @@
-# Sprite Motion — authoritative runtime
+# Sprite Motion / Unified Physics
 
-Sprite Motion v2 is the only runtime motion protocol. No v1 descriptor, Client-reported impact command, or legacy completion command is supported.
+## Runtime compatibility
 
-## Authority
+The existing authoritative Sprite trajectory coordinator remains **protocol v2** by default. It preserves the current client presentation/ACK contract and event-time circle/sphere coordinator. It is not yet wired to execute authoritative motions through the new 3D World.
 
-- Engine generates initial trajectory, collision events, physics response, post-impact segments, final positions, and active lifecycle state.
-- Client is a renderer and may sample/interpolate the supplied trajectory representation. It cannot report authoritative impact or choose physics response.
-- Runtime Sprite position remains at its authoritative start/current simulated state while presentation is pending. Final affected-body positions are committed only after a validated ACK.
-- End effects run only after a valid presentation ACK.
-- A collision is a multi-body state transition. All affected bodies receive current/post-impact state and final commit together.
+## Unified 3D-native physics
 
-## Runtime
+`physics3d/RigidBodyWorld3D.js` is a shared physics world. `dimension: '3D'` permits XYZ and normalized quaternion rotation. `dimension: '2D'` constrains the same world to plane `XY`, `XZ`, or `YZ`; `planeOffset` supports a non-zero plane, and `dimensionPolicy` chooses `project` or `reject` for invalid out-of-plane vectors.
 
-`AuthoritativeSpriteSimulation` performs event-time pair scanning with subdivision-based continuous collision detection for moving circles/spheres, impulse response, restitution, friction, penetration correction, and collision chains across body pairs. It uses stable body ordering and deterministic collision ordering for a given input snapshot.
+```js
+import { RigidBodyWorld3D } from './index.js';
+const world = new RigidBodyWorld3D({ dimension: '2D', plane: 'XY', fixedDt: 1/120, gravity: [0,-9.81,0] });
+world.addBody({ id:'ball', position:[0,2,0], velocity:[1,0,0], radius:.5 });
+world.step();
+```
 
-The simulation has a configurable horizon and maximum collision event count. Collision geometry is circle/sphere radius only; CCD remains subdivision-based approximation rather than adaptive/exact general geometry.
+3D runtime supports dynamic/static/kinematic/sensor bodies; force, torque, impulse and timed idempotent impulse; fixed time; sleep/wake; checkpoint/restore; energy diagnostics; sphere, AABB box and plane collision queries/responses; analytic sphere CCD for flagged bodies (one impact per body per fixed step). Box colliders are axis-aligned; scalar inertia is approximate.
 
-## Scenario configuration
+## 2D compatibility
 
-Sprite-level:
+`physics3d/DimensionProfile.js` constrains all dimensional state and provides `legacy2DTo3D()` and `transform3DToLegacy2D()` adapters. Existing `x/y/angle` style data can be mapped into XYZ/quaternion. This adapter does not itself switch the legacy Sprite coordinator to the 3D World.
 
-- `collision.enable`, `collision.radius`
-- `physics.mass`, `physics.restitution`, `physics.friction`, `physics.gravity`
+## Protocol v3 contract
 
-Motion-level:
+`physics3d/ProtocolV3.js` exports a v3 serializer, validator and v2 trajectory adapter. Schema is `physics3d/protocol-v3.schema.json`. Protocol v3 represents XYZ, quaternion, linear/angular velocity, explicit simulation time, dimension, completion, events and diagnostics. It is currently a standalone contract; v2 remains the published default until end-to-end migration and parity gates are completed.
 
-- Initial `enable`, `duration`, `path`, `easing`
-- `impact.enable`, `impact.physics`
-- `physics.horizon`, `physics.restitution`, `physics.friction`, `physics.gravity`
-- `effect.start`, `effect.end`
+## Existing v2 authority
 
-## Protocol
+- Engine generates initial trajectory, collision events, response, post-impact segments and final positions.
+- Client renders/interpolates and ACKs; it cannot report authoritative impact.
+- Final affected-body positions commit after validated presentation ACK.
+- End effects run only after valid ACK.
+- Collision transitions commit all affected bodies together.
 
-Engine publishes `presentation.sprite.trajectory.v2` with `protocolVersion: 2`, motion and trajectory IDs, timeline, per-body segment lists, impact events, final positions, and required presentation segment IDs.
+## 2D modules and diagnostics
 
-Client ACK command: `sprite.motion.presentation.ack`. ACK includes identity, completed status, last segment, presented-through simulation time, and the set of presented required segments. Stale or incomplete ACKs are rejected; duplicate valid ACKs are idempotent.
+`collider.js` and `solver.js` provide standalone 2D circle/box/convex/capsule/compound geometry and a 2D angular contact solver. `recovery.js` provides an fsync-backed operation ledger for integration-side effects. The authoritative v2 coordinator remains circle/sphere based.
 
-## Persistence
+The exact feature boundaries and verification are in `docs-sprite-motion/implementation-status.md` and `docs-sprite-motion/one-pass-upgrade-report.md`. Benchmarks: `tests/sprite-physics/benchmark.js` (legacy Sprite) and `benchmark3d.js` (new physics world; all-pairs narrowphase, informational).
 
-Save version 4 includes active authoritative trajectory descriptors and completion identities. Restore rehydrates active trajectories and republishes them so presentation can resynchronize. Saves are no longer rejected merely because presentation is pending.
+## Post-impact trajectory solving (v2)
 
-
-## Waypoint transform extensions
-
-Reference waypoints accept `x`, `y`, `z`, plus optional `r` (rotation in degrees) and `s` (uniform positive scale). Transform keyframes are serialized on `transformTrajectory`; rotation follows the shortest angular path and scale is linearly interpolated. Older waypoints remain valid and inherit the previous transform values.
-
-## Collision performance/correctness hardening
-
-CCD adapts subdivision count to relative travel distance and collision radius, with a 4096-step cap. The authoritative coordinator now uses a sampled swept-bounds spatial grid to filter candidate pairs before narrow-phase CCD. Oversized swept bodies conservatively fall back to all-pairs checks. Because swept bounds are sampled, this is a performance broad-phase, not a formal analytic bound for arbitrary curves; the narrow-phase refinement and cap remain relevant.
+Post-impact trajectory endpoints are derived from the configured continuous dynamics. The v2 coordinator no longer uses `horizon`, `maxPhysicsDuration`, or `postImpactDeceleration` to determine endpoints. With zero external acceleration and positive `linearDamping`, the solver analytically integrates exponential drag (`v(t)=v0*exp(-k*t)`) and uses `sleepLinearThreshold` as the natural-equilibrium tolerance. The same damping parameter is serialized so the client samples the solved exponential trajectory exactly, rather than approximating it with constant acceleration. If damping is absent/zero or external acceleration prevents equilibrium, the segment is explicitly marked `non-terminating-dynamics`; it is not assigned a fabricated physical endpoint.

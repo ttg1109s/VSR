@@ -69,7 +69,7 @@ export const ProtocolCommands = {
       const pending=this.pendingSpriteMotionEndHooks.get(payload.motionId);
       if(pending){
         try{
-          if(pending.effects.length)await this.processRunnables(pending.effects,pending.context,true);
+          if(pending.effects.length)await this.processRunnables(pending.effects,{...pending.context,skipRunnableIndexes:new Set([...(pending.startedIndexes||[]),...(pending.completedIndexes||[])]),hookLedgerRoot:true,onRunnableStart:async index=>{pending.startedIndexes ||= [];if(!pending.startedIndexes.includes(index)){pending.startedIndexes.push(index);pending.lastStartedIndex=index;}},onRunnableComplete:async index=>{pending.completedIndexes ||= [];if(!pending.completedIndexes.includes(index))pending.completedIndexes.push(index);pending.lastCompletedIndex=index;}},true);
           this.pendingSpriteMotionEndHooks.delete(payload.motionId);
           this.protocol.publish('presentation.sprite.trajectory.completed',pending.completion);
           return{success:true,duplicate:true,endHookRetried:true,committedSprites:pending.committedSprites};
@@ -96,10 +96,11 @@ export const ProtocolCommands = {
     const sprite=this.src?.sprite?.[payload.spriteId];
     const effects=Array.isArray(sprite?.motion?.effect?.end)?sprite.motion.effect.end:[];
     const completion={spriteId:payload.spriteId,motionId:payload.motionId,trajectoryId:payload.trajectoryId,reason:'presentation-completed',presentedThroughTime:payload.presentedThroughTime};
-    const context={spriteId:payload.spriteId,motionId:payload.motionId,trajectoryId:payload.trajectoryId,hook:'motion.end',reason:'presentation-completed',impacts:active.descriptor.impacts||[]};
+    const context={spriteId:payload.spriteId,motionId:payload.motionId,trajectoryId:payload.trajectoryId,hook:'motion.end',reason:'presentation-completed',impacts:active.descriptor.impacts||[],operationIdBase:`sprite:${payload.motionId}:${payload.trajectoryId}:motion.end`,operationLedger:this.spriteOperationLedger};
     if(effects.length){
-      this.pendingSpriteMotionEndHooks.set(payload.motionId,{effects,context,completion,committedSprites:entries.map(([id])=>id)});
-      try{await this.processRunnables(effects,context,true);this.pendingSpriteMotionEndHooks.delete(payload.motionId);}
+      const pendingHook={effects,context,completion,committedSprites:entries.map(([id])=>id),startedIndexes:[],completedIndexes:[]};
+      this.pendingSpriteMotionEndHooks.set(payload.motionId,pendingHook);
+      try{await this.processRunnables(effects,{...context,hookLedgerRoot:true,onRunnableStart:async index=>{if(!pendingHook.startedIndexes.includes(index))pendingHook.startedIndexes.push(index);},onRunnableComplete:async index=>{if(!pendingHook.completedIndexes.includes(index))pendingHook.completedIndexes.push(index);}},true);this.pendingSpriteMotionEndHooks.delete(payload.motionId);}
       catch(error){return{success:false,reason:'end_hook_failed',retryable:true,committed:true,message:error?.message||String(error),committedSprites:entries.map(([id])=>id)};}
     }
     this.protocol.publish('presentation.sprite.trajectory.completed',completion);

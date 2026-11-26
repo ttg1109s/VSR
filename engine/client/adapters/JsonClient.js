@@ -1,3 +1,4 @@
+import { validateSpriteV3 } from '../../modules/sprite/physics3d/ProtocolV3.js';
 /**
  * JSON-only client transport. It has no Engine import or Engine reference.
  * A host may be local, worker-backed, HTTP, or WebSocket as long as it
@@ -52,6 +53,7 @@ export function sampleSpriteTrajectoryV2(trajectory, spriteId, simulationTime) {
   }
   if (segment.type === 'physics') {
     const dt=Math.max(0,Math.min(duration,time-segment.startTime));
+    if(Number(segment.linearDamping)>0&&segment.acceleration.every(value=>Math.abs(value)<1e-12)){const k=Number(segment.linearDamping),factor=(1-Math.exp(-k*dt))/k;return segment.initialPosition.map((value,axis)=>value+segment.initialVelocity[axis]*factor);}
     return segment.initialPosition.map((value,axis)=>value+segment.initialVelocity[axis]*dt+0.5*segment.acceleration[axis]*dt*dt);
   }
   throw new TypeError(`Unsupported authoritative trajectory segment type: ${String(segment.type)}`);
@@ -142,6 +144,10 @@ export class JsonClient {
         if (engineChanged) this.emit({ type: 'synchronization.recovered', source: 'event.snapshot', eventSequence: sequence });
       }
       this.processProtocolTimelineEvent(message);
+      if (message.event === 'presentation.sprite.simulation.v3' || message.event === 'presentation.sprite.trajectory.v3') {
+        try { validateSpriteV3(message.payload); this.emit({ type: 'sprite.simulation.v3', simulation: structuredClone(message.payload), eventId: message.eventId, sequence }); }
+        catch (error) { this.emit({ type: 'sprite.simulation.invalid', payload: structuredClone(message.payload), error, eventId: message.eventId, sequence }); }
+      }
       if (message.event === 'presentation.sprite.trajectory.v2') {
         if (message.payload?.protocolVersion === 2 && message.payload?.motionId && message.payload?.trajectoryId && message.payload?.trajectories) this.emit({ type: 'sprite.trajectory.v2', trajectory: structuredClone(message.payload), eventId: message.eventId, sequence });
         else this.emit({ type: 'sprite.trajectory.invalid', payload: structuredClone(message.payload), eventId: message.eventId, sequence });

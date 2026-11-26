@@ -170,6 +170,46 @@
         },
         "additionalProperties": false
       }
+    },
+    "postImpactResults": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "from",
+          "to",
+          "duration",
+          "startTime",
+          "finalVelocity",
+          "completion"
+        ],
+        "properties": {
+          "from": {
+            "$ref": "#/definitions/vector3"
+          },
+          "to": {
+            "$ref": "#/definitions/vector3"
+          },
+          "duration": {
+            "type": "number",
+            "minimum": 0
+          },
+          "startTime": {
+            "type": "number"
+          },
+          "finalVelocity": {
+            "$ref": "#/definitions/vector3"
+          },
+          "completion": {
+            "type": "string",
+            "enum": [
+              "natural-equilibrium",
+              "non-terminating-dynamics"
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
     }
   },
   "definitions": {
@@ -224,6 +264,27 @@
         },
         "acceleration": {
           "$ref": "#/definitions/vector3"
+        },
+        "duration": {
+          "type": "number",
+          "minimum": 0
+        },
+        "finalPosition": {
+          "$ref": "#/definitions/vector3"
+        },
+        "finalVelocity": {
+          "$ref": "#/definitions/vector3"
+        },
+        "linearDamping": {
+          "type": "number",
+          "minimum": 0
+        },
+        "completion": {
+          "type": "string",
+          "enum": [
+            "natural-equilibrium",
+            "non-terminating-dynamics"
+          ]
         }
       },
       "additionalProperties": false

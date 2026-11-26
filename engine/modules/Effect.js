@@ -57,6 +57,8 @@ export const EffectSystem = {
 
         for (let i = 0; i < effectiveList.length; i++) {
             if (typeof context.shouldContinue === 'function' && !context.shouldContinue()) break;
+            if (context.skipRunnableIndexes?.has?.(i)) continue;
+            const ledgerRoot = context.hookLedgerRoot === true;
             const wrapper = effectiveList[i];
             if (!wrapper || typeof wrapper !== 'object' || Array.isArray(wrapper)) {
                 throw new TypeError('Runnable wrapper must be an object.');
@@ -64,7 +66,13 @@ export const EffectSystem = {
 
             // All wrapper types, including skip_all, pass through the same
             // skip and requirement gate before their control-flow semantics run.
-            const shouldStop = await this.processRunnable(wrapper, context, listKey, sourceList, isAsync);
+            if (ledgerRoot && typeof context.onRunnableStart === 'function') await context.onRunnableStart(i, wrapper);
+            const runnableContext={...context,operationPath:[...(context.operationPath||[]),i],operationId:context.operationIdBase?`${context.operationIdBase}:${[...(context.operationPath||[]),i].join('.')}`:context.operationId};
+            const executeRunnable=async({idempotencyKey}={})=>this.processRunnable(wrapper,{...runnableContext,idempotencyKey:idempotencyKey||runnableContext.operationId},listKey,sourceList,isAsync);
+            let shouldStop;
+            if(runnableContext.operationId&&context.operationLedger?.run)await context.operationLedger.run(runnableContext.operationId,executeRunnable);
+            else shouldStop=await executeRunnable({idempotencyKey:runnableContext.operationId});
+            if (ledgerRoot && typeof context.onRunnableComplete === 'function') await context.onRunnableComplete(i, wrapper);
             if (shouldStop === true || (typeof context.shouldContinue === 'function' && !context.shouldContinue())) break;
         }
     },
@@ -83,7 +91,7 @@ export const EffectSystem = {
 
             const process = async (content) => {
                 if (Array.isArray(content)) {
-                    await this.processRunnables(content, context, isAsync, true);
+                    await this.processRunnables(content, { ...context, hookLedgerRoot: false, skipRunnableIndexes: undefined, onRunnableStart: undefined, onRunnableComplete: undefined }, isAsync, true);
                     return typeof context.shouldContinue === 'function' && !context.shouldContinue();
                 }
                 // effect_details permits skip_all as an inline payload type.

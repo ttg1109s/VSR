@@ -1,4 +1,4 @@
-import { validateVector, lerp, sub, scale } from './math.js';
+import { validateVector, lerp, sub, scale, length } from './math.js';
 export function cubicBezier(p0,p1,p2,p3,u){
   const v=1-u, v2=v*v, u2=u*u;
   return p0.map((x,i)=>v2*v*x+3*v2*u*p1[i]+3*v*u2*p2[i]+u2*u*p3[i]);
@@ -40,6 +40,39 @@ export function createPiecewiseBezierTrajectory({points,duration,easing='linear'
     velocity(time){return locate(time).velocity(time);},
     sampleNormalized(t){return this.sample(startTime+Math.max(0,Math.min(1,t))*duration);}
   };
+}
+
+
+/** Analytical post-impact trajectory for linear damping (v(t)=v0*exp(-k*t)).
+ * The solver derives endpoint and duration from the configured physical damping and
+ * the body's sleep threshold; it does not use a simulation horizon.
+ * Constant external acceleration is not supported by this finite-stop solution.
+ */
+export function solveDampedTrajectory({ position, velocity, linearDamping, velocityThreshold = 0.02, acceleration = [0,0,0] }) {
+  const p=validateVector(position,'position'),v=validateVector(velocity,'velocity'),a=validateVector(acceleration,'acceleration');
+  if(!Number.isFinite(linearDamping)||linearDamping<0)throw new TypeError('linearDamping must be finite and non-negative.');
+  if(!Number.isFinite(velocityThreshold)||velocityThreshold<=0)throw new TypeError('velocityThreshold must be positive and finite.');
+  const speed=length(v);
+  if(speed<=velocityThreshold)return {position:p,velocity:v,acceleration:[0,0,0],duration:0,finalPosition:p,finalVelocity:[0,0,0],completion:'natural-equilibrium'};
+  if(a.some(x=>Math.abs(x)>1e-12))return {position:p,velocity:v,acceleration:a,duration:null,finalPosition:null,finalVelocity:v,completion:'non-terminating-dynamics'};
+  if(linearDamping<=1e-12)return {position:p,velocity:v,acceleration:[0,0,0],duration:null,finalPosition:null,finalVelocity:v,completion:'non-terminating-dynamics'};
+  const duration=Math.log(speed/velocityThreshold)/linearDamping;
+  const factor=(1-Math.exp(-linearDamping*duration))/linearDamping;
+  const finalPosition=p.map((x,i)=>x+v[i]*factor);
+  const finalVelocity=v.map(x=>x*Math.exp(-linearDamping*duration));
+  return {position:p,velocity:v,acceleration:[0,0,0],duration,finalPosition,finalVelocity,completion:'natural-equilibrium'};
+}
+
+export function createDampedPhysicsSegment({segmentId,startTime,position,velocity,linearDamping,velocityThreshold=0.02,acceleration=[0,0,0]}){
+  const solution=solveDampedTrajectory({position,velocity,linearDamping,velocityThreshold,acceleration});
+  if(solution.duration===null)return null;
+  if(solution.duration<=1e-12)return {segmentId,type:'physics',startTime,endTime:startTime+1e-9,duration:1e-9,initialPosition:solution.position,initialVelocity:[0,0,0],acceleration:[0,0,0],finalPosition:solution.finalPosition,finalVelocity:[0,0,0],completion:solution.completion,sample(){return solution.finalPosition;},velocity(){return [0,0,0];}};
+  const seg=createLinearPhysicsSegment({segmentId,startTime,duration:solution.duration,position:solution.position,velocity:solution.velocity,acceleration:[0,0,0]});
+  // Override constant-velocity sampling with the analytical exponential solution.
+  const k=linearDamping,p=solution.position,v=solution.velocity;
+  return {...seg,linearDamping:k,finalPosition:solution.finalPosition,finalVelocity:solution.finalVelocity,completion:solution.completion,
+    sample(time){const t=Math.max(0,Math.min(solution.duration,time-startTime)),factor=(1-Math.exp(-k*t))/k;return p.map((x,i)=>x+v[i]*factor);},
+    velocity(time){const t=Math.max(0,Math.min(solution.duration,time-startTime));return v.map(x=>x*Math.exp(-k*t));}};
 }
 
 export function createLinearPhysicsSegment({segmentId,startTime,duration,position,velocity,acceleration=[0,0,0]}){

@@ -153,3 +153,17 @@ test('fault injection contract: restore runtime-generation boundary invalidates 
   assert.ok(engine._lifecycleGeneration > oldGeneration, 'restore must create a new lifecycle generation');
   engine.dispose();
 });
+
+test('fault injection contract: hook ledger is at-most-once for persisted started wrapper indexes', async () => {
+  const engine = new GameEngine();
+  const effects=[{type:'effect',inline:{type:'set',subtype:'global',target:'counter',value:1}}];
+  const started=[],completed=[];
+  const original=engine.processRunnable.bind(engine);let injected=true;
+  engine.processRunnable=async(...args)=>{if(injected){injected=false;throw new Error('crash after hook start marker');}return original(...args);};
+  await assert.rejects(engine.processRunnables(effects,{hookLedgerRoot:true,onRunnableStart:index=>started.push(index),onRunnableComplete:index=>completed.push(index)},true,true),/crash after hook start marker/);
+  assert.deepEqual(started,[0]);assert.deepEqual(completed,[]);
+  engine.processRunnable=original;
+  await engine.processRunnables(effects,{hookLedgerRoot:true,skipRunnableIndexes:new Set(started),onRunnableStart:index=>started.push(index),onRunnableComplete:index=>completed.push(index)},true,true);
+  assert.deepEqual(started,[0]);assert.deepEqual(completed,[],'started but incomplete wrapper is intentionally not replayed');
+  engine.dispose();
+});

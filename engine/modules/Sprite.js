@@ -20,12 +20,13 @@ function sampleSerializedSegments(segments, time, terminalClamp=true) {
     }
     if(segment.type==='physics'){
         const dt=Math.max(0,Math.min(duration,time-segment.startTime));
+        if(Number(segment.linearDamping)>0&&segment.acceleration.every(value=>Math.abs(value)<1e-12)){const k=Number(segment.linearDamping),factor=(1-Math.exp(-k*dt))/k;return {position:segment.initialPosition.map((value,axis)=>value+segment.initialVelocity[axis]*factor),velocity:segment.initialVelocity.map(value=>value*Math.exp(-k*dt))};}
         return {position:segment.initialPosition.map((value,axis)=>value+segment.initialVelocity[axis]*dt+.5*segment.acceleration[axis]*dt*dt),velocity:segment.initialVelocity.map((value,axis)=>value+segment.acceleration[axis]*dt)};
     }
     return null;
 }
 
-function rebaseSerializedSegments(segments,elapsed,horizon){
+function rebaseSerializedSegments(segments,elapsed,windowEnd){
     if(!Array.isArray(segments)||!segments.length)return[];
     const rebased=[];
     for(const segment of segments){
@@ -34,18 +35,18 @@ function rebaseSerializedSegments(segments,elapsed,horizon){
             const sampled=sampleSerializedSegments([segment],elapsed);
             const remaining=Math.max(1e-6,segment.endTime-elapsed);
             if(segment.type==='physics'){
-                rebased.push({segmentId:`${segment.segmentId}:rebased`,type:'physics',startTime:0,endTime:Math.min(horizon,remaining),initialPosition:sampled.position,initialVelocity:sampled.velocity,acceleration:segment.acceleration});
+                rebased.push({segmentId:`${segment.segmentId}:rebased`,type:'physics',startTime:0,endTime:Math.min(windowEnd,remaining),initialPosition:sampled.position,initialVelocity:sampled.velocity,acceleration:segment.acceleration,linearDamping:segment.linearDamping});
             }else if(segment.type==='bezier'){
                 const end=segment.controlPoints[3];
                 const endSample=sampleSerializedSegments([segment],segment.endTime);
                 const p0=sampled.position,p3=end,p1=p0.map((v,i)=>v+sampled.velocity[i]*remaining/3),p2=p3.map((v,i)=>v-endSample.velocity[i]*remaining/3);
-                rebased.push({segmentId:`${segment.segmentId}:rebased`,type:'bezier',startTime:0,endTime:Math.min(horizon,remaining),controlPoints:[p0,p1,p2,p3],easing:'linear'});
+                rebased.push({segmentId:`${segment.segmentId}:rebased`,type:'bezier',startTime:0,endTime:Math.min(windowEnd,remaining),controlPoints:[p0,p1,p2,p3],easing:'linear'});
             }
         }else{
-            rebased.push({...segment,startTime:segment.startTime-elapsed,endTime:Math.min(horizon,segment.endTime-elapsed)});
+            rebased.push({...segment,startTime:segment.startTime-elapsed,endTime:Math.min(windowEnd,segment.endTime-elapsed)});
         }
     }
-    if(!rebased.length){const last=sampleSerializedSegments(segments,elapsed);rebased.push({segmentId:`${segments.at(-1).segmentId}:terminal`,type:'physics',startTime:0,endTime:horizon,initialPosition:last.position,initialVelocity:[0,0,0],acceleration:[0,0,0]});}
+    if(!rebased.length){const last=sampleSerializedSegments(segments,elapsed);rebased.push({segmentId:`${segments.at(-1).segmentId}:terminal`,type:'physics',startTime:0,endTime:windowEnd,initialPosition:last.position,initialVelocity:[0,0,0],acceleration:[0,0,0]});}
     return rebased;
 }
 
@@ -56,6 +57,17 @@ export function setSpriteProperty(engine, spriteId, prop, value) {
         if (!definition) throw new Error(`Unknown Sprite ID: ${spriteId}`);
         const current = state.getRuntimeSnapshot('sprites.[id]', { id: spriteId });
         if (!current) throw new Error(`Sprite runtime state missing: ${spriteId}`);
+        // When a position effect supersedes an in-flight motion, rebase from the
+        // presentation trajectory at effect time, not from the ACK-authoritative
+        // runtime position (which intentionally remains at the old start).
+        const activeBeforeSet = engine.activeSpriteMotions?.get(spriteId);
+        let sampledActivePosition = null;
+        if (prop === 'position' && activeBeforeSet) {
+            const elapsed = Math.max(0, (Date.now() - (activeBeforeSet.startedAt || Date.now())) / 1000);
+            const serialized = activeBeforeSet.descriptor?.trajectories?.[spriteId];
+            const sampled = sampleSerializedSegments(serialized, elapsed);
+            if (sampled?.position?.every(Number.isFinite)) sampledActivePosition = sampled.position;
+        }
         if (prop === 'state') {
             if (typeof value !== 'string' || !Object.hasOwn(definition.state, value)) throw new TypeError(`Sprite '${spriteId}' has no state '${String(value)}'.`);
             state.update('sprites.[id]', runtime => ({ ...(runtime || {}), state: value }), { id: spriteId });
@@ -70,7 +82,7 @@ export function setSpriteProperty(engine, spriteId, prop, value) {
             if (!Array.isArray(value) || value.length < 1 || value.length > 3 || value.some(v => v !== null && (typeof v !== 'number' || !Number.isFinite(v)))) {
                 throw new TypeError('Sprite position requires an array of 1 to 3 finite numbers or null axis values.');
             }
-            const from = [...(current.position || definition.position)];
+            const from = [...(sampledActivePosition || current.position || definition.position)];
             const target = [...from];
             for (let index = 0; index < value.length; index++) {
                 if (value[index] !== null) target[index] = value[index];
@@ -221,8 +233,10 @@ export function setSpriteProperty(engine, spriteId, prop, value) {
             const durationSeconds = Math.max(0.001, Number(descriptor.duration || 0) / 1000);
             const startVector = from.map(v => v ?? 0), targetVector = target.map(v => v ?? 0);
             const bezierPoints = descriptor.path.points.map(point => [point.x, point.y, point.z]);
-            const postImpactHorizon = Math.max(0.001, Number(motion.physics?.horizon ?? motion.impact?.horizon ?? 2));
-            const horizon = durationSeconds + (descriptor.impact?.enable === true ? postImpactHorizon : 0);
+            const spritePhysics = definition.physics || {};
+            // Event search follows the authored motion window and any analytically
+            // solved natural-equilibrium segment; no physics horizon determines endpoints.
+            const eventWindow = durationSeconds;
             const bezier = descriptor.path.type==='bezier-chain'
                 ? createPiecewiseBezierTrajectory({points:bezierPoints,duration:durationSeconds,easing:descriptor.easing||'linear',startTime:0,segmentId:`${descriptor.motionId}:initial`})
                 : createBezierTrajectory({ points: bezierPoints, duration: durationSeconds, easing: descriptor.easing || 'linear', startTime: 0, segmentId: `${descriptor.motionId}:initial` });
@@ -243,27 +257,30 @@ export function setSpriteProperty(engine, spriteId, prop, value) {
                     const serialized=activeOther.descriptor.trajectories?.[otherId];
                     const sampled=sampleSerializedSegments(serialized,elapsed);
                     if(sampled){otherVector=sampled.position;otherVelocity=sampled.velocity;otherPosition=sampled.position;
-                        const horizonEnd=elapsed+horizon;
-                        trajectoryMap.set(otherId,{segmentId:`${otherId}:active-rebased`,type:'active-rebased',startTime:0,endTime:horizon,segments:rebaseSerializedSegments(serialized,elapsed,horizon).map(seg=>seg.type==='bezier'?{...seg,points:seg.controlPoints,easingName:seg.easing}:seg),sample:t=>sampleSerializedSegments(serialized,elapsed+t)?.position||otherVector,velocity:t=>sampleSerializedSegments(serialized,elapsed+t)?.velocity||otherVelocity});
+                        
+                        trajectoryMap.set(otherId,{segmentId:`${otherId}:active-rebased`,type:'active-rebased',startTime:0,endTime:eventWindow,segments:rebaseSerializedSegments(serialized,elapsed,eventWindow).map(seg=>seg.type==='bezier'?{...seg,points:seg.controlPoints,easingName:seg.easing}:seg),sample:t=>sampleSerializedSegments(serialized,elapsed+t)?.position||otherVector,velocity:t=>sampleSerializedSegments(serialized,elapsed+t)?.velocity||otherVelocity});
                     }
                 }
                 bodies[otherId] = {
                     id: otherId, layer: Number.isFinite(otherRuntime.layer) ? otherRuntime.layer : otherDef.layer,
                     radius: Number(otherDef.collision?.radius ?? otherDef.radius ?? 0),
-                    mass: Number(otherDef.physics?.mass ?? 1),
+                    mass: Number(otherDef.physics?.mass ?? 1), bodyType: otherDef.physics?.bodyType ?? 'dynamic',
                     collisionEnabled: otherId === spriteId ? descriptor.impact?.enable === true : otherDef.collision?.enable !== false, physicsEnabled: descriptor.impact?.physics === true, isMotionOwner: otherId === spriteId
                 };
                 if (otherId !== spriteId) {
-                    if(!activeOther) trajectoryMap.set(otherId, createLinearPhysicsSegment({ segmentId: `${otherId}:initial-runtime`, startTime: 0, duration: horizon, position: otherVector, velocity: otherVelocity, acceleration: otherDef.physics?.gravity || [0,0,0] }));
+                    if(!activeOther) trajectoryMap.set(otherId, createLinearPhysicsSegment({ segmentId: `${otherId}:initial-runtime`, startTime: 0, duration: eventWindow, position: otherVector, velocity: otherVelocity, acceleration: otherDef.physics?.bodyType === 'static' ? [0,0,0] : (otherDef.physics?.gravity || [0,0,0]) }));
                 }
-                physicsByBody[otherId] = otherDef.physics || {};
+                physicsByBody[otherId] = { ...(otherDef.physics || {}), bodyType: otherDef.physics?.bodyType ?? 'dynamic' };
             }
             bodies[spriteId].collisionEnabled = descriptor.impact?.enable === true;
-            physicsByBody[spriteId] = { ...(definition.physics || {}), restitution: definition.physics?.restitution ?? motion.physics?.restitution ?? 0.5, friction: definition.physics?.friction ?? motion.physics?.friction ?? 0 };
-            const simulation = new AuthoritativeSpriteSimulation({ horizon, subdivisions: 192, maxCollisionEvents: 16, gravity: motion.physics?.gravity || [0,0,0] });
-            const result = descriptor.impact?.enable === true
-                ? simulation.run({ bodies, initialTrajectories: trajectoryMap, physicsByBody, startTime: 0 })
-                : { startTime: 0, endTime: horizon, collisions: [], segments: new Map([[spriteId, [initialTrajectory]]]), finalPositions: new Map([[spriteId, initialTrajectory.sample(durationSeconds)]]), positionsAtImpact: new Map([[spriteId,startVector]]) };
+            physicsByBody[spriteId] = { ...spritePhysics, bodyType: spritePhysics.bodyType ?? 'dynamic', restitution: spritePhysics.restitution ?? 0.5, friction: spritePhysics.friction ?? 0 };
+            let result;
+            if (descriptor.impact?.enable === true) {
+                const simulation = new AuthoritativeSpriteSimulation({ subdivisions: 192, maxCollisionEvents: 16, gravity: spritePhysics.gravity || [0,0,0] });
+                result = simulation.run({ bodies, initialTrajectories: trajectoryMap, physicsByBody, startTime: 0 });
+            } else {
+                result = { startTime: 0, endTime: durationSeconds, collisions: [], segments: new Map([[spriteId, [initialTrajectory]]]), finalPositions: new Map([[spriteId, initialTrajectory.sample(durationSeconds)]]), positionsAtImpact: new Map([[spriteId,startVector]]) };
+            }
             if(result.collisionLimitReached) throw new Error(`Sprite physics collision event limit exceeded (${simulation.options.maxCollisionEvents}); motion rejected rather than silently truncated.`);
             const impactEvents = result.collisions.map(event => ({ ...event }));
             const trajectoryId = `${descriptor.motionId}:trajectory:1`;
@@ -273,8 +290,8 @@ export function setSpriteProperty(engine, spriteId, prop, value) {
             for (const bodyId of affectedBodies) {
                 const segs=result.segments.get(bodyId)||[];
                 bodyTrajectories[bodyId] = segs.flatMap(seg => seg.type === 'bezier-chain' ? seg.segments.map(chainSeg => ({ segmentId: chainSeg.segmentId, type:'bezier', startTime:chainSeg.startTime, endTime:chainSeg.endTime, controlPoints:chainSeg.points, easing:descriptor.easing||'linear' })) : [seg]).map(seg => seg.type === 'bezier'
-                    ? { segmentId: seg.segmentId, type: 'bezier', startTime: seg.startTime, endTime: seg.endTime, controlPoints: seg.points, easing: seg.easingName || seg.easing || descriptor.easing || 'linear' }
-                    : { segmentId: seg.segmentId, type: 'physics', startTime: seg.startTime, endTime: seg.endTime, initialPosition: seg.initialPosition, initialVelocity: seg.initialVelocity, acceleration: seg.acceleration });
+                    ? { segmentId: seg.segmentId, type: 'bezier', startTime: seg.startTime, endTime: seg.endTime, duration: seg.endTime-seg.startTime, controlPoints: seg.points, easing: seg.easingName || seg.easing || descriptor.easing || 'linear' }
+                    : { segmentId: seg.segmentId, type: 'physics', startTime: seg.startTime, endTime: seg.endTime, duration: seg.endTime-seg.startTime, initialPosition: seg.initialPosition, initialVelocity: seg.initialVelocity, acceleration: seg.acceleration, finalPosition: seg.finalPosition || seg.sample(seg.endTime), finalVelocity: seg.finalVelocity || seg.velocity(seg.endTime), linearDamping: seg.linearDamping || 0, completion: seg.completion || 'non-terminating-dynamics' });
             }
             for (const [bodyId, pos] of result.finalPositions) if(affectedBodies.has(bodyId)) bodyFinalPositions[bodyId] = pos;
             for(const affectedId of affectedBodies){
@@ -287,11 +304,30 @@ export function setSpriteProperty(engine, spriteId, prop, value) {
                 }
                 state.update('sprites.[id]',runtime=>({...runtime||{},position:impactPosition||runtime?.position,motion:{motionId:descriptor.motionId,trajectoryId,phase:'post-impact',currentTime:impactEvents.at(-1)?.time||0,finalPositions:bodyFinalPositions}}),{id:affectedId});
             }
+            const postImpactResults = {};
+            for (const bodyId of affectedBodies) {
+                const bodySegments = result.segments.get(bodyId) || [];
+                const impactForBody = impactEvents.filter(event => event.spriteA === bodyId || event.spriteB === bodyId);
+                if (!impactForBody.length) continue;
+                const lastImpactTime = Math.max(...impactForBody.map(event => event.time));
+                const postSegment = [...bodySegments].reverse().find(segment => segment.type === 'physics' && segment.startTime >= lastImpactTime - 1e-9);
+                if (postSegment?.completion === 'natural-equilibrium') postImpactResults[bodyId] = {
+                    from: postSegment.initialPosition,
+                    to: postSegment.finalPosition || postSegment.sample(postSegment.endTime),
+                    duration: postSegment.endTime - postSegment.startTime,
+                    startTime: postSegment.startTime,
+                    finalVelocity: postSegment.finalVelocity || postSegment.velocity(postSegment.endTime),
+                    completion: 'natural-equilibrium'
+                };
+            }
+            const solvedTrajectoryEndTime = impactEvents.length
+                ? Math.max(durationSeconds, ...Object.values(postImpactResults).filter(result => result.completion === 'natural-equilibrium').map(result => result.startTime + result.duration))
+                : durationSeconds;
             descriptor = {
                 protocolVersion: 2, spriteId, motionId: descriptor.motionId, trajectoryId,
-                startTime: 0, endTime: impactEvents.length ? result.endTime : durationSeconds, duration: impactEvents.length ? result.endTime : durationSeconds,
+                startTime: 0, endTime: solvedTrajectoryEndTime, duration: solvedTrajectoryEndTime,
                 requestedTarget: targetVector, initialTrajectory: bodyTrajectories[spriteId],
-                trajectories: bodyTrajectories, finalPositions: bodyFinalPositions,
+                trajectories: bodyTrajectories, finalPositions: bodyFinalPositions, postImpactResults,
                 impacts: impactEvents, geometryMode: effectiveMode, transformTrajectory: descriptor.transformTrajectory,
                 presentation: { requiredSegments: Object.values(bodyTrajectories).flat().map(seg => seg.segmentId) }
             };
@@ -310,11 +346,11 @@ export function setSpriteProperty(engine, spriteId, prop, value) {
             const startEffects = Array.isArray(motion.effect?.start) ? motion.effect.start : [];
             const publishIfActive = () => {
                 if (engine.activeSpriteMotions.get(spriteId)?.motionId !== descriptor.motionId) return { success: false, reason: 'stale_motion', motionId: descriptor.motionId };
-                engine.protocol?.publish?.('presentation.sprite.trajectory.v2', descriptor);
+                engine.protocol?.publish?.('presentation.sprite.trajectory.v2', descriptor); // Legacy scripted-motion protocol remains; authoritative physics v3 is emitted by the physics API/coordinator.
                 return { success: true, motionId: descriptor.motionId, trajectoryId };
             };
             if (startEffects.length) {
-                return Promise.resolve(engine.processRunnables(startEffects, { spriteId, hook: 'motion.start', motionId: descriptor.motionId, trajectoryId }, true))
+                return Promise.resolve(engine.processRunnables(startEffects, { spriteId, hook: 'motion.start', motionId: descriptor.motionId, trajectoryId, operationIdBase: `sprite:${descriptor.motionId}:${trajectoryId}:motion.start`, operationLedger: engine.spriteOperationLedger }, true))
                     .then(publishIfActive)
                     .catch(error => {
                         if (engine.activeSpriteMotions.get(spriteId)?.motionId === descriptor.motionId) {

@@ -14,7 +14,7 @@ const fixture = () => JSON.parse(readFileSync(new URL('./fixtures/engine/minimal
 function spriteScenario({collision=false,physics=false}={}) {
   const s=fixture(); delete s.scenes.start.routers.main.actions;
   s.sprite={
-    mover:{action:'test_action',layer:2,state:{idle:'mover.png'},position:[0,0,0],transform:{scale:1,rotate:0},collision:{enable:true,radius:10},physics:{mass:1,restitution:0.8,friction:0},motion:{enable:true,duration:1000,path:{point:[[],'geometry-preserving']},easing:'linear',impact:{enable:collision,physics},physics:{horizon:1,restitution:0.8,friction:0,gravity:[0,0,0]},effect:{start:[],end:[]}}},
+    mover:{action:'test_action',layer:2,state:{idle:'mover.png'},position:[0,0,0],transform:{scale:1,rotate:0},collision:{enable:true,radius:10},physics:{mass:1,restitution:0.8,friction:0,horizon:1,gravity:[0,0,0]},motion:{enable:true,duration:1000,path:{point:[[],'geometry-preserving']},easing:'linear',impact:{enable:collision,physics},effect:{start:[],end:[]}}},
     wall:{action:'test_action',layer:2,state:{idle:'wall.png'},position:[50,0,0],transform:{scale:1,rotate:0},collision:{enable:true,radius:10},physics:{mass:2,restitution:0.8,friction:0},motion:{enable:false,duration:0,path:{point:[[],'geometry-preserving']},easing:'linear'}}
   };
   s.scenes.start.routers.main.meta.sprite=true;s.scenes.start.routers.main.sprites=['mover','wall'];
@@ -25,9 +25,37 @@ function spriteScenario({collision=false,physics=false}={}) {
 
 function dispatch(engine,command,payload={}) { return engine.protocol.dispatch(engine.protocol.createCommand(command,payload)); }
 
+
+test('client executes analytically solved linear-damping trajectory instead of constant-acceleration approximation',()=>{
+  const payload={protocolVersion:2,trajectoryId:'damped-test',startTime:0,endTime:1,trajectories:{mover:[{segmentId:'d',type:'physics',startTime:0,endTime:1,duration:1,initialPosition:[0,0,0],initialVelocity:[10,0,0],acceleration:[0,0,0],linearDamping:2,finalPosition:[4.323323583816936,0,0],finalVelocity:[1.353352832366127,0,0],completion:'natural-equilibrium'}]},presentation:{requiredSegments:['d']}};
+  const sampled=sampleSpriteTrajectoryV2(payload,'mover',0.5);
+  assert.ok(Math.abs(sampled[0]-(10*(1-Math.exp(-1))/2))<1e-10);
+});
+test('motion.physics is migrated into canonical sprite.physics and validated',()=>{
+  const scenario=spriteScenario({collision:true,physics:true});
+  delete scenario.sprite.mover.physics.gravity;
+  delete scenario.sprite.mover.physics.friction;
+  scenario.sprite.mover.motion.physics={horizon:3,restitution:0.25,friction:0.2,gravity:[0,-9.8,0]};
+  assert.deepEqual(validateScenario(scenario),[]);
+  const normalized=modules.Scenario.normalizeScenario(scenario);
+  assert.equal(Object.hasOwn(normalized.sprite.mover.physics,'horizon'),false); // legacy endpoint control is removed
+  assert.equal(normalized.sprite.mover.physics.restitution,0.8);
+  assert.equal(normalized.sprite.mover.physics.friction,0.2);
+  assert.deepEqual(normalized.sprite.mover.physics.gravity,[0,-9.8,0]);
+  assert.equal(Object.hasOwn(normalized.sprite.mover.motion,'physics'),false);
+});
+
 test('scenario schema accepts v2 collision and physics configuration and rejects invalid physical properties',()=>{
   const scenario=spriteScenario({collision:true,physics:true});assert.deepEqual(validateScenario(scenario),[]);
   scenario.sprite.mover.physics.mass=0;assert.ok(validateScenario(scenario).length>0);
+});
+
+test('scenario schema accepts canonical unified 2D/3D physics and collider fields',()=>{
+  const scenario=spriteScenario();const p=scenario.sprite.mover.physics;Object.assign(p,{dimension:'3D',plane:'XZ',planeOffset:4,dimensionPolicy:'reject',bodyType:'kinematic',velocity:[1,2,3],angularVelocity:[0,1,0],orientation:[1,0,0,0],linearDamping:0.1,angularDamping:0.2,ccd:true,fixedDt:1/120});Object.assign(scenario.sprite.mover.collision,{shape:'box',halfExtents:[1,2,3],offset:[0,0,0]});assert.deepEqual(validateScenario(scenario),[]);p.dimension='4D';assert.ok(validateScenario(scenario).length>0);
+});
+
+test('Engine API runs scenario physics and publishes authoritative protocol v3',()=>{
+  const engine=new GameEngine();try{const result=engine.api.spritePhysics.runScenario({ball:{position:[0,1,0],collision:{enable:true,shape:'sphere',radius:0.25},physics:{dimension:'2D',gravity:[0,0,0],bodyType:'dynamic'}}},{maxTicks:20,simulationId:'api-test'});assert.equal(result.payload.protocolVersion,3);assert.ok(engine.protocol.eventLog.some(e=>e.event==='presentation.sprite.simulation.v3'&&e.payload.simulationId==='api-test'));}finally{engine.dispose();}
 });
 
 test('Sprite teleport commits position directly while active motion keeps authoritative start position',async()=>{
@@ -41,6 +69,26 @@ test('Sprite teleport commits position directly while active motion keeps author
   } finally {engine.dispose();}
 });
 
+
+test('Position effect during active motion rebases from sampled presentation position',async()=>{
+  const engine=new GameEngine();
+  try {
+    const scenario=spriteScenario({collision:false,physics:false});scenario.sprite.wall.position=[500,0,0];scenario.sprite.wall.collision.radius=1;
+    await engine.init(scenario,{enterScene:true});
+    SetStrategies.sprite(engine,{target:'mover',property:'position',value:[100,0,0]});
+    const active=engine.activeSpriteMotions.get('mover');assert.ok(active);
+    // Simulate effect firing 300 ms into the active 1 s linear trajectory.
+    active.startedAt=Date.now()-300;
+    SetStrategies.sprite(engine,{target:'mover',property:'position',value:[20,10,0]});
+    const payload=engine.protocol.eventLog.filter(e=>e.event==='presentation.sprite.trajectory.v2').at(-1).payload;
+    const start=payload.initialTrajectory[0].controlPoints[0];
+    const end=payload.initialTrajectory[0].controlPoints[3];
+    assert.ok(Math.abs(start[0]-30)<0.1,`expected sampled x≈30, got ${start[0]}`);
+    assert.ok(Math.abs(start[1])<0.1);
+    assert.deepEqual(end,[20,10,0]);
+    assert.ok(engine.protocol.eventLog.some(e=>e.event==='presentation.sprite.trajectory.cancelled'&&e.payload.reason==='superseded'));
+  } finally {engine.dispose();}
+});
 
 test('Active trajectory preserves runtime start until validated presentation ACK',async()=>{
   const engine=new GameEngine();
@@ -81,10 +129,43 @@ test('Impact-enabled motion with no collision ACKs at initial trajectory duratio
   } finally {engine.dispose();}
 });
 
+
+test('Static bodies remain immovable after collision and settling criteria end zero-velocity physics early',async()=>{
+  const engine=new GameEngine();
+  try {
+    const scenario=spriteScenario({collision:true,physics:true});
+    scenario.sprite.wall.physics.bodyType='static';
+    scenario.sprite.mover.physics.restitution=0;
+    scenario.sprite.mover.physics.maxPhysicsDuration=4;
+    delete scenario.sprite.mover.physics.horizon;
+    scenario.sprite.mover.physics.settlingVelocityThreshold=0.05;
+    scenario.sprite.mover.physics.settlingDuration=0.2;
+    await engine.init(scenario,{enterScene:true});
+    SetStrategies.sprite(engine,{target:'mover',property:'position',value:[100,0,0]});
+    const payload=engine.protocol.eventLog.filter(e=>e.event==='presentation.sprite.trajectory.v2').at(-1).payload;
+    assert.equal(payload.impacts.length,1);
+    assert.ok(payload.endTime<2,`settled physics should stop early; endTime=${payload.endTime}`);
+    assert.deepEqual(payload.finalPositions.wall,[50,0,0]);
+    const impact=payload.impacts[0];
+    assert.ok(Math.hypot(...impact.velocityAfterA)<0.05,'zero restitution against static wall should settle mover');
+  } finally {engine.dispose();}
+});
+
+test('Static wall receives no collision impulse or penetration correction',()=>{
+  const a=createBezierTrajectory({points:[[0,0,0],[33.333,0,0],[66.667,0,0],[100,0,0]],duration:1,easing:'linear'});
+  const wall={type:'physics',segmentId:'wall-static',startTime:0,endTime:2,duration:2,initialPosition:[50,0,0],initialVelocity:[0,0,0],acceleration:[0,0,0],sample:t=>[50,0,0],velocity:t=>[0,0,0]};
+  const sim=new AuthoritativeSpriteSimulation({horizon:2,subdivisions:192,maxCollisionEvents:8});
+  const result=sim.run({bodies:{a:{id:'a',layer:1,radius:10,collisionEnabled:true,physicsEnabled:true,isMotionOwner:true,mass:1,bodyType:'dynamic'},wall:{id:'wall',layer:1,radius:10,collisionEnabled:true,physicsEnabled:true,mass:2,bodyType:'static'}},initialTrajectories:new Map([['a',a],['wall',wall]]),physicsByBody:{a:{mass:1,restitution:0.8,bodyType:'dynamic'},wall:{mass:2,restitution:0.8,bodyType:'static'}}});
+  assert.equal(result.collisions.length,1);
+  assert.deepEqual(result.finalPositions.get('wall'),[50,0,0]);
+  assert.ok(Math.abs(result.collisions[0].velocityAfterA[0]+80)<0.001);
+  assert.deepEqual(result.collisions[0].velocityAfterB,[0,0,0]);
+});
+
 test('Collision simulation uses moving target trajectory and supersedes target motion only when collision affects it',async()=>{
   const engine=new GameEngine();
   try {
-    const scenario=spriteScenario({collision:true,physics:true});scenario.sprite.wall.motion={enable:true,duration:1000,path:{point:[[{x:50,y:20,z:0}],'absolute']},easing:'linear',impact:{enable:false,physics:false},physics:{horizon:1,restitution:0.5,friction:0,gravity:[0,0,0]},effect:{start:[],end:[]}};
+    const scenario=spriteScenario({collision:true,physics:true});scenario.sprite.wall.motion={enable:true,duration:1000,path:{point:[[{x:50,y:20,z:0}],'absolute']},easing:'linear',impact:{enable:false,physics:false},effect:{start:[],end:[]}};
     await engine.init(scenario,{enterScene:true});
     SetStrategies.sprite(engine,{target:'wall',property:'position',value:[80,0,0]});
     const wallMotion=engine.activeSpriteMotions.get('wall');assert.ok(wallMotion);
@@ -221,4 +302,23 @@ test('Scenario waypoint r/s values validate and are serialized into transform tr
     assert.equal(payload.transformTrajectory[1].rotate,45);
     assert.equal(payload.transformTrajectory[1].scale,1.25);
   } finally {engine.dispose();}
+});
+
+test('Sprite v2 payload exposes analytical post-impact final position and duration',async()=>{
+ const engine=new GameEngine();
+ try{
+  const scenario=spriteScenario({collision:true,physics:true});
+  scenario.sprite.wall.physics={bodyType:'static',mass:2,restitution:0.8,friction:0};
+  scenario.sprite.mover.physics.linearDamping=4;
+  assert.deepEqual(validateScenario(scenario),[]);
+  await engine.init(scenario,{enterScene:true});
+  SetStrategies.sprite(engine,{target:'mover',property:'position',value:[100,0,0]});
+  const payload=engine.protocol.eventLog.filter(e=>e.event==='presentation.sprite.trajectory.v2').at(-1).payload;
+  const solved=payload.postImpactResults.mover;
+  assert.ok(solved,'mover should have post-impact result');
+  assert.ok(solved.duration>0,`duration=${solved.duration}`);
+  assert.ok(Number.isFinite(solved.to[0]),`final x=${solved.to[0]}`);
+  assert.ok(Math.hypot(...solved.finalVelocity)<=0.021);
+  assert.equal(solved.completion,'natural-equilibrium');
+ }finally{engine.dispose();}
 });
