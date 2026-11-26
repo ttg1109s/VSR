@@ -1,59 +1,21 @@
 # Sprite Motion and Physics Modules
 
-The Sprite implementation is intentionally **flat**: motion, collision, recovery, and 3D physics files live directly in `engine/modules/sprite/`. There is no per-dimension or per-subsystem directory for a single-file module. The public `index.js` is the export surface.
+The Sprite implementation is intentionally flat. Motion, collision, recovery, and 3D physics files live directly in `engine/modules/sprite/`; `index.js` is the public export surface.
 
-The 3D-native / constrained-2D implementation is split by responsibility and named explicitly: `RigidBodyWorld3D.js`, `DimensionProfile.js`, `collider3d.js`, `SpritePhysicsConfig.js`, and `SpriteSimulationCoordinator3D.js`. The 3D body snapshot schema is a data contract, so it lives in `engine/schema/sprite-physics3d-state.schema.json`, not beside implementation code. Protocol payload contracts remain owned by `engine/protocol/`.
+## Phase 2 — Canonical PoseTrajectory
 
-# 3D-native / constrained-2D Physics World
+`PoseTrajectory` is the source of sampled position, rotation, scale, origin, and supported derivatives. Position trajectories expose `sample(time)` and `velocity(time)`. Transform keys support direct scalar/Euler rotation, quaternion interpolation, scale and origin. Position, scale, and direct scalar/Euler rotation use cubic Hermite interpolation; optional endpoint `positionVelocity`, `angularVelocity` and `scaleRate` fields constrain the supported tangent components. `retarget(time, ...)` anchors at the sampled pose and preserves position, supported angular and scale derivatives by default.
 
-The `RigidBodyWorld3D` runtime is the shared physics core. Select `dimension: '3D'` for unrestricted XYZ/quaternion state or `dimension: '2D'` with plane `XY`, `XZ`, or `YZ` to constrain the same core. 2D defaults to projection of out-of-plane state (`dimensionPolicy: 'project'`); `reject` throws on invalid input vectors.
+Quaternion rotation uses normalized shortest-path interpolation/slerp. Prescribed angular-velocity Hermite constraints are deliberately rejected for quaternion keys rather than silently claiming derivative continuity that this interpolation does not implement. Quaternion angular-rate sampling reports the segment's relative axis-angle rate. A quaternion retarget that requires exact angular-velocity continuity must be expressed using direct Euler/scalar channels or use a future tangent-space quaternion spline.
 
-```js
-import { RigidBodyWorld3D } from '../index.js';
-const world = new RigidBodyWorld3D({ dimension: '2D', plane: 'XY', fixedDt: 1/120, gravity: [0,-9.81,0] });
-world.addBody({ id:'ball', position:[0,2,0], velocity:[1,0,0], radius:.5 });
-world.step();
-```
+## Phase 3 — PhysicalStateSampler and authoritative fixed-step integration
 
-## Implemented in this upgrade
-- XYZ positions, normalized quaternion orientation, explicit simulation time/tick, fixed timestep.
-- Dynamic/static/kinematic/sensor bodies; force, torque, impulse, scheduled impulse with operation IDs.
-- Sphere, axis-aligned box, and plane narrowphase queries; sphere-box, box-box, sphere-plane, sphere-sphere contacts.
-- Sphere CCD for flagged bodies: analytic swept TOI, one supported CCD impact per body per fixed step. Other shape pairs remain discrete.
-- Normal impulse, approximate scalar inertia, friction, positional correction, sleep, energy diagnostics, checkpoint/restore.
-- 2D XY/XZ/YZ constrained profiles and legacy 2D transform adapter.
-- Unified Sprite protocol serializer/validator is owned by `engine/protocol/JsonProtocol.js`; the single `engine/protocol/protocol.schema.json` contains both trajectory and simulation payload contracts. `SpriteSimulationCoordinator3D` emits the unified simulation kind.
+Each normalized physics-enabled Sprite receives one canonical `poseTrajectory` and one `physicalStateSampler`. The sampler derives scaled collider geometry, mass, inverse mass, principal inertia, and inverse inertia from one pose timestamp. `RigidBodyWorld3D.syncPhysicalState(time)` synchronizes the initial state; the world samples again at the start of each fixed step. Kinematic/scripted bodies receive trajectory pose and derivatives at each step boundary. Dynamic body position and orientation remain solver-owned; their sampled physical state keeps the solver's current position while geometry, mass and inertia are refreshed at the same timestamp.
 
-## Explicit limits
-- Box collision is axis-aligned; orientation does not rotate box collider geometry (OBB is not implemented).
-- CCD is sphere-sphere only, one event per body per fixed step. CCD against box/plane and multiple-impact CCD chains are not implemented.
-- Scalar inverse inertia is an approximation for box bodies. Full tensor/world-space inertia and iterative multi-contact island solver remain future work.
-- Convex hull/GJK/EPA, capsule, compound and dynamic concave mesh colliders are not supported by this 3D runtime.
-- The legacy `engine/modules/Sprite.js` scripted-motion coordinator and the 3D world coordinator now publish through the same Sprite protocol identity/version. Their payload kinds remain trajectory and simulation, respectively.
-- No cross-platform bitwise determinism claim.
+A non-uniformly scaled sphere uses a conservative enclosing sphere for collision, while the sampler computes principal moments from the corresponding ellipsoid radii. This cannot miss a collision due to an undersized shape, but can produce false-positive contacts. The approximation and exact ellipsoid radii are carried in sampled geometry metadata. Box scale is baked into half-extents; collider offsets are scaled with pose scale; plane normal and offset are transformed together by the inverse-transpose scale rule.
 
-## Scenario ownership
+## Runtime boundaries (not claimed complete by Phases 2/3)
 
-Scenario authors configure the shared World under `config.physicsWorld`; Sprite `physics` contains only per-body settings, while `collision` contains collider geometry and CCD.
+The current world still approximates principal inertia by a scalar average in its contact response. Full tensor inertia, world-space/body-space tensor rotation and solver integration remain Phase 6. This phase does not implement a general ellipsoid narrowphase, full shape-pair matrix, or shape-aware CCD. The existing narrowphase capabilities and limitations remain owned by `collider3d.js`; the conservative sphere representation is used for scaled sphere geometry specifically to avoid an unsupported ellipsoid pair becoming a false no-impact result.
 
-```json
-{
-  "config": {
-    "physicsWorld": {
-      "dimension": "3D",
-      "plane": "XY",
-      "gravity": [0, -9.81, 0],
-      "fixedDt": 0.008333333333333333,
-      "velocityIterations": 8,
-      "positionIterations": 3,
-      "maxSubsteps": 8
-    }
-  },
-  "sprite": {
-    "ball": {
-      "physics": { "bodyType": "dynamic", "mass": 1, "velocity": [0, 0, 0] },
-      "collision": { "shape": "sphere", "radius": 0.5 }
-    }
-  }
-}
-```
+Checkpoint serialization still stores sampled body values, not executable trajectory/sampler closures; deterministic persistence/replay of those definitions remains Phase 7.
