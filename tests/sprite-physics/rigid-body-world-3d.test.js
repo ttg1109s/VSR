@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { RigidBodyWorld3D, Physics3DMath } from '../../engine/modules/sprite/physics3d/RigidBodyWorld3D.js';
+import { RigidBodyWorld3D, Physics3DMath } from '../../engine/modules/sprite/physics/3d/RigidBodyWorld.js';
 
 test('3D transform uses XYZ and normalized quaternion; time is explicit',()=>{
  const w=new RigidBodyWorld3D({gravity:[0,0,0]});w.addBody({id:'a',position:[1,2,3],orientation:[2,0,0,0],velocity:[1,0,0]});

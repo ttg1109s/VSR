@@ -1,5 +1,5 @@
-import { createDimensionProfile } from './DimensionProfile.js';
-import { createSphereCollider3D, collider3DWorldGeometry, collideWorldShapes3D } from './collider3d.js';
+import { createDimensionProfile } from '../dimension.js';
+import { createSphereCollider3D, collider3DWorldGeometry, collideWorldShapes3D } from '../../collision/3d/geometry.js';
 /** Deterministic fixed-step 3D-native rigid-body runtime (sphere colliders in v1).
  * Transform convention: position=[x,y,z], orientation=[w,x,y,z] quaternion, time=t seconds.
  * This is a foundational 3D profile, not a replacement for a general convex solver yet.

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { normalizeSpritePhysicsConfig, normalizeScenarioSpritePhysics, normalizePhysicsWorldConfig } from '../../engine/modules/sprite/physics3d/SpritePhysicsConfig.js';
-import { SpriteSimulationCoordinator3D } from '../../engine/modules/sprite/physics3d/SpriteSimulationCoordinator3D.js';
+import { normalizeSpritePhysicsConfig, normalizeScenarioSpritePhysics, normalizePhysicsWorldConfig } from '../../engine/modules/sprite/physics/config.js';
+import { SpriteSimulationCoordinator3D } from '../../engine/modules/sprite/physics/3d/coordinator.js';
 import { normalizeScenario } from '../../engine/schema/scenario.js';
 import { readFileSync } from 'node:fs';
 

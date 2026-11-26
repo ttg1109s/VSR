@@ -1,6 +1,6 @@
-import { RigidBodyWorld3D } from './RigidBodyWorld3D.js';
-import { serializeSpriteSimulation } from '../../../protocol/JsonProtocol.js';
-import { normalizeScenarioSpritePhysics } from './SpritePhysicsConfig.js';
+import { RigidBodyWorld3D } from './RigidBodyWorld.js';
+import { serializeSpriteSimulation } from '../../../../protocol/JsonProtocol.js';
+import { normalizeScenarioSpritePhysics } from '../config.js';
 /** Runs an authoritative fixed-step 3D (or constrained 2D) Sprite simulation to natural completion or watchdog failure. */
 export class SpriteSimulationCoordinator3D {
  constructor({world=null,worldConfig={},maxTicks=12000,sampleEveryTicks=1,simulationId='sprite-sim'}={}){if(!Number.isSafeInteger(maxTicks)||maxTicks<=0||!Number.isSafeInteger(sampleEveryTicks)||sampleEveryTicks<=0)throw new TypeError('maxTicks and sampleEveryTicks must be positive integers');this.world=world||new RigidBodyWorld3D(worldConfig);this.maxTicks=maxTicks;this.sampleEveryTicks=sampleEveryTicks;this.simulationId=String(simulationId);}

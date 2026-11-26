@@ -1,4 +1,4 @@
-import { validateVector, sub, dot, scale, add, normalize } from './math.js';
+import { validateVector, sub, dot, scale, add, normalize } from '../../math/vector.js';
 export function resolveCircleCollision({position1,position2,velocity1,velocity2,mass1=1,mass2=1,restitution=0,friction=0,bodyType1='dynamic',bodyType2='dynamic'}){
   const p1=validateVector(position1,'position1'),p2=validateVector(position2,'position2'),v1=validateVector(velocity1,'velocity1'),v2=validateVector(velocity2,'velocity2');
   for(const [name,value] of [['mass1',mass1],['mass2',mass2]])if(!Number.isFinite(value)||value<=0)throw new TypeError(`${name} must be positive and finite.`);

@@ -1,4 +1,4 @@
-import {sub,dot,length,normalize} from './math.js';
+import {sub,dot,length,normalize} from '../math/vector.js';
 export function movingCircleTOI(p1,v1,p2,v2,radiusSum,maxTime){const p=sub(p2,p1),v=sub(v2,v1),a=dot(v,v),b=2*dot(p,v),c=dot(p,p)-radiusSum*radiusSum;if(c<=0)return dot(p,v)<0?0:null;if(a<=1e-15)return null;const disc=b*b-4*a*c;if(disc<0)return null;const t=(-b-Math.sqrt(disc))/(2*a);return t>=0&&t<=maxTime?t:null;}
 const box=(min,max)=>({min,max});const merge=(a,b)=>({min:a.min.map((v,i)=>Math.min(v,b.min[i])),max:a.max.map((v,i)=>Math.max(v,b.max[i]))});const inflate=(b,r)=>({min:b.min.map(v=>v-r),max:b.max.map(v=>v+r)});const separated=(a,b)=>a.min.some((v,i)=>v>b.max[i]||a.max[i]<b.min[i]);
 const cubic=(p0,p1,p2,p3,u)=>{const v=1-u;return p0.map((x,i)=>v*v*v*x+3*v*v*u*p1[i]+3*v*u*u*p2[i]+u*u*u*p3[i]);};

@@ -1,4 +1,4 @@
-import { validateVector } from './math.js';
+import { validateVector } from '../math/vector.js';
 
 const EPS = 1e-9;
 const v2 = (v, name='vector') => { const a=validateVector(v,name); return [a[0],a[1]]; };

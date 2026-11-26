@@ -1,7 +1,7 @@
-import { firstCircleImpact } from './collision.js';
-import { resolveCircleCollision, correctCirclePenetration } from './physics.js';
-import { createLinearPhysicsSegment, createDampedPhysicsSegment } from './trajectory.js';
-import { sub, dot } from './math.js';
+import { firstCircleImpact } from '../collision/detection.js';
+import { resolveCircleCollision, correctCirclePenetration } from '../physics/2d/response.js';
+import { createLinearPhysicsSegment, createDampedPhysicsSegment } from '../motion/trajectory.js';
+import { sub, dot } from '../math/vector.js';
 
 
 function analyticTrajectoryBounds(trajectory, startTime, endTime) {

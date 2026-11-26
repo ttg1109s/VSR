@@ -1,4 +1,4 @@
-import { createSphereCollider3D, createBoxCollider3D, createPlaneCollider3D } from './collider3d.js';
+import { createSphereCollider3D, createBoxCollider3D, createPlaneCollider3D } from '../collision/3d/geometry.js';
 
 const vec3 = (value, name) => {
   if (!Array.isArray(value) || value.length !== 3 || value.some(v => !Number.isFinite(v))) throw new TypeError(`${name} must be a finite Vec3`);

@@ -1,17 +1,15 @@
-export * from './math.js';
-export * from './trajectory.js';
-export * from './collision.js';
-export * from './physics.js';
-export * from './AuthoritativeSimulation.js';
-export * from './diagnostics.js';
-export * from './collider.js';
-export * from './solver.js';
-export * from './recovery.js';
-export * from './replay.js';
-export * from './physics3d/RigidBodyWorld3D.js';
-export * from './physics3d/DimensionProfile.js';
-// Sprite protocol contract is owned by engine/protocol, not this implementation package.
-export * from './physics3d/collider3d.js';
-export * from './physics3d/SpriteSimulationCoordinator3D.js';
-
-export * from './physics3d/SpritePhysicsConfig.js';
+// Sprite public facade: exports only public domain APIs; implementation lives in domain modules.
+export * from './math/vector.js';
+export * from './motion/trajectory.js';
+export * from './motion/replay.js';
+export * from './collision/detection.js';
+export * from './collision/geometry.js';
+export * from './collision/3d/geometry.js';
+export * from './physics/2d/response.js';
+export * from './physics/2d/solver.js';
+export * from './physics/3d/RigidBodyWorld.js';
+export * from './physics/dimension.js';
+export * from './physics/config.js';
+export * from './physics/3d/coordinator.js';
+export * from './core/AuthoritativeSimulation.js';
+export * from './recovery/ledger.js';

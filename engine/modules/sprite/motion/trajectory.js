@@ -1,4 +1,4 @@
-import { validateVector, lerp, sub, scale, length } from './math.js';
+import { validateVector, lerp, sub, scale, length } from '../math/vector.js';
 export function cubicBezier(p0,p1,p2,p3,u){
   const v=1-u, v2=v*v, u2=u*u;
   return p0.map((x,i)=>v2*v*x+3*v2*u*p1[i]+3*v*u2*p2[i]+u2*u*p3[i]);
