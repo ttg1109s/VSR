@@ -269,7 +269,7 @@ export function setSpriteProperty(engine, spriteId, prop, value) {
                     collisionEnabled: otherId === spriteId ? descriptor.impact?.enable === true : otherDef.collision?.enable !== false, physicsEnabled: descriptor.impact?.physics === true, isMotionOwner: otherId === spriteId
                 };
                 if (otherId !== spriteId) {
-                    if(!activeOther) trajectoryMap.set(otherId, createLinearPhysicsSegment({ segmentId: `${otherId}:initial-runtime`, startTime: 0, duration: eventWindow, position: otherVector, velocity: otherVelocity, acceleration: otherDef.physics?.bodyType === 'static' ? [0,0,0] : (otherDef.physics?.gravity || [0,0,0]) }));
+                    if(!activeOther) trajectoryMap.set(otherId, createLinearPhysicsSegment({ segmentId: `${otherId}:initial-runtime`, startTime: 0, duration: eventWindow, position: otherVector, velocity: otherVelocity, acceleration: otherDef.physics?.bodyType === 'static' ? [0,0,0] : (engine.src?.config?.physicsWorld?.gravity || [0,0,0]) }));
                 }
                 physicsByBody[otherId] = { ...(otherDef.physics || {}), bodyType: otherDef.physics?.bodyType ?? 'dynamic' };
             }
@@ -277,7 +277,7 @@ export function setSpriteProperty(engine, spriteId, prop, value) {
             physicsByBody[spriteId] = { ...spritePhysics, bodyType: spritePhysics.bodyType ?? 'dynamic', restitution: spritePhysics.restitution ?? 0.5, friction: spritePhysics.friction ?? 0 };
             let result;
             if (descriptor.impact?.enable === true) {
-                const simulation = new AuthoritativeSpriteSimulation({ subdivisions: 192, maxCollisionEvents: 16, gravity: spritePhysics.gravity || [0,0,0] });
+                const simulation = new AuthoritativeSpriteSimulation({ subdivisions: 192, maxCollisionEvents: 16, gravity: engine.src?.config?.physicsWorld?.gravity || [0,0,0] });
                 result = simulation.run({ bodies, initialTrajectories: trajectoryMap, physicsByBody, startTime: 0 });
             } else {
                 result = { startTime: 0, endTime: durationSeconds, collisions: [], segments: new Map([[spriteId, [initialTrajectory]]]), finalPositions: new Map([[spriteId, initialTrajectory.sample(durationSeconds)]]), positionsAtImpact: new Map([[spriteId,startVector]]) };
