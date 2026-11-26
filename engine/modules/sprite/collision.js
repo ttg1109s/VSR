@@ -12,11 +12,74 @@ function trajectoryBounds(t,t0,t1){if(!t)return null;if(t.type==='bezier'&&Array
  return null;}
 function constantVelocity(t){return t?.type==='linear'||(t?.type==='physics'&&Array.isArray(t.acceleration)&&t.acceleration.every(v=>Math.abs(v)<1e-15));}
 function endpointTravel(t,t0,t1){return Math.hypot(...sub(t.sample(t1),t.sample(t0)));}
-export function firstCircleImpact({trajectoryA,trajectoryB=null,radiusA,radiusB,timeStart=0,timeEnd,subdivisions=128,conservative=true,intervalTolerance=1e-6,maxDepth=24}){if(!Number.isFinite(radiusA)||radiusA<0||!Number.isFinite(radiusB)||radiusB<0)throw new TypeError('Collision radii must be non-negative finite numbers.');if(!Number.isFinite(timeEnd)||timeEnd<=timeStart)throw new TypeError('timeEnd must exceed timeStart.');if(!trajectoryB||typeof trajectoryA?.sample!=='function'||typeof trajectoryB?.sample!=='function')throw new TypeError('CCD requires two explicit trajectory objects with sample(time).');if(!Number.isSafeInteger(subdivisions)||subdivisions<=0)throw new TypeError('subdivisions must be a positive safe integer');const rs=radiusA+radiusB,pA=trajectoryA.sample(timeStart),pB=trajectoryB.sample(timeStart),delta=sub(pB,pA);if(Math.hypot(...delta)<=1e-12&&rs>0)return{time:timeStart,positionA:pA,positionB:pB,normal:[1,0,0],approximation:'overlap-depenetration',subdivisions:0};
- if(constantVelocity(trajectoryA)&&constantVelocity(trajectoryB)){const vA=trajectoryA.velocity(timeStart),vB=trajectoryB.velocity(timeStart),t=movingCircleTOI(pA,vA,pB,vB,rs,timeEnd-timeStart);if(t===null)return null;const time=timeStart+t,pa=trajectoryA.sample(time),pb=trajectoryB.sample(time);return{time,positionA:pa,positionB:pb,normal:normalize(sub(pb,pa)),approximation:'analytic-linear',subdivisions:1};}
- // Conservative interval search: trajectory interval bounds are analytic for linear,
- // constant acceleration, and cubic Bezier/Bezier-chain segments. Unknown/custom
- // trajectories are treated as potentially colliding, never silently discarded.
- if(conservative){let checks=0;const stack=[[timeStart,timeEnd,0]];while(stack.length){const[t0,t1,depth]=stack.pop();checks++;const ba=trajectoryBounds(trajectoryA,t0,t1),bb=trajectoryBounds(trajectoryB,t0,t1);if(ba&&bb&&separated(inflate(ba,radiusA),inflate(bb,radiusB)))continue;if(!ba||!bb){const travel=endpointTravel(trajectoryA,timeStart,timeEnd)+endpointTravel(trajectoryB,timeStart,timeEnd),adaptive=Math.min(4096,Math.max(subdivisions,Math.ceil(travel/Math.max(rs*.25,1e-3)))),time=timeStart,pa=trajectoryA.sample(time),pb=trajectoryB.sample(time);return{time,positionA:pa,positionB:pb,normal:normalize(sub(pb,pa)),approximation:'unknown-trajectory-conservative-fallback',subdivisions:adaptive};}if(depth>=maxDepth||t1-t0<=intervalTolerance){const time=(t0+t1)/2,pa=trajectoryA.sample(time),pb=trajectoryB.sample(time),d=sub(pb,pa),n=Math.hypot(...d)>1e-12?normalize(d):[1,0,0];return{time,positionA:pa,positionB:pb,normal:n,approximation:'conservative-interval',subdivisions:checks,interval:[t0,t1]};}const mid=(t0+t1)/2;stack.push([mid,t1,depth+1],[t0,mid,depth+1]);}return null;}
+export function firstCircleImpact({trajectoryA,trajectoryB=null,radiusA,radiusB,timeStart=0,timeEnd,subdivisions=128,conservative=true,intervalTolerance=1e-6,maxDepth=24}) {
+ if(!Number.isFinite(radiusA)||radiusA<0||!Number.isFinite(radiusB)||radiusB<0)throw new TypeError('Collision radii must be non-negative finite numbers.');
+ if(!Number.isFinite(timeStart)||!Number.isFinite(timeEnd)||timeEnd<=timeStart)throw new TypeError('timeEnd must exceed timeStart.');
+ if(!trajectoryB||typeof trajectoryA?.sample!=='function'||typeof trajectoryB?.sample!=='function')throw new TypeError('CCD requires two explicit trajectory objects with sample(time).');
+ if(!Number.isSafeInteger(subdivisions)||subdivisions<=0)throw new TypeError('subdivisions must be a positive safe integer');
+ if(!Number.isFinite(intervalTolerance)||intervalTolerance<=0)throw new TypeError('intervalTolerance must be positive and finite');
+ if(!Number.isSafeInteger(maxDepth)||maxDepth<1)throw new TypeError('maxDepth must be a positive safe integer');
+ const rs=radiusA+radiusB;
+ const samplePair=time=>{const pa=trajectoryA.sample(time),pb=trajectoryB.sample(time),delta=sub(pb,pa),distance=Math.hypot(...delta);return{time,positionA:pa,positionB:pb,normal:distance>1e-12?normalize(delta):[1,0,0],distance,gap:distance-rs};};
+ const initial=samplePair(timeStart);
+ if(initial.gap<=1e-10){
+  const va=typeof trajectoryA.velocity==='function'?trajectoryA.velocity(timeStart):null;
+  const vb=typeof trajectoryB.velocity==='function'?trajectoryB.velocity(timeStart):null;
+  if(va&&vb&&dot(sub(vb,va),initial.normal)<-1e-10)return{time:timeStart,positionA:initial.positionA,positionB:initial.positionB,normal:initial.normal,approximation:'initial-overlap',subdivisions:0};
+  return null;
+ }
+ if(constantVelocity(trajectoryA)&&constantVelocity(trajectoryB)){
+  const vA=trajectoryA.velocity(timeStart),vB=trajectoryB.velocity(timeStart);
+  const t=movingCircleTOI(initial.positionA,vA,initial.positionB,vB,rs,timeEnd-timeStart);
+  if(t===null)return null;
+  const hit=samplePair(timeStart+t);
+  if(hit.gap>1e-8)return null;
+  return{time:hit.time,positionA:hit.positionA,positionB:hit.positionB,normal:hit.normal,approximation:'analytic-linear',subdivisions:1};
+ }
+ if(conservative){
+  let checks=0,indeterminate=null;
+  const stack=[[timeStart,timeEnd,0]];
+  while(stack.length){
+   const[t0,t1,depth]=stack.pop();checks++;
+   const ba=trajectoryBounds(trajectoryA,t0,t1),bb=trajectoryBounds(trajectoryB,t0,t1);
+   if(ba&&bb&&separated(inflate(ba,radiusA),inflate(bb,radiusB)))continue;
+   const left=samplePair(t0),right=samplePair(t1);
+   if(left.gap<=1e-10&&right.gap>1e-10){
+    const va=typeof trajectoryA.velocity==='function'?trajectoryA.velocity(t0):null;
+    const vb=typeof trajectoryB.velocity==='function'?trajectoryB.velocity(t0):null;
+    if(va&&vb&&dot(sub(vb,va),left.normal)<-1e-10)return{time:t0,positionA:left.positionA,positionB:left.positionB,normal:left.normal,approximation:'sampled-contact',subdivisions:checks};
+   }
+   if(left.gap>0&&right.gap<=0){
+    let lo=t0,hi=t1,loSample=left,hiSample=right;
+    for(let i=0;i<64&&hi-lo>intervalTolerance;i++){
+     const mid=(lo+hi)/2,m=samplePair(mid);
+     if(m.gap<=0){hi=mid;hiSample=m;}else{lo=mid;loSample=m;}
+    }
+    const hit=samplePair(hi);
+    if(hit.gap<=1e-8)return{time:hi,positionA:hit.positionA,positionB:hit.positionB,normal:hit.normal,approximation:'refined-contact',subdivisions:checks,interval:[lo,hi]};
+   }
+   if(depth>=maxDepth||t1-t0<=intervalTolerance){
+    indeterminate={time:t0,interval:[t0,t1],subdivisions:checks,reason:!ba||!bb?'unknown-trajectory-bounds':'unresolved-conservative-interval'};
+    continue;
+   }
+   const mid=(t0+t1)/2;
+   stack.push([mid,t1,depth+1],[t0,mid,depth+1]);
+  }
+  return null;
+ }
+ // Explicit approximate mode retained for compatibility; only sampled contact is returned.
+ const dt=(timeEnd-timeStart)/subdivisions;
+ for(let i=0;i<subdivisions;i++){
+  const t0=timeStart+i*dt,t1=t0+dt,a0=trajectoryA.sample(t0),a1=trajectoryA.sample(t1),b0=trajectoryB.sample(t0),b1=trajectoryB.sample(t1);
+  const va=a1.map((x,k)=>(x-a0[k])/dt),vb=b1.map((x,k)=>(x-b0[k])/dt);
+  const local=movingCircleTOI(a0,va,b0,vb,rs,dt);
+  if(local!==null){
+   const hit=samplePair(t0+local);
+   if(hit.gap<=1e-8)return{time:hit.time,positionA:hit.positionA,positionB:hit.positionB,normal:hit.normal,approximation:'subdivision-ccd',subdivisions};
+  }
+ }
+ return null;
+}
+
  // Legacy approximate mode retained for explicit callers.
  const dt=(timeEnd-timeStart)/subdivisions;for(let i=0;i<subdivisions;i++){const t0=timeStart+i*dt,t1=t0+dt,a0=trajectoryA.sample(t0),a1=trajectoryA.sample(t1),b0=trajectoryB.sample(t0),b1=trajectoryB.sample(t1),va=a1.map((x,k)=>(x-a0[k])/dt),vb=b1.map((x,k)=>(x-b0[k])/dt),local=movingCircleTOI(a0,va,b0,vb,rs,dt);if(local!==null){const time=t0+local,pa=trajectoryA.sample(time),pb=trajectoryB.sample(time);return{time,positionA:pa,positionB:pb,normal:normalize(sub(pb,pa)),approximation:'subdivision-ccd',subdivisions};}}return null;}
