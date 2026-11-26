@@ -49,14 +49,31 @@ export function normalizeSpritePhysicsConfig(spriteId, spriteDefinition) {
     restitution:Number(p.restitution??0.2),
     staticFriction:Number(p.friction??0.5), dynamicFriction:Number(p.friction??0.5),
     linearDamping:Number(p.linearDamping??0), angularDamping:Number(p.angularDamping??0),
-    collisionEnabled:collisionDeclared, ccd:c.ccd===true,
+    collisionEnabled:collisionDeclared, ccd:c.ccd===true||p.ccd===true,
     physicsEnabled
   };
 }
 
 /** Normalizes one shared World configuration and per-Sprite Body specifications. */
 export function normalizeScenarioSpritePhysics(spriteDefinitions={}, worldConfig={}) {
-  const normalizedWorld=normalizePhysicsWorldConfig(worldConfig);
-  const bodies=Object.entries(spriteDefinitions).map(([id,def])=>normalizeSpritePhysicsConfig(id,def)).filter(body=>body.physicsEnabled);
+  const legacyWorldKeys=['dimension','plane','planeOffset','dimensionPolicy','gravity','fixedDt','sleepLinearThreshold','sleepAngularThreshold','sleepDwell'];
+  const worldInput={...(worldConfig||{})};
+  const explicitKeys=new Set(Object.keys(worldInput));
+  const adopted=new Set();
+  for(const [spriteId,definition] of Object.entries(spriteDefinitions||{})){
+    const p=definition?.physics||{};
+    for(const key of legacyWorldKeys){
+      if(!Object.hasOwn(p,key))continue;
+      if(explicitKeys.has(key)){
+        if(JSON.stringify(worldInput[key])!==JSON.stringify(p[key]))throw new TypeError(`physicsWorld.${key} conflicts with legacy Sprite ${spriteId} physics.${key}`);
+      }else if(adopted.has(key)){
+        if(JSON.stringify(worldInput[key])!==JSON.stringify(p[key]))throw new TypeError(`Legacy Sprite physics settings conflict for physicsWorld.${key}`);
+      }else{
+        worldInput[key]=p[key];adopted.add(key);
+      }
+    }
+  }
+  const normalizedWorld=normalizePhysicsWorldConfig(worldInput);
+  const bodies=Object.entries(spriteDefinitions||{}).map(([id,def])=>normalizeSpritePhysicsConfig(id,def)).filter(body=>body.physicsEnabled);
   return {worldConfig:normalizedWorld,bodies:normalizedWorld.enable?bodies:[]};
 }
