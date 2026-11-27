@@ -13,6 +13,15 @@ test('Phase 6.5 island partition is deterministic for chain, branch, cycle and i
  assert.equal(one[0].contacts.length,5);
  assert.equal(one[1].contacts.length,1);
 });
+test('coupled chain contact solve propagates impulse across adjacent contacts',()=>{
+ const a=body('a','dynamic',[1,0,0]),b=body('b'),cBody=body('c');
+ const contacts=[contact(a,b,[1,0,0],0),contact(b,cBody,[1,0,0],0)];
+ const result=solveContactIslands([a,b,cBody],contacts,{velocityIterations:30,positionIterations:0});
+ assert.ok(b.velocity[0]>0,'middle body receives impulse from first contact');
+ assert.ok(cBody.velocity[0]>0,'impulse propagates through the second contact');
+ assert.ok(Math.abs(a.velocity[0]+b.velocity[0]+cBody.velocity[0]-1)<1e-6,'linear momentum is conserved');
+ assert.equal(result.islandCount,1);
+});
 test('Phase 6.5 island solver exposes normal, friction and position residual diagnostics',()=>{
  const floor=body('floor','static'),moving=body('moving','dynamic',[0,-1,1]);
  const contacts=[contact(floor,moving,[0,1,0],.02)];
