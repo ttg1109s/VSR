@@ -87,7 +87,7 @@ export function setSpriteProperty(engine, spriteId, prop, value) {
             sampledActiveTransform=sampleTransformKeys(activeBeforeSet.descriptor?.transformTrajectory,elapsed,activeBeforeSet.descriptor?.endTime||0,poseTransform(definition.position,current.transform||{rotate:0,scale:1,origin:'center'}));
         }
         if (prop === 'state') {
-            if (typeof value !== 'string' || !Object.hasOwn(definition.state, value)) throw new TypeError(`Sprite '${spriteId}' has no state '${String(value)}'.`);
+            if (typeof value !== 'string' || !Object.hasOwn(definition.state?.map || {}, value)) throw new TypeError(`Sprite '${spriteId}' has no state '${String(value)}'.`);
             state.update('sprites.[id]', runtime => ({ ...(runtime || {}), state: value }), { id: spriteId });
             return;
         }
@@ -420,8 +420,9 @@ export function getSpritePresentationData(engine, spriteId, action = null) {
         layer: Number.isFinite(runtime.layer) ? runtime.layer : definition.layer,
         position: { location: poseLocation(runtime.position) || poseLocation(definition.position), transform: [Number((runtime.transform||poseTransform(definition.position)).rotate), Number((runtime.transform||poseTransform(definition.position)).scale), String((runtime.transform||poseTransform(definition.position)).origin||'center')] },
         motion: definition.motion || { enable: false, duration: 0, type: 'linear', easing: 'linear', step: [] },
-        state: runtime.state ?? Object.keys(definition.state || {})[0] ?? null,
-        states: definition.state || {}
+        state: runtime.state ?? definition.state?.active ?? Object.keys(definition.state?.map || {})[0] ?? null,
+        states: definition.state?.map || {},
+        stateMap: definition.state?.map || {}
     };
 }
 
