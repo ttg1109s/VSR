@@ -4,18 +4,33 @@ The Sprite implementation is intentionally flat. Motion, collision, recovery, an
 
 ## Phase 2 — Canonical PoseTrajectory
 
-`PoseTrajectory` is the source of sampled position, rotation, scale, origin, and supported derivatives. Position trajectories expose `sample(time)` and `velocity(time)`. Transform keys support direct scalar/Euler rotation, quaternion interpolation, scale and origin. Position, scale, and direct scalar/Euler rotation use cubic Hermite interpolation; optional endpoint `positionVelocity`, `angularVelocity` and `scaleRate` fields constrain the supported tangent components. `retarget(time, ...)` anchors at the sampled pose and preserves position, supported angular and scale derivatives by default.
+`PoseTrajectory` is the sole source of sampled location, rotation, scale, origin and supported derivatives. Initial pose uses the required object contract:
 
-Quaternion rotation uses normalized shortest-path interpolation/slerp. Prescribed angular-velocity Hermite constraints are deliberately rejected for quaternion keys rather than silently claiming derivative continuity that this interpolation does not implement. Quaternion angular-rate sampling reports the segment's relative axis-angle rate. A quaternion retarget that requires exact angular-velocity continuity must be expressed using direct Euler/scalar channels or use a future tangent-space quaternion spline.
+```js
+position: {
+  location: [0, 0, 0],
+  transform: {
+    rotation: [0, 0, 0],       // Euler degrees OR quaternion [w,x,y,z]
+    scale: [1, 1, 1],         // per-axis scale
+    origin: [0, 0, 0]         // local origin offset
+  }
+}
+```
+
+Transform keys require `time`, `rotation`, `scale` and `origin`. Rotation is either Euler Vec3 or quaternion; scale and origin are Vec3. There are no scalar-rotation, uniform-scale, named-origin, tuple-transform, `rotate` alias, or alternate quaternion-key compatibility forms.
+
+Position, scale and Euler rotation use cubic Hermite interpolation. Quaternion rotation uses normalized quaternion interpolation and supports angular-velocity tangents. `positionVelocity`, `angularVelocity` and `scaleRate` key tangents are consumed by the canonical trajectory. `retarget(time,...)` anchors at the sampled pose and preserves supported derivatives by default.
 
 ## Phase 3 — PhysicalStateSampler and authoritative fixed-step integration
 
-Each normalized physics-enabled Sprite receives one canonical `poseTrajectory` and one `physicalStateSampler`. The sampler derives scaled collider geometry, mass, inverse mass, principal inertia, and inverse inertia from one pose timestamp. `RigidBodyWorld3D.syncPhysicalState(time)` synchronizes the initial state; the world samples again at the start of each fixed step. Kinematic/scripted bodies receive trajectory pose and derivatives at each step boundary. Dynamic body position and orientation remain solver-owned; their sampled physical state keeps the solver's current position while geometry, mass and inertia are refreshed at the same timestamp.
+Each physics-enabled Sprite receives one canonical `poseTrajectory` and one `physicalStateSampler`. The sampler derives scaled collider geometry, mass, inverse mass, principal inertia and inverse inertia from one pose timestamp. `RigidBodyWorld3D.syncPhysicalState(time)` synchronizes the initial state; the world samples at both fixed-step boundaries. Kinematic/scripted bodies receive trajectory pose and derivatives. Dynamic body location/orientation remain solver-owned while scale/origin-driven physical properties are sampled at the same timestamp.
 
-A non-uniformly scaled sphere uses a conservative enclosing sphere for collision, while the sampler computes principal moments from the corresponding ellipsoid radii. This cannot miss a collision due to an undersized shape, but can produce false-positive contacts. The approximation and exact ellipsoid radii are carried in sampled geometry metadata. Box scale is baked into half-extents; collider offsets are scaled with pose scale; plane normal and offset are transformed together by the inverse-transpose scale rule.
+World configuration is authored only at the world level. The normalizer no longer adopts or reconciles world settings from per-Sprite physics objects. Per-body orientation is authored only in canonical `position.transform.rotation`; the duplicate `physics.orientation` field is removed.
 
-## Runtime boundaries (not claimed complete by Phases 2/3)
+A non-uniformly scaled sphere uses a conservative enclosing sphere for collision while principal moments are derived from ellipsoid radii. This avoids false negatives from undersized geometry but can produce false-positive contacts. Box scale is baked into half-extents; collider offsets are scaled with pose scale; plane normal and offset are transformed together.
 
-The current world still approximates principal inertia by a scalar average in its contact response. Full tensor inertia, world-space/body-space tensor rotation and solver integration remain Phase 6. This phase does not implement a general ellipsoid narrowphase, full shape-pair matrix, or shape-aware CCD. The existing narrowphase capabilities and limitations remain owned by `collider3d.js`; the conservative sphere representation is used for scaled sphere geometry specifically to avoid an unsupported ellipsoid pair becoming a false no-impact result.
+## Runtime boundaries
 
-Checkpoint serialization still stores sampled body values, not executable trajectory/sampler closures; deterministic persistence/replay of those definitions remains Phase 7.
+The current world still approximates principal inertia by a scalar average in contact response. Full tensor inertia and solver integration remain Phase 6. This phase does not implement a general ellipsoid narrowphase, complete shape-pair matrix or shape-aware CCD.
+
+Checkpoint serialization still stores sampled body values, not executable trajectory/sampler definitions; deterministic persistence/replay remains Phase 7.
