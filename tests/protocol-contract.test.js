@@ -463,3 +463,24 @@ test('protocol checkpoint validation is atomic and rejects event sequence corrup
  assert.deepEqual(protocol.checkpoint(),before);
  assert.equal(event.sequence,1);
 });
+
+
+test('strict transaction policy rejects mutating commands when no provider is configured',async()=>{
+ let mutations=0;const protocol=new JsonProtocol({requireTransactions:true});
+ protocol.registerCommand('strict.mutate',async()=>{mutations++;return{changed:true};});
+ const ack=await protocol.dispatch({protocol:'vsr',protocolVersion:2,type:'command',command:'strict.mutate',commandId:'strict-no-provider',payload:{}});
+ assert.equal(ack.ok,false);assert.equal(ack.error.code,'TRANSACTION_REQUIRED');assert.equal(mutations,0);
+});
+
+test('atomic ACK provider recovers committed command result after ACK store failure and restart',async()=>{
+ const ledger=new Map();const provider=async({idempotencyKey})=>({atomicAck:true,commit:async(_result,{ack,requestFingerprint})=>ledger.set(idempotencyKey,{requestFingerprint,ack}),rollback:async()=>ledger.delete(idempotencyKey)});
+ provider.atomicAck=true;provider.lookup=async({idempotencyKey})=>ledger.get(idempotencyKey)||null;
+ const failingStore={get:async()=>null,set:async()=>{throw new Error('injected durable ACK store failure');}};
+ let executions=0;const first=new JsonProtocol({transactionProvider:provider,requireTransactions:true,requireAtomicAck:true,idempotencyStore:failingStore});
+ first.registerCommand('atomic.mutate',async()=>{executions++;return{committed:true};});
+ const command={protocol:'vsr',protocolVersion:2,type:'command',command:'atomic.mutate',commandId:'atomic-recovery',payload:{}};
+ const ack=await first.dispatch(command);assert.equal(ack.ok,true);assert.equal(executions,1);assert.equal(ledger.size,1);
+ const restarted=new JsonProtocol({transactionProvider:provider,requireTransactions:true,requireAtomicAck:true});
+ restarted.registerCommand('atomic.mutate',async()=>{executions++;return{committed:true};});
+ const recovered=await restarted.dispatch(command);assert.deepEqual(recovered,ack);assert.equal(executions,1);
+});
