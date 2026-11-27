@@ -2,12 +2,12 @@ import { createDimensionProfile } from './DimensionProfile.js';
 import { createSphereCollider3D, collider3DWorldGeometry, collideWorldShapes3D, narrowphase3D } from './collider3d.js';
 import { buildSweptBroadphasePairs } from './Broadphase3D.js';
 import { findCCDImpact3D } from './CCD3D.js';
-import { worldInverseInertia, applyAngularImpulse, effectiveMass, solveContactManifold } from './RigidBodySolver3D.js';
+import { worldInverseInertia, applyAngularImpulse, effectiveMass, buildContactIslands, solveContactIslands } from './RigidBodySolver3D.js';
 /** Deterministic fixed-step 3D-native rigid-body runtime (sphere colliders in v1).
  * Transform convention: position=[x,y,z], orientation=[w,x,y,z] quaternion, time=t seconds.
  * This is a foundational 3D profile, not a replacement for a general convex solver yet.
  */
-const EPS=1e-12;
+const EPS=1e-12,TOI_TOL=1e-7;
 const v3=(v=[0,0,0])=>{if(!Array.isArray(v)||v.length!==3||v.some(x=>!Number.isFinite(x)))throw new TypeError('Expected finite Vec3');return [...v];};
 const add=(a,b)=>a.map((x,i)=>x+b[i]);
 const sub=(a,b)=>a.map((x,i)=>x-b[i]);
@@ -56,38 +56,70 @@ export class RigidBodyWorld3D {
   let remaining=dt,elapsed=0,impactCount=0,ccdUnresolved=false;
   const maxCCDImpacts=Math.max(16,Math.min(256,candidatePairs.length*4));
   const advanceWorld=(delta)=>{if(delta<=0)return;for(const body of ccdBodies)if((body.type==='dynamic'&&body.awake)||body.type==='kinematic'){body.position=add(body.position,scale(body.velocity,delta));body.orientation=qintegrate(body.orientation,body.angularVelocity,delta);this.dimensionProfile.constrainBody(body);}};
-  const ccdPairHandled=new Set(),ccdUncertainKeys=new Set();
+  const ccdPairHandled=new Set(),ccdEventTimeKeys=new Set(),ccdUncertainKeys=new Set();
   while(remaining>EPS&&impactCount<maxCCDImpacts){
-   const freshPairs=buildSweptBroadphasePairs(this.bodies,{dt:remaining,cellSize:Math.max(4,...[...this.bodies.values()].map(b=>Math.max(1,b.radius*2)))}),pairMap=new Map([...candidatePairs,...freshPairs].map(p=>[`${p[0]}\\0${p[1]}`,p]));candidatePairs=[...pairMap.values()].sort((x,y)=>x[0].localeCompare(y[0])||x[1].localeCompare(y[1]));
-   let earliest=null;
+   const freshPairs=buildSweptBroadphasePairs(this.bodies,{dt:remaining,cellSize:Math.max(4,...[...this.bodies.values()].map(b=>Math.max(1,b.radius*2)))}),pairMap=new Map([...candidatePairs,...freshPairs].map(p=>[`${p[0]}\0${p[1]}`,p]));candidatePairs=[...pairMap.values()].sort((x,y)=>x[0].localeCompare(y[0])||x[1].localeCompare(y[1]));
+
+   let earliest=null;const confirmed=[];
    for(const [pairA,pairB] of freshPairs){const a=this.bodies.get(pairA),b=this.bodies.get(pairB);if(!(a.ccd||b.ccd)||!a.collisionEnabled||!b.collisionEnabled||a.type==='static'&&b.type==='static')continue;
     const impact=findCCDImpact3D(a,b,remaining);
-    if(impact.status==='indeterminate'){const key=`${a.id}\\0${b.id}\\0${impact.reason||'indeterminate'}`;if(!ccdUncertainKeys.has(key)){ccdUncertainKeys.add(key);const uncertainty={type:'ccd-indeterminate',t:this.t+elapsed,bodyA:a.id,bodyB:b.id,pair:impact.pair,reason:impact.reason,interval:impact.interval||null};ccdEvents.push(uncertainty);this.events.push(uncertainty);}continue;}
+    if(impact.status==='indeterminate'){const key=a.id+'\0'+b.id+'\0'+(impact.reason||'indeterminate');if(!ccdUncertainKeys.has(key)){ccdUncertainKeys.add(key);const uncertainty={type:'ccd-indeterminate',t:this.t+elapsed,bodyA:a.id,bodyB:b.id,pair:impact.pair,reason:impact.reason,interval:impact.interval||null};ccdEvents.push(uncertainty);this.events.push(uncertainty);}continue;}
     if(impact.status!=='confirmed-impact')continue;
-    const contact=impact.contact,n=contact.normal,point=contact.point,ra=sub(point,a.position),rb=sub(point,b.position),rv=sub(add(b.velocity,cross(b.angularVelocity,rb)),add(a.velocity,cross(a.angularVelocity,ra))),vn=dot(rv,n);
-    if(impact.time<=TOI_TOL&&vn>=-EPS)continue;
-    const candidate={a,b,impact,toi:Math.max(0,impact.time),vn};
-    if(!earliest||candidate.toi<earliest.toi-TOI_TOL||Math.abs(candidate.toi-earliest.toi)<=TOI_TOL&&(a.id.localeCompare(earliest.a.id)<0||a.id===earliest.a.id&&b.id.localeCompare(earliest.b.id)<0))earliest=candidate;
+    const contact=impact.contact,n=contact.normal,point=contact.point,ra=sub(point,a.position),rb=sub(point,b.position),rv=dot(sub(add(b.velocity,cross(b.angularVelocity,rb)),add(a.velocity,cross(a.angularVelocity,ra))),n);
+    if(impact.time<=TOI_TOL&&rv>=-EPS)continue;
+    const candidate={a,b,impact,toi:Math.max(0,impact.time),vn:rv};confirmed.push(candidate);
+    if(!earliest||candidate.toi<earliest.toi-TOI_TOL)earliest=candidate;
    }
    if(!earliest){advanceWorld(remaining);elapsed+=remaining;remaining=0;break;}
-   const {a,b,impact,toi}=earliest;advanceWorld(toi);elapsed+=toi;remaining-=toi;
-   const contact=impact.contact,n=contact.normal,point=contact.point,ra=sub(point,a.position),rb=sub(point,b.position),rv=sub(add(b.velocity,cross(b.angularVelocity,rb)),add(a.velocity,cross(a.angularVelocity,ra))),vn=dot(rv,n),den=effectiveMass(a,ra,n)+effectiveMass(b,rb,n);
-   let jn=0;if(den>EPS&&vn<0)jn=-(1+Math.min(a.restitution,b.restitution))*vn/den;const J=scale(n,jn);
-   if(a.type==='dynamic'){a.velocity=sub(a.velocity,scale(J,a.invMass));applyAngularImpulse(a,scale(cross(ra,J),-1));this.#wake(a);}if(b.type==='dynamic'){b.velocity=add(b.velocity,scale(J,b.invMass));applyAngularImpulse(b,cross(rb,J));this.#wake(b);}
-   const ev={type:'collision',t:this.t+elapsed,bodyA:a.id,bodyB:b.id,position:point,normal:n,penetration:contact.penetration??0,normalImpulse:jn,tangentImpulse:0,ccd:true,ccdMethod:impact.method,pair:impact.pair,ccdImpactIndex:impactCount};ccdEvents.push(ev);this.events.push(ev);ccdHandled.add(a.id);ccdHandled.add(b.id);ccdPairHandled.add(`${a.id}\\0${b.id}`);impactCount++;
-   if(toi<=TOI_TOL&&jn<=EPS){const nudge=Math.min(remaining,TOI_TOL);advanceWorld(nudge);elapsed+=nudge;remaining-=nudge;}
-  }
+   const toi=earliest.toi;advanceWorld(toi);elapsed+=toi;remaining-=toi;
+   // Group impacts whose TOIs fall within tolerance; stable pair order makes the batch deterministic.
+   const batch=confirmed.filter(c=>Math.abs(c.toi-toi)<=TOI_TOL).sort((x,y)=>x.a.id.localeCompare(y.a.id)||x.b.id.localeCompare(y.b.id));
+   const batchPairs=new Set(batch.map(({a,b})=>a.id+'\\0'+b.id));
+   const batchDynamicIds=new Set(batch.flatMap(({a,b})=>[a,b]).filter(body=>body.type==='dynamic').map(body=>body.id));
+   // At the TOI, discover contacts touching the batch's dynamic topology. Expand
+   // the closure through dynamic-dynamic contacts so newly connected bodies are
+   // solved in the same island batch rather than deferred to end-of-step.
+   const topologyContacts=new Map();
+   const pairKey=(a,b)=>a.id+'\\0'+b.id;
+   for(const [pairA,pairB] of freshPairs){
+    const a=this.bodies.get(pairA),b=this.bodies.get(pairB);
+    if(!a.collisionEnabled||!b.collisionEnabled||a.type==='static'&&b.type==='static'||a.type==='sensor'||b.type==='sensor')continue;
+    const key=pairKey(a,b),ga=collider3DWorldGeometry(a.collider,{position:a.position,orientation:a.orientation}),gb=collider3DWorldGeometry(b.collider,{position:b.position,orientation:b.orientation}),result=narrowphase3D(ga,gb);
+    if(result.status!=='confirmed-contact')continue;
+    const contact=result.contact;
+    topologyContacts.set(key,{a,b,normal:contact.normal,point:contact.point,penetration:contact.penetration??0,colliderA:a.collider.type,colliderB:b.collider.type,ccd:batchPairs.has(key)});
+   }
+   let changed=true;
+   while(changed){changed=false;for(const contact of topologyContacts.values())if(contact.a.type==='dynamic'&&contact.b.type==='dynamic'&&(batchDynamicIds.has(contact.a.id)||batchDynamicIds.has(contact.b.id))){for(const id of [contact.a.id,contact.b.id])if(!batchDynamicIds.has(id)){batchDynamicIds.add(id);changed=true;}}}
+   const ccdContacts=[...topologyContacts.values()].filter(c=>batchPairs.has(pairKey(c.a,c.b))||c.a.type==='dynamic'&&batchDynamicIds.has(c.a.id)||c.b.type==='dynamic'&&batchDynamicIds.has(c.b.id)).sort((x,y)=>x.a.id.localeCompare(y.a.id)||x.b.id.localeCompare(y.b.id));
+   // Ensure confirmed TOI contacts survive narrowphase edge cases at the exact
+   // impact instant, and avoid duplicate pairs in the solve batch.
+   for(const {a,b,impact} of batch){const key=pairKey(a,b);if(!topologyContacts.has(key)){const contact=impact.contact;topologyContacts.set(key,{a,b,normal:contact.normal,point:contact.point,penetration:contact.penetration??0,colliderA:a.collider.type,colliderB:b.collider.type,ccd:true});}}
+   const solveContacts=[...topologyContacts.values()].filter(c=>batchPairs.has(pairKey(c.a,c.b))||c.a.type==='dynamic'&&batchDynamicIds.has(c.a.id)||c.b.type==='dynamic'&&batchDynamicIds.has(c.b.id)).sort((x,y)=>x.a.id.localeCompare(y.a.id)||x.b.id.localeCompare(y.b.id));
+   const ccdIslands=buildContactIslands(solveContacts);
+   for(const island of ccdIslands){const active=island.bodyIds.some(id=>this.bodies.get(id)?.awake)||island.contacts.some(c=>{const ra=sub(c.point,c.a.position),rb=sub(c.point,c.b.position),rv=sub(add(c.b.velocity,cross(c.b.angularVelocity,rb)),add(c.a.velocity,cross(c.a.angularVelocity,ra)));return dot(rv,c.normal)<-EPS;});if(active)for(const id of island.bodyIds)this.#wake(this.bodies.get(id));}
+   const batchSolved=solveContactIslands(this.bodies,solveContacts,{velocityIterations:this.config.velocityIterations,positionIterations:0});
+   const solvedByPair=new Map(solveContacts.map((c,i)=>[pairKey(c.a,c.b),batchSolved[i]]));
+   const timeKey=Math.round((this.t+elapsed)/TOI_TOL);
+   for(const c of solveContacts){const key=pairKey(c.a,c.b),imp=solvedByPair.get(key),eventKey=key+'\\0'+timeKey;if(!ccdEventTimeKeys.has(eventKey)){ccdEventTimeKeys.add(eventKey);const isImpact=batchPairs.has(key),event={type:'collision',t:this.t+elapsed,bodyA:c.a.id,bodyB:c.b.id,position:c.point,normal:c.normal,penetration:c.penetration??0,normalImpulse:imp.normalImpulse,tangentImpulse:imp.tangentImpulse,ccd:isImpact,ccdTopologyPropagated:!isImpact,ccdImpactIndex:isImpact?impactCount+batch.findIndex(x=>pairKey(x.a,x.b)===key):undefined,approximation:isImpact?batch.find(x=>pairKey(x.a,x.b)===key)?.impact?.method:undefined,solver:'sequential-impulse-ccd-topology-batch'};ccdEvents.push(event);this.events.push(event);ccdHandled.add(c.a.id);ccdHandled.add(c.b.id);}ccdPairHandled.add(key);}
+   impactCount+=batch.length;
+   if(toi<=TOI_TOL&&batchSolved.some(x=>x.normalImpulse<=EPS)){const nudge=Math.min(remaining,TOI_TOL);advanceWorld(nudge);elapsed+=nudge;remaining-=nudge;}  }
   if(remaining>EPS){ccdUnresolved=true;advanceWorld(remaining);elapsed+=remaining;remaining=0;const ev={type:'ccd-impact-budget-exhausted',t:this.t+dt,impactCount,maxCCDImpacts};ccdEvents.push(ev);this.events.push(ev);}
   for(const b of ccdBodies)ccdAdvance.set(b.id,true);
   for(const b of [...this.bodies.values()].sort((a,b)=>a.id.localeCompare(b.id)))if((b.type==='dynamic'&&b.awake)||b.type==='kinematic'){if(!ccdAdvance.has(b.id)){b.position=add(b.position,scale(b.velocity,dt));b.orientation=qintegrate(b.orientation,b.angularVelocity,dt);}this.dimensionProfile.constrainBody(b);}
   for(const b of this.bodies.values())if(b.physicalStateSampler){this.#samplePhysicalStateForBody(b,this.t+dt);}
   const contactManifolds=[];
-  for(const [pairA,pairB] of candidatePairs){const a=this.bodies.get(pairA),b=this.bodies.get(pairB);if(ccdPairHandled.has(`${a.id}\\0${b.id}`))continue;if(!a.collisionEnabled||!b.collisionEnabled||a.type==='static'&&b.type==='static')continue;const ga=collider3DWorldGeometry(a.collider,{position:a.position,orientation:a.orientation}),gb=collider3DWorldGeometry(b.collider,{position:b.position,orientation:b.orientation}),result=narrowphase3D(ga,gb);if(result.status==='indeterminate'){this.events.push({type:'narrowphase-indeterminate',t:this.t+dt,bodyA:a.id,bodyB:b.id,pair:result.pair,reason:result.reason});continue;}if(result.status==='confirmed-no-contact')continue;const contact=result.contact,n=contact.normal,point=contact.point,penetration=contact.penetration;if(a.type==='sensor'||b.type==='sensor'){this.events.push({type:'overlap',t:this.t+dt,bodyA:a.id,bodyB:b.id,position:point,normal:n,penetration});continue;}contactManifolds.push({a,b,normal:n,point,penetration,colliderA:a.collider.type,colliderB:b.collider.type});}
-  const solved=solveContactManifold(this.bodies,contactManifolds,{velocityIterations:this.config.velocityIterations,positionIterations:this.config.positionIterations});
+  for(const [pairA,pairB] of candidatePairs){const a=this.bodies.get(pairA),b=this.bodies.get(pairB);if(ccdPairHandled.has(`${a.id}\0${b.id}`))continue;if(!a.collisionEnabled||!b.collisionEnabled||a.type==='static'&&b.type==='static')continue;const ga=collider3DWorldGeometry(a.collider,{position:a.position,orientation:a.orientation}),gb=collider3DWorldGeometry(b.collider,{position:b.position,orientation:b.orientation}),result=narrowphase3D(ga,gb);if(result.status==='indeterminate'){this.events.push({type:'narrowphase-indeterminate',t:this.t+dt,bodyA:a.id,bodyB:b.id,pair:result.pair,reason:result.reason});continue;}if(result.status==='confirmed-no-contact')continue;const contact=result.contact,n=contact.normal,point=contact.point,penetration=contact.penetration;if(a.type==='sensor'||b.type==='sensor'){this.events.push({type:'overlap',t:this.t+dt,bodyA:a.id,bodyB:b.id,position:point,normal:n,penetration});continue;}contactManifolds.push({a,b,normal:n,point,penetration,colliderA:a.collider.type,colliderB:b.collider.type});}
+  // Wake propagation: an awake dynamic member wakes its entire connected dynamic island
+  // before solving, so sleeping bodies in chains/branches receive solver impulses and
+  // participate in subsequent fixed-step integration.
+  const wakeIslands=buildContactIslands(contactManifolds);
+  for(const island of wakeIslands){const active=island.bodyIds.some(id=>this.bodies.get(id)?.awake)||island.contacts.some(c=>{const ra=sub(c.point,c.a.position),rb=sub(c.point,c.b.position),rv=sub(add(c.b.velocity,cross(c.b.angularVelocity,rb)),add(c.a.velocity,cross(c.a.angularVelocity,ra)));return dot(rv,c.normal)<-EPS;});if(active){for(const id of island.bodyIds)this.#wake(this.bodies.get(id));}}
+  const solved=solveContactIslands(this.bodies,contactManifolds,{velocityIterations:this.config.velocityIterations,positionIterations:this.config.positionIterations});
   for(let i=0;i<contactManifolds.length;i++){const c=contactManifolds[i],imp=solved[i];const ev={type:'collision',t:this.t+dt,bodyA:c.a.id,bodyB:c.b.id,position:c.point,normal:c.normal,penetration:c.penetration,normalImpulse:imp.normalImpulse,tangentImpulse:imp.tangentImpulse,colliderA:c.colliderA,colliderB:c.colliderB,solver:'sequential-impulse'};collisionEvents.push(ev);this.events.push(ev);if(c.a.type==='dynamic')this.#wake(c.a);if(c.b.type==='dynamic')this.#wake(c.b);}
 
   for(const b of this.bodies.values())if(b.type==='dynamic'){b.force=[0,0,0];b.torque=[0,0,0];const quiet=len(b.velocity)<=this.config.sleepLinearThreshold&&len(b.angularVelocity)<=this.config.sleepAngularThreshold;if(quiet){b.sleepTime+=dt;if(b.sleepTime>=this.config.sleepDwell){b.awake=false;b.velocity=[0,0,0];b.angularVelocity=[0,0,0];}}else b.sleepTime=0;}
-  for(const b of this.bodies.values())this.dimensionProfile.constrainBody(b);this.t+=dt;this.tick++;const endEnergy=this.energy();collisionEvents.push(...ccdEvents);this.lastDiagnostics={energyStart:startEnergy,energyEnd:endEnergy,energyDelta:endEnergy-startEnergy,collisionCount:collisionEvents.length,ccdCount:ccdEvents.filter(e=>e.type==='collision').length,ccdImpactCount:impactCount,ccdImpactBudgetExceeded:ccdUnresolved,ccdIndeterminate:ccdEvents.filter(e=>e.type==='ccd-indeterminate').length,broadphasePairs:candidatePairs.length,narrowphaseIndeterminate:this.events.filter(e=>e.type==='narrowphase-indeterminate').length,solverContacts:solved.contacts,solverVelocityIterations:solved.iterations,solverPositionIterations:solved.positionIterations,maxContactPenetration:solved.maxPenetration,awakeBodies:[...this.bodies.values()].filter(b=>b.awake).length};return {t:this.t,tick:this.tick,events:[...this.events],diagnostics:{...this.lastDiagnostics},bodies:this.snapshot()};
+  for(const b of this.bodies.values())this.dimensionProfile.constrainBody(b);this.t+=dt;this.tick++;const endEnergy=this.energy();collisionEvents.push(...ccdEvents);this.lastDiagnostics={energyStart:startEnergy,energyEnd:endEnergy,energyDelta:endEnergy-startEnergy,collisionCount:collisionEvents.length,ccdCount:ccdEvents.filter(e=>e.type==='collision').length,ccdImpactCount:impactCount,ccdImpactBudgetExceeded:ccdUnresolved,ccdIndeterminate:ccdEvents.filter(e=>e.type==='ccd-indeterminate').length,broadphasePairs:candidatePairs.length,narrowphaseIndeterminate:this.events.filter(e=>e.type==='narrowphase-indeterminate').length,solverContacts:solved.contacts,solverVelocityIterations:solved.iterations,solverPositionIterations:solved.positionIterations,maxContactPenetration:solved.maxPenetration,simulationIslands:solved.islandCount,maxIslandBodies:solved.maxIslandBodies,maxIslandContacts:solved.maxIslandContacts,maxNormalResidual:solved.maxNormalResidual,solverConverged:solved.converged,islandDiagnostics:solved.islandDiagnostics,awakeBodies:[...this.bodies.values()].filter(b=>b.awake).length};return {t:this.t,tick:this.tick,events:[...this.events],diagnostics:{...this.lastDiagnostics},bodies:this.snapshot()};
  }
  syncPhysicalState(time=this.t){if(!Number.isFinite(time))throw new TypeError('physical sample time must be finite');this.t=time;this.#samplePhysicalState(time);return this.snapshot();}
  #samplePhysicalState(time){for(const b of this.bodies.values()){if(!b.physicalStateSampler)continue;const before=b.type==='dynamic'?b.position.slice():null;this.#samplePhysicalStateForBody(b,time);if(before)b.physicalState={...b.physicalState,pose:{...b.physicalState.pose,location:before}};}}

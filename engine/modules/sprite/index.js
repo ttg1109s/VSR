@@ -18,5 +18,6 @@ export * from './SpritePhysicsConfig.js';
 
 export * from './PoseTrajectory.js';
 export * from './PhysicalStateSampler.js';
-\nexport * from './Broadphase3D.js';
-export * from './RigidBodySolver3D.js';\n
+
+export * from './Broadphase3D.js';
+export * from './RigidBodySolver3D.js';

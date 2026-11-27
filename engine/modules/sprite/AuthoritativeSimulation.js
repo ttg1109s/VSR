@@ -69,7 +69,7 @@ export class AuthoritativeSpriteSimulation {
     const trajectories=new Map(initialTrajectories);
     const segments=new Map([...trajectories].map(([id,t])=>[id,t.segments?[...t.segments]:[t]]));
     const positions=new Map(); const velocities=new Map();
-    const collisions=[]; const lastCollisionTimeByPair=new Map(); const indeterminatePairs=[];
+    const collisions=[]; const lastCollisionTimeByPair=new Map(); const lastCollisionNormalByPair=new Map(); const indeterminatePairs=[];
     for(const [id,t] of trajectories){positions.set(id,t.sample(startTime));velocities.set(id,t.velocity(startTime));}
     let cursor=startTime;
     let collisionLimitReached=false;
@@ -83,10 +83,11 @@ export class AuthoritativeSpriteSimulation {
       for(const [a,b] of candidatePairs){
         const key=`${a}|${b}`;
         const lastTime=lastCollisionTimeByPair.get(key);
-        const pairSearchStart=Math.max(cursor,lastTime===undefined?cursor:lastTime+this.options.timeEpsilon*20);
+        let pairSearchStart=Math.max(cursor,lastTime===undefined?cursor:lastTime+this.options.timeEpsilon*20);
         const bodyA=bodies[a],bodyB=bodies[b];
         if(!bodyA||!bodyB||bodyA.collisionEnabled===false||bodyB.collisionEnabled===false)continue;
         if(bodyA.layer!==bodyB.layer)continue;
+        if(lastTime!==undefined){const normal=lastCollisionNormalByPair.get(key),ta=trajectories.get(a),tb=trajectories.get(b),pa=ta.sample(pairSearchStart),pb=tb.sample(pairSearchStart),relative=sub(tb.velocity(pairSearchStart),ta.velocity(pairSearchStart));if(normal&&Math.hypot(...sub(pb,pa))<=(bodyA.radius??0)+(bodyB.radius??0)+1e-9&&dot(relative,normal)>=-1e-12){let separatedAt=null;for(let k=1;k<=96;k++){const t=pairSearchStart+(endTime-pairSearchStart)*k/96,xa=ta.sample(t),xb=tb.sample(t);if(Math.hypot(...sub(xb,xa))>(bodyA.radius??0)+(bodyB.radius??0)+1e-9){separatedAt=t;break;}}if(separatedAt===null)continue;pairSearchStart=separatedAt;}}
         profiler.narrowphaseChecks++;
         const ccd=firstCircleImpactResult({trajectoryA:trajectories.get(a),trajectoryB:trajectories.get(b),radiusA:bodyA.radius??0,radiusB:bodyB.radius??0,timeStart:pairSearchStart,timeEnd:endTime,subdivisions:this.options.subdivisions});
         profiler.ccdIntervals+=ccd.subdivisions||0;
@@ -141,7 +142,7 @@ export class AuthoritativeSpriteSimulation {
       if(segB.completion==='natural-equilibrium')endTime=Math.max(endTime,segB.endTime);
       positions.set(a,corrected.position1);positions.set(b,corrected.position2);velocities.set(a,resolved.velocity1);velocities.set(b,resolved.velocity2);
       collisions.push({eventId:`collision-${collisions.length+1}`,time,spriteA:a,spriteB:b,contactA:positionA,contactB:positionB,normal:resolved.normal,velocityBeforeA:va,velocityBeforeB:vb,velocityAfterA:resolved.velocity1,velocityAfterB:resolved.velocity2,impulse:resolved.normalImpulse,restitution,friction,physicsEnabled,penetration:corrected.penetration,approximation:earliest.approximation,interval:earliest.interval||null});
-      lastCollisionTimeByPair.set(key,time);cursor=time;profiler.collisionEvents=collisions.length;
+      lastCollisionTimeByPair.set(key,time);lastCollisionNormalByPair.set(key,resolved.normal);cursor=time;profiler.collisionEvents=collisions.length;
       if(!physicsEnabled)break;
     }
     const finalPositions=new Map();

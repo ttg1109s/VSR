@@ -30,13 +30,15 @@ export function evaluateSpriteEasing(easing, progress) {
 
 export function sampleSpriteTransformTrajectoryV2(trajectory, simulationTime, fallback={rotate:0,scale:1,origin:'center'}) {
   const keys=trajectory?.transformTrajectory;
-  if(!Array.isArray(keys)||!keys.length)return {rotate:Number(fallback.rotate||0),scale:Number(fallback.scale||1),origin:String(fallback.origin||'center')};
+  const includeOrigin=Array.isArray(keys)&&keys.some(key=>Object.hasOwn(key,'origin'));
+  const make=(rotate,scale,origin)=>includeOrigin?{rotate,scale,origin:origin||fallback.origin||'center'}:{rotate,scale};
+  if(!Array.isArray(keys)||!keys.length)return make(Number(fallback.rotate||0),Number(fallback.scale||1),fallback.origin);
   const time=Math.max(0,Math.min(Number(simulationTime),trajectory.endTime));
   const right=keys.findIndex(key=>key.time>=time);
-  if(right<=0)return {rotate:keys[0].rotate,scale:keys[0].scale,origin:keys[0].origin||fallback.origin||'center'};
-  if(right<0)return {rotate:keys.at(-1).rotate,scale:keys.at(-1).scale,origin:keys.at(-1).origin||fallback.origin||'center'};
+  if(right<=0)return make(keys[0].rotate,keys[0].scale,keys[0].origin);
+  if(right<0)return make(keys.at(-1).rotate,keys.at(-1).scale,keys.at(-1).origin);
   const a=keys[right-1],b=keys[right],span=Math.max(1e-9,b.time-a.time),t=Math.max(0,Math.min(1,(time-a.time)/span));
-  return {rotate:a.rotate+(b.rotate-a.rotate)*t,scale:a.scale+(b.scale-a.scale)*t,origin:b.origin||a.origin||fallback.origin||'center'};
+  return make(a.rotate+(b.rotate-a.rotate)*t,a.scale+(b.scale-a.scale)*t,b.origin||a.origin);
 }
 export function sampleSpriteTrajectoryV2(trajectory, spriteId, simulationTime) {
   if (trajectory?.protocolVersion !== 2 || typeof trajectory.trajectoryId !== 'string' || !Array.isArray(trajectory.trajectories?.[spriteId])) throw new TypeError('Invalid authoritative Sprite trajectory v2.');

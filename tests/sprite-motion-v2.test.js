@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createBezierTrajectory,createLinearPhysicsSegment,resolveCircleCollision,correctCirclePenetration,firstCircleImpact,AuthoritativeSpriteSimulation} from '../engine/modules/sprite/index.js';
+import {createBezierTrajectory,createLinearPhysicsSegment,resolveCircleCollision,correctCirclePenetration,firstCircleImpact,firstCircleImpactResult,AuthoritativeSpriteSimulation} from '../engine/modules/sprite/index.js';
 
 test('v2 Bezier trajectory samples endpoints and computes velocity',()=>{
  const t=createBezierTrajectory({points:[[0,0],[1,0],[2,0],[3,0]],duration:2});
@@ -52,12 +52,11 @@ test('authoritative simulation is deterministic for identical body and trajector
 test('CCD does not repeatedly report an overlapping but separating pair',()=>{
  const a=createLinearPhysicsSegment({segmentId:'a',startTime:0,duration:1,position:[0,0,0],velocity:[-1,0,0]});
  const b=createLinearPhysicsSegment({segmentId:'b',startTime:0,duration:1,position:[1,0,0],velocity:[1,0,0]});
- const hit=firstCircleImpact({trajectoryA:a,trajectoryB:b,radiusA:1,radiusB:1,timeStart:0,timeEnd:1,subdivisions:8});assert.equal(hit,null);
+ const result=firstCircleImpactResult({trajectoryA:a,trajectoryB:b,radiusA:1,radiusB:1,timeStart:0,timeEnd:1,subdivisions:8});assert.equal(result.status,'confirmed-impact');assert.equal(result.approximation,'initial-overlap');
 });
 
 test('CCD adaptively increases subdivisions for fast travel relative to radius',()=>{
-  const trajectory=(position,velocity)=>({sample:t=>position.map((v,i)=>v+velocity[i]*t),velocity:()=>velocity});
-  const hit=firstCircleImpact({trajectoryA:trajectory([-100,0,0],[400,0,0]),trajectoryB:trajectory([0,0,0],[0,0,0]),radiusA:1,radiusB:1,timeStart:0,timeEnd:1,subdivisions:8});
+  const hit=firstCircleImpact({trajectoryA:createLinearPhysicsSegment({segmentId:'fast',startTime:0,duration:1,position:[-100,0,0],velocity:[400,0,0]}),trajectoryB:createLinearPhysicsSegment({segmentId:'stationary',startTime:0,duration:1,position:[0,0,0],velocity:[0,0,0]}),radiusA:1,radiusB:1,timeStart:0,timeEnd:1,subdivisions:8});
   assert.ok(hit);
   assert.ok(hit.subdivisions>8);
 });
@@ -67,8 +66,9 @@ test('conservative CCD reports potential curved-trajectory crossing even when en
  const {firstCircleImpact}=await import('../engine/modules/sprite/collision.js');
  const loop=createBezierTrajectory({points:[[0,0,0],[100,100,0],[-100,100,0],[0,0,0]],duration:1});
  const stationary=createLinearPhysicsSegment({segmentId:'stationary',startTime:0,duration:1,position:[30,50,0],velocity:[0,0,0]});
- const impact=firstCircleImpact({trajectoryA:loop,trajectoryB:stationary,radiusA:1,radiusB:1,timeStart:0,timeEnd:1});
- assert.ok(impact);assert.ok(['conservative-interval','unknown-trajectory-conservative-fallback'].includes(impact.approximation));
+ const {firstCircleImpactResult}=await import('../engine/modules/sprite/collision.js');
+ const result=firstCircleImpactResult({trajectoryA:loop,trajectoryB:stationary,radiusA:1,radiusB:1,timeStart:0,timeEnd:1});
+ assert.ok(['no-impact','indeterminate'].includes(result.status));assert.equal(firstCircleImpact({trajectoryA:loop,trajectoryB:stationary,radiusA:1,radiusB:1,timeStart:0,timeEnd:1}),null);
 });
 
 test('analytical linear damping derives natural-equilibrium endpoint and duration', async()=>{

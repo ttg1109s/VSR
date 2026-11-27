@@ -23,9 +23,9 @@ test('Phase 5 narrowphase contract distinguishes unsupported pair from no-contac
 
 test('Phase 5 CCD preserves indeterminate status for unsupported shape pairs', async()=>{
  const {findCCDImpact3D}=await import('../../engine/modules/sprite/CCD3D.js');
- const sphere={collider:createSphereCollider3D({radius:1}),position:[0,0,0],velocity:[1,0,0],orientation:[1,0,0,0],angularVelocity:[0,0,0]};
- const ellipsoid={collider:{type:'ellipsoid',radii:[1,1,1]},position:[4,0,0],velocity:[0,0,0],orientation:[1,0,0,0],angularVelocity:[0,0,0]};
- const result=findCCDImpact3D(sphere,ellipsoid,1);
+ const ellipsoid={collider:{type:'ellipsoid',radii:[1,1,1],offset:[0,0,0]},position:[0,0,0],velocity:[1,0,0],orientation:[1,0,0,0],angularVelocity:[0,0,0]};
+ const box={collider:{type:'box',halfExtents:[1,1,1],offset:[0,0,0]},position:[4,0,0],velocity:[0,0,0],orientation:[1,0,0,0],angularVelocity:[0,0,0]};
+ const result=findCCDImpact3D(ellipsoid,box,1);
  assert.equal(result.status,'indeterminate');assert.equal(result.reason,'unsupported-shape-pair');
 });
 test('Phase 5 CCD returns explicit confirmed no-impact and initial-impact outcomes', async()=>{
