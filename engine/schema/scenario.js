@@ -73,6 +73,30 @@ function asArray(value) {
   return Array.isArray(value) ? value : [];
 }
 
+function migrateSpriteLegacyShape(scenario) {
+  // Legacy Sprite authoring used top-level position arrays and scalar transform fields.
+  // Convert to the canonical position.location + position.transform contract before strict validation.
+  for (const [spriteId, definition] of Object.entries(isObject(scenario.sprite) ? scenario.sprite : {})) {
+    if (!isObject(definition)) continue;
+    const position = isObject(definition.position) ? definition.position : {};
+    const legacyPosition = Array.isArray(definition.position) ? definition.position : null;
+    const legacyTransform = isObject(definition.transform) ? definition.transform : {};
+    const canonicalTransform = isObject(position.transform) ? position.transform : {};
+    if (legacyPosition || Object.keys(legacyTransform).length || Object.keys(position).length) {
+      const location = position.location ?? legacyPosition ?? [0, 0, 0];
+      const rawRotation = canonicalTransform.rotation ?? legacyTransform.rotation ?? legacyTransform.rotate ?? 0;
+      const rotation = Array.isArray(rawRotation) ? rawRotation : [0, 0, Number(rawRotation) || 0];
+      const rawScale = canonicalTransform.scale ?? legacyTransform.scale ?? 1;
+      const scale = Array.isArray(rawScale) ? rawScale : [rawScale, rawScale, rawScale];
+      const origin = canonicalTransform.origin ?? legacyTransform.origin ?? [0, 0, 0];
+      definition.position = { location, transform: { rotation, scale, origin } };
+      if (Array.isArray(definition.transform)) delete definition.transform;
+      else delete definition.transform;
+    }
+  }
+  return scenario;
+}
+
 function migrateMotionPhysics(scenario) {
   // Compatibility migration: old motion.physics values are folded into canonical sprite.physics.
   for (const [spriteId, definition] of Object.entries(isObject(scenario.sprite) ? scenario.sprite : {})) {
@@ -670,7 +694,7 @@ export function validateScenario(scenario) {
 }
 
 export function normalizeScenario(input) {
-  const scenario = migrateMotionPhysics(clone(input));
+  const scenario = migrateSpriteLegacyShape(migrateMotionPhysics(clone(input)));
   if (!isObject(scenario)) throw new ScenarioValidationError(['root must be a JSON object']);
 
   if (isObject(scenario.meta) && scenario.meta.entryCharacter == null) {
