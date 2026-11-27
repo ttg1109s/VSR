@@ -20,4 +20,25 @@ export function solveContactManifold(bodies,contacts,{velocityIterations=10,posi
  for(let it=0;it<positionIterations;it++)for(const c of ordered){const {a,b,normal:n,penetration}=c,den=a.invMass+b.invMass;if(den<=1e-12)continue;const correction=Math.max(0,penetration-slop)*baumgarte/positionIterations/den,J=scale(n,correction);if(a.type==='dynamic')a.position=sub(a.position,scale(J,a.invMass));if(b.type==='dynamic')b.position=add(b.position,scale(J,b.invMass));}
  const results=ordered.map(c=>({normalImpulse:c.accN,tangentImpulse:Math.hypot(...c.accT)}));results.iterations=velocityIterations;results.positionIterations=positionIterations;results.contacts=ordered.length;results.maxPenetration=ordered.reduce((v,c)=>Math.max(v,c.penetration||0),0);return results;
 }
+/** Deterministic contact-island partitioning. Static/kinematic anchors do not merge
+ * otherwise independent dynamic networks (e.g. two stacks on the same floor). */
+export function buildContactIslands(contacts){
+ const ordered=[...contacts].sort((a,b)=>a.a.id.localeCompare(b.a.id)||a.b.id.localeCompare(b.b.id));
+ const dynamicIds=[...new Set(ordered.flatMap(c=>[c.a,c.b]).filter(b=>b.type==='dynamic').map(b=>b.id))].sort();
+ const parent=new Map(dynamicIds.map(id=>[id,id]));
+ const find=id=>{let p=parent.get(id);while(p!==parent.get(p)){parent.set(p,parent.get(parent.get(p)));p=parent.get(p);}return p;};
+ const union=(a,b)=>{let ra=find(a),rb=find(b);if(ra===rb)return;if(ra<rb)parent.set(rb,ra);else parent.set(ra,rb);};
+ for(const c of ordered)if(c.a.type==='dynamic'&&c.b.type==='dynamic')union(c.a.id,c.b.id);
+ const groups=new Map();
+ for(const id of dynamicIds){const root=find(id);if(!groups.has(root))groups.set(root,{bodyIds:[],contacts:[]});groups.get(root).bodyIds.push(id);}
+ for(const c of ordered){const dynamic=c.a.type==='dynamic'?c.a:c.b.type==='dynamic'?c.b:null;if(!dynamic)continue;const group=groups.get(find(dynamic.id));group.contacts.push(c);}
+ return [...groups.values()].sort((a,b)=>a.bodyIds[0].localeCompare(b.bodyIds[0])).map(g=>({bodyIds:g.bodyIds,contacts:g.contacts}));
+}
+/** Solve independent contact islands deterministically, preserving existing solver semantics.
+ * Results are flattened in stable island/contact order; diagnostics expose per-island work. */
+export function solveContactIslands(bodies,contacts,options={}){
+ const islands=buildContactIslands(contacts),results=[],diagnostics=[];
+ for(const island of islands){const solved=solveContactManifold(bodies,island.contacts,options);results.push(...solved);diagnostics.push({bodyIds:island.bodyIds,bodyCount:island.bodyIds.length,contactCount:island.contacts.length,velocityIterations:solved.iterations,positionIterations:solved.positionIterations,maxPenetration:solved.maxPenetration});}
+ results.contacts=contacts.length;results.iterations=diagnostics.reduce((m,d)=>Math.max(m,d.velocityIterations),0);results.positionIterations=diagnostics.reduce((m,d)=>Math.max(m,d.positionIterations),0);results.maxPenetration=diagnostics.reduce((m,d)=>Math.max(m,d.maxPenetration),0);results.islandCount=islands.length;results.islandDiagnostics=diagnostics;results.maxIslandBodies=diagnostics.reduce((m,d)=>Math.max(m,d.bodyCount),0);results.maxIslandContacts=diagnostics.reduce((m,d)=>Math.max(m,d.contactCount),0);return results;
+}
 export const Tensor3D={matVec,matMul,transpose,rotate};
