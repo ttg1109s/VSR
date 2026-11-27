@@ -484,3 +484,21 @@ test('atomic ACK provider recovers committed command result after ACK store fail
  restarted.registerCommand('atomic.mutate',async()=>{executions++;return{committed:true};});
  const recovered=await restarted.dispatch(command);assert.deepEqual(recovered,ack);assert.equal(executions,1);
 });
+
+
+test('commit failure is reported as unknown outcome without unsafe rollback or retry execution',async()=>{
+ let executions=0,rollbacks=0,sideEffect=false;
+ const protocol=new JsonProtocol({transactionProvider:async()=>({commit:async()=>{sideEffect=true;throw new Error('commit outcome uncertain');},rollback:async()=>{rollbacks++;sideEffect=false;}})});
+ protocol.registerCommand('uncertain.commit',async()=>{executions++;return{attempt:executions};});
+ const command={protocol:'vsr',protocolVersion:2,type:'command',command:'uncertain.commit',commandId:'commit-uncertain',payload:{}};
+ const ack=await protocol.dispatch(command);assert.equal(ack.ok,false);assert.equal(ack.error.code,'COMMAND_OUTCOME_UNKNOWN');assert.equal(sideEffect,true);assert.equal(rollbacks,0);
+ const retry=await protocol.dispatch(command);assert.deepEqual(retry,ack);assert.equal(executions,1);
+});
+
+test('committed mutation remains success when durable ACK persistence fails in legacy transaction mode',async()=>{
+ let mutation=0,rollback=0;
+ const protocol=new JsonProtocol({transactionProvider:async()=>({commit:async()=>{},rollback:async()=>{rollback++;}}),idempotencyStore:{get:async()=>null,set:async()=>{throw new Error('ack store down');}}});
+ protocol.registerCommand('store.after.commit',async()=>({value:++mutation}));
+ const ack=await protocol.dispatch({protocol:'vsr',protocolVersion:2,type:'command',command:'store.after.commit',commandId:'ack-store-after-commit',payload:{}});
+ assert.equal(ack.ok,true);assert.equal(ack.durability.ackPersisted,false);assert.equal(ack.durability.warning,'ACK_PERSISTENCE_FAILED');assert.equal(mutation,1);assert.equal(rollback,0);
+});
