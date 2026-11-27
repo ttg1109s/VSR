@@ -24,11 +24,11 @@ const hasSnapshotUnsafeExpression=value=>{
  return false;
 };
 export class JsonProtocol{
- constructor({engineId=`vsr-${Math.random().toString(36).slice(2,10)}`,protocolVersion=2,maxEvents=1000,maxRememberedCommands=500,idempotencyStore=null,authorizeCommand=null,requireAuthorization=false,onCommandSuccess=null,presentationAvailable=null}={}){
+ constructor({engineId=`vsr-${Math.random().toString(36).slice(2,10)}`,protocolVersion=2,maxEvents=1000,maxRememberedCommands=500,idempotencyStore=null,authorizeCommand=null,requireAuthorization=false,onCommandSuccess=null,presentationAvailable=null,transactionProvider=null}={}){
   if(typeof requireAuthorization!=='boolean')throw new TypeError('requireAuthorization must be boolean.');
   if(requireAuthorization&&typeof authorizeCommand!=='function')throw new TypeError('requireAuthorization needs an authorizeCommand function.');
   if(idempotencyStore!==null&&(!idempotencyStore||typeof idempotencyStore.get!=='function'||typeof idempotencyStore.set!=='function'))throw new TypeError('idempotencyStore must implement async-compatible get(key) and set(key, value).');
-  Object.assign(this,{engineId,protocolVersion,maxEvents,maxRememberedCommands,idempotencyStore,authorizeCommand,requireAuthorization,onCommandSuccess,presentationAvailable});
+  Object.assign(this,{engineId,protocolVersion,maxEvents,maxRememberedCommands,idempotencyStore,authorizeCommand,requireAuthorization,onCommandSuccess,presentationAvailable,transactionProvider});
   this.stateRevision=0;this.revision=0;this.eventSequence=0;this.commandSequence=0;this.listeners=new Set();this.eventLog=[];this.commandHandlers=new Map();this.commandResults=new Map();this.dispatchQueue=Promise.resolve();this.presentationRequests=new Map();this.presentationRequestSequence=0;
  }
  subscribe(fn){if(typeof fn!=='function')throw new TypeError('Protocol listener must be a function.');this.listeners.add(fn);return()=>this.listeners.delete(fn);}
@@ -554,10 +554,15 @@ export class JsonProtocol{
     }
 
     const revisionBefore = this.stateRevision;
+    let transaction=null;
+    try { transaction=this.transactionProvider ? await this.transactionProvider({command:command.command,payload,context,commandId:command.commandId}) : null; }
+    catch(error) { return this.#remember(idempotencyKey,requestFingerprint,{protocol:'vsr',protocolVersion:this.protocolVersion,type:'ack',commandId:command.commandId,ok:false,error:{code:error?.code||'TRANSACTION_SETUP_FAILED',message:error?.message||String(error)},revision:this.stateRevision,stateRevision:this.stateRevision}); }
+    if(transaction!==null&&(!transaction||typeof transaction.commit!=='function'||typeof transaction.rollback!=='function')) throw new TypeError('transactionProvider must return commit() and rollback() methods.');
     this.publish('command.accepted', { commandId: command.commandId, command: command.command });
     try {
       const result = await handler(payload, context);
       await this.onCommandSuccess?.({ command: command.command, payload, context, revisionBefore });
+      await transaction?.commit?.(result);
       this.publish('command.completed', { commandId: command.commandId, command: command.command });
       return this.#remember(idempotencyKey, requestFingerprint, {
         protocol: 'vsr', protocolVersion: this.protocolVersion, type: 'ack',
@@ -565,6 +570,7 @@ export class JsonProtocol{
         stateRevision: this.stateRevision, result: result === undefined ? null : cloneJsonValue(result)
       });
     } catch (error) {
+      if(transaction){try{await transaction.rollback(error);}catch(rollbackError){error.rollbackError=rollbackError;error.code='ROLLBACK_FAILED';}}
       this.publish('command.failed', {
         commandId: command.commandId, command: command.command,
         code: error?.code || 'COMMAND_FAILED', message: error?.message || String(error)
