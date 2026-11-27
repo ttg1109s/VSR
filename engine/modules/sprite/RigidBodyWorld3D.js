@@ -56,13 +56,13 @@ export class RigidBodyWorld3D {
   let remaining=dt,elapsed=0,impactCount=0,ccdUnresolved=false;
   const maxCCDImpacts=Math.max(16,Math.min(256,candidatePairs.length*4));
   const advanceWorld=(delta)=>{if(delta<=0)return;for(const body of ccdBodies)if((body.type==='dynamic'&&body.awake)||body.type==='kinematic'){body.position=add(body.position,scale(body.velocity,delta));body.orientation=qintegrate(body.orientation,body.angularVelocity,delta);this.dimensionProfile.constrainBody(body);}};
-  const ccdPairHandled=new Set();
+  const ccdPairHandled=new Set(),ccdUncertainKeys=new Set();
   while(remaining>EPS&&impactCount<maxCCDImpacts){
    const freshPairs=buildSweptBroadphasePairs(this.bodies,{dt:remaining,cellSize:Math.max(4,...[...this.bodies.values()].map(b=>Math.max(1,b.radius*2)))}),pairMap=new Map([...candidatePairs,...freshPairs].map(p=>[`${p[0]}\\0${p[1]}`,p]));candidatePairs=[...pairMap.values()].sort((x,y)=>x[0].localeCompare(y[0])||x[1].localeCompare(y[1]));
    let earliest=null;
    for(const [pairA,pairB] of freshPairs){const a=this.bodies.get(pairA),b=this.bodies.get(pairB);if(!(a.ccd||b.ccd)||!a.collisionEnabled||!b.collisionEnabled||a.type==='static'&&b.type==='static')continue;
     const impact=findCCDImpact3D(a,b,remaining);
-    if(impact.status==='indeterminate'){const uncertainty={type:'ccd-indeterminate',t:this.t+elapsed,bodyA:a.id,bodyB:b.id,pair:impact.pair,reason:impact.reason,interval:impact.interval||null};ccdEvents.push(uncertainty);this.events.push(uncertainty);continue;}
+    if(impact.status==='indeterminate'){const key=`${a.id}\\0${b.id}\\0${impact.reason||'indeterminate'}`;if(!ccdUncertainKeys.has(key)){ccdUncertainKeys.add(key);const uncertainty={type:'ccd-indeterminate',t:this.t+elapsed,bodyA:a.id,bodyB:b.id,pair:impact.pair,reason:impact.reason,interval:impact.interval||null};ccdEvents.push(uncertainty);this.events.push(uncertainty);}continue;}
     if(impact.status!=='confirmed-impact')continue;
     const contact=impact.contact,n=contact.normal,point=contact.point,ra=sub(point,a.position),rb=sub(point,b.position),rv=sub(add(b.velocity,cross(b.angularVelocity,rb)),add(a.velocity,cross(a.angularVelocity,ra))),vn=dot(rv,n);
     if(impact.time<=TOI_TOL&&vn>=-EPS)continue;
