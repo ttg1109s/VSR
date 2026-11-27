@@ -6941,59 +6941,35 @@
               "description": "Initial [x,y,z] location."
             },
             "transform": {
-              "type": "array",
-              "minItems": 3,
-              "maxItems": 3,
-              "items": [
-                {
+              "type": "object",
+              "required": [
+                "rotation",
+                "scale",
+                "origin"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "rotation": {
                   "anyOf": [
                     {
-                      "type": "number",
-                      "description": "Rotation in degrees (legacy scalar Z rotation)."
+                      "$ref": "#/definitions/vec3"
                     },
                     {
-                      "$ref": "#/definitions/vec3",
-                      "description": "Euler rotation in degrees [rx,ry,rz]."
-                    },
-                    {
-                      "$ref": "#/definitions/quat",
-                      "description": "Quaternion [w,x,y,z]."
+                      "$ref": "#/definitions/quat"
                     }
-                  ]
+                  ],
+                  "description": "Euler rotation Vec3 in degrees or quaternion [w,x,y,z]."
                 },
-                {
-                  "anyOf": [
-                    {
-                      "type": "number",
-                      "exclusiveMinimum": 0,
-                      "description": "Uniform positive scale (legacy compatible)."
-                    },
-                    {
-                      "$ref": "#/definitions/vec3",
-                      "description": "Positive per-axis scale [sx,sy,sz]."
-                    }
-                  ]
+                "scale": {
+                  "$ref": "#/definitions/vec3",
+                  "description": "Positive per-axis scale [sx,sy,sz]."
                 },
-                {
-                  "anyOf": [
-                    {
-                      "type": "string",
-                      "description": "Transform origin identifier (legacy compatible)."
-                    },
-                    {
-                      "$ref": "#/definitions/vec3",
-                      "description": "Per-axis origin offset."
-                    }
-                  ]
+                "origin": {
+                  "$ref": "#/definitions/vec3",
+                  "description": "Origin offset in local coordinates."
                 }
-              ],
-              "additionalItems": false,
-              "default": [
-                0,
-                1,
-                "center"
-              ],
-              "description": "[rotation, scale, origin]; legacy scalar/uniform values remain valid."
+              },
+              "description": "Canonical initial transform; no legacy tuple, scalar rotation, uniform scale or named origin."
             },
             "transformTrajectory": {
               "type": "array",
@@ -7002,7 +6978,10 @@
               "items": {
                 "type": "object",
                 "required": [
-                  "time"
+                  "time",
+                  "rotation",
+                  "scale",
+                  "origin"
                 ],
                 "properties": {
                   "time": {
@@ -7011,38 +6990,21 @@
                   "rotation": {
                     "anyOf": [
                       {
-                        "type": "number"
+                        "$ref": "#/definitions/vec3"
                       },
                       {
-                        "$ref": "#/definitions/vec3"
+                        "$ref": "#/definitions/quat"
                       }
                     ]
-                  },
-                  "rotate": {
-                    "type": "number"
                   },
                   "quaternion": {
                     "$ref": "#/definitions/quat"
                   },
                   "scale": {
-                    "anyOf": [
-                      {
-                        "type": "number"
-                      },
-                      {
-                        "$ref": "#/definitions/vec3"
-                      }
-                    ]
+                    "$ref": "#/definitions/vec3"
                   },
                   "origin": {
-                    "anyOf": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "$ref": "#/definitions/vec3"
-                      }
-                    ]
+                    "$ref": "#/definitions/vec3"
                   },
                   "angularVelocity": {
                     "$ref": "#/definitions/vec3"
@@ -7153,15 +7115,6 @@
             "angularVelocity": {
               "$ref": "#/definitions/vec3",
               "default": [
-                0,
-                0,
-                0
-              ]
-            },
-            "orientation": {
-              "$ref": "#/definitions/quat",
-              "default": [
-                1,
                 0,
                 0,
                 0
