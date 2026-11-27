@@ -37,8 +37,8 @@ export function buildContactIslands(contacts){
 /** Solve independent contact islands deterministically, preserving existing solver semantics.
  * Results are flattened in stable island/contact order; diagnostics expose per-island work. */
 export function solveContactIslands(bodies,contacts,options={}){
- const islands=buildContactIslands(contacts),results=[],diagnostics=[];
- for(const island of islands){const solved=solveContactManifold(bodies,island.contacts,options);results.push(...solved);diagnostics.push({bodyIds:island.bodyIds,bodyCount:island.bodyIds.length,contactCount:island.contacts.length,velocityIterations:solved.iterations,positionIterations:solved.positionIterations,maxPenetration:solved.maxPenetration});}
+ const islands=buildContactIslands(contacts),results=new Array(contacts.length),diagnostics=[],contactIndex=new Map(contacts.map((c,i)=>[c,i]));
+ for(const island of islands){const solved=solveContactManifold(bodies,island.contacts,options);island.contacts.forEach((c,i)=>{results[contactIndex.get(c)]=solved[i];});diagnostics.push({bodyIds:island.bodyIds,bodyCount:island.bodyIds.length,contactCount:island.contacts.length,velocityIterations:solved.iterations,positionIterations:solved.positionIterations,maxPenetration:solved.maxPenetration});}
  results.contacts=contacts.length;results.iterations=diagnostics.reduce((m,d)=>Math.max(m,d.velocityIterations),0);results.positionIterations=diagnostics.reduce((m,d)=>Math.max(m,d.positionIterations),0);results.maxPenetration=diagnostics.reduce((m,d)=>Math.max(m,d.maxPenetration),0);results.islandCount=islands.length;results.islandDiagnostics=diagnostics;results.maxIslandBodies=diagnostics.reduce((m,d)=>Math.max(m,d.bodyCount),0);results.maxIslandContacts=diagnostics.reduce((m,d)=>Math.max(m,d.contactCount),0);return results;
 }
 export const Tensor3D={matVec,matMul,transpose,rotate};
