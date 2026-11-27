@@ -37,6 +37,7 @@ export function createSaveEnvelope(engine) {
     completedSpriteMotionIdentities: Object.fromEntries(engine.completedSpriteMotionIdentities||new Map()),
     pendingSpriteMotionEndHooks: Object.fromEntries(engine.pendingSpriteMotionEndHooks||new Map()),
     spriteMotionSequence: engine.spriteMotionSequence||0,
+    protocolCheckpoint: engine.protocol?.checkpoint?.() ?? null,
     savedAt: new Date().toISOString()
   };
 }
@@ -94,6 +95,7 @@ function validateSaveShape(save) {
   if (save.completedSpriteMotionIdentities !== undefined && (!save.completedSpriteMotionIdentities||typeof save.completedSpriteMotionIdentities!=='object'||Array.isArray(save.completedSpriteMotionIdentities)||Object.values(save.completedSpriteMotionIdentities).some(identity=>!identity||typeof identity.spriteId!=='string'||typeof identity.trajectoryId!=='string'))) throw new TypeError('Save completedSpriteMotionIdentities is invalid.');
   if (save.pendingSpriteMotionEndHooks !== undefined && (!save.pendingSpriteMotionEndHooks||typeof save.pendingSpriteMotionEndHooks!=='object'||Array.isArray(save.pendingSpriteMotionEndHooks)||Object.values(save.pendingSpriteMotionEndHooks).some(item=>!item||!Array.isArray(item.effects)||!item.context||!item.completion||!Array.isArray(item.committedSprites)||(item.startedIndexes!==undefined&&!Array.isArray(item.startedIndexes))||(item.completedIndexes!==undefined&&!Array.isArray(item.completedIndexes))))) throw new TypeError('Save pendingSpriteMotionEndHooks is invalid.');
   if (save.spriteMotionSequence !== undefined && (!Number.isSafeInteger(save.spriteMotionSequence)||save.spriteMotionSequence<0)) throw new TypeError('Save spriteMotionSequence is invalid.');
+  if (save.protocolCheckpoint !== undefined && save.protocolCheckpoint !== null && (save.protocolCheckpoint.format !== 'vsr.protocol.checkpoint.v1' || !Number.isSafeInteger(save.protocolCheckpoint.eventSequence) || !Number.isSafeInteger(save.protocolCheckpoint.stateRevision) || !Array.isArray(save.protocolCheckpoint.eventLog) || !Array.isArray(save.protocolCheckpoint.commandResults))) throw new TypeError('Save protocolCheckpoint is invalid.');
   if (save.automationRandomBags !== undefined && (!save.automationRandomBags || typeof save.automationRandomBags !== 'object' || Array.isArray(save.automationRandomBags))) throw new TypeError('Save automationRandomBags must be an object.');
   if (save.pausedTasks !== undefined && (!Array.isArray(save.pausedTasks) || save.pausedTasks.some(name => typeof name !== 'string' || !/^(auto_|move_char_|move_still_|router_still_|timer_ui_|timer_end_)[^/]+$/.test(name)))) {
     throw new TypeError('Save pausedTasks must contain valid task names.');
