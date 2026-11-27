@@ -1,33 +1,19 @@
 import { collider3DWorldGeometry, narrowphase3D } from './collider3d.js';
-
-const EPS=1e-10;
-const add=(a,b)=>a.map((v,i)=>v+b[i]);
-const sub=(a,b)=>a.map((v,i)=>v-b[i]);
-const scale=(a,s)=>a.map(v=>v*s);
-const dot=(a,b)=>a.reduce((s,v,i)=>s+v*b[i],0);
-const len=a=>Math.hypot(...a);
-const qrotate=(q,v)=>{const u=q.slice(1),t=[2*(u[1]*v[2]-u[2]*v[1]),2*(u[2]*v[0]-u[0]*v[2]),2*(u[0]*v[1]-u[1]*v[0])];return add(v,add(scale(t,q[0]),[u[1]*t[2]-u[2]*t[1],u[2]*t[0]-u[0]*t[2],u[0]*t[1]-u[1]*t[0]]));};
-function boundRadius(g){if(g.type==='sphere')return g.radius;if(g.type==='ellipsoid')return Math.max(...g.radii);if(g.type==='box')return len(g.halfExtents);return Infinity;}
-function planeExtent(g,n){if(g.type==='sphere')return g.radius;if(g.type==='ellipsoid'){const inv=[g.orientation[0],-g.orientation[1],-g.orientation[2],-g.orientation[3]],ln=qrotate(inv,n);return Math.sqrt(g.radii.reduce((s,r,i)=>s+(r*ln[i])**2,0));}if(g.type==='box'){const axes=[qrotate(g.orientation,[1,0,0]),qrotate(g.orientation,[0,1,0]),qrotate(g.orientation,[0,0,1])];return g.halfExtents.reduce((s,h,i)=>s+h*Math.abs(dot(n,axes[i])),0);}return 0;}
-function geometryAt(body,time){return collider3DWorldGeometry(body.collider,{position:add(body.position,scale(body.velocity,time)),orientation:body.orientation});}
-function planeGap(g,plane){const signed=dot(g.center,plane.normal)-plane.offset;return{gap:Math.abs(signed)-planeExtent(g,plane.normal),side:signed>=0?1:-1};}
-function sphereSphereTOI(ga,gb,va,vb,dt){const p=sub(gb.center,ga.center),v=sub(vb,va),r=ga.radius+gb.radius,A=dot(v,v),B=2*dot(p,v),C=dot(p,p)-r*r;if(C<=0)return 0;if(A<EPS||B>=0)return null;const d=B*B-4*A*C;if(d<0)return null;const t=(-B-Math.sqrt(Math.max(0,d)))/(2*A);return t>=0&&t<=dt?t:null;}
-function pairTOI(a,b,dt){
- const ga=geometryAt(a,0),gb=geometryAt(b,0);
- if(ga.type==='sphere'&&gb.type==='sphere')return {time:sphereSphereTOI(ga,gb,a.velocity,b.velocity,dt),method:'analytic-sphere-sphere'};
- if(ga.type==='plane'&&gb.type!=='plane'){const {gap,side}=planeGap(gb,ga),speed=dot(b.velocity,ga.normal)*side;if(gap<=0)return{time:0,method:'analytic-shape-plane'};if(speed>=-EPS)return null;const t=gap/-speed;return t<=dt?{time:t,method:'analytic-shape-plane'}:null;}
- if(gb.type==='plane'&&ga.type!=='plane'){const {gap,side}=planeGap(ga,gb),speed=dot(a.velocity,gb.normal)*side;if(gap<=0)return{time:0,method:'analytic-shape-plane'};if(speed>=-EPS)return null;const t=gap/-speed;return t<=dt?{time:t,method:'analytic-shape-plane'}:null;}
- if(ga.type==='plane'||gb.type==='plane')return null;
- const R=boundRadius(ga)+boundRadius(gb),p=sub(gb.center,ga.center),v=sub(b.velocity,a.velocity),A=dot(v,v),B=2*dot(p,v),C=dot(p,p)-R*R;
- if(C<=0)return{time:0,method:'conservative-bounding-sphere'};
- if(A<EPS||B>=0)return null;const d=B*B-4*A*C;if(d<0)return null;const t=(-B-Math.sqrt(Math.max(0,d)))/(2*A);return t>=0&&t<=dt?{time:t,method:'conservative-bounding-sphere'}:null;
-}
-export function findCCDImpact3D(a,b,dt,{maxIterations=48}={}){
- const candidate=pairTOI(a,b,dt);if(!candidate||candidate.time===null)return null;
- const start=candidate.time,steps=Math.max(8,Math.min(64,maxIterations)),remaining=dt-start;
- // Candidate TOI is exact for sphere-sphere and shape-plane translation; other
- // supported pairs use a conservative enclosing-radius candidate. Narrowphase
- // contact is required before the candidate can become an authoritative impact.
- for(let i=0;i<=steps;i++){const ti=start+remaining*i/steps,ra=narrowphase3D(geometryAt(a,ti),geometryAt(b,ti));if(ra.status==='confirmed-contact')return{time:ti,contact:ra.contact,method:candidate.method,pair:ra.pair};}
- return null;
-}
+const EPS=1e-10,TOI_TOL=1e-7;
+const add=(a,b)=>a.map((v,i)=>v+b[i]),sub=(a,b)=>a.map((v,i)=>v-b[i]),scale=(a,s)=>a.map(v=>v*s);
+const dot=(a,b)=>a.reduce((s,v,i)=>s+v*b[i],0),len=a=>Math.hypot(...a),norm=a=>len(a)>EPS?scale(a,1/len(a)):[1,0,0];
+const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+const qrotate=(q,v)=>{const u=q.slice(1),t=scale(cross(u,v),2);return add(v,add(scale(t,q[0]),cross(u,t)));},qinv=q=>[q[0],-q[1],-q[2],-q[3]];
+function qintegrate(q,w,dt){const [wx,wy,wz]=w,[x,y,z]=q.slice(1),s=.5*dt,n=[q[0]-s*(wx*x+wy*y+wz*z),x+s*(wx*q[0]+wy*z-wz*y),y+s*(wy*q[0]+wz*x-wx*z),z+s*(wz*q[0]+wx*y-wy*x)],l=Math.hypot(...n);return l>EPS?n.map(v=>v/l):q.slice();}
+function geometryAt(body,time){return collider3DWorldGeometry(body.collider,{position:add(body.position,scale(body.velocity,time)),orientation:qintegrate(body.orientation,body.angularVelocity||[0,0,0],time)});}
+function radius(g){if(g.type==='sphere')return g.radius;if(g.type==='ellipsoid')return Math.max(...g.radii);if(g.type==='box')return len(g.halfExtents);return Infinity;}
+function planeExtent(g,n){if(g.type==='sphere')return g.radius;if(g.type==='ellipsoid'){const local=qrotate(qinv(g.orientation),n);return Math.sqrt(g.radii.reduce((s,r,i)=>s+(r*local[i])**2,0));}if(g.type==='box'){const axes=[qrotate(g.orientation,[1,0,0]),qrotate(g.orientation,[0,1,0]),qrotate(g.orientation,[0,0,1])];return g.halfExtents.reduce((s,h,i)=>s+h*Math.abs(dot(n,axes[i])),0);}return 0;}
+function planeGap(g,p){const signed=dot(g.center,p.normal)-p.offset;return Math.abs(signed)-planeExtent(g,p.normal);}
+function localPoint(b,p){return qrotate(qinv(b.orientation),sub(p,b.center));}
+function sphereBoxGap(s,b){const p=localPoint(b,s.center),h=b.halfExtents,q=p.map((v,i)=>Math.max(-h[i],Math.min(h[i],v)));return len(sub(p,q))-s.radius;}
+function boxAxes(b){return[qrotate(b.orientation,[1,0,0]),qrotate(b.orientation,[0,1,0]),qrotate(b.orientation,[0,0,1])];}
+function boxBoxGap(a,b){const aa=boxAxes(a),bb=boxAxes(b),d=sub(b.center,a.center),axes=[...aa,...bb];for(const x of aa)for(const y of bb){const c=cross(x,y);if(len(c)>1e-8)axes.push(norm(c));}let max=-Infinity;for(const n of axes){const ra=a.halfExtents.reduce((s,h,i)=>s+h*Math.abs(dot(n,aa[i])),0),rb=b.halfExtents.reduce((s,h,i)=>s+h*Math.abs(dot(n,bb[i])),0);max=Math.max(max,Math.abs(dot(d,n))-ra-rb);}return max;}
+function sphereEllipsoidGap(s,e){const inv=qinv(e.orientation),r=e.radii;let p=e.center.slice();for(let i=0;i<48;i++){const dir=norm(sub(s.center,p)),ld=qrotate(inv,dir),den=Math.sqrt((r[0]*ld[0])**2+(r[1]*ld[1])**2+(r[2]*ld[2])**2);if(den<EPS)break;const lp=[r[0]*r[0]*ld[0]/den,r[1]*r[1]*ld[1]/den,r[2]*r[2]*ld[2]/den],next=add(e.center,qrotate(e.orientation,lp));if(len(sub(next,p))<1e-9){p=next;break;}p=next;}const approximate=len(sub(s.center,p))-s.radius,lowerBound=len(sub(s.center,e.center))-s.radius-Math.max(...e.radii);return Math.min(approximate,lowerBound);}
+function shapeGap(a,b){if(a.type==='sphere'&&b.type==='sphere')return len(sub(b.center,a.center))-a.radius-b.radius;if(a.type==='sphere'&&b.type==='box')return sphereBoxGap(a,b);if(a.type==='box'&&b.type==='sphere')return sphereBoxGap(b,a);if(a.type==='box'&&b.type==='box')return boxBoxGap(a,b);if(a.type==='sphere'&&b.type==='ellipsoid')return sphereEllipsoidGap(a,b);if(a.type==='ellipsoid'&&b.type==='sphere')return sphereEllipsoidGap(b,a);if(a.type==='plane'&&b.type!=='plane')return planeGap(b,a);if(b.type==='plane'&&a.type!=='plane')return planeGap(a,b);if(a.type==='plane'||b.type==='plane')return Infinity;return len(sub(b.center,a.center))-radius(a)-radius(b);}
+function angularBound(body){const w=body.angularVelocity||[0,0,0];return len(w)*radius(body.collider);}
+export function findCCDImpact3D(a,b,dt,{maxIterations=64,tolerance=TOI_TOL}={}){const ga0=geometryAt(a,0),gb0=geometryAt(b,0),initial=narrowphase3D(ga0,gb0);if(initial.status==='indeterminate')return null;if(initial.status==='confirmed-contact')return null;const speed=len(sub(b.velocity,a.velocity))+angularBound(a)+angularBound(b);if(speed<EPS)return null;let t=0,gap=shapeGap(ga0,gb0);if(!Number.isFinite(gap)||gap<=0)return null;for(let i=0;i<maxIterations;i++){const step=Math.max(tolerance*.25,gap/speed*.8);t+=step;if(t>dt+tolerance)return null;t=Math.min(t,dt);const ga=geometryAt(a,t),gb=geometryAt(b,t),result=narrowphase3D(ga,gb);if(result.status==='confirmed-contact')return{time:t,contact:result.contact,method:'conservative-advancement',pair:result.pair,iterations:i+1};if(result.status==='indeterminate')return null;gap=shapeGap(ga,gb);if(!Number.isFinite(gap))return null;if(gap<=tolerance){let lo=Math.max(0,t-step),hi=t;for(let j=0;j<24;j++){const mid=(lo+hi)/2,r=narrowphase3D(geometryAt(a,mid),geometryAt(b,mid));if(r.status==='confirmed-contact')hi=mid;else lo=mid;}const r=narrowphase3D(geometryAt(a,hi),geometryAt(b,hi));if(r.status==='confirmed-contact')return{time:hi,contact:r.contact,method:'conservative-advancement',pair:r.pair,iterations:i+1};return null;}if(t>=dt)return null;}return null;}
