@@ -6941,31 +6941,80 @@
               "description": "Initial [x,y,z] location."
             },
             "transform": {
-              "type": "array",
-              "minItems": 3,
-              "maxItems": 3,
-              "items": [
-                {
-                  "type": "number",
-                  "description": "Rotation in degrees."
+              "type": "object",
+              "required": [
+                "rotation",
+                "scale",
+                "origin"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "rotation": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/vec3"
+                    },
+                    {
+                      "$ref": "#/definitions/quat"
+                    }
+                  ],
+                  "description": "Euler rotation Vec3 in degrees or quaternion [w,x,y,z]."
                 },
-                {
-                  "type": "number",
-                  "exclusiveMinimum": 0,
-                  "description": "Uniform scale."
+                "scale": {
+                  "$ref": "#/definitions/vec3",
+                  "description": "Positive per-axis scale [sx,sy,sz]."
                 },
-                {
-                  "type": "string",
-                  "description": "Transform origin."
+                "origin": {
+                  "$ref": "#/definitions/vec3",
+                  "description": "Origin offset in local coordinates."
                 }
-              ],
-              "additionalItems": false,
-              "default": [
-                0,
-                1,
-                "center"
-              ],
-              "description": "[rotate, scale, origin]"
+              },
+              "description": "Canonical initial transform; no legacy tuple, scalar rotation, uniform scale or named origin."
+            },
+            "transformTrajectory": {
+              "type": "array",
+              "minItems": 1,
+              "description": "Optional canonical time-keyed transform keys; every key uses Vec3 or quaternion rotation, Vec3 scale and Vec3 origin.",
+              "items": {
+                "type": "object",
+                "required": [
+                  "time",
+                  "rotation",
+                  "scale",
+                  "origin"
+                ],
+                "properties": {
+                  "time": {
+                    "type": "number"
+                  },
+                  "rotation": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/definitions/vec3"
+                      },
+                      {
+                        "$ref": "#/definitions/quat"
+                      }
+                    ]
+                  },
+                  "scale": {
+                    "$ref": "#/definitions/vec3"
+                  },
+                  "origin": {
+                    "$ref": "#/definitions/vec3"
+                  },
+                  "angularVelocity": {
+                    "$ref": "#/definitions/vec3"
+                  },
+                  "scaleRate": {
+                    "$ref": "#/definitions/vec3"
+                  },
+                  "positionVelocity": {
+                    "$ref": "#/definitions/vec3"
+                  }
+                },
+                "additionalProperties": false
+              }
             }
           },
           "additionalProperties": false,
@@ -7068,15 +7117,6 @@
                 0
               ]
             },
-            "orientation": {
-              "$ref": "#/definitions/quat",
-              "default": [
-                1,
-                0,
-                0,
-                0
-              ]
-            },
             "linearDamping": {
               "type": "number",
               "minimum": 0,
@@ -7086,6 +7126,27 @@
               "type": "number",
               "minimum": 0,
               "default": 0
+            },
+            "rotationMode": {
+              "type": "string",
+              "enum": [
+                "direct",
+                "shortest-path"
+              ],
+              "default": "direct"
+            },
+            "massMode": {
+              "type": "string",
+              "enum": [
+                "fixed",
+                "constant-density"
+              ],
+              "default": "fixed"
+            },
+            "density": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "default": 1
             }
           },
           "additionalProperties": false
@@ -7225,6 +7286,30 @@
             "easing"
           ],
           "additionalProperties": false
+        },
+        "positionTrajectory": {
+          "type": "array",
+          "minItems": 2,
+          "description": "Optional time-keyed canonical position trajectory with optional velocity tangents.",
+          "items": {
+            "type": "object",
+            "required": [
+              "time",
+              "position"
+            ],
+            "properties": {
+              "time": {
+                "type": "number"
+              },
+              "position": {
+                "$ref": "#/definitions/vec3"
+              },
+              "velocity": {
+                "$ref": "#/definitions/vec3"
+              }
+            },
+            "additionalProperties": false
+          }
         }
       },
       "additionalProperties": false

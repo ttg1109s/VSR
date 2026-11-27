@@ -2,87 +2,22 @@ import { createSphereCollider3D, createBoxCollider3D, createPlaneCollider3D } fr
 import { createPoseTrajectory } from './PoseTrajectory.js';
 import { createPhysicalStateSampler } from './PhysicalStateSampler.js';
 
-const vec3 = (value, name) => {
-  if (!Array.isArray(value) || value.length !== 3 || value.some(v => !Number.isFinite(v))) throw new TypeError(`${name} must be a finite Vec3`);
-  return [...value];
-};
-const quat = (value, name='orientation') => {
-  if (!Array.isArray(value) || value.length !== 4 || value.some(v => !Number.isFinite(v)) || Math.hypot(...value) < 1e-12) throw new TypeError(`${name} must be a finite non-zero quaternion`);
-  const m=Math.hypot(...value); return value.map(v=>v/m);
-};
-
-const WORLD_DEFAULTS = Object.freeze({
-  dimension:'2D', plane:'XY', planeOffset:0, dimensionPolicy:'project',
-  gravity:[0,-9.81,0], fixedDt:1/120, velocityIterations:8, positionIterations:3,
-  maxSubsteps:8, sleepLinearThreshold:0.02, sleepAngularThreshold:0.03, sleepDwell:0.5
-});
-
-export function normalizePhysicsWorldConfig(config={}) {
-  const w={...WORLD_DEFAULTS,...(config||{})};
-  if(!['2D','3D'].includes(w.dimension)||!['XY','XZ','YZ'].includes(w.plane)||!Number.isFinite(w.planeOffset)||!['project','reject'].includes(w.dimensionPolicy)) throw new TypeError('Invalid physicsWorld dimension profile');
-  w.gravity=vec3(w.gravity,'physicsWorld.gravity');
-  for(const key of ['fixedDt'])if(!Number.isFinite(w[key])||w[key]<=0)throw new TypeError(`physicsWorld.${key} must be positive finite`);
-  for(const key of ['velocityIterations','positionIterations','maxSubsteps'])if(!Number.isSafeInteger(w[key])||w[key]<1)throw new TypeError(`physicsWorld.${key} must be a positive integer`);
-  for(const key of ['sleepLinearThreshold','sleepAngularThreshold','sleepDwell'])if(!Number.isFinite(w[key])||w[key]<0)throw new TypeError(`physicsWorld.${key} must be non-negative finite`);
-  return w;
+const vec3=(value,name)=>{if(!Array.isArray(value)||value.length!==3||value.some(v=>!Number.isFinite(v)))throw new TypeError(`${name} must be a finite Vec3`);return [...value];};
+const scale3=(value,name='scale')=>{const v=vec3(value,name);if(v.some(x=>x<=0))throw new TypeError(`${name} components must be positive finite`);return v;};
+const rotationQuat=(value)=>{if(Array.isArray(value)&&value.length===4)return quat(value,'rotation quaternion');if(!Array.isArray(value)||value.length!==3)throw new TypeError('rotation must be Euler Vec3 or quaternion');const [x,y,z]=value.map(v=>v*Math.PI/360),cx=Math.cos(x),sx=Math.sin(x),cy=Math.cos(y),sy=Math.sin(y),cz=Math.cos(z),sz=Math.sin(z);return[cx*cy*cz+sx*sy*sz,sx*cy*cz-cx*sy*sz,cx*sy*cz+sx*cy*sz,cx*cy*sz-sx*sy*cz];};
+const quat=(value,name='orientation')=>{if(!Array.isArray(value)||value.length!==4||value.some(v=>!Number.isFinite(v))||Math.hypot(...value)<1e-12)throw new TypeError(`${name} must be a finite non-zero quaternion`);const m=Math.hypot(...value);return value.map(v=>v/m);};
+const WORLD_DEFAULTS=Object.freeze({dimension:'2D',plane:'XY',planeOffset:0,dimensionPolicy:'project',gravity:[0,-9.81,0],fixedDt:1/120,velocityIterations:8,positionIterations:3,maxSubsteps:8,sleepLinearThreshold:0.02,sleepAngularThreshold:0.03,sleepDwell:0.5});
+export function normalizePhysicsWorldConfig(config={}){const w={...WORLD_DEFAULTS,...(config||{})};if(!['2D','3D'].includes(w.dimension)||!['XY','XZ','YZ'].includes(w.plane)||!Number.isFinite(w.planeOffset)||!['project','reject'].includes(w.dimensionPolicy))throw new TypeError('Invalid physicsWorld dimension profile');w.gravity=vec3(w.gravity,'physicsWorld.gravity');for(const key of ['fixedDt'])if(!Number.isFinite(w[key])||w[key]<=0)throw new TypeError(`physicsWorld.${key} must be positive finite`);for(const key of ['velocityIterations','positionIterations','maxSubsteps'])if(!Number.isSafeInteger(w[key])||w[key]<1)throw new TypeError(`physicsWorld.${key} must be a positive integer`);for(const key of ['sleepLinearThreshold','sleepAngularThreshold','sleepDwell'])if(!Number.isFinite(w[key])||w[key]<0)throw new TypeError(`physicsWorld.${key} must be non-negative finite`);return w;}
+/** Builds one canonical pose trajectory and a timestamp-matched physical sampler per Sprite. */
+export function normalizeSpritePhysicsConfig(spriteId,spriteDefinition){
+ if(!spriteDefinition||typeof spriteDefinition!=='object')throw new TypeError(`Sprite ${spriteId} definition required`);
+ const p=spriteDefinition.physics||{},c=spriteDefinition.collision||{},worldKeys=['dimension','plane','planeOffset','dimensionPolicy','gravity','fixedDt','velocityIterations','positionIterations','maxSubsteps','sleepLinearThreshold','sleepAngularThreshold','sleepDwell'];if(worldKeys.some(key=>Object.hasOwn(p,key)))throw new TypeError(`Sprite ${spriteId} physics contains world configuration; move it to physicsWorld`);if(Object.hasOwn(p,'orientation'))throw new TypeError(`Sprite ${spriteId} physics.orientation is removed; use position.transform.rotation`);if(!spriteDefinition.position?.transform||Array.isArray(spriteDefinition.position.transform))throw new TypeError(`Sprite ${spriteId} requires canonical position.transform object`);if(spriteDefinition.transformTrajectory?.some(k=>Object.hasOwn(k,'rotate')||Object.hasOwn(k,'quaternion')))throw new TypeError(`Sprite ${spriteId} transformTrajectory legacy aliases rotate/quaternion are removed`);const physicsEnabled=Object.hasOwn(spriteDefinition,'physics')&&p&&typeof p==='object',collisionDeclared=Object.hasOwn(spriteDefinition,'collision')&&c.enable!==false,shape=c.shape??'sphere';
+ let collider;if(shape==='sphere')collider=createSphereCollider3D({radius:Number(c.radius??.5),offset:vec3(c.offset??[0,0,0],'collision.offset')});else if(shape==='box')collider=createBoxCollider3D({halfExtents:vec3(c.halfExtents??[.5,.5,.5],'collision.halfExtents'),offset:vec3(c.offset??[0,0,0],'collision.offset')});else if(shape==='plane')collider=createPlaneCollider3D({normal:vec3(c.normal??[0,1,0],'collision.normal'),offset:Number(c.planeOffset??0)});else throw new TypeError(`Sprite ${spriteId} has unsupported collider shape ${shape}`);
+ const radius=shape==='sphere'?collider.radius:Number(c.radius??.5),bodyType=p.bodyType??'dynamic';if(!['static','kinematic','dynamic','sensor'].includes(bodyType))throw new TypeError(`Sprite ${spriteId} has invalid bodyType`);
+ const authoredPose=spriteDefinition.position,position=vec3(authoredPose.location,'position.location'),transform=authoredPose.transform,initialScale=scale3(transform.scale,'position.transform.scale'),initialRotation=transform.rotation,initialOrigin=vec3(transform.origin,'position.transform.origin');
+ const keys=(spriteDefinition.transformTrajectory??[]).map(k=>({time:k.time,rotation:k.rotation,scale:scale3(k.scale,'transformTrajectory.scale'),origin:vec3(k.origin,'transformTrajectory.origin'),positionVelocity:k.positionVelocity,angularVelocity:k.angularVelocity,scaleRate:k.scaleRate})),positionTrajectory=spriteDefinition.positionTrajectory?(()=>{const points=spriteDefinition.positionTrajectory.map(k=>({time:Number(k.time),position:vec3(k.position,'positionTrajectory.position'),velocity:k.velocity===undefined?null:vec3(k.velocity,'positionTrajectory.velocity')})).sort((a,b)=>a.time-b.time);if(points.length<2||points.some((k,i)=>!Number.isFinite(k.time)||(i&&k.time===points[i-1].time)))throw new TypeError('positionTrajectory requires at least two unique finite time keys');const locate=t=>t<=points[0].time?0:t>=points.at(-1).time?points.length-2:points.findIndex((k,j)=>j<points.length-1&&t>=k.time&&t<=points[j+1].time);return{startTime:points[0].time,endTime:points.at(-1).time,sample(t){const i=locate(t),a=points[i],b=points[i+1],dt=b.time-a.time,u=Math.max(0,Math.min(1,(t-a.time)/dt)),v0=a.velocity??b.position.map((x,j)=>(x-a.position[j])/dt),v1=b.velocity??v0,u2=u*u,u3=u2*u;return a.position.map((x,j)=>(2*u3-3*u2+1)*x+(-2*u3+3*u2)*b.position[j]+(u3-2*u2+u)*dt*v0[j]+(u3-u2)*dt*v1[j]);},velocity(t){const i=locate(t),a=points[i],b=points[i+1],dt=b.time-a.time,u=Math.max(0,Math.min(1,(t-a.time)/dt)),v0=a.velocity??b.position.map((x,j)=>(x-a.position[j])/dt),v1=b.velocity??v0,u2=u*u;return a.position.map((x,j)=>((6*u2-6*u)*x+(-6*u2+6*u)*b.position[j]+(3*u2-4*u+1)*dt*v0[j]+(3*u2-2*u)*dt*v1[j])/dt);}};})():null;
+ const poseTrajectory=createPoseTrajectory({positionTrajectory,initialPose:{location:position,rotation:initialRotation,scale:initialScale,origin:initialOrigin},transformKeys:keys,rotationMode:p.rotationMode??'direct'});
+ const physicalStateSampler=createPhysicalStateSampler({collider,mass:Number(p.mass??1),bodyType,poseTrajectory,constantDensity:p.massMode==='constant-density',density:Number(p.density??1)});
+ return{id:String(spriteId),type:bodyType,radius,collider,transform:{position,orientation:rotationQuat(initialRotation),rotation:initialRotation,scale:initialScale,origin:initialOrigin},poseTrajectory,physicalStateSampler,velocity:vec3(p.velocity??poseTrajectory.velocity(0),'physics.velocity'),angularVelocity:vec3(p.angularVelocity??poseTrajectory.angularVelocity(0),'physics.angularVelocity'),mass:Number(p.mass??1),restitution:Number(p.restitution??.2),staticFriction:Number(p.friction??.5),dynamicFriction:Number(p.friction??.5),linearDamping:Number(p.linearDamping??0),angularDamping:Number(p.angularDamping??0),collisionEnabled:collisionDeclared,ccd:c.ccd===true||p.ccd===true,physicsEnabled};
 }
-
-/** Converts a scenario Sprite definition into a rigid-body spec. World settings are never read from the Sprite. */
-export function normalizeSpritePhysicsConfig(spriteId, spriteDefinition) {
-  if (!spriteDefinition || typeof spriteDefinition !== 'object') throw new TypeError(`Sprite ${spriteId} definition required`);
-  const p=spriteDefinition.physics||{}, c=spriteDefinition.collision||{};
-  const physicsEnabled=Object.hasOwn(spriteDefinition,'physics') && p && typeof p==='object';
-  const collisionDeclared=Object.prototype.hasOwnProperty.call(spriteDefinition,'collision') && c.enable!==false;
-  const shape=c.shape??'sphere'; let collider;
-  if(shape==='sphere') collider=createSphereCollider3D({radius:Number(c.radius??0.5),offset:vec3(c.offset??[0,0,0],'collision.offset')});
-  else if(shape==='box') collider=createBoxCollider3D({halfExtents:vec3(c.halfExtents??[0.5,0.5,0.5],'collision.halfExtents'),offset:vec3(c.offset??[0,0,0],'collision.offset')});
-  else if(shape==='plane') collider=createPlaneCollider3D({normal:vec3(c.normal??[0,1,0],'collision.normal'),offset:Number(c.planeOffset??0)});
-  else throw new TypeError(`Sprite ${spriteId} has unsupported collider shape ${shape}`);
-  const radius=shape==='sphere'?collider.radius:Number(c.radius??0.5);
-  const bodyType=p.bodyType??'dynamic';
-  if(!['static','kinematic','dynamic','sensor'].includes(bodyType))throw new TypeError(`Sprite ${spriteId} has invalid bodyType`);
-  const authoredPose=spriteDefinition.position&&typeof spriteDefinition.position==='object'&&!Array.isArray(spriteDefinition.position)?spriteDefinition.position:{};
-  const position=vec3(authoredPose.location??spriteDefinition.position??[0,0,0],'position');
-  const tuple=authoredPose.transform;
-  const initialScale=tuple?.[1]??1,initialRotation=tuple?.[0]??0,initialOrigin=tuple?.[2]??'center';
-  const transformKeys=Array.isArray(spriteDefinition.transformTrajectory)?spriteDefinition.transformTrajectory.map(k=>({time:k.time,quaternion:k.quaternion,rotation:k.rotate??k.rotation??0,scale:k.scale??1,origin:k.origin??initialOrigin})):[];
-  const poseTrajectory=createPoseTrajectory({initialPose:{location:position,rotation:initialRotation,scale:initialScale,origin:initialOrigin},transformKeys,rotationMode:p.rotationMode??'direct'});
-  const physicalStateSampler=createPhysicalStateSampler({collider,mass:Number(p.mass??1),bodyType,poseTrajectory,constantDensity:p.massMode==='constant-density',density:Number(p.density??1)});
-  return {
-    id:String(spriteId), type:bodyType, radius, collider,
-    transform:{position,orientation:quat(p.orientation??[1,0,0,0]),rotation:initialRotation,scale:initialScale,origin:initialOrigin},
-    poseTrajectory,physicalStateSampler,
-    velocity:vec3(p.velocity??[0,0,0],'physics.velocity'),
-    angularVelocity:vec3(p.angularVelocity??[0,0,0],'physics.angularVelocity'),
-    mass:Number(p.mass??1),
-    restitution:Number(p.restitution??0.2),
-    staticFriction:Number(p.friction??0.5), dynamicFriction:Number(p.friction??0.5),
-    linearDamping:Number(p.linearDamping??0), angularDamping:Number(p.angularDamping??0),
-    collisionEnabled:collisionDeclared, ccd:c.ccd===true||p.ccd===true,
-    physicsEnabled
-  };
-}
-
-/** Normalizes one shared World configuration and per-Sprite Body specifications. */
-export function normalizeScenarioSpritePhysics(spriteDefinitions={}, worldConfig={}) {
-  const legacyWorldKeys=['dimension','plane','planeOffset','dimensionPolicy','gravity','fixedDt','sleepLinearThreshold','sleepAngularThreshold','sleepDwell'];
-  const worldInput={...(worldConfig||{})};
-  const explicitKeys=new Set(Object.keys(worldInput));
-  const adopted=new Set();
-  for(const [spriteId,definition] of Object.entries(spriteDefinitions||{})){
-    const p=definition?.physics||{};
-    for(const key of legacyWorldKeys){
-      if(!Object.hasOwn(p,key))continue;
-      if(explicitKeys.has(key)){
-        if(JSON.stringify(worldInput[key])!==JSON.stringify(p[key]))throw new TypeError(`physicsWorld.${key} conflicts with legacy Sprite ${spriteId} physics.${key}`);
-      }else if(adopted.has(key)){
-        if(JSON.stringify(worldInput[key])!==JSON.stringify(p[key]))throw new TypeError(`Legacy Sprite physics settings conflict for physicsWorld.${key}`);
-      }else{
-        worldInput[key]=p[key];adopted.add(key);
-      }
-    }
-  }
-  const normalizedWorld=normalizePhysicsWorldConfig(worldInput);
-  const bodies=Object.entries(spriteDefinitions||{}).map(([id,def])=>normalizeSpritePhysicsConfig(id,def)).filter(body=>body.physicsEnabled);
-  return {worldConfig:normalizedWorld,bodies};
-}
+export function normalizeScenarioSpritePhysics(spriteDefinitions={},worldConfig={}){const normalizedWorld=normalizePhysicsWorldConfig(worldConfig),bodies=Object.entries(spriteDefinitions||{}).map(([id,def])=>normalizeSpritePhysicsConfig(id,def)).filter(body=>body.physicsEnabled);return{worldConfig:normalizedWorld,bodies};}
