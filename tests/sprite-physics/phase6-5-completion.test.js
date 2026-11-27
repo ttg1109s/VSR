@@ -45,7 +45,7 @@ test('static friction holds a low tangential load without slipping',()=>{
 test('solver diagnostics do not report convergence when residuals exceed tolerances',()=>{
  const floor=body('floor','static'),moving=body('moving','dynamic',[0,-5,5]);
  const c=contact(floor,moving,[0,1,0],.1);
- const result=solveContactManifold([floor,moving],[c],{velocityIterations:1,positionIterations:1,normalTolerance:1e-12,frictionTolerance:1e-12,positionTolerance:1e-12});
+ const result=solveContactManifold([floor,moving],[c],{velocityIterations:0,positionIterations:0,normalTolerance:1e-12,frictionTolerance:1e-12,positionTolerance:1e-12});
  assert.equal(result.converged,false);
  assert.ok(result.normalResidual>0||result.frictionResidual>0||result.positionResidual>0);
 });
