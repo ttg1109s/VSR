@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { createBezierTrajectory, createLinearPhysicsSegment } from '../../engine/modules/sprite/trajectory.js';
 import { firstCircleImpactResult, movingCircleTOI } from '../../engine/modules/sprite/collision.js';
 import { createPoseTrajectory } from '../../engine/modules/sprite/PoseTrajectory.js';
-import { normalizeSpritePhysicsConfig, normalizeScenarioSpritePhysics } from '../../engine/modules/sprite/SpritePhysicsConfig.js';
+import { normalizeSpritePhysicsConfig } from '../../engine/modules/sprite/SpritePhysicsConfig.js';
 import { createPhysicalStateSampler } from '../../engine/modules/sprite/PhysicalStateSampler.js';
 import { RigidBodyWorld3D } from '../../engine/modules/sprite/RigidBodyWorld3D.js';
 import { AuthoritativeSpriteSimulation } from '../../engine/modules/sprite/AuthoritativeSimulation.js';
