@@ -6922,12 +6922,27 @@
         },
         "state": {
           "type": "object",
-          "minProperties": 1,
-          "additionalProperties": {
-            "type": "string",
-            "minLength": 1
+          "required": [
+            "active",
+            "map"
+          ],
+          "properties": {
+            "active": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Active visual state key; must reference a key in map."
+            },
+            "map": {
+              "type": "object",
+              "minProperties": 1,
+              "additionalProperties": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
           },
-          "description": "Named visual states mapped to image URLs/paths."
+          "additionalProperties": false,
+          "description": "Sprite visual state configuration with active key and named media map."
         },
         "position": {
           "type": "object",
@@ -7170,7 +7185,8 @@
             "effect": {
               "start": [],
               "end": []
-            }
+            },
+            "falling": false
           },
           "properties": {
             "enable": {
@@ -7277,6 +7293,11 @@
                 }
               },
               "additionalProperties": false
+            },
+            "falling": {
+              "type": "boolean",
+              "default": false,
+              "description": "Whether the Sprite is currently falling."
             }
           },
           "required": [

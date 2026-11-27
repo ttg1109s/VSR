@@ -367,7 +367,7 @@ function validateReferences(scenario) {
       if (check.type === 'sprite' && !isDynamicExpression(check.target)) {
         const spriteDef = scenario.sprite?.[check.target];
         if (!spriteDef) add(checkPath + '.target', `references missing Sprite '${check.target}'`);
-        else if (check.property === 'state' && typeof check.value === 'string' && !isDynamicExpression(check.value) && !Object.hasOwn(spriteDef.state || {}, check.value)) {
+        else if (check.property === 'state' && typeof check.value === 'string' && !isDynamicExpression(check.value) && !Object.hasOwn(spriteDef.state?.map || {}, check.value)) {
           add(checkPath + '.value', `references missing Sprite state '${check.value}'`);
         }
       }
@@ -474,7 +474,7 @@ function validateReferences(scenario) {
     if (effect.type === 'set' && effect.subtype === 'sprite' && effect.target && !dynamicTarget) {
       const spriteDef = scenario.sprite?.[effect.target];
       if (!spriteDef) add(`${path}.target`, `references missing Sprite '${effect.target}'`);
-      else if (effect.property === 'state' && typeof effect.value === 'string' && !isDynamicExpression(effect.value) && !Object.hasOwn(spriteDef.state || {}, effect.value)) {
+      else if (effect.property === 'state' && typeof effect.value === 'string' && !isDynamicExpression(effect.value) && !Object.hasOwn(spriteDef.state?.map || {}, effect.value)) {
         add(`${path}.value`, `references missing Sprite state '${effect.value}'`);
       }
     }
@@ -545,6 +545,7 @@ function validateReferences(scenario) {
 
   for (const [spriteId, sprite] of Object.entries(scenario.sprite || {})) {
     if (!actionExists(sprite?.action)) add(`sprite.${spriteId}.action`, `references missing global Action '${sprite?.action}'`);
+    if (sprite?.state?.active && !Object.hasOwn(sprite.state.map || {}, sprite.state.active)) add(`sprite.${spriteId}.state.active`, 'must reference an existing state.map key');
     const point = sprite?.motion?.path?.point;
     if (Array.isArray(point)) {
       const waypoints = Array.isArray(point[0]) ? point[0] : [];
@@ -696,6 +697,18 @@ export function validateScenario(scenario) {
   return [...new Set(errors)];
 }
 
+function migrateSpriteStateMap(scenario) {
+  for (const [spriteId, definition] of Object.entries(scenario?.sprite || {})) {
+    const state = definition?.state;
+    if (!state || typeof state !== 'object' || Array.isArray(state) || Object.hasOwn(state, 'active') || Object.hasOwn(state, 'map')) continue;
+    const keys = Object.keys(state);
+    if (!keys.length) continue;
+    definition.state = {
+      active: keys[0],
+      map: Object.fromEntries(keys.map(key => [key, state[key]]))
+    };
+  }
+}
 export function normalizeScenario(input) {
   const scenario = migrateSpriteLegacyShape(migrateMotionPhysics(clone(input)));
   if (!isObject(scenario)) throw new ScenarioValidationError(['root must be a JSON object']);
