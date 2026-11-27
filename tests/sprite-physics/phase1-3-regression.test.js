@@ -42,16 +42,16 @@ test('custom Bezier easing uses full control hull conservatively and authoritati
 });
 
 test('PoseTrajectory preserves direct 720-degree multi-turn keys and reports scale rate',()=>{
-  const pose=createPoseTrajectory({initialPose:{location:[0,0,0],rotation:0,scale:1,origin:'center'},transformKeys:[{time:0,rotation:0,scale:[1,1,1]},{time:1,rotation:720,scale:[2,3,4]}],rotationMode:'direct'});
-  assert.equal(pose.sample(.5).rotation,360);
+  const pose=createPoseTrajectory({initialPose:{location:[0,0,0],rotation:[0,0,0],scale:[1,1,1],origin:[0,0,0]},transformKeys:[{time:0,rotation:[0,0,0],scale:[1,1,1],origin:[0,0,0]},{time:1,rotation:[0,0,720],scale:[2,3,4],origin:[0,0,0]}],rotationMode:'direct'});
+  assert.deepEqual(pose.sample(.5).rotation,[0,0,360]);
   assert.deepEqual(pose.sample(.5).scale,[1.5,2,2.5]);
   assert.ok(Math.abs(pose.angularVelocity(.5)[2]-4*Math.PI)<1e-3);
   assert.ok(pose.scaleRate(.5).every((v,i)=>Math.abs(v-[1,2,3][i])<1e-6));
-  assert.deepEqual(pose.sample(1).origin,'center');
+  assert.deepEqual(pose.sample(1).origin,[0,0,0]);
 });
 
 test('PoseTrajectory normalizes quaternion keys and samples deterministic endpoint values',()=>{
-  const pose=createPoseTrajectory({transformKeys:[{time:0,quaternion:[2,0,0,0]},{time:1,quaternion:[0,0,0,2]}],rotationMode:'shortest-path'});
+  const pose=createPoseTrajectory({initialPose:{location:[0,0,0],rotation:[1,0,0,0],scale:[1,1,1],origin:[0,0,0]},transformKeys:[{time:0,rotation:[2,0,0,0],scale:[1,1,1],origin:[0,0,0]},{time:1,rotation:[0,0,0,2],scale:[1,1,1],origin:[0,0,0]}],rotationMode:'shortest-path'});
   assert.deepEqual(pose.sample(0).rotation,[1,0,0,0]);
   const end=pose.sample(1).rotation;
   assert.ok(Math.abs(Math.hypot(...end)-1)<1e-12);
@@ -59,7 +59,7 @@ test('PoseTrajectory normalizes quaternion keys and samples deterministic endpoi
 });
 
 test('PhysicalStateSampler derives box geometry and diagonal inertia from animated scale',()=>{
-  const sampler=createPhysicalStateSampler({collider:{type:'box',halfExtents:[1,2,3]},mass:2,poseTrajectory:createPoseTrajectory({transformKeys:[{time:0,scale:[1,1,1]},{time:1,scale:[2,1,.5]}]})});
+  const sampler=createPhysicalStateSampler({collider:{type:'box',halfExtents:[1,2,3]},mass:2,poseTrajectory:createPoseTrajectory({initialPose:{location:[0,0,0],rotation:[0,0,0],scale:[1,1,1],origin:[0,0,0]},transformKeys:[{time:0,rotation:[0,0,0],scale:[1,1,1],origin:[0,0,0]},{time:1,rotation:[0,0,0],scale:[2,1,.5],origin:[0,0,0]}]})});
   const s=sampler(1);
   assert.deepEqual(s.geometry.halfExtents,[2,2,1.5]);
   assert.ok(Math.abs(s.inertia[0]-4.166666666666667)<1e-12);
@@ -94,9 +94,9 @@ test('PhysicalStateSampler rejects dynamic and constant-density plane mass model
 
 
 test('PoseTrajectory retarget carries position, angular and scale derivatives',()=>{
-  const source=createPoseTrajectory({positionTrajectory:{sample:t=>[t*t,0,0],velocity:t=>[2*t,0,0]},transformKeys:[{time:0,rotation:0,scale:[1,1,1]},{time:2,rotation:180,scale:[3,3,3]}]});
+  const source=createPoseTrajectory({positionTrajectory:{sample:t=>[t*t,0,0],velocity:t=>[2*t,0,0]},transformKeys:[{time:0,rotation:[0,0,0],scale:[1,1,1],origin:[0,0,0]},{time:2,rotation:[0,0,180],scale:[3,3,3],origin:[0,0,0]}]});
   const before=source.sample(1),velocity=source.velocity(1),angular=source.angularVelocity(1),scaleRate=source.scaleRate(1);
-  const next=source.retarget(1,{transformKeys:[{time:2,rotation:270,scale:[5,5,5]}]});
+  const next=source.retarget(1,{transformKeys:[{time:2,rotation:[0,0,270],scale:[5,5,5],origin:[0,0,0]}]});
   assert.deepEqual(next.sample(1),before);
   assert.ok(next.velocity(1).every((v,i)=>Math.abs(v-velocity[i])<1e-9));
   assert.ok(next.angularVelocity(1).every((v,i)=>Math.abs(v-angular[i])<1e-9));
@@ -104,7 +104,7 @@ test('PoseTrajectory retarget carries position, angular and scale derivatives',(
 });
 
 test('PhysicalStateSampler keeps the requested timestamp and conservative scale geometry',()=>{
-  const pose=createPoseTrajectory({transformKeys:[{time:0,scale:[2,1,.5]},{time:1,scale:[1,2,1]}]});
+  const pose=createPoseTrajectory({initialPose:{location:[0,0,0],rotation:[0,0,0],scale:[2,1,.5],origin:[0,0,0]},transformKeys:[{time:0,rotation:[0,0,0],scale:[2,1,.5],origin:[0,0,0]},{time:1,rotation:[0,0,0],scale:[1,2,1],origin:[0,0,0]}]});
   const sample=createPhysicalStateSampler({collider:{type:'sphere',radius:1},mass:2,poseTrajectory:pose});
   const result=sample(.5);
   assert.equal(result.time,.5);
@@ -114,7 +114,7 @@ test('PhysicalStateSampler keeps the requested timestamp and conservative scale 
 });
 
 test('RigidBodyWorld3D samples kinematic physical state at fixed-step timestamps',()=>{
-  const pose=createPoseTrajectory({positionTrajectory:{sample:t=>[t,0,0],velocity:()=>[1,0,0]},transformKeys:[{time:0,scale:[1,1,1]},{time:1,scale:[2,1,1]}]});
+  const pose=createPoseTrajectory({positionTrajectory:{sample:t=>[t,0,0],velocity:()=>[1,0,0]},transformKeys:[{time:0,rotation:[0,0,0],scale:[1,1,1],origin:[0,0,0]},{time:1,rotation:[0,0,0],scale:[2,1,1],origin:[0,0,0]}]});
   const world=new RigidBodyWorld3D({fixedDt:.1,gravity:[0,0,0]});
   world.addBody({id:'scripted',type:'kinematic',poseTrajectory:pose,physicalStateSampler:createPhysicalStateSampler({collider:{type:'box',halfExtents:[1,1,1]},bodyType:'kinematic',poseTrajectory:pose})});
   world.syncPhysicalState(0);
