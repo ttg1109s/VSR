@@ -3,9 +3,19 @@ import assert from 'node:assert/strict';
 import { createBezierTrajectory, createLinearPhysicsSegment } from '../../engine/modules/sprite/trajectory.js';
 import { firstCircleImpactResult, movingCircleTOI } from '../../engine/modules/sprite/collision.js';
 import { createPoseTrajectory } from '../../engine/modules/sprite/PoseTrajectory.js';
+import { normalizeSpritePhysicsConfig, normalizeScenarioSpritePhysics } from '../../engine/modules/sprite/SpritePhysicsConfig.js';
 import { createPhysicalStateSampler } from '../../engine/modules/sprite/PhysicalStateSampler.js';
 import { RigidBodyWorld3D } from '../../engine/modules/sprite/RigidBodyWorld3D.js';
 import { AuthoritativeSpriteSimulation } from '../../engine/modules/sprite/AuthoritativeSimulation.js';
+
+test('Sprite physics rejects legacy transform and per-body world-config compatibility forms',()=>{
+  const canonical={position:{location:[0,0,0],transform:{rotation:[0,0,0],scale:[1,1,1],origin:[0,0,0]}},physics:{bodyType:'kinematic'},collision:{shape:'box',halfExtents:[1,1,1]}};
+  assert.doesNotThrow(()=>normalizeSpritePhysicsConfig('canonical',canonical));
+  assert.throws(()=>normalizeSpritePhysicsConfig('legacy-tuple',{...canonical,position:{location:[0,0,0],transform:[0,1,'center']}}),/canonical position\.transform object/);
+  assert.throws(()=>normalizeSpritePhysicsConfig('legacy-orientation',{...canonical,physics:{...canonical.physics,orientation:[1,0,0,0]}}),/physics\.orientation is removed/);
+  assert.throws(()=>normalizeSpritePhysicsConfig('legacy-world',{...canonical,physics:{...canonical.physics,gravity:[0,-9.81,0]}}),/contains world configuration/);
+  assert.throws(()=>normalizeSpritePhysicsConfig('legacy-alias',{...canonical,transformTrajectory:[{time:0,rotate:0,scale:[1,1,1],origin:[0,0,0]}]}),/legacy aliases/);
+});
 
 test('CCD confirms tangential contact and rejects a geometric near miss',()=>{
   const a=createLinearPhysicsSegment({segmentId:'a',startTime:0,duration:2,position:[-2,0,0],velocity:[1,0,0]});
