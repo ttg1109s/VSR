@@ -276,7 +276,7 @@ export function setSpriteProperty(engine, spriteId, prop, value) {
                     const sampled=sampleSerializedSegments(serialized,elapsed);
                     if(sampled){otherVector=sampled.position;otherVelocity=sampled.velocity;otherPosition=sampled.position;
                         
-                        trajectoryMap.set(otherId,{segmentId:`${otherId}:active-rebased`,type:'active-rebased',startTime:0,endTime:eventWindow,segments:rebaseSerializedSegments(serialized,elapsed,eventWindow).map(seg=>seg.type==='bezier'?{...seg,points:seg.controlPoints,easingName:seg.easing}:seg),sample:t=>sampleSerializedSegments(serialized,elapsed+t)?.position||otherVector,velocity:t=>sampleSerializedSegments(serialized,elapsed+t)?.velocity||otherVelocity});
+                        trajectoryMap.set(otherId,{segmentId:`${otherId}:active-rebased`,type:'active-rebased',startTime:0,endTime:eventWindow,segments:rebaseSerializedSegments(serialized,elapsed,eventWindow).map(seg=>seg.type==='bezier'?{...seg,duration:seg.endTime-seg.startTime,points:seg.controlPoints,easingName:seg.easing}:seg),sample:t=>sampleSerializedSegments(serialized,elapsed+t)?.position||otherVector,velocity:t=>sampleSerializedSegments(serialized,elapsed+t)?.velocity||otherVelocity});
                     }
                 }
                 bodies[otherId] = {
