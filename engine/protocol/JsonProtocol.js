@@ -634,6 +634,7 @@ export function normalizeSpriteProtocol(payload) {
   if (!payload || typeof payload !== 'object' || Array.isArray(payload)) throw new TypeError('Invalid Sprite protocol payload.');
   if (payload.protocol === SPRITE_PROTOCOL && payload.protocolVersion === 2 && ['trajectory','simulation'].includes(payload.kind)) return payload;
   if (payload.protocol === SPRITE_PROTOCOL && payload.protocolVersion === 3 && payload.kind === 'motion-lut') return payload;
+  if (payload.protocol === SPRITE_PROTOCOL && payload.protocolVersion === 4 && payload.kind === 'motion-lifecycle') return payload;
   if (payload.protocolVersion === 2 && payload.trajectoryId && payload.trajectories && payload.presentation) return { ...payload, protocol: SPRITE_PROTOCOL, protocolVersion: 2, kind: 'trajectory' };
   if (payload.protocol === 'vsr.sprite.protocol.v3' && payload.protocolVersion === 3) return { ...payload, protocol: SPRITE_PROTOCOL, protocolVersion: 2, kind: 'simulation' };
   throw new TypeError('Unsupported Sprite protocol payload identity.');
@@ -641,8 +642,12 @@ export function normalizeSpriteProtocol(payload) {
 export function validateSpriteProtocol(payload) {
   const p = normalizeSpriteProtocol(payload);
   if (p.kind === 'motion-lut') return validateMotionLUTProtocol(p);
+  if (p.kind === 'motion-lifecycle') return validateMotionLifecycleProtocol(p);
   if (p.kind === 'trajectory') {
     if (!p.spriteId || !p.motionId || !p.trajectoryId || !Number.isFinite(p.startTime) || !Number.isFinite(p.endTime) || p.endTime <= 0 || !p.trajectories || typeof p.trajectories !== 'object' || Array.isArray(p.trajectories) || !p.finalPositions || typeof p.finalPositions !== 'object' || !Array.isArray(p.impacts) || !Array.isArray(p.presentation?.requiredSegments)) throw new TypeError('Invalid Sprite trajectory payload.');
+    if(p.motionLUT)validateMotionLUTProtocol(p.motionLUT);
+    if(p.finalStates!==undefined){if(!p.finalStates||typeof p.finalStates!=='object'||Array.isArray(p.finalStates))throw new TypeError('Sprite finalStates must be an object map.');for(const [bodyId,state] of Object.entries(p.finalStates)){if(!bodyId||!state||!Number.isFinite(state.simulationTime)||!finiteVector(state.position,3)||!finiteVector(state.velocity,3)||!finiteVector(state.orientation,4)||!finiteVector(state.angularVelocity,3)||!finiteVector(state.scale,3))throw new TypeError(`Invalid Sprite final motion state for ${bodyId}.`);}}
+    if(p.motionLifecycle){validateMotionLifecycleProtocol(p.motionLifecycle);if(p.motionLifecycle.status!=='terminal'||p.motionLifecycle.interval.endTime!==p.endTime)throw new TypeError('Sprite trajectory and lifecycle terminal intervals differ.');if(p.motionLUT&&p.motionLifecycle.canonicalMotionLUT){if(p.motionLifecycle.canonicalMotionLUT.simulation.simulationId!==p.motionLUT.simulation.simulationId||p.motionLifecycle.canonicalMotionLUT.simulation.endTime!==p.motionLUT.simulation.endTime||JSON.stringify(p.motionLifecycle.canonicalMotionLUT)!==JSON.stringify(p.motionLUT))throw new TypeError('Sprite trajectory and lifecycle canonical LUTs differ.');}}
     return true;
   }
   if (!p.simulationId || !p.time || !Number.isFinite(p.time.tStart) || !Number.isFinite(p.time.tEnd) || !Number.isFinite(p.time.fixedDt) || p.time.tEnd < p.time.tStart || p.time.fixedDt <= 0 || !Array.isArray(p.bodies) || !Array.isArray(p.events) || !Array.isArray(p.trajectories) || !p.diagnostics || typeof p.diagnostics !== 'object' || !p.completion || !['completed','natural-rest','kinematic-complete','cancelled','failed'].includes(p.completion.status)) throw new TypeError('Invalid Sprite simulation payload.');
@@ -663,4 +668,20 @@ export function validateMotionLUTProtocol(payload){
  for(const track of payload.tracks){if(!track.bodyId||!Array.isArray(track.samples)||!track.samples.length)throw new TypeError('Invalid motion-LUT track.');let prev=-Infinity;for(const s of track.samples){if(!Number.isFinite(s.t)||s.t<=prev||!finiteVector(s.p,3)||!finiteVector(s.q,4)||!finiteVector(s.w,3)||!finiteVector(s.s,3)||(s.v!==undefined&&!finiteVector(s.v,3)))throw new TypeError('Invalid motion-LUT sample.');prev=s.t;}}
  return true;
 }
+
+/** Canonical authoritative lifecycle protocol v4. Phase results are authoritative simulation data; the LUT is terminal-only. */
+export function serializeMotionLifecycle({lifecycleId,status='terminal',terminalReason,interval,stateAtStart,stateAtEnd,phases=[],canonicalMotionLUT=null,participants=[],metadata={}}={}){
+ const payload={protocol:SPRITE_PROTOCOL,protocolVersion:4,kind:'motion-lifecycle',lifecycleId:String(lifecycleId||'motion-lifecycle'),status,terminalReason,interval:{...interval},stateAtStart:cloneJsonValue(stateAtStart),stateAtEnd:cloneJsonValue(stateAtEnd),phases:phases.map(p=>cloneJsonValue(p)),canonicalMotionLUT:canonicalMotionLUT?cloneJsonValue(canonicalMotionLUT):null,participants:cloneJsonValue(participants),metadata:cloneJsonValue(metadata)};
+ validateMotionLifecycleProtocol(payload);return payload;
+}
+export function validateMotionLifecycleProtocol(payload){
+ if(!payload||payload.protocol!==SPRITE_PROTOCOL||payload.protocolVersion!==4||payload.kind!=='motion-lifecycle'||typeof payload.lifecycleId!=='string'||!payload.lifecycleId||!['terminal','running','interrupted','cancelled','failed'].includes(payload.status)||typeof payload.terminalReason!=='string'||!payload.interval||!Number.isFinite(payload.interval.startTime)||!Number.isFinite(payload.interval.endTime)||payload.interval.endTime<payload.interval.startTime||!Array.isArray(payload.phases)||!payload.stateAtStart||!payload.stateAtEnd)throw new TypeError('Invalid motion-lifecycle protocol payload.');
+ const stateValid=s=>s&&Number.isFinite(s.simulationTime)&&s.state&&finiteVector(s.state.position,3)&&finiteVector(s.state.velocity,3)&&finiteVector(s.state.orientation,4)&&finiteVector(s.state.angularVelocity,3)&&finiteVector(s.state.scale,3);
+ if(!stateValid(payload.stateAtStart)||!stateValid(payload.stateAtEnd))throw new TypeError('Invalid lifecycle authoritative state.');
+ for(const phase of payload.phases){if(!phase||typeof phase.phaseId!=='string'||typeof phase.phaseType!=='string'||!['completed','interrupted','cancelled','failed','superseded'].includes(phase.status)||!phase.interval||!Number.isFinite(phase.interval.startTime)||!Number.isFinite(phase.interval.endTime)||phase.interval.endTime<phase.interval.startTime||!stateValid(phase.stateAtStart)||!stateValid(phase.stateAtEnd)||!Array.isArray(phase.events)||!phase.terminal||typeof phase.terminal.reason!=='string')throw new TypeError('Invalid lifecycle phase result.');}
+ if(payload.participants!==undefined){if(!Array.isArray(payload.participants))throw new TypeError('Lifecycle participants must be an array.');for(const participant of payload.participants){if(!participant||typeof participant.bodyId!=='string'||typeof participant.lifecycleId!=='string'||!['primary','affected'].includes(participant.role)||!stateValid(participant.stateAtStart)||!stateValid(participant.stateAtEnd)||!Array.isArray(participant.phaseIds)||participant.phaseIds.some(id=>typeof id!=='string')||typeof participant.terminalReason!=='string')throw new TypeError('Invalid lifecycle participant state.');}}
+ if(payload.canonicalMotionLUT!==null){validateMotionLUTProtocol(payload.canonicalMotionLUT);if(payload.status!=='terminal')throw new TypeError('Canonical Motion LUT may only be attached to a terminal lifecycle.');}
+ return true;
+}
+
 export function adaptSpriteTrajectory(payload) { const normalized=normalizeSpriteProtocol(payload); if(normalized.kind!=='trajectory')throw new TypeError('Expected Sprite trajectory payload.'); validateSpriteProtocol(normalized); return normalized; }

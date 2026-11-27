@@ -1,0 +1,323 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vsr.engine/protocol/sprite-motion-lifecycle-v4.schema.json",
+  "title": "VSR Authoritative Motion Lifecycle Protocol v4",
+  "type": "object",
+  "required": [
+    "protocol",
+    "protocolVersion",
+    "kind",
+    "lifecycleId",
+    "status",
+    "terminalReason",
+    "interval",
+    "stateAtStart",
+    "stateAtEnd",
+    "phases",
+    "canonicalMotionLUT",
+    "metadata"
+  ],
+  "properties": {
+    "protocol": {
+      "const": "vsr.sprite"
+    },
+    "protocolVersion": {
+      "const": 4
+    },
+    "kind": {
+      "const": "motion-lifecycle"
+    },
+    "lifecycleId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "terminal",
+        "running",
+        "interrupted",
+        "cancelled",
+        "failed"
+      ]
+    },
+    "terminalReason": {
+      "type": "string",
+      "minLength": 1
+    },
+    "interval": {
+      "type": "object",
+      "required": [
+        "startTime",
+        "endTime"
+      ],
+      "properties": {
+        "startTime": {
+          "type": "number"
+        },
+        "endTime": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "stateAtStart": {
+      "$ref": "#/$defs/state"
+    },
+    "stateAtEnd": {
+      "$ref": "#/$defs/state"
+    },
+    "phases": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/phaseResult"
+      }
+    },
+    "canonicalMotionLUT": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "required": [
+            "protocol",
+            "protocolVersion",
+            "kind",
+            "simulation",
+            "tracks",
+            "events",
+            "integrity"
+          ],
+          "properties": {
+            "protocol": {
+              "const": "vsr.sprite"
+            },
+            "protocolVersion": {
+              "const": 3
+            },
+            "kind": {
+              "const": "motion-lut"
+            }
+          },
+          "additionalProperties": true
+        }
+      ]
+    },
+    "metadata": {
+      "type": "object"
+    },
+    "participants": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "bodyId",
+          "lifecycleId",
+          "role",
+          "stateAtStart",
+          "stateAtEnd",
+          "phaseIds",
+          "terminalReason"
+        ],
+        "properties": {
+          "bodyId": {
+            "type": "string"
+          },
+          "lifecycleId": {
+            "type": "string"
+          },
+          "role": {
+            "enum": [
+              "primary",
+              "affected"
+            ]
+          },
+          "stateAtStart": {
+            "$ref": "#/$defs/state"
+          },
+          "stateAtEnd": {
+            "$ref": "#/$defs/state"
+          },
+          "phaseIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "terminalReason": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "$defs": {
+    "state": {
+      "type": "object",
+      "required": [
+        "simulationTime",
+        "state"
+      ],
+      "properties": {
+        "simulationTime": {
+          "type": "number"
+        },
+        "state": {
+          "type": "object",
+          "required": [
+            "position",
+            "velocity",
+            "orientation",
+            "angularVelocity",
+            "scale"
+          ],
+          "properties": {
+            "position": {
+              "$ref": "#/$defs/vec3"
+            },
+            "velocity": {
+              "$ref": "#/$defs/vec3"
+            },
+            "orientation": {
+              "$ref": "#/$defs/quat"
+            },
+            "angularVelocity": {
+              "$ref": "#/$defs/vec3"
+            },
+            "scale": {
+              "$ref": "#/$defs/vec3"
+            }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "phaseResult": {
+      "type": "object",
+      "required": [
+        "phaseId",
+        "phaseType",
+        "status",
+        "interval",
+        "stateAtStart",
+        "stateAtEnd",
+        "events",
+        "terminal",
+        "continuation"
+      ],
+      "properties": {
+        "phaseId": {
+          "type": "string"
+        },
+        "phaseType": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "completed",
+            "interrupted",
+            "cancelled",
+            "failed",
+            "superseded"
+          ]
+        },
+        "interval": {
+          "type": "object",
+          "required": [
+            "startTime",
+            "endTime"
+          ],
+          "properties": {
+            "startTime": {
+              "type": "number"
+            },
+            "endTime": {
+              "type": "number"
+            }
+          }
+        },
+        "stateAtStart": {
+          "$ref": "#/$defs/state"
+        },
+        "stateAtEnd": {
+          "$ref": "#/$defs/state"
+        },
+        "trajectory": {
+          "type": "object"
+        },
+        "segments": {
+          "type": "array"
+        },
+        "events": {
+          "type": "array"
+        },
+        "terminal": {
+          "type": "object",
+          "required": [
+            "reason",
+            "physicallyResting",
+            "supported"
+          ],
+          "properties": {
+            "reason": {
+              "type": "string"
+            },
+            "physicallyResting": {
+              "type": "boolean"
+            },
+            "supported": {
+              "type": "boolean"
+            }
+          }
+        },
+        "continuation": {
+          "type": "object",
+          "required": [
+            "required"
+          ],
+          "properties": {
+            "required": {
+              "type": "boolean"
+            },
+            "nextPhaseType": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "policy": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        },
+        "diagnostics": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": true
+    },
+    "vec3": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {
+        "type": "number"
+      }
+    },
+    "quat": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": {
+        "type": "number"
+      }
+    }
+  },
+  "additionalProperties": true
+}

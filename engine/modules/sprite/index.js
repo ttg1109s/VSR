@@ -23,3 +23,4 @@ export * from './Broadphase3D.js';
 export * from './RigidBodySolver3D.js';
 
 export * from './MotionLUT.js';
+export * from './motion/index.js';

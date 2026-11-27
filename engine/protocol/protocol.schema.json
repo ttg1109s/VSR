@@ -1648,17 +1648,44 @@
         },
         "motionLUT": {
           "type": "object",
-          "required": ["protocol", "protocolVersion", "kind", "simulation", "sampling", "tracks", "events", "integrity"],
+          "required": [
+            "protocol",
+            "protocolVersion",
+            "kind",
+            "simulation",
+            "sampling",
+            "tracks",
+            "events",
+            "integrity"
+          ],
           "properties": {
-            "protocol": { "const": "vsr.sprite" },
-            "protocolVersion": { "const": 3 },
-            "kind": { "const": "motion-lut" },
-            "simulation": { "type": "object" },
-            "coordinateSystem": { "type": "object" },
-            "sampling": { "type": "object" },
-            "tracks": { "type": "array" },
-            "events": { "type": "array" },
-            "integrity": { "type": "object" }
+            "protocol": {
+              "const": "vsr.sprite"
+            },
+            "protocolVersion": {
+              "const": 3
+            },
+            "kind": {
+              "const": "motion-lut"
+            },
+            "simulation": {
+              "type": "object"
+            },
+            "coordinateSystem": {
+              "type": "object"
+            },
+            "sampling": {
+              "type": "object"
+            },
+            "tracks": {
+              "type": "array"
+            },
+            "events": {
+              "type": "array"
+            },
+            "integrity": {
+              "type": "object"
+            }
           },
           "additionalProperties": true
         },
@@ -1728,6 +1755,114 @@
               }
             },
             "additionalProperties": false
+          }
+        },
+        "motionLifecycle": {
+          "$ref": "./sprite-motion-lifecycle-v4.schema.json"
+        },
+        "finalStates": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": [
+              "simulationTime",
+              "position",
+              "velocity",
+              "orientation",
+              "angularVelocity",
+              "scale"
+            ],
+            "properties": {
+              "simulationTime": {
+                "type": "number"
+              },
+              "position": {
+                "type": "array",
+                "minItems": 3,
+                "maxItems": 3,
+                "items": {
+                  "type": "number"
+                }
+              },
+              "velocity": {
+                "type": "array",
+                "minItems": 3,
+                "maxItems": 3,
+                "items": {
+                  "type": "number"
+                }
+              },
+              "orientation": {
+                "type": "array",
+                "minItems": 4,
+                "maxItems": 4,
+                "items": {
+                  "type": "number"
+                }
+              },
+              "angularVelocity": {
+                "type": "array",
+                "minItems": 3,
+                "maxItems": 3,
+                "items": {
+                  "type": "number"
+                }
+              },
+              "scale": {
+                "type": "array",
+                "minItems": 3,
+                "maxItems": 3,
+                "items": {
+                  "type": "number"
+                }
+              }
+            },
+            "additionalProperties": true
+          }
+        },
+        "participants": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "bodyId",
+              "lifecycleId",
+              "role",
+              "stateAtStart",
+              "stateAtEnd",
+              "phaseIds",
+              "terminalReason"
+            ],
+            "properties": {
+              "bodyId": {
+                "type": "string"
+              },
+              "lifecycleId": {
+                "type": "string"
+              },
+              "role": {
+                "enum": [
+                  "primary",
+                  "affected"
+                ]
+              },
+              "stateAtStart": {
+                "type": "object"
+              },
+              "stateAtEnd": {
+                "type": "object"
+              },
+              "phaseIds": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "terminalReason": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": true
           }
         }
       },
@@ -1991,6 +2126,9 @@
         }
       },
       "additionalProperties": false
+    },
+    "spriteMotionLifecycleV4": {
+      "$ref": "./sprite-motion-lifecycle-v4.schema.json"
     }
   }
 }

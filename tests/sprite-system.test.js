@@ -328,3 +328,48 @@ test('Sprite trajectory payload exposes analytical post-impact final position an
   assert.equal(solved.completion,'natural-equilibrium');
  }finally{engine.dispose();}
 });
+
+test('Sprite motion Falling config runs an authoritative lifecycle continuation and publishes terminal canonical LUT',async()=>{
+  const engine=new GameEngine();
+  try{
+    const scenario=spriteScenario({collision:false,physics:false});
+    for(const id of ['mover','wall'])scenario.sprite[id].state={active:'idle',map:{idle:`${id}.png`}};
+    scenario.actions.test_action.effect.normal[0].value='idle';
+    scenario.sprite.mover.motion.falling={enable:true,maxDuration:0.1,maxTicks:100,fixedDt:1/120,stopWhenResting:true,environment:[],world:{gravity:[0,-9.81,0],dimension:'2D',plane:'XY'}};
+    scenario.sprite.mover.position=[0,20,0];
+    assert.deepEqual(validateScenario(scenario),[]);
+    await engine.init(scenario,{enterScene:true});
+    SetStrategies.sprite(engine,{target:'mover',property:'position',value:[100,20,0]});
+    const payload=engine.protocol.eventLog.filter(e=>e.event==='presentation.sprite.simulation').at(-1).payload;
+    assert.equal(payload.motionLifecycle.protocolVersion,4);
+    assert.equal(payload.motionLifecycle.kind,'motion-lifecycle');
+    assert.equal(payload.motionLifecycle.phases.at(-1).phaseType,'falling');
+    assert.equal(payload.motionLifecycle.status,'terminal');
+    assert.ok(payload.motionLifecycle.interval.endTime>1);
+    assert.equal(payload.motionLUT.simulation.endTime,payload.motionLifecycle.interval.endTime);
+    const last=payload.motionLUT.tracks.find(t=>t.bodyId==='mover').samples.at(-1);
+    assert.ok(last.v[1]<0,'falling final velocity is preserved in canonical LUT');
+    assert.ok(engine.protocol.eventLog.some(e=>e.event==='sprite.motion.lifecycle'&&e.payload.protocolVersion===4));
+    const ack=getSpriteTrajectoryAck(payload,'mover',payload.endTime,payload.presentation.requiredSegments),ackResult=await engine.protocol.dispatch({protocol:'vsr',protocolVersion:engine.protocol.protocolVersion,type:'command',commandId:'falling-ack-test',command:'sprite.motion.presentation.ack',payload:ack});
+    assert.equal(ackResult.result.success,true);const committed=engine.api.engine.state.getRuntimeSnapshot('sprites.[id]',{id:'mover'});assert.ok(committed.motionState.velocity[1]<0);assert.equal(committed.motionState.terminalReason,'simulation_limit');
+  }finally{engine.dispose();}
+});
+
+test('Impact Resolution hands resolved state continuously into Falling',async()=>{
+  const engine=new GameEngine();
+  try{
+    const scenario=spriteScenario({collision:true,physics:true});
+    for(const id of ['mover','wall'])scenario.sprite[id].state={active:'idle',map:{idle:`${id}.png`}};
+    scenario.actions.test_action.effect.normal[0].value='idle';
+    scenario.sprite.mover.motion.falling={enable:true,maxDuration:0.05,maxTicks:100,fixedDt:1/120,environment:[],world:{gravity:[0,-9.81,0],dimension:'2D',plane:'XY'}};
+    scenario.sprite.mover.position=[0,0,0];scenario.sprite.wall.position=[50,0,0];
+    assert.deepEqual(validateScenario(scenario),[]);await engine.init(scenario,{enterScene:true});
+    SetStrategies.sprite(engine,{target:'mover',property:'position',value:[100,0,0]});
+    const payload=engine.protocol.eventLog.filter(e=>e.event==='presentation.sprite.simulation').at(-1).payload;
+    assert.ok(payload.motionLifecycle.phases.some(p=>p.phaseType==='impact-resolution'));
+    assert.equal(payload.motionLifecycle.phases.at(-1).phaseType,'falling');
+    const impact=payload.motionLifecycle.phases.find(p=>p.phaseType==='impact-resolution'),falling=payload.motionLifecycle.phases.at(-1);
+    assert.deepEqual(impact.stateAtEnd.state.position,falling.stateAtStart.state.position);
+    assert.deepEqual(impact.stateAtEnd.state.velocity,falling.stateAtStart.state.velocity);
+  }finally{engine.dispose();}
+});

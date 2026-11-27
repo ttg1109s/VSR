@@ -7295,9 +7295,141 @@
               "additionalProperties": false
             },
             "falling": {
-              "type": "boolean",
-              "default": false,
-              "description": "Whether the Sprite is currently falling."
+              "oneOf": [
+                {
+                  "type": "boolean",
+                  "description": "Legacy shorthand. true enables default Falling continuation; false disables."
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "enable": {
+                      "type": "boolean",
+                      "default": true
+                    },
+                    "maxDuration": {
+                      "type": "number",
+                      "exclusiveMinimum": 0,
+                      "default": 20
+                    },
+                    "maxTicks": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "default": 24000
+                    },
+                    "fixedDt": {
+                      "type": "number",
+                      "exclusiveMinimum": 0,
+                      "default": 0.008333333333333333
+                    },
+                    "restLinearThreshold": {
+                      "type": "number",
+                      "minimum": 0,
+                      "default": 0.05
+                    },
+                    "restAngularThreshold": {
+                      "type": "number",
+                      "minimum": 0,
+                      "default": 0.05
+                    },
+                    "restDwell": {
+                      "type": "number",
+                      "minimum": 0,
+                      "default": 0.5
+                    },
+                    "stopWhenResting": {
+                      "type": "boolean",
+                      "default": true
+                    },
+                    "environment": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "shape": {
+                            "enum": [
+                              "plane",
+                              "sphere",
+                              "box"
+                            ]
+                          },
+                          "position": {
+                            "$ref": "#/definitions/vec3"
+                          },
+                          "normal": {
+                            "$ref": "#/definitions/vec3"
+                          },
+                          "offset": {
+                            "type": "number"
+                          },
+                          "radius": {
+                            "type": "number",
+                            "exclusiveMinimum": 0
+                          },
+                          "halfExtents": {
+                            "$ref": "#/definitions/vec3"
+                          },
+                          "enabled": {
+                            "type": "boolean"
+                          }
+                        },
+                        "additionalProperties": true
+                      }
+                    },
+                    "world": {
+                      "type": "object",
+                      "properties": {
+                        "gravity": {
+                          "$ref": "#/definitions/vec3"
+                        },
+                        "dimension": {
+                          "enum": [
+                            "2D",
+                            "3D"
+                          ]
+                        },
+                        "plane": {
+                          "enum": [
+                            "XY",
+                            "XZ",
+                            "YZ"
+                          ]
+                        },
+                        "planeOffset": {
+                          "type": "number"
+                        },
+                        "velocityIterations": {
+                          "type": "integer",
+                          "minimum": 1
+                        },
+                        "positionIterations": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      },
+                      "additionalProperties": true
+                    },
+                    "terminalPolicy": {
+                      "enum": [
+                        "supported-and-resting",
+                        "simulation-limit",
+                        "manual"
+                      ],
+                      "default": "supported-and-resting"
+                    },
+                    "sampleEveryTicks": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "default": 1
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              ],
+              "description": "Falling phase configuration. Legacy boolean is supported; object form controls authoritative Falling simulation."
             }
           },
           "required": [

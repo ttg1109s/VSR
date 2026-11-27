@@ -86,8 +86,8 @@ export const ProtocolCommands = {
     const entries=Object.entries(active.finalPositions||{});
     await state.transaction(tx=>{
       for(const [affectedId,position] of entries){
-        const runtime=tx.get('sprites.[id]',{id:affectedId})||{};
-        tx.set('sprites.[id]',{...runtime,position,motion:null},{id:affectedId});
+        const runtime=tx.get('sprites.[id]',{id:affectedId})||{},finalMotionState=active.finalStates?.[affectedId];
+        tx.set('sprites.[id]',{...runtime,position,motion:null,...(finalMotionState?{motionState:finalMotionState}:{})},{id:affectedId});
       }
     });
     this.activeSpriteMotions.delete(payload.spriteId);
@@ -95,7 +95,7 @@ export const ProtocolCommands = {
     this.completedSpriteMotionIdentities.set(payload.motionId,{spriteId:payload.spriteId,trajectoryId:payload.trajectoryId});
     const sprite=this.src?.sprite?.[payload.spriteId];
     const effects=Array.isArray(sprite?.motion?.effect?.end)?sprite.motion.effect.end:[];
-    const completion={spriteId:payload.spriteId,motionId:payload.motionId,trajectoryId:payload.trajectoryId,reason:'presentation-completed',presentedThroughTime:payload.presentedThroughTime};
+    const completion={spriteId:payload.spriteId,motionId:payload.motionId,trajectoryId:payload.trajectoryId,reason:'presentation-completed',terminalReason:active.descriptor.motionLifecycle?.terminalReason||null,presentedThroughTime:payload.presentedThroughTime};
     const context={spriteId:payload.spriteId,motionId:payload.motionId,trajectoryId:payload.trajectoryId,hook:'motion.end',reason:'presentation-completed',impacts:active.descriptor.impacts||[],operationIdBase:`sprite:${payload.motionId}:${payload.trajectoryId}:motion.end`,operationLedger:this.spriteOperationLedger};
     if(effects.length){
       const pendingHook={effects,context,completion,committedSprites:entries.map(([id])=>id),startedIndexes:[],completedIndexes:[]};

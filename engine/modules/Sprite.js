@@ -1,4 +1,4 @@
-import { adaptSpriteTrajectory, serializeMotionLUT } from '../protocol/JsonProtocol.js';
+import { adaptSpriteTrajectory, validateMotionLifecycleProtocol } from '../protocol/JsonProtocol.js';
 // Runtime Sprite operations. Effect syntax is resolved in effect/Strategies.js.
 function poseLocation(value) { return Array.isArray(value?.location) ? value.location : Array.isArray(value) ? value : null; }
 function poseTransform(value, fallback={rotate:0,scale:1,origin:'center'}) {
@@ -21,7 +21,7 @@ function sampleSerializedSegments(segments, time, terminalClamp=true) {
     const terminal=segments.at(-1);
     if(terminalClamp&&time>=terminal.endTime-1e-9){
         const last=sampleSerializedSegments([terminal],terminal.endTime,false);
-        return last?{position:last.position,velocity:[0,0,0]}:null;
+        return last?{position:terminal.finalPosition||last.position,velocity:terminal.finalVelocity||last.velocity}:null;
     }
     const segment=[...segments].reverse().find(item=>time>=item.startTime-1e-9)||segments[0];
     const duration=Math.max(1e-9,segment.endTime-segment.startTime),t=Math.max(0,Math.min(1,(time-segment.startTime)/duration));
@@ -36,8 +36,10 @@ function sampleSerializedSegments(segments, time, terminalClamp=true) {
     }
     if(segment.type==='physics'){
         const dt=Math.max(0,Math.min(duration,time-segment.startTime));
-        if(Number(segment.linearDamping)>0&&segment.acceleration.every(value=>Math.abs(value)<1e-12)){const k=Number(segment.linearDamping),factor=(1-Math.exp(-k*dt))/k;return {position:segment.initialPosition.map((value,axis)=>value+segment.initialVelocity[axis]*factor),velocity:segment.initialVelocity.map(value=>value*Math.exp(-k*dt))};}
-        return {position:segment.initialPosition.map((value,axis)=>value+segment.initialVelocity[axis]*dt+.5*segment.acceleration[axis]*dt*dt),velocity:segment.initialVelocity.map((value,axis)=>value+segment.acceleration[axis]*dt)};
+        if(Number(segment.linearDamping)>0&&segment.acceleration.every(value=>Math.abs(value)<1e-12)){const k=Number(segment.linearDamping),factor=(1-Math.exp(-k*dt))/k,sampled={position:segment.initialPosition.map((value,axis)=>value+segment.initialVelocity[axis]*factor),velocity:segment.initialVelocity.map(value=>value*Math.exp(-k*dt))};if(time>=segment.endTime-1e-9){if(segment.finalPosition)sampled.position=segment.finalPosition;if(segment.finalVelocity)sampled.velocity=segment.finalVelocity;}return sampled;}
+        const sampled={position:segment.initialPosition.map((value,axis)=>value+segment.initialVelocity[axis]*dt+.5*segment.acceleration[axis]*dt*dt),velocity:segment.initialVelocity.map((value,axis)=>value+segment.acceleration[axis]*dt)};
+        if(time>=segment.endTime-1e-9){if(segment.finalPosition)sampled.position=segment.finalPosition;if(segment.finalVelocity)sampled.velocity=segment.finalVelocity;}
+        return sampled;
     }
     return null;
 }
@@ -66,7 +68,7 @@ function rebaseSerializedSegments(segments,elapsed,windowEnd){
     return rebased;
 }
 
-import { createBezierTrajectory, createPiecewiseBezierTrajectory, createLinearPhysicsSegment, AuthoritativeSpriteSimulation } from './sprite/index.js';
+import { createBezierTrajectory, createPiecewiseBezierTrajectory, createLinearPhysicsSegment, AuthoritativeSpriteSimulation, FallingPhase, MotionLifecycle, normalizeMotionState, assertMotionStateContinuity, createMotionPhaseResult, finalizeMotionLifecycle } from './sprite/index.js';
 export function setSpriteProperty(engine, spriteId, prop, value) {
         const state = engine.api.engine.state;
         const definition = engine.src?.sprite?.[spriteId];
@@ -230,7 +232,7 @@ export function setSpriteProperty(engine, spriteId, prop, value) {
                     path: { type: intermediate.length >= 2 ? 'bezier-chain' : 'bezier', points: motionPoints },
                     start: toPoint(from), end: toPoint(target),
                     duration: motion.duration, easing: motion.easing,
-                    impact: motion.impact || { enable: false, physics: false },
+                    impact: motion.impact || { enable: false, physics: false }, falling: motion.falling || false,
                     geometryMode: effectiveMode, transformTrajectory
                 };
             }
@@ -258,7 +260,7 @@ export function setSpriteProperty(engine, spriteId, prop, value) {
             const bezier = descriptor.path.type==='bezier-chain'
                 ? createPiecewiseBezierTrajectory({points:bezierPoints,duration:durationSeconds,easing:descriptor.easing||'linear',startTime:0,segmentId:`${descriptor.motionId}:initial`})
                 : createBezierTrajectory({ points: bezierPoints, duration: durationSeconds, easing: descriptor.easing || 'linear', startTime: 0, segmentId: `${descriptor.motionId}:initial` });
-            const initialTrajectory = { ...bezier, endTime: durationSeconds, sample: time => bezier.sample(Math.min(durationSeconds, Math.max(0, time))), velocity: time => time >= durationSeconds ? [0,0,0] : bezier.velocity(Math.max(0,time)), segments: bezier.segments||[bezier] };
+            const initialTrajectory = { ...bezier, endTime: durationSeconds, sample: time => bezier.sample(Math.min(durationSeconds, Math.max(0, time))), velocity: time => bezier.velocity(Math.max(0,Math.min(durationSeconds,Number(time)||0))), segments: bezier.segments||[bezier] };
             const trajectoryMap = new Map([[spriteId, initialTrajectory]]);
             const bodies = {};
             const physicsByBody = {};
@@ -300,7 +302,7 @@ export function setSpriteProperty(engine, spriteId, prop, value) {
                 result = { startTime: 0, endTime: durationSeconds, collisions: [], segments: new Map([[spriteId, [initialTrajectory]]]), finalPositions: new Map([[spriteId, initialTrajectory.sample(durationSeconds)]]), positionsAtImpact: new Map([[spriteId,startVector]]) };
             }
             if(result.collisionLimitReached) throw new Error(`Sprite physics collision event limit exceeded (${simulation.options.maxCollisionEvents}); motion rejected rather than silently truncated.`);
-            const impactEvents = result.collisions.map(event => ({ ...event }));
+            let impactEvents = result.collisions.map(event => ({ ...event }));
             const trajectoryId = `${descriptor.motionId}:trajectory:1`;
             const bodyTrajectories = {};
             const bodyFinalPositions = {};
@@ -311,7 +313,43 @@ export function setSpriteProperty(engine, spriteId, prop, value) {
                     ? { segmentId: seg.segmentId, type: 'bezier', startTime: seg.startTime, endTime: seg.endTime, duration: seg.endTime-seg.startTime, controlPoints: seg.points, easing: seg.easingName || seg.easing || descriptor.easing || 'linear' }
                     : { segmentId: seg.segmentId, type: 'physics', startTime: seg.startTime, endTime: seg.endTime, duration: seg.endTime-seg.startTime, initialPosition: seg.initialPosition, initialVelocity: seg.initialVelocity, acceleration: seg.acceleration, finalPosition: seg.finalPosition || seg.sample(seg.endTime), finalVelocity: seg.finalVelocity || seg.velocity(seg.endTime), linearDamping: seg.linearDamping || 0, completion: seg.completion || 'non-terminating-dynamics' });
             }
-            for (const [bodyId, pos] of result.finalPositions) if(affectedBodies.has(bodyId)) bodyFinalPositions[bodyId] = pos;
+            let solvedTrajectoryEndTime=durationSeconds;
+            const fallingConfig=descriptor.falling===true?{enable:true}:descriptor.falling&&typeof descriptor.falling==='object'?{enable:descriptor.falling.enable!==false,...descriptor.falling}:{enable:false};
+            let fallingResult=null,fallingSamples=[],motionLifecycle=null,fallingSimulationBodies=[];
+            const fallWorld={...(engine.src?.config?.physicsWorld||{}),...(fallingConfig.world||{})};
+            if(fallingConfig.enable){
+                const hasAuthoredImpact=impactEvents.some(event=>(event.time??event.t??0)<=durationSeconds+1e-9&&!String(event.eventId||'').startsWith('falling-')&&typeof event.eventId==='string'&&(event.spriteA||event.spriteB));const entrySample=hasAuthoredImpact?(sampleSerializedSegments(bodyTrajectories[spriteId],durationSeconds,false)||{position:targetVector,velocity:bezier.velocity(durationSeconds)}):{position:initialTrajectory.sample(durationSeconds),velocity:initialTrajectory.velocity(durationSeconds)};
+                const entryPosition=entrySample.position||targetVector,entryVelocity=entrySample.velocity||bezier.velocity(durationSeconds);
+                // Post-authored impact segments are clipped at the phase boundary. Falling continues from the exact resolved sample.
+                for(const bodyId of Object.keys(bodyTrajectories)){
+                    bodyTrajectories[bodyId]=bodyTrajectories[bodyId].filter(seg=>seg.startTime<durationSeconds+1e-9).map(seg=>{
+                        if(seg.endTime<=durationSeconds+1e-9)return seg;
+                        const sample=sampleSerializedSegments([seg],durationSeconds,false);
+                        return {...seg,endTime:durationSeconds,finalPosition:sample?.position,finalVelocity:sample?.velocity};
+                    }).filter(seg=>seg.endTime>=seg.startTime);
+                }
+                const simulationBodies=[];
+                for(const [otherId,otherDef] of Object.entries(definitions)){
+                    if(otherId===spriteId)continue;
+                    const otherRuntime=runtimeSprites[otherId]||{},otherPhysics=otherDef.physics||{},otherCollision=otherDef.collision||{};
+                    const otherSegs=bodyTrajectories[otherId];
+                    const sampled=otherSegs?.length?sampleSerializedSegments(otherSegs,durationSeconds,false):trajectoryMap.get(otherId)?.sample?.(durationSeconds);
+                    const otherPos=sampled?.position||poseLocation(otherRuntime.position)||poseLocation(otherDef.position)||[0,0,0];
+                    const otherVel=sampled?.velocity||[0,0,0];
+                    const otherMotionActive=engine.activeSpriteMotions?.get(otherId)?.motionId,otherPhysicsEnabled=Object.hasOwn(otherDef,'physics');simulationBodies.push({id:otherId,bodyType:otherPhysics.bodyType==='static'?'static':otherMotionActive&&!affectedBodies.has(otherId)?'kinematic':otherPhysicsEnabled?(otherPhysics.bodyType||'dynamic'):'kinematic',position:otherPos,velocity:otherVel,orientation:[1,0,0,0],angularVelocity:otherPhysics.angularVelocity||[0,0,0],radius:Number(otherCollision.radius??otherDef.radius??0.5),mass:Number(otherPhysics.mass??1),restitution:Number(otherPhysics.restitution??0.2),friction:Number(otherPhysics.friction??0.5),linearDamping:Number(otherPhysics.linearDamping??0),angularDamping:Number(otherPhysics.angularDamping??0),collider:{shape:otherCollision.shape||'sphere',radius:Number(otherCollision.radius??otherDef.radius??0.5),halfExtents:otherCollision.halfExtents||[0.5,0.5,0.5],offset:otherCollision.offset||[0,0,0]},collisionEnabled:otherCollision.enable!==false,ccd:otherCollision.ccd===true||otherPhysics.ccd===true});
+                }
+                fallingSimulationBodies=simulationBodies;
+                const angle=Number(targetTransform.rotate||0)*Math.PI/180,orientation=[Math.cos(angle/2),0,0,Math.sin(angle/2)];
+                const fallingEntry=normalizeMotionState({simulationTime:durationSeconds,state:{position:entryPosition,velocity:entryVelocity,orientation,angularVelocity:physicsByBody[spriteId].angularVelocity||[0,0,0],scale:[targetTransform.scale,targetTransform.scale,targetTransform.scale]},body:{...physicsByBody[spriteId],bodyType:physicsByBody[spriteId].bodyType||'dynamic'},collider:{enabled:bodies[spriteId].collisionEnabled,shape:definitions[spriteId].collision?.shape||'sphere',radius:Number(definitions[spriteId].collision?.radius??definitions[spriteId].radius??0.5),halfExtents:definitions[spriteId].collision?.halfExtents||[0.5,0.5,0.5],offset:definitions[spriteId].collision?.offset||[0,0,0],ccd:definitions[spriteId].collision?.ccd===true},world:{gravity:fallWorld.gravity||[0,-9.81,0],dimension:fallWorld.dimension||'2D',plane:fallWorld.plane||'XY',planeOffset:fallWorld.planeOffset||0},context:{bodyId:spriteId,spriteId,sourcePhase:impactEvents.length?'impact-resolution':'authored-motion',lifecycleId:descriptor.motionId,simulationBodies}});
+                const fallingPhase=new FallingPhase({phaseId:`${descriptor.motionId}:falling`,worldConfig:fallWorld,fixedDt:fallingConfig.fixedDt||fallWorld.fixedDt||1/120,maxDuration:fallingConfig.maxDuration||20,maxTicks:fallingConfig.maxTicks||24000,sampleEveryTicks:fallingConfig.sampleEveryTicks||1,restLinearThreshold:fallingConfig.restLinearThreshold??fallWorld.sleepLinearThreshold??0.05,restAngularThreshold:fallingConfig.restAngularThreshold??fallWorld.sleepAngularThreshold??0.05,restDwell:fallingConfig.restDwell??fallWorld.sleepDwell??0.5,environment:fallingConfig.environment||[],stopWhenResting:fallingConfig.stopWhenResting!==false,terminalPolicy:fallingConfig.terminalPolicy||'supported-and-resting'});
+                fallingResult=fallingPhase.run(fallingEntry,{lifecycleId:descriptor.motionId,phaseId:`${descriptor.motionId}:falling`});fallingSamples=fallingResult.trajectory.samples;
+                const grouped=new Map();for(const sample of fallingSamples){let group=grouped.get(sample.bodyId);if(!group)grouped.set(sample.bodyId,group=[]);group.push(sample);}
+                for(const [bodyId,trackSamples] of grouped){if(!bodyTrajectories[bodyId])bodyTrajectories[bodyId]=[];for(let i=1;i<trackSamples.length;i++){const a=trackSamples[i-1],b=trackSamples[i],dt=b.t-a.t;if(dt<=1e-9)continue;const accel=a.v.map((v,axis)=>(b.v[axis]-v)/dt);bodyTrajectories[bodyId].push({segmentId:`${descriptor.motionId}:falling:${bodyId}:${i}`,type:'physics',startTime:a.t,endTime:b.t,initialPosition:a.p,initialVelocity:a.v,acceleration:accel,finalPosition:b.p,finalVelocity:b.v,linearDamping:0,completion:'falling-sample-segment'});bodyFinalPositions[bodyId]=trackSamples.at(-1).p;affectedBodies.add(bodyId);}
+                }
+                impactEvents=[...impactEvents,...fallingResult.events.map(event=>({eventId:`falling-${event.type}-${event.t}-${event.bodyA||event.bodyId||''}`,time:event.t??event.time,type:event.type,spriteA:event.bodyA||event.bodyId||spriteId,spriteB:event.bodyB||null,...event}))];
+                solvedTrajectoryEndTime=fallingResult.interval.endTime;
+            }
+            for (const [bodyId, pos] of result.finalPositions) if(affectedBodies.has(bodyId)&&!fallingResult) bodyFinalPositions[bodyId] = pos;
             for(const affectedId of affectedBodies){
                 if(affectedId===spriteId)continue;
                 const activeAffected=engine.activeSpriteMotions.get(affectedId);
@@ -338,30 +376,52 @@ export function setSpriteProperty(engine, spriteId, prop, value) {
                     completion: 'natural-equilibrium'
                 };
             }
-            const solvedTrajectoryEndTime = impactEvents.length
+            if(!fallingResult)solvedTrajectoryEndTime = impactEvents.length
                 ? Math.max(durationSeconds, ...Object.values(postImpactResults).filter(result => result.completion === 'natural-equilibrium').map(result => result.startTime + result.duration))
                 : durationSeconds;
-            // Additive canonical LUT: legacy v2 descriptors remain authoritative/compatible.
-            const lutSampleTimes = [...new Set([0, solvedTrajectoryEndTime, ...impactEvents.map(e=>e.time), ...Object.values(bodyTrajectories).flat().flatMap(seg=>[seg.startTime,seg.endTime]), ...Array.from({length:Math.max(0,Math.ceil(solvedTrajectoryEndTime*60)-1)},(_,i)=>(i+1)/60).filter(t=>t<solvedTrajectoryEndTime)])].sort((a,b)=>a-b);
-            const lutTracks = Object.entries(bodyTrajectories).map(([bodyId,segs])=>({bodyId,samples:lutSampleTimes.map(t=>{
-                const sampled=sampleSerializedSegments(segs,t);
-                const position=sampled?.position||bodyFinalPositions[bodyId]||startVector;
-                const velocity=sampled?.velocity||[0,0,0];
-                const transform=bodyId===spriteId?sampleTransformKeys(descriptor.transformTrajectory?.keys,t,solvedTrajectoryEndTime,poseTransform(definition.position)):null;
-                const angle=(transform?.rotate||0)*Math.PI/180,half=angle/2;
-                return {t,p:[position[0]||0,position[1]||0,position[2]||0],v:[velocity[0]||0,velocity[1]||0,velocity[2]||0],q:[Math.cos(half),0,0,Math.sin(half)],w:[0,0,0],s:[transform?.scale||1,transform?.scale||1,transform?.scale||1],...(transform?.origin!==undefined?{origin:transform.origin}:{})};
-            })}));
-            const motionLUT=serializeMotionLUT({simulationId:descriptor.motionId,startTime:0,endTime:solvedTrajectoryEndTime,sampling:{mode:'fixed',sampleInterval:1/60,interpolation:'linear',authoritative:true},tracks:lutTracks,events:impactEvents,completion:{status:'completed',reason:'authoritative-trajectory-complete'},coordinateSystem:{dimension:2}});
+            // Canonical LUT is generated only by the lifecycle terminal finalizer.
+            const lutSampleTimes = [...new Set([0, solvedTrajectoryEndTime, ...impactEvents.map(e=>e.time), ...Object.values(bodyTrajectories).flat().flatMap(seg=>[seg.startTime,seg.endTime]), ...Array.from({length:Math.max(0,Math.ceil(solvedTrajectoryEndTime*60)-1)},(_,i)=>(i+1)/60).filter(t=>t<solvedTrajectoryEndTime), ...fallingSamples.map(sample=>sample.t)])].sort((a,b)=>a-b);
+            let motionLUT=null;
+            // Lifecycle result is additive to legacy v2 trajectory. Canonical LUT is generated at lifecycle terminal boundary.
+            const makeState=(time,position,velocity,phaseContext={})=>normalizeMotionState({simulationTime:time,state:{position:[...position],velocity:[...velocity],orientation:[Math.cos(Number(targetTransform.rotate||0)*Math.PI/360),0,0,Math.sin(Number(targetTransform.rotate||0)*Math.PI/360)],angularVelocity:[...(physicsByBody[spriteId].angularVelocity||[0,0,0])],scale:[targetTransform.scale,targetTransform.scale,targetTransform.scale]},body:{...physicsByBody[spriteId]},collider:{shape:definitions[spriteId].collision?.shape||'sphere',radius:Number(definitions[spriteId].collision?.radius??definitions[spriteId].radius??0.5)},world:{gravity:fallWorld?.gravity||engine.src?.config?.physicsWorld?.gravity||[0,-9.81,0],dimension:fallWorld?.dimension||engine.src?.config?.physicsWorld?.dimension||'2D',plane:fallWorld?.plane||engine.src?.config?.physicsWorld?.plane||'XY'},context:{bodyId:spriteId,spriteId,lifecycleId:descriptor.motionId,...phaseContext}});
+            const lifecycleStart=makeState(0,startVector,initialTrajectory.velocity(0),{sourcePhase:'initial'});
+            const authoredImpactEvents=impactEvents.filter(event=>(event.time??event.t??0)<=durationSeconds+1e-9&&!String(event.eventId||'').startsWith('falling-'));
+            const firstImpact=authoredImpactEvents.filter(event=>event.spriteA||event.spriteB).sort((a,b)=>(a.time??a.t??0)-(b.time??b.t??0))[0]||null;
+            const firstImpactTime=firstImpact?Math.max(0,Math.min(durationSeconds,Number(firstImpact.time??firstImpact.t))):durationSeconds;
+            const impactPosition=firstImpact?(result.positionsAtImpact.get(spriteId)||(firstImpact.spriteA===spriteId?firstImpact.contactA:firstImpact.spriteB===spriteId?firstImpact.contactB:initialTrajectory.sample(firstImpactTime))):null;
+            const impactVelocity=firstImpact?(firstImpact.spriteA===spriteId?firstImpact.velocityBeforeA:firstImpact.spriteB===spriteId?firstImpact.velocityBeforeB:initialTrajectory.velocity(firstImpactTime)):null;
+            const authoredEndPosition=firstImpact?impactPosition:initialTrajectory.sample(durationSeconds);
+            const authoredEndVelocity=firstImpact?impactVelocity:initialTrajectory.velocity(durationSeconds);
+            const authoredEndState=makeState(firstImpactTime,authoredEndPosition,authoredEndVelocity,{sourcePhase:'authored-motion'});
+            const authoredSamples=[];for(const t of lutSampleTimes.filter(t=>t<=firstImpactTime+1e-9)){const sampled=initialTrajectory.sample(t),velocity=initialTrajectory.velocity(t),transform=sampleTransformKeys(descriptor.transformTrajectory?.keys,t,durationSeconds,poseTransform(definition.position)),angle=(transform?.rotate||0)*Math.PI/180,half=angle/2;authoredSamples.push({bodyId:spriteId,t,p:sampled,v:velocity,q:[Math.cos(half),0,0,Math.sin(half)],w:physicsByBody[spriteId].angularVelocity||[0,0,0],s:[transform.scale,transform.scale,transform.scale]});}
+            const authoredPhase=createMotionPhaseResult({phaseId:`${descriptor.motionId}:authored`,phaseType:'authored-motion',status:'completed',interval:{startTime:0,endTime:firstImpactTime},stateAtStart:lifecycleStart,stateAtEnd:authoredEndState,trajectory:{samples:authoredSamples},events:[],terminal:{reason:firstImpact?'phase_complete':'authored_policy',physicallyResting:false,supported:false},continuation:{required:!!firstImpact||!!fallingResult,nextPhaseType:firstImpact?'impact-resolution':fallingResult?'falling':null,policy:firstImpact?'impact-detected':fallingResult?'falling-enabled':'terminal'}});
+            const lifecyclePhases=[authoredPhase];
+            if(firstImpact){
+                const impactStartState=authoredEndState,impactPhaseEndTime=fallingResult?durationSeconds:solvedTrajectoryEndTime,impactEndSample=sampleSerializedSegments(bodyTrajectories[spriteId],impactPhaseEndTime,false)||{position:bodyFinalPositions[spriteId]||targetVector,velocity:[0,0,0]},impactEndState=makeState(impactPhaseEndTime,impactEndSample.position,impactEndSample.velocity,{sourcePhase:'impact-resolution'});
+                const impactSamples=[];for(const t of lutSampleTimes.filter(t=>t>=firstImpactTime-1e-9&&t<=impactPhaseEndTime+1e-9)){for(const bodyId of affectedBodies){const sampled=sampleSerializedSegments(bodyTrajectories[bodyId],t,false);if(sampled){const transform=bodyId===spriteId?sampleTransformKeys(descriptor.transformTrajectory?.keys,t,impactPhaseEndTime,poseTransform(definition.position)):null,angle=(transform?.rotate||0)*Math.PI/180,half=angle/2;impactSamples.push({bodyId,t,p:sampled.position,v:sampled.velocity,q:bodyId===spriteId?[Math.cos(half),0,0,Math.sin(half)]:[1,0,0,0],w:bodyId===spriteId?(physicsByBody[spriteId].angularVelocity||[0,0,0]):[0,0,0],s:bodyId===spriteId?[transform?.scale||1,transform?.scale||1,transform?.scale||1]:[1,1,1]});}}}
+                const impactPhase=createMotionPhaseResult({phaseId:`${descriptor.motionId}:impact`,phaseType:'impact-resolution',status:'completed',interval:{startTime:firstImpactTime,endTime:impactPhaseEndTime},stateAtStart:impactStartState,stateAtEnd:impactEndState,trajectory:{samples:impactSamples},events:authoredImpactEvents,terminal:{reason:fallingResult?'phase_complete':'authored_policy',physicallyResting:false,supported:false},continuation:{required:!!fallingResult,nextPhaseType:fallingResult?'falling':null,policy:fallingResult?'falling-enabled':'terminal'}});
+                assertMotionStateContinuity(impactStartState,authoredPhase.stateAtEnd);if(fallingResult)assertMotionStateContinuity(impactEndState,fallingResult.stateAtStart);lifecyclePhases.push(impactPhase);
+            }else if(fallingResult){assertMotionStateContinuity(authoredEndState,fallingResult.stateAtStart);}
+            if(fallingResult)lifecyclePhases.push(fallingResult);
+            const lifecycleRunner=new MotionLifecycle({lifecycleId:descriptor.motionId,initialState:lifecycleStart,phases:lifecyclePhases.map(phaseResult=>({phaseId:phaseResult.phaseId,phaseType:phaseResult.phaseType,run:()=>phaseResult})),transitionEvaluator:({index})=>index===lifecyclePhases.length-1?{terminal:true,reason:fallingResult?.terminal.reason||'authored_policy'}:{terminal:false,nextPhaseIndex:index+1}});
+            const lifecycleResult=lifecycleRunner.runSync({spriteId});
+            lifecycleResult.terminalReason=fallingResult?.terminal.reason||'authored_policy';lifecycleResult.interval={startTime:0,endTime:solvedTrajectoryEndTime};
+            motionLifecycle=finalizeMotionLifecycle(lifecycleResult,{coordinateSystem:{dimension:fallWorld?.dimension||engine.src?.config?.physicsWorld?.dimension||'2D'},sampleInterval:fallingConfig?.fixedDt||1/60});
+            motionLUT=motionLifecycle.canonicalMotionLUT;
+            const participants=[];for(const track of motionLUT.tracks||[]){const first=track.samples[0],last=track.samples.at(-1);if(!first||!last)continue;const participantId=track.bodyId,primary=participantId===spriteId;const makeParticipantState=(sample)=>({simulationTime:sample.t,state:{position:sample.p,velocity:sample.v||[0,0,0],orientation:sample.q||[1,0,0,0],angularVelocity:sample.w||[0,0,0],scale:sample.s||[1,1,1]},body:primary?motionLifecycle.stateAtEnd.body:(physicsByBody[participantId]||{}),collider:primary?motionLifecycle.stateAtEnd.collider:(definitions[participantId]?.collision||{}),world:motionLifecycle.stateAtEnd.world,contactState:{supported:false,contacts:[]},context:{bodyId:participantId,spriteId:participantId,lifecycleId:primary?descriptor.motionId:`${descriptor.motionId}:${participantId}`,sourcePhase:primary?'primary':'affected'}});participants.push({bodyId:participantId,lifecycleId:primary?descriptor.motionId:`${descriptor.motionId}:${participantId}`,role:primary?'primary':'affected',stateAtStart:primary?motionLifecycle.stateAtStart:makeParticipantState(first),stateAtEnd:primary?motionLifecycle.stateAtEnd:makeParticipantState(last),phaseIds:motionLifecycle.phases.map(phase=>phase.phaseId),terminalReason:motionLifecycle.terminalReason});}
+            motionLifecycle.participants=participants;validateMotionLifecycleProtocol(motionLifecycle);
+            const finalStates={};for(const track of motionLUT.tracks||[]){const last=track.samples.at(-1);if(!last)continue;finalStates[track.bodyId]={simulationTime:last.t,position:last.p,velocity:last.v||[0,0,0],orientation:last.q||[1,0,0,0],angularVelocity:last.w||[0,0,0],scale:last.s||[1,1,1],terminalReason:motionLifecycle.terminalReason,physicallyResting:motionLifecycle.phases.at(-1)?.terminal?.physicallyResting===true,supported:motionLifecycle.phases.at(-1)?.terminal?.supported===true};}
+            const authoritativeEnd=motionLifecycle.stateAtEnd;finalStates[spriteId]={simulationTime:authoritativeEnd.simulationTime,position:authoritativeEnd.state.position,velocity:authoritativeEnd.state.velocity,orientation:authoritativeEnd.state.orientation,angularVelocity:authoritativeEnd.state.angularVelocity,scale:authoritativeEnd.state.scale,body:authoritativeEnd.body,collider:authoritativeEnd.collider,world:authoritativeEnd.world,contactState:authoritativeEnd.contactState,context:authoritativeEnd.context,terminalReason:motionLifecycle.terminalReason,physicallyResting:motionLifecycle.phases.at(-1)?.terminal?.physicallyResting===true,supported:motionLifecycle.phases.at(-1)?.terminal?.supported===true};
             descriptor = {
                 protocolVersion: 2, spriteId, motionId: descriptor.motionId, trajectoryId,
-                motionLUT,
+                motionLUT, motionLifecycle, finalStates,
                 startTime: 0, endTime: solvedTrajectoryEndTime, duration: solvedTrajectoryEndTime,
                 requestedTarget: targetVector, initialTrajectory: bodyTrajectories[spriteId],
                 trajectories: bodyTrajectories, finalPositions: bodyFinalPositions, postImpactResults,
                 impacts: impactEvents, geometryMode: effectiveMode, transformTrajectory: descriptor.transformTrajectory,
                 presentation: { requiredSegments: Object.values(bodyTrajectories).flat().map(seg => seg.segmentId) }
             };
-            const activeMotion = { motionId: descriptor.motionId, trajectoryId, descriptor, finalPositions: bodyFinalPositions, startPosition: startVector, endTime: descriptor.endTime, startedAt: Date.now(), phase: 'presentation-pending' };
+            const activeMotion = { motionId: descriptor.motionId, trajectoryId, descriptor, finalPositions: bodyFinalPositions, finalStates, startPosition: startVector, endTime: descriptor.endTime, startedAt: Date.now(), phase: 'presentation-pending' };
             engine.activeSpriteMotions.set(spriteId, activeMotion);
             // Runtime remains at the authoritative start position until presentation ACK commits simulation results.
             const moverSimulatedPosition=result.positionsAtImpact.get(spriteId)||startVector;
@@ -376,6 +436,7 @@ export function setSpriteProperty(engine, spriteId, prop, value) {
             const startEffects = Array.isArray(motion.effect?.start) ? motion.effect.start : [];
             const publishIfActive = () => {
                 if (engine.activeSpriteMotions.get(spriteId)?.motionId !== descriptor.motionId) return { success: false, reason: 'stale_motion', motionId: descriptor.motionId };
+                if(descriptor.motionLifecycle)engine.protocol?.publish?.('sprite.motion.lifecycle',descriptor.motionLifecycle);
                 engine.protocol?.publish?.('presentation.sprite.simulation', adaptSpriteTrajectory(descriptor));
                 return { success: true, motionId: descriptor.motionId, trajectoryId };
             };

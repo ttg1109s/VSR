@@ -6,7 +6,7 @@ import { normalizeSpriteProtocol, validateSpriteProtocol } from '../../protocol/
  */
 import { JsonStateStore } from '../state/JsonStateStore.js';
 import { MotionLUTPlayer } from '../../modules/sprite/MotionLUT.js';
-import { validateMotionLUTProtocol } from '../../protocol/JsonProtocol.js';
+import { validateMotionLUTProtocol, validateMotionLifecycleProtocol } from '../../protocol/JsonProtocol.js';
 
 const deepEqualTimeline = (a, b) => {
   if (Object.is(a, b)) return true;
@@ -57,7 +57,8 @@ export function sampleSpriteTrajectoryV2(trajectory, spriteId, simulationTime) {
   }
   if (segment.type === 'physics') {
     const dt=Math.max(0,Math.min(duration,time-segment.startTime));
-    if(Number(segment.linearDamping)>0&&segment.acceleration.every(value=>Math.abs(value)<1e-12)){const k=Number(segment.linearDamping),factor=(1-Math.exp(-k*dt))/k;return segment.initialPosition.map((value,axis)=>value+segment.initialVelocity[axis]*factor);}
+    if(Number(segment.linearDamping)>0&&segment.acceleration.every(value=>Math.abs(value)<1e-12)){if(time>=segment.endTime-1e-9&&Array.isArray(segment.finalPosition))return [...segment.finalPosition];const k=Number(segment.linearDamping),factor=(1-Math.exp(-k*dt))/k;return segment.initialPosition.map((value,axis)=>value+segment.initialVelocity[axis]*factor);}
+    if(time>=segment.endTime-1e-9&&Array.isArray(segment.finalPosition))return [...segment.finalPosition];
     return segment.initialPosition.map((value,axis)=>value+segment.initialVelocity[axis]*dt+0.5*segment.acceleration[axis]*dt*dt);
   }
   throw new TypeError(`Unsupported authoritative trajectory segment type: ${String(segment.type)}`);
@@ -87,6 +88,12 @@ export function createSpriteMotionLUTPlayer(payload) {
 export function sampleSpriteMotionLUT(payload, time) {
   return createSpriteMotionLUTPlayer(payload).seek(time);
 }
+
+/** Validate the authoritative lifecycle envelope delivered to JSON-only clients. */
+export function validateSpriteMotionLifecycle(payload){validateMotionLifecycleProtocol(payload);return true;}
+/** Lifecycle playback is only available after terminal finalization supplied a canonical LUT. */
+export function createSpriteMotionLifecyclePlayer(payload){validateMotionLifecycleProtocol(payload);if(payload.status!=='terminal'||!payload.canonicalMotionLUT)throw new TypeError('Motion lifecycle has no terminal canonical LUT yet.');return new MotionLUTPlayer(payload.canonicalMotionLUT);}
+export function sampleSpriteMotionLifecycle(payload,time){return createSpriteMotionLifecyclePlayer(payload).seek(time);}
 
 export class JsonClient {
   constructor(transport) {
@@ -158,6 +165,10 @@ export class JsonClient {
         if (engineChanged) this.emit({ type: 'synchronization.recovered', source: 'event.snapshot', eventSequence: sequence });
       }
       this.processProtocolTimelineEvent(message);
+      if(message.event==='sprite.motion.lifecycle'){
+        try{validateMotionLifecycleProtocol(message.payload);this.emit({type:'sprite.motion.lifecycle',lifecycle:structuredClone(message.payload),eventId:message.eventId,sequence});}
+        catch(error){this.emit({type:'sprite.motion.lifecycle.invalid',payload:structuredClone(message.payload),error,eventId:message.eventId,sequence});}
+      }
       if (['presentation.sprite.simulation','presentation.sprite.simulation.v3','presentation.sprite.trajectory.v3','presentation.sprite.trajectory.v2'].includes(message.event)) {
         try {
           const normalized = normalizeSpriteProtocol(message.payload);
@@ -665,6 +676,9 @@ export class JsonClient {
 
   triggerAction(actionId, uniqueId) { return this.dispatch('action.trigger', { actionId, uniqueId }); }
   triggerSprite(spriteId, uniqueId) { return this.dispatch('sprite.trigger', { spriteId, uniqueId }); }
+  validateSpriteMotionLifecycle(payload) { return validateSpriteMotionLifecycle(payload); }
+  createSpriteMotionLifecyclePlayer(payload) { return createSpriteMotionLifecyclePlayer(payload); }
+  sampleSpriteMotionLifecycle(payload, time) { return sampleSpriteMotionLifecycle(payload, time); }
   acknowledgeSpriteTrajectory(payload) { return this.dispatch('sprite.motion.presentation.ack', payload); }
   markActionRead(uniqueId) { return this.dispatch('action.markAsRead', { uniqueId }); }
   openChatThread(contactId, chatId) { return this.dispatch('chat.open', { contactId, chatId }); }

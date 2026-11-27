@@ -2,7 +2,7 @@ import { createStateAccess } from '../state/StateAccess.js';
 import { createUtils } from '../utils.js';
 import { SpriteSimulationCoordinator3D } from '../modules/sprite/SpriteSimulationCoordinator3D.js';
 export { JsonProtocol, cloneJsonValue } from './JsonProtocol.js';
-export { SPRITE_PROTOCOL, normalizeSpriteProtocol, validateSpriteProtocol, serializeSpriteSimulation, adaptSpriteTrajectory } from './JsonProtocol.js';
+export { SPRITE_PROTOCOL, normalizeSpriteProtocol, validateSpriteProtocol, validateMotionLifecycleProtocol, serializeMotionLifecycle, serializeSpriteSimulation, adaptSpriteTrajectory } from './JsonProtocol.js';
 export { normalizePhysicsWorldConfig, normalizeSpritePhysicsConfig, normalizeScenarioSpritePhysics } from '../modules/sprite/SpritePhysicsConfig.js';
 
 function createPresentation(engine) {

@@ -13,3 +13,5 @@ export { StateAccess, StatePathError, createStateAccess } from './state/StateAcc
 export { STATE_SCHEMA } from './state/schema.js';
 
 export { createUtils, TaskManager, Loop } from './utils.js';
+
+export { MotionLifecycle, FallingPhase, normalizeMotionState, createMotionPhaseResult, finalizeMotionLifecycle } from './modules/sprite/motion/index.js';
