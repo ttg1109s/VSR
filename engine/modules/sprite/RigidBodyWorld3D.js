@@ -50,16 +50,33 @@ export class RigidBodyWorld3D {
   const dyn=[...this.bodies.values()].filter(b=>b.type==='dynamic'&&b.awake).sort((a,b)=>a.id.localeCompare(b.id));
   for(const b of dyn){b.velocity=add(b.velocity,scale(add(this.config.gravity,scale(b.force,b.invMass)),dt));applyAngularImpulse(b,scale(b.torque,dt));b.velocity=scale(b.velocity,Math.max(0,1-b.linearDamping*dt));b.angularVelocity=scale(b.angularVelocity,Math.max(0,1-b.angularDamping*dt));}
   const ccdHandled=new Set(),collisionEvents=[],ccdEvents=[],ccdAdvance=new Map(),ids=[...this.bodies.keys()].sort(),candidatePairs=buildSweptBroadphasePairs(this.bodies,{dt,cellSize:Math.max(4,...[...this.bodies.values()].map(b=>Math.max(1,b.radius*2)))});
-  // Pair-aware CCD: exact sphere-sphere and shape-plane TOI; other supported
-  // pairs use conservative bounding-sphere candidates followed by narrowphase confirmation.
-  for(const [pairA,pairB] of candidatePairs){const a=this.bodies.get(pairA),b=this.bodies.get(pairB);if(!(a.ccd||b.ccd)||!a.collisionEnabled||!b.collisionEnabled||a.type==='static'&&b.type==='static'||ccdHandled.has(a.id)||ccdHandled.has(b.id))continue;
-   const impact=findCCDImpact3D(a,b,dt);if(impact.status==='confirmed-impact'&&impact.time===0&&impact.method==='initial-contact')continue;if(impact.status==='indeterminate'){const uncertainty={type:'ccd-indeterminate',t:this.t,bodyA:a.id,bodyB:b.id,pair:impact.pair,reason:impact.reason,interval:impact.interval||null};ccdEvents.push(uncertainty);this.events.push(uncertainty);continue;}if(impact.status!=='confirmed-impact')continue;
-   const toi=impact.time,impactP=[add(a.position,scale(a.velocity,toi)),add(b.position,scale(b.velocity,toi))],contact=impact.contact,n=contact.normal,point=contact.point,ra=sub(point,impactP[0]),rb=sub(point,impactP[1]),rv=sub(add(b.velocity,cross(b.angularVelocity,rb)),add(a.velocity,cross(a.angularVelocity,ra))),vn=dot(rv,n),rnA=cross(ra,n),rnB=cross(rb,n),den=effectiveMass(a,ra,n)+effectiveMass(b,rb,n);
+  // Global CCD event loop: advance to the earliest impact, solve it, then
+  // recompute candidate TOIs over the remaining portion of this fixed step.
+  const ccdBodies=[...this.bodies.values()].sort((a,b)=>a.id.localeCompare(b.id));
+  let remaining=dt,elapsed=0,impactCount=0,ccdUnresolved=false;
+  const maxCCDImpacts=Math.max(16,Math.min(256,candidatePairs.length*4));
+  const advanceWorld=(delta)=>{if(delta<=0)return;for(const body of ccdBodies)if((body.type==='dynamic'&&body.awake)||body.type==='kinematic){body.position=add(body.position,scale(body.velocity,delta));body.orientation=qintegrate(body.orientation,body.angularVelocity,delta);this.dimensionProfile.constrainBody(body);}};
+  while(remaining>EPS&&impactCount<maxCCDImpacts){
+   let earliest=null;
+   for(const [pairA,pairB] of candidatePairs){const a=this.bodies.get(pairA),b=this.bodies.get(pairB);if(!(a.ccd||b.ccd)||!a.collisionEnabled||!b.collisionEnabled||a.type==='static'&&b.type==='static')continue;
+    const impact=findCCDImpact3D(a,b,remaining);
+    if(impact.status==='indeterminate'){const uncertainty={type:'ccd-indeterminate',t:this.t+elapsed,bodyA:a.id,bodyB:b.id,pair:impact.pair,reason:impact.reason,interval:impact.interval||null};ccdEvents.push(uncertainty);this.events.push(uncertainty);continue;}
+    if(impact.status!=='confirmed-impact')continue;
+    const contact=impact.contact,n=contact.normal,point=contact.point,ra=sub(point,a.position),rb=sub(point,b.position),rv=sub(add(b.velocity,cross(b.angularVelocity,rb)),add(a.velocity,cross(a.angularVelocity,ra))),vn=dot(rv,n);
+    if(impact.time<=TOI_TOL&&vn>=-EPS)continue;
+    const candidate={a,b,impact,toi:Math.max(0,impact.time),vn};
+    if(!earliest||candidate.toi<earliest.toi-TOI_TOL||Math.abs(candidate.toi-earliest.toi)<=TOI_TOL&&(a.id.localeCompare(earliest.a.id)<0||a.id===earliest.a.id&&b.id.localeCompare(earliest.b.id)<0))earliest=candidate;
+   }
+   if(!earliest){advanceWorld(remaining);elapsed+=remaining;remaining=0;break;}
+   const {a,b,impact,toi}=earliest;advanceWorld(toi);elapsed+=toi;remaining-=toi;
+   const contact=impact.contact,n=contact.normal,point=contact.point,ra=sub(point,a.position),rb=sub(point,b.position),rv=sub(add(b.velocity,cross(b.angularVelocity,rb)),add(a.velocity,cross(a.angularVelocity,ra))),vn=dot(rv,n),den=effectiveMass(a,ra,n)+effectiveMass(b,rb,n);
    let jn=0;if(den>EPS&&vn<0)jn=-(1+Math.min(a.restitution,b.restitution))*vn/den;const J=scale(n,jn);
    if(a.type==='dynamic'){a.velocity=sub(a.velocity,scale(J,a.invMass));applyAngularImpulse(a,scale(cross(ra,J),-1));this.#wake(a);}if(b.type==='dynamic'){b.velocity=add(b.velocity,scale(J,b.invMass));applyAngularImpulse(b,cross(rb,J));this.#wake(b);}
-   a.position=add(impactP[0],scale(a.velocity,dt-toi));b.position=add(impactP[1],scale(b.velocity,dt-toi));ccdAdvance.set(a.id,true);ccdAdvance.set(b.id,true);ccdHandled.add(a.id);ccdHandled.add(b.id);
-   const ev={type:'collision',t:this.t+toi,bodyA:a.id,bodyB:b.id,position:point,normal:n,penetration:contact.penetration??0,normalImpulse:jn,tangentImpulse:0,ccd:true,ccdMethod:impact.method,pair:impact.pair};ccdEvents.push(ev);this.events.push(ev);
+   const ev={type:'collision',t:this.t+elapsed,bodyA:a.id,bodyB:b.id,position:point,normal:n,penetration:contact.penetration??0,normalImpulse:jn,tangentImpulse:0,ccd:true,ccdMethod:impact.method,pair:impact.pair,ccdImpactIndex:impactCount};ccdEvents.push(ev);this.events.push(ev);ccdHandled.add(a.id);ccdHandled.add(b.id);impactCount++;
+   if(toi<=TOI_TOL&&jn<=EPS){const nudge=Math.min(remaining,TOI_TOL);advanceWorld(nudge);elapsed+=nudge;remaining-=nudge;}
   }
+  if(remaining>EPS){ccdUnresolved=true;advanceWorld(remaining);elapsed+=remaining;remaining=0;const ev={type:'ccd-impact-budget-exhausted',t:this.t+dt,impactCount,maxCCDImpacts};ccdEvents.push(ev);this.events.push(ev);}
+  for(const b of ccdBodies)ccdAdvance.set(b.id,true);
   for(const b of [...this.bodies.values()].sort((a,b)=>a.id.localeCompare(b.id)))if((b.type==='dynamic'&&b.awake)||b.type==='kinematic'){if(!ccdAdvance.has(b.id)){b.position=add(b.position,scale(b.velocity,dt));}b.orientation=qintegrate(b.orientation,b.angularVelocity,dt);this.dimensionProfile.constrainBody(b);}
   for(const b of this.bodies.values())if(b.physicalStateSampler){this.#samplePhysicalStateForBody(b,this.t+dt);}
   const contactManifolds=[];
@@ -68,7 +85,7 @@ export class RigidBodyWorld3D {
   for(let i=0;i<contactManifolds.length;i++){const c=contactManifolds[i],imp=solved[i];const ev={type:'collision',t:this.t+dt,bodyA:c.a.id,bodyB:c.b.id,position:c.point,normal:c.normal,penetration:c.penetration,normalImpulse:imp.normalImpulse,tangentImpulse:imp.tangentImpulse,colliderA:c.colliderA,colliderB:c.colliderB,solver:'sequential-impulse'};collisionEvents.push(ev);this.events.push(ev);if(c.a.type==='dynamic')this.#wake(c.a);if(c.b.type==='dynamic')this.#wake(c.b);}
 
   for(const b of this.bodies.values())if(b.type==='dynamic'){b.force=[0,0,0];b.torque=[0,0,0];const quiet=len(b.velocity)<=this.config.sleepLinearThreshold&&len(b.angularVelocity)<=this.config.sleepAngularThreshold;if(quiet){b.sleepTime+=dt;if(b.sleepTime>=this.config.sleepDwell){b.awake=false;b.velocity=[0,0,0];b.angularVelocity=[0,0,0];}}else b.sleepTime=0;}
-  for(const b of this.bodies.values())this.dimensionProfile.constrainBody(b);this.t+=dt;this.tick++;const endEnergy=this.energy();collisionEvents.push(...ccdEvents);this.lastDiagnostics={energyStart:startEnergy,energyEnd:endEnergy,energyDelta:endEnergy-startEnergy,collisionCount:collisionEvents.length,ccdCount:ccdEvents.filter(e=>e.type==='collision').length,ccdIndeterminate:ccdEvents.filter(e=>e.type==='ccd-indeterminate').length,broadphasePairs:candidatePairs.length,narrowphaseIndeterminate:this.events.filter(e=>e.type==='narrowphase-indeterminate').length,solverContacts:solved.contacts,solverVelocityIterations:solved.iterations,solverPositionIterations:solved.positionIterations,maxContactPenetration:solved.maxPenetration,awakeBodies:[...this.bodies.values()].filter(b=>b.awake).length};return {t:this.t,tick:this.tick,events:[...this.events],diagnostics:{...this.lastDiagnostics},bodies:this.snapshot()};
+  for(const b of this.bodies.values())this.dimensionProfile.constrainBody(b);this.t+=dt;this.tick++;const endEnergy=this.energy();collisionEvents.push(...ccdEvents);this.lastDiagnostics={energyStart:startEnergy,energyEnd:endEnergy,energyDelta:endEnergy-startEnergy,collisionCount:collisionEvents.length,ccdCount:ccdEvents.filter(e=>e.type==='collision').length,ccdImpactCount:impactCount,ccdImpactBudgetExceeded:ccdUnresolved,ccdIndeterminate:ccdEvents.filter(e=>e.type==='ccd-indeterminate').length,broadphasePairs:candidatePairs.length,narrowphaseIndeterminate:this.events.filter(e=>e.type==='narrowphase-indeterminate').length,solverContacts:solved.contacts,solverVelocityIterations:solved.iterations,solverPositionIterations:solved.positionIterations,maxContactPenetration:solved.maxPenetration,awakeBodies:[...this.bodies.values()].filter(b=>b.awake).length};return {t:this.t,tick:this.tick,events:[...this.events],diagnostics:{...this.lastDiagnostics},bodies:this.snapshot()};
  }
  syncPhysicalState(time=this.t){if(!Number.isFinite(time))throw new TypeError('physical sample time must be finite');this.t=time;this.#samplePhysicalState(time);return this.snapshot();}
  #samplePhysicalState(time){for(const b of this.bodies.values()){if(!b.physicalStateSampler)continue;const before=b.type==='dynamic'?b.position.slice():null;this.#samplePhysicalStateForBody(b,time);if(before)b.physicalState={...b.physicalState,pose:{...b.physicalState.pose,location:before}};}}
