@@ -431,3 +431,35 @@ test('Phase 7 protocol commits transaction before emitting successful acknowledg
   const ack=await protocol.dispatch({protocol:'vsr',protocolVersion:2,type:'command',command:'mutate.ok',commandId:'phase7-ok',payload:{}});
   assert.equal(ack.ok,true);assert.equal(committed,true);
 });
+
+
+test('protocol checkpoint restores event sequence, state revision and idempotent command results with a new epoch',async()=>{
+ const source=new JsonProtocol({engineId:'checkpoint-engine'});
+ source.publish('before.checkpoint',{value:1});
+ source.registerCommand('checkpoint.command',async()=>({value:2}));
+ const command={protocol:'vsr',protocolVersion:2,type:'command',command:'checkpoint.command',commandId:'checkpoint-command',payload:{}};
+ const ack=await source.dispatch(command);
+ const checkpoint=source.checkpoint();
+ const restored=new JsonProtocol({engineId:'temporary-engine'});
+ const restoredCheckpoint=await restored.restoreCheckpoint(checkpoint);
+ assert.equal(restored.engineId,'checkpoint-engine');
+ assert.equal(restored.eventSequence,checkpoint.eventSequence);
+ assert.equal(restored.stateRevision,checkpoint.stateRevision);
+ assert.equal(restored.epoch,checkpoint.epoch+1);
+ assert.deepEqual(await restored.dispatch(command),ack);
+ const event=restored.publish('after.restore',{value:3});
+ assert.equal(event.sequence,checkpoint.eventSequence+1);
+ assert.equal(event.protocolEpoch,checkpoint.epoch+1);
+ assert.equal(restored.getEventsAfter(checkpoint.eventSequence).gap,false);
+ assert.equal(restoredCheckpoint.eventSequence,checkpoint.eventSequence);
+});
+
+test('protocol checkpoint validation is atomic and rejects event sequence corruption',async()=>{
+ const protocol=new JsonProtocol({engineId:'atomic-protocol-checkpoint'});
+ const event=protocol.publish('safe.event',{ok:true});
+ const before=protocol.checkpoint();
+ const corrupt=structuredClone(before);corrupt.eventLog[0].sequence=99;
+ await assert.rejects(protocol.restoreCheckpoint(corrupt),/event continuity/);
+ assert.deepEqual(protocol.checkpoint(),before);
+ assert.equal(event.sequence,1);
+});
