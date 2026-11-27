@@ -25,10 +25,10 @@ import {JsonProtocol,cloneJsonValue} from './protocol/JsonProtocol.js';
 import {verifyPassword} from './modules/password/verify.js';
 
 export class GameEngine {
- constructor({taskManager,engineId,authorizeCommand,requireAuthorization=false,clock,presentationAvailable=()=>false,spriteOperationLedger=null}={}) {
+ constructor({taskManager,engineId,authorizeCommand,requireAuthorization=false,clock,presentationAvailable=()=>false,spriteOperationLedger=null,transactionProvider=null}={}) {
   this.spriteOperationLedger=spriteOperationLedger;
   this.taskManager=taskManager||new TaskManager({},120,{clock});
-  this.protocol=new JsonProtocol({engineId,protocolVersion:2,authorizeCommand,requireAuthorization,presentationAvailable,onCommandSuccess:({command,revisionBefore})=>{
+  this.protocol=new JsonProtocol({engineId,protocolVersion:2,authorizeCommand,requireAuthorization,presentationAvailable,transactionProvider,onCommandSuccess:({command,revisionBefore})=>{
    if(!['engine.init','scenario.inspect','snapshot.get'].includes(command)&&this.protocol.stateRevision===revisionBefore)this.commitState(`command:${command}`);
   }});
   const register=this.protocol.registerCommand.bind(this.protocol);
