@@ -56,7 +56,7 @@ export class RigidBodyWorld3D {
   let remaining=dt,elapsed=0,impactCount=0,ccdUnresolved=false;
   const maxCCDImpacts=Math.max(16,Math.min(256,candidatePairs.length*4));
   const advanceWorld=(delta)=>{if(delta<=0)return;for(const body of ccdBodies)if((body.type==='dynamic'&&body.awake)||body.type==='kinematic'){body.position=add(body.position,scale(body.velocity,delta));body.orientation=qintegrate(body.orientation,body.angularVelocity,delta);this.dimensionProfile.constrainBody(body);}};
-  const ccdPairHandled=new Set(),ccdUncertainKeys=new Set();
+  const ccdPairHandled=new Set(),ccdEventTimeKeys=new Set(),ccdUncertainKeys=new Set();
   while(remaining>EPS&&impactCount<maxCCDImpacts){
    const freshPairs=buildSweptBroadphasePairs(this.bodies,{dt:remaining,cellSize:Math.max(4,...[...this.bodies.values()].map(b=>Math.max(1,b.radius*2)))}),pairMap=new Map([...candidatePairs,...freshPairs].map(p=>[`${p[0]}\0${p[1]}`,p]));candidatePairs=[...pairMap.values()].sort((x,y)=>x[0].localeCompare(y[0])||x[1].localeCompare(y[1]));
 
@@ -101,7 +101,7 @@ export class RigidBodyWorld3D {
    const batchSolved=solveContactIslands(this.bodies,solveContacts,{velocityIterations:this.config.velocityIterations,positionIterations:0});
    const solvedByPair=new Map(solveContacts.map((c,i)=>[pairKey(c.a,c.b),batchSolved[i]]));
    const timeKey=Math.round((this.t+elapsed)/TOI_TOL);
-   for(const c of solveContacts){const key=pairKey(c.a,c.b),imp=solvedByPair.get(key);if(!ccdPairHandled.has(key)){ccdPairHandled.add(key);const isImpact=batchPairs.has(key),event={type:'collision',t:this.t+elapsed,bodyA:c.a.id,bodyB:c.b.id,position:c.point,normal:c.normal,penetration:c.penetration??0,normalImpulse:imp.normalImpulse,tangentImpulse:imp.tangentImpulse,ccd:isImpact,ccdTopologyPropagated:!isImpact,ccdImpactIndex:isImpact?impactCount+batch.findIndex(x=>pairKey(x.a,x.b)===key):undefined,solver:'sequential-impulse-ccd-topology-batch'};ccdEvents.push(event);this.events.push(event);ccdHandled.add(c.a.id);ccdHandled.add(c.b.id);}ccdPairHandled.add(key+'\\0'+timeKey);}
+   for(const c of solveContacts){const key=pairKey(c.a,c.b),imp=solvedByPair.get(key),eventKey=key+'\\0'+timeKey;if(!ccdEventTimeKeys.has(eventKey)){ccdEventTimeKeys.add(eventKey);const isImpact=batchPairs.has(key),event={type:'collision',t:this.t+elapsed,bodyA:c.a.id,bodyB:c.b.id,position:c.point,normal:c.normal,penetration:c.penetration??0,normalImpulse:imp.normalImpulse,tangentImpulse:imp.tangentImpulse,ccd:isImpact,ccdTopologyPropagated:!isImpact,ccdImpactIndex:isImpact?impactCount+batch.findIndex(x=>pairKey(x.a,x.b)===key):undefined,solver:'sequential-impulse-ccd-topology-batch'};ccdEvents.push(event);this.events.push(event);ccdHandled.add(c.a.id);ccdHandled.add(c.b.id);}ccdPairHandled.add(key);}
    impactCount+=batch.length;
    if(toi<=TOI_TOL&&batchSolved.some(x=>x.normalImpulse<=EPS)){const nudge=Math.min(remaining,TOI_TOL);advanceWorld(nudge);elapsed+=nudge;remaining-=nudge;}  }
   if(remaining>EPS){ccdUnresolved=true;advanceWorld(remaining);elapsed+=remaining;remaining=0;const ev={type:'ccd-impact-budget-exhausted',t:this.t+dt,impactCount,maxCCDImpacts};ccdEvents.push(ev);this.events.push(ev);}
