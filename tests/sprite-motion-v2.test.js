@@ -56,7 +56,6 @@ test('CCD does not repeatedly report an overlapping but separating pair',()=>{
 });
 
 test('CCD adaptively increases subdivisions for fast travel relative to radius',()=>{
-  const {createLinearPhysicsSegment}=await import('../engine/modules/sprite/trajectory.js');
   const hit=firstCircleImpact({trajectoryA:createLinearPhysicsSegment({segmentId:'fast',startTime:0,duration:1,position:[-100,0,0],velocity:[400,0,0]}),trajectoryB:createLinearPhysicsSegment({segmentId:'stationary',startTime:0,duration:1,position:[0,0,0],velocity:[0,0,0]}),radiusA:1,radiusB:1,timeStart:0,timeEnd:1,subdivisions:8});
   assert.ok(hit);
   assert.ok(hit.subdivisions>8);
