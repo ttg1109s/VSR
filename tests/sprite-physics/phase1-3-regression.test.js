@@ -68,7 +68,7 @@ test('PhysicalStateSampler derives box geometry and diagonal inertia from animat
 });
 
 test('PhysicalStateSampler supports nonuniform sphere scale and constant-density mass',()=>{
-  const sampler=createPhysicalStateSampler({collider:{type:'sphere',radius:2},mass:3,constantDensity:true,density:2,poseTrajectory:createPoseTrajectory({transformKeys:[{time:0,scale:[2,1,.5]}]})});
+  const sampler=createPhysicalStateSampler({collider:{type:'sphere',radius:2},mass:3,constantDensity:true,density:2,poseTrajectory:createPoseTrajectory({initialPose:{location:[0,0,0],rotation:[0,0,0],scale:[2,1,.5],origin:[0,0,0]},transformKeys:[{time:0,rotation:[0,0,0],scale:[2,1,.5],origin:[0,0,0]}]})});
   const s=sampler(0);
   assert.equal(s.geometry.type,'sphere');
   assert.equal(s.geometry.radius,4);
@@ -80,8 +80,8 @@ test('PhysicalStateSampler supports nonuniform sphere scale and constant-density
 
 test('PhysicalStateSampler capsule inertia responds to axial and radial scale',()=>{
   const base=createPhysicalStateSampler({collider:{type:'capsule',radius:.5,halfLength:1},mass:2})(0);
-  const radial=createPhysicalStateSampler({collider:{type:'capsule',radius:.5,halfLength:1},mass:2,poseTrajectory:createPoseTrajectory({transformKeys:[{time:0,scale:[2,1,1]}]})})(0);
-  const axial=createPhysicalStateSampler({collider:{type:'capsule',radius:.5,halfLength:1},mass:2,poseTrajectory:createPoseTrajectory({transformKeys:[{time:0,scale:[1,2,1]}]})})(0);
+  const radial=createPhysicalStateSampler({collider:{type:'capsule',radius:.5,halfLength:1},mass:2,poseTrajectory:createPoseTrajectory({initialPose:{location:[0,0,0],rotation:[0,0,0],scale:[2,1,1],origin:[0,0,0]},transformKeys:[{time:0,rotation:[0,0,0],scale:[2,1,1],origin:[0,0,0]}]})})(0);
+  const axial=createPhysicalStateSampler({collider:{type:'capsule',radius:.5,halfLength:1},mass:2,poseTrajectory:createPoseTrajectory({initialPose:{location:[0,0,0],rotation:[0,0,0],scale:[1,2,1],origin:[0,0,0]},transformKeys:[{time:0,rotation:[0,0,0],scale:[1,2,1],origin:[0,0,0]}]})})(0);
   assert.ok(radial.inertia[1]>base.inertia[1]);
   assert.ok(axial.inertia[0]>base.inertia[0]);
   assert.ok(base.inertia.every(x=>Number.isFinite(x)&&x>0));
@@ -94,7 +94,7 @@ test('PhysicalStateSampler rejects dynamic and constant-density plane mass model
 
 
 test('PoseTrajectory retarget carries position, angular and scale derivatives',()=>{
-  const source=createPoseTrajectory({positionTrajectory:{sample:t=>[t*t,0,0],velocity:t=>[2*t,0,0]},transformKeys:[{time:0,rotation:[0,0,0],scale:[1,1,1],origin:[0,0,0]},{time:2,rotation:[0,0,180],scale:[3,3,3],origin:[0,0,0]}]});
+  const source=createPoseTrajectory({initialPose:{location:[0,0,0],rotation:[0,0,0],scale:[1,1,1],origin:[0,0,0]},positionTrajectory:{sample:t=>[t*t,0,0],velocity:t=>[2*t,0,0]},transformKeys:[{time:0,rotation:[0,0,0],scale:[1,1,1],origin:[0,0,0]},{time:2,rotation:[0,0,180],scale:[3,3,3],origin:[0,0,0]}]});
   const before=source.sample(1),velocity=source.velocity(1),angular=source.angularVelocity(1),scaleRate=source.scaleRate(1);
   const next=source.retarget(1,{transformKeys:[{time:2,rotation:[0,0,270],scale:[5,5,5],origin:[0,0,0]}]});
   assert.deepEqual(next.sample(1),before);
@@ -114,7 +114,7 @@ test('PhysicalStateSampler keeps the requested timestamp and conservative scale 
 });
 
 test('RigidBodyWorld3D samples kinematic physical state at fixed-step timestamps',()=>{
-  const pose=createPoseTrajectory({positionTrajectory:{sample:t=>[t,0,0],velocity:()=>[1,0,0]},transformKeys:[{time:0,rotation:[0,0,0],scale:[1,1,1],origin:[0,0,0]},{time:1,rotation:[0,0,0],scale:[2,1,1],origin:[0,0,0]}]});
+  const pose=createPoseTrajectory({initialPose:{location:[0,0,0],rotation:[0,0,0],scale:[1,1,1],origin:[0,0,0]},positionTrajectory:{sample:t=>[t,0,0],velocity:()=>[1,0,0]},transformKeys:[{time:0,rotation:[0,0,0],scale:[1,1,1],origin:[0,0,0]},{time:1,rotation:[0,0,0],scale:[2,1,1],origin:[0,0,0]}]});
   const world=new RigidBodyWorld3D({fixedDt:.1,gravity:[0,0,0]});
   world.addBody({id:'scripted',type:'kinematic',poseTrajectory:pose,physicalStateSampler:createPhysicalStateSampler({collider:{type:'box',halfExtents:[1,1,1]},bodyType:'kinematic',poseTrajectory:pose})});
   world.syncPhysicalState(0);
