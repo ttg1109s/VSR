@@ -554,7 +554,9 @@ export class JsonProtocol{
     }
 
     const revisionBefore = this.stateRevision;
-    const transaction = this.transactionProvider ? await this.transactionProvider({command:command.command,payload,context,commandId:command.commandId}) : null;
+    let transaction=null;
+    try { transaction=this.transactionProvider ? await this.transactionProvider({command:command.command,payload,context,commandId:command.commandId}) : null; }
+    catch(error) { return this.#remember(idempotencyKey,requestFingerprint,{protocol:'vsr',protocolVersion:this.protocolVersion,type:'ack',commandId:command.commandId,ok:false,error:{code:error?.code||'TRANSACTION_SETUP_FAILED',message:error?.message||String(error)},revision:this.stateRevision,stateRevision:this.stateRevision}); }
     if(transaction!==null&&(!transaction||typeof transaction.commit!=='function'||typeof transaction.rollback!=='function')) throw new TypeError('transactionProvider must return commit() and rollback() methods.');
     this.publish('command.accepted', { commandId: command.commandId, command: command.command });
     try {

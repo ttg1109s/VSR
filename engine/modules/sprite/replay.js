@@ -13,11 +13,12 @@ export function createSpriteReplay({simulationOptions={},bodies,initialTrajector
 export function validateSpriteReplay(replay,{allowLegacy=true}={}){
  if(!replay||typeof replay!=='object'||!['vsr.sprite.replay.v1',SPRITE_REPLAY_FORMAT].includes(replay.format))throw new TypeError('Unsupported Sprite replay format.');
  if(replay.format==='vsr.sprite.replay.v1'&&!allowLegacy)throw new TypeError('Legacy Sprite replay format is not allowed.');
- if(!Array.isArray(replay.trajectories)||!replay.bodies||typeof replay.bodies!=='object'||!Number.isFinite(replay.startTime))throw new TypeError('Invalid Sprite replay envelope.');
+ if(!Array.isArray(replay.trajectories)||!replay.bodies||typeof replay.bodies!=='object'||Array.isArray(replay.bodies)||!Number.isFinite(replay.startTime)||!replay.simulationOptions||typeof replay.simulationOptions!=='object'||!replay.physicsByBody||typeof replay.physicsByBody!=='object')throw new TypeError('Invalid Sprite replay envelope.');
  const ids=new Set();for(const [id,trajectory] of replay.trajectories){if(typeof id!=='string'||!id||ids.has(id))throw new TypeError('Replay trajectory IDs must be unique non-empty strings.');ids.add(id);if(!trajectory||typeof trajectory!=='object')throw new TypeError('Replay trajectory descriptor is invalid.');}
  const candidate={seed:replay.seed??null,simulationOptions:stable(replay.simulationOptions||{}),bodies:stable(replay.bodies),physicsByBody:stable(replay.physicsByBody||{}),startTime:replay.startTime,trajectories:replay.trajectories.map(([id,t])=>[id,t]).sort(([a],[b])=>a.localeCompare(b))};
  const fingerprint=deterministicFingerprint(candidate);
  if(replay.fingerprint!==fingerprint)throw new Error('Sprite replay fingerprint mismatch; payload is corrupt or incompatible.');
+ if(replay.format==='vsr.sprite.replay.v2'&&replay.compatibility?.physicsModel!=='authoritative-sprite-v1')throw new TypeError('Incompatible Sprite replay physics model.');
  if(replay.format===SPRITE_REPLAY_FORMAT&&replay.compatibility?.trajectorySchema!==1)throw new TypeError('Unsupported Sprite replay trajectory schema.');
  return {fingerprint,compatible:true,legacy:replay.format==='vsr.sprite.replay.v1'};
 }
