@@ -31,7 +31,7 @@ A non-uniformly scaled sphere uses a conservative enclosing sphere for collision
 
 ## Runtime boundaries
 
-Phase 6 tensor inertia and iterative contact solving are now integrated. Dynamic bodies retain principal local inertia and compute world inverse inertia from current orientation; torque and contact impulses update angular velocity through the tensor. Contact manifolds are resolved in deterministic body-pair order with configurable sequential velocity iterations and position correction iterations. Restitution is thresholded for stability and friction impulses are accumulated and clamped to the Coulomb cone. The runtime remains constrained: multiple CCD impacts within one timestep are not yet a complete event-loop implementation. This phase does not implement a general ellipsoid narrowphase, complete shape-pair matrix or shape-aware CCD.
+Phase 6 tensor inertia and iterative contact solving are now integrated. Dynamic bodies retain principal local inertia and compute world inverse inertia from current orientation; torque and contact impulses update angular velocity through the tensor. Contact manifolds are resolved in deterministic body-pair order with configurable sequential velocity iterations and position correction iterations. Restitution is thresholded for stability and friction impulses are accumulated and clamped to the Coulomb cone. The runtime now performs a global earliest-impact continuation loop within the fixed timestep, refreshes swept broadphase candidates after impacts, resolves subsequent confirmed impacts, and records impact-budget exhaustion/indeterminate CCD diagnostics. The loop has a deterministic finite impact budget to protect against pathological zero-time loops. This phase does not implement a general ellipsoid narrowphase, complete shape-pair matrix or shape-aware CCD.
 
 Checkpoint serialization still stores sampled body values, not executable trajectory/sampler definitions; deterministic persistence/replay remains Phase 7.
 
@@ -51,3 +51,8 @@ The supported narrowphase pair matrix is explicit: sphere-sphere, sphere-box, bo
 ## Phase 6 — RigidBodyWorld3D solver implementation
 
 The world now uses body-local principal inertia tensors and orientation-derived world inverse tensors for torque and contact response. The Phase 6 solver module provides deterministic sequential impulse iterations across the discovered contact set, accumulated normal and friction impulses, restitution thresholding, Coulomb friction bounds, and iterative penetration correction. Solver iteration counts are configurable on the world. Static and kinematic bodies contribute zero inverse inertia; dynamic bodies use sampled principal moments when PhysicalStateSampler is present. CCD currently resolves at most one handled impact per body per fixed step, so multi-impact continuation remains a constrained boundary.
+
+
+### Multi-impact CCD continuation
+
+Within one authoritative fixed step, CCD now advances the world to the earliest confirmed impact, resolves its normal impulse, refreshes conservative swept broadphase candidates for the remaining time, and repeats until no further confirmed impact exists or a deterministic finite impact budget is reached. CCD collision events include an impact index and diagnostics report total impact count and whether the budget was exhausted. Indeterminate pairs are surfaced as events and deduplicated by pair/reason during the continuation loop. This implementation is source-complete; test execution remains intentionally out of scope.
