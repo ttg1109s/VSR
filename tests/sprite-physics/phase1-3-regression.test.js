@@ -133,3 +133,28 @@ test('RigidBodyWorld3D samples kinematic physical state at fixed-step timestamps
   assert.ok(Math.abs(snapshot.position[0]-.1)<1e-9);
   assert.ok(Math.abs(snapshot.collider.halfExtents[0]-1.1)<1e-9);
 });
+
+
+test('Phase 1: initial overlap is confirmed even when bodies are separating',()=>{
+  const a=createLinearPhysicsSegment({segmentId:'overlap-a',startTime:0,duration:1,position:[0,0,0],velocity:[-1,0,0]});
+  const b=createLinearPhysicsSegment({segmentId:'overlap-b',startTime:0,duration:1,position:[1,0,0],velocity:[0,0,0]});
+  const result=firstCircleImpactResult({trajectoryA:a,trajectoryB:b,radiusA:1,radiusB:0,timeStart:0,timeEnd:1});
+  assert.equal(result.status,'confirmed-impact');
+  assert.equal(result.time,0);
+  assert.equal(result.approximation,'initial-overlap');
+});
+
+test('Phase 1: tangential analytic CCD tolerates roundoff around zero discriminant',()=>{
+  const a=createLinearPhysicsSegment({segmentId:'tangent-a',startTime:0,duration:2,position:[-2,0,0],velocity:[1,0,0]});
+  const b=createLinearPhysicsSegment({segmentId:'tangent-b',startTime:0,duration:2,position:[0,1+1e-14,0],velocity:[0,0,0]});
+  const result=firstCircleImpactResult({trajectoryA:a,trajectoryB:b,radiusA:1,radiusB:0,timeStart:0,timeEnd:2});
+  assert.equal(result.status,'confirmed-impact');
+});
+
+test('Phase 1: unsupported nonlinear trajectory cannot become false no-impact in fallback mode',()=>{
+  const linear=createLinearPhysicsSegment({segmentId:'fallback-linear',startTime:0,duration:1,position:[0,0,0],velocity:[0,0,0]});
+  const custom={type:'custom',startTime:0,endTime:1,sample:t=>[Math.sin(Math.PI*t),0,0]};
+  const result=firstCircleImpactResult({trajectoryA:linear,trajectoryB:custom,radiusA:.1,radiusB:.1,timeStart:0,timeEnd:1,conservative:false,subdivisions:8});
+  assert.equal(result.status,'indeterminate');
+  assert.equal(result.reason,'nonlinear-trajectory-without-conservative-bounds');
+});
