@@ -87,7 +87,7 @@ export class RigidBodyWorld3D {
   // before solving, so sleeping bodies in chains/branches receive solver impulses and
   // participate in subsequent fixed-step integration.
   const wakeIslands=buildContactIslands(contactManifolds);
-  for(const island of wakeIslands){if(island.bodyIds.some(id=>this.bodies.get(id)?.awake)){for(const id of island.bodyIds)this.#wake(this.bodies.get(id));}}
+  for(const island of wakeIslands){const active=island.bodyIds.some(id=>this.bodies.get(id)?.awake)||island.contacts.some(c=>{const ra=sub(c.point,c.a.position),rb=sub(c.point,c.b.position),rv=sub(add(c.b.velocity,cross(c.b.angularVelocity,rb)),add(c.a.velocity,cross(c.a.angularVelocity,ra)));return dot(rv,c.normal)<-EPS;});if(active){for(const id of island.bodyIds)this.#wake(this.bodies.get(id));}}
   const solved=solveContactIslands(this.bodies,contactManifolds,{velocityIterations:this.config.velocityIterations,positionIterations:this.config.positionIterations});
   for(let i=0;i<contactManifolds.length;i++){const c=contactManifolds[i],imp=solved[i];const ev={type:'collision',t:this.t+dt,bodyA:c.a.id,bodyB:c.b.id,position:c.point,normal:c.normal,penetration:c.penetration,normalImpulse:imp.normalImpulse,tangentImpulse:imp.tangentImpulse,colliderA:c.colliderA,colliderB:c.colliderB,solver:'sequential-impulse'};collisionEvents.push(ev);this.events.push(ev);if(c.a.type==='dynamic')this.#wake(c.a);if(c.b.type==='dynamic')this.#wake(c.b);}
 
