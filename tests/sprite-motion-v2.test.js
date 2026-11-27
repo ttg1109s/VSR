@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createBezierTrajectory,createLinearPhysicsSegment,resolveCircleCollision,correctCirclePenetration,firstCircleImpact,AuthoritativeSpriteSimulation} from '../engine/modules/sprite/index.js';
+import {createBezierTrajectory,createLinearPhysicsSegment,resolveCircleCollision,correctCirclePenetration,firstCircleImpact,firstCircleImpactResult,AuthoritativeSpriteSimulation} from '../engine/modules/sprite/index.js';
 
 test('v2 Bezier trajectory samples endpoints and computes velocity',()=>{
  const t=createBezierTrajectory({points:[[0,0],[1,0],[2,0],[3,0]],duration:2});
@@ -52,7 +52,7 @@ test('authoritative simulation is deterministic for identical body and trajector
 test('CCD does not repeatedly report an overlapping but separating pair',()=>{
  const a=createLinearPhysicsSegment({segmentId:'a',startTime:0,duration:1,position:[0,0,0],velocity:[-1,0,0]});
  const b=createLinearPhysicsSegment({segmentId:'b',startTime:0,duration:1,position:[1,0,0],velocity:[1,0,0]});
- const {firstCircleImpactResult}=await import('../engine/modules/sprite/collision.js');const result=firstCircleImpactResult({trajectoryA:a,trajectoryB:b,radiusA:1,radiusB:1,timeStart:0,timeEnd:1,subdivisions:8});assert.equal(result.status,'confirmed-impact');assert.equal(result.approximation,'initial-overlap');
+ const result=firstCircleImpactResult({trajectoryA:a,trajectoryB:b,radiusA:1,radiusB:1,timeStart:0,timeEnd:1,subdivisions:8});assert.equal(result.status,'confirmed-impact');assert.equal(result.approximation,'initial-overlap');
 });
 
 test('CCD adaptively increases subdivisions for fast travel relative to radius',()=>{
