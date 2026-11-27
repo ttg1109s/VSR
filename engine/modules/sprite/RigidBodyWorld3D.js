@@ -7,7 +7,7 @@ import { worldInverseInertia, applyAngularImpulse, effectiveMass, buildContactIs
  * Transform convention: position=[x,y,z], orientation=[w,x,y,z] quaternion, time=t seconds.
  * This is a foundational 3D profile, not a replacement for a general convex solver yet.
  */
-const EPS=1e-12;
+const EPS=1e-12,TOI_TOL=1e-7;
 const v3=(v=[0,0,0])=>{if(!Array.isArray(v)||v.length!==3||v.some(x=>!Number.isFinite(x)))throw new TypeError('Expected finite Vec3');return [...v];};
 const add=(a,b)=>a.map((x,i)=>x+b[i]);
 const sub=(a,b)=>a.map((x,i)=>x-b[i]);
