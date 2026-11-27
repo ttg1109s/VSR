@@ -55,7 +55,7 @@ export class RigidBodyWorld3D {
   const ccdBodies=[...this.bodies.values()].sort((a,b)=>a.id.localeCompare(b.id));
   let remaining=dt,elapsed=0,impactCount=0,ccdUnresolved=false;
   const maxCCDImpacts=Math.max(16,Math.min(256,candidatePairs.length*4));
-  const advanceWorld=(delta)=>{if(delta<=0)return;for(const body of ccdBodies)if((body.type==='dynamic'&&body.awake)||body.type==='kinematic){body.position=add(body.position,scale(body.velocity,delta));body.orientation=qintegrate(body.orientation,body.angularVelocity,delta);this.dimensionProfile.constrainBody(body);}};
+  const advanceWorld=(delta)=>{if(delta<=0)return;for(const body of ccdBodies)if((body.type==='dynamic'&&body.awake)||body.type==='kinematic'){body.position=add(body.position,scale(body.velocity,delta));body.orientation=qintegrate(body.orientation,body.angularVelocity,delta);this.dimensionProfile.constrainBody(body);}};
   while(remaining>EPS&&impactCount<maxCCDImpacts){
    let earliest=null;
    for(const [pairA,pairB] of candidatePairs){const a=this.bodies.get(pairA),b=this.bodies.get(pairB);if(!(a.ccd||b.ccd)||!a.collisionEnabled||!b.collisionEnabled||a.type==='static'&&b.type==='static')continue;
@@ -77,7 +77,7 @@ export class RigidBodyWorld3D {
   }
   if(remaining>EPS){ccdUnresolved=true;advanceWorld(remaining);elapsed+=remaining;remaining=0;const ev={type:'ccd-impact-budget-exhausted',t:this.t+dt,impactCount,maxCCDImpacts};ccdEvents.push(ev);this.events.push(ev);}
   for(const b of ccdBodies)ccdAdvance.set(b.id,true);
-  for(const b of [...this.bodies.values()].sort((a,b)=>a.id.localeCompare(b.id)))if((b.type==='dynamic'&&b.awake)||b.type==='kinematic'){if(!ccdAdvance.has(b.id)){b.position=add(b.position,scale(b.velocity,dt));}b.orientation=qintegrate(b.orientation,b.angularVelocity,dt);this.dimensionProfile.constrainBody(b);}
+  for(const b of [...this.bodies.values()].sort((a,b)=>a.id.localeCompare(b.id)))if((b.type==='dynamic'&&b.awake)||b.type==='kinematic'){if(!ccdAdvance.has(b.id)){b.position=add(b.position,scale(b.velocity,dt));b.orientation=qintegrate(b.orientation,b.angularVelocity,dt);}this.dimensionProfile.constrainBody(b);}
   for(const b of this.bodies.values())if(b.physicalStateSampler){this.#samplePhysicalStateForBody(b,this.t+dt);}
   const contactManifolds=[];
   for(const [pairA,pairB] of candidatePairs){const a=this.bodies.get(pairA),b=this.bodies.get(pairB);if(ccdHandled.has(a.id)&&ccdHandled.has(b.id))continue;if(!a.collisionEnabled||!b.collisionEnabled||a.type==='static'&&b.type==='static')continue;const ga=collider3DWorldGeometry(a.collider,{position:a.position,orientation:a.orientation}),gb=collider3DWorldGeometry(b.collider,{position:b.position,orientation:b.orientation}),result=narrowphase3D(ga,gb);if(result.status==='indeterminate'){this.events.push({type:'narrowphase-indeterminate',t:this.t+dt,bodyA:a.id,bodyB:b.id,pair:result.pair,reason:result.reason});continue;}if(result.status==='confirmed-no-contact')continue;const contact=result.contact,n=contact.normal,point=contact.point,penetration=contact.penetration;if(a.type==='sensor'||b.type==='sensor'){this.events.push({type:'overlap',t:this.t+dt,bodyA:a.id,bodyB:b.id,position:point,normal:n,penetration});continue;}contactManifolds.push({a,b,normal:n,point,penetration,colliderA:a.collider.type,colliderB:b.collider.type});}
