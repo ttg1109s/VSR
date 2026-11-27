@@ -41,9 +41,11 @@ test('solver diagnostics do not report convergence when residuals exceed toleran
  assert.ok(result.normalResidual>0||result.frictionResidual>0||result.positionResidual>0);
 });
 test('island solver remains deterministic under contact input reordering',()=>{
- const floor=body('floor','static'),a=body('a','dynamic',[0,-1,0]),b=body('b','dynamic',[0,-1,0]);
- const make=()=>[contact(floor,a),contact(a,b)];
- const run=order=>{const cs=make().slice().reverse();if(order)cs.reverse();return solveContactIslands([floor,a,b],cs,{velocityIterations:8,positionIterations:4}).map(x=>x);};
- const first=run(false);a.velocity=[0,-1,0];b.velocity=[0,-1,0];a.position=[0,0,0];b.position=[0,0,0];const second=run(true);
- assert.deepEqual(first,second);
+ const run=reverse=>{
+  const floor=body('floor','static'),a=body('a','dynamic',[0,-1,0]),b=body('b','dynamic',[0,-1,0]);
+  const cs=[contact(floor,a),contact(a,b)];if(reverse)cs.reverse();
+  const result=solveContactIslands([floor,a,b],cs,{velocityIterations:8,positionIterations:4});
+  return {bodies:[a,b].map(x=>({id:x.id,velocity:x.velocity,position:x.position,angularVelocity:x.angularVelocity})),contacts:cs.map((c,i)=>({pair:[c.a.id,c.b.id].join('|'),impulse:result[i]})).sort((x,y)=>x.pair.localeCompare(y.pair))};
+ };
+ assert.deepEqual(run(false),run(true));
 });
