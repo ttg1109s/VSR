@@ -9,7 +9,7 @@ const matVec=(m,v)=>m.map(row=>dot(row,v));
 const transpose=m=>m[0].map((_,i)=>m.map(row=>row[i]));
 const matMul=(a,b)=>a.map(row=>b[0].map((_,j)=>dot(row,b.map(r=>r[j]))));
 const invDiag=d=>matDiag(d.map(x=>x>1e-12&&Number.isFinite(x)?1/x:0));
-export function worldInverseInertia(body){if(body.type!=='dynamic')return [[0,0,0],[0,0,0],[0,0,0]];const local=body.inverseInertiaTensorLocal||invDiag(body.inertiaTensorLocal||[body.inertia,body.inertia,body.inertia]),q=qn(body.orientation),basis=[rotate(q,[1,0,0]),rotate(q,[0,1,0]),rotate(q,[0,0,1])],R=transpose(basis);return matMul(matMul(R,local),transpose(R));}
+export function worldInverseInertia(body){if(body.type!=='dynamic')return [[0,0,0],[0,0,0],[0,0,0]];const raw=body.inverseInertiaTensorLocal||invDiag(body.inertiaTensorLocal||[body.inertia,body.inertia,body.inertia]),local=Array.isArray(raw[0])?raw:matDiag(raw),q=qn(body.orientation),basis=[rotate(q,[1,0,0]),rotate(q,[0,1,0]),rotate(q,[0,0,1])],R=transpose(basis);return matMul(matMul(R,local),transpose(R));}
 export function applyAngularImpulse(body,impulse){body.angularVelocity=add(body.angularVelocity,matVec(worldInverseInertia(body),impulse));}
 export function effectiveMass(body,r,n){if(body.type!=='dynamic')return 0;const rn=cross(r,n);return body.invMass+dot(rn,matVec(worldInverseInertia(body),rn));}
 export function solveContactManifold(bodies,contacts,{velocityIterations=10,positionIterations=4,baumgarte=.18,slop=.002}={}){
