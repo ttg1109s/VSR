@@ -138,8 +138,8 @@ export const LoaderSystem = {
             state.sprites[spriteId] = {
                 state: stateNames[0] ?? null,
                 layer: sprite.layer,
-                position: [...sprite.position],
-                transform: { scale: sprite.transform?.scale ?? 1, rotate: sprite.transform?.rotate ?? 0 }
+                position: [...(sprite.position?.location ?? sprite.position)],
+                transform: (() => { const t=sprite.position?.transform ?? sprite.transform ?? {}; const scale=t.scale ?? 1,rotation=t.rotation ?? t.rotate ?? 0; return { scale:Array.isArray(scale)?scale[0]:scale, rotate:Array.isArray(rotation)?rotation[2]??0:rotation }; })()
             };
         }
 
