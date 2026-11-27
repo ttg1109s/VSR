@@ -705,7 +705,7 @@ function migrateSpriteStateMap(scenario) {
     if (!keys.length) continue;
     definition.state = {
       active: keys[0],
-      map: Object.fromEntries(keys.map(key => [key, { url: state[key], media: 'photo' }]))
+      map: Object.fromEntries(keys.map(key => [key, state[key]]))
     };
   }
 }
