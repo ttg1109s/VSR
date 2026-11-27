@@ -37,6 +37,6 @@ test('Phase 7 checkpoint continuation matches uninterrupted deterministic simula
  const restored=create();restored.restore(checkpoint);
  const replayed=[];for(let i=0;i<40;i++)replayed.push(restored.step());
  assert.deepEqual(restored.snapshot(),finalState);
- assert.deepEqual(restored.events,replayed.flatMap(r=>r.events.filter(e=>e.t>=checkpoint.t)));
+ assert.deepEqual(restored.events,postCheckpointEvents);
  assert.deepEqual(restored.lastDiagnostics,uninterrupted.lastDiagnostics);
 });
