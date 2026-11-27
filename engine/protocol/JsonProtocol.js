@@ -24,11 +24,13 @@ const hasSnapshotUnsafeExpression=value=>{
  return false;
 };
 export class JsonProtocol{
- constructor({engineId=`vsr-${Math.random().toString(36).slice(2,10)}`,protocolVersion=2,maxEvents=1000,maxRememberedCommands=500,idempotencyStore=null,authorizeCommand=null,requireAuthorization=false,onCommandSuccess=null,presentationAvailable=null,transactionProvider=null}={}){
+ constructor({engineId=`vsr-${Math.random().toString(36).slice(2,10)}`,protocolVersion=2,maxEvents=1000,maxRememberedCommands=500,idempotencyStore=null,authorizeCommand=null,requireAuthorization=false,onCommandSuccess=null,presentationAvailable=null,transactionProvider=null,requireTransactions=false,requireAtomicAck=false}={}){
   if(typeof requireAuthorization!=='boolean')throw new TypeError('requireAuthorization must be boolean.');
+  if(typeof requireTransactions!=='boolean'||typeof requireAtomicAck!=='boolean')throw new TypeError('Transaction policy flags must be boolean.');
+  if(requireAtomicAck&&(!requireTransactions||!transactionProvider||transactionProvider.atomicAck!==true||typeof transactionProvider.lookup!=='function'))throw new TypeError('requireAtomicAck needs requireTransactions and an atomicAck transactionProvider with lookup().');
   if(requireAuthorization&&typeof authorizeCommand!=='function')throw new TypeError('requireAuthorization needs an authorizeCommand function.');
   if(idempotencyStore!==null&&(!idempotencyStore||typeof idempotencyStore.get!=='function'||typeof idempotencyStore.set!=='function'))throw new TypeError('idempotencyStore must implement async-compatible get(key) and set(key, value).');
-  Object.assign(this,{engineId,protocolVersion,maxEvents,maxRememberedCommands,idempotencyStore,authorizeCommand,requireAuthorization,onCommandSuccess,presentationAvailable,transactionProvider});
+  Object.assign(this,{engineId,protocolVersion,maxEvents,maxRememberedCommands,idempotencyStore,authorizeCommand,requireAuthorization,onCommandSuccess,presentationAvailable,transactionProvider,requireTransactions,requireAtomicAck});
   this.stateRevision=0;this.revision=0;this.eventSequence=0;this.commandSequence=0;this.epoch=0;this.listeners=new Set();this.eventLog=[];this.commandHandlers=new Map();this.commandResults=new Map();this.dispatchQueue=Promise.resolve();this.presentationRequests=new Map();this.presentationRequestSequence=0;
  }
  subscribe(fn){if(typeof fn!=='function')throw new TypeError('Protocol listener must be a function.');this.listeners.add(fn);return()=>this.listeners.delete(fn);}
@@ -529,6 +531,7 @@ export class JsonProtocol{
     const requestFingerprint = JSON.stringify({ command: command.command, payload });
     let previous = this.commandResults.get(idempotencyKey);
     if(!previous&&this.idempotencyStore){previous=await this.idempotencyStore.get(idempotencyKey);if(previous)this.commandResults.set(idempotencyKey,cloneJsonValue(previous));}
+    if(!previous&&this.requireAtomicAck){previous=await this.transactionProvider.lookup({idempotencyKey,requestFingerprint});if(previous)this.commandResults.set(idempotencyKey,cloneJsonValue(previous));}
     if (previous) {
       if (previous.requestFingerprint !== requestFingerprint) {
         return {
@@ -553,6 +556,8 @@ export class JsonProtocol{
       };
     }
 
+    if(this.requireTransactions&&!this.transactionProvider)return this.#remember(idempotencyKey,requestFingerprint,{protocol:'vsr',protocolVersion:this.protocolVersion,type:'ack',commandId:command.commandId,ok:false,error:{code:'TRANSACTION_REQUIRED'},revision:this.stateRevision,stateRevision:this.stateRevision});
+
     const handler = this.commandHandlers.get(command.command);
     if (!handler) {
       return await this.#remember(idempotencyKey, requestFingerprint, {
@@ -565,32 +570,44 @@ export class JsonProtocol{
 
     const revisionBefore = this.stateRevision;
     let transaction=null;
-    try { transaction=this.transactionProvider ? await this.transactionProvider({command:command.command,payload,context,commandId:command.commandId}) : null; }
+    try { transaction=this.transactionProvider ? await this.transactionProvider({command:command.command,payload,context,commandId:command.commandId,idempotencyKey,requestFingerprint}) : null; }
     catch(error) { return this.#remember(idempotencyKey,requestFingerprint,{protocol:'vsr',protocolVersion:this.protocolVersion,type:'ack',commandId:command.commandId,ok:false,error:{code:error?.code||'TRANSACTION_SETUP_FAILED',message:error?.message||String(error)},revision:this.stateRevision,stateRevision:this.stateRevision}); }
     if(transaction!==null&&(!transaction||typeof transaction.commit!=='function'||typeof transaction.rollback!=='function')) throw new TypeError('transactionProvider must return commit() and rollback() methods.');
+    if(this.requireTransactions&&!transaction)return this.#remember(idempotencyKey,requestFingerprint,{protocol:'vsr',protocolVersion:this.protocolVersion,type:'ack',commandId:command.commandId,ok:false,error:{code:'TRANSACTION_REQUIRED'},revision:this.stateRevision,stateRevision:this.stateRevision});
+    if(this.requireAtomicAck&&transaction?.atomicAck!==true)return this.#remember(idempotencyKey,requestFingerprint,{protocol:'vsr',protocolVersion:this.protocolVersion,type:'ack',commandId:command.commandId,ok:false,error:{code:'ATOMIC_ACK_REQUIRED'},revision:this.stateRevision,stateRevision:this.stateRevision});
     this.publish('command.accepted', { commandId: command.commandId, command: command.command });
+    let commitAttempted=false,committed=false,successAck=null;
     try {
       const result = await handler(payload, context);
       await this.onCommandSuccess?.({ command: command.command, payload, context, revisionBefore });
-      await transaction?.commit?.(result);
+      successAck={protocol:'vsr',protocolVersion:this.protocolVersion,type:'ack',commandId:command.commandId,ok:true,revision:this.stateRevision,stateRevision:this.stateRevision,result:result===undefined?null:cloneJsonValue(result)};
+      commitAttempted=!!transaction;
+      await transaction?.commit?.(result,{ack:successAck,idempotencyKey,requestFingerprint,commandId:command.commandId});
+      committed=true;
       this.publish('command.completed', { commandId: command.commandId, command: command.command });
-      return this.#remember(idempotencyKey, requestFingerprint, {
-        protocol: 'vsr', protocolVersion: this.protocolVersion, type: 'ack',
-        commandId: command.commandId, ok: true, revision: this.stateRevision,
-        stateRevision: this.stateRevision, result: result === undefined ? null : cloneJsonValue(result)
-      });
+      try{return await this.#remember(idempotencyKey,requestFingerprint,successAck);}
+      catch(storeError){
+       // Never report a committed mutation as a failure. Atomic providers own the
+       // durable ACK and can recover it through lookup(); legacy providers get an
+       // explicit degraded-durability success ACK to prevent blind retries.
+       this.commandResults.set(idempotencyKey,{requestFingerprint,ack:cloneJsonValue(successAck)});
+       if(this.commandResults.size>this.maxRememberedCommands)this.commandResults.delete(this.commandResults.keys().next().value);
+       if(this.requireAtomicAck)return cloneJsonValue(successAck);
+       const degraded={...successAck,durability:{ackPersisted:false,warning:'ACK_PERSISTENCE_FAILED'}};
+       this.commandResults.set(idempotencyKey,{requestFingerprint,ack:cloneJsonValue(degraded)});
+       this.publish('command.ack.persistence.failed',{commandId:command.commandId,command:command.command,code:'ACK_PERSISTENCE_FAILED'});
+       return cloneJsonValue(degraded);
+      }
     } catch (error) {
-      if(transaction){try{await transaction.rollback(error);}catch(rollbackError){error.rollbackError=rollbackError;error.code='ROLLBACK_FAILED';}}
-      this.publish('command.failed', {
-        commandId: command.commandId, command: command.command,
-        code: error?.code || 'COMMAND_FAILED', message: error?.message || String(error)
-      });
-      return this.#remember(idempotencyKey, requestFingerprint, {
-        protocol: 'vsr', protocolVersion: this.protocolVersion, type: 'ack',
-        commandId: command.commandId, ok: false,
-        error: { code: error?.code || 'COMMAND_FAILED', message: error?.message || String(error) },
-        revision: this.stateRevision, stateRevision: this.stateRevision
-      });
+      if(committed)return cloneJsonValue(successAck);
+      let outcomeUnknown=commitAttempted;
+      if(this.requireAtomicAck&&commitAttempted){
+       try{const recovered=await this.transactionProvider.lookup({idempotencyKey,requestFingerprint});if(recovered&&recovered.requestFingerprint===requestFingerprint)return cloneJsonValue(recovered.ack);outcomeUnknown=false;}catch(lookupError){error.lookupError=lookupError;}
+      }
+      if(transaction&&!outcomeUnknown){try{await transaction.rollback(error);}catch(rollbackError){error.rollbackError=rollbackError;error.code='ROLLBACK_FAILED';}}
+      const code=outcomeUnknown?'COMMAND_OUTCOME_UNKNOWN':error?.code||'COMMAND_FAILED';
+      this.publish('command.failed', {commandId:command.commandId,command:command.command,code,message:error?.message||String(error)});
+      return this.#remember(idempotencyKey,requestFingerprint,{protocol:'vsr',protocolVersion:this.protocolVersion,type:'ack',commandId:command.commandId,ok:false,error:{code,message:error?.message||String(error)},revision:this.stateRevision,stateRevision:this.stateRevision});
     }
   }
 
