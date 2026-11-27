@@ -90,7 +90,7 @@ function migrateSpriteLegacyShape(scenario) {
       const scale = Array.isArray(rawScale) ? rawScale : [rawScale, rawScale, rawScale];
       const origin = canonicalTransform.origin ?? legacyTransform.origin ?? [0, 0, 0];
       const legacyOrientation = definition.physics?.orientation;
-      const finalRotation = canonicalTransform.rotation ?? legacyTransform.rotation ?? legacyTransform.rotate ?? (Array.isArray(legacyOrientation) ? legacyOrientation : rotation);
+      const finalRotation = canonicalTransform.rotation ?? (Array.isArray(legacyTransform.rotation) ? legacyTransform.rotation : (Array.isArray(legacyOrientation) ? legacyOrientation : rotation));
       if (isObject(definition.physics)) delete definition.physics.orientation;
       definition.position = { location, transform: { rotation: finalRotation, scale, origin } };
       if (Array.isArray(definition.transform)) delete definition.transform;
