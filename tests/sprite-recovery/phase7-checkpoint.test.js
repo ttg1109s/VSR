@@ -22,3 +22,21 @@ test('Phase 7 checkpoint rejects unsnapshotable trajectory and physical sampler 
  world.addBody({id:'kinematic',type:'kinematic',poseTrajectory:{sample:()=>[0,0,0]}});
  assert.throws(()=>world.checkpoint(),/runtime trajectory\/sampler closures/);
 });
+
+
+test('Phase 7 checkpoint continuation matches uninterrupted deterministic simulation',()=>{
+ const create=()=>new RigidBodyWorld3D({fixedDt:1/120,gravity:[0,-9.81,0],velocityIterations:8,positionIterations:3});
+ const uninterrupted=create();
+ uninterrupted.addBody({id:'a',type:'dynamic',position:[0,3,0],velocity:[1,0,0],radius:0.5,restitution:0.2});
+ uninterrupted.addBody({id:'floor',type:'static',position:[0,0,0],radius:1});
+ for(let i=0;i<25;i++)uninterrupted.step();
+ const checkpoint=uninterrupted.checkpoint();
+ const checkpointEvents=uninterrupted.events.length;
+ const continued=[];for(let i=0;i<40;i++)continued.push(uninterrupted.step());
+ const finalState=uninterrupted.snapshot();const postCheckpointEvents=uninterrupted.events.slice(checkpointEvents);
+ const restored=create();restored.restore(checkpoint);
+ const replayed=[];for(let i=0;i<40;i++)replayed.push(restored.step());
+ assert.deepEqual(restored.snapshot(),finalState);
+ assert.deepEqual(restored.events,replayed.flatMap(r=>r.events.filter(e=>e.t>=checkpoint.t)));
+ assert.deepEqual(restored.lastDiagnostics,uninterrupted.lastDiagnostics);
+});
