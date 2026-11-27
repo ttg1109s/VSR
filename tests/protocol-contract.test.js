@@ -411,3 +411,23 @@ test('JsonClient receives and validates the unified Sprite protocol', () => {
     assert.equal(received.some(x=>x.type==='sprite.protocol.invalid'),true);
   } finally { client.dispose(); }
 });
+
+test('Phase 7 protocol transaction rolls back before persisting failure ACK', async () => {
+  let value=0,commits=0,rollbacks=0;
+  const protocol=new JsonProtocol({transactionProvider:async()=>({
+    commit:async()=>{commits++;},
+    rollback:async()=>{rollbacks++;value=0;}
+  })});
+  protocol.registerCommand('mutate.fail',async()=>{value=9;throw Object.assign(new Error('injected failure'),{code:'INJECTED'});});
+  const command={protocol:'vsr',protocolVersion:2,type:'command',command:'mutate.fail',commandId:'phase7-fail',payload:{}};
+  const first=await protocol.dispatch(command),retry=await protocol.dispatch(command);
+  assert.equal(first.ok,false);assert.equal(first.error.code,'INJECTED');assert.equal(value,0);
+  assert.equal(commits,0);assert.equal(rollbacks,1);assert.deepEqual(retry,first);
+});
+test('Phase 7 protocol commits transaction before emitting successful acknowledgement', async () => {
+  let committed=false;
+  const protocol=new JsonProtocol({transactionProvider:async()=>({commit:async()=>{committed=true;},rollback:async()=>{committed=false;}})});
+  protocol.registerCommand('mutate.ok',async()=>({changed:true}));
+  const ack=await protocol.dispatch({protocol:'vsr',protocolVersion:2,type:'command',command:'mutate.ok',commandId:'phase7-ok',payload:{}});
+  assert.equal(ack.ok,true);assert.equal(committed,true);
+});
