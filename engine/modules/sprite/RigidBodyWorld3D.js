@@ -74,11 +74,34 @@ export class RigidBodyWorld3D {
    const toi=earliest.toi;advanceWorld(toi);elapsed+=toi;remaining-=toi;
    // Group impacts whose TOIs fall within tolerance; stable pair order makes the batch deterministic.
    const batch=confirmed.filter(c=>Math.abs(c.toi-toi)<=TOI_TOL).sort((x,y)=>x.a.id.localeCompare(y.a.id)||x.b.id.localeCompare(y.b.id));
-   const ccdContacts=batch.map(({a,b,impact})=>({a,b,normal:impact.contact.normal,point:impact.contact.point,penetration:impact.contact.penetration??0,colliderA:a.collider.type,colliderB:b.collider.type,preVn:null,ccd:true}));
-   const ccdIslands=buildContactIslands(ccdContacts);
+   const batchPairs=new Set(batch.map(({a,b})=>a.id+'\\0'+b.id));
+   const batchDynamicIds=new Set(batch.flatMap(({a,b})=>[a,b]).filter(body=>body.type==='dynamic').map(body=>body.id));
+   // At the TOI, discover contacts touching the batch's dynamic topology. Expand
+   // the closure through dynamic-dynamic contacts so newly connected bodies are
+   // solved in the same island batch rather than deferred to end-of-step.
+   const topologyContacts=new Map();
+   const pairKey=(a,b)=>a.id+'\\0'+b.id;
+   for(const [pairA,pairB] of freshPairs){
+    const a=this.bodies.get(pairA),b=this.bodies.get(pairB);
+    if(!a.collisionEnabled||!b.collisionEnabled||a.type==='static'&&b.type==='static'||a.type==='sensor'||b.type==='sensor')continue;
+    const key=pairKey(a,b),ga=collider3DWorldGeometry(a.collider,{position:a.position,orientation:a.orientation}),gb=collider3DWorldGeometry(b.collider,{position:b.position,orientation:b.orientation}),result=narrowphase3D(ga,gb);
+    if(result.status!=='confirmed-contact')continue;
+    const contact=result.contact;
+    topologyContacts.set(key,{a,b,normal:contact.normal,point:contact.point,penetration:contact.penetration??0,colliderA:a.collider.type,colliderB:b.collider.type,ccd:batchPairs.has(key)});
+   }
+   let changed=true;
+   while(changed){changed=false;for(const contact of topologyContacts.values())if(contact.a.type==='dynamic'&&contact.b.type==='dynamic'&&(batchDynamicIds.has(contact.a.id)||batchDynamicIds.has(contact.b.id))){for(const id of [contact.a.id,contact.b.id])if(!batchDynamicIds.has(id)){batchDynamicIds.add(id);changed=true;}}}
+   const ccdContacts=[...topologyContacts.values()].filter(c=>batchPairs.has(pairKey(c.a,c.b))||c.a.type==='dynamic'&&batchDynamicIds.has(c.a.id)||c.b.type==='dynamic'&&batchDynamicIds.has(c.b.id)).sort((x,y)=>x.a.id.localeCompare(y.a.id)||x.b.id.localeCompare(y.b.id));
+   // Ensure confirmed TOI contacts survive narrowphase edge cases at the exact
+   // impact instant, and avoid duplicate pairs in the solve batch.
+   for(const {a,b,impact} of batch){const key=pairKey(a,b);if(!topologyContacts.has(key)){const contact=impact.contact;topologyContacts.set(key,{a,b,normal:contact.normal,point:contact.point,penetration:contact.penetration??0,colliderA:a.collider.type,colliderB:b.collider.type,ccd:true});}}
+   const solveContacts=[...topologyContacts.values()].filter(c=>batchPairs.has(pairKey(c.a,c.b))||c.a.type==='dynamic'&&batchDynamicIds.has(c.a.id)||c.b.type==='dynamic'&&batchDynamicIds.has(c.b.id)).sort((x,y)=>x.a.id.localeCompare(y.a.id)||x.b.id.localeCompare(y.b.id));
+   const ccdIslands=buildContactIslands(solveContacts);
    for(const island of ccdIslands){const active=island.bodyIds.some(id=>this.bodies.get(id)?.awake)||island.contacts.some(c=>{const ra=sub(c.point,c.a.position),rb=sub(c.point,c.b.position),rv=sub(add(c.b.velocity,cross(c.b.angularVelocity,rb)),add(c.a.velocity,cross(c.a.angularVelocity,ra)));return dot(rv,c.normal)<-EPS;});if(active)for(const id of island.bodyIds)this.#wake(this.bodies.get(id));}
-   const batchSolved=solveContactIslands(this.bodies,ccdContacts,{velocityIterations:this.config.velocityIterations,positionIterations:0});
-   for(let i=0;i<batch.length;i++){const {a,b,impact}=batch[i],contact=impact.contact,imp=batchSolved[i],ev={type:'collision',t:this.t+elapsed,bodyA:a.id,bodyB:b.id,position:contact.point,normal:contact.normal,penetration:contact.penetration??0,normalImpulse:imp.normalImpulse,tangentImpulse:imp.tangentImpulse,ccd:true,ccdMethod:impact.method,pair:impact.pair,ccdImpactIndex:impactCount+i,solver:'sequential-impulse-ccd-batch'};ccdEvents.push(ev);this.events.push(ev);ccdHandled.add(a.id);ccdHandled.add(b.id);ccdPairHandled.add(a.id+'\0'+b.id);}
+   const batchSolved=solveContactIslands(this.bodies,solveContacts,{velocityIterations:this.config.velocityIterations,positionIterations:0});
+   const solvedByPair=new Map(solveContacts.map((c,i)=>[pairKey(c.a,c.b),batchSolved[i]]));
+   const timeKey=Math.round((this.t+elapsed)/TOI_TOL);
+   for(const c of solveContacts){const key=pairKey(c.a,c.b),imp=solvedByPair.get(key);if(!ccdPairHandled.has(key)){ccdPairHandled.add(key);const isImpact=batchPairs.has(key),event={type:'collision',t:this.t+elapsed,bodyA:c.a.id,bodyB:c.b.id,position:c.point,normal:c.normal,penetration:c.penetration??0,normalImpulse:imp.normalImpulse,tangentImpulse:imp.tangentImpulse,ccd:isImpact,ccdTopologyPropagated:!isImpact,ccdImpactIndex:isImpact?impactCount+batch.findIndex(x=>pairKey(x.a,x.b)===key):undefined,solver:'sequential-impulse-ccd-topology-batch'};ccdEvents.push(event);this.events.push(event);ccdHandled.add(c.a.id);ccdHandled.add(c.b.id);}ccdPairHandled.add(key+'\\0'+timeKey);}
    impactCount+=batch.length;
    if(toi<=TOI_TOL&&batchSolved.some(x=>x.normalImpulse<=EPS)){const nudge=Math.min(remaining,TOI_TOL);advanceWorld(nudge);elapsed+=nudge;remaining-=nudge;}  }
   if(remaining>EPS){ccdUnresolved=true;advanceWorld(remaining);elapsed+=remaining;remaining=0;const ev={type:'ccd-impact-budget-exhausted',t:this.t+dt,impactCount,maxCCDImpacts};ccdEvents.push(ev);this.events.push(ev);}
