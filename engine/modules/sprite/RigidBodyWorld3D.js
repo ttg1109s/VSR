@@ -2,7 +2,7 @@ import { createDimensionProfile } from './DimensionProfile.js';
 import { createSphereCollider3D, collider3DWorldGeometry, collideWorldShapes3D, narrowphase3D } from './collider3d.js';
 import { buildSweptBroadphasePairs } from './Broadphase3D.js';
 import { findCCDImpact3D } from './CCD3D.js';
-import { worldInverseInertia, applyAngularImpulse, effectiveMass, solveContactIslands } from './RigidBodySolver3D.js';
+import { worldInverseInertia, applyAngularImpulse, effectiveMass, buildContactIslands, solveContactIslands } from './RigidBodySolver3D.js';
 /** Deterministic fixed-step 3D-native rigid-body runtime (sphere colliders in v1).
  * Transform convention: position=[x,y,z], orientation=[w,x,y,z] quaternion, time=t seconds.
  * This is a foundational 3D profile, not a replacement for a general convex solver yet.
@@ -83,6 +83,11 @@ export class RigidBodyWorld3D {
   for(const b of this.bodies.values())if(b.physicalStateSampler){this.#samplePhysicalStateForBody(b,this.t+dt);}
   const contactManifolds=[];
   for(const [pairA,pairB] of candidatePairs){const a=this.bodies.get(pairA),b=this.bodies.get(pairB);if(ccdPairHandled.has(`${a.id}\\0${b.id}`))continue;if(!a.collisionEnabled||!b.collisionEnabled||a.type==='static'&&b.type==='static')continue;const ga=collider3DWorldGeometry(a.collider,{position:a.position,orientation:a.orientation}),gb=collider3DWorldGeometry(b.collider,{position:b.position,orientation:b.orientation}),result=narrowphase3D(ga,gb);if(result.status==='indeterminate'){this.events.push({type:'narrowphase-indeterminate',t:this.t+dt,bodyA:a.id,bodyB:b.id,pair:result.pair,reason:result.reason});continue;}if(result.status==='confirmed-no-contact')continue;const contact=result.contact,n=contact.normal,point=contact.point,penetration=contact.penetration;if(a.type==='sensor'||b.type==='sensor'){this.events.push({type:'overlap',t:this.t+dt,bodyA:a.id,bodyB:b.id,position:point,normal:n,penetration});continue;}contactManifolds.push({a,b,normal:n,point,penetration,colliderA:a.collider.type,colliderB:b.collider.type});}
+  // Wake propagation: an awake dynamic member wakes its entire connected dynamic island
+  // before solving, so sleeping bodies in chains/branches receive solver impulses and
+  // participate in subsequent fixed-step integration.
+  const wakeIslands=buildContactIslands(contactManifolds);
+  for(const island of wakeIslands){if(island.bodyIds.some(id=>this.bodies.get(id)?.awake)){for(const id of island.bodyIds)this.#wake(this.bodies.get(id));}}
   const solved=solveContactIslands(this.bodies,contactManifolds,{velocityIterations:this.config.velocityIterations,positionIterations:this.config.positionIterations});
   for(let i=0;i<contactManifolds.length;i++){const c=contactManifolds[i],imp=solved[i];const ev={type:'collision',t:this.t+dt,bodyA:c.a.id,bodyB:c.b.id,position:c.point,normal:c.normal,penetration:c.penetration,normalImpulse:imp.normalImpulse,tangentImpulse:imp.tangentImpulse,colliderA:c.colliderA,colliderB:c.colliderB,solver:'sequential-impulse'};collisionEvents.push(ev);this.events.push(ev);if(c.a.type==='dynamic')this.#wake(c.a);if(c.b.type==='dynamic')this.#wake(c.b);}
 
