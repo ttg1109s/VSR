@@ -6936,27 +6936,8 @@
               "type": "object",
               "minProperties": 1,
               "additionalProperties": {
-                "type": "object",
-                "required": [
-                  "url",
-                  "media"
-                ],
-                "properties": {
-                  "url": {
-                    "type": "string",
-                    "minLength": 1,
-                    "format": "uri-reference"
-                  },
-                  "media": {
-                    "type": "string",
-                    "enum": [
-                      "photo",
-                      "video",
-                      "sound"
-                    ]
-                  }
-                },
-                "additionalProperties": false
+                "type": "string",
+                "minLength": 1
               }
             }
           },
