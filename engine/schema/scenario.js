@@ -678,7 +678,7 @@ export function validateScenario(scenario) {
 
   let candidate;
   try {
-    candidate = migrateMotionPhysics(clone(scenario));
+    candidate = migrateSpriteLegacyShape(migrateMotionPhysics(clone(scenario)));
   } catch (error) {
     return error instanceof ScenarioValidationError ? error.errors : [error.message];
   }
