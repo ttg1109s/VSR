@@ -1,5 +1,6 @@
 const EPS=1e-10;
 const v3=(v,name='vector')=>{if(!Array.isArray(v)||v.length!==3||v.some(x=>!Number.isFinite(x)))throw new TypeError(`${name} must be finite Vec3`);return [...v];};
+const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
 const add=(a,b)=>a.map((x,i)=>x+b[i]),sub=(a,b)=>a.map((x,i)=>x-b[i]),mul=(a,s)=>a.map(x=>x*s),dot=(a,b)=>a.reduce((s,x,i)=>s+x*b[i],0),len=a=>Math.hypot(...a),norm=a=>{const l=len(a);return l>EPS?mul(a,1/l):[1,0,0];};
 const qnorm=q=>{const a=v3(q.slice(1),'quaternion vector'),n=Math.hypot(q[0],...a);if(!Number.isFinite(n)||n<EPS)throw new TypeError('Invalid quaternion');return q.map(x=>x/n);};
 const qrotate=(q,v)=>{const u=q.slice(1),t=mul(cross(u,v),2);return add(v,add(mul(t,q[0]),cross(u,t)));};
