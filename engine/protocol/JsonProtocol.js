@@ -29,7 +29,7 @@ export class JsonProtocol{
   if(requireAuthorization&&typeof authorizeCommand!=='function')throw new TypeError('requireAuthorization needs an authorizeCommand function.');
   if(idempotencyStore!==null&&(!idempotencyStore||typeof idempotencyStore.get!=='function'||typeof idempotencyStore.set!=='function'))throw new TypeError('idempotencyStore must implement async-compatible get(key) and set(key, value).');
   Object.assign(this,{engineId,protocolVersion,maxEvents,maxRememberedCommands,idempotencyStore,authorizeCommand,requireAuthorization,onCommandSuccess,presentationAvailable,transactionProvider});
-  this.stateRevision=0;this.revision=0;this.eventSequence=0;this.commandSequence=0;this.listeners=new Set();this.eventLog=[];this.commandHandlers=new Map();this.commandResults=new Map();this.dispatchQueue=Promise.resolve();this.presentationRequests=new Map();this.presentationRequestSequence=0;
+  this.stateRevision=0;this.revision=0;this.eventSequence=0;this.commandSequence=0;this.epoch=0;this.listeners=new Set();this.eventLog=[];this.commandHandlers=new Map();this.commandResults=new Map();this.dispatchQueue=Promise.resolve();this.presentationRequests=new Map();this.presentationRequestSequence=0;
  }
  subscribe(fn){if(typeof fn!=='function')throw new TypeError('Protocol listener must be a function.');this.listeners.add(fn);return()=>this.listeners.delete(fn);}
  registerCommand(name,fn){if(typeof name!=='string'||!name.trim()||typeof fn!=='function')throw new TypeError('Invalid command registration.');this.commandHandlers.set(name,fn);return()=>this.commandHandlers.delete(name);}
@@ -398,7 +398,7 @@ export class JsonProtocol{
    itemCount:inventoryIds.length,inventoryLimit:ownerLimit>0?ownerLimit:null
   };
   const snapshot={
-   protocol:'vsr',protocolVersion:this.protocolVersion,type:'snapshot',engineId:this.engineId,
+   protocol:'vsr',protocolVersion:this.protocolVersion,type:'snapshot',engineId:this.engineId,protocolEpoch:this.epoch,
    revision:this.stateRevision,stateRevision:this.stateRevision,eventSequence:this.eventSequence,
    createdAt:new Date().toISOString(),
    game:{initialized:!!engine.src,sceneId,routerId},
@@ -421,6 +421,16 @@ export class JsonProtocol{
   return snapshot;
  }
 
+ checkpoint(){return cloneJsonValue({format:'vsr.protocol.checkpoint.v1',protocolVersion:this.protocolVersion,engineId:this.engineId,epoch:this.epoch,stateRevision:this.stateRevision,eventSequence:this.eventSequence,commandSequence:this.commandSequence,eventLog:this.eventLog,commandResults:[...this.commandResults.entries()]});}
+ async restoreCheckpoint(checkpoint){
+  if(!checkpoint||typeof checkpoint!=='object'||checkpoint.format!=='vsr.protocol.checkpoint.v1'||checkpoint.protocolVersion!==this.protocolVersion||typeof checkpoint.engineId!=='string'||!checkpoint.engineId||!Number.isSafeInteger(checkpoint.epoch)||checkpoint.epoch<0||!Number.isSafeInteger(checkpoint.stateRevision)||checkpoint.stateRevision<0||!Number.isSafeInteger(checkpoint.eventSequence)||checkpoint.eventSequence<0||!Number.isSafeInteger(checkpoint.commandSequence)||checkpoint.commandSequence<0||!Array.isArray(checkpoint.eventLog)||!Array.isArray(checkpoint.commandResults))throw new TypeError('Invalid protocol checkpoint.');
+  if(checkpoint.eventLog.length>this.maxEvents||checkpoint.commandResults.length>this.maxRememberedCommands)throw new TypeError('Protocol checkpoint exceeds configured bounds.');
+  let previousSequence=0;for(const event of checkpoint.eventLog){if(!event||event.protocol!=='vsr'||event.protocolVersion!==this.protocolVersion||event.type!=='event'||typeof event.event!=='string'||!Number.isSafeInteger(event.sequence)||event.sequence<=previousSequence||event.sequence>checkpoint.eventSequence||!Number.isSafeInteger(event.stateRevision)||event.stateRevision<0||event.stateRevision>checkpoint.stateRevision)throw new TypeError('Protocol checkpoint contains invalid event continuity.');previousSequence=event.sequence;}
+  const stagedResults=new Map();for(const entry of checkpoint.commandResults){if(!Array.isArray(entry)||entry.length!==2||typeof entry[0]!=='string'||!entry[0]||!entry[1]||typeof entry[1].requestFingerprint!=='string'||!entry[1].ack||typeof entry[1].ack!=='object'||entry[1].ack.type!=='ack'||typeof entry[1].ack.commandId!=='string')throw new TypeError('Protocol checkpoint contains invalid command result.');if(stagedResults.has(entry[0]))throw new TypeError('Protocol checkpoint contains duplicate command result key.');stagedResults.set(entry[0],cloneJsonValue(entry[1]));}
+  if(previousSequence>checkpoint.eventSequence)throw new TypeError('Protocol checkpoint event sequence is inconsistent.');
+  if(this.idempotencyStore)for(const [key,record] of stagedResults)await this.idempotencyStore.set(key,cloneJsonValue(record));
+  this.cancelPresentationRequests('restored');this.engineId=checkpoint.engineId;this.epoch=checkpoint.epoch+1;this.stateRevision=checkpoint.stateRevision;this.revision=this.stateRevision;this.eventSequence=checkpoint.eventSequence;this.commandSequence=checkpoint.commandSequence;this.eventLog=cloneJsonValue(checkpoint.eventLog);this.commandResults=stagedResults;this.presentationRequestSequence=0;return this.checkpoint();
+ }
  requestPresentation(operation,payload={}, {timeoutMs=2500}={}){
   // No presentation subscriber means this Engine is running headless (HTTP API,
   // CLI, unit-test harness, or server-side execution). Presentation requests
@@ -453,15 +463,15 @@ export class JsonProtocol{
   if(typeof type!=='string'||!type.trim()||!payload||typeof payload!=='object'||Array.isArray(payload))throw new TypeError('Invalid event envelope.');
   if(type==='presentation.sprite.simulation'){payload=normalizeSpriteProtocol(payload);validateSpriteProtocol(payload);}
   const sequence=++this.eventSequence,safe=cloneJsonValue(payload);
-  const event={protocol:'vsr',protocolVersion:this.protocolVersion,type:'event',engineId:this.engineId,eventId:id('evt',sequence),sequence,revision:this.stateRevision,stateRevision:this.stateRevision,timestamp:new Date().toISOString(),event:type,payload:safe??{}};
+  const event={protocol:'vsr',protocolVersion:this.protocolVersion,type:'event',engineId:this.engineId,protocolEpoch:this.epoch,eventId:id('evt',sequence),sequence,revision:this.stateRevision,stateRevision:this.stateRevision,timestamp:new Date().toISOString(),event:type,payload:safe??{}};
   this.eventLog.push(event);if(this.eventLog.length>this.maxEvents)this.eventLog.shift();
   for(const listener of this.listeners){try{listener(cloneJsonValue(event));}catch(error){console.error('[VSR Protocol] Event listener failed:',error);}}
   return cloneJsonValue(event);
  }
  commitState(engine,reason='state.changed'){this.stateRevision++;this.revision=this.stateRevision;const snapshot=this.createSnapshot(engine);this.publish('state.snapshot',{reason,snapshot});return cloneJsonValue(snapshot);}
  publishSnapshot(engine,reason='state.changed'){return this.commitState(engine,reason);}
- getEventsSince(rev=0){if(!Number.isInteger(rev)||rev<0)throw new TypeError('stateRevision must be non-negative.');const first=this.eventLog[0],gap=!!first&&first.stateRevision>rev+1;return{gap,currentRevision:this.stateRevision,currentStateRevision:this.stateRevision,events:gap?[]:this.eventLog.filter(e=>e.stateRevision>rev).map(event => cloneJsonValue(event))};}
- getEventsAfter(seq=0){if(!Number.isInteger(seq)||seq<0)throw new TypeError('sequence must be non-negative.');const first=this.eventLog[0]?.sequence??this.eventSequence+1,gap=seq<first-1;return{gap,currentSequence:this.eventSequence,currentStateRevision:this.stateRevision,events:gap?[]:this.eventLog.filter(e=>e.sequence>seq).map(event => cloneJsonValue(event))};}
+ getEventsSince(rev=0){if(!Number.isInteger(rev)||rev<0)throw new TypeError('stateRevision must be non-negative.');const first=this.eventLog[0],gap=!!first&&first.stateRevision>rev+1;return{gap,protocolEpoch:this.epoch,currentRevision:this.stateRevision,currentStateRevision:this.stateRevision,events:gap?[]:this.eventLog.filter(e=>e.stateRevision>rev).map(event => cloneJsonValue(event))};}
+ getEventsAfter(seq=0){if(!Number.isInteger(seq)||seq<0)throw new TypeError('sequence must be non-negative.');const first=this.eventLog[0]?.sequence??this.eventSequence+1,gap=seq<first-1;return{gap,protocolEpoch:this.epoch,currentSequence:this.eventSequence,currentStateRevision:this.stateRevision,events:gap?[]:this.eventLog.filter(e=>e.sequence>seq).map(event => cloneJsonValue(event))};}
  async #remember(key, requestFingerprint, ack) {
   const record={ requestFingerprint, ack: cloneJsonValue(ack) };
   if(this.idempotencyStore) await this.idempotencyStore.set(key, cloneJsonValue(record));
