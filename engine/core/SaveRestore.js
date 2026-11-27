@@ -82,6 +82,8 @@ export const SaveRestore = {
     'automationRandomBags','automationBlockingOwners','automationRunSequence','_lifecycleGeneration'
    ];
    const rollback=Object.fromEntries(rollbackFields.map(key=>[key,this[key]]));
+   const rollbackProtocolCheckpoint=this.protocol?.checkpoint?.()??null;
+   const legacyProtocolCheckpoint=rollbackProtocolCheckpoint?{...rollbackProtocolCheckpoint,eventLog:[],commandResults:[]}:null;
    let rollbackSave=null;
    try { rollbackSave=this.exportSave(); } catch {}
    try {
@@ -102,12 +104,14 @@ export const SaveRestore = {
     this.restoredAutomationRandomBags=cloneJsonValue(save.automationRandomBags)||{};
     this.rehydrateBackgroundTasks();
     this.rehydratePasswordChallenge();
+    if(this.protocol){await this.protocol.restoreCheckpoint(save.protocolCheckpoint??legacyProtocolCheckpoint);}
     for(const active of this.activeSpriteMotions.values()) this.protocol?.publish?.('presentation.sprite.simulation',adaptSpriteTrajectory(active.descriptor));
     this.commitState('save.restored');
     return{restored:true,saveVersion:SAVE_VERSION};
    } catch(error) {
     this.taskManager?.killAll?.();
     for(const key of rollbackFields)this[key]=rollback[key];
+    if(this.protocol&&rollbackProtocolCheckpoint){try{await this.protocol.restoreCheckpoint(rollbackProtocolCheckpoint,{incrementEpoch:false,persistResults:false});}catch(protocolRollbackError){error.protocolRollbackError=protocolRollbackError;}}
     // A new generation invalidates callbacks from the failed runtime. Rehydrated
     // tasks belong to the restored old runtime and use the old save's timer data.
     this._lifecycleGeneration=Math.max(this._lifecycleGeneration||0,rollback._lifecycleGeneration||0)+1;
