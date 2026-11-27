@@ -56,3 +56,13 @@ The world now uses body-local principal inertia tensors and orientation-derived 
 ### Multi-impact CCD continuation
 
 Within one authoritative fixed step, CCD now advances the world to the earliest confirmed impact, resolves its normal impulse, refreshes conservative swept broadphase candidates for the remaining time, and repeats until no further confirmed impact exists or a deterministic finite impact budget is reached. CCD collision events include an impact index and diagnostics report total impact count and whether the budget was exhausted. Indeterminate pairs are surfaced as events and deduplicated by pair/reason during the continuation loop. This implementation is source-complete; test execution remains intentionally out of scope.
+
+## Canonical Motion LUT (protocol v3)
+
+`MotionLUT.js` provides a canonical sampled presentation representation. It is output data from authoritative simulation/trajectory evaluation and does **not** run physics on clients. It includes sample normalization, fixed-track construction, adaptive midpoint-error sampling, interpolation/playback (`MotionLUTPlayer`), seek, pause/resume, reset, and event lookup.
+
+The 3D coordinator preserves its legacy protocol-v2 simulation envelope and now additionally emits `payload.motionLUT` (protocol v3 `kind: motion-lut`) with shared simulation time, body tracks, position/velocity, quaternion orientation, angular velocity, scale, state, and event timeline. This is additive for existing consumers. The standalone JSON Schema is `engine/protocol/sprite-motion-lut-v3.schema.json`.
+
+Adaptive sampling is available through `generateAdaptiveMotionSamples`. It uses midpoint reconstruction error against linear approximation, supports explicit segment/event boundaries and sample budgets, and can optionally evaluate velocity error. For authoritative discontinuities, pass exact boundary times and keep interpolation within each continuous segment; do not interpolate across impact/state-transition boundaries. The current coordinator output uses fixed physics-step sampling, while adaptive LUT generation is a reusable API for trajectory sources.
+
+Interpolation choices: position is linear by default or cubic Hermite when both endpoint velocities are present and requested; rotation uses normalized shortest-path quaternion interpolation; scale and angular velocity are linearly interpolated. Event lookup is timestamp-based and events are not interpolated.

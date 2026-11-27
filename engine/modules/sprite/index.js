@@ -21,3 +21,5 @@ export * from './PhysicalStateSampler.js';
 
 export * from './Broadphase3D.js';
 export * from './RigidBodySolver3D.js';
+
+export * from './MotionLUT.js';

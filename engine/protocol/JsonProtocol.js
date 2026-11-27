@@ -633,12 +633,14 @@ const finiteVector = (value, size) => Array.isArray(value) && value.length === s
 export function normalizeSpriteProtocol(payload) {
   if (!payload || typeof payload !== 'object' || Array.isArray(payload)) throw new TypeError('Invalid Sprite protocol payload.');
   if (payload.protocol === SPRITE_PROTOCOL && payload.protocolVersion === 2 && ['trajectory','simulation'].includes(payload.kind)) return payload;
+  if (payload.protocol === SPRITE_PROTOCOL && payload.protocolVersion === 3 && payload.kind === 'motion-lut') return payload;
   if (payload.protocolVersion === 2 && payload.trajectoryId && payload.trajectories && payload.presentation) return { ...payload, protocol: SPRITE_PROTOCOL, protocolVersion: 2, kind: 'trajectory' };
   if (payload.protocol === 'vsr.sprite.protocol.v3' && payload.protocolVersion === 3) return { ...payload, protocol: SPRITE_PROTOCOL, protocolVersion: 2, kind: 'simulation' };
   throw new TypeError('Unsupported Sprite protocol payload identity.');
 }
 export function validateSpriteProtocol(payload) {
   const p = normalizeSpriteProtocol(payload);
+  if (p.kind === 'motion-lut') return validateMotionLUTProtocol(p);
   if (p.kind === 'trajectory') {
     if (!p.spriteId || !p.motionId || !p.trajectoryId || !Number.isFinite(p.startTime) || !Number.isFinite(p.endTime) || p.endTime <= 0 || !p.trajectories || typeof p.trajectories !== 'object' || Array.isArray(p.trajectories) || !p.finalPositions || typeof p.finalPositions !== 'object' || !Array.isArray(p.impacts) || !Array.isArray(p.presentation?.requiredSegments)) throw new TypeError('Invalid Sprite trajectory payload.');
     return true;
@@ -650,5 +652,15 @@ export function validateSpriteProtocol(payload) {
 export function serializeSpriteSimulation({simulationId,physicsVersion='1.0.0',dimension='3D',time,bodies=[],events=[],trajectories=[],diagnostics={},completion={status:'completed',reason:'simulation-completed'}}) {
   const payload={protocol:SPRITE_PROTOCOL,protocolVersion:2,kind:'simulation',simulationId:String(simulationId),physicsVersion,dimension,time:{tStart:time.tStart,tEnd:time.tEnd,fixedDt:time.fixedDt,ticks:time.ticks},bodies:bodies.map(b=>({id:String(b.id),type:b.type,position:[...(b.position||b.transform?.position||[0,0,0])],orientation:[...(b.orientation||b.transform?.orientation||[1,0,0,0])],velocity:[...(b.velocity||[0,0,0])],angularVelocity:[...(b.angularVelocity||[0,0,0])],awake:b.awake??false})),events:events.map(e=>({...e})),trajectories:trajectories.map(t=>({...t})),diagnostics:{...diagnostics},completion:{...completion}};
   validateSpriteProtocol(payload); return payload;
+}
+/** Protocol v3 canonical sampled motion payload. Legacy v2 trajectory/simulation envelopes remain unchanged. */
+export function serializeMotionLUT({simulationId,startTime=0,endTime,sampling={},tracks=[],events=[],completion={status:'completed'},coordinateSystem={}}={}) {
+ const payload={protocol:SPRITE_PROTOCOL,protocolVersion:3,kind:'motion-lut',simulation:{simulationId:String(simulationId||'motion'),startTime,endTime,completion:{...completion}},coordinateSystem:{space:'world',dimension:3,lengthUnit:'engine-unit',timeUnit:'second',rotationFormat:'quaternion-wxyz',...coordinateSystem},sampling:{mode:'fixed',interpolation:'linear',...sampling},tracks:tracks.map(t=>({bodyId:String(t.bodyId),samples:t.samples.map(s=>({...s,p:[...(s.p||s.position||[])],...(s.v||s.velocity?{v:[...(s.v||s.velocity)]}:{}),q:[...(s.q||s.orientation||[1,0,0,0])],w:[...(s.w||s.angularVelocity||[0,0,0])],s:[...(s.s||s.scale||[1,1,1])]}))})),events:events.map(e=>({...e})),integrity:{authoritative:true,complete:true}};
+ validateMotionLUTProtocol(payload);return payload;
+}
+export function validateMotionLUTProtocol(payload){
+ if(!payload||payload.protocol!==SPRITE_PROTOCOL||payload.protocolVersion!==3||payload.kind!=='motion-lut'||!payload.simulation||typeof payload.simulation.simulationId!=='string'||!Number.isFinite(payload.simulation.startTime)||!Number.isFinite(payload.simulation.endTime)||payload.simulation.endTime<payload.simulation.startTime||!Array.isArray(payload.tracks)||!Array.isArray(payload.events)||!payload.sampling||!payload.integrity)throw new TypeError('Invalid motion-LUT protocol payload.');
+ for(const track of payload.tracks){if(!track.bodyId||!Array.isArray(track.samples)||!track.samples.length)throw new TypeError('Invalid motion-LUT track.');let prev=-Infinity;for(const s of track.samples){if(!Number.isFinite(s.t)||s.t<=prev||!finiteVector(s.p,3)||!finiteVector(s.q,4)||!finiteVector(s.w,3)||!finiteVector(s.s,3)||(s.v!==undefined&&!finiteVector(s.v,3)))throw new TypeError('Invalid motion-LUT sample.');prev=s.t;}}
+ return true;
 }
 export function adaptSpriteTrajectory(payload) { const normalized=normalizeSpriteProtocol(payload); if(normalized.kind!=='trajectory')throw new TypeError('Expected Sprite trajectory payload.'); validateSpriteProtocol(normalized); return normalized; }

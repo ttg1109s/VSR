@@ -1,4 +1,4 @@
-import { adaptSpriteTrajectory } from '../protocol/JsonProtocol.js';
+import { adaptSpriteTrajectory, serializeMotionLUT } from '../protocol/JsonProtocol.js';
 // Runtime Sprite operations. Effect syntax is resolved in effect/Strategies.js.
 function poseLocation(value) { return Array.isArray(value?.location) ? value.location : Array.isArray(value) ? value : null; }
 function poseTransform(value, fallback={rotate:0,scale:1,origin:'center'}) {
@@ -341,8 +341,20 @@ export function setSpriteProperty(engine, spriteId, prop, value) {
             const solvedTrajectoryEndTime = impactEvents.length
                 ? Math.max(durationSeconds, ...Object.values(postImpactResults).filter(result => result.completion === 'natural-equilibrium').map(result => result.startTime + result.duration))
                 : durationSeconds;
+            // Additive canonical LUT: legacy v2 descriptors remain authoritative/compatible.
+            const lutSampleTimes = [...new Set([0, solvedTrajectoryEndTime, ...impactEvents.map(e=>e.time), ...Object.values(bodyTrajectories).flat().flatMap(seg=>[seg.startTime,seg.endTime]), ...Array.from({length:Math.max(0,Math.ceil(solvedTrajectoryEndTime*60)-1)},(_,i)=>(i+1)/60).filter(t=>t<solvedTrajectoryEndTime)])].sort((a,b)=>a-b);
+            const lutTracks = Object.entries(bodyTrajectories).map(([bodyId,segs])=>({bodyId,samples:lutSampleTimes.map(t=>{
+                const sampled=sampleSerializedSegments(segs,t);
+                const position=sampled?.position||bodyFinalPositions[bodyId]||startVector;
+                const velocity=sampled?.velocity||[0,0,0];
+                const transform=bodyId===spriteId?sampleTransformKeys(descriptor.transformTrajectory?.keys,t,solvedTrajectoryEndTime,poseTransform(definition.position)):null;
+                const angle=(transform?.rotate||0)*Math.PI/180,half=angle/2;
+                return {t,p:[position[0]||0,position[1]||0,position[2]||0],v:[velocity[0]||0,velocity[1]||0,velocity[2]||0],q:[Math.cos(half),0,0,Math.sin(half)],w:[0,0,0],s:[transform?.scale||1,transform?.scale||1,transform?.scale||1],...(transform?.origin!==undefined?{origin:transform.origin}:{})};
+            })}));
+            const motionLUT=serializeMotionLUT({simulationId:descriptor.motionId,startTime:0,endTime:solvedTrajectoryEndTime,sampling:{mode:'fixed',sampleInterval:1/60,interpolation:'linear',authoritative:true},tracks:lutTracks,events:impactEvents,completion:{status:'completed',reason:'authoritative-trajectory-complete'},coordinateSystem:{dimension:2}});
             descriptor = {
                 protocolVersion: 2, spriteId, motionId: descriptor.motionId, trajectoryId,
+                motionLUT,
                 startTime: 0, endTime: solvedTrajectoryEndTime, duration: solvedTrajectoryEndTime,
                 requestedTarget: targetVector, initialTrajectory: bodyTrajectories[spriteId],
                 trajectories: bodyTrajectories, finalPositions: bodyFinalPositions, postImpactResults,

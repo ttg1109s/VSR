@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vsr.engine/protocol/sprite-motion-lut-v3.schema.json",
+  "title": "VSR Sprite Motion LUT Protocol v3",
+  "type": "object",
+  "required": ["protocol", "protocolVersion", "kind", "simulation", "coordinateSystem", "sampling", "tracks", "events", "integrity"],
+  "properties": {
+    "protocol": {"const": "vsr.sprite"},
+    "protocolVersion": {"const": 3},
+    "kind": {"const": "motion-lut"},
+    "simulation": {"type": "object", "required": ["simulationId", "startTime", "endTime", "completion"], "properties": {"simulationId": {"type": "string"}, "startTime": {"type": "number"}, "endTime": {"type": "number"}, "completion": {"type": "object"}}, "additionalProperties": true},
+    "coordinateSystem": {"type": "object"},
+    "sampling": {"type": "object", "required": ["mode", "interpolation"]},
+    "tracks": {"type": "array", "items": {"type": "object", "required": ["bodyId", "samples"], "properties": {"bodyId": {"type": "string"}, "samples": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["t", "p", "q", "w", "s"], "properties": {"t": {"type": "number"}, "p": {"type": "array", "minItems": 3, "maxItems": 3, "items": {"type": "number"}}, "v": {"type": "array", "minItems": 3, "maxItems": 3, "items": {"type": "number"}}, "q": {"type": "array", "minItems": 4, "maxItems": 4, "items": {"type": "number"}}, "w": {"type": "array", "minItems": 3, "maxItems": 3, "items": {"type": "number"}}, "s": {"type": "array", "minItems": 3, "maxItems": 3, "items": {"type": "number"}}}, "additionalProperties": true}}}, "additionalProperties": true}},
+    "events": {"type": "array", "items": {"type": "object"}},
+    "integrity": {"type": "object", "required": ["authoritative", "complete"], "properties": {"authoritative": {"type": "boolean"}, "complete": {"type": "boolean"}}, "additionalProperties": true}
+  },
+  "additionalProperties": true
+}

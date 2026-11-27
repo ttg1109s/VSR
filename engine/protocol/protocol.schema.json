@@ -1646,6 +1646,22 @@
           "type": "number",
           "minimum": 0
         },
+        "motionLUT": {
+          "type": "object",
+          "required": ["protocol", "protocolVersion", "kind", "simulation", "sampling", "tracks", "events", "integrity"],
+          "properties": {
+            "protocol": { "const": "vsr.sprite" },
+            "protocolVersion": { "const": 3 },
+            "kind": { "const": "motion-lut" },
+            "simulation": { "type": "object" },
+            "coordinateSystem": { "type": "object" },
+            "sampling": { "type": "object" },
+            "tracks": { "type": "array" },
+            "events": { "type": "array" },
+            "integrity": { "type": "object" }
+          },
+          "additionalProperties": true
+        },
         "transformTrajectory": {
           "type": "array",
           "items": {

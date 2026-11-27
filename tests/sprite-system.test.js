@@ -117,7 +117,7 @@ test('Engine generates authoritative first-impact and post-impact trajectories f
     await engine.init(spriteScenario({collision:true,physics:true}),{enterScene:true});
     SetStrategies.sprite(engine,{target:'mover',property:'position',value:[100,0,0]});
     const event=engine.protocol.eventLog.filter(e=>e.event==='presentation.sprite.simulation').at(-1);assert.ok(event);
-    const payload=event.payload;assert.equal(payload.protocolVersion,2);assert.equal(payload.impacts.length,1);
+    const payload=event.payload;assert.equal(payload.protocolVersion,2);assert.equal(payload.impacts.length,1);assert.equal(payload.motionLUT.protocolVersion,3);assert.equal(payload.motionLUT.kind,'motion-lut');assert.ok(payload.motionLUT.tracks.some(t=>t.bodyId==='mover'));assert.ok(payload.motionLUT.tracks.some(t=>t.bodyId==='wall'));assert.ok(payload.motionLUT.tracks.flatMap(t=>t.samples).some(s=>s.t===payload.impacts[0].time));
     const impact=payload.impacts[0];assert.ok(impact.time>0&&impact.time<1);assert.ok(impact.physicsEnabled);
     assert.ok(payload.trajectories.mover.some(seg=>seg.type==='physics'));
     assert.ok(payload.trajectories.wall.some(seg=>seg.type==='physics'));

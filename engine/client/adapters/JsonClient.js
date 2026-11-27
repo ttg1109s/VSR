@@ -5,6 +5,8 @@ import { normalizeSpriteProtocol, validateSpriteProtocol } from '../../protocol/
  * implements request(JSON) and subscribe(listener).
  */
 import { JsonStateStore } from '../state/JsonStateStore.js';
+import { MotionLUTPlayer } from '../../modules/sprite/MotionLUT.js';
+import { validateMotionLUTProtocol } from '../../protocol/JsonProtocol.js';
 
 const deepEqualTimeline = (a, b) => {
   if (Object.is(a, b)) return true;
@@ -75,6 +77,16 @@ const timestampFromSnapshot = snapshot => {
   return Number.isFinite(parsed) ? parsed : Date.now();
 };
 
+
+
+/** Host/client-side playback helper for canonical authoritative motion LUTs. */
+export function createSpriteMotionLUTPlayer(payload) {
+  validateMotionLUTProtocol(payload);
+  return new MotionLUTPlayer(payload);
+}
+export function sampleSpriteMotionLUT(payload, time) {
+  return createSpriteMotionLUTPlayer(payload).seek(time);
+}
 
 export class JsonClient {
   constructor(transport) {
