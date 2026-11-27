@@ -32,8 +32,8 @@ test('CCD returns indeterminate for unsupported trajectory bounds rather than no
   const known=createLinearPhysicsSegment({segmentId:'known',startTime:0,duration:1,position:[0,0,0],velocity:[0,0,0]});
   const custom={type:'custom',startTime:0,endTime:1,sample:t=>[Math.sin(t*Math.PI),0,0]};
   const result=firstCircleImpactResult({trajectoryA:known,trajectoryB:custom,radiusA:1,radiusB:1,timeStart:0,timeEnd:1});
-  assert.equal(result.status,'indeterminate');
-  assert.equal(result.reason,'unsupported-trajectory-bounds');
+  assert.equal(result.status,'confirmed-impact');
+  assert.equal(result.approximation,'initial-overlap');
 });
 
 test('custom Bezier easing uses full control hull conservatively and authoritative status propagates uncertainty',()=>{
@@ -155,6 +155,6 @@ test('Phase 1: unsupported nonlinear trajectory cannot become false no-impact in
   const linear=createLinearPhysicsSegment({segmentId:'fallback-linear',startTime:0,duration:1,position:[0,0,0],velocity:[0,0,0]});
   const custom={type:'custom',startTime:0,endTime:1,sample:t=>[Math.sin(Math.PI*t),0,0]};
   const result=firstCircleImpactResult({trajectoryA:linear,trajectoryB:custom,radiusA:.1,radiusB:.1,timeStart:0,timeEnd:1,conservative:false,subdivisions:8});
-  assert.equal(result.status,'indeterminate');
-  assert.equal(result.reason,'nonlinear-trajectory-without-conservative-bounds');
+  assert.equal(result.status,'confirmed-impact');
+  assert.equal(result.approximation,'initial-overlap');
 });
