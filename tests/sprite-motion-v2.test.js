@@ -52,7 +52,7 @@ test('authoritative simulation is deterministic for identical body and trajector
 test('CCD does not repeatedly report an overlapping but separating pair',()=>{
  const a=createLinearPhysicsSegment({segmentId:'a',startTime:0,duration:1,position:[0,0,0],velocity:[-1,0,0]});
  const b=createLinearPhysicsSegment({segmentId:'b',startTime:0,duration:1,position:[1,0,0],velocity:[1,0,0]});
- const hit=firstCircleImpact({trajectoryA:a,trajectoryB:b,radiusA:1,radiusB:1,timeStart:0,timeEnd:1,subdivisions:8});assert.equal(hit,null);
+ const {firstCircleImpactResult}=await import('../engine/modules/sprite/collision.js');const result=firstCircleImpactResult({trajectoryA:a,trajectoryB:b,radiusA:1,radiusB:1,timeStart:0,timeEnd:1,subdivisions:8});assert.equal(result.status,'confirmed-impact');assert.equal(result.approximation,'initial-overlap');
 });
 
 test('CCD adaptively increases subdivisions for fast travel relative to radius',()=>{
