@@ -59,24 +59,28 @@ export class RigidBodyWorld3D {
   const ccdPairHandled=new Set(),ccdUncertainKeys=new Set();
   while(remaining>EPS&&impactCount<maxCCDImpacts){
    const freshPairs=buildSweptBroadphasePairs(this.bodies,{dt:remaining,cellSize:Math.max(4,...[...this.bodies.values()].map(b=>Math.max(1,b.radius*2)))}),pairMap=new Map([...candidatePairs,...freshPairs].map(p=>[`${p[0]}\\0${p[1]}`,p]));candidatePairs=[...pairMap.values()].sort((x,y)=>x[0].localeCompare(y[0])||x[1].localeCompare(y[1]));
-   let earliest=null;
+
+   let earliest=null;const confirmed=[];
    for(const [pairA,pairB] of freshPairs){const a=this.bodies.get(pairA),b=this.bodies.get(pairB);if(!(a.ccd||b.ccd)||!a.collisionEnabled||!b.collisionEnabled||a.type==='static'&&b.type==='static')continue;
     const impact=findCCDImpact3D(a,b,remaining);
-    if(impact.status==='indeterminate'){const key=`${a.id}\\0${b.id}\\0${impact.reason||'indeterminate'}`;if(!ccdUncertainKeys.has(key)){ccdUncertainKeys.add(key);const uncertainty={type:'ccd-indeterminate',t:this.t+elapsed,bodyA:a.id,bodyB:b.id,pair:impact.pair,reason:impact.reason,interval:impact.interval||null};ccdEvents.push(uncertainty);this.events.push(uncertainty);}continue;}
+    if(impact.status==='indeterminate'){const key=a.id+'\\0'+b.id+'\\0'+(impact.reason||'indeterminate');if(!ccdUncertainKeys.has(key)){ccdUncertainKeys.add(key);const uncertainty={type:'ccd-indeterminate',t:this.t+elapsed,bodyA:a.id,bodyB:b.id,pair:impact.pair,reason:impact.reason,interval:impact.interval||null};ccdEvents.push(uncertainty);this.events.push(uncertainty);}continue;}
     if(impact.status!=='confirmed-impact')continue;
-    const contact=impact.contact,n=contact.normal,point=contact.point,ra=sub(point,a.position),rb=sub(point,b.position),rv=sub(add(b.velocity,cross(b.angularVelocity,rb)),add(a.velocity,cross(a.angularVelocity,ra))),vn=dot(rv,n);
-    if(impact.time<=TOI_TOL&&vn>=-EPS)continue;
-    const candidate={a,b,impact,toi:Math.max(0,impact.time),vn};
-    if(!earliest||candidate.toi<earliest.toi-TOI_TOL||Math.abs(candidate.toi-earliest.toi)<=TOI_TOL&&(a.id.localeCompare(earliest.a.id)<0||a.id===earliest.a.id&&b.id.localeCompare(earliest.b.id)<0))earliest=candidate;
+    const contact=impact.contact,n=contact.normal,point=contact.point,ra=sub(point,a.position),rb=sub(point,b.position),rv=dot(sub(add(b.velocity,cross(b.angularVelocity,rb)),add(a.velocity,cross(a.angularVelocity,ra))),n);
+    if(impact.time<=TOI_TOL&&rv>=-EPS)continue;
+    const candidate={a,b,impact,toi:Math.max(0,impact.time),vn:rv};confirmed.push(candidate);
+    if(!earliest||candidate.toi<earliest.toi-TOI_TOL)earliest=candidate;
    }
    if(!earliest){advanceWorld(remaining);elapsed+=remaining;remaining=0;break;}
-   const {a,b,impact,toi}=earliest;advanceWorld(toi);elapsed+=toi;remaining-=toi;
-   const contact=impact.contact,n=contact.normal,point=contact.point,ra=sub(point,a.position),rb=sub(point,b.position),rv=sub(add(b.velocity,cross(b.angularVelocity,rb)),add(a.velocity,cross(a.angularVelocity,ra))),vn=dot(rv,n),den=effectiveMass(a,ra,n)+effectiveMass(b,rb,n);
-   let jn=0;if(den>EPS&&vn<0)jn=-(1+Math.min(a.restitution,b.restitution))*vn/den;const J=scale(n,jn);
-   if(a.type==='dynamic'){a.velocity=sub(a.velocity,scale(J,a.invMass));applyAngularImpulse(a,scale(cross(ra,J),-1));this.#wake(a);}if(b.type==='dynamic'){b.velocity=add(b.velocity,scale(J,b.invMass));applyAngularImpulse(b,cross(rb,J));this.#wake(b);}
-   const ev={type:'collision',t:this.t+elapsed,bodyA:a.id,bodyB:b.id,position:point,normal:n,penetration:contact.penetration??0,normalImpulse:jn,tangentImpulse:0,ccd:true,ccdMethod:impact.method,pair:impact.pair,ccdImpactIndex:impactCount};ccdEvents.push(ev);this.events.push(ev);ccdHandled.add(a.id);ccdHandled.add(b.id);ccdPairHandled.add(`${a.id}\\0${b.id}`);impactCount++;
-   if(toi<=TOI_TOL&&jn<=EPS){const nudge=Math.min(remaining,TOI_TOL);advanceWorld(nudge);elapsed+=nudge;remaining-=nudge;}
-  }
+   const toi=earliest.toi;advanceWorld(toi);elapsed+=toi;remaining-=toi;
+   // Group impacts whose TOIs fall within tolerance; stable pair order makes the batch deterministic.
+   const batch=confirmed.filter(c=>Math.abs(c.toi-toi)<=TOI_TOL).sort((x,y)=>x.a.id.localeCompare(y.a.id)||x.b.id.localeCompare(y.b.id));
+   const ccdContacts=batch.map(({a,b,impact})=>({a,b,normal:impact.contact.normal,point:impact.contact.point,penetration:impact.contact.penetration??0,colliderA:a.collider.type,colliderB:b.collider.type,preVn:null,ccd:true}));
+   const ccdIslands=buildContactIslands(ccdContacts);
+   for(const island of ccdIslands){const active=island.bodyIds.some(id=>this.bodies.get(id)?.awake)||island.contacts.some(c=>{const ra=sub(c.point,c.a.position),rb=sub(c.point,c.b.position),rv=sub(add(c.b.velocity,cross(c.b.angularVelocity,rb)),add(c.a.velocity,cross(c.a.angularVelocity,ra)));return dot(rv,c.normal)<-EPS;});if(active)for(const id of island.bodyIds)this.#wake(this.bodies.get(id));}
+   const batchSolved=solveContactIslands(this.bodies,ccdContacts,{velocityIterations:this.config.velocityIterations,positionIterations:0});
+   for(let i=0;i<batch.length;i++){const {a,b,impact}=batch[i],contact=impact.contact,imp=batchSolved[i],ev={type:'collision',t:this.t+elapsed,bodyA:a.id,bodyB:b.id,position:contact.point,normal:contact.normal,penetration:contact.penetration??0,normalImpulse:imp.normalImpulse,tangentImpulse:imp.tangentImpulse,ccd:true,ccdMethod:impact.method,pair:impact.pair,ccdImpactIndex:impactCount+i,solver:'sequential-impulse-ccd-batch'};ccdEvents.push(ev);this.events.push(ev);ccdHandled.add(a.id);ccdHandled.add(b.id);ccdPairHandled.add(a.id+'\\0'+b.id);}
+   impactCount+=batch.length;
+   if(toi<=TOI_TOL&&batchSolved.some(x=>x.normalImpulse<=EPS)){const nudge=Math.min(remaining,TOI_TOL);advanceWorld(nudge);elapsed+=nudge;remaining-=nudge;}  }
   if(remaining>EPS){ccdUnresolved=true;advanceWorld(remaining);elapsed+=remaining;remaining=0;const ev={type:'ccd-impact-budget-exhausted',t:this.t+dt,impactCount,maxCCDImpacts};ccdEvents.push(ev);this.events.push(ev);}
   for(const b of ccdBodies)ccdAdvance.set(b.id,true);
   for(const b of [...this.bodies.values()].sort((a,b)=>a.id.localeCompare(b.id)))if((b.type==='dynamic'&&b.awake)||b.type==='kinematic'){if(!ccdAdvance.has(b.id)){b.position=add(b.position,scale(b.velocity,dt));b.orientation=qintegrate(b.orientation,b.angularVelocity,dt);}this.dimensionProfile.constrainBody(b);}
