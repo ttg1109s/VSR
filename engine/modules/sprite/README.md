@@ -31,7 +31,7 @@ A non-uniformly scaled sphere uses a conservative enclosing sphere for collision
 
 ## Runtime boundaries
 
-The current world still approximates principal inertia by a scalar average in contact response. Full tensor inertia and solver integration remain Phase 6. This phase does not implement a general ellipsoid narrowphase, complete shape-pair matrix or shape-aware CCD.
+Phase 6 tensor inertia and iterative contact solving are now integrated. Dynamic bodies retain principal local inertia and compute world inverse inertia from current orientation; torque and contact impulses update angular velocity through the tensor. Contact manifolds are resolved in deterministic body-pair order with configurable sequential velocity iterations and position correction iterations. Restitution is thresholded for stability and friction impulses are accumulated and clamped to the Coulomb cone. The runtime remains constrained: multiple CCD impacts within one timestep are not yet a complete event-loop implementation. This phase does not implement a general ellipsoid narrowphase, complete shape-pair matrix or shape-aware CCD.
 
 Checkpoint serialization still stores sampled body values, not executable trajectory/sampler definitions; deterministic persistence/replay remains Phase 7.
 
@@ -46,3 +46,8 @@ The 3D world builds deterministic candidate pairs from swept bounding-sphere AAB
 The supported narrowphase pair matrix is explicit: sphere-sphere, sphere-box, box-box (OBB SAT), sphere-plane, box-plane, sphere-ellipsoid and ellipsoid-plane. Box geometry is orientation-aware; OBB-OBB uses the 15-axis SAT (3 axes from each box plus 9 edge-cross axes) and computes a support-feature contact point. Box-plane computes projected OBB extent against the plane normal. Supported pairs return either confirmed contact or confirmed no-contact. Unsupported pairs (including ellipsoid-ellipsoid and ellipsoid-box) return an explicit `indeterminate` contract through `narrowphase3D`; the world emits an `narrowphase-indeterminate` event and diagnostic count rather than treating unsupported geometry as authoritative separation.
 
 **Phase 5 boundary:** pair-specific CCD/conservative advancement is not complete. The existing analytic swept-sphere CCD remains the only CCD path; other supported narrowphase pairs are currently discrete. This is an implementation slice, not Phase 5 completion.
+
+
+## Phase 6 — RigidBodyWorld3D solver implementation
+
+The world now uses body-local principal inertia tensors and orientation-derived world inverse tensors for torque and contact response. The Phase 6 solver module provides deterministic sequential impulse iterations across the discovered contact set, accumulated normal and friction impulses, restitution thresholding, Coulomb friction bounds, and iterative penetration correction. Solver iteration counts are configurable on the world. Static and kinematic bodies contribute zero inverse inertia; dynamic bodies use sampled principal moments when PhysicalStateSampler is present. CCD currently resolves at most one handled impact per body per fixed step, so multi-impact continuation remains a constrained boundary.
