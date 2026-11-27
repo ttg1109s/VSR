@@ -34,4 +34,15 @@ A non-uniformly scaled sphere uses a conservative enclosing sphere for collision
 The current world still approximates principal inertia by a scalar average in contact response. Full tensor inertia and solver integration remain Phase 6. This phase does not implement a general ellipsoid narrowphase, complete shape-pair matrix or shape-aware CCD.
 
 Checkpoint serialization still stores sampled body values, not executable trajectory/sampler definitions; deterministic persistence/replay remains Phase 7.
-\n\n## Phase 4 — Conservative swept broadphase\n\nThe 3D world builds deterministic candidate pairs from swept bounding-sphere AABBs. Sphere, ellipsoid and box geometry use conservative radius bounds including collider offsets; movement sweeps center from current position through the fixed-step predicted endpoint. Planes are unbounded and always candidates against collision-enabled bodies. Unknown collider types and sampled/animated geometry use all-pairs fallback. Large cell spans bypass bucket expansion and fall back to pairing. Candidate pairs are AABB-confirmed where bounds exist and integrated into both CCD and discrete collision passes. This conservative filter does not add narrowphase shape pairs or alter unsupported narrowphase outcomes.\n
+
+
+## Phase 4 — Conservative swept broadphase
+
+The 3D world builds deterministic candidate pairs from swept bounding-sphere AABBs. Sphere, ellipsoid and box geometry use conservative radius bounds including collider offsets; movement sweeps center from current position through the fixed-step predicted endpoint. Planes are unbounded and always candidates against collision-enabled bodies. Unknown collider types and sampled/animated geometry use all-pairs fallback. Large cell spans bypass bucket expansion and fall back to pairing. Candidate pairs are AABB-confirmed where bounds exist and integrated into both CCD and discrete collision passes. This conservative filter does not add narrowphase shape pairs or alter unsupported narrowphase outcomes.
+
+
+## Phase 5 — Shape-aware narrowphase contract
+
+The supported narrowphase pair matrix is explicit: sphere-sphere, sphere-box, box-box (OBB SAT), sphere-plane, box-plane, sphere-ellipsoid and ellipsoid-plane. Box geometry is orientation-aware; OBB-OBB uses the 15-axis SAT (3 axes from each box plus 9 edge-cross axes) and computes a support-feature contact point. Box-plane computes projected OBB extent against the plane normal. Supported pairs return either confirmed contact or confirmed no-contact. Unsupported pairs (including ellipsoid-ellipsoid and ellipsoid-box) return an explicit `indeterminate` contract through `narrowphase3D`; the world emits an `narrowphase-indeterminate` event and diagnostic count rather than treating unsupported geometry as authoritative separation.
+
+**Phase 5 boundary:** pair-specific CCD/conservative advancement is not complete. The existing analytic swept-sphere CCD remains the only CCD path; other supported narrowphase pairs are currently discrete. This is an implementation slice, not Phase 5 completion.
